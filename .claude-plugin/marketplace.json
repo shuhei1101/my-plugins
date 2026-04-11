@@ -1,0 +1,47 @@
+{
+  "name": "mentaiko-claude-plugins",
+  "owner": {
+    "name": "tamago-yaki"
+  },
+  "metadata": {
+    "description": "カスタムClaudeスキルのプラグインマーケットプレイス"
+  },
+  "plugins": [
+    {
+      "name": "skill-wizard",
+      "source": "./plugins/skill-wizard",
+      "description": "対話形式・単発スキルの新規作成および既存スキルの編集を行うウィザードスキル",
+      "version": "1.0.0"
+    },
+    {
+      "name": "idea",
+      "source": "./plugins/idea",
+      "description": "複数ペルソナによる多角的な意見・評価・アイデア生成スキル",
+      "version": "1.0.0"
+    },
+    {
+      "name": "agent-wizard",
+      "source": "./plugins/agent-wizard",
+      "description": "カスタムサブエージェントを対話形式で作成・編集・管理するスキル",
+      "version": "1.0.0"
+    },
+    {
+      "name": "mcp-wizard",
+      "source": "./plugins/mcp-wizard",
+      "description": "MCPサーバーの総合管理を対話形式でガイドするスキル（最新MCP情報の取得・おすすめMCP探索・登録・管理）",
+      "version": "1.0.0"
+    },
+    {
+      "name": "py-wizard",
+      "source": "./plugins/py-wizard",
+      "description": "Python開発ウィザード — 新規プロジェクト作成から実装・テストまでを対話形式でサポート",
+      "version": "1.3.5"
+    },
+    {
+      "name": "diagram-wizard",
+      "source": "./plugins/diagram-wizard",
+      "description": "Mermaid図やフォルダ構成図を対話形式で作成するスキル — フロー図・クラス図・シーケンス図・ER図・ユースケース図・フォルダ構成図・アスキーアート・既存図編集に対応",
+      "version": "1.0.0"
+    }
+  ]
+}

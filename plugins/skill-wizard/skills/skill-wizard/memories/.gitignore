@@ -1,0 +1,8 @@
+# Exclude all memory session files from Git
+# These files contain session-specific context and should not be committed
+
+# All markdown files (memory session records)
+*.md
+
+# Keep this .gitignore file itself
+!.gitignore

@@ -1,0 +1,5 @@
+{
+  "name": "py-wizard",
+  "description": "Python開発ウィザード — 新規プロジェクト作成から実装・テストまでを対話形式でサポート",
+  "version": "1.3.6"
+}

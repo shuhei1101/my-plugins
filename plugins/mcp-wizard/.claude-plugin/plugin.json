@@ -1,0 +1,5 @@
+{
+  "name": "mcp-wizard",
+  "description": "MCPサーバーの総合管理を対話形式でガイドするスキル（最新MCP情報の取得・おすすめMCP探索・登録・管理）",
+  "version": "1.0.0"
+}

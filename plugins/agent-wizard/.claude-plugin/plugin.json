@@ -1,0 +1,5 @@
+{
+  "name": "agent-wizard",
+  "version": "1.0.0",
+  "description": "カスタムサブエージェントを対話形式で作成・編集・管理するスキル"
+}

@@ -1,0 +1,23 @@
+{
+  "skill_name": "idea",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "新しいスキル作成ツールに、「対話形式で段階的に仕様を確定する機能」を追加するか迷ってます。実装の観点から評価してください。",
+      "expected_output": "Implementation category personas (コスト重視、品質重視、工数最小、セキュリティ重視) の意見が表形式で提示される。各ペルソナが具体的な理由を添えて意見を述べる。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "プロジェクトの README.md を大幅に改訂するんですが、どういう視点でレビューすべきか、ドキュメントの観点から意見だして。",
+      "expected_output": "Documentation category personas (作成者目線、初見読者目線、保守者目線) の意見が表形式で提示される。README改訂のレビュー観点が具体的に示される。",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "「skill-wizard」っていう名前、もっといい候補ないかな？複数の視点で意見出して。",
+      "expected_output": "Naming category personas (キャッチー重視、シンプル重視、機能明瞭、検索性重視) が複数の代替案を提示し、それぞれの観点から理由を説明する。自動判断でnamingカテゴリが選択される。",
+      "files": []
+    }
+  ]
+}
