@@ -359,12 +359,13 @@
   - `{package_name}/config.py` — 設定読み込み（上部でデフォルト値定義 → 下部で.env読み込み上書き）
   - `{package_name}/main.py` — 引数処理・起動分岐（高レベルのみ）
   - `{package_name}/gui.py` — tkinter GUI（青い実行ボタン、設定モーダル）
-  - `{package_name}/logger.py` — logger初期化・設定集約
+  - `{package_name}/logger.py` — logger初期化・設定集約（**必須**: `setup_logger()` で `StreamHandler` + `FileHandler(log/YYYYMMDD_HHMMSS_{package_name}.log)` を両方アタッチ（実行ごとにタイムスタンプ付き新規ファイル、過去実行を上書きしない）、`LOG_DIR.mkdir(parents=True, exist_ok=True)` でフォルダ自動作成。参考: `voice-paste/voice_paste/logger.py`）
   - `{package_name}/exceptions.py` — カスタム例外クラス
-  - `{package_name}/constants.py` — 定数定義（デフォルトパス等）
+  - `{package_name}/constants.py` — 定数定義（**必須**: `LOG_DIR = PROJECT_ROOT / "log"` を含める）
   - `{package_name}/utils.py` or `common/` — 共通ユーティリティ
   - `{package_name}/cli.py` — argparse処理
-  - `bat/` — batファイル一式（gui.bat + モード別bat）
+  - `run.bat` — プロジェクトルートのメインランチャー（**必須**: `log/<タイムスタンプ>_run_bat.log`（実行ごとにタイムスタンプ付き新規ファイル、PowerShell `Get-Date` で生成・詳細は `references/python_rules.md`）へ stdout/stderr を追記リダイレクト、venv自動有効化、非ゼロ終了時は `pause` でウィンドウ維持。参考: `voice-paste/run.bat`）
+  - `bat/` — batファイル一式（gui.bat + モード別bat、いずれも `run.bat` と同じログ記録方式を踏襲）
   - `setup/` — セットアップ用bat一式（Python環境構築含む）
   - `tests/` — テストフォルダ（機能ミラー構成）
   - `tests/mocks/` — モックファイル置き場
@@ -385,6 +386,10 @@
   - コメント・docstring: すべて日本語
   - GUI表示文言: 日本語
 - loggerの設定（ログレベル変更可能、がっつりログ出力）
+  - `main.py` / `__main__.py` の起動直後で `setup_logger()` を呼び、以降の処理は必ずロガー経由で追跡可能にする
+  - ファイル出力先は `log/YYYYMMDD_HHMMSS_{package_name}.log`（実行ごとに新規ファイル。bat ログと同じタイムスタンプ粒度にすることでソート順で相関可能。フォルダはロガー側で自動作成）
+- `.bat` ランチャーはサイレント失敗しないよう、stdout/stderr を `log/<タイムスタンプ>_run_bat.log`（実行ごとに新規・PowerShell `Get-Date` ベースで生成）に追記し、失敗時は `pause` でウィンドウを維持する。長時間コマンド（PyInstaller ビルド等）は PowerShell パイプ（`Write-Host` + `Add-Content -Encoding utf8`、CP932 環境の文字化け対策込み。`Tee-Object` は PS 5.1 で `-Encoding` 非対応のため使わない）でコンソールにも同時出力すること（`references/python_rules.md` の「.bat ランチャーログ」節参照）
+- **【ASCII限定】`.bat` ファイルの中身は ASCII のみ**（日本語コメント・echo文字列禁止）。`cmd.exe` は bat をシステムANSIコードページ（CP932）でパースするため、UTF-8保存した日本語バイトが CP932 リードバイトとして誤認され、続くコマンドが壊れる（実例: `setlocal` 直前に日本語コメントがあると `'etlocal' is not recognized` になる）。日本語の説明は `README.md` に書くこと
 - .env未存在時のフォールバック処理を含める（.env.sampleをコピー、キー空）
 - 連携先ツールがある場合、デフォルトパスを設定済みにする
 - `~/.claude/skill-memory/py-wizard/{YYYYMMDDHHMMSS}_session.md` を更新

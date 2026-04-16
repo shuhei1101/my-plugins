@@ -160,6 +160,74 @@ def check_file_exists(file_path: Path) -> bool:
 - がっつりログを入れる（デバッグ時に処理を追いやすくする）
 - ログメッセージは英語で記述（言語使用ルール参照）
 
+### Python logger（必須）
+
+生成されるプロジェクトには以下を必ず含める:
+
+- `{package_name}/logger.py` に `setup_logger()` を定義し、`main.py` / `__main__.py` の起動直後に呼び出す
+- `constants.py` に `LOG_DIR = PROJECT_ROOT / "log"` を定義
+- `setup_logger()` の必須仕様:
+  - `LOG_DIR.mkdir(parents=True, exist_ok=True)` でログフォルダ自動作成
+  - ファイル名はタイムスタンプ付きとし、`LOG_DIR / f"{datetime.now():%Y%m%d_%H%M%S}_{package_name}.log"` の形式で生成（毎回新規ファイル、過去実行を上書きしない）
+  - `StreamHandler(sys.stdout)` + `FileHandler(..., encoding="utf-8")` の両方をアタッチ
+  - bat ログ（後述）と同じタイムスタンプ粒度にすることで、同一実行の bat ログと python ログをソート順で相関できる
+  - フォーマット例: `[%(asctime)s] %(levelname)s %(name)s %(filename)s:%(lineno)d - %(message)s`
+  - 多重追加防止（`if logger.handlers: return logger`）
+  - 初期化時に `logger.info("Logger initialized. level=%s, log_file=%s", ...)` を出す
+  - `latest.log` のような固定名シンボリックリンク/コピーは任意（必要ならオプションで追加）。デフォルトは強制しない
+- サブモジュールは `get_logger(__name__)` でロガー取得
+- 参考実装: `voice-paste/voice_paste/logger.py`
+
+### .bat ランチャーログ（必須）
+
+生成される `run.bat` および `bat/*.bat` には以下を必ず組み込む（サイレント失敗防止）:
+
+- `chcp 65001 > nul` + `setlocal` で開始
+- `set "LOG_DIR=%~dp0log"` → `if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"`
+- **タイムスタンプ付きログファイル名（必須）**: 固定の `run_bat.log` は禁止（過去実行が上書きされるため）。実行ごとに `YYYYMMDD_HHMMSS_run_bat.log` を新規作成する。正準スニペット（ASCII-only / CP932安全）:
+
+  ```bat
+  for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMddHHmmss"') do set "TS=%%I"
+  set "BAT_LOG=%LOG_DIR%\%TS%_run_bat.log"
+  ```
+
+  **`wmic` は使わないこと**。Windows 11 24H2 以降では `wmic` が既定で削除されており、`for /f ... wmic os get localdatetime ...` は `LDT` を空のまま通過し、`%LDT:~0,14%` がリテラル文字列 `~0,14` に展開されて `~0,14_run_bat.log` のようなゴミファイル名が生成される（サイレント失敗）。PowerShell 版はサポート対象の全 Windows バージョンで動作するため、常にこちらを採用する
+- 開始・cwd・venv有効化・起動コマンドを `echo [%date% %time%] ... >> "%BAT_LOG%"` で記録
+- venv自動有効化は `call ...\activate.bat >> "%BAT_LOG%" 2>&1`
+- Python起動は `python -m {package_name} >> "%BAT_LOG%" 2>&1` で stdout/stderr を両方キャプチャ
+- `set "EXITCODE=%ERRORLEVEL%"` を退避し、非ゼロの場合は画面にエラー＋ログパスを出し `pause`（ウィンドウ維持）
+- `endlocal & exit /b %EXITCODE%` で終了コード伝播
+- **長時間コマンドは PowerShell パイプでコンソールとログに同時出力する**: 通常の `>> "%BAT_LOG%" 2>&1` だとコンソールが無音になり、PyInstaller ビルドやモデルダウンロードなど数分かかる処理でユーザに進捗が見えずフリーズと誤認される。その場合は PowerShell の `Write-Host` + `Add-Content` パイプを使う:
+
+  ```bat
+  long_command.exe args 2>&1 | powershell -NoProfile -Command "[Console]::InputEncoding=[System.Text.Encoding]::UTF8; $input | ForEach-Object { Write-Host $_; Add-Content -LiteralPath '%BAT_LOG%' -Value $_ -Encoding utf8 }"
+  ```
+
+  ポイント:
+  - `[Console]::InputEncoding = UTF8` で、`chcp 65001` 配下の子プロセスが出す UTF-8 バイト列を PowerShell が正しく解釈する（設定しないと PS は既定で ANSI=CP932 として読み込み、日本語 Windows で激しい文字化けが発生する）
+  - `Write-Host` でコンソール表示、`Add-Content -Encoding utf8` でログファイルに UTF-8 追記
+  - `-LiteralPath` で `[` `]` などを含むパスのワイルドカード展開を防ぐ
+  - Windows PowerShell 5.1（Windows 7 SP1 以降に標準搭載）で動作
+
+  **なぜ `Tee-Object` を直接使わないか**: `Tee-Object` は一見この用途に合うが、Windows PowerShell 5.1 の `Tee-Object` には `-Encoding` パラメータが存在せず（PS 6+ / `pwsh` のみ対応）、出力ファイルの文字コードを制御できない。さらに `[Console]::InputEncoding` を UTF-8 に設定しないと、CP932 環境では UTF-8 入力が CP932 として解釈され、ログが丸ごとモジバケする。上記の `Write-Host` + `Add-Content` 形式なら PS 5.1 のみで文字化けなく動作する。
+
+  **注意: パイプ後の `%ERRORLEVEL%` は元コマンドではなく PowerShell の終了コードを反映する**。成功判定には ERRORLEVEL ではなく既知の生成物の存在確認を使うこと。例:
+
+  ```bat
+  pyinstaller --onefile foo.py 2>&1 | powershell -NoProfile -Command "[Console]::InputEncoding=[System.Text.Encoding]::UTF8; $input | ForEach-Object { Write-Host $_; Add-Content -LiteralPath '%BAT_LOG%' -Value $_ -Encoding utf8 }"
+  if not exist "dist\foo.exe" (
+    echo [ERROR] build failed. see %BAT_LOG%
+    pause
+    exit /b 1
+  )
+  ```
+
+  使い分け:
+  - 短時間コマンド（`pip show`、venv 有効化など）: 素直に `>> "%BAT_LOG%" 2>&1` でよい
+  - 長時間コマンドで進捗が見えないと困るもの（PyInstaller ビルド、モデルダウンロード、テスト実行など）: 上記の `Write-Host` + `Add-Content` パターンを使う
+- 参考実装: `voice-paste/run.bat`
+- **【最重要・ASCII限定】`.bat` ファイルの中身は ASCII 文字のみにすること（日本語コメント・`echo` 文字列すべて禁止）**。理由: `cmd.exe` は bat をシステムANSIコードページ（日本語Windowsでは CP932）でパースする。ファイル先頭に `chcp 65001` を書いても**パーサ側の字句解析にはそれが適用されない**ため無意味。UTF-8保存の日本語バイト（例: 「起動」= `E8 B5 B7 E5 8B 95`）が CP932 のリードバイトとして誤認され、続くコマンド文字を食い潰す。実例: `setlocal` の直前に日本語コメントがあると `'etlocal' is not recognized as an internal or external command`（先頭の `s` が直前バイトに吸われる）という謎エラーになる。日本語の説明文は `README.md` 側に書き、bat 内のコメント・echo はすべて英語で書くこと。Shift-JIS保存でも動くが環境依存で壊れやすいので必ず ASCII-only を選ぶ。
+
 ---
 
 ## 命名規則
