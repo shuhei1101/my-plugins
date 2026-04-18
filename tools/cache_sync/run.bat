@@ -1,4 +1,5 @@
 @echo off
-cd /d "%~dp0.."
+pushd "%~dp0.."
 python -m cache_sync
+popd
 pause
