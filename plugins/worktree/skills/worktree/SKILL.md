@@ -205,8 +205,15 @@ Git worktreeを使って、複数のAIセッションが干渉せず並行して
   1. `git branch {ブランチ名} {ベースブランチ}`
   2. worktreeパスを決定: デフォルト `{親ディレクトリ}/{リポジトリ名}-wt-PR{N}`
   3. `git worktree add {worktreeパス} {ブランチ名}`
-  4. worktree内で空コミット: `git commit --allow-empty -m "chore: start PR{N} {やること名}"`
-  5. worktree内でPRドキュメントをコミット: `git add docs/PR/PR{N}.md && git commit -m "docs: add PR{N} plan"`
+  4. **プロジェクトタイプを自動検出してシンボリックリンクを作成**:
+     - `pyproject.toml` または `setup.py` が存在する → Python プロジェクト
+       - メインリポジトリの `venv/` が存在すれば `ln -s {メインリポジトリ}/venv {worktreeパス}/venv`
+     - `package.json` が存在する → Node.js/Next.js プロジェクト
+       - `node_modules/` が存在すれば `ln -s {メインリポジトリ}/node_modules {worktreeパス}/node_modules`
+       - `.next/` が存在すれば `ln -s {メインリポジトリ}/.next {worktreeパス}/.next`
+     - リンク対象が存在しない場合はスキップ（警告のみ表示）
+  5. worktree内で空コミット: `git commit --allow-empty -m "chore: start PR{N} {やること名}"`
+  6. worktree内でPRドキュメントをコミット: `git add docs/PR/PR{N}.md && git commit -m "docs: add PR{N} plan"`
 - skill-memoryに worktreeパス・ブランチ名・PR番号を保存
 
 **出力**:
