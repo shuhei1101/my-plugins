@@ -73,6 +73,9 @@
   - デザインパターン適用（テンプレート、ストラテジー等、適材適所）
   - main.pyは高レベルのみ、低レベル処理は抽象クラス・インターフェースへ
   - loggerをがっつり入れる（デバッグ追跡用）
+  - **ログ出力の必須要件**: `logger.py` の `setup_logger()` は `StreamHandler` + `FileHandler(log/YYYYMMDD_HHMMSS_{package_name}.log)` を両方アタッチし（実行ごとにタイムスタンプ付き新規ファイル、過去実行を上書きしない）、`LOG_DIR` は `log/` フォルダを自動作成する。`main.py` / `__main__.py` の起動直後で必ず `setup_logger()` を呼ぶ（参考: `voice-paste/voice_paste/logger.py`）
+  - **.bat ランチャーの必須要件**: `run.bat` / `bat/*.bat` は stdout/stderr を `log/<タイムスタンプ>_run_bat.log`（実行ごとにタイムスタンプ付き新規ファイル、PowerShell `Get-Date` で生成。bat ログと python ログが同じ粒度のタイムスタンプを持つことで同一実行分をソート順で相関可能）に追記リダイレクトし、venv自動有効化・非ゼロ終了時 `pause` を組み込む（参考: `voice-paste/run.bat`、正準スニペットおよび長時間コマンド向けコンソール／ログ同時出力パターン（PowerShell `Write-Host` + `Add-Content -Encoding utf8`、CP932 環境での文字化け対策込み）は `references/python_rules.md` の「.bat ランチャーログ」節）
+  - **【ASCII限定】`.bat` ファイルの中身は ASCII 文字のみ**（日本語コメント・echo文字列禁止）。`cmd.exe` は bat をシステムANSIコードページ（CP932）でパースするため、UTF-8保存の日本語バイトが CP932 リードバイトとして誤認され、続くコマンドが壊れる（例: `'etlocal' is not recognized`）。日本語説明は `README.md` に書く
   - print文・ログ文はすべて英語
   - 設定値は引数で受け取れる設計（優先順位: 環境変数 → 引数上書き）
 

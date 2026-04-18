@@ -28,7 +28,8 @@
 | main.py | エントリーポイント | {pkg}/main.py |
 | gui.py | tkinter GUI | {pkg}/gui.py |
 | cli.py | argparse処理 | {pkg}/cli.py |
-| logger.py | ログ設定 | {pkg}/logger.py |
+| logger.py | ログ設定（`log/{pkg}.log` への FileHandler + StreamHandler を設定、必須） | {pkg}/logger.py |
+| run.bat | メインランチャー（`log/run_bat.log` へ stdout/stderr 記録、失敗時 pause、必須） | run.bat |
 | exceptions.py | カスタム例外 | {pkg}/exceptions.py |
 | constants.py | 定数定義 | {pkg}/constants.py |
 | utils.py | 共通ユーティリティ | {pkg}/utils.py |
