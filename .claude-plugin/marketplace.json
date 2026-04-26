@@ -48,6 +48,12 @@
       "source": "./plugins/worktree",
       "description": "Git worktreeを使った実装ワークフロー管理スキル — ブランチ作成→worktree分離→実装計画（PRドキュメント）→実装→レビュー→squashマージ→クリーンアップを対話形式で進める。複数AIセッションの並行実装に対応",
       "version": "1.0.0"
+    },
+    {
+      "name": "wiki-wizard",
+      "source": "./plugins/wiki-wizard",
+      "description": "プロジェクトのドキュメントをWiki化し、Issue駆動の意思決定運用と決定経緯の履歴記録を支援するウィザードスキル — docs/wiki.md（ナビゲーションハブ）+ Issues.md（未決定事項）+ イシュー履歴.md（決定済み履歴）の3点セットを構築・運用する",
+      "version": "1.0.0"
     }
   ]
 }
