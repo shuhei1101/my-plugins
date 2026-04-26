@@ -1,0 +1,5 @@
+{
+  "name": "wiki-wizard",
+  "description": "プロジェクトのドキュメントを Wiki 化し、Issue 駆動の意思決定運用と決定経緯の履歴記録を支援するウィザードスキル。",
+  "version": "1.0.0"
+}
