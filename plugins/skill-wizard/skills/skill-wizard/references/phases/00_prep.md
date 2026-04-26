@@ -239,7 +239,7 @@
     - 観点: ユーザビリティ・明瞭性・拡張性等
 
 **出力**:
-  - 改善項目リスト（チェックリスト形式）は `assets/improvement_checklist_template.md` をテンプレートとして提示する
+  - 改善項目リスト（チェックリスト形式）は `examples/improvement_checklist_example.md` を具体例として提示する
 
 **選択肢**:
   1. この改善項目で実行する（編集後のリストを貼り付けてください）

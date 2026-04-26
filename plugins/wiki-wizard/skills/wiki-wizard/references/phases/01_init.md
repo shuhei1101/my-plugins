@@ -91,9 +91,9 @@
 
 **AI実施タスク**:
 - 以下のテンプレートをロードして、対象プロジェクトに合わせて軽くカスタマイズ
-  - `assets/wiki_md_template.md` → `docs/wiki.md` に書き出し
-  - `assets/issues_md_template.md` → `docs/Issues.md` に書き出し
-  - `assets/issue_history_template.md` → `docs/イシュー履歴.md` に書き出し
+  - `examples/wiki_md_example.md` → `docs/wiki.md` に書き出し
+  - `examples/issues_md_example.md` → `docs/Issues.md` に書き出し
+  - `examples/issue_history_example.md` → `docs/イシュー履歴.md` に書き出し
 - 「既存ドキュメントを取り込んで wiki.md を生成」モードの場合は、`docs/*.md` を Glob で取得し、ファイル名からセクション分類を推測して `wiki.md` のリンク集に展開
 - ファイル書き込みは **サブエージェント（バックグラウンド）に委譲**
 
@@ -107,11 +107,11 @@ Agent ツール:
   prompt:
     """
     以下の3ファイルを {プロジェクトルート}/docs/ 配下に新規作成してください。
-    各ファイルの内容は assets/{xxx}_template.md をロードして、現在日付を埋めて書き出してください。
+    各ファイルの内容は examples/{xxx}_example.md をロードして、現在日付を埋めて書き出してください。
 
-    1. docs/wiki.md ← assets/wiki_md_template.md（既存ドキュメント取り込みモードならファイル一覧を反映）
-    2. docs/Issues.md ← assets/issues_md_template.md
-    3. docs/イシュー履歴.md ← assets/issue_history_template.md
+    1. docs/wiki.md ← examples/wiki_md_example.md（既存ドキュメント取り込みモードならファイル一覧を反映）
+    2. docs/Issues.md ← examples/issues_md_example.md
+    3. docs/イシュー履歴.md ← examples/issue_history_example.md
 
     現在の日付: {YYYY-MM-DD}（フロントマターや初期化日に埋める）
 
