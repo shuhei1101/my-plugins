@@ -1,6 +1,6 @@
 # Issue 記載フォーマット — 具体例
 
-`docs/Issues.md` に追記する Issue のフォーマット例。
+`wiki/Issues.md` に追記する Issue のフォーマット例。
 
 ---
 
