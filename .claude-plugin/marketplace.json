@@ -46,8 +46,8 @@
     {
       "name": "worktree",
       "source": "./plugins/worktree",
-      "description": "Git worktreeを使った実装ワークフロー管理スキル — ブランチ作成→worktree分離→実装計画（PRドキュメント）→実装→レビュー→squashマージ→クリーンアップを対話形式で進める。複数AIセッションの並行実装に対応",
-      "version": "1.0.0"
+      "description": "Git worktreeを使った実装ワークフロー管理スキル — 実装系（ブランチ+worktree→計画→実装→レビュー→squashマージ）とドキュメント系（ブランチのみ→変更→コミット→マージ）の2モードに対応",
+      "version": "1.2.0"
     },
     {
       "name": "wiki-wizard",

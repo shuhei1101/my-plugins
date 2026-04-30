@@ -359,3 +359,105 @@ def check_file_exists(file_path: Path) -> bool:
 
 - 開発技術・ライブラリ選定時は **MCP（context7）やWeb検索を使って最新情報を調査する**
 - 該当ステップ: 2.5（開発技術）、3.2（実装計画）
+
+---
+
+## 簡易スクリプトルール
+
+単一 `.py` ファイルで完結するスクリプト向けのルール。フルパッケージ構成は不要。
+
+### ファイル構成
+
+```
+{script_name}.py   ← これ1ファイルのみ
+```
+
+### ファイルヘッダー（必須）
+
+ファイル冒頭に以下の形式のdocstringを記載する:
+
+```python
+"""
+{script_name} — {一行説明（端的に何をするか）}
+
+Usage:
+  # コマンドライン引数の説明
+  python {script_name}.py [options] {positional_args}
+
+"""
+```
+
+- Usage の `# コマンドライン引数の説明` コメント部分に引数・オプションの説明を記載する
+- 引数なしの場合はコメント行を省略可
+
+### コード構成テンプレート
+
+```python
+"""...(ヘッダーdocstring)..."""
+
+# ── 標準ライブラリ ──────────────────────────────────────────
+import argparse
+import sys
+from pathlib import Path
+from typing import Literal, Optional
+
+# ── サードパーティ ──────────────────────────────────────────
+# （サードパーティが不要な場合はこのブロックを省略）
+import some_lib  # pip install some_lib
+
+# ── 定数 ────────────────────────────────────────────────────
+SOME_CONSTANT: str = "value"
+
+# ── プライベート関数 ─────────────────────────────────────────
+def _helper_function(value: str) -> str:
+    """
+    補助処理を行う。
+
+    :param value: 処理対象の文字列
+    :return: 処理結果
+    """
+    return value.strip()
+
+# ── メイン処理 ──────────────────────────────────────────────
+def main(args: argparse.Namespace) -> None:
+    """
+    メイン処理。
+
+    :param args: コマンドライン引数
+    """
+    ...
+
+def parse_args() -> argparse.Namespace:
+    """
+    コマンドライン引数を解析する。
+
+    :return: 解析済み引数
+    """
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    ...
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    args = parse_args()
+    main(args)
+```
+
+### フルパッケージと共通のルール
+
+- `typing` で型を厳格に（Literal, Union, Optional 等を積極的に使用）
+- docstring は reStructuredText 形式（`:param:`, `:return:`, `:raises:` 等）
+- 複雑なロジック・深いネスト・難解な式・珍しいライブラリ利用箇所には適宜インラインコメントを追記（docstring とは別に）
+- print文・ログ出力: すべて英語
+- コメント・docstring: すべて日本語
+- デザインパターン適用（適材適所。ただし過度な抽象化は避ける）
+- Pydantic: 外部 API / ファイル I/O のデータ構造化が必要な場合に使用（フルパッケージと同基準）
+
+### フルパッケージと異なるルール
+
+- `logger.py` は不要。ログは `print()` または `logging.basicConfig()` で簡易出力
+- `config.py` / `.env` は不要。設定は引数または定数で管理
+- テスト / bat / setup / `pyproject.toml` は生成しない
+- 外部ライブラリが必要な場合はヘッダー内または `# pip install {package}` コメントで明示
