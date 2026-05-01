@@ -8,8 +8,21 @@ worktreeスキルで使用するgitコマンドの詳細。
 git branch {ブランチ名} {ベースブランチ}
 ```
 
-- ブランチ名形式: `{PR番号}/{やること名}` (例: `30/ログイン実装`)
+- ブランチ名形式: `{type}/PR{N}-{やること名}` (例: `feat/PR30-login-implement`, `docs/PR31-update-wiki`)
+  - type: `feat` / `fix` / `docs` / `refactor` / `test` / `chore`
 - ベースブランチはスキル起動時のカレントブランチ
+
+### 次の PR 番号を決める
+
+```bash
+# 完了済み PR の最大番号
+git log --oneline | grep -oP '#PR\d+' | grep -oP '\d+' | sort -n | tail -1
+
+# 仕掛かり中 PR の最大番号（ブランチ名から）
+git branch -a | grep -oP 'PR\d+' | grep -oP '\d+' | sort -n | tail -1
+```
+
+次番号 = max(完了済み, 仕掛かり中) + 1
 
 ## Worktree作成
 
