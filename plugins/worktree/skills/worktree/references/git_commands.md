@@ -8,7 +8,7 @@ worktreeスキルで使用するgitコマンドの詳細。
 git branch {ブランチ名} {ベースブランチ}
 ```
 
-- ブランチ名形式: `{type}/PR{N}-{やること名}` (例: `feat/PR30-login-implement`, `docs/PR31-update-wiki`)
+- ブランチ名形式: `PR{N}/{type}/{内容}` (例: `PR30/feat/login-implement`, `PR31/docs/update-wiki`)
   - type: `feat` / `fix` / `docs` / `refactor` / `test` / `chore`
 - ベースブランチはスキル起動時のカレントブランチ
 
