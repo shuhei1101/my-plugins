@@ -1,0 +1,5 @@
+{
+  "name": "wt",
+  "description": "Git worktree-based implementation workflow management",
+  "version": "1.0.0"
+}
