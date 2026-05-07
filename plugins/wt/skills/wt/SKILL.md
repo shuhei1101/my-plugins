@@ -127,8 +127,7 @@ Then stop. Do **not** show merge commands. Do **not** ask "shall I merge?". The 
 ```bash
 # User runs this in the main repo
 git checkout {base-branch}
-git merge --squash {branch-name}
-git commit -m "{description} #PR{N}"
+git merge {branch-name}
 ```
 
 Wait for the user to tell you the merge is done.
@@ -139,10 +138,8 @@ After the user confirms the merge is complete, remove the worktree and branch:
 
 ```bash
 git worktree remove {worktree-path}
-git branch -D {branch-name}
+git branch -d {branch-name}
 ```
-
-Use `-D` (force delete) — squash-merged branches fail the `-d` safeguard check by design.
 
 Update the session file: `## Status: completed`
 
@@ -183,12 +180,11 @@ git worktree add {path} PR{N}/{type}/{desc}
 # Empty initial commit
 git commit --allow-empty -m "chore: start PR{N} {desc}"
 
-# Squash merge (run in main repo, not worktree)
+# Merge (run in main repo, not worktree)
 git checkout {base}
-git merge --squash {branch}
-git commit -m "{desc} #PR{N}"
+git merge {branch}
 
 # Cleanup
 git worktree remove {path}
-git branch -D {branch}
+git branch -d {branch}
 ```
