@@ -4,6 +4,28 @@ This repository is a Claude Code plugin marketplace. It hosts skills distributed
 
 ---
 
+## Japanese Translation Files (`.jp.md`)
+
+Every English document in this repo has a paired Japanese translation:
+
+| English (auto-loaded) | Japanese (reference only) |
+|-----------------------|--------------------------|
+| `CLAUDE.md` | `CLAUDE.jp.md` |
+| `plugins/*/skills/*/SKILL.md` | `plugins/*/skills/*/SKILL.jp.md` |
+
+**These `.jp.md` files are never auto-loaded by Claude Code** — Claude Code only reads files named exactly `CLAUDE.md` or `SKILL.md`. The `.jp.md` variants are purely for human reference.
+
+### Update workflow
+
+The user reads `.jp.md` to understand the content and gives instructions in Japanese. When a change is needed:
+
+1. **Update `.jp.md` first** — confirm the intended change is correctly reflected in Japanese
+2. **Then update the English original** — apply the same change to the authoritative file
+
+Both files must always be kept in sync. Never update one without updating the other.
+
+---
+
 ## Repository Structure
 
 ```
@@ -16,8 +38,10 @@ my-plugins/
 │       │   └── plugin.json    # Plugin manifest (name, description, version)
 │       └── skills/
 │           └── {skill-name}/
-│               └── SKILL.md   # Skill definition
-└── CLAUDE.md
+│               ├── SKILL.md      # Skill definition (English, auto-loaded)
+│               └── SKILL.jp.md   # Japanese translation (reference only)
+├── CLAUDE.md      # This file (English, auto-loaded)
+└── CLAUDE.jp.md   # Japanese translation (reference only)
 ```
 
 ---
