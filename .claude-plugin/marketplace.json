@@ -23,7 +23,7 @@
       "name": "wt",
       "source": "./plugins/wt",
       "description": "Git worktree-based implementation workflow management",
-      "version": "1.0.1"
+      "version": "1.0.2"
     }
   ]
 }

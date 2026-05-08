@@ -114,7 +114,7 @@ Review the changes at: {worktree-path}
 
 If the user requests changes, return to Phase 3.
 
-### Squash Merge
+### Merge
 
 When the user confirms the review is done, output only:
 
@@ -127,8 +127,10 @@ Then stop. Do **not** show merge commands. Do **not** ask "shall I merge?". The 
 ```bash
 # User runs this in the main repo
 git checkout {base-branch}
-git merge {branch-name}
+git merge {branch-name}   # regular merge — never use --squash
 ```
+
+**Always use a regular merge to preserve the commit history on the branch. Never use `--squash`.**
 
 Wait for the user to tell you the merge is done.
 
