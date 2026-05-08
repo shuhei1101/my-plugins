@@ -9,11 +9,11 @@ python tools/sync_plugin_cache.py <プラグイン名>
 # インストール済みの全プラグインを一括同期
 python tools/sync_plugin_cache.py
 
-# 特定プラグインをマーケットプレイスの正規版に復元
-python tools/sync_plugin_cache.py --restore <プラグイン名>
+# 特定プラグインをマーケットプレイスの最新版に更新
+python tools/sync_plugin_cache.py --update <プラグイン名>
 
-# インストール済みの全プラグインを正規版に復元
-python tools/sync_plugin_cache.py --restore
+# インストール済みの全プラグインを最新版に更新
+python tools/sync_plugin_cache.py --update
 """
 
 import argparse
@@ -40,8 +40,8 @@ def parse_args() -> argparse.Namespace:
         "元に戻す場合: claude plugin update <プラグイン名>@my-plugins",
     )
     parser.add_argument("plugin", nargs="?", default=None, help="プラグイン名（省略時は全プラグインを同期）")
-    parser.add_argument("--restore", action="store_true",
-        help="マーケットプレイスの正規版に復元する（マーケットプレイス→キャッシュへコピー）")
+    parser.add_argument("--update", action="store_true",
+        help="マーケットプレイスの最新版に更新する（マーケットプレイス→キャッシュへコピー）")
     return parser.parse_args()
 
 
@@ -170,7 +170,7 @@ def restore_all() -> None:
 def main() -> None:
     args = parse_args()
 
-    if args.restore:
+    if args.update:
         if args.plugin:
             if not restore_plugin(args.plugin):
                 sys.exit(1)
