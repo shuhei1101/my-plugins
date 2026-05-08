@@ -119,12 +119,12 @@ def run_claude_cmd(args: list[str], *, allow_fail: bool = False) -> subprocess.C
     cmd: list[str] = CLAUDE_CMD + args
     print(f" > {' '.join(cmd)}")
     result: subprocess.CompletedProcess[str] = subprocess.run(
-        cmd, capture_output=True, text=True,
+        cmd, capture_output=True, text=True, encoding='utf-8', errors='replace',
     )
-    if result.stdout.strip():
+    if result.stdout and result.stdout.strip():
         print(result.stdout.strip())
     if result.returncode != 0 and not allow_fail:
-        if result.stderr.strip():
+        if result.stderr and result.stderr.strip():
             print(result.stderr.strip())
         print(f"エラー: コマンドが失敗しました (exit {result.returncode})")
         sys.exit(1)
@@ -142,7 +142,7 @@ def get_installed_plugins(marketplace_key: str) -> list[str]:
     """
     result: subprocess.CompletedProcess[str] = subprocess.run(
         CLAUDE_CMD + ["plugin", "list"],
-        capture_output=True, text=True,
+        capture_output=True, text=True, encoding='utf-8', errors='replace',
     )
     plugins: list[str] = []
     suffix: str = f"@{marketplace_key}"
@@ -179,7 +179,7 @@ def get_all_installed_plugins() -> dict[str, list[str]]:
     """
     result: subprocess.CompletedProcess[str] = subprocess.run(
         CLAUDE_CMD + ["plugin", "list"],
-        capture_output=True, text=True,
+        capture_output=True, text=True, encoding='utf-8', errors='replace',
     )
     installed: dict[str, list[str]] = {}
     for line in result.stdout.splitlines():
@@ -299,7 +299,7 @@ def cmd_list() -> None:
     try:
         result: subprocess.CompletedProcess[str] = subprocess.run(
             ["git", "ls-remote", "--heads", MARKETPLACE_URL],
-            capture_output=True, text=True, check=True,
+            capture_output=True, text=True, check=True, encoding='utf-8', errors='replace',
         )
     except subprocess.CalledProcessError as e:
         print(f"エラー: リモートへの接続に失敗しました。\n{e.stderr.strip()}")

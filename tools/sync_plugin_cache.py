@@ -119,10 +119,10 @@ def _update_marketplace() -> bool:
     print("マーケットプレイスを更新中...")
     result = subprocess.run(
         CLAUDE_CMD + ["plugin", "marketplace", "update", MARKETPLACE_NAME],
-        capture_output=True, text=True,
+        capture_output=True, text=True, encoding='utf-8', errors='replace',
     )
     if result.returncode != 0:
-        print(f" 警告: マーケットプレイスの更新に失敗しました: {result.stderr.strip()}")
+        print(f" 警告: マーケットプレイスの更新に失敗しました: {result.stderr and result.stderr.strip()}")
         return False
     print(" マーケットプレイス更新完了")
     return True
