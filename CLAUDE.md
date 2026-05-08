@@ -85,6 +85,19 @@ Optional frontmatter fields:
 
 ---
 
+## Prerequisite for All Plugin Work
+
+Whether creating a new plugin or updating an existing one, **always use the `wt` skill to create a worktree and branch before starting work**.
+
+Never work directly on the main branch.
+
+```bash
+# Invoke the wt skill before starting any plugin work
+/wt:wt
+```
+
+---
+
 ## Creating a New Plugin
 
 ### 1. Create the plugin directory

@@ -1,0 +1,5 @@
+{
+  "name": "claude-rule",
+  "description": "Authoring conventions for Claude instruction files — English-only AI directives with paired Japanese reference files",
+  "version": "1.0.0"
+}

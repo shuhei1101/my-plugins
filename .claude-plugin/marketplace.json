@@ -24,6 +24,12 @@
       "source": "./plugins/wt",
       "description": "Git worktree-based implementation workflow management",
       "version": "1.0.2"
+    },
+    {
+      "name": "claude-rule",
+      "source": "./plugins/claude-rule",
+      "description": "Authoring conventions for Claude instruction files — English-only AI directives with paired Japanese reference files",
+      "version": "1.0.0"
     }
   ]
 }
