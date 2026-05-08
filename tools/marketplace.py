@@ -15,6 +15,9 @@ python tools/marketplace.py add <ブランチ名>
 # 指定ブランチの指定プラグインをインストール [-l でローカルスコープ]
 python tools/marketplace.py install <ブランチ名> <プラグイン名> [-l]
 
+# マーケットプレイス追加 + 全プラグインをインストール/更新 [-l でローカルスコープ]
+python tools/marketplace.py sync <ブランチ名> [-l]
+
 # マーケットプレイス追加 + master と差分のあるプラグインのみインストール [-l でローカルスコープ]
 python tools/marketplace.py install-diff <ブランチ名> [-l]
 
@@ -57,6 +60,10 @@ def parse_args() -> argparse.Namespace:
     install_parser.add_argument("branch", help="対象のGitブランチ名")
     install_parser.add_argument("plugin", help="プラグイン名")
     install_parser.add_argument("-l", "--local", action="store_true", help="ローカルスコープでインストール")
+
+    sync_parser = sub.add_parser("sync", help="マーケットプレイス追加/更新 + 全プラグインをインストール/更新（迷ったらこれ）")
+    sync_parser.add_argument("branch", help="対象のGitブランチ名")
+    sync_parser.add_argument("-l", "--local", action="store_true", help="ローカルスコープでインストール")
 
     install_diff_parser = sub.add_parser("install-diff", help="マーケットプレイス追加 + master と差分のあるプラグインのみインストール")
     install_diff_parser.add_argument("branch", help="レビュー対象のGitブランチ名")
@@ -388,6 +395,24 @@ def cmd_install(branch: str, plugin_name: str, *, local: bool = False) -> None:
     run_claude_cmd(["plugin", "install", plugin_full, "--scope", scope])
 
 
+def cmd_sync(branch: str, *, local: bool = False) -> None:
+    """マーケットプレイスを追加/更新し、全プラグインをインストール/更新する。
+
+    :param branch: 対象のGitブランチ名
+    :param local: True ならローカルスコープでインストール
+
+    - マーケットプレイスが未登録なら追加、登録済みなら最新に更新する
+    - 利用可能な全プラグインをインストール（インストール済みなら update、未インストールなら install）
+    """
+    key: str = add_marketplace(branch)
+
+    plugins: list[str] = get_available_plugins(key)
+    if plugins:
+        install_plugins(plugins, key, local=local)
+    else:
+        print("利用可能なプラグインが見つかりませんでした。")
+
+
 def cmd_install_diff(branch: str, *, local: bool = False) -> None:
     """マーケットプレイスを追加し、master と差分のあるプラグインのみインストールする。
 
@@ -493,6 +518,8 @@ def main() -> None:
         cmd_add(args.branch)
     elif args.command == "install":
         cmd_install(args.branch, args.plugin, local=args.local)
+    elif args.command == "sync":
+        cmd_sync(args.branch, local=args.local)
     elif args.command == "install-diff":
         cmd_install_diff(args.branch, local=args.local)
     elif args.command == "update":
