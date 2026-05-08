@@ -87,6 +87,8 @@ description: {いつトリガーするか、何をするか。具体的なコン
 | `wiki` | 1.0.0 | Issue 駆動の意思決定追跡を含むプロジェクトドキュメント Wiki 管理 |
 | `py` | 1.0.0 | Python プロジェクトのコーディング規約 |
 | `wt` | 1.0.1 | Git worktree を使った実装ワークフロー管理 |
+| `claude-rule` | 1.0.0 | Claude 指示ファイルの記述規約（英語指示・日本語参照ファイルのペア管理） |
+| `yaml-rule` | 1.0.0 | アセット・プロジェクト設定の YAML 管理規約（index.yaml / settings.yaml / 開発者ノート） |
 
 ---
 
