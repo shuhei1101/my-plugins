@@ -26,7 +26,7 @@ from typing import Final
 
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 PLUGINS_DIR: Final[Path] = REPO_ROOT / "plugins"
-MARKETPLACE_NAME: Final[str] = "my-plugins"
+MARKETPLACE_NAME: Final[str] = "mentaiko-claude-plugins"
 CACHE_DIR: Final[Path] = Path.home() / ".claude" / "plugins" / "cache" / MARKETPLACE_NAME
 MARKETPLACE_DIR: Final[Path] = Path.home() / ".claude" / "plugins" / "marketplaces" / MARKETPLACE_NAME / "plugins"
 CLAUDE_CMD: Final[list[str]] = ["cmd", "/c", "claude"] if sys.platform == "win32" else ["claude"]

@@ -37,7 +37,7 @@ from typing import Any, Final
 
 KNOWN_MARKETPLACES: Final[Path] = Path.home() / ".claude" / "plugins" / "known_marketplaces.json"
 MARKETPLACE_URL: Final[str] = "https://github.com/shuhei1101/my-plugins.git"
-KEY_PREFIX: Final[str] = "my-plugins"
+KEY_PREFIX: Final[str] = "mentaiko-claude-plugins"
 CLAUDE_CMD: Final[list[str]] = ["cmd", "/c", "claude"] if sys.platform == "win32" else ["claude"]
 
 MarketplaceData = dict[str, Any]
