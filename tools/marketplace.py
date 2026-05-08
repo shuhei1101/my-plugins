@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
-"""review_marketplace — レビュー用マーケットプレイスの追加・削除・一覧管理.
+"""marketplace — レビュー用マーケットプレイスの追加・削除・一覧管理.
 
 Usage::
 
 # リモートブランチ一覧を確認
-python tools/review_marketplace.py list
+python tools/marketplace.py list
 
 # 登録済みレビュー用マーケットプレイスの状態を表示
-python tools/review_marketplace.py status
+python tools/marketplace.py status
 
 # 指定ブランチのマーケットプレイスを追加
-python tools/review_marketplace.py add <ブランチ名>
+python tools/marketplace.py add <ブランチ名>
 
 # 指定ブランチの指定プラグインをインストール [-l でローカルスコープ]
-python tools/review_marketplace.py install <ブランチ名> <プラグイン名> [-l]
+python tools/marketplace.py install <ブランチ名> <プラグイン名> [-l]
 
 # マーケットプレイス追加 + master と差分のあるプラグインのみインストール [-l でローカルスコープ]
-python tools/review_marketplace.py install-diff <ブランチ名> [-l]
+python tools/marketplace.py install-diff <ブランチ名> [-l]
 
 # 指定ブランチのマーケットプレイスを更新
-python tools/review_marketplace.py update <ブランチ名>
+python tools/marketplace.py update <ブランチ名>
 
 # 指定ブランチのマーケットプレイスを削除
-python tools/review_marketplace.py remove <ブランチ名>
+python tools/marketplace.py remove <ブランチ名>
 """
 
 import argparse
