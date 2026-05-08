@@ -127,10 +127,10 @@ Then stop. Do **not** show merge commands. Do **not** ask "shall I merge?". The 
 ```bash
 # User runs this in the main repo
 git checkout {base-branch}
-git merge {branch-name}   # regular merge — never use --squash
+git merge --no-ff {branch-name}   # --no-ff preserves branch line in history
 ```
 
-**Always use a regular merge to preserve the commit history on the branch. Never use `--squash`.**
+**Always use `--no-ff` to create a merge commit and keep the branch visible in history. Never use `--squash`.**
 
 Wait for the user to tell you the merge is done.
 
@@ -184,7 +184,7 @@ git commit --allow-empty -m "chore: start PR{N} {desc}"
 
 # Merge (run in main repo, not worktree)
 git checkout {base}
-git merge {branch}
+git merge --no-ff {branch}
 
 # Cleanup
 git worktree remove {path}

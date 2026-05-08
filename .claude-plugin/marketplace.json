@@ -23,7 +23,7 @@
       "name": "wt",
       "source": "./plugins/wt",
       "description": "Git worktree-based implementation workflow management",
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "name": "claude-rule",
