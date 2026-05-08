@@ -73,6 +73,28 @@ paths:
 
 A rule file without `paths:` is loaded unconditionally, just like CLAUDE.md.
 
+## When to create a rule
+
+Create a `.claude/rules/<name>.md` file with `paths:` frontmatter when the instruction:
+
+- Only applies while editing files in a specific folder or file pattern
+- Does not need to be in the context of every session
+- Fits one of the two rule patterns: a process/convention rule (how to work in that folder) or a source ↔ documentation linking rule (which specs govern that folder)
+
+Keep the instruction in **CLAUDE.md** when it:
+
+- Applies every session regardless of what is being edited
+- Is part of the project meta-workflow (worktree setup, commit format, server management)
+- Has no natural folder scope
+
+| Instruction type | Where |
+|---|---|
+| Worktree setup / commit format / server ports | CLAUDE.md |
+| Wiki editing conventions | `.claude/rules/wiki-work.md` (`paths: wiki/**/*.md`) |
+| Python implementation standards | `.claude/rules/implementation.md` (`paths: src/**/*.py`) |
+| Which specs govern a source folder | `.claude/rules/<domain>.md` (matching paths) |
+| Project-wide rules with no folder scope | CLAUDE.md |
+
 ## Two patterns for path-scoped rules
 
 1. **Process / convention rules** — instructions on how to work in a folder (e.g., wiki editing conventions, prompt-authoring rules). Self-contained.
@@ -84,6 +106,21 @@ When you edit a file under `.claude/rules/`:
 
 1. Check whether wiki / docs referenced from that rule still match the rule's content. Update them if they have drifted (one source of truth).
 2. Update the matching `.claude/rules-jp/<same-name>.md` so the Japanese mirror stays in sync.
+
+## Implementation ↔ wiki sync cycle
+
+"Source ↔ documentation linking" rules create a three-way sync loop between code, rules, and wiki:
+
+1. **Edit code** → the path-scoped rule auto-loads, showing the referenced wiki list. Check whether the implementation aligns with the spec. If it diverges, update both (reflect the new behavior in the wiki; add or remove entries from the rule's reference list if needed).
+
+2. **Edit a rule file** → check that referenced wikis still match the rule's content. After updating, sync the `.claude/rules-jp/<same-name>.md` mirror.
+
+3. **Edit a wiki** → check whether any rule file references that wiki. If the rule's description of the wiki's scope is now stale, update the rule.
+
+This cycle ensures:
+- Implementing a feature automatically prompts wiki updates
+- Updating documentation doesn't silently drift from the rules
+- The rules index stays accurate
 
 ## File Naming Summary
 
