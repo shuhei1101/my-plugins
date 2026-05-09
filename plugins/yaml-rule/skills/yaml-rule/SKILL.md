@@ -64,3 +64,50 @@ settings.yaml
 | Asset removed | Mark inactive or remove | Remove key | Remove key |
 | New config option | — | Add key + comment | Add key + local value |
 | Structure change | Update | Update | Update manually |
+
+## UI-editable YAML must resolve to the main-repository copy
+
+When the project uses git worktrees, any YAML file that is written **at runtime** by the UI / API (e.g. `settings.yaml`, runtime state files) must always read and write to the **main repository's copy**, never to the worktree's local copy.
+
+### Why this matters
+
+If runtime-editable YAML lives inside the worktree:
+
+1. The user works in worktree A and saves settings via the UI
+2. The worktree's YAML is updated, but the main repository's YAML is unchanged
+3. When that worktree is deleted (or the user switches to another branch), the saved configuration is **lost**
+4. Everything the user clicked through and saved disappears — the worst possible outcome for runtime state
+
+### Two valid implementations (pick one)
+
+**A. Filesystem level (symlink / junction)**
+
+In the worktree setup script, link `<worktree>/path/to/settings.yaml` → `<main-repo>/path/to/settings.yaml`. The app reads and writes using the regular path; the symlink transparently routes to main. Fall back to copy on platforms that don't support symlinks.
+
+**B. App level (runtime path resolution)**
+
+Provide a helper like `main_repo_root()` that returns the main repository path even when called from a linked worktree. Detection uses `git rev-parse --git-common-dir`:
+
+- In the main worktree it returns `.git` (relative)
+- In a linked worktree it returns an absolute path to main's `.git` directory
+
+App code composes runtime-editable YAML paths as `main_repo_root() / "path/to/file.yaml"` so every worktree resolves to the same canonical file.
+
+### Which YAML this applies to
+
+| YAML | Apply this rule? | Reason |
+|---|---|---|
+| `settings.yaml` | ✅ Yes | Written by the UI / config screen |
+| `mock_notes.yaml`, `runtime_state.yaml`, etc. | ✅ Yes | Written by the app via API |
+| `index.yaml` | ❌ No | Hand-edited catalog. Each worktree has its own copy and merges through git normally |
+| `settings.yaml.sample` | ❌ No | Committed template |
+
+### Document the choice
+
+When introducing a new runtime-editable YAML, record in the matching `.claude/rules/<name>.md`:
+
+- Which resolution method (A: symlink / B: runtime helper)
+- Where the canonical file lives (`<main-repo>/data/...` or similar)
+- Whether the file is gitignored
+
+This way future maintainers (and future Claude sessions) can see the structure at a glance.
