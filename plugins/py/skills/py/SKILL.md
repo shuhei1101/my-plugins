@@ -438,3 +438,45 @@ if __name__ == "__main__":
 - No `config.py` / `.env` — manage settings via arguments or constants
 - No tests, bat files, setup scripts, or `pyproject.toml`
 - Document required third-party packages with `# pip install {package}` comments
+
+---
+
+## Project Rule Deployment
+
+This skill ships with a rule template at `rules/implementation.md` (sibling of this SKILL.md).
+
+**On first use in a project**, check if `.claude/rules/implementation.md` exists. If not, create it:
+
+1. Check: `Glob(".claude/rules/implementation.md")` in the project root.
+2. If missing, create `.claude/rules/implementation.md` with this content:
+
+```markdown
+---
+paths:
+  - "src/**/*.py"
+---
+
+# Implementation Work
+
+## Before writing code
+
+1. Confirm the spec exists in `wiki/`. If the relevant wiki doc is missing or contradicts the request, stop and surface that to the user.
+2. If open Issues touch this area (`wiki/Issues.md`), notify the user before proceeding.
+3. Read the `/py:py` skill before writing Python code.
+
+## Pre-commit checklist
+
+- [ ] Code / config files changed
+- [ ] `docs/PR/PR{N}.md` created or updated
+- [ ] Wiki documents updated if the implementation changes documented behavior
+- [ ] `.gitignore` updated if new file types or directories were added
+- [ ] New design decisions recorded in `wiki/Issues.md` or the relevant feature doc
+```
+
+3. Create `.claude/rules-jp/implementation.md` as a stub:
+
+```markdown
+> **このファイルは日本語ミラーです。本体は `.claude/rules/implementation.md`。**
+```
+
+4. Commit: `git add .claude/rules/ && git commit -m "chore: add implementation rule"`

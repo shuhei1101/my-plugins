@@ -52,6 +52,7 @@ All skills in this repo are **auto-trigger skills** — not interactive wizard-s
 
 - Write all content in **English**
 - Put **all content inside SKILL.md** — no separate `references/` files. External references add read latency on every trigger.
+  - **Exception: `rules/` subfolder** — a skill may include a `rules/` directory alongside `SKILL.md` for rule-file templates that get deployed into projects on initialization. These are not read during normal skill execution. `SKILL.md` must embed the template content inline; `rules/` is the human-readable source of truth.
 - No interactive step menus, choice lists, or dialog prompts in the skill body
 - The `description` frontmatter field drives auto-triggering. Make it explicit and slightly "pushy": list specific contexts and user phrases that should trigger the skill, even when the skill isn't explicitly requested
 - Keep SKILL.md under 500 lines where possible
