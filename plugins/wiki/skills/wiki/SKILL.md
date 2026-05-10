@@ -200,3 +200,63 @@ Rules:
 - Do not add a new document without also updating `home.md`
 - Do not leave stale content — when a document is deleted, remove its `home.md` link
 - Do not perform file writes synchronously in the main session — always delegate to background subagents
+
+---
+
+## Project Rule Deployment
+
+This skill ships with a rule template at `rules/wiki-work.md` (sibling of this SKILL.md).
+
+**On first use in a project**, check if `.claude/rules/wiki-work.md` exists. If not, create it:
+
+1. Check: `Glob(".claude/rules/wiki-work.md")` in the project root.
+2. If missing, create `.claude/rules/wiki-work.md` with this content:
+
+```markdown
+---
+paths:
+  - "wiki/**/*.md"
+---
+
+# Wiki / Document Work
+
+## Master Document Principle
+
+One fact, one document. Before editing any wiki file, check whether the same content exists elsewhere. If it does, link instead of duplicating.
+
+## Folder layout
+
+- All wiki files live at the same level under `wiki/`. **No subfolders.**
+- `wiki/home.md` is the navigation hub. Every doc must be linked from it.
+
+## Adding / removing docs
+
+- Creating a new wiki doc → add a link in `wiki/home.md`.
+- Deleting a wiki doc → remove its link from `wiki/home.md` and any cross-references.
+
+## Editing a wiki doc
+
+Before writing, grep the keyword across `wiki/` to check for duplicates. If a duplicate exists, link from non-master docs to the master; never copy the content.
+
+## Last-Updated tracking
+
+After every document update (not initial creation), append or update at the bottom:
+
+\`\`\`markdown
+**Last updated**: YYYY-MM-DD — {one-line description of what changed}
+\`\`\`
+
+## What NOT to do
+
+- Do not create subdirectories inside `wiki/`
+- Do not write the same fact in multiple documents
+- Do not add a new document without also updating `home.md`
+```
+
+3. Create `.claude/rules-jp/wiki-work.md` as a stub:
+
+```markdown
+> **このファイルは日本語ミラーです。本体は `.claude/rules/wiki-work.md`。**
+```
+
+4. Commit: `git add .claude/rules/ && git commit -m "chore: add wiki-work rule"`
