@@ -250,6 +250,55 @@ if not exist "dist\foo.exe" (
 
 ---
 
+## FastAPI / HTTP Server Startup Script
+
+When creating a FastAPI server started via `python -m {package_name}`, always provide a `run.bat`.
+
+**Requirements:**
+- Accept an optional port argument: `run.bat [port]`
+- Fall back to the `PORT` environment variable, then to the default defined in `__main__.py` / `config.py` (do not hard-code a port in the bat)
+- Auto-activate `.venv\Scripts\activate.bat` when present
+
+**Template:**
+
+```bat
+@echo off
+chcp 65001 > nul
+setlocal
+
+set "LOG_DIR=%~dp0log"
+if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
+
+for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMddHHmmss"') do set "TS=%%I"
+set "BAT_LOG=%LOG_DIR%\%TS%_run.log"
+
+if not "%1"=="" set "PORT=%1"
+
+echo [%date% %time%] Starting. PORT=%PORT% >> "%BAT_LOG%"
+echo [%date% %time%] CWD: %cd% >> "%BAT_LOG%"
+
+if exist "%~dp0.venv\Scripts\activate.bat" (
+    call "%~dp0.venv\Scripts\activate.bat" >> "%BAT_LOG%" 2>&1
+)
+
+python -m {package_name} >> "%BAT_LOG%" 2>&1
+set "EXITCODE=%ERRORLEVEL%"
+
+if %EXITCODE% neq 0 (
+    echo [ERROR] Exit code %EXITCODE%. See: %BAT_LOG%
+    pause
+)
+
+endlocal & exit /b %EXITCODE%
+```
+
+**Port conventions:**
+- Reserve a fixed port for the main repo (e.g., 8090); document it in `CLAUDE.md`.
+- Use fixed-port + 1 or higher (e.g., 8091+) for worktree test servers.
+- To launch from a worktree without a separate venv, use `PYTHONPATH` to point at the worktree's `src/` while invoking the main repo's `.venv\Scripts\python.exe` directly. See the wt skill and the repo's `CLAUDE.md` for details.
+
+---
+
 ## Naming Conventions
 
 ### Interface / Abstract Base Classes

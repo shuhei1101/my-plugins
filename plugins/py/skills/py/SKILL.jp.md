@@ -257,6 +257,55 @@ if not exist "dist\foo.exe" (
 
 ---
 
+## FastAPI / HTTP サーバーの起動スクリプト
+
+FastAPI サーバー（`python -m {package_name}` で起動する形式）を作るときは、`run.bat` を必ず用意する。
+
+**要件：**
+- 第 1 引数でポートを指定できる：`run.bat [port]`
+- 省略時は環境変数 `PORT`、それもなければ `__main__.py` / `config.py` の既定値を使う（bat 側では値を決め打ちしない）
+- `.venv\Scripts\activate.bat` が存在すれば自動で有効化する
+
+**テンプレート：**
+
+```bat
+@echo off
+chcp 65001 > nul
+setlocal
+
+set "LOG_DIR=%~dp0log"
+if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
+
+for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMddHHmmss"') do set "TS=%%I"
+set "BAT_LOG=%LOG_DIR%\%TS%_run.log"
+
+if not "%1"=="" set "PORT=%1"
+
+echo [%date% %time%] Starting. PORT=%PORT% >> "%BAT_LOG%"
+echo [%date% %time%] CWD: %cd% >> "%BAT_LOG%"
+
+if exist "%~dp0.venv\Scripts\activate.bat" (
+    call "%~dp0.venv\Scripts\activate.bat" >> "%BAT_LOG%" 2>&1
+)
+
+python -m {package_name} >> "%BAT_LOG%" 2>&1
+set "EXITCODE=%ERRORLEVEL%"
+
+if %EXITCODE% neq 0 (
+    echo [ERROR] Exit code %EXITCODE%. See: %BAT_LOG%
+    pause
+)
+
+endlocal & exit /b %EXITCODE%
+```
+
+**ポートの運用：**
+- メインリポジトリ用の固定ポート（例: 8090）を決め、それを予約する
+- Worktree からテスト起動するときは固定ポート + 1 以上（8091+）を使う
+- Worktree から起動する際は `.venv` をシンボリックリンクするか `PYTHONPATH` でメインの venv を指定する（詳細はそのリポジトリの CLAUDE.md または wt スキルを参照）
+
+---
+
 ## 命名規則
 
 ### インターフェース / 抽象基底クラス

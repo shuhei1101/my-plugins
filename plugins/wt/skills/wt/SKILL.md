@@ -73,6 +73,7 @@ After the user approves the plan:
 4. **Symlink dependencies** (skip silently if the target doesn't exist):
    - Python project (`pyproject.toml` or `setup.py` present): `ln -s {main-repo}/venv {worktree}/venv`
    - Node.js project (`package.json` present): `ln -s {main-repo}/node_modules {worktree}/node_modules` and `.next` if present
+   - If symlinking fails, use `PYTHONPATH` to reuse the main repo's venv when launching a worktree server (see section below)
 
 5. **Make the initial commits** inside the worktree:
 
@@ -146,6 +147,40 @@ git branch -d {branch-name}
 Update the session file: `## Status: completed`
 
 Remote push is always the user's responsibility — this skill never runs `git push`.
+
+---
+
+## Worktree Server Launch and venv Policy
+
+### venv rule
+
+**Never run `pip install -e .` inside a worktree.** It redirects the main repo's installed package to the worktree's `src/`, breaking the main server after the worktree is removed.
+
+Use `PYTHONPATH` instead:
+
+```powershell
+$env:PORT = "809{N}"   # higher than the main repo's fixed port
+$env:PYTHONPATH = "{worktree-path}\src"
+{main-repo}\.venv\Scripts\python.exe -m {package_name}
+```
+
+To stop a worktree server before cleanup:
+
+```powershell
+$port = 8091
+$p = (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue).OwningProcess
+if ($p) { Stop-Process -Id $p -Force }
+```
+
+### Gitignored config file rule
+
+Files listed in `.gitignore` (`config/settings.yaml`, `.env`, etc.) must be **created and edited in the main repo directly**.
+
+**Why:** Changes to gitignored files inside a worktree are lost when `git worktree remove` runs — the file disappears with the worktree directory.
+
+**In practice:**
+- When a PR adds new keys to `settings.yaml` → edit the main repo's `settings.yaml` directly; edit only `settings.yaml.sample` (tracked) inside the worktree.
+- Same for `.env` changes → always edit in the main repo.
 
 ---
 

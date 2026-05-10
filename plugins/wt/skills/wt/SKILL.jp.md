@@ -80,6 +80,7 @@
 4. **依存関係をシンボリックリンクで接続**（対象が存在しない場合はスキップ）：
    - Python プロジェクト（`pyproject.toml` または `setup.py` が存在）：`ln -s {メインリポジトリ}/venv {worktree}/venv`
    - Node.js プロジェクト（`package.json` が存在）：`node_modules` と `.next`（あれば）をシンボリックリンク
+   - シンボリックリンクが作れない場合は、worktree からサーバーを起動するときに `PYTHONPATH` でメインリポジトリの venv を流用する（後述）
 
 5. **worktree 内で初期コミットを作成：**
 
@@ -153,6 +154,40 @@ git branch -d {ブランチ名}
 セッションファイルを更新：`## ステータス: 完了`
 
 リモートへの push は常にユーザーの責任 — このスキルでは `git push` を実行しない。
+
+---
+
+## Worktree からのサーバー起動と venv の扱い
+
+### venv のルール
+
+**Worktree 内で `pip install -e .` を実行しない。** 実行するとメインリポジトリのインストール済みパッケージが worktree の `src/` を参照するようになり、worktree 削除後にメインサーバーが壊れる。
+
+代わりに `PYTHONPATH` を使う：
+
+```powershell
+$env:PORT = "809{N}"   # メインリポジトリ固定ポートより大きい値
+$env:PYTHONPATH = "{worktreeパス}\src"
+{メインリポジトリ}\.venv\Scripts\python.exe -m {package_name}
+```
+
+Worktree サーバーをクリーンアップ前に停止するとき：
+
+```powershell
+$port = 8091
+$p = (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue).OwningProcess
+if ($p) { Stop-Process -Id $p -Force }
+```
+
+### gitignore 対象ファイルのルール
+
+`.gitignore` に含まれるファイル（`config/settings.yaml`、`.env` など）は **メインリポジトリで直接作成・編集する**。
+
+**理由：** Worktree 内で gitignore 対象ファイルを変更しても、`git worktree remove` を実行するとそのファイルは消える。マージ後に変更が元に戻る。
+
+**具体的な手順：**
+- PR で `settings.yaml` に新しいキーを追加する場合 → メインリポジトリの `settings.yaml` を直接編集し、Worktree 内では `settings.yaml.sample`（git 管理下）のみ編集する
+- `.env` の変更も同様 → メインリポジトリ側で直接変更する
 
 ---
 
