@@ -36,6 +36,12 @@
       "source": "./plugins/yaml-rule",
       "description": "YAML file management conventions for assets and project configuration — index.yaml, settings.yaml, and developer note standards",
       "version": "1.0.0"
+    },
+    {
+      "name": "aituber-notify",
+      "source": "./plugins/aituber-notify",
+      "description": "Claude Code Stop hook that POSTs session completion to AITuber /api/notify/completion so Kotonoha Akane announces it via voice",
+      "version": "1.0.0"
     }
   ]
 }
