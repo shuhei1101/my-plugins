@@ -67,7 +67,10 @@ install it. Only create a custom rule from scratch (rules-creator) when no marke
 - **Write all Claude-read files in English.** CLAUDE.md, SKILL.md, and `.claude/rules/*.md`
   are auto-loaded as directives. Japanese causes translation overhead and ambiguity.
 - **Every English file must have a paired Japanese mirror.** The mirror is for the human author.
-- **Never put Japanese content inside the authoritative English file.**
+- **Exception: Japanese content that must stay in Japanese is allowed inside English files.**
+  Examples: Japanese trigger phrases in `description` frontmatter, Japanese UI strings,
+  user-facing Japanese text, or any content whose value would be lost in translation.
+  Write these inline — do not force-translate content that is inherently Japanese.
 - **Never update one side without updating the other.**
 
 </hard_rules>
