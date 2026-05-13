@@ -1,6 +1,6 @@
 ---
 name: claude-rule
-description: （日本語訳）Claude Code の設定・ドキュメント作業すべてのゲートウェイスキル。CLAUDE.md・SKILL.md・.claude/rules/ の作成・編集、ルール/スキル/フック/MCP の設定、ルールマーケットからのルールインストール、プロジェクトへの Claude Code セットアップ、規約の確認など、Claude Code に関するあらゆるリクエストで自動適用される。
+description: （日本語訳）Claude Code に関するすべての質問・設定のゲートウェイ。コンテキスト、ステータスライン、フック、MCP、メモリ、ルール、スキルなど Claude Code に関する質問全般、CLAUDE.md / SKILL.md / .claude/rules/ の作成・編集、新規プロジェクトへのセットアップなどで適用される。
 ---
 
 > このファイルは `SKILL.md` の日本語翻訳です。Claude Code には自動読み込みされません。

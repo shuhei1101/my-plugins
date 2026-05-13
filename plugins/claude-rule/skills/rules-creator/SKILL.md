@@ -1,14 +1,6 @@
 ---
 name: rules-creator
-description: >
-  Scaffold a new path-scoped rule under `.claude/rules/`. Use when: user explicitly asks to
-  create a new custom rule that is NOT in the rule-market library; the claude-rule gateway
-  dispatches here after rule-market found no match; user says "/rules-creator", "make a rule
-  for X", "create a path-scoped rule", "ルールを新規作成", "新しいルール作って", or describes
-  a new coding/workflow constraint they want Claude to follow in a specific folder.
-  ALWAYS check rule-market first (run `/claude-rule:rule-market list`) before using this skill —
-  if a market rule covers the need, install it instead of creating from scratch.
-disable-model-invocation: false
+description: Scaffold a new custom path-scoped rule under .claude/rules/. Use only when rule-market has no matching rule. Trigger when user says "新しいルール作って", "ルールを新規作成", "make a rule for X", or the claude-rule gateway dispatches here after rule-market found no match.
 ---
 
 # rules-creator — Scaffold a New Path-Scoped Rule

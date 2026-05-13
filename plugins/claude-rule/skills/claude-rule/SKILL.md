@@ -1,20 +1,6 @@
 ---
 name: claude-rule
-description: >
-  Gateway for all Claude Code questions, configuration, and documentation tasks.
-  Always apply when: (1) user asks ANY question about Claude Code — how context works,
-  what the status line shows, how memory/rules/hooks/MCP work, what features are available,
-  how to configure anything in Claude Code; (2) creating or editing CLAUDE.md, SKILL.md,
-  or .claude/rules/ files; (3) authoring prompt files or any file Claude reads as directives;
-  (4) asking about conventions (bilingual .jp.md, XML tags, rule placement, skill authoring);
-  (5) setting up Claude Code in a new project; (6) deciding whether to write a rule, a skill,
-  or a CLAUDE.md entry; (7) installing rules via rule-market; (8) configuring hooks or MCP.
-  Trigger phrases: "create CLAUDE.md", "write a skill", "make a rule", "set up .claude/rules/",
-  "install rules", "rule-market", "configure Claude Code", "set up hooks",
-  "ルールを作る", "スキルを作る", "CLAUDE.md を作る",
-  "クロードのコンテキストって", "ステータスラインって", "Claude Code ってどうやって",
-  "クロードコードの設定", "フックってどう使うの", "MCPってどう設定するの",
-  or any Claude Code question — including "how does X work in Claude Code".
+description: Gateway for all Claude Code questions and configuration. Apply when the user asks anything about Claude Code (context, status line, hooks, MCP, memory, rules, skills, how things work), or wants to create/edit CLAUDE.md, SKILL.md, .claude/rules/ files, or set up Claude Code in a project. Trigger phrases include "ルールを作る", "スキルを作る", "CLAUDE.md を作る", "クロードのコンテキストって", "ステータスラインって", "フックってどう使うの", "rule-market", "install rules".
 ---
 
 # claude-rule — Claude Code Gateway

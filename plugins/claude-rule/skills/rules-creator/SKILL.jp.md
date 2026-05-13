@@ -1,6 +1,6 @@
 ---
 name: rules-creator
-description: （日本語訳）`.claude/rules/` に新しい path-scoped ルールをスキャフォールドするスキル。ルールマーケットに該当がない場合に、ゼロからカスタムルールを作成する。
+description: （日本語訳）`.claude/rules/` に新しいカスタム path-scoped ルールを作成する。ルールマーケットに該当なしの場合のみ使用。「新しいルール作って」「ルールを新規作成」などで起動。
 ---
 
 > このファイルは `SKILL.md` の日本語翻訳です。Claude Code には自動読み込みされません。

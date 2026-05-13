@@ -1,12 +1,6 @@
 ---
 name: rule-market
-description: >
-  Rule library and installer for Claude Code projects. Use when: user says "install rules",
-  "rule-market", "add rules to this project", "set up Claude Code rules", "ルールマーケット",
-  "ルールを追加したい", "ルールをインストール"; or when the claude-rule gateway dispatches here
-  because the user needs a new rule and a market match may exist; or when rules-creator is
-  about to create a new rule (always check market first).
-  Operations: list available rules, install one or all, sync a modified rule back to the library.
+description: Rule library for Claude Code projects. Use when the user wants to install rules, says "rule-market", "ルールマーケット", "ルールをインストール", "add rules to this project", or when rules-creator is about to create a new rule (always check here first). Lists available rules, installs them into the project, and syncs modified rules back to the library.
 ---
 
 # rule-market — Rule Library for Claude Code Projects
