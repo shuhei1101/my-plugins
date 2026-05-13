@@ -202,6 +202,41 @@ A rule without `paths:` is loaded every session — same scope as CLAUDE.md.
 
 ---
 
+## Cross-Platform Script Policy
+
+<policy>
+
+Rules and skills in this plugin must work on both Linux/Mac (Bash) and Windows (PowerShell).
+
+**Shell commands** — always provide both versions, Bash first:
+
+```bash
+# Bash (Linux / Mac)
+find ~/.claude -name "sync_rules.py" -path "*target*" 2>/dev/null | head -1
+```
+```powershell
+# PowerShell (Windows)
+Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*target*" } | Select-Object -First 1 -ExpandProperty FullName
+```
+
+**Python scripts** — use Python for complex logic; it runs on both platforms without changes.
+- Invoke as `python script.py` (use `python3` if Python 3 is not the default)
+- Use `pathlib.Path` for file paths — never hardcode `/` or `\` separators
+- Write comments and docstrings in **Japanese** (scripts are for humans, not for Claude)
+
+**Quick reference — Bash / PowerShell equivalents:**
+
+| Operation | Bash | PowerShell |
+|---|---|---|
+| Find file by name | `find ~ -name "file.py" 2>/dev/null` | `Get-ChildItem ~ -Recurse -Filter "file.py" -ErrorAction SilentlyContinue` |
+| Home directory | `~` | `~` (also `$HOME` or `$env:USERPROFILE`) |
+| Run Python | `python script.py` | `python script.py` |
+| Path separator | `/` | `/` or `\` (both work in pwsh) |
+
+</policy>
+
+---
+
 ## File Summary
 
 | File | Language | Auto-loaded? | Purpose |

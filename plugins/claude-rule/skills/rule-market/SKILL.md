@@ -61,12 +61,18 @@ Use when a project's installed rule has been customized and you want to propagat
 back to the plugin's template so future installs get the improved version.
 
 1. Locate the sync script:
+   ```bash
+   # Bash (Linux / Mac)
+   find ~/.claude -name "sync_rules.py" -path "*claude-rule*" 2>/dev/null | head -1
    ```
-   Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*claude-rule*" }
+   ```powershell
+   # PowerShell (Windows)
+   Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*claude-rule*" } | Select-Object -First 1 -ExpandProperty FullName
    ```
 2. Run it:
-   ```
+   ```bash
    python <script-path> sync <project-root> <rule-name>
+   # Note: use python3 if python is not Python 3 on your system
    ```
    The script copies `PROJECT/.claude/rules/<rule-name>.md` →
    `<plugin>/skills/rule-market/rules/<rule-name>.md`.
@@ -237,9 +243,15 @@ use the sync operation:
 ```
 
 Or run the sync script directly (locate it first):
+```bash
+# Bash (Linux / Mac)
+find ~/.claude -name "sync_rules.py" -path "*claude-rule*" 2>/dev/null | head -1
+```
 ```powershell
-Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" |
-  Where-Object { $_.FullName -like "*claude-rule*" }
+# PowerShell (Windows)
+Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*claude-rule*" } | Select-Object -First 1 -ExpandProperty FullName
+```
+```bash
 python <script-path> sync <project-root> <rule-name>
 ```
 

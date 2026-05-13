@@ -138,6 +138,37 @@ CLAUDE.md は約200行以内に保つ。ドメイン固有の内容は path-scop
 
 ---
 
+## クロスプラットフォーム スクリプト方針
+
+このプラグインのルール・スキルは Linux/Mac (Bash) と Windows (PowerShell) の両方で動作する必要がある。
+
+**シェルコマンド** — Bash を先に、両バージョンを必ず記載する:
+
+```bash
+# Bash (Linux / Mac)
+find ~/.claude -name "sync_rules.py" -path "*target*" 2>/dev/null | head -1
+```
+```powershell
+# PowerShell (Windows)
+Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*target*" } | Select-Object -First 1 -ExpandProperty FullName
+```
+
+**Python スクリプト** — 複雑なロジックには Python を使う（プラットフォーム非依存）。
+- 起動は `python script.py`（Python 3 がデフォルトでない環境では `python3`）
+- パスには `pathlib.Path` を使い、`/` や `\` をハードコードしない
+- コメント・docstring は**日本語**で書く（スクリプトは人間のためのもの）
+
+**Bash / PowerShell 対応表:**
+
+| 操作 | Bash | PowerShell |
+|---|---|---|
+| ファイル検索 | `find ~ -name "file.py" 2>/dev/null` | `Get-ChildItem ~ -Recurse -Filter "file.py" -ErrorAction SilentlyContinue` |
+| ホームディレクトリ | `~` | `~`（`$HOME` / `$env:USERPROFILE` も可） |
+| Python 実行 | `python script.py` | `python script.py` |
+| パス区切り | `/` | `/` または `\`（pwsh は両方対応） |
+
+---
+
 ## ファイルまとめ
 
 | ファイル | 言語 | 自動ロード | 目的 |

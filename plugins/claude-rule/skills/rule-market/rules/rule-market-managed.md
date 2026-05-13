@@ -20,9 +20,15 @@ use the sync operation:
 ```
 
 Or run the sync script directly (locate it first):
+```bash
+# Bash (Linux / Mac)
+find ~/.claude -name "sync_rules.py" -path "*claude-rule*" 2>/dev/null | head -1
+```
 ```powershell
-Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" |
-  Where-Object { $_.FullName -like "*claude-rule*" }
+# PowerShell (Windows)
+Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*claude-rule*" } | Select-Object -First 1 -ExpandProperty FullName
+```
+```bash
 python <script-path> sync <project-root> <rule-name>
 ```
 
