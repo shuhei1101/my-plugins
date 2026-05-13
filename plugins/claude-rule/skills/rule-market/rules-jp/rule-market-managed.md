@@ -17,20 +17,23 @@ paths:
 /claude-rule:rule-market sync <rule-name>
 ```
 
-または同期スクリプトを直接実行:
-```bash
-# Bash (Linux / Mac)
-find ~/.claude -name "sync_rules.py" -path "*claude-rule*" 2>/dev/null | head -1
-```
-```powershell
-# PowerShell (Windows)
-Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*claude-rule*" } | Select-Object -First 1 -ExpandProperty FullName
-```
-```bash
-python <script-path> sync <project-root> <rule-name>
-```
+または同期スクリプトを直接実行する。**キャッシュではなくプラグインのソースリポジトリに書き込む**こと。
 
-同期後は `rules-jp/` の JP ミラーも更新し、プラグインのバージョンをバンプしてください。
+1. マーケットプレイスのソースリポジトリを探す（よくある場所で `marketplace.json` を検索）。
+2. キャッシュ内のスクリプトを探す:
+   ```bash
+   # Bash
+   find ~/.claude -name "sync_rules.py" -path "*claude-rule*" 2>/dev/null | head -1
+   ```
+   ```powershell
+   # PowerShell
+   Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*claude-rule*" } | Select-Object -First 1 -ExpandProperty FullName
+   ```
+3. 実行する:
+   ```bash
+   python <script-path> sync <project-root> <rule-name> --plugin-repo <marketplace-repo-root>
+   ```
+4. ソースリポジトリで JP ミラー更新・バージョンバンプ・コミット。
 
 ## このプロジェクトにインストールされたマーケットルール
 

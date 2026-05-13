@@ -46,21 +46,27 @@ description: （日本語訳）Claude Code プロジェクト向けルールラ�
 
 プロジェクトでカスタマイズしたルールを、プラグインのテンプレートに反映させたいときに使う。
 
-1. 同期スクリプトを探す:
+**重要:** キャッシュ (`~/.claude/plugins/cache/`) ではなくプラグインのソースリポジトリに書き込む。
+
+1. プラグインのソースリポジトリ（`marketplace.json` がある場所）を探す。
+   よくある場所（`~/repo`, `~/repos` など）で `marketplace.json` を検索する。
+
+2. キャッシュ内のスクリプトを探す:
    ```bash
-   # Bash (Linux / Mac)
+   # Bash
    find ~/.claude -name "sync_rules.py" -path "*claude-rule*" 2>/dev/null | head -1
    ```
    ```powershell
-   # PowerShell (Windows)
+   # PowerShell
    Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*claude-rule*" } | Select-Object -First 1 -ExpandProperty FullName
    ```
-2. 実行する:
+
+3. 実行する:
    ```bash
-   python <script-path> sync <project-root> <rule-name>
-   # ※ python が Python 3 でない環境では python3 を使う
+   python <script-path> sync <project-root> <rule-name> --plugin-repo <marketplace-repo-root>
    ```
-3. JP ミラー（`rules-jp/`）の更新とプラグインバージョンバンプをユーザーに案内する
+
+4. ソースリポジトリで JP ミラー更新・バージョンバンプ・コミット
 
 ---
 

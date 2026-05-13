@@ -58,25 +58,55 @@ Display the Available Rules table above. No files are created.
 <steps>
 
 Use when a project's installed rule has been customized and you want to propagate the change
-back to the plugin's template so future installs get the improved version.
+back to the plugin's **source repository** so future installs get the improved version.
 
-1. Locate the sync script:
-   ```bash
-   # Bash (Linux / Mac)
-   find ~/.claude -name "sync_rules.py" -path "*claude-rule*" 2>/dev/null | head -1
-   ```
-   ```powershell
-   # PowerShell (Windows)
-   Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*claude-rule*" } | Select-Object -First 1 -ExpandProperty FullName
-   ```
-2. Run it:
-   ```bash
-   python <script-path> sync <project-root> <rule-name>
-   # Note: use python3 if python is not Python 3 on your system
-   ```
-   The script copies `PROJECT/.claude/rules/<rule-name>.md` →
-   `<plugin>/skills/rule-market/rules/<rule-name>.md`.
-3. Remind the user to also update the JP mirror in `rules-jp/` and bump the plugin version.
+> **Important:** Do NOT write to `~/.claude/plugins/cache/` — that is a read-only cache that
+> gets overwritten on every plugin update. Always write to the plugin's source repo.
+
+**Step 1 — Find the plugin's source repository:**
+
+Use `Glob` to search for `marketplace.json` or `plugins/claude-rule/.claude-plugin/plugin.json`
+in common locations (home directory, sibling directories, `~/repo/**`, `~/repos/**`, etc.).
+
+```bash
+# Bash — search common repo locations
+find ~ -name "marketplace.json" -path "*/my-plugins/*" 2>/dev/null | head -5
+```
+```powershell
+# PowerShell — search common repo locations
+Get-ChildItem ~ -Recurse -Filter "marketplace.json" -ErrorAction SilentlyContinue | Where-Object { $_.FullName -like "*my-plugins*" } | Select-Object -First 5 -ExpandProperty FullName
+```
+
+If multiple results are found, confirm with the user which repo to update.
+
+**Step 2 — Locate the sync script in the cache:**
+
+```bash
+# Bash
+find ~/.claude -name "sync_rules.py" -path "*claude-rule*" 2>/dev/null | head -1
+```
+```powershell
+# PowerShell
+Get-ChildItem ~/.claude -Recurse -Filter "sync_rules.py" | Where-Object { $_.FullName -like "*claude-rule*" } | Select-Object -First 1 -ExpandProperty FullName
+```
+
+**Step 3 — Run the sync:**
+
+```bash
+python <script-path> sync <project-root> <rule-name> --plugin-repo <marketplace-repo-root>
+```
+
+Example:
+```bash
+python ~/.claude/.../sync_rules.py sync /home/user/myproject ai-models --plugin-repo /home/user/my-plugins
+```
+
+The script copies `PROJECT/.claude/rules/<rule-name>.md` →
+`<marketplace-repo>/plugins/claude-rule/skills/rule-market/rules/<rule-name>.md`.
+
+**Step 4 — Commit in the source repo:**
+
+Update the JP mirror (`rules-jp/<rule-name>.md`), bump `plugin.json` version, and commit.
 
 </steps>
 
