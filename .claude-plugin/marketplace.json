@@ -29,7 +29,7 @@
       "name": "claude-rule",
       "source": "./plugins/claude-rule",
       "description": "Gateway for Claude Code configuration and documentation — authoring conventions, XML tag guidance, rule-market library, and dispatch to rules-creator / skill-creator",
-      "version": "2.3.0"
+      "version": "2.4.0"
     },
     {
       "name": "yaml-rule",
