@@ -14,12 +14,15 @@ the current project. Always check here before creating a new rule from scratch.
 
 <rule_library>
 
+Currently the library ships one management rule:
+
 | Rule name | Paths | Description |
 |---|---|---|
-| `cascade-sync` | `**/*` | Keep rules, docs, and JP mirrors in sync on every edit |
-| `auto-register` | `**/*` | Ensure every edited file is covered by a path-scoped rule |
+| `rule-market-managed` | `.claude/rules/**/*.md` | Sync guide for rules installed from this market |
 
-> `rule-market-managed` is always installed alongside any selected rule (management rule).
+> `rule-market-managed` is always installed alongside any domain rule created by `rules-creator`.
+
+Domain-linked rules (cascade sync, coverage check) are generated per-project by `/claude-rule:rules-creator`, not distributed from this library.
 
 </rule_library>
 
