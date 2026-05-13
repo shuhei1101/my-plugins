@@ -1,22 +1,26 @@
 ---
 name: claude-rule
 description: >
-  Gateway for all Claude Code configuration and documentation tasks. Always apply when:
-  creating or editing CLAUDE.md, SKILL.md, or .claude/rules/ files; authoring prompt files
-  or any file Claude reads as directives; asking about Claude Code conventions (bilingual .jp.md,
-  XML tags, rule placement, skill authoring); setting up Claude Code in a new project; deciding
-  whether to write a rule, a skill, or a CLAUDE.md entry; installing existing rules via
-  rule-market; configuring hooks or MCP servers.
+  Gateway for all Claude Code questions, configuration, and documentation tasks.
+  Always apply when: (1) user asks ANY question about Claude Code — how context works,
+  what the status line shows, how memory/rules/hooks/MCP work, what features are available,
+  how to configure anything in Claude Code; (2) creating or editing CLAUDE.md, SKILL.md,
+  or .claude/rules/ files; (3) authoring prompt files or any file Claude reads as directives;
+  (4) asking about conventions (bilingual .jp.md, XML tags, rule placement, skill authoring);
+  (5) setting up Claude Code in a new project; (6) deciding whether to write a rule, a skill,
+  or a CLAUDE.md entry; (7) installing rules via rule-market; (8) configuring hooks or MCP.
   Trigger phrases: "create CLAUDE.md", "write a skill", "make a rule", "set up .claude/rules/",
-  "install rules", "rule-market", "add to CLAUDE.md", "configure Claude Code",
-  "create instructions for Claude", "set up hooks", "ルールを作る", "スキルを作る",
-  "CLAUDE.md を作る", or any Claude Code documentation or configuration request.
+  "install rules", "rule-market", "configure Claude Code", "set up hooks",
+  "ルールを作る", "スキルを作る", "CLAUDE.md を作る",
+  "クロードのコンテキストって", "ステータスラインって", "Claude Code ってどうやって",
+  "クロードコードの設定", "フックってどう使うの", "MCPってどう設定するの",
+  or any Claude Code question — including "how does X work in Claude Code".
 ---
 
-# claude-rule — Claude Code Configuration Gateway
+# claude-rule — Claude Code Gateway
 
-Entry point for all Claude Code documentation and configuration work. Contains authoring
-conventions and dispatches to specialized skills based on what the user needs.
+Entry point for all Claude Code questions, documentation, and configuration work.
+Contains authoring conventions and dispatches to specialized skills based on what the user needs.
 
 ---
 
@@ -24,7 +28,8 @@ conventions and dispatches to specialized skills based on what the user needs.
 
 <steps>
 
-Before creating or editing any Claude Code file, confirm you are working from the latest spec.
+For **any** Claude Code task or question — configuration, questions about behavior, creating files,
+or anything else — always check the official docs before answering or taking action.
 Official Claude Code documentation: **https://code.claude.com/docs/**
 
 Key pages by task:
@@ -53,8 +58,9 @@ Identify what the user needs, then route accordingly:
 
 | Need | Action |
 |---|---|
+| Question about Claude Code ("how does X work?") | Read official docs → answer from docs |
 | Install proven, reusable rules | `/claude-rule:rule-market` |
-| Create a new project-specific rule | Check rule-market first; if no match → `/rules-creator` |
+| Create a new project-specific rule | Check rule-market first; if no match → `/claude-rule:rules-creator` |
 | Create / update a skill | Load `skill-creator` (install if missing), then follow it |
 | Edit existing CLAUDE.md / SKILL.md / rules | Apply conventions in this skill directly |
 | Configure hooks | Read hooks docs; edit `.claude/settings.json` directly |
@@ -129,7 +135,7 @@ Claude is trained on XML-structured content and resolves tagged sections more re
 plain Markdown prose.
 
 **Use XML tags in:** `CLAUDE.md`, `SKILL.md`, `.claude/rules/*.md`
-**Do not use in:** JP mirrors, YAML/JSON data files, wiki docs, project documentation
+**Do not use in:** JP mirrors, YAML/JSON data files, general project documentation
 
 **Recommended tags:**
 
@@ -190,9 +196,9 @@ A rule without `paths:` is loaded every session — same scope as CLAUDE.md.
 <policy>
 
 1. **Process / convention rules** — how to work in a folder (coding standards, checklists).
-   Self-contained; no external wiki link needed.
-2. **Source ↔ documentation linking rules** — list the wiki/spec docs governing a folder.
-   When Claude edits source under that path, the rule injects "relevant specs are X, Y, Z".
+   Self-contained.
+2. **Source ↔ documentation linking rules** — list the spec docs or reference materials governing
+   a folder. When Claude edits source under that path, the rule injects "relevant specs are X, Y, Z".
 
 </policy>
 
@@ -202,7 +208,7 @@ A rule without `paths:` is loaded every session — same scope as CLAUDE.md.
 
 <steps>
 
-1. Check whether wikis/docs referenced in the rule still match the current content.
+1. Check whether docs referenced in the rule still match the current content.
 2. Update the `.claude/rules-jp/<same-name>.md` mirror.
 3. Commit EN original + JP mirror in the same commit.
 

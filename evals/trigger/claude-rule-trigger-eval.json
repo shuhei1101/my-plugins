@@ -1,0 +1,82 @@
+[
+  {
+    "query": "CLAUDE.md って何から書いたらいいんだろ、プロジェクトのルール入れたいんだけど",
+    "should_trigger": true
+  },
+  {
+    "query": "いま .claude/rules/ にルールファイル追加したいんだけど、どうすれば Claude に読み込まれる？",
+    "should_trigger": true
+  },
+  {
+    "query": "クロードのコンテキストってどういう情報が入ってるの？",
+    "should_trigger": true
+  },
+  {
+    "query": "Claude Code のステータスラインってどうなってるんやったっけ、設定方法も知りたい",
+    "should_trigger": true
+  },
+  {
+    "query": "My project needs Claude Code setup. How do I write the instructions so Claude follows our coding style?",
+    "should_trigger": true
+  },
+  {
+    "query": "フックってどう設定するの？ファイル保存後に自動実行させたい",
+    "should_trigger": true
+  },
+  {
+    "query": "make a rule for the api folder — want claude to check swagger docs before editing any api files",
+    "should_trigger": true
+  },
+  {
+    "query": "XML タグって CLAUDE.md に使うべき？ <steps> とか <policy> みたいなやつ",
+    "should_trigger": true
+  },
+  {
+    "query": "MCP ってどうやって設定するの？Claude Code で使いたいんだけど",
+    "should_trigger": true
+  },
+  {
+    "query": "create instructions for claude so it always checks the wiki before writing any python code",
+    "should_trigger": true
+  },
+  {
+    "query": "how does claude memory work in claude code? does it persist between sessions?",
+    "should_trigger": true
+  },
+  {
+    "query": "python で CSV ファイルを読み込んで、列ごとに統計量を出すコード書いて",
+    "should_trigger": false
+  },
+  {
+    "query": "this PR has a merge conflict in src/api/routes.ts can you help resolve it",
+    "should_trigger": false
+  },
+  {
+    "query": "型チェックのエラーが出てて、TypeScript の型定義を直してほしい",
+    "should_trigger": false
+  },
+  {
+    "query": "README.md にインストール手順を追加したい",
+    "should_trigger": false
+  },
+  {
+    "query": "Docker Compose の設定で redis が起動しない、config 見てくれる？",
+    "should_trigger": false
+  },
+  {
+    "query": "git commit のメッセージどう書けばいい？ conventional commits 使ってて",
+    "should_trigger": false
+  },
+  {
+    "query": "テストが失敗してるんやけど、モックの設定が間違ってるっぽい",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to add a new feature to the dashboard. Can you help me design the UI?",
+    "should_trigger": false
+  },
+  {
+    "query": "Dockerfile を最適化して、イメージサイズを小さくしたい",
+    "should_trigger": false
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "query": "rule-market に何か入ってるか教えて",
+    "should_trigger": true
+  },
+  {
+    "query": "cascade-sync ルールをこのプロジェクトにインストールしたい",
+    "should_trigger": true
+  },
+  {
+    "query": "利用可能なルールを一覧で見たい、rule-market で何がある？",
+    "should_trigger": true
+  },
+  {
+    "query": "ルールマーケットからルールを追加したい",
+    "should_trigger": true
+  },
+  {
+    "query": "add rules to this project from the rule-market",
+    "should_trigger": true
+  },
+  {
+    "query": "set up Claude Code rules for my new project, what's available in the library?",
+    "should_trigger": true
+  },
+  {
+    "query": "cascade-sync ルールを編集したんだけど、プラグインのライブラリ側にも反映させたい",
+    "should_trigger": true
+  },
+  {
+    "query": "新しいプロジェクトに Claude のルールをセットアップしたいんやけど、プラグインに何か入ってる？",
+    "should_trigger": true
+  },
+  {
+    "query": "auto-register ルールって何するやつ？インストールできる？",
+    "should_trigger": true
+  },
+  {
+    "query": "install all available rules from the claude-rule plugin into this project",
+    "should_trigger": true
+  },
+  {
+    "query": "新しいルールをゼロから作りたい — チームの Python コーディング規約用",
+    "should_trigger": false
+  },
+  {
+    "query": "CLAUDE.md を最初から書きたい、何を入れたらいい？",
+    "should_trigger": false
+  },
+  {
+    "query": "スキル作りたいんやけど、どう始めればいい？",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the difference between CLAUDE.md and .claude/rules/ files?",
+    "should_trigger": false
+  },
+  {
+    "query": "install the wiki plugin to my project",
+    "should_trigger": false
+  },
+  {
+    "query": "このプロジェクトの既存のルールを確認・レビューしたい",
+    "should_trigger": false
+  },
+  {
+    "query": "npm パッケージをいくつかインストールしたい",
+    "should_trigger": false
+  },
+  {
+    "query": ".claude/rules/implementation.md を編集して、Python の規約を追加したい",
+    "should_trigger": false
+  },
+  {
+    "query": "add the py plugin to my .claude/settings.json",
+    "should_trigger": false
+  },
+  {
+    "query": "I modified cascade-sync.md in my project and want to share it with my team via git",
+    "should_trigger": false
+  }
+]

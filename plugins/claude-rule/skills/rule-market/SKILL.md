@@ -22,7 +22,7 @@ the current project. Always check here before creating a new rule from scratch.
 
 | Rule name | Paths | Description |
 |---|---|---|
-| `cascade-sync` | `**/*` | Keep rules, wiki, and JP mirrors in sync on every edit |
+| `cascade-sync` | `**/*` | Keep rules, docs, and JP mirrors in sync on every edit |
 | `auto-register` | `**/*` | Ensure every edited file is covered by a path-scoped rule |
 
 > `rule-market-managed` is always installed alongside any selected rule (management rule).
@@ -108,16 +108,16 @@ Never leave referenced documents stale after a change.
 <steps>
 
 Look through `.claude/rules/**/*.md` for a rule whose `paths:` pattern matches the edited file.
-That rule's referenced wiki / doc list shows what to check.
+That rule's referenced doc list shows what to check.
 
 </steps>
 
-## Step 2 — Update wikis / docs
+## Step 2 — Update docs
 
 <policy>
 
 If the edit changes documented behavior (schema, field names, process, valid values), update
-every referenced wiki or doc. If behavior is unchanged, no edit needed.
+every referenced doc. If behavior is unchanged, no edit needed.
 
 </policy>
 
@@ -126,7 +126,7 @@ every referenced wiki or doc. If behavior is unchanged, no edit needed.
 When adding, removing, or renaming a domain constant (config key, identifier, model name):
 
 ```
-grep -r "<old_or_new_identifier>" src/ docs/ wiki/
+grep -r "<old_or_new_identifier>" src/ docs/
 ```
 
 Update every reference found — source code, config files, docs.
