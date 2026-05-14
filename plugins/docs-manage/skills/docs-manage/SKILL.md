@@ -1,6 +1,6 @@
 ---
-name: wiki
-description: Manages project documentation using a Wiki structure with Issue-driven decision tracking. Always apply this skill when: working inside the wiki/ folder, creating or updating wiki/home.md, adding issues to wiki/Issues.md, recording decisions in wiki/イシュー履歴.md, checking for document duplication, initializing a project wiki, or any request involving documentation organization, undecided matters, or decision history. Trigger immediately whenever the user mentions wiki management, Issues.md, decision tracking, document deduplication, or home.md updates — even if "wiki" is not explicitly said.
+name: docs-manage
+description: Manages project documentation with Issue-driven decision tracking. Always apply this skill when: working inside the docs/ folder, creating or updating docs/specs/Home.md, adding issues to docs/qa.md, recording decisions in docs/qa_history.md, checking for document duplication, initializing project docs, or any request involving documentation organization, undecided matters, or decision history. Trigger immediately whenever the user mentions docs management, QA, decision tracking, document deduplication, or Home.md updates — even if "docs" is not explicitly said.
 ---
 
 # Wiki — Project Documentation & Issue-Driven Decision Management
