@@ -77,7 +77,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ##### Branching
 
-- Existing rule covers the target → offer to extend it → if user agrees, skip to Step 4
+- Existing rule covers the target → offer to extend it → if user agrees, skip to Step 5
 
 ---
 
@@ -110,7 +110,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ---
 
-### Step 3: Validate against file-type guide
+### Step 3: Validate gathered information
 
 #### Condition
 
@@ -150,7 +150,44 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ---
 
-### Step 4: Write the JP mirror first (`.claude/rules-jp/<name>.md`)
+### Step 4: Check for similar existing rules
+
+#### Condition
+
+- Step 3 complete (rules confirmed appropriate)
+
+#### Input
+
+- Domain description and file list from Step 2
+- Existing rules in `.claude/rules/`
+
+#### Process
+
+1. Glob `.claude/rules/**/*.md` and read the overview and `paths:` of each
+2. Check whether any existing rule has overlapping domains or similar file patterns
+3. If overlap or similarity found:
+   - Explain the overlap to the user
+   - Propose options:
+     - **Merge**: extend the existing rule to cover this domain too
+     - **Keep separate**: explain the clear boundary that justifies splitting (e.g., different update triggers, different team ownership)
+   - Let the user decide before proceeding
+4. If no overlap → proceed directly
+
+→ Proceed to Step 5
+
+#### Output
+
+- Confirmed approach: new rule, merge with existing, or justified separation
+
+#### Notes
+
+##### Branching
+
+- User chooses to merge → apply changes to the existing rule instead of creating a new file → skip to Step 6 (final verification)
+
+---
+
+### Step 5: Write the JP mirror first (`.claude/rules-jp/<name>.md`)
 
 #### Condition
 
@@ -166,11 +203,11 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 2. Add the required JP mirror header at the top (after frontmatter, before H1)
 3. Put the cross-reference table in `## 参考資料` at the bottom
 
-→ Proceed to Step 5
+→ Proceed to Step 6
 
 #### Output
 
-- \.claude/rules-jp/<name>.md` created
+- `.claude/rules-jp/<name>.md` created
 
 #### Notes
 
@@ -181,7 +218,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ---
 
-### Step 5: Translate to the English rule (`.claude/rules/<name>.md`)
+### Step 6: Translate to the English rule (`.claude/rules/<name>.md`)
 
 #### Condition
 
@@ -197,7 +234,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 2. Create `.claude/rules/<name>.md` with the same step-based structure
 3. Keep heading structure identical to the JP mirror
 
-→ Proceed to Step 6
+→ Proceed to Step 7
 
 #### Output
 
@@ -212,7 +249,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ---
 
-### Step 6: Final verification
+### Step 7: Final verification
 
 #### Condition
 
