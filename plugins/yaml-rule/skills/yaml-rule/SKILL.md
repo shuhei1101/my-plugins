@@ -37,7 +37,7 @@ Physical files (assets, media, etc.) can be placed in any folder structure freel
 
 Do **not** put management rules, change history, or per-field explanations inside the YAML as comment blocks. The YAML is data — keep it terse.
 
-Document those conventions in `.claude/rules/<name>.md` instead, with a `paths:` frontmatter targeting the relevant YAML files. The rule file loads automatically when Claude reads a matching YAML, so it serves the same "context for whoever opens this file" purpose without bloating the data file. See the `claude-rule` skill for how to author rule files.
+Document those conventions in `.claude/rules/<name>.md` instead, with a `paths:` frontmatter targeting the relevant YAML files. The rule file loads automatically when Claude reads a matching YAML, so it serves the same "context for whoever opens this file" purpose without bloating the data file. See the `claude-kit` plugin's `rules-creator` skill for how to author rule files.
 
 A short pointer comment at the top of a YAML (e.g., one line saying "see .claude/rules/assets-bgm.md") is fine, but never duplicate the rule's body inside the YAML.
 

@@ -230,8 +230,6 @@ git branch -d {branch}
 
 ## Project Rule Deployment
 
-This skill ships with a rule template at `rules/pr-docs.md` (sibling of this SKILL.md).
-
 **On first use in a project**, check if `.claude/rules/pr-docs.md` exists. If not, create it:
 
 1. Check: `Glob(".claude/rules/pr-docs.md")` in the project root.

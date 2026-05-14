@@ -443,8 +443,6 @@ if __name__ == "__main__":
 
 ## Project Rule Deployment
 
-This skill ships with a rule template at `rules/implementation.md` (sibling of this SKILL.md).
-
 **On first use in a project**, check if `.claude/rules/implementation.md` exists. If not, create it:
 
 1. Check: `Glob(".claude/rules/implementation.md")` in the project root.

@@ -445,3 +445,43 @@ if __name__ == "__main__":
 - `config.py` / `.env` は不要 — 設定は引数または定数で管理
 - テスト・bat ファイル・setup スクリプト・`pyproject.toml` は生成しない
 - 必要なサードパーティ製パッケージは `# pip install {package}` コメントで明示
+
+---
+
+## プロジェクトへのルール展開
+
+**プロジェクトで初めて使用するとき**、`.claude/rules/implementation.md` が存在しない場合に作成します：
+
+1. プロジェクトルートで `Glob(".claude/rules/implementation.md")` を実行して確認。
+2. 存在しなければ、`.claude/rules/implementation.md` を以下の内容で作成：
+
+```markdown
+---
+paths:
+  - "src/**/*.py"
+---
+
+# 実装作業
+
+## コードを書く前に
+
+1. `wiki/` に仕様が存在するか確認する。関連する wiki ドキュメントが不足しているか、リクエストと矛盾している場合は、ユーザーに報告してから進む。
+2. このエリアに関わる未決定 Issue が `wiki/Issues.md` にある場合は、着手前にユーザーへ通知する。
+3. Python コードを書く前に `/py:py` スキルを読む。
+
+## コミット前チェックリスト
+
+- [ ] コード・設定ファイルの変更
+- [ ] `docs/PR/PR{N}.md` の作成または更新
+- [ ] 実装が文書化された動作を変更した場合は wiki ドキュメントを更新
+- [ ] 新しいファイル種別・ディレクトリを追加した場合は `.gitignore` を更新
+- [ ] 新しい設計上の決定を `wiki/Issues.md` または関連する機能ドキュメントに記録
+```
+
+3. `.claude/rules-jp/implementation.md` をスタブとして作成：
+
+```markdown
+> **このファイルは日本語ミラーです。本体は `.claude/rules/implementation.md`。**
+```
+
+4. コミット：`git add .claude/rules/ && git commit -m "chore: add implementation rule"`

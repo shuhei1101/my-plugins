@@ -135,10 +135,10 @@
 ```bash
 # ユーザーがメインリポジトリで実行
 git checkout {ベースブランチ}
-git merge {ブランチ名}   # 通常マージ — --squash は使用しない
+git merge --no-ff {ブランチ名}   # --no-ff でブランチ線がログに残る
 ```
 
-**ブランチのコミット履歴を保持するため、常に通常のマージを使用すること。`--squash` は絶対に使わない。**
+**ブランチをログに残すため、常に `--no-ff` を使ってマージコミットを作ること。`--squash` は絶対に使わない。**
 
 ユーザーがマージ完了を伝えるまで待つ。
 
@@ -226,9 +226,79 @@ git commit --allow-empty -m "chore: start PR{N} {内容}"
 
 # マージ（worktree ではなくメインリポジトリで実行）
 git checkout {ベースブランチ}
-git merge {ブランチ名}
+git merge --no-ff {ブランチ名}
 
 # クリーンアップ
 git worktree remove {パス}
 git branch -d {ブランチ名}
 ```
+
+---
+
+## プロジェクトへのルール展開
+
+**プロジェクトで初めて使用するとき**、`.claude/rules/pr-docs.md` が存在しない場合に作成します：
+
+1. プロジェクトルートで `Glob(".claude/rules/pr-docs.md")` を実行して確認。
+2. 存在しなければ、`.claude/rules/pr-docs.md` を以下の内容で作成：
+
+```markdown
+---
+paths:
+  - "docs/PR/**/*.md"
+  - "docs/PR/index.yaml"
+---
+
+# PR ドキュメントルール
+
+## PRドキュメントを作成するタイミング
+
+`docs/PR/PR{N}.md` は PR ごとに作成する。マージ後に作るのは禁止。計画のみのPR（実装なし）は `index.yaml` に `planning: true` を設定する。
+
+## 必須セクション
+
+\`\`\`markdown
+# PR{N} — {短いタイトル}
+
+## 概要
+
+{1〜3行：このPRが何をするか、なぜするか}
+
+## スコープ
+
+### 含む
+- {項目}
+
+### 含まない
+- {項目}
+
+## 変更ファイル
+
+- `path/to/file` — 1行の変更理由
+\`\`\`
+
+オプションセクション：`背景`、`前提条件`、`実装ログ`、`決定事項`、`未決定事項`。
+
+## index.yaml — 必須更新
+
+`docs/PR/PR{N}.md` を作成・大幅更新するたびに `docs/PR/index.yaml` のエントリも追加・更新する。
+
+| フィールド | ルール |
+|---|---|
+| `id` | PR番号（int） |
+| `title` | PR{N}.mdのh1テキストと完全一致 |
+| `type` | `feat` / `fix` / `docs` / `refactor` / `chore` / `test` |
+| `tags` | 自由形式のリスト |
+| `planning` | 実装なし（計画・設計のみ）のPRは `true` |
+| `summary` | ファイルを開かずに内容が分かる1行説明（120文字以内） |
+| `children` | このPRが定義した子PRの番号リスト |
+| `parent` | このPRを定義した親PRの番号 |
+```
+
+3. `.claude/rules-jp/pr-docs.md` をスタブとして作成：
+
+```markdown
+> **このファイルは日本語ミラーです。本体は `.claude/rules/pr-docs.md`。**
+```
+
+4. コミット：`git add .claude/rules/ && git commit -m "chore: add pr-docs rule"`

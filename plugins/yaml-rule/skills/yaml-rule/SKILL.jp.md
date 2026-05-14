@@ -1,10 +1,7 @@
----
-name: yaml-rule
-description: （日本語訳）プロジェクトのアセットと設定を管理するYAMLファイルの運用ルール。index.yaml・settings.yaml・settings.yaml.sampleの作成・編集時、アセット/メディアファイルをYAMLで管理する設計時、新しいプロジェクトでアセット管理の仕組みを構築するときに自動適用される。
----
+# SKILL.jp.md — yaml-rule スキル（日本語ミラー）
 
-> このファイルは `SKILL.md` の日本語翻訳です。Claude Code には自動読み込みされません。
-> 変更する場合は、まずこのファイルを更新し、その後 `SKILL.md`（英語本体）にも同じ変更を反映してください。
+> このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
+> 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
 
 ---
 
@@ -42,7 +39,7 @@ description: （日本語訳）プロジェクトのアセットと設定を管�
 
 管理ルール・変更履歴・各フィールドの説明を YAML の冒頭コメントブロックに書かないこと。YAML はデータ。記述は最小に保つ。
 
-これらの規約は `.claude/rules/<name>.md` に書く。`paths:` frontmatter で対象 YAML を指定すれば、Claude が該当 YAML を読み込んだときにルールが自動でコンテキストに入るので、「このファイルを開いた人が背景を把握できる」という目的は達成しつつ、データファイルを膨らませない。`.claude/rules/` の運用ルールは `claude-rule` skill を参照。
+これらの規約は `.claude/rules/<name>.md` に書く。`paths:` frontmatter で対象 YAML を指定すれば、Claude が該当 YAML を読み込んだときにルールが自動でコンテキストに入るので、「このファイルを開いた人が背景を把握できる」という目的は達成しつつ、データファイルを膨らませない。`.claude/rules/` の運用ルールは `claude-kit` プラグインの `rules-creator` スキルを参照。
 
 YAML 冒頭に「詳しくは `.claude/rules/assets-bgm.md` を参照」のような短いポインタコメントを置くのはOK。ただし、ルールの内容自体を YAML 内に複製してはいけない。
 

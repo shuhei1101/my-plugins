@@ -205,8 +205,6 @@ Rules:
 
 ## Project Rule Deployment
 
-This skill ships with a rule template at `rules/wiki-work.md` (sibling of this SKILL.md).
-
 **On first use in a project**, check if `.claude/rules/wiki-work.md` exists. If not, create it:
 
 1. Check: `Glob(".claude/rules/wiki-work.md")` in the project root.
