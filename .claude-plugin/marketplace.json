@@ -8,10 +8,10 @@
   },
   "plugins": [
     {
-      "name": "wiki",
-      "source": "./plugins/wiki",
-      "description": "Project documentation Wiki management with Issue-driven decision tracking",
-      "version": "1.1.0"
+      "name": "docs-manage",
+      "source": "./plugins/docs-manage",
+      "description": "Project documentation management with Issue-driven decision tracking",
+      "version": "1.2.0"
     },
     {
       "name": "py",
@@ -26,10 +26,10 @@
       "version": "1.1.0"
     },
     {
-      "name": "claude-rule",
-      "source": "./plugins/claude-rule",
-      "description": "Gateway for Claude Code configuration and documentation — authoring conventions, XML tag guidance, rule-market library, and dispatch to rules-creator / skill-creator",
-      "version": "2.4.0"
+      "name": "claude-kit",
+      "source": "./plugins/claude-kit",
+      "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
+      "version": "3.0.0"
     },
     {
       "name": "yaml-rule",
