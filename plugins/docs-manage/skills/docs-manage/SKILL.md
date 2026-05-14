@@ -1,48 +1,216 @@
 ---
 name: docs-manage
-description: Manages project documentation with Issue-driven decision tracking. Always apply this skill when: working inside the docs/ folder, creating or updating docs/specs/Home.md, adding issues to docs/qa.md, recording decisions in docs/qa_history.md, checking for document duplication, initializing project docs, or any request involving documentation organization, undecided matters, or decision history. Trigger immediately whenever the user mentions docs management, QA, decision tracking, document deduplication, or Home.md updates — even if "docs" is not explicitly said.
+description: Manages project documentation with Issue-driven decision tracking. Always apply this skill when: working inside the wiki/ or docs/ folder, creating or updating home.md, adding issues to Issues.md, recording decisions in イシュー履歴.md, checking for document duplication, initializing project docs, or any request involving documentation organization, undecided matters, or decision history. Trigger immediately whenever the user mentions docs management, QA, decision tracking, document deduplication, or home.md updates — even if "docs" is not explicitly said.
 ---
 
-# Wiki — Project Documentation & Issue-Driven Decision Management
+# docs-manage — Project Documentation & Issue-Driven Decision Management
 
-## Folder Structure
+Manages the project wiki: initializes structure, tracks open issues, records decisions, and maintains a single source of truth across all documents.
+
+---
+
+## Overview
+
+All project knowledge lives in `wiki/` (flat — no subdirectories):
 
 ```
 wiki/
 ├── home.md            ← Navigation hub (links to all documents)
 ├── Issues.md          ← Open / undecided issues
 ├── イシュー履歴.md    ← Decision history log (append-only)
-└── {feature}.md       ← Feature-specific documents (flat, no subdirs)
+└── {feature}.md       ← Feature-specific documents
 ```
 
-**Invariants:**
-- All documents live directly under `wiki/` — never create subdirectories
-- `home.md` must be updated whenever a document is added or removed
-- `Issues.md` holds only unresolved issues; decided ones move to `イシュー履歴.md`
+**Core invariant:** One fact lives in exactly one document. Before writing, always check for duplicates.
 
 ---
 
-## Initializing the Wiki
+## Tasks
 
-When creating a wiki for a new or existing project:
+### Step 1: Identify the operation
 
-1. Glob-scan for existing `wiki/` to detect current state
-2. Create (or update) `wiki/home.md` — navigation hub with links to all docs
-3. Create `wiki/Issues.md` — open issues (empty if none yet)
-4. Create `wiki/イシュー履歴.md` — decision history (empty if none yet)
-5. Add a wiki entry link to the project root `README.md` (preserve all existing content)
-6. Optionally append wiki operation rules to `CLAUDE.md` (ask the user)
+#### Condition
 
-If `wiki/` already exists, diff against existing files and propose merging — do not overwrite without confirming.
+- Always — before doing anything else
+
+#### Process
+
+1. Determine what the user is requesting:
+
+   | User request | Go to |
+   |---|---|
+   | New project or `wiki/` does not exist | Step 2 (Initialize) |
+   | Raise an undecided matter / question | Step 3 (Add Issue) |
+   | Confirm a decision on an existing issue | Step 4 (Decide Issue) |
+   | Document added, removed, or renamed | Step 5 (Update home.md) |
+   | Write information to a wiki document | Step 6 (Duplicate check + write) |
+
+→ Proceed to the appropriate step
+
+#### Output
+
+- Confirmed operation type
 
 ---
 
-## Adding a New Issue
+### Step 2: Initialize the wiki
 
-When the user raises an undecided matter or a question that needs a decision:
+#### Condition
 
-1. Determine the next issue number by grepping both `wiki/Issues.md` and `wiki/イシュー履歴.md` for `ISSUE-(\d+)`. Next number = max + 1. Never reuse a number.
-2. Append to `wiki/Issues.md`:
+- `wiki/` does not exist, or user wants to set up docs for a new project
+
+#### Input
+
+- Project root directory
+
+#### Process
+
+1. Glob-scan for existing `wiki/` to detect current state.
+2. Create or update `wiki/home.md` — navigation hub with links to all docs.
+3. Create `wiki/Issues.md` — open issues (empty if none yet).
+4. Create `wiki/イシュー履歴.md` — decision history (empty if none yet).
+5. Add a wiki link to the project root `README.md` (preserve all existing content).
+6. Ask the user whether to append wiki operation rules to `CLAUDE.md`.
+
+If `wiki/` already exists: diff against existing files and propose merging — do not overwrite without confirming.
+
+→ Proceed to Step 6 to write files
+
+#### Output
+
+- `wiki/home.md`, `wiki/Issues.md`, `wiki/イシュー履歴.md` created or verified
+
+---
+
+### Step 3: Add a new issue
+
+#### Condition
+
+- User raises an undecided matter or question that needs a decision
+
+#### Input
+
+- User's description of the undecided matter
+
+#### Process
+
+1. Determine the next issue number:
+   - Grep both `wiki/Issues.md` and `wiki/イシュー履歴.md` for `ISSUE-(\d+)`
+   - Next number = max found + 1. Never reuse a number.
+2. Draft the issue entry using the template in References.
+3. For large issues with multiple sub-questions, use `### ISSUE-XXX-1`, `### ISSUE-XXX-2`.
+
+→ Proceed to Step 6 to write files
+
+#### Output
+
+- New issue entry ready to append to `wiki/Issues.md`
+
+---
+
+### Step 4: Decide an issue
+
+#### Condition
+
+- User confirms a decision on an existing issue
+
+#### Input
+
+- Issue number or title
+- The chosen option and rationale
+
+#### Process
+
+1. Identify the issue in `Issues.md` by number or title.
+2. Determine the master document for the decision (see Master Document Principle in References).
+3. Run a duplicate check (Step 6) before writing.
+4. Prepare four concurrent writes (all delegated to background subagents):
+   - **A** — Append the decision with rationale to the master feature document.
+   - **B** — Remove the resolved issue from `wiki/Issues.md`.
+   - **C** — Append a history entry to `wiki/イシュー履歴.md` (see template in References).
+   - **D** — Update `wiki/home.md` links if a new document was created.
+
+→ Proceed to Step 6 to write files
+
+#### Output
+
+- Decision recorded in master doc, issue removed from Issues.md, history entry appended
+
+---
+
+### Step 5: Update home.md
+
+#### Condition
+
+- A document was added, removed, or renamed in `wiki/`
+
+#### Input
+
+- Current state of `wiki/` directory
+
+#### Process
+
+1. Glob `wiki/` to get the current file list.
+2. Diff against links currently in `home.md`.
+3. Propose categorized sections (e.g., Features / Spec / API / Reference — adapt to the project).
+
+→ Proceed to Step 6 to write files
+
+#### Output
+
+- Updated `home.md` link list ready
+
+---
+
+### Step 6: Duplicate check then write
+
+#### Condition
+
+- Any step that produces content to be written to `wiki/`
+
+#### Input
+
+- Target file and content to write
+
+#### Process
+
+1. Grep the target keyword across `wiki/` (full-text search).
+2. If a duplicate is found:
+   - Apply the Master Document Principle (see References) to determine the authoritative location.
+   - In non-master documents, replace duplicated content with a reference link:
+     ```markdown
+     For details, see [Master Doc — Section](wiki/master.md#section)
+     ```
+   - After updating a master document, grep for old anchor names to find and fix stale references in other docs.
+3. Delegate all file writes to background subagents (`run_in_background=true`):
+   - Main session stays focused on decisions and communication with the user.
+   - Subagents handle actual file writes in parallel without waiting for completion.
+4. After each write, append or update the last-updated line at the bottom:
+   ```markdown
+   **Last updated**: YYYY-MM-DD — {one-line description of what changed}
+   ```
+
+→ Done
+
+#### Output
+
+- Files written, last-updated lines updated, duplicate check passed
+
+#### Notes
+
+##### Prohibitions
+
+- Do not create subdirectories inside `wiki/`
+- Do not write the same fact in multiple documents — one spec, one document
+- Do not add a new document without also updating `home.md`
+- Do not leave stale content — when a document is deleted, remove its `home.md` link
+- Do not perform file writes in the main session — always delegate to background subagents
+
+---
+
+## References
+
+### Issue entry template
 
 ```markdown
 ## ISSUE-XXX: {Title}  {未決定 | 検討中 | 保留}
@@ -58,84 +226,20 @@ When the user raises an undecided matter or a question that needs a decision:
 **Related docs**: [{doc name}](wiki/{file}.md)
 ```
 
-For large issues with multiple sub-questions, use `### ISSUE-XXX-1`, `### ISSUE-XXX-2`.
-
----
-
-## Deciding an Issue
-
-When the user confirms a decision:
-
-1. Identify the issue in `Issues.md` by number or title
-2. Determine the master document for the decision (see Master Document Principle below)
-3. Run a duplicate check before writing (see Duplicate Check Rules below)
-4. Delegate all file writes to background subagents in parallel:
-
-   - **A** — Append the decision (with rationale) to the master feature document
-   - **B** — Remove the resolved issue from `wiki/Issues.md`
-   - **C** — Append to the bottom of `wiki/イシュー履歴.md`:
-
-     ```markdown
-     ## ISSUE-XXX: {Title}
-
-     - **Question**: {brief summary of the original issue}
-     - **Decision**: {chosen option and rationale, 1–3 lines}
-     - **Date**: YYYY-MM-DD
-     - **Written to**: [{doc name}](wiki/{file}.md#{section})
-
-     ---
-     ```
-
-   - **D** — Update `wiki/home.md` links if a new document was created
-
----
-
-## Checking for Duplicates
-
-Before writing any information to a document:
-
-1. Grep the target keyword across `wiki/` (full-text search)
-2. If duplicate found, apply the Master Document Principle to determine the authoritative location
-3. In non-master documents, replace duplicated content with a reference link:
+### Decision history template (append to `wiki/イシュー履歴.md`)
 
 ```markdown
-For details, see [Master Doc — Section](wiki/master.md#section)
-```
+## ISSUE-XXX: {Title}
 
-After updating a master document, grep for the old anchor/section name to find and fix stale references in other docs.
-
-**Bad** (same spec duplicated):
-```markdown
-# 共通仕様.md
-## Failure threshold: STT: 3, TTS: 2
-
-# feature-x.md
-## Failure threshold: STT: 3, TTS: 2   ← duplicate
-```
-
-**Good** (single source of truth):
-```markdown
-# 共通仕様.md  ← master
-## Failure threshold: STT: 3, TTS: 2
-
-# feature-x.md
-For thresholds, see [共通仕様.md — Failure threshold](共通仕様.md#failure-threshold)
-```
+- **Question**: {brief summary of the original issue}
+- **Decision**: {chosen option and rationale, 1–3 lines}
+- **Date**: YYYY-MM-DD
+- **Written to**: [{doc name}](wiki/{file}.md#{section})
 
 ---
+```
 
-## Updating home.md
-
-When documents are added, removed, or renamed:
-
-1. Glob `wiki/` to get the current file list
-2. Diff against links currently in `home.md`
-3. Propose categorized sections (e.g., Features / Spec / API / Reference — adapt to the project)
-4. Delegate the rewrite to a background subagent
-
----
-
-## Master Document Principle
+### Master Document Principle
 
 | Information type | Master document |
 |---|---|
@@ -147,59 +251,6 @@ When documents are added, removed, or renamed:
 | AI config / LLM roles | Dedicated AI config doc (if it exists) |
 
 Non-master documents must reference the master via a link — never duplicate the content.
-
----
-
-## Last-Updated Tracking
-
-After every document update (not on initial creation), append or update this line at the bottom:
-
-```markdown
-**Last updated**: YYYY-MM-DD — {one-line description of what changed}
-```
-
-Examples:
-```
-**Last updated**: 2026-04-27 — Added hot-reload/restart classification per ISSUE-029
-**Last updated**: 2026-04-27 — Changed T2 from parallel to single call (sections 3 & 4)
-```
-
-This allows a separate AI session to immediately understand when and why a file was last changed.
-
----
-
-## Subagent Delegation for File Writes
-
-All file writes (document creation, updates, appends) must be delegated to background subagents:
-
-- Main session: focuses on decisions, analysis, and communicating with the user
-- Subagents: handle actual file writes in the background (`run_in_background=true`)
-- Do not wait for subagent completion before continuing to the next task
-
-Subagent instruction template:
-```
-Task: {which file to write and what content}
-
-Content:
-{specific content in heredoc format}
-
-Rules:
-1. Grep wiki/ for duplicates before writing
-2. Apply Master Document Principle if duplicates found
-3. Update wiki/home.md if a new document was created
-4. Update the **Last updated** line at the bottom
-5. Report what was updated (1–3 lines) when done
-```
-
----
-
-## What NOT to Do
-
-- Do not create subdirectories inside `wiki/`
-- Do not write the same decision in multiple documents — one spec, one document
-- Do not add a new document without also updating `home.md`
-- Do not leave stale content — when a document is deleted, remove its `home.md` link
-- Do not perform file writes synchronously in the main session — always delegate to background subagents
 
 ---
 

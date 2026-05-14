@@ -1,32 +1,48 @@
-# SKILL.jp.md — wt スキル（日本語訳）
+# SKILL.jp.md — wt スキル（日本語ミラー）
 
-> このファイルは `SKILL.md` の日本語翻訳です。Claude Code には自動読み込みされません。内容を確認するための参照用ファイルです。
-> 変更を加える場合は、まずこのファイルを更新し、その後 `SKILL.md`（本体）にも同じ変更を反映してください。
+> このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
+> 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
 
 ---
 
-**スキル名**: wt  
-**トリガー**: 新しい実装を始めたい・PR を作りたい・新しいブランチで作業したい・worktree セッションを再開したい・並行開発を管理したいときに自動起動。「worktree」「新しい PR」「〇〇を実装したい」「〇〇のブランチを作って」「並行実装」といった発言でトリガーする
+**スキル名**: wt
+**トリガー**: 新しい実装を始めたい・PR を作りたい・新しいブランチで作業したい・worktree セッションを再開したい・並行開発を管理したいときに自動起動
 
 ---
 
 # wt — Git Worktree 実装ワークフロー
 
-## 基本原則
-
-**1 セッション = 1 PR。** コード実装でもドキュメント更新でも、すべての作業は専用の worktree・専用ブランチ上で行う。複数の AI セッションが互いに干渉するのを防ぐためです。
-
-ライフサイクル：**計画 → セットアップ → 実装 → レビュー → マージ → クリーンアップ**
+1 セッション = 1 PR。コード実装でもドキュメント更新でも、すべての作業は専用の worktree・専用ブランチ上で行う。複数の AI セッションが互いに干渉するのを防ぐためです。
 
 ---
 
-## フェーズ1: 計画
+## 概要
 
-コードやファイルに触れる前に：
+ライフサイクル：**計画 → セットアップ → 実装 → レビュー → マージ → クリーンアップ**
 
-1. **タスクを理解する。** `README.md` を読み、`docs/` があればスキャンし、スコープをユーザーと確認する。要件が不明な場合は、作業を開始する前に質問する。
-2. **PR 番号を決める。** `docs/PR/` にある既存ファイルを確認して最大の PR 番号を調べる。次の番号は max + 1。`docs/PR/` がなければ作成する。
-3. **PR ドキュメントを作成** (`docs/PR/PR{N}.md`)：
+実装中のファイル書き込みはすべて worktree 内で行う。メインリポジトリには実装中は触れない。
+
+---
+
+## 作業内容
+
+### ステップ1: 計画
+
+#### 条件
+
+- ユーザーが新しいタスクや PR を始めたいとき
+
+#### 入力
+
+- ユーザーのタスク説明
+
+#### 処理内容
+
+1. `README.md` を読み、`docs/` があればスキャンしてプロジェクトを把握する。要件が不明な場合は作業前に確認する。
+2. PR 番号を決める：
+   - `docs/PR/` にある既存ファイルを確認して最大の PR 番号を調べる
+   - 次の番号 = max + 1。`docs/PR/` がなければ作成する
+3. `docs/PR/PR{N}.md` を作成する：
 
 ```markdown
 ## 概要
@@ -48,130 +64,200 @@
 | 追加 | tests/test_foo.py | src/foo.py | TestFoo.test_bar | bar のテスト |
 ```
 
-必要に応じてオプションセクションを追加：`## 設計メモ`、`## 依存関係`、`## リスク`、`## ユーザー確認事項`
+オプションセクション：`## 設計メモ`、`## 依存関係`、`## リスク`、`## ユーザー確認事項`
 
-4. **ブランチや worktree を作成する前に、ユーザーに計画を確認する。**
+4. ブランチや worktree を作成する前に、ユーザーに計画を確認する。
+
+→ ステップ2へ進む
+
+#### 出力
+
+- `docs/PR/PR{N}.md` 作成済み
+- ユーザーが計画を承認済み
 
 ---
 
-## フェーズ2: セットアップ
+### ステップ2: worktree のセットアップ
 
-ユーザーが計画を承認したら：
+#### 条件
 
-1. **ベースブランチを確認する。** `git branch --show-current` と `git status` を実行。未コミット変更があれば警告。現在のブランチが `master`/`main` の場合も注意喚起。
+- ステップ1でユーザーが計画を承認済みであること
 
-2. **ブランチ名を決める** — `PR{N}/{type}/{内容}` 形式：
+#### 入力
+
+- PR 番号とベースブランチ
+
+#### 処理内容
+
+1. ベースブランチとクリーンな状態を確認する：
+   ```bash
+   git branch --show-current
+   git status
+   ```
+   未コミット変更がある場合や `master`/`main` ブランチの場合は警告する。
+
+2. ブランチ名を決める — `PR{N}/{type}/{内容}` 形式：
    - `type` は Conventional Commits に従う：`feat` / `fix` / `docs` / `refactor` / `test` / `chore`
    - スペース・特殊文字はハイフンに変換
-   - 日本語はそのまま許容
-   - 例：`PR30/feat/login-implement`、`PR31/docs/update-wiki`、`PR32/fix/tts-timeout`
    - `git branch --list {ブランチ名}` で衝突チェック
 
-3. **ブランチと worktree を作成：**
-
+3. ブランチと worktree を作成する：
    ```bash
    git branch {ブランチ名} {ベースブランチ}
    git worktree add {worktreeパス} {ブランチ名}
    ```
+   デフォルトパス：`{親ディレクトリ}/{リポジトリ名}-wt-PR{N}`
 
-   worktree パスのデフォルト：`{親ディレクトリ}/{リポジトリ名}-wt-PR{N}`  
-   例：リポジトリが `/c/Users/shuhe/repo/voice-paste` なら worktree は `/c/Users/shuhe/repo/voice-paste-wt-PR30`
+4. 依存関係をシンボリックリンクで接続（対象が存在しない場合はスキップ）：
+   - Python プロジェクト：`ln -s {メインリポジトリ}/venv {worktree}/venv`
+   - Node.js プロジェクト：`node_modules` と `.next`（あれば）をシンボリックリンク
+   - シンボリックリンクが作れない場合：`PYTHONPATH` でメインリポジトリの venv を流用する（参考資料参照）
 
-4. **依存関係をシンボリックリンクで接続**（対象が存在しない場合はスキップ）：
-   - Python プロジェクト（`pyproject.toml` または `setup.py` が存在）：`ln -s {メインリポジトリ}/venv {worktree}/venv`
-   - Node.js プロジェクト（`package.json` が存在）：`node_modules` と `.next`（あれば）をシンボリックリンク
-   - シンボリックリンクが作れない場合は、worktree からサーバーを起動するときに `PYTHONPATH` でメインリポジトリの venv を流用する（後述）
-
-5. **worktree 内で初期コミットを作成：**
-
+5. worktree 内で初期コミットを作成する：
    ```bash
    git commit --allow-empty -m "chore: start PR{N} {内容}"
    git add docs/PR/PR{N}.md
    git commit -m "docs: add PR{N} plan"
    ```
 
-6. **セッション状態を保存** (`~/.claude/skill-memory/worktree/{YYYYMMDDHHMMSS}_session.md`)：
+6. セッション状態を保存する（`~/.claude/skill-memory/worktree/{YYYYMMDDHHMMSS}_session.md`）：
    ```
    ベースブランチ、worktree パス、PR 番号、現在のフェーズ
    ```
 
----
+→ ステップ3へ進む
 
-## フェーズ3: 実装
+#### 出力
 
-すべての作業は worktree ディレクトリ内で行う — メインリポジトリには触れない。
-
-- `docs/PR/PR{N}.md` のタスクリストを進捗に合わせてチェックしていく
-- フェーズの区切りごとに `~/.claude/skill-memory/worktree/` のセッションファイルを更新
-- Conventional Commits 形式でコミット：
-  - `feat:` 新機能、`fix:` バグ修正、`refactor:` リファクタリング、`docs:` ドキュメント、`test:` テスト、`chore:` 雑務
-  - 例：`git add . && git commit -m "feat: JWT 認証を実装"`
-- コミット前に変更ファイルを確認する
+- `{worktreeパス}` に worktree 作成済み
+- ブランチ `PR{N}/{type}/{内容}` 準備完了
+- セッション状態保存済み
 
 ---
 
-## フェーズ4: レビュー & マージ
+### ステップ3: 実装
 
-### ユーザーレビュー
+#### 条件
 
-コミット完了後、worktree パスをユーザーに伝えて実装内容の確認を依頼：
+- ステップ2で worktree のセットアップが完了していること
 
-```
-変更内容を以下の worktree で確認してください: {worktreeパス}
-```
+#### 入力
 
-ユーザーが修正を求めた場合はフェーズ3に戻る。
+- `docs/PR/PR{N}.md` のタスクリスト
 
-### マージ
+#### 処理内容
 
-ユーザーがレビュー完了を確認したら、以下のみを出力する：
+1. すべての作業は worktree ディレクトリ内で行う — 実装中はメインリポジトリに触れない。
+2. `docs/PR/PR{N}.md` のタスクリストを進捗に合わせてチェックしていく。
+3. Conventional Commits 形式でコミットする：
+   ```bash
+   git add {ファイル}
+   git commit -m "feat: JWT 認証を実装"
+   ```
+   タイプ：`feat` / `fix` / `refactor` / `docs` / `test` / `chore`
+4. フェーズの区切りごとに `~/.claude/skill-memory/worktree/` のセッションファイルを更新する。
 
-```
-コミット完了 — PR{N}: {変更内容の1行説明}
-```
+→ すべてのタスクにチェックが入ったらステップ4へ進む
 
-以降は何もしない。**マージコマンドを表示しない。**「マージしますか？」と聞かない。マージはユーザーが自分のターミナルで実行する：
+#### 出力
 
-```bash
-# ユーザーがメインリポジトリで実行
-git checkout {ベースブランチ}
-git merge --no-ff {ブランチ名}   # --no-ff でブランチ線がログに残る
-```
+- すべてのタスクが worktree 内でコミット済み
 
-**ブランチをログに残すため、常に `--no-ff` を使ってマージコミットを作ること。`--squash` は絶対に使わない。**
+#### 補足
 
-ユーザーがマージ完了を伝えるまで待つ。
+##### 禁止事項
 
-### クリーンアップ
+- worktree 内で `pip install -e .` を実行しない — メインリポジトリのパッケージが worktree の `src/` を参照するようになり、worktree 削除後にメインサーバーが壊れる
 
-ユーザーがマージ完了を確認したら、worktree とブランチを削除：
+##### gitignore 対象ファイルのルール
 
-```bash
-git worktree remove {worktreeパス}
-git branch -d {ブランチ名}
-```
+`.gitignore` に含まれるファイル（`config/settings.yaml`、`.env` など）はメインリポジトリで直接編集する。worktree 内のこれらのファイルへの変更は `git worktree remove` の実行時に消えてしまう。
 
-セッションファイルを更新：`## ステータス: 完了`
-
-リモートへの push は常にユーザーの責任 — このスキルでは `git push` を実行しない。
+具体的な手順：PR で `settings.yaml` に新しいキーを追加する場合は、メインリポジトリの `settings.yaml` を直接編集し、worktree 内では `settings.yaml.sample`（git 管理下）のみ編集する。
 
 ---
 
-## Worktree からのサーバー起動と venv の扱い
+### ステップ4: レビューとマージ
 
-### venv のルール
+#### 条件
 
-**Worktree 内で `pip install -e .` を実行しない。** 実行するとメインリポジトリのインストール済みパッケージが worktree の `src/` を参照するようになり、worktree 削除後にメインサーバーが壊れる。
+- ステップ3のすべてのタスクが完了してコミット済みであること
 
-代わりに `PYTHONPATH` を使う：
+#### 処理内容
+
+1. worktree パスをユーザーに伝えて実装内容の確認を依頼する：
+   ```
+   変更内容を以下の worktree で確認してください: {worktreeパス}
+   ```
+2. ユーザーが修正を求めた場合 → ステップ3に戻る。
+3. ユーザーがレビュー完了を確認したら、以下のみを出力する：
+   ```
+   コミット完了 — PR{N}: {変更内容の1行説明}
+   ```
+   以降は何もしない。**マージコマンドを表示しない。**「マージしますか？」と聞かない。マージはユーザーが自分のターミナルで実行する：
+   ```bash
+   git checkout {ベースブランチ}
+   git merge --no-ff {ブランチ名}   # --no-ff でブランチ線がログに残る
+   ```
+4. ユーザーがマージ完了を伝えるまで待つ。
+
+→ ステップ5へ進む
+
+#### 出力
+
+- ユーザーがブランチをベースブランチにマージ済み
+
+#### 補足
+
+##### 禁止事項
+
+- `--squash` は絶対に使わない — ブランチをログに残すため、必ず `--no-ff` を使ってマージコミットを作る
+
+---
+
+### ステップ5: クリーンアップ
+
+#### 条件
+
+- ユーザーがマージ完了を確認済みであること
+
+#### 処理内容
+
+1. worktree とブランチを削除する：
+   ```bash
+   git worktree remove {worktreeパス}
+   git branch -d {ブランチ名}
+   ```
+2. セッションファイルを更新する：`## ステータス: 完了`
+
+→ 完了
+
+#### 出力
+
+- worktree とブランチが削除済み
+- セッションが完了とマーク済み
+
+#### 補足
+
+##### 禁止事項
+
+- リモートへの push は常にユーザーの責任 — このスキルでは `git push` を実行しない
+
+---
+
+## 参考資料
+
+### worktree からのサーバー起動と venv の扱い
+
+**worktree 内で `pip install -e .` を実行しない。** 代わりに `PYTHONPATH` を使う：
 
 ```powershell
-$env:PORT = "809{N}"   # メインリポジトリ固定ポートより大きい値
+$env:PORT = "809{N}"
 $env:PYTHONPATH = "{worktreeパス}\src"
 {メインリポジトリ}\.venv\Scripts\python.exe -m {package_name}
 ```
 
-Worktree サーバーをクリーンアップ前に停止するとき：
+worktree サーバーをクリーンアップ前に停止するとき：
 
 ```powershell
 $port = 8091
@@ -179,30 +265,14 @@ $p = (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyC
 if ($p) { Stop-Process -Id $p -Force }
 ```
 
-### gitignore 対象ファイルのルール
-
-`.gitignore` に含まれるファイル（`config/settings.yaml`、`.env` など）は **メインリポジトリで直接作成・編集する**。
-
-**理由：** Worktree 内で gitignore 対象ファイルを変更しても、`git worktree remove` を実行するとそのファイルは消える。マージ後に変更が元に戻る。
-
-**具体的な手順：**
-- PR で `settings.yaml` に新しいキーを追加する場合 → メインリポジトリの `settings.yaml` を直接編集し、Worktree 内では `settings.yaml.sample`（git 管理下）のみ編集する
-- `.env` の変更も同様 → メインリポジトリ側で直接変更する
-
----
-
-## セッションの再開
-
-作業を中断して再開したいとき：
+### セッションの再開
 
 1. `~/.claude/skill-memory/worktree/` から該当セッションファイルを読み込む
-2. `## 現在のステータス` で最後に完了したフェーズを確認
-3. `git worktree list` で worktree がまだ存在するか確認
-4. 該当フェーズから作業を再開する
+2. `## 現在のステータス` で最後に完了したステップを確認する
+3. `git worktree list` で worktree がまだ存在するか確認する
+4. 該当ステップから作業を再開する
 
----
-
-## Git コマンドリファレンス
+### Git コマンドリファレンス
 
 ```bash
 # worktree 一覧
@@ -213,9 +283,6 @@ git branch --show-current
 
 # 未コミット変更の確認
 git status
-
-# 次の PR 番号 — 既存ドキュメントから最大値を確認
-ls docs/PR/
 
 # ブランチ + worktree の作成
 git branch PR{N}/{type}/{内容} {ベースブランチ}
@@ -253,7 +320,7 @@ paths:
 
 ## PRドキュメントを作成するタイミング
 
-`docs/PR/PR{N}.md` は PR ごとに作成する。マージ後に作るのは禁止。計画のみのPR（実装なし）は `index.yaml` に `planning: true` を設定する。
+`docs/PR/PR{N}.md` は PR ごとにマージ前に作成する。計画のみのPR（実装なし）は index.yaml に `planning: true` を設定する。
 
 ## 必須セクション
 
