@@ -201,7 +201,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 #### Output
 
-- \.claude/rules/<name>.md\ created
+- `.claude/rules/<name>.md` created
 
 #### Notes
 
@@ -212,34 +212,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ---
 
-### Step 6: Update CLAUDE.md table
-
-#### Condition
-
-- Both rule files created
-
-#### Input
-
-- Domain name, path pattern, description
-
-#### Process
-
-1. Check if the project's `CLAUDE.md` has a `Folder-scoped rules` table
-2. If yes, append a row:
-   ```
-   | `<name>.md` | `<path-pattern>` — <description> |
-   ```
-3. Also update `CLAUDE.jp.md` if it has a matching table
-
-→ Proceed to Step 7
-
-#### Output
-
-- CLAUDE.md table updated (or confirmed no table exists)
-
----
-
-### Step 7: Final verification
+### Step 6: Final verification
 
 #### Condition
 
@@ -260,8 +233,6 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 - [ ] `.claude/rules/<name>.md` — English, auto-loaded on path match
 - [ ] `.claude/rules-jp/<name>.md` — Japanese mirror with required header
-- [ ] `CLAUDE.md` table updated (if applicable)
-- [ ] `CLAUDE.jp.md` table updated (if applicable)
 
 ---
 
