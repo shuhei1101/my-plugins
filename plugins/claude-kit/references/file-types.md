@@ -1,106 +1,107 @@
-# Claude Code ファイルタイプ使い分けガイド
+# Claude Code File Type Usage Guide
 
-このドキュメントは `CLAUDE.md` / `.claude/rules/` / `.claude/skills/` の使い分けを定義する。
-各 creator スキルの Step 0 で参照すること。
+This document defines when to use `CLAUDE.md`, `.claude/rules/`, and `.claude/skills/`.
+Referenced in Step 0 of each creator skill.
+Japanese mirror: `references/file-types.jp.md`
 
 ---
 
 ## CLAUDE.md
 
-### 読み込みタイミング
+### When it loads
 
-| 配置場所 | 読み込みタイミング |
+| Placement | When loaded |
 |---|---|
-| プロジェクトルート | セッション開始時に**必ず**読み込まれる |
-| サブフォルダ | そのフォルダ内のファイルを Claude が読み込んだとき（遅延ロード） |
+| Project root | At every session start — always loaded |
+| Subfolder | Lazily, when Claude reads any file in that folder or its subfolders |
 
-サブフォルダの CLAUDE.md はセッション開始時には読み込まれない。
-そのフォルダに Claude がアクセスした瞬間にロードされる。
+A subfolder CLAUDE.md is not loaded at session start.
+It loads the moment Claude accesses a file in that directory.
 
-### 用途
+### Purpose
 
-- フォルダ配下の全体的な説明・役割・規約
-- そのフォルダで守るべき一般的な作業ルール
-- ファイルの簡単な概要説明
+- Describing the contents and conventions of a folder
+- General rules that apply whenever Claude works in this folder
+- Brief overview of what files in the folder do
 
-### 良い例
+### Good examples
 
-- 「このフォルダには〜が入っている。編集するときは〜に注意する」
-- 「このフォルダのファイルはXの形式で書く」
+- "This folder contains X. When editing, watch out for Y."
+- "Files in this folder follow the X format."
 
-### NG（こちらは `.claude/rules/` へ）
+### Not a good fit (use `.claude/rules/` instead)
 
-- 特定ファイルを編集したときにだけ適用したいルール
+- Rules that should only apply when editing a specific file type
 
 ---
 
-## `.claude/rules/`（パススコープルール）
+## `.claude/rules/` (Path-scoped rules)
 
-### 読み込みタイミング
+### When it loads
 
-`paths:` パターンに一致するファイルを Claude が**読み込んだとき**にロードされる。
+Loads when Claude **reads** a file matching the `paths:` pattern.
 
-- ✅ ファイルを読む → ロードされる
-- ✅ ファイルを編集する（編集前に読むため） → ロードされる
-- ❌ `mv` / `rm` 等のシェルコマンドのみ → ロードされない
-- ❌ ファイルを参照せず別の作業をする → ロードされない
+- ✅ Reading a file → loads
+- ✅ Editing a file (Claude reads before editing) → loads
+- ❌ Shell-only commands (`mv`, `rm`, etc.) without reading → does not load
+- ❌ Working without accessing a matching file → does not load
 
-### 用途
+### Purpose
 
-**更新漏れを防ぐための横断リンク**が主目的。
+**Primary purpose: cross-path linking to prevent missed updates.**
 
-`paths:` に複数の異なるフォルダ・ファイルを指定できるのが強み。
-ソース・テスト・仕様書・設定ファイルなど**場所がバラバラな関連ファイルをひとつのルールに束ねて**、
-どれかひとつが読まれたときに「他のものも確認せよ」と伝える。
+The key advantage is that `paths:` can span multiple different folders.
+Bundle related files — source, tests, specs, config — into one rule so that
+when any one of them is read, Claude is reminded to check the others.
 
-### 使うべき場面
+### When to use
 
-- 関連ファイルが**複数の異なるフォルダに散らばっている**とき
-- 「Xを変えたら必ずY・Zも更新しなければならない」という連動ルールを定義したいとき
-- ひとつのドメイン（例: モデル定義）に属するファイルを横断管理したいとき
+- Related files are **spread across multiple different folders**
+- You want to define a linked rule: "if X changes, Y and Z must also be updated"
+- You need to manage a domain (e.g., model definitions) that spans multiple locations
 
-### 良い例
+### Good examples
 
-- `paths:` に `src/models/*.py` と `tests/test_models.py` と `docs/specs/models.md` を登録
-  → どれかひとつが読まれたら「他のファイルも確認・更新する」と促す
-- 関連ファイルのリンク一覧と「このとき更新する」の条件表
+- Register `src/models/*.py`, `tests/test_models.py`, and `docs/specs/models.md` under `paths:`
+  → Whenever any one is read, Claude is prompted to verify and update the others
+- A cross-reference table with "update when" conditions for each related file
 
-### NG（こちらは `CLAUDE.md` サブフォルダへ）
+### Not a good fit (use a subfolder `CLAUDE.md` instead)
 
-- **単一フォルダに特化した内容** → サブフォルダに `CLAUDE.md` を置く方が簡潔で分かりやすい
-  （フォルダに置くだけで「このフォルダだけに適用される」と一目でわかる）
-- 横断する必要がないのに `.claude/rules/` に定義するのは過剰
+- **Content specific to a single folder** → a subfolder CLAUDE.md is simpler and clearer
+  (placing it in the folder makes the scope self-evident at a glance)
+- Defining a rule in `.claude/rules/` when no cross-path linking is needed is overkill
 
 ---
 
 ## `.claude/skills/`
 
-### 読み込みタイミング
+### When it loads
 
-- `/skill-name` で明示的に呼んだとき
-- `description` フロントマターの条件に一致したとき（自動起動）
-- `disable-model-invocation: true` なら明示呼び出しのみ
+- When explicitly invoked as `/skill-name`
+- When the `description` frontmatter condition is matched (auto-trigger)
+- If `disable-model-invocation: true`, explicit invocation only — no auto-trigger
 
-### 用途
+### Purpose
 
-複数ステップから成る作業手順・ワークフローを定義する。
+Define multi-step workflows and procedures.
 
-### 良い例
+### Good examples
 
-- PR作成のフロー、ドキュメント作成手順、情報収集・一覧表示などのルーティン作業
-- ユーザーとの対話が含まれる複雑な作業
+- PR creation flow, documentation authoring, information gathering / listing routines
+- Complex tasks that involve back-and-forth with the user
 
-### NG
+### Not a good fit
 
-- シンプルなルール（1-2行で書ける内容）→ `CLAUDE.md` か `.claude/rules/` に書く
+- Simple rules that fit in 1-2 lines → write in `CLAUDE.md` or `.claude/rules/`
 
 ---
 
-## まとめ
+## Summary
 
-| ファイル | いつ読まれるか | 何を書くか |
+| File | When read | What to write |
 |---|---|---|
-| `CLAUDE.md`（ルート） | セッション開始時 | プロジェクト全体の規約・ワークフロー |
-| `CLAUDE.md`（サブフォルダ） | そのフォルダにアクセスしたとき | フォルダの説明・ローカル規約 |
-| `.claude/rules/<name>.md` | 対象ファイルを読んだとき | 複数フォルダをまたぐ関連ファイルのリンク・更新漏れ防止 |
-| `.claude/skills/<name>/SKILL.md` | 呼び出されたとき | 作業手順・ワークフロー |
+| `CLAUDE.md` (root) | Every session start | Project-wide conventions and workflow |
+| `CLAUDE.md` (subfolder) | When Claude accesses that folder | Folder description and local conventions |
+| `.claude/rules/<name>.md` | When a matching file is read | Cross-path file links and missed-update prevention |
+| `.claude/skills/<name>/SKILL.md` | When invoked | Workflow procedures and step-by-step tasks |
