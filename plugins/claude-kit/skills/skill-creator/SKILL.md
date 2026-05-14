@@ -80,11 +80,53 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 
 ---
 
-### Step 2: Write the JP mirror first (`SKILL.jp.md`)
+### Step 2: Validate against file-type guide
 
 #### Condition
 
 - Step 1 complete
+
+#### Input
+
+- Skill description and workflow collected in Step 1
+- File-type guide (`references/file-types.md` in this plugin)
+
+#### Process
+
+1. Check whether `.claude/skills/` is truly the right choice:
+
+   | If the content is… | Suggest |
+   |---|---|
+   | Multi-step workflow with user interaction or branching | ✅ Skill — correct choice |
+   | Repeated routine that needs user confirmation points | ✅ Skill — correct choice |
+   | 1-2 simple rules or conventions | ⚠️ CLAUDE.md or `.claude/rules/` is simpler |
+   | Cross-path file sync ("edit X → also update Y, Z") | ⚠️ `.claude/rules/` is more appropriate |
+   | Mix of workflow + sync rules | ⚠️ Consider splitting: skill for the workflow, rules for the sync |
+
+2. If skill is the right fit → confirm and proceed
+3. If another file type fits better → explain why and offer to redirect
+
+→ Proceed to Step 3 if skill is confirmed appropriate
+
+#### Output
+
+- Confirmed: the content is a multi-step workflow appropriate for a skill
+
+#### Notes
+
+##### Branching
+
+- Simple rule → explain and offer to create in CLAUDE.md or rules instead
+- Primarily file-sync → offer to switch to `rules-creator`
+- Mixed → suggest splitting and confirm scope of what the skill will cover
+
+---
+
+### Step 3: Write the JP mirror first (`SKILL.jp.md`)
+
+#### Condition
+
+- Step 2 complete (skill confirmed appropriate)
 
 #### Input
 
@@ -180,7 +222,7 @@ description: |
 
 ---
 
-### Step 3: Translate to the English skill (`SKILL.md`)
+### Step 4: Translate to the English skill (`SKILL.md`)
 
 #### Condition
 
@@ -286,7 +328,7 @@ Tables or definitions referenced by multiple steps
 
 ---
 
-### Step 4: Commit
+### Step 5: Final verification
 
 #### Condition
 
@@ -294,16 +336,18 @@ Tables or definitions referenced by multiple steps
 
 #### Process
 
-1. Commit both files together
+1. Confirm both files exist with matching structure
+2. Present result to the user for review
 
-→ Done
+#### Output
+
+- User can review both files before committing
 
 #### Notes
 
 ##### Checklist
 
-- [ ] `.claude/skills/<name>/SKILL.md` — English skill
-- [ ] `.claude/skills/<name>/SKILL.jp.md` — Japanese mirror
-- [ ] Both committed in the same commit
-
-Commit message: `feat(skills): <name> スキル追加`
+- [ ] `.claude/skills/<name>/SKILL.md` — English, Claude Code reads this
+- [ ] `.claude/skills/<name>/SKILL.jp.md` — Japanese mirror, human reference
+- [ ] Both files have matching heading structure
+- [ ] `description` frontmatter has precise trigger conditions

@@ -110,7 +110,47 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ---
 
-### Step 3: Write the JP mirror first (`.claude/rules-jp/<name>.md`)
+### Step 3: Validate against file-type guide
+
+#### Condition
+
+- Step 2 complete
+
+#### Input
+
+- Domain file list collected in Step 2
+- File-type guide (`references/file-types.md` in this plugin)
+
+#### Process
+
+1. Check whether `.claude/rules/` is truly the right choice:
+
+   | If the files are… | Suggest |
+   |---|---|
+   | Spread across multiple different folders | ✅ Rules — correct choice for cross-path linking |
+   | All within a single folder | ⚠️ CLAUDE.md (subfolder) may be simpler and clearer |
+   | About a workflow or procedure | ⚠️ `.claude/skills/` may be more appropriate |
+   | A mix | ⚠️ Consider splitting: rules for cross-path, CLAUDE.md for folder-local |
+
+2. If rules is the right fit → confirm and proceed
+3. If another file type fits better → explain the reasoning and offer to redirect
+
+→ Proceed to Step 4 if rules is confirmed appropriate
+
+#### Output
+
+- Confirmed: the domain spans multiple paths and rules is appropriate
+
+#### Notes
+
+##### Branching
+
+- All files in one folder → explain and offer to use a subfolder CLAUDE.md instead
+- It's a workflow → offer to switch to `skill-creator`
+
+---
+
+### Step 4: Write the JP mirror first (`.claude/rules-jp/<name>.md`)
 
 #### Condition
 
@@ -126,11 +166,11 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 2. Add the required JP mirror header at the top (after frontmatter, before H1)
 3. Put the cross-reference table in `## 参考資料` at the bottom
 
-→ Proceed to Step 4
+→ Proceed to Step 5
 
 #### Output
 
-- `.claude/rules-jp/<name>.md` created
+- \.claude/rules-jp/<name>.md` created
 
 #### Notes
 
@@ -141,7 +181,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ---
 
-### Step 4: Translate to the English rule (`.claude/rules/<name>.md`)
+### Step 5: Translate to the English rule (`.claude/rules/<name>.md`)
 
 #### Condition
 
@@ -149,7 +189,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 #### Input
 
-- JP mirror content from Step 3
+- JP mirror content from Step 4
 
 #### Process
 
@@ -157,11 +197,11 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 2. Create `.claude/rules/<name>.md` with the same step-based structure
 3. Keep heading structure identical to the JP mirror
 
-→ Proceed to Step 5
+→ Proceed to Step 6
 
 #### Output
 
-- `.claude/rules/<name>.md` created
+- \.claude/rules/<name>.md\ created
 
 #### Notes
 
@@ -172,7 +212,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ---
 
-### Step 5: Update CLAUDE.md table
+### Step 6: Update CLAUDE.md table
 
 #### Condition
 
@@ -191,7 +231,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
    ```
 3. Also update `CLAUDE.jp.md` if it has a matching table
 
-→ Proceed to Step 6
+→ Proceed to Step 7
 
 #### Output
 
@@ -199,7 +239,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ---
 
-### Step 6: Final verification
+### Step 7: Final verification
 
 #### Condition
 

@@ -62,7 +62,7 @@ without loading that context at every session start.
 
 ---
 
-### Step 1: Clarify placement and purpose
+### Step 1: Gather creation details
 
 #### Condition
 
@@ -74,24 +74,63 @@ without loading that context at every session start.
 
 #### Process
 
-1. Determine where the CLAUDE.md goes:
-   - **Project root** (`CLAUDE.md`) — for overall project workflow
-   - **Subfolder** (e.g., `src/CLAUDE.md`) — for folder-specific description and conventions
-
-2. Ask the user for:
-   - **Location** — project root or which subfolder?
-   - **For root**: workflow steps, prohibitions, folder-scoped rule table entries
+1. Ask the user for:
+   - **Location** — project root (`CLAUDE.md`) or a specific subfolder (e.g., `src/CLAUDE.md`)?
+   - **For root**: overall workflow steps, prohibitions, folder-scoped rule table entries
    - **For subfolder**: what files are in this folder, what are their roles, any local conventions
+   - **Content overview** — what instructions or descriptions should be included?
 
 → Proceed to Step 2
 
 #### Output
 
-- Confirmed placement (root or subfolder), content outline
+- Location (root or subfolder path), content overview
 
 ---
 
-### Step 2: Write CLAUDE.jp.md first
+### Step 2: Validate against file-type guide
+
+#### Condition
+
+- Step 1 complete
+
+#### Input
+
+- Location and content collected in Step 1
+- File-type guide (`references/file-types.md` in this plugin)
+
+#### Process
+
+1. Check whether the content truly belongs in CLAUDE.md:
+
+   | If the content is… | Suggest |
+   |---|---|
+   | Single-folder conventions or descriptions | ✅ CLAUDE.md (subfolder) — correct choice |
+   | Project-wide workflow or global conventions | ✅ CLAUDE.md (root) — correct choice |
+   | Cross-path file sync ("edit X → also update Y, Z in different folders") | ⚠️ `.claude/rules/` is more appropriate |
+   | A multi-step workflow with user interaction | ⚠️ `.claude/skills/` is more appropriate |
+   | Mix of the above | ⚠️ Consider splitting across file types |
+
+2. If the content fits CLAUDE.md → confirm and proceed
+3. If a different file type is more appropriate → explain why and offer to redirect to `rules-creator` or `skill-creator`
+
+→ Proceed to Step 3 if CLAUDE.md is confirmed appropriate
+
+#### Output
+
+- Confirmed: the content fits CLAUDE.md
+
+#### Notes
+
+##### Branching
+
+- Rules fit better → explain and offer to switch to `rules-creator`
+- Skill fits better → explain and offer to switch to `skill-creator`
+- Mixed → suggest splitting: CLAUDE.md for the folder description part, rules/skills for the rest
+
+---
+
+### Step 3: Write CLAUDE.jp.md first
 
 #### Condition
 
@@ -108,7 +147,7 @@ without loading that context at every session start.
 2. Put shared tables and cross-references in `## 参考資料` at the bottom
 3. Keep the file under ~200 lines — move domain-specific content to `.claude/rules/` if needed
 
-→ Proceed to Step 3
+→ Proceed to Step 4
 
 #### Output
 
@@ -123,7 +162,7 @@ without loading that context at every session start.
 
 ---
 
-### Step 3: Translate to CLAUDE.md (English)
+### Step 4: Translate to CLAUDE.md (English)
 
 #### Condition
 
@@ -139,7 +178,7 @@ without loading that context at every session start.
 2. Write `CLAUDE.md` — the file Claude Code reads as directives
 3. Keep heading structure identical to CLAUDE.jp.md
 
-→ Proceed to Step 4
+→ Proceed to Step 5
 
 #### Output
 
@@ -154,7 +193,7 @@ without loading that context at every session start.
 
 ---
 
-### Step 4: Final verification
+### Step 5: Final verification
 
 #### Condition
 
