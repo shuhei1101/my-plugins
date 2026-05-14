@@ -80,7 +80,7 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 
 ---
 
-### Step 2: Validate against file-type guide
+### Step 2: Validate gathered information
 
 #### Condition
 
@@ -122,11 +122,48 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 
 ---
 
-### Step 3: Write the JP mirror first (`SKILL.jp.md`)
+### Step 3: Check for similar existing skills
 
 #### Condition
 
 - Step 2 complete (skill confirmed appropriate)
+
+#### Input
+
+- Skill description and workflow from Step 1
+- Existing skills in `.claude/skills/`
+
+#### Process
+
+1. Glob `.claude/skills/**/SKILL.md` and read the `description` and overview of each
+2. Check whether any existing skill has overlapping triggers or similar workflow steps
+3. If overlap or similarity found:
+   - Explain the overlap to the user
+   - Propose options:
+     - **Merge**: extend the existing skill to cover this use case too
+     - **Keep separate**: explain the clear boundary that justifies splitting (e.g., different trigger conditions, distinct user flows)
+   - Let the user decide before proceeding
+4. If no overlap → proceed directly
+
+→ Proceed to Step 4
+
+#### Output
+
+- Confirmed approach: new skill, merge with existing, or justified separation
+
+#### Notes
+
+##### Branching
+
+- User chooses to merge → apply changes to the existing skill instead of creating new files → skip to Step 6 (final verification)
+
+---
+
+### Step 4: Write the JP mirror first (`SKILL.jp.md`)
+
+#### Condition
+
+- Step 3 complete (skill confirmed appropriate, no blocking similarity)
 
 #### Input
 
@@ -222,7 +259,7 @@ description: |
 
 ---
 
-### Step 4: Translate to the English skill (`SKILL.md`)
+### Step 5: Translate to the English skill (`SKILL.md`)
 
 #### Condition
 
@@ -328,7 +365,7 @@ Tables or definitions referenced by multiple steps
 
 ---
 
-### Step 5: Final verification
+### Step 6: Final verification
 
 #### Condition
 
