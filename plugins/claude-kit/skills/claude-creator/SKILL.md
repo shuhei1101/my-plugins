@@ -17,33 +17,31 @@ Creates a CLAUDE.md and its paired CLAUDE.jp.md mirror for a project.
 CLAUDE.md is the top-level instruction file that Claude Code loads at the start of every session.
 It defines the project workflow, commit rules, server management, and folder-scoped rule table.
 
-Structure to produce:
-
-```
-## 概要          (Overview — what this project does and how AI should work here)
-## 作業内容      (Tasks — step-by-step workflow)
-  ### ステップN
-    #### 条件
-    #### 入力
-    #### 処理内容
-    #### 出力
-    #### 補足
-      ##### 禁止事項
-      ##### 条件分岐
-      ##### 参照ドキュメント
-      ##### チェックリスト
-## 参考資料      (References — shared tables / definitions used across steps)
-```
-
 ---
 
 ## Tasks
+
+### Step 0: Read the official docs
+
+#### Condition
+
+- Always — before doing anything else
+
+#### Process
+
+1. Read the official Claude Code documentation on CLAUDE.md:
+   **https://code.claude.com/docs/en/memory**
+2. Confirm understanding of CLAUDE.md placement, scope, and loading behavior before writing
+
+→ Proceed to Step 1
+
+---
 
 ### Step 1: Gather project information
 
 #### Condition
 
-- User wants to create or overhaul a CLAUDE.md
+- Step 0 complete
 
 #### Input
 
@@ -52,24 +50,22 @@ Structure to produce:
 #### Process
 
 1. Ask the user for:
-   - **Project name** — one-line description of what the project is
-   - **Workflow steps** — what does AI do in this project? Walk through:
+   - **Project name and overview** — one-line description of what this project does
+   - **Workflow steps** — walk through each phase:
      - How does a new task start? (e.g., create worktree, create PR doc)
      - How is implementation done?
-     - How is it verified?
-     - How is it merged / completed?
-   - **Key prohibitions** — what must never happen? (e.g., "never merge without user confirmation")
-   - **Folder-scoped rules** — are there `.claude/rules/` files? List them for the table
+     - How is it verified? (e.g., start dev server, show URL)
+     - How is it completed? (e.g., user confirms merge)
+   - **Key prohibitions** — what must never happen
+   - **Folder-scoped rules** — are there `.claude/rules/` files? List names and paths
 
-2. Map each workflow phase into a step using this pattern:
-   - Step name = the action being taken (e.g., "設計・PR ドキュメント作成")
-   - Each step has: 条件, 入力, 処理内容, 出力, 補足
+2. Map each workflow phase into a numbered step
 
 → Proceed to Step 2
 
 #### Output
 
-- Project name, list of workflow steps, prohibitions, rule table entries
+- Project overview, workflow step list, prohibitions, rule table entries
 
 ---
 
@@ -85,10 +81,9 @@ Structure to produce:
 
 #### Process
 
-1. Write `CLAUDE.jp.md` in Japanese using the structure above
-2. Use `### ステップN:` headings with `#### 条件 / 入力 / 処理内容 / 出力 / 補足` under each
-3. Put shared tables and cross-references in `## 参考資料` at the bottom
-4. Keep the file under ~200 lines — move domain-specific content to `.claude/rules/` if it grows too large
+1. Write `CLAUDE.jp.md` in Japanese using the step-based structure (see §References)
+2. Put shared tables and cross-references in `## 参考資料` at the bottom
+3. Keep the file under ~200 lines — if it grows too large, move domain-specific content to `.claude/rules/`
 
 → Proceed to Step 3
 
@@ -118,9 +113,8 @@ Structure to produce:
 #### Process
 
 1. Translate line-by-line to English
-2. Write `CLAUDE.md` — this is the file Claude Code actually reads
-3. Use `### Step N:` headings with `#### Condition / Input / Process / Output / Notes` under each
-4. Put shared tables in `## References` at the bottom
+2. Write `CLAUDE.md` — this is the file Claude Code actually reads as directives
+3. Keep heading structure identical to CLAUDE.jp.md
 
 → Proceed to Step 4
 
@@ -133,11 +127,11 @@ Structure to produce:
 ##### Prohibitions
 
 - Do not write the body in Japanese — CLAUDE.md is read by Claude as directives
-- Keep heading structure identical to CLAUDE.jp.md
+- Keep heading structure and step numbering identical to CLAUDE.jp.md
 
 ---
 
-### Step 4: Verify and commit
+### Step 4: Final verification
 
 #### Condition
 
@@ -145,25 +139,78 @@ Structure to produce:
 
 #### Process
 
-1. Confirm both files exist and structure matches
-2. Commit both together
+1. Check that both files exist and have matching structure
+2. Confirm the file is under ~200 lines
+3. Present the result to the user for review
 
-→ Done
+#### Output
+
+- User can review both files before committing
 
 #### Notes
 
 ##### Checklist
 
-- [ ] `CLAUDE.md` — English, auto-loaded by Claude Code
-- [ ] `CLAUDE.jp.md` — Japanese mirror, human reference
-- [ ] Both committed in the same commit
+- [ ] `CLAUDE.md` — English, will be auto-loaded by Claude Code
+- [ ] `CLAUDE.jp.md` — Japanese mirror, human reference only
+- [ ] Both files have matching heading structure
 - [ ] File is under ~200 lines
-
-Commit message: `docs: CLAUDE.md 作成`
 
 ---
 
 ## References
+
+### Step-based structure for CLAUDE.md
+
+Every section in CLAUDE.md follows this pattern:
+
+```markdown
+## 概要
+(What this project does and how AI should work here — 1-3 sentences)
+
+## 作業内容
+
+### ステップN: (Action name)
+
+#### 条件
+(When to enter this step — preconditions that must be true. If not met, stop or branch.)
+
+#### 入力
+(Data, files, or context this step uses — from the user, previous steps, or existing files)
+
+#### 処理内容
+(Numbered list of concrete actions. Include commands if applicable.)
+1. Do X
+2. Do Y
+   ```bash
+   command here
+   ```
+→ Proceed to Step N+1 (or → Step N if <condition>)
+
+#### 出力
+(What exists as a result of completing this step — files created, server running, etc.)
+
+#### 補足
+(Optional. Use only the sub-sections that apply.)
+
+##### 禁止事項
+(Things that must never be done in this step — hard constraints)
+
+##### 条件分岐
+(Branching: "if X → go to Step N", "if Y → stop and ask the user")
+
+##### 参照ドキュメント
+(Files, URLs, or §References entries used in this step)
+
+##### チェックリスト
+(Items to verify before considering this step complete)
+
+---
+
+## 参考資料
+(Shared tables, definitions, or reference material used across multiple steps.
+Put cross-reference tables, schema definitions, and link lists here.)
+```
 
 ### CLAUDE.md vs `.claude/rules/` — what goes where
 
@@ -174,13 +221,6 @@ Commit message: `docs: CLAUDE.md 作成`
 | Applies only when editing a specific folder | `.claude/rules/<name>.md` with `paths:` |
 | Domain-specific spec references | `.claude/rules/<name>.md` with `paths:` |
 
-### Folder-scoped rule table (include in CLAUDE.md if rules exist)
+### Official docs
 
-```markdown
-## Folder-scoped rules (`.claude/rules/`)
-
-| Rule | Scope | Description |
-|---|---|---|
-| `<name>.md` | `src/**/*.py` | Python implementation conventions |
-| `<name>.md` | `docs/specs/**/*.md` | Spec editing workflow |
-```
+- CLAUDE.md structure and placement: **https://code.claude.com/docs/en/memory**

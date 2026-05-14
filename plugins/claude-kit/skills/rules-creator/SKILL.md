@@ -2,36 +2,47 @@
 name: rules-creator
 description: |
   Create a new path-scoped rule under .claude/rules/ using the step-based structure.
-  Trigger when the user says "新しいルール作って", "ルールを新規作成", "make a rule for X", or claude-kit dispatches here.
+  Trigger when the user says "新しいルール作って", "ルールを新規作成", "make a rule for X", or "create a rule for".
 ---
 
-# rules-creator — New Rule Scaffold
+# rules-creator — Path-Scoped Rule Creator
 
-Creates a path-scoped rule in the step-based structure.
-A rule groups related files into a domain and ensures they stay in sync.
+Creates a new `.claude/rules/<name>.md` and its `.claude/rules-jp/<name>.md` mirror
+using the step-based structure.
 
 ---
 
 ## Overview
 
-A domain rule answers: "which files belong together, and what must happen when any of them changes?"
-
-Example — "models" domain:
-- Config: `config/models.yaml`
-- Source: `src/models/*.py`
-- Docs: `docs/specs/models.md`
-
-When you edit any one of these, the rule reminds you to check the others.
+A path-scoped rule groups related files into a domain and defines what must happen
+when any of those files is edited. The rule loads automatically when Claude edits
+a file matching the `paths:` pattern.
 
 ---
 
 ## Tasks
 
+### Step 0: Read the official docs
+
+#### Condition
+
+- Always — before doing anything else
+
+#### Process
+
+1. Read the official Claude Code documentation on path-scoped rules:
+   **https://code.claude.com/docs/en/memory**
+2. Confirm understanding of `paths:` frontmatter and rule loading behavior
+
+→ Proceed to Step 1
+
+---
+
 ### Step 1: Check existing coverage
 
 #### Condition
 
-- Before creating any new rule file
+- Always before creating a new rule file
 
 #### Input
 
@@ -39,9 +50,11 @@ When you edit any one of these, the rule reminds you to check the others.
 
 #### Process
 
-1. Glob `.claude/rules/**/*.md` and scan `paths:` patterns
-2. If an existing rule already covers the target files, offer to extend it instead
-3. Only proceed with a new file if no existing rule covers this domain
+1. Glob `.claude/rules/**/*.md` and read each `paths:` pattern
+2. Test whether the target files already match an existing rule
+3. If covered: offer to extend the existing rule instead
+
+→ Proceed to Step 2 only if no existing rule covers this domain
 
 #### Output
 
@@ -51,7 +64,7 @@ When you edit any one of these, the rule reminds you to check the others.
 
 ##### Branching
 
-- Existing rule found → offer to extend it → skip to Step 4 if user agrees to extend
+- Existing rule covers the target → offer to extend it → if user agrees, skip to Step 4
 
 ---
 
@@ -67,19 +80,20 @@ When you edit any one of these, the rule reminds you to check the others.
 
 #### Process
 
-1. Ask for:
-   - **Domain name** — short kebab-case identifier (e.g. `models`, `voice`, `assets-bgm`)
-   - **Files in this domain** — help the user think in three categories:
-     - Config / schema (YAML, JSON, constants)
+1. Ask the user for:
+   - **Domain name** — kebab-case identifier (e.g. `models`, `voice`, `assets-bgm`)
+   - **Files in this domain** — help the user identify three categories:
+     - Config / schema (YAML, JSON, constants that define the domain)
      - Source code (implementation files)
      - Docs (spec files, architecture docs)
    - **One-line description** — what this domain does and why these files must stay in sync
+2. If the user describes a scenario, extract files from it without asking redundant questions
 
-2. If the user describes a scenario ("when I add X I need to update Y, Z"), extract the files from that description without asking redundant questions
+→ Proceed to Step 3
 
 #### Output
 
-- Domain name, file list, one-line description
+- Domain name, file list (with globs), one-line description
 
 ---
 
@@ -91,104 +105,26 @@ When you edit any one of these, the rule reminds you to check the others.
 
 #### Input
 
-- Domain name, file list, description
+- Domain name, file list, description from Step 2
 
 #### Process
 
-1. Create `.claude/rules-jp/<name>.md` with this structure:
+1. Create `.claude/rules-jp/<name>.md` using the step-based structure (see §References)
+2. Add the required JP mirror header at the top (after frontmatter, before H1)
+3. Put the cross-reference table in `## 参考資料` at the bottom
 
-```markdown
----
-paths:
-  - "<config/schema glob>"
-  - "<source glob>"
-  - "<docs glob>"
----
-
-> ⚠️ **日本語ミラー** — Claude には読み込まれません。このファイルを更新したときは英語オリジナル `.claude/rules/<name>.md` を必ず同時に更新してください。
-
-# <ドメイン名> ルール
-
-## 概要
-
-<1〜2文でこのドメインが何を管理するか>
-
-## 作業内容
-
-### ステップ1: 編集前の確認
-
-#### 条件
-
-- このドメインのいずれかのファイルを編集するとき
-
-#### 処理内容
-
-1. 下記「参考資料」の対応表でファイルの役割を確認する
-2. `docs/qa.md` に関連する未決定イシューがないか確認する
-
-#### 補足
-
-##### 参照ドキュメント
-
-- → 参考資料 §対応表 を参照
-
----
-
-### ステップ2: 編集する
-
-#### 条件
-
-- ステップ1の確認が完了していること
-
-#### 処理内容
-
-1. ファイルを編集する
-2. 影響を受ける他のファイルをすべて更新する（対応表を参照）
-3. このルール自体も変更が必要なら更新する
-
-→ ステップ3へ進む
-
-#### 補足
-
-##### 禁止事項
-
-- 1ファイルだけ更新して他は「後で」と先送りにしない
-
----
-
-### ステップ3: 動作確認・コミット
-
-#### 処理内容
-
-1. 変更したファイル一覧を確認する
-2. コミットする
-
-#### 補足
-
-##### チェックリスト
-
-- [ ] 対応表のすべての関連ファイルを確認した
-- [ ] JPミラーも更新した（ルール自体を変更した場合）
-
----
-
-## 参考資料
-
-### 対応表
-
-このドメインのいずれかのファイルを編集するときは、以下を確認・更新すること:
-
-| ファイル / パターン | 役割 | いつ更新するか |
-|---|---|---|
-| `<config file>` | 設定の正規ソース | 値・フィールド・エントリを追加・変更・削除したとき |
-| `src/<domain>/` | 実装コード | 設定に合わせて挙動を変更するとき |
-| `docs/specs/<doc>.md` | 設計ドキュメント | 構造・挙動が変わるとき |
-| `.claude/rules/<name>.md` | このルール自体 | ドメインのファイルが増減したとき |
-```
+→ Proceed to Step 4
 
 #### Output
 
 - `.claude/rules-jp/<name>.md` created
+
+#### Notes
+
+##### Prohibitions
+
+- Do not write the body in English — this is the Japanese human reference
+- Do not place this file inside `.claude/rules/` — use `.claude/rules-jp/` (the rules directory is scanned recursively and would auto-load the file)
 
 ---
 
@@ -200,130 +136,146 @@ paths:
 
 #### Input
 
-- JP mirror content
+- JP mirror content from Step 3
 
 #### Process
 
-1. Translate the JP mirror to English
-2. Create `.claude/rules/<name>.md` with this structure:
+1. Translate line-by-line to English
+2. Create `.claude/rules/<name>.md` with the same step-based structure
+3. Keep heading structure identical to the JP mirror
 
-```markdown
----
-paths:
-  - "<config/schema glob>"
-  - "<source glob>"
-  - "<docs glob>"
----
-
-# <Domain> Rule
-
-## Overview
-
-<1-2 sentence description>
-
-## Tasks
-
-### Step 1: Pre-edit check
-
-#### Condition
-
-- When editing any file in this domain
-
-#### Process
-
-1. Check the cross-reference table in §References to understand each file's role
-2. Check `docs/qa.md` for open issues related to this domain
-
-#### Notes
-
-##### References
-
-- → See References §Cross-reference table
-
----
-
-### Step 2: Edit
-
-#### Condition
-
-- Step 1 check complete
-
-#### Process
-
-1. Edit the target file
-2. Update all affected files listed in the cross-reference table
-3. Update this rule itself if the domain's file list has changed
-
-→ Proceed to Step 3
-
-#### Notes
-
-##### Prohibitions
-
-- Do not update one file and defer the rest — do them all in the same PR/commit
-
----
-
-### Step 3: Verify and commit
-
-#### Process
-
-1. Review the list of changed files
-2. Commit
-
-#### Notes
-
-##### Checklist
-
-- [ ] Checked all related files in the cross-reference table
-- [ ] Updated the JP mirror if the rule itself changed
-
----
-
-## References
-
-### Cross-reference table
-
-When editing any file in this domain, check and update ALL of the following:
-
-| File / Pattern | Role | Update when |
-|---|---|---|
-| `<config file>` | Canonical config source | A value, field, or entry is added / renamed / removed |
-| `src/<domain>/` | Implementation | Behavior must reflect the config change |
-| `docs/specs/<doc>.md` | Design doc | Structure or behavior changes |
-| `.claude/rules/<name>.md` | This rule | Domain files are added or removed |
-```
+→ Proceed to Step 5
 
 #### Output
 
 - `.claude/rules/<name>.md` created
 
+#### Notes
+
+##### Prohibitions
+
+- Do not write the body in Japanese — this file is auto-loaded by Claude as directives
+- Keep heading structure and step numbering identical to the JP mirror
+
 ---
 
-### Step 5: Update `CLAUDE.md` and commit
+### Step 5: Update CLAUDE.md table
 
 #### Condition
 
 - Both rule files created
 
+#### Input
+
+- Domain name, path pattern, description
+
 #### Process
 
-1. If the project's `CLAUDE.md` has a `Folder-scoped rules` table, append:
+1. Check if the project's `CLAUDE.md` has a `Folder-scoped rules` table
+2. If yes, append a row:
    ```
-   | `<name>.md` | `<path-pattern>` — <domain description> |
+   | `<name>.md` | `<path-pattern>` — <description> |
    ```
-2. Also update `CLAUDE.jp.md` if it has a matching table
-3. Commit all four files together: EN rule + JP mirror + CLAUDE.md + CLAUDE.jp.md
+3. Also update `CLAUDE.jp.md` if it has a matching table
 
-→ Done
+→ Proceed to Step 6
+
+#### Output
+
+- CLAUDE.md table updated (or confirmed no table exists)
+
+---
+
+### Step 6: Final verification
+
+#### Condition
+
+- All files created
+
+#### Process
+
+1. Confirm all files exist with matching structure
+2. Present the result to the user for review
+
+#### Output
+
+- User can review all files before committing
 
 #### Notes
 
 ##### Checklist
 
-- [ ] `.claude/rules/<name>.md` — English rule
-- [ ] `.claude/rules-jp/<name>.md` — Japanese mirror
-- [ ] `CLAUDE.md` — updated (if table present)
-- [ ] `CLAUDE.jp.md` — updated (if updated CLAUDE.md)
+- [ ] `.claude/rules/<name>.md` — English, auto-loaded on path match
+- [ ] `.claude/rules-jp/<name>.md` — Japanese mirror with required header
+- [ ] `CLAUDE.md` table updated (if applicable)
+- [ ] `CLAUDE.jp.md` table updated (if applicable)
 
-Commit message: `docs(rules): <name> ルール追加`
+---
+
+## References
+
+### Step-based structure for rule files
+
+```markdown
+---
+paths:
+  - "<glob pattern covering the domain>"
+---
+
+> ⚠️ **日本語ミラー** — Claude には読み込まれません。このファイルを更新したときは英語オリジナル `.claude/rules/<name>.md` を必ず同時に更新してください。
+
+# (Rule title in Japanese)
+
+## 概要
+(What this rule governs — 1-2 sentences)
+
+## 作業内容
+
+### ステップN: (Action name)
+
+#### 条件
+(Preconditions to enter this step)
+
+#### 入力
+(Data, files, or context used in this step)
+
+#### 処理内容
+(Numbered list of actions. Include commands if applicable.)
+1. Do X
+→ Proceed to Step N+1
+
+#### 出力
+(What exists as a result of this step)
+
+#### 補足
+
+##### 禁止事項
+(Hard constraints — what must never be done)
+
+##### 条件分岐
+("If X → go to Step N", "If Y → stop and ask the user")
+
+##### 参照ドキュメント
+(Files, URLs, or §References entries used in this step)
+
+##### チェックリスト
+(Items to verify before considering this step complete)
+
+---
+
+## 参考資料
+
+### 対応表
+(Cross-reference table — which files must be checked when any domain file changes)
+
+| File / Pattern | Role | Update when |
+|---|---|---|
+| `<config>` | Config source | Values added / changed / removed |
+| `src/<domain>/` | Implementation | Behavior must reflect config |
+| `docs/specs/<doc>.md` | Design doc | Structure or behavior changes |
+| `.claude/rules/<name>.md` | This rule | Domain files are added or removed |
+```
+
+### Official docs
+
+- Path-scoped rules: **https://code.claude.com/docs/en/memory**
