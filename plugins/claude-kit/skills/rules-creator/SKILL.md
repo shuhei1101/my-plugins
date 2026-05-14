@@ -15,14 +15,14 @@ using the step-based structure.
 ## Overview
 
 A path-scoped rule groups related files into a domain and defines what must happen
-when any of those files is edited. The rule loads automatically when Claude edits
-a file matching the `paths:` pattern.
+when any of those files is read or edited. The rule loads automatically when Claude
+reads a file matching the `paths:` pattern (not on shell-only commands like mv/rm).
 
 ---
 
 ## Tasks
 
-### Step 0: Read the official docs
+### Step 0: Read background materials
 
 #### Condition
 
@@ -32,7 +32,20 @@ a file matching the `paths:` pattern.
 
 1. Read the official Claude Code documentation on path-scoped rules:
    **https://code.claude.com/docs/en/memory**
-2. Confirm understanding of `paths:` frontmatter and rule loading behavior
+
+2. Read the file-type usage reference (`references/file-types.md` in this plugin).
+   Key points:
+
+   **When rules load**: When Claude *reads* a matching file — NOT on shell-only commands (mv, rm)
+
+   **What to put in rules (good)**:
+   - Links to related files that must stay in sync when any one is edited
+   - "When editing X, also check Y, Z (spec, test, config)"
+
+   **What NOT to put in rules (bad)**:
+   - Detailed documentation or descriptions of what a file does
+   - Content that should be visible even when no matching file is being read
+   - → Those belong in CLAUDE.md instead
 
 → Proceed to Step 1
 

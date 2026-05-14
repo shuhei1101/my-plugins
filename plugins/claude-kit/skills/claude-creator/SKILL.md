@@ -1,27 +1,39 @@
 ---
 name: claude-creator
 description: |
-  Create or overhaul a CLAUDE.md (and its CLAUDE.jp.md mirror) for a project.
+  Create or overhaul a CLAUDE.md (and its CLAUDE.jp.md mirror) for a project or subfolder.
   Trigger when the user says "CLAUDE.md を作って", "CLAUDE.md を書いて", "create a CLAUDE.md",
-  "クロードのガイドを作りたい", or asks to set up Claude Code instructions for a project.
+  "クロードのガイドを作りたい", "このフォルダの CLAUDE.md を作って", or asks to set up
+  Claude Code instructions for a project or specific folder.
 ---
 
 # claude-creator — CLAUDE.md Authoring
 
-Creates a CLAUDE.md and its paired CLAUDE.jp.md mirror for a project.
+Creates a CLAUDE.md and its paired CLAUDE.jp.md mirror for a project or subfolder.
 
 ---
 
 ## Overview
 
-CLAUDE.md is the top-level instruction file that Claude Code loads at the start of every session.
-It defines the project workflow, commit rules, server management, and folder-scoped rule table.
+CLAUDE.md can be placed in two locations with different behaviors:
+
+| Placement | When loaded |
+|---|---|
+| Project root | Loaded at every session start |
+| Subfolder | Loaded lazily when Claude reads any file in that folder or its subfolders |
+
+**Project root CLAUDE.md**: Defines the overall project workflow, commit rules, server management,
+and the folder-scoped rule table.
+
+**Subfolder CLAUDE.md**: Describes the folder's contents and conventions.
+Useful for giving Claude context about what files in this folder do and how to work with them,
+without loading that context at every session start.
 
 ---
 
 ## Tasks
 
-### Step 0: Read the official docs
+### Step 0: Read background materials
 
 #### Condition
 
@@ -31,13 +43,26 @@ It defines the project workflow, commit rules, server management, and folder-sco
 
 1. Read the official Claude Code documentation on CLAUDE.md:
    **https://code.claude.com/docs/en/memory**
-2. Confirm understanding of CLAUDE.md placement, scope, and loading behavior before writing
+
+2. Read the file-type usage reference (`references/file-types.md` in this plugin).
+   Key points:
+
+   **CLAUDE.md vs Rules vs Skills:**
+   - `CLAUDE.md` (root): loaded every session — project workflow, global conventions
+   - `CLAUDE.md` (subfolder): loaded when Claude accesses that folder — folder description, local conventions
+   - `.claude/rules/`: loaded when Claude reads a matching file — links to related files that must stay in sync
+   - `.claude/skills/`: invoked on demand — multi-step workflows and procedures
+
+   **What goes in CLAUDE.md (not rules):**
+   - General descriptions of what files in a folder do
+   - Conventions that apply whenever Claude works in this folder
+   - Rules that should be visible regardless of which specific file is being edited
 
 → Proceed to Step 1
 
 ---
 
-### Step 1: Gather project information
+### Step 1: Clarify placement and purpose
 
 #### Condition
 
@@ -45,27 +70,24 @@ It defines the project workflow, commit rules, server management, and folder-sco
 
 #### Input
 
-- User's description of the project
+- User's description of what they want to create
 
 #### Process
 
-1. Ask the user for:
-   - **Project name and overview** — one-line description of what this project does
-   - **Workflow steps** — walk through each phase:
-     - How does a new task start? (e.g., create worktree, create PR doc)
-     - How is implementation done?
-     - How is it verified? (e.g., start dev server, show URL)
-     - How is it completed? (e.g., user confirms merge)
-   - **Key prohibitions** — what must never happen
-   - **Folder-scoped rules** — are there `.claude/rules/` files? List names and paths
+1. Determine where the CLAUDE.md goes:
+   - **Project root** (`CLAUDE.md`) — for overall project workflow
+   - **Subfolder** (e.g., `src/CLAUDE.md`) — for folder-specific description and conventions
 
-2. Map each workflow phase into a numbered step
+2. Ask the user for:
+   - **Location** — project root or which subfolder?
+   - **For root**: workflow steps, prohibitions, folder-scoped rule table entries
+   - **For subfolder**: what files are in this folder, what are their roles, any local conventions
 
 → Proceed to Step 2
 
 #### Output
 
-- Project overview, workflow step list, prohibitions, rule table entries
+- Confirmed placement (root or subfolder), content outline
 
 ---
 
@@ -77,13 +99,14 @@ It defines the project workflow, commit rules, server management, and folder-sco
 
 #### Input
 
-- Project info from Step 1
+- Placement and content outline from Step 1
 
 #### Process
 
-1. Write `CLAUDE.jp.md` in Japanese using the step-based structure (see §References)
+1. Write `CLAUDE.jp.md` (or `<subfolder>/CLAUDE.jp.md`) in Japanese using the step-based structure
+   (see §References for structure template)
 2. Put shared tables and cross-references in `## 参考資料` at the bottom
-3. Keep the file under ~200 lines — if it grows too large, move domain-specific content to `.claude/rules/`
+3. Keep the file under ~200 lines — move domain-specific content to `.claude/rules/` if needed
 
 → Proceed to Step 3
 
@@ -96,7 +119,7 @@ It defines the project workflow, commit rules, server management, and folder-sco
 ##### Prohibitions
 
 - Do not write the body in English — CLAUDE.jp.md is the Japanese human reference
-- Do not exceed ~200 lines — split into path-scoped rules if needed
+- Do not exceed ~200 lines
 
 ---
 
@@ -113,7 +136,7 @@ It defines the project workflow, commit rules, server management, and folder-sco
 #### Process
 
 1. Translate line-by-line to English
-2. Write `CLAUDE.md` — this is the file Claude Code actually reads as directives
+2. Write `CLAUDE.md` — the file Claude Code reads as directives
 3. Keep heading structure identical to CLAUDE.jp.md
 
 → Proceed to Step 4
@@ -126,8 +149,8 @@ It defines the project workflow, commit rules, server management, and folder-sco
 
 ##### Prohibitions
 
-- Do not write the body in Japanese — CLAUDE.md is read by Claude as directives
-- Keep heading structure and step numbering identical to CLAUDE.jp.md
+- Do not write the body in Japanese
+- Keep structure identical to CLAUDE.jp.md
 
 ---
 
@@ -135,26 +158,22 @@ It defines the project workflow, commit rules, server management, and folder-sco
 
 #### Condition
 
-- Both CLAUDE.md and CLAUDE.jp.md written
+- Both files written
 
 #### Process
 
-1. Check that both files exist and have matching structure
-2. Confirm the file is under ~200 lines
-3. Present the result to the user for review
-
-#### Output
-
-- User can review both files before committing
+1. Check that both files exist with matching structure
+2. Confirm file is under ~200 lines
+3. Present result to the user for review
 
 #### Notes
 
 ##### Checklist
 
-- [ ] `CLAUDE.md` — English, will be auto-loaded by Claude Code
+- [ ] `CLAUDE.md` — English, auto-loaded by Claude Code
 - [ ] `CLAUDE.jp.md` — Japanese mirror, human reference only
-- [ ] Both files have matching heading structure
-- [ ] File is under ~200 lines
+- [ ] Matching heading structure
+- [ ] Under ~200 lines
 
 ---
 
@@ -162,21 +181,19 @@ It defines the project workflow, commit rules, server management, and folder-sco
 
 ### Step-based structure for CLAUDE.md
 
-Every section in CLAUDE.md follows this pattern:
-
 ```markdown
 ## 概要
-(What this project does and how AI should work here — 1-3 sentences)
+(What this folder/project does and how AI should work here — 1-3 sentences)
 
 ## 作業内容
 
 ### ステップN: (Action name)
 
 #### 条件
-(When to enter this step — preconditions that must be true. If not met, stop or branch.)
+(Preconditions to enter this step. If not met, stop or branch.)
 
 #### 入力
-(Data, files, or context this step uses — from the user, previous steps, or existing files)
+(Data, files, or context this step uses)
 
 #### 処理内容
 (Numbered list of concrete actions. Include commands if applicable.)
@@ -188,16 +205,15 @@ Every section in CLAUDE.md follows this pattern:
 → Proceed to Step N+1 (or → Step N if <condition>)
 
 #### 出力
-(What exists as a result of completing this step — files created, server running, etc.)
+(What exists as a result of completing this step)
 
 #### 補足
-(Optional. Use only the sub-sections that apply.)
 
 ##### 禁止事項
-(Things that must never be done in this step — hard constraints)
+(Things that must never be done in this step)
 
 ##### 条件分岐
-(Branching: "if X → go to Step N", "if Y → stop and ask the user")
+("If X → go to Step N", "If Y → stop and ask the user")
 
 ##### 参照ドキュメント
 (Files, URLs, or §References entries used in this step)
@@ -208,18 +224,17 @@ Every section in CLAUDE.md follows this pattern:
 ---
 
 ## 参考資料
-(Shared tables, definitions, or reference material used across multiple steps.
-Put cross-reference tables, schema definitions, and link lists here.)
+(Shared tables, definitions, or reference material used across multiple steps)
 ```
 
-### CLAUDE.md vs `.claude/rules/` — what goes where
+### CLAUDE.md vs `.claude/rules/` placement
 
 | Content | Where |
 |---|---|
-| Applies every session, any file | `CLAUDE.md` |
-| Project meta-workflow (worktree, commit, server) | `CLAUDE.md` |
-| Applies only when editing a specific folder | `.claude/rules/<name>.md` with `paths:` |
-| Domain-specific spec references | `.claude/rules/<name>.md` with `paths:` |
+| Applies every session, any file | `CLAUDE.md` (root) |
+| Folder-specific descriptions and conventions | `CLAUDE.md` (subfolder) |
+| Applies only when reading/editing a specific file | `.claude/rules/<name>.md` with `paths:` |
+| Multi-step workflow procedure | `.claude/skills/<name>/SKILL.md` |
 
 ### Official docs
 
