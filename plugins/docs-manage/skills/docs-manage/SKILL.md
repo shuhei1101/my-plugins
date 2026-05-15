@@ -1,6 +1,6 @@
 ---
 name: docs-manage
-description: Manages project documentation with QA-driven decision tracking. Always apply this skill when: working inside the docs/ folder, creating or updating docs/specs/Home.md, adding questions to docs/qa.md, recording decisions in docs/qa_history.md, checking for document duplication, initializing project docs, or any request involving documentation organization, undecided matters, or decision history. Trigger immediately whenever the user mentions docs management, QA, decision tracking, document deduplication, or Home.md updates — even if "docs" is not explicitly said.
+description: Manages project documentation with QA-driven decision tracking. Always apply this skill when: working inside the docs/ folder, adding questions to docs/qa.md, recording decisions in docs/qa_history.md, checking for document duplication, initializing project docs, or any request involving documentation organization, undecided matters, or decision history. Trigger immediately whenever the user mentions docs management, QA, decision tracking, or document deduplication — even if "docs" is not explicitly said.
 ---
 
 # docs-manage — Project Documentation & QA-Driven Decision Management
@@ -16,7 +16,6 @@ Documentation is organized into four areas under `docs/`:
 ```
 docs/
 ├── specs/           ← Design and specification documents (flat — no subfolders)
-│   └── Home.md      ← Navigation hub (links to all specs)
 ├── qa.md            ← Open design questions (QA-XXX series)
 ├── qa_history.md    ← Resolved QA log (append-only)
 └── incident.md      ← Incident log (INC-XXX series, optional)
@@ -43,8 +42,7 @@ docs/
    | New project or `docs/` does not exist | Step 2 (Initialize) |
    | Raise an undecided matter / design question | Step 3 (Add QA entry) |
    | Confirm a decision on an existing QA entry | Step 4 (Close QA entry) |
-   | Spec document added, removed, or renamed | Step 5 (Update Home.md) |
-   | Write information to a spec document | Step 6 (Duplicate check + write) |
+   | Write information to a spec document | Step 5 (Duplicate check + write) |
 
 → Proceed to the appropriate step
 
@@ -67,19 +65,18 @@ docs/
 #### Process
 
 1. Glob-scan for existing `docs/` to detect current state.
-2. Create or update `docs/specs/Home.md` — navigation hub with links to all spec documents.
-3. Create `docs/qa.md` — open design questions (empty if none yet; see template in References).
-4. Create `docs/qa_history.md` — resolved QA log (empty if none yet).
-5. Optionally create `docs/incident.md` — incident log (create only if the project needs it).
-6. Add a docs link to the project root `README.md` (preserve all existing content).
+2. Create `docs/qa.md` — open design questions (empty if none yet; see template in References).
+3. Create `docs/qa_history.md` — resolved QA log (empty if none yet).
+4. Optionally create `docs/incident.md` — incident log (create only if the project needs it).
+5. Add a docs link to the project root `README.md` (preserve all existing content).
 
 If `docs/` already exists: diff against existing files and propose merging — do not overwrite without confirming.
 
-→ Proceed to Step 6 to write files
+→ Proceed to Step 5 to write files
 
 #### Output
 
-- `docs/specs/Home.md`, `docs/qa.md`, `docs/qa_history.md` created or verified
+- `docs/qa.md`, `docs/qa_history.md` created or verified
 
 ---
 
@@ -106,7 +103,7 @@ If `docs/` already exists: diff against existing files and propose merging — d
    - Multiple sub-questions → split into `### QA-XXX-1`, `### QA-XXX-2` sub-sections
 4. **Always append new entries to the bottom** of `docs/qa.md` to preserve chronological order.
 
-→ Proceed to Step 6 to write files
+→ Proceed to Step 5 to write files
 
 #### Output
 
@@ -129,14 +126,13 @@ If `docs/` already exists: diff against existing files and propose merging — d
 
 1. Identify the QA entry in `docs/qa.md` by number or title.
 2. Determine the master spec document where the decision should be written (see Master Document Principle in References).
-3. Run a duplicate check (Step 6) before writing.
+3. Run a duplicate check (Step 5) before writing.
 4. Prepare three concurrent writes (delegate to background subagents):
    - **A** — Apply the decision to the target spec document in `docs/specs/`.
    - **B** — Delete the entire QA block from `docs/qa.md`. No partial residue, no "decided" markers — remove the entry completely.
    - **C** — Append a summary entry to the bottom of `docs/qa_history.md` (see template in References).
-5. Update `docs/specs/Home.md` links if a new spec document was created.
 
-→ Proceed to Step 6 to write files
+→ Proceed to Step 5 to write files
 
 #### Output
 
@@ -150,31 +146,7 @@ If `docs/` already exists: diff against existing files and propose merging — d
 
 ---
 
-### Step 5: Update Home.md
-
-#### Condition
-
-- A spec document was added, removed, or renamed in `docs/specs/`
-
-#### Input
-
-- Current state of `docs/specs/` directory
-
-#### Process
-
-1. Glob `docs/specs/` to get the current file list.
-2. Diff against links currently in `Home.md`.
-3. Propose categorized sections (e.g., Features / Architecture / API / Reference — adapt to the project).
-
-→ Proceed to Step 6 to write files
-
-#### Output
-
-- Updated `Home.md` link list ready
-
----
-
-### Step 6: Duplicate check then write
+### Step 5: Duplicate check then write
 
 #### Condition
 
@@ -214,8 +186,6 @@ If `docs/` already exists: diff against existing files and propose merging — d
 
 - Do not create subfolders inside `docs/specs/` — all spec files live flat at the same level
 - Do not write the same fact in multiple documents — one spec, one document
-- Do not add a spec document without also updating `docs/specs/Home.md`
-- Do not leave stale content — when a document is deleted, remove its `Home.md` link
 - Do not leave TBD / 要検討 / 後で決める markers inside spec bodies — file a QA entry instead, and leave only a link in the spec body
 
 ---
@@ -294,12 +264,6 @@ One fact, one document. Before editing any spec file, check whether the same con
 ## Folder layout
 
 - All spec files live at the same level under `docs/specs/`. **No subfolders.**
-- `docs/specs/Home.md` is the navigation hub. Every doc must be linked from it.
-
-## Adding / removing docs
-
-- Creating a new spec doc → add a link in `docs/specs/Home.md`.
-- Deleting a spec doc → remove its link from `docs/specs/Home.md` and any cross-references.
 
 ## Open questions → docs/qa.md
 
