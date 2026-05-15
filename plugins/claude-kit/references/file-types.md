@@ -29,9 +29,9 @@ It loads the moment Claude accesses a file in that directory.
 - "This folder contains X. When editing, watch out for Y."
 - "Files in this folder follow the X format."
 
-### Not a good fit (use `.claude/rules/` instead)
+### Not a good fit
 
-- Rules that should only apply when editing a specific file type
+- Multi-step workflows or procedures → `.claude/skills/` is more appropriate
 
 ---
 
@@ -66,11 +66,16 @@ when any one of them is read, Claude is reminded to check the others.
   → Whenever any one is read, Claude is prompted to verify and update the others
 - A cross-reference table with "update when" conditions for each related file
 
-### Not a good fit (use a subfolder `CLAUDE.md` instead)
+### Single-folder content: `.claude/rules/` vs subfolder `CLAUDE.md`
 
-- **Content specific to a single folder** → a subfolder CLAUDE.md is simpler and clearer
-  (placing it in the folder makes the scope self-evident at a glance)
-- Defining a rule in `.claude/rules/` when no cross-path linking is needed is overkill
+Either can hold folder-specific conventions. The choice depends on your priority:
+
+| Priority | Choice |
+|---|---|
+| **See all active rules in one place** (auditability) | `.claude/rules/<name>.md` |
+| **Keep rules co-located with the code** (proximity) | Subfolder `CLAUDE.md` |
+
+Cross-path linking ("if X changes, also update Y in a different folder") always belongs in `.claude/rules/`.
 
 ---
 
@@ -102,6 +107,6 @@ Define multi-step workflows and procedures.
 | File | When read | What to write |
 |---|---|---|
 | `CLAUDE.md` (root) | Every session start | Project-wide conventions and workflow |
-| `CLAUDE.md` (subfolder) | When Claude accesses that folder | Folder description and local conventions |
-| `.claude/rules/<name>.md` | When a matching file is read | Cross-path file links and missed-update prevention |
+| `CLAUDE.md` (subfolder) | When Claude accesses that folder | Folder description and local conventions (co-location preferred) |
+| `.claude/rules/<name>.md` | When a matching file is read | Cross-path links and missed-update prevention. Single-folder also fine (auditability preferred) |
 | `.claude/skills/<name>/SKILL.md` | When invoked | Workflow procedures and step-by-step tasks |

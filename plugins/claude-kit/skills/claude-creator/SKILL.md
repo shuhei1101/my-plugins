@@ -105,7 +105,7 @@ without loading that context at every session start.
 
    | If the content is… | Suggest |
    |---|---|
-   | Single-folder conventions or descriptions | ✅ CLAUDE.md (subfolder) — correct choice |
+   | Single-folder conventions or descriptions | ✅ CLAUDE.md (subfolder) if co-location is preferred. `.claude/rules/` is also valid if auditability (one place to see all rules) matters more |
    | Project-wide workflow or global conventions | ✅ CLAUDE.md (root) — correct choice |
    | Cross-path file sync ("edit X → also update Y, Z in different folders") | ⚠️ `.claude/rules/` is more appropriate |
    | A multi-step workflow with user interaction | ⚠️ `.claude/skills/` is more appropriate |

@@ -128,9 +128,9 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
    | If the files are… | Suggest |
    |---|---|
    | Spread across multiple different folders | ✅ Rules — correct choice for cross-path linking |
-   | All within a single folder | ⚠️ CLAUDE.md (subfolder) may be simpler and clearer |
+   | All within a single folder | ✅ Rules (auditability) or subfolder CLAUDE.md (co-location) — ask the user which they prefer |
    | About a workflow or procedure | ⚠️ `.claude/skills/` may be more appropriate |
-   | A mix | ⚠️ Consider splitting: rules for cross-path, CLAUDE.md for folder-local |
+   | A mix | ⚠️ Consider splitting: rules required for cross-path; user's choice for folder-local |
 
 2. If rules is the right fit → confirm and proceed
 3. If another file type fits better → explain the reasoning and offer to redirect
@@ -145,7 +145,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ##### Branching
 
-- All files in one folder → explain and offer to use a subfolder CLAUDE.md instead
+- All files in one folder → ask user: auditability (rules) vs co-location (CLAUDE.md subfolder), then proceed with their choice
 - It's a workflow → offer to switch to `skill-creator`
 
 ---
