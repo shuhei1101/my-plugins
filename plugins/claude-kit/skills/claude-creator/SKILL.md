@@ -248,18 +248,18 @@ without loading that context at every session start.
 
 #### 補足
 
-##### 条件分岐
-("If X → go to Step N", "If Y → stop and ask the user")
-
-##### 参照ドキュメント
-(Files, URLs, or §References entries used in this step)
-
 ##### チェックリスト
 (Items to verify before considering this step complete.
 Use "X is done" for required items, "X is not done" for prohibitions.)
 
 - [ ] X is done
 - [ ] X is not done
+
+##### 条件分岐
+("If X → go to Step N", "If Y → stop and ask the user")
+
+##### 参照ドキュメント
+(Files, URLs, or §References entries used in this step)
 
 ---
 
