@@ -155,10 +155,10 @@ without loading that context at every session start.
 
 #### Notes
 
-##### Prohibitions
+##### Checklist
 
-- Do not write the body in English — CLAUDE.jp.md is the Japanese human reference
-- Do not exceed ~200 lines
+- [ ] Body written in Japanese — CLAUDE.jp.md is the Japanese human reference, not English
+- [ ] Under ~200 lines (if longer, move domain-specific content to `.claude/rules/`)
 
 ---
 
@@ -186,10 +186,10 @@ without loading that context at every session start.
 
 #### Notes
 
-##### Prohibitions
+##### Checklist
 
-- Do not write the body in Japanese
-- Keep structure identical to CLAUDE.jp.md
+- [ ] Body written in English (Claude Code reads this directly — no Japanese)
+- [ ] Heading structure identical to CLAUDE.jp.md
 
 ---
 
@@ -248,9 +248,6 @@ without loading that context at every session start.
 
 #### 補足
 
-##### 禁止事項
-(Things that must never be done in this step)
-
 ##### 条件分岐
 ("If X → go to Step N", "If Y → stop and ask the user")
 
@@ -258,7 +255,11 @@ without loading that context at every session start.
 (Files, URLs, or §References entries used in this step)
 
 ##### チェックリスト
-(Items to verify before considering this step complete)
+(Items to verify before considering this step complete.
+Use "X is done" for required items, "X is not done" for prohibitions.)
+
+- [ ] X is done
+- [ ] X is not done
 
 ---
 
