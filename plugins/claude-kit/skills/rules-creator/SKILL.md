@@ -44,8 +44,6 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
    **What NOT to put in rules (bad)**:
    - Detailed documentation or descriptions of what a file does
-   - Content that should be visible even when no matching file is being read
-   - → Those belong in CLAUDE.md instead
 
 → Proceed to Step 1
 
@@ -201,7 +199,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 1. Create `.claude/rules-jp/<name>.md` using the step-based structure (see §References)
 2. Add the required JP mirror header at the top (after frontmatter, before H1)
-3. Put the cross-reference table in `## 参考資料` at the bottom
+3. Create the cross-reference table in `## 参考資料` using the §References / Correspondence table template
 
 → Proceed to Step 6
 
@@ -326,15 +324,18 @@ paths:
 
 ## 参考資料
 
-### 対応表
-(Cross-reference table — which files must be checked when any domain file changes)
+### Correspondence table template
 
-| File / Pattern | Role | Update when |
-|---|---|---|
-| `<config>` | Config source | Values added / changed / removed |
-| `src/<domain>/` | Implementation | Behavior must reflect config |
-| `docs/specs/<doc>.md` | Design doc | Structure or behavior changes |
-| `.claude/rules/<name>.md` | This rule | Domain files are added or removed |
+```markdown
+### 対応表
+
+| ファイルパス | 概要 |
+|---|---|
+| `<config>` | Configuration file |
+| `src/<domain>/` | Implementation files |
+| `docs/specs/<doc>.md` | Design specification |
+| `.claude/rules/<name>.md` | This rule file |
+```
 ```
 
 ### Official docs
