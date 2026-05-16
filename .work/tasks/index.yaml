@@ -24,3 +24,17 @@ prs:
     summary: 'disable-model-invocation と allowed-tools を基本不使用に変更、work-kit スキルから allowed-tools 削除'
     task: '20260516_fix-skill-frontmatter-guidance'
     completed: true
+  - id: 4
+    title: 'PR4 — update-todo-template'
+    type: feat
+    tags: []
+    summary: 'TODO.md テンプレートを概要・作業内容（テーブル）・参考ドキュメント構成に刷新'
+    task: '20260516_update-todo-template'
+    completed: true
+  - id: 3
+    title: 'PR3 — add-hook-creator-skill'
+    type: feat
+    tags: []
+    summary: 'claude-kit プラグインに prompt-injection フック作成スキル hook-creator を追加'
+    task: '20260516_add-hook-creator-skill'
+    completed: false
