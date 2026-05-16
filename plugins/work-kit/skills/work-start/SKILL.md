@@ -27,8 +27,8 @@ Waits for user approval before implementation begins.
 
 #### Process
 
-1. Read `.work/tasks/index.yaml`
-2. Next PR number = max `id` in the `prs` list + 1 (1 if the list is empty)
+1. If the user has already specified a PR number or branch name, use that value
+2. Otherwise read `.work/tasks/index.yaml` and use max `id` + 1 as the next PR number (1 if the list is empty)
 
 → Proceed to Step 2
 
