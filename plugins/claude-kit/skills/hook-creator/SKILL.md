@@ -124,7 +124,7 @@ How prompt injection works:
    | Placement | Example path |
    |---|---|
    | Plugin | `plugins/{name}/hooks/prompts/{event-name}.md` |
-   | Project | `.claude/hooks/prompts/{event-name}.md` |
+   | Project | `.claude/hooks/{event-name}.md` |
 
 2. Write the user's instruction text as-is into the file
 
@@ -155,9 +155,15 @@ How prompt injection works:
 
 #### Process
 
-1. Plugin placement: create or update `plugins/{name}/hooks/hooks.json`
-2. Project placement: update the `hooks` section in `.claude/settings.json`
-3. Use the snippet from §References / Hook patterns
+1. Choose the file based on placement:
+
+   | Placement | File | Shared |
+   |---|---|---|
+   | Plugin | `plugins/{name}/hooks/hooks.json` | ✅ Bundled with plugin |
+   | Project (team) | `hooks` section in `.claude/settings.json` | ✅ Committed to git |
+   | Project (local only) | `hooks` section in `.claude/settings.local.json` | ❌ Add to `.gitignore` |
+
+2. Use the snippet from §References / Hook patterns
 
 → Proceed to Step 6
 
@@ -190,7 +196,7 @@ How prompt injection works:
 
 - [ ] Prompt file exists
 - [ ] Hook entry added to hooks.json or settings.json
-- [ ] Path (`${CLAUDE_PLUGIN_ROOT}` or absolute) is correct
+- [ ] Path variable matches placement (see §References / Path variables)
 
 ---
 
@@ -206,11 +212,24 @@ How prompt injection works:
 | "after a tool runs" / "after file edit" | `PostToolUse` | After tool execution |
 | "at session start" | `SessionStart` | When the session starts |
 
+### Path variables
+
+| Variable | Where usable | Meaning |
+|---|---|---|
+| `${CLAUDE_PLUGIN_ROOT}` | **Plugin hooks.json only** | Plugin installation root |
+| `${CLAUDE_PROJECT_DIR}` | settings.json / settings.local.json | Project root |
+| `${CLAUDE_PLUGIN_DATA}` | Plugin hooks.json only | Plugin persistent data directory |
+
+> ⚠️ `${CLAUDE_PLUGIN_ROOT}` is only expanded when installed as a plugin.
+> In project-level settings.json it does nothing — use `${CLAUDE_PROJECT_DIR}` instead.
+
+---
+
 ### Hook patterns
 
-#### UserPromptSubmit — output prompt file contents to stdout
+#### [Plugin] UserPromptSubmit
 
-stdout text is injected as `<system-reminder>` before Claude processes the user's message.
+Place in the plugin's `hooks/hooks.json`. `${CLAUDE_PLUGIN_ROOT}` is available.
 
 ```json
 {
@@ -234,7 +253,34 @@ stdout text is injected as `<system-reminder>` before Claude processes the user'
 }
 ```
 
-#### Stop — inject a prompt and make Claude continue working
+#### [Project] UserPromptSubmit
+
+Place in `.claude/settings.json` or `.claude/settings.local.json`.
+Prompt file lives at `.claude/hooks/{name}.md`.
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/user-prompt-submit.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+#### [Plugin] Stop — inject a prompt and make Claude continue working
 
 The `stop_hook_active` guard prevents infinite loops.
 
@@ -260,7 +306,31 @@ The `stop_hook_active` guard prevents infinite loops.
 }
 ```
 
-#### PreToolUse — inject a prompt and block tool execution
+#### [Project] Stop
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+#### [Project] PreToolUse — block tool and inject prompt
 
 Use `matcher` to target specific tools.
 
@@ -277,7 +347,7 @@ Use `matcher` to target specific tools.
             "args": [
               "-c",
               "import sys,json,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
-              "/path/to/prompts/pre-tool-use.md"
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.md"
             ]
           }
         ]
@@ -286,11 +356,3 @@ Use `matcher` to target specific tools.
   }
 }
 ```
-
-### Path variables
-
-| Variable | Where usable | Meaning |
-|---|---|---|
-| `${CLAUDE_PLUGIN_ROOT}` | Plugin hooks.json | Plugin installation root |
-| Absolute path | settings.json | Filesystem absolute path |
-| `$CLAUDE_PROJECT_DIR` | settings.json (inside command) | Project root (env var) |

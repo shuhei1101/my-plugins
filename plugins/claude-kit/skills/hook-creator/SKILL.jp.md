@@ -124,7 +124,7 @@ Claude Code のフックは、セッション中の特定タイミングで自�
    | 配置場所 | パス例 |
    |---|---|
    | プラグイン | `plugins/{name}/hooks/prompts/{event-name}.md` |
-   | プロジェクト | `.claude/hooks/prompts/{event-name}.md` |
+   | プロジェクト | `.claude/hooks/{event-name}.md` |
 
 2. ファイル内容はユーザーが指定したプロンプトテキストをそのまま記述する
 
@@ -155,9 +155,15 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 
 #### 処理内容
 
-1. プラグイン配置の場合: `plugins/{name}/hooks/hooks.json` を作成・更新する
-2. プロジェクト配置の場合: `.claude/settings.json` の `hooks` セクションを更新する
-3. §参考資料 / フックパターン一覧 のスニペットを使用する
+1. 配置場所に応じてファイルを決める:
+
+   | 配置場所 | ファイル | 共有 |
+   |---|---|---|
+   | プラグイン | `plugins/{name}/hooks/hooks.json` | ✅ プラグインに同梱 |
+   | プロジェクト（チーム共有） | `.claude/settings.json` の `hooks` セクション | ✅ git にコミット |
+   | プロジェクト（ローカル限定） | `.claude/settings.local.json` の `hooks` セクション | ❌ `.gitignore` 推奨 |
+
+2. §参考資料 / フックパターン一覧 のスニペットを使用する
 
 → ステップ 6 へ
 
@@ -190,7 +196,7 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 
 - [ ] プロンプトファイルが存在する
 - [ ] hooks.json / settings.json にエントリが追加された
-- [ ] パス (`${CLAUDE_PLUGIN_ROOT}` または絶対パス) が正確
+- [ ] パス変数が配置場所に合っている（§参考資料 / パス変数 を参照）
 
 ---
 
@@ -206,11 +212,24 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 | 「ツール実行後」「ファイル編集後」 | `PostToolUse` | ツール実行後 |
 | 「セッション開始時」 | `SessionStart` | セッション起動時 |
 
+### パス変数
+
+| 変数 | 使える場所 | 意味 |
+|---|---|---|
+| `${CLAUDE_PLUGIN_ROOT}` | **プラグインの hooks.json のみ** | プラグインのインストール先ルート |
+| `${CLAUDE_PROJECT_DIR}` | settings.json / settings.local.json | プロジェクトルート |
+| `${CLAUDE_PLUGIN_DATA}` | プラグインの hooks.json のみ | プラグインの永続データディレクトリ |
+
+> ⚠️ `${CLAUDE_PLUGIN_ROOT}` はプラグインとしてインストールされたときのみ展開される。
+> プロジェクト直置きの settings.json では機能しないため、`${CLAUDE_PROJECT_DIR}` を使うこと。
+
+---
+
 ### フックパターン一覧
 
-#### UserPromptSubmit — プロンプトファイルの内容を stdout に出力
+#### [プラグイン用] UserPromptSubmit
 
-stdout テキストが `<system-reminder>` として Claude に注入される。
+プラグインの `hooks/hooks.json` に記述。`${CLAUDE_PLUGIN_ROOT}` が使える。
 
 ```json
 {
@@ -234,7 +253,34 @@ stdout テキストが `<system-reminder>` として Claude に注入される�
 }
 ```
 
-#### Stop — プロンプトを注入して Claude に作業を継続させる
+#### [プロジェクト用] UserPromptSubmit
+
+`.claude/settings.json` または `.claude/settings.local.json` の `hooks` セクションに記述。
+プロンプトファイルは `.claude/hooks/{name}.md` に置く。
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/user-prompt-submit.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+#### [プラグイン用] Stop
 
 `stop_hook_active` チェックで無限ループを防止する。
 
@@ -260,7 +306,31 @@ stdout テキストが `<system-reminder>` として Claude に注入される�
 }
 ```
 
-#### PreToolUse — ツール実行前にプロンプトを注入してブロック
+#### [プロジェクト用] Stop
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+#### [プロジェクト用] PreToolUse — ツール実行前にブロック
 
 `matcher` でツールを絞り込める。
 
@@ -277,7 +347,7 @@ stdout テキストが `<system-reminder>` として Claude に注入される�
             "args": [
               "-c",
               "import sys,json,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
-              "/path/to/prompts/pre-tool-use.md"
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.md"
             ]
           }
         ]
@@ -286,11 +356,3 @@ stdout テキストが `<system-reminder>` として Claude に注入される�
   }
 }
 ```
-
-### パス変数
-
-| 変数 | 使える場所 | 意味 |
-|---|---|---|
-| `${CLAUDE_PLUGIN_ROOT}` | プラグインの hooks.json | プラグインのインストール先ルート |
-| 絶対パス | settings.json | ファイルシステム上の絶対パス |
-| `$CLAUDE_PROJECT_DIR` | settings.json (command 内) | プロジェクトルート（環境変数） |
