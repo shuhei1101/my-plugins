@@ -73,6 +73,13 @@ prs:
     summary: 'hook-creator に PreToolUse のループ防止（ワンタイムトークン方式）の説明と例を追加'
     task: '20260516_hook-creator-loop-prevention'
     completed: true
+  - id: 11
+    title: 'PR11 — sync-no-branch'
+    type: feat
+    tags: []
+    summary: 'sync コマンドをブランチ省略可能にし、削除プラグインの自動アンインストールを追加'
+    task: '20260516_sync-no-branch'
+    completed: true
   - id: 10
     title: 'PR10 — git-guard-session-isolation'
     type: fix
