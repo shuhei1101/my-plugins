@@ -27,8 +27,8 @@ There are two broad categories:
 
 How prompt injection works:
 - `UserPromptSubmit` hook: stdout text → injected as `<system-reminder>` before Claude processes
-- `Stop` hook: JSON `{"decision":"block","reason":"<prompt>"}` → Claude continues with that instruction
-- `PreToolUse` hook: JSON `{"decision":"block","reason":"<prompt>"}` → block tool and inject instruction
+- `Stop` hook: write text to stderr + exit(2) → Claude continues with that instruction
+- `PreToolUse` hook: JSON `{"decision":"block","reason":"<prompt>"}` to stdout → block tool and inject instruction
 
 ---
 
@@ -283,6 +283,7 @@ Prompt file lives at `.claude/hooks/{name}.md`.
 #### [Plugin] Stop — inject a prompt and make Claude continue working
 
 The `stop_hook_active` guard prevents infinite loops.
+Write the prompt text to stderr and exit with code 2 to signal "block and continue".
 
 ```json
 {
@@ -295,7 +296,7 @@ The `stop_hook_active` guard prevents infinite loops.
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); (sys.stderr.buffer.write(p.read_text('utf-8').encode('utf-8')),sys.exit(2)) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
             ]
           }
@@ -319,7 +320,7 @@ The `stop_hook_active` guard prevents infinite loops.
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); (sys.stderr.buffer.write(p.read_text('utf-8').encode('utf-8')),sys.exit(2)) if p.exists() else None",
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.md"
             ]
           }

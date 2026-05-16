@@ -26,8 +26,8 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 
 プロンプト注入の仕組み:
 - `UserPromptSubmit` フック: stdout テキスト → `<system-reminder>` として Claude に注入
-- `Stop` フック: JSON `{"decision":"block","reason":"<プロンプト>"}` → Claude が作業を継続する
-- `PreToolUse` フック: JSON `{"decision":"block","reason":"<プロンプト>"}` → ツール実行をブロックして指示注入
+- `Stop` フック: stderr にテキストを書き出し + exit(2) → Claude が作業を継続する
+- `PreToolUse` フック: JSON `{"decision":"block","reason":"<プロンプト>"}` を stdout → ツール実行をブロックして指示注入
 
 ---
 
@@ -283,6 +283,7 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 #### [プラグイン用] Stop
 
 `stop_hook_active` チェックで無限ループを防止する。
+stderr にプロンプトテキストを書き出し、exit(2) で「ブロック継続」を伝える。
 
 ```json
 {
@@ -295,7 +296,7 @@ Claude Code のフックは、セッション中の特定タイミングで自�
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); (sys.stderr.buffer.write(p.read_text('utf-8').encode('utf-8')),sys.exit(2)) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
             ]
           }
@@ -319,7 +320,7 @@ Claude Code のフックは、セッション中の特定タイミングで自�
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); (sys.stderr.buffer.write(p.read_text('utf-8').encode('utf-8')),sys.exit(2)) if p.exists() else None",
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.md"
             ]
           }
