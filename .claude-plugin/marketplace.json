@@ -29,7 +29,13 @@
       "name": "work-kit",
       "source": "./plugins/work-kit",
       "description": "Hook-based project lifecycle management — injects PR task context on every prompt and reminds task updates on stop",
-      "version": "2.6.1"
+      "version": "2.6.2"
+    },
+    {
+      "name": "guard-kit",
+      "source": "./plugins/guard-kit",
+      "description": "Safety guards for dangerous operations — hooks that intercept git push/merge and other risky commands to enforce user confirmation",
+      "version": "1.0.0"
     }
   ]
 }
