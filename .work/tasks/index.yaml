@@ -59,3 +59,24 @@ prs:
     summary: 'git push / git merge 実行前に毎回無条件でユーザー確認を求める PreToolUse フックを追加'
     task: '20260516_git-guard-hook'
     completed: true
+  - id: 8
+    title: 'PR8 — fix-git-guard-loop'
+    type: fix
+    tags: []
+    summary: 'git-guard フックの無限ループを一時トークン方式で修正'
+    task: '20260516_fix-git-guard-loop'
+    completed: true
+  - id: 9
+    title: 'PR9 — hook-creator-loop-prevention'
+    type: docs
+    tags: []
+    summary: 'hook-creator に PreToolUse のループ防止（ワンタイムトークン方式）の説明と例を追加'
+    task: '20260516_hook-creator-loop-prevention'
+    completed: true
+  - id: 10
+    title: 'PR10 — git-guard-session-isolation'
+    type: fix
+    tags: []
+    summary: 'git-guard トークンを session_id でセッション分離し複数セッション干渉を防止'
+    task: '20260516_git-guard-session-isolation'
+    completed: true
