@@ -17,3 +17,10 @@ prs:
     summary: 'plugin-work.md のステップ形式を廃止し rule-creator 規約スタイルに書き直す'
     task: '20260516_fix-plugin-work-rule'
     completed: true
+  - id: 2
+    title: 'PR2 — fix-skill-frontmatter-guidance'
+    type: docs
+    tags: []
+    summary: 'disable-model-invocation と allowed-tools を基本不使用に変更、work-kit スキルから allowed-tools 削除'
+    task: '20260516_fix-skill-frontmatter-guidance'
+    completed: true
