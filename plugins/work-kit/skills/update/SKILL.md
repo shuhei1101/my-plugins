@@ -11,6 +11,7 @@ Applies the latest work-kit templates to an already-initialized `.work/` directo
 Update strategy differs by file type:
 
 - **CLAUDE.md / CLAUDE.jp.md** — direct overwrite from template
+- **tasks/.gitignore** — direct overwrite from template
 - **QA.md / TODO.md templates** — agent reads both and applies only structural/format changes; existing content is never overwritten
 
 ---
@@ -56,11 +57,28 @@ Update strategy differs by file type:
 
 ---
 
-### Step 3: Diff and patch QA.md files
+### Step 3: Sync .gitignore
 
 #### Condition
 
 - Step 2 complete
+
+#### Process
+
+1. Copy `tasks/.gitignore` from the template to `.work/tasks/.gitignore` (overwrite)
+2. Create the file if it does not exist
+
+#### Output
+
+- `.work/tasks/.gitignore` — updated to latest (or created)
+
+---
+
+### Step 4: Diff and patch QA.md files
+
+#### Condition
+
+- Step 3 complete
 
 #### Process
 
@@ -78,11 +96,11 @@ Update strategy differs by file type:
 
 ---
 
-### Step 4: Diff and patch TODO.md files
+### Step 5: Diff and patch TODO.md files
 
 #### Condition
 
-- Step 3 complete
+- Step 4 complete
 
 #### Process
 
@@ -100,7 +118,7 @@ Update strategy differs by file type:
 
 ---
 
-### Step 5: Report completion
+### Step 6: Report completion
 
 #### Process
 
