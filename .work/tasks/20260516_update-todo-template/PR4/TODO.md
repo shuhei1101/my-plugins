@@ -17,6 +17,7 @@ TODO.md テンプレートを刷新する。チェックボックス1行形式�
 | [x] | テンプレート CLAUDE.jp.md の規約セクションを新 TODO 形式に合わせて更新 | `plugins/work-kit/skills/setup/templates/.work/CLAUDE.jp.md` |
 | [x] | テンプレート CLAUDE.md（英語本体）を同期 | `plugins/work-kit/skills/setup/templates/.work/CLAUDE.md` |
 | [x] | work-kit バージョンバンプ（plugin.json + marketplace.json） | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| [x] | TODO.md テンプレートを追加修正（対象ファイルを箇条書き・参考ドキュメント形式・追加セクション追記） | - `plugins/work-kit/skills/setup/templates/.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md`<br>- `.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` |
 
 ## 参考ドキュメント
 
