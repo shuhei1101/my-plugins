@@ -171,18 +171,24 @@ All files must be created **inside the worktree (`../repo-wt-PR{N}/`)**, not the
 
 ---
 
-### Step 8: Commit created content, then report to user
+### Step 8: Commit created content, report to user, then start implementation
 
 #### Process
 
 1. Commit all created files inside the worktree (branch: `PR{N}/{type}/{title}`)
 2. Report what was created: branch name, worktree path, TODO.md path, spec path
-3. Wait for user approval before starting implementation
+3. Start implementation:
+   - **If QA entries exist** → ask the user for confirmation before starting
+   - **If no QA entries** → proceed with implementation immediately
 
 #### Notes
 
 ##### Prohibitions
 
-- Do not report to the user before committing (always: commit → then report)
-- Do not start implementation without explicit user approval
 - Never commit to anywhere other than the created worktree (`PR{N}/{type}/{title}` branch)
+
+##### Commit granularity
+
+- Commit in meaningful units that are easy for the user to understand
+- Do not split commits too finely
+- Do not mix planning documents (TODO, specs, etc.) and implementation code in the same commit
