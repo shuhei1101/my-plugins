@@ -14,8 +14,8 @@ import sys
 from pathlib import Path
 
 # ── constants ───────────────────────────────────────────────
-# scripts/ → setup/ (SKILL.md と同階層) → templates/.work/
-TEMPLATE_DIR = Path(__file__).parent.parent / "templates" / ".work"
+# scripts/ → setup/ → skills/ → work-kit/ → templates/.work/
+TEMPLATE_DIR = Path(__file__).parent.parent.parent.parent / "templates" / ".work"
 TARGET_DIR = Path.cwd() / ".work"
 
 # ── private helpers ─────────────────────────────────────────
