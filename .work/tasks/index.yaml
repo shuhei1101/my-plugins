@@ -1,0 +1,19 @@
+# .work/tasks/index.yaml — PR 索引
+#
+# フィールド説明:
+#   id        : PR 番号（連番）
+#   title     : PR フォルダの h1 タイトルそのまま
+#   type      : feat / fix / docs / refactor / chore / test
+#   tags      : 自由形式タグ（省略可）
+#   summary   : ファイルを開かずに内容がわかる一行説明
+#   task      : タスクフォルダ名（YYYYMMDD_{title}）
+#   completed : false = 進行中、true = マージ済み / 廃止済み
+
+prs:
+  - id: 1
+    title: 'PR1 — fix-plugin-work-rule'
+    type: docs
+    tags: []
+    summary: 'plugin-work.md のステップ形式を廃止し rule-creator 規約スタイルに書き直す'
+    task: '20260516_fix-plugin-work-rule'
+    completed: true
