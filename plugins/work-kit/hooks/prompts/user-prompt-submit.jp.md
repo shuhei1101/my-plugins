@@ -4,7 +4,7 @@
 [work-kit] プロンプトを処理する前に現在の作業コンテキストを確認すること:
 
 1. `.work/tasks/index.yaml` を読んで `completed: false` の PR を確認する
-2. 進行中の PR があればその `TODO.md` を読む
+2. 進行中の PR があれば `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` を読む
 3. 今回の依頼の種別を判断する:
    - 既存 PR の続き → 該当ワークツリーで作業を継続する
    - 新規作業 → `/work-kit:work-start` を実行してから始める
