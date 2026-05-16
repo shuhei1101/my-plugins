@@ -12,10 +12,10 @@ worktree 対応（cd / git -C パス検出）は維持する。
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | hooks.json を guard-kit パターンに合わせる（トークン作成+ブロック → 2回目ALLOW）＋ worktree 対応維持 | - `plugins/work-kit/hooks/hooks.json` |
-| - | master-commit-guard.md を git-guard.md スタイルに更新（ユーザー確認を即時強制指示） | - `plugins/work-kit/hooks/prompts/master-commit-guard.md` |
-| - | master-commit-guard.jp.md を同様に更新 | - `plugins/work-kit/hooks/prompts/master-commit-guard.jp.md` |
-| - | work-kit バージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | hooks.json を guard-kit パターンに合わせる（トークン作成+ブロック → 2回目ALLOW）＋ worktree 対応維持 | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | master-commit-guard.md を git-guard.md スタイルに更新（ユーザー確認を即時強制指示） | - `plugins/work-kit/hooks/prompts/master-commit-guard.md` |
+| 済 | master-commit-guard.jp.md を同様に更新 | - `plugins/work-kit/hooks/prompts/master-commit-guard.jp.md` |
+| 済 | work-kit バージョンを bump (2.6.8 → 2.6.9) | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
