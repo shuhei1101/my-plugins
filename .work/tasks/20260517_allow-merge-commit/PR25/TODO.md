@@ -9,8 +9,8 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | master-commit-guard フックに MERGE_HEAD チェックを追加してマージ中はスキップ | - `plugins/work-kit/hooks/hooks.json` |
-| - | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | master-commit-guard フックに MERGE_HEAD チェックを追加してマージ中はスキップ | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
