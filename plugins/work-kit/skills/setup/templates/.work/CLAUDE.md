@@ -36,10 +36,10 @@ Update specs whenever implementation changes documented behavior.
 
 ## Conventions
 
-- Mark completed rows in the TODO.md task table with `[x]` in the Done column
+- Mark completed rows in the TODO.md task table with `済` in the Done column
 - Reflect spec changes in the relevant `specs/` document
 - Append unresolved questions to the PR's `QA.md`
-- Confirm all rows in the task table are `[x]` before merging
+- Confirm all rows in the task table are `済` before merging
 
 ---
 
