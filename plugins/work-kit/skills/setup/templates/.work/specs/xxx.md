@@ -3,19 +3,11 @@ created_at: YYYY-MM-DD
 updated_at: YYYY-MM-DD
 related_specs:
   - {related-spec}.md
+related_prs:
+  - PR{N}
 ---
 
 # {機能名} — {一行説明}
-
-**目的**: {なぜこの仕様書が存在するか}
-
-**前提**:
-- {前提条件}
-
-**関連**:
-- [{関連仕様書}]({関連仕様書}.md) — {役割の一行説明}
-
----
 
 ## 概要
 
