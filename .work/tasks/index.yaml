@@ -38,3 +38,10 @@ prs:
     summary: 'claude-kit プラグインに prompt-injection フック作成スキル hook-creator を追加'
     task: '20260516_add-hook-creator-skill'
     completed: true
+  - id: 5
+    title: 'PR5 — add-update-skill'
+    type: feat
+    tags: []
+    summary: 'テンプレートを共有配置に移動し、work-kit に update スキルを追加する'
+    task: '20260516_add-update-skill'
+    completed: true
