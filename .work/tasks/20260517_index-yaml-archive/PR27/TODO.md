@@ -16,7 +16,7 @@ trim スクリプトを追加することで、`index.yaml` を常にアクテ�
 | 済 | work-start ステップ1を last_id 参照に更新 | - `plugins/work-kit/skills/work-start/SKILL.md`<br>- `plugins/work-kit/skills/work-start/SKILL.jp.md` |
 | 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 | 済 | update スキルに index.yaml last_id マイグレーションステップを追加 | - `plugins/work-kit/skills/update/SKILL.md`<br>- `plugins/work-kit/skills/update/SKILL.jp.md` |
-| - | trim-index.py を py:py 規約に従って書き直す | - `plugins/work-kit/scripts/trim-index.py` |
+| 済 | trim-index.py を py:py 規約に従って書き直す | - `plugins/work-kit/scripts/trim-index.py` |
 
 ## 参考ドキュメント
 
