@@ -4,8 +4,6 @@ description: |
   Initialize the work-kit document structure (.work/) in the current project by running the setup script.
   Creates .work/tasks/, .work/specs/, and .work/QA.md from templates.
   Manual invocation only — use /work-kit:setup.
-disable-model-invocation: true
-allowed-tools: Bash
 ---
 
 # work-kit:setup — Initialize .work/ Document Structure

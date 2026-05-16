@@ -65,7 +65,6 @@
    - **スキル名** — kebab-case（例: `pr-pick`, `notify`, `topic-generate`）
    - **トリガー条件** — いつ自動起動するか（「ユーザーが〜と言ったとき」「〜ファイルを編集するとき」）
    - **やること** — ワークフローの各ステップをざっくり説明
-   - **`disable-model-invocation`** — 明示的な `/skill-name` 呼び出しのみにするか（自動起動を無効にする場合 `true`）
 2. ワークフローをステップにマッピングする
 
 → ステップ2へ進む
@@ -200,19 +199,11 @@
 
 1. SKILL.jp.md を行単位で英語に翻訳する
 2. `.claude/skills/<name>/SKILL.md` を同じステップ構造で作成する
-3. 必要なら `disable-model-invocation: true` をフロントマターに追加する
-
 → ステップ6へ進む
 
 #### 出力
 
 - `SKILL.md` 作成済み
-
-#### 補足
-
-##### 条件分岐
-
-- 自動起動を無効にしたい → `disable-model-invocation: true` をフロントマターに追加
 
 ---
 
@@ -304,12 +295,19 @@ description: |
 （複数ステップから参照される共通の表・定義・リンク集）
 ```
 
-### `disable-model-invocation` の使い方
+### フロントマターの基本形
 
-| 設定 | 動作 |
-|---|---|
-| 省略（デフォルト） | `description` の条件に合えば自動起動する |
-| `disable-model-invocation: true` | `/skill-name` の明示呼び出しのみ。自動起動しない |
+```yaml
+---
+name: {skill-name}
+description: |
+  トリガー条件を具体的に書く。
+  例: ユーザーが「〜したい」「〜して」と言ったとき。
+---
+```
+
+`name` と `description` のみでよい。`allowed-tools` や `disable-model-invocation` は基本不要。
+`disable-model-invocation: true` はモデルからの実行（Skill ツール経由含む）を完全にブロックするため使わない。
 
 ### 公式ドキュメント
 

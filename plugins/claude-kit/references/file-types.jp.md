@@ -92,7 +92,8 @@
 
 - `/skill-name` で明示的に呼んだとき
 - `description` フロントマターの条件に一致したとき（自動起動）
-- `disable-model-invocation: true` なら明示呼び出しのみ
+
+`disable-model-invocation: true` は基本使わない。これを設定するとモデル（Skill ツール経由の呼び出しを含む）からスキルを実行できなくなる。`description` の記述で自動起動を制御するのが標準。
 
 ### 用途
 

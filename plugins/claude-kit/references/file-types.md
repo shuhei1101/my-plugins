@@ -85,7 +85,8 @@ Cross-path linking ("if X changes, also update Y in a different folder") always 
 
 - When explicitly invoked as `/skill-name`
 - When the `description` frontmatter condition is matched (auto-trigger)
-- If `disable-model-invocation: true`, explicit invocation only — no auto-trigger
+
+Do not use `disable-model-invocation: true`. It blocks all model invocations including via the Skill tool. Control auto-triggering through the `description` frontmatter instead.
 
 ### Purpose
 

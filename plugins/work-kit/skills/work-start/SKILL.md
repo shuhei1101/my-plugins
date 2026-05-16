@@ -5,7 +5,6 @@ description: |
   create worktree, then create all task documents INSIDE the worktree.
   Trigger when the user says "新しい PR を作って", "新しい作業を始めたい", "work-start して",
   "start new work", or "create a new PR".
-allowed-tools: Bash Read Write
 ---
 
 # work-kit:work-start — Start a New PR
