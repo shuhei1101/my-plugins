@@ -4,6 +4,7 @@ description: |
   Merge a PR: verify TODO checklist, merge with --no-ff, remove worktree and branch,
   and sync QA.md. Trigger when the user says "マージして", "merge して", or "PR をマージしたい".
   Never invoke automatically — only when the user explicitly requests a merge.
+disable-model-invocation: true
 ---
 
 # work-kit:merge — Merge a PR

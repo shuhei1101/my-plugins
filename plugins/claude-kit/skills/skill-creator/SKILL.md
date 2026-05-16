@@ -460,8 +460,9 @@ description: |
 ---
 ```
 
-Only `name` and `description` are needed. Do not add `allowed-tools` or `disable-model-invocation`.
-`disable-model-invocation: true` blocks all model invocations including via the Skill tool — do not use it.
+Only `name` and `description` are needed. Do not add `allowed-tools`.
+
+Do not use `disable-model-invocation: true` by default. **Exception**: add it for skills that must only be run by a human explicitly — merge, deploy, destructive operations — where AI self-invocation is unacceptable.
 
 ### Official docs
 

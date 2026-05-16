@@ -306,8 +306,9 @@ description: |
 ---
 ```
 
-`name` と `description` のみでよい。`allowed-tools` や `disable-model-invocation` は基本不要。
-`disable-model-invocation: true` はモデルからの実行（Skill ツール経由含む）を完全にブロックするため使わない。
+`name` と `description` のみでよい。`allowed-tools` は不要。
+
+`disable-model-invocation: true` は基本使わない。ただし、**人間のみが明示的に実行すべきスキル**（マージ・デプロイ・削除など AI に勝手に実行させてはいけないもの）には付ける。
 
 ### 公式ドキュメント
 

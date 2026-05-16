@@ -14,6 +14,10 @@
 - [x] `work-kit/skills/work-start/SKILL.md` から `allowed-tools` を削除
 - [x] `work-kit/skills/setup/SKILL.md` から `allowed-tools` と `disable-model-invocation` を削除
 - [x] work-kit バージョンバンプ（plugin.json + marketplace.json）
+- [x] `file-types.jp.md` / `file-types.md`: disable-model-invocation に「人間のみが実行すべきスキルには使う」を追記
+- [x] `skill-creator/SKILL.jp.md` / `SKILL.md`: 同様に例外ケースを追記
+- [x] `work-kit/skills/merge/SKILL.md`: `disable-model-invocation: true` を復活
+- [x] work-kit バージョンバンプ（2.3.3 → 2.3.4）
 
 ## 変更ファイル
 
