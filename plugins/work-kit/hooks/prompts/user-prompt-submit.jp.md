@@ -28,10 +28,12 @@
 
 #### 処理内容
 
-1. `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` を読む
-2. 未解決の QA エントリがあれば **ここで停止する** — ユーザーに QA の解決を求め、それ以上の作業は行わない
-3. QA が全て解決済み（またはファイルが空）なら `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` を読む
-4. TODO の内容に従って作業を継続する
+1. `git worktree list` で進行中 PR のワークツリーパスを特定し、そのディレクトリに移動する
+2. `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` を読む
+3. 未解決の QA エントリがあれば **ここで停止する** — ユーザーに QA の解決を求め、それ以上の作業は行わない
+4. QA が全て解決済み（またはファイルが空）なら `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` を読む
+5. 今回の依頼内容が TODO に含まれていない場合、作業を始める前に TODO に追記してコミットする
+6. TODO の内容に従って作業を継続する
 
 #### 補足
 
