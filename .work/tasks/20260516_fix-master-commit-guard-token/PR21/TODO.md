@@ -12,7 +12,9 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| 済 | PreToolUse ハンドラーのトークン制御ロジックを削除、cd/git -C のパスを検出して実ブランチを確認するよう修正 | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | cd/git -C のパスを検出して実ブランチを確認するよう修正 | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | トークンはフック自体でなく Claude がユーザー確認後に作成する設計に変更 | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | master-commit-guard.md / jp.md にトークン作成コマンドを追記 | - `plugins/work-kit/hooks/prompts/master-commit-guard.md`<br>- `plugins/work-kit/hooks/prompts/master-commit-guard.jp.md` |
 | 済 | サブエージェントで動作検証（全6シナリオ合格） | - |
 | 済 | work-kit プラグインのバージョンを bump (2.6.7 → 2.6.8) | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
