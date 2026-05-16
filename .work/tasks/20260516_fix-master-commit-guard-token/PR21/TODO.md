@@ -12,9 +12,9 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | PreToolUse ハンドラーのトークン制御ロジック（token.unlink/touch 部分）を削除 | - `plugins/work-kit/hooks/hooks.json` |
-| - | サブエージェントで動作検証 | - |
-| - | work-kit プラグインのバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | PreToolUse ハンドラーのトークン制御ロジックを削除、cd/git -C のパスを検出して実ブランチを確認するよう修正 | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | サブエージェントで動作検証（全6シナリオ合格） | - |
+| 済 | work-kit プラグインのバージョンを bump (2.6.7 → 2.6.8) | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
