@@ -1,9 +1,8 @@
 ---
 name: work-start
 description: |
-  Start a new PR: create the task folder, PR folder, TODO.md, add an entry to index.yaml,
-  update the relevant spec in .work/specs/, record unknowns in .work/QA.md, then create
-  the worktree and branch.
+  Start a new PR: determine PR number, collect details, add index.yaml entry in main repo,
+  create worktree, then create all task documents INSIDE the worktree.
   Trigger when the user says "新しい PR を作って", "新しい作業を始めたい", "work-start して",
   "start new work", or "create a new PR".
 allowed-tools: Bash Read Write
@@ -11,9 +10,8 @@ allowed-tools: Bash Read Write
 
 # work-kit:work-start — Start a New PR
 
-Creates the task/PR folder structure with TODO.md, adds an entry to index.yaml,
-maintains the spec and QA documents, then sets up the worktree.
-Waits for user approval before implementation begins.
+Creates the worktree first, then creates all task documents inside it.
+This prevents task documents from being created in the main repository.
 
 ---
 
@@ -61,7 +59,7 @@ Waits for user approval before implementation begins.
 
 ---
 
-### Step 3: Create task folder, PR folder, TODO.md, and QA.md
+### Step 3: Add entry to index.yaml (main repository)
 
 #### Condition
 
@@ -69,29 +67,7 @@ Waits for user approval before implementation begins.
 
 #### Process
 
-1. Create `.work/tasks/{YYYYMMDD}_{title}/`
-2. Create `.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
-3. Create `TODO.md` using the template at `.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md`
-4. Create `QA.md` using the template at `.work/tasks/yyyymmdd_xxx/PRXXX/QA.md`
-
-→ Proceed to Step 4
-
-#### Output
-
-- `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` created
-- `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` created
-
----
-
-### Step 4: Add entry to index.yaml
-
-#### Condition
-
-- Step 3 complete
-
-#### Process
-
-1. Append to the `prs` list in `.work/tasks/index.yaml`:
+1. Append to the `prs` list in the main repository's `.work/tasks/index.yaml`:
 
 ```yaml
 - id: {N}
@@ -103,51 +79,19 @@ Waits for user approval before implementation begins.
   completed: false
 ```
 
-→ Proceed to Step 5
+→ Proceed to Step 4
 
 #### Output
 
-- `.work/tasks/index.yaml` updated with the new PR entry
+- `.work/tasks/index.yaml` updated with the new PR entry (main repository)
 
 ---
 
-### Step 5: Maintain the spec document
+### Step 4: Create the worktree and branch
 
 #### Condition
 
-- Step 4 complete
-
-#### Process
-
-1. Check `.work/specs/` for a related spec
-2. If found → update the relevant sections for this PR
-3. If not found → create a new spec using the template at `.work/specs/xxx.md`
-4. Add a link to the spec in TODO.md's `## 仕様参照` section
-
-→ Proceed to Step 6
-
----
-
-### Step 6: Record open questions in QA.md
-
-#### Condition
-
-- Step 5 complete
-
-#### Process
-
-1. Append any open questions from Step 2 to `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` as QA-XXX entries
-2. Skip if there are no open questions
-
-→ Proceed to Step 7
-
----
-
-### Step 7: Create the worktree and branch
-
-#### Condition
-
-- Step 6 complete
+- Step 3 complete
 
 #### Process
 
@@ -157,13 +101,74 @@ Waits for user approval before implementation begins.
 git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 ```
 
-→ Proceed to Step 8
+→ Proceed to Step 5
+
+#### Output
+
+- Worktree created at `../repo-wt-PR{N}`
+- Branch `PR{N}/{type}/{title}` exists
 
 #### Notes
 
 ##### Prohibitions
 
 - Never commit directly to master/main
+
+---
+
+### Step 5: Create task folder, PR folder, TODO.md, and QA.md (inside worktree)
+
+#### Condition
+
+- Step 4 complete
+
+#### Process
+
+All files must be created **inside the worktree (`../repo-wt-PR{N}/`)**, not the main repository.
+
+1. Create `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/`
+2. Create `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
+3. Create `TODO.md` using the template at `.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md`
+4. Create `QA.md` using the template at `.work/tasks/yyyymmdd_xxx/PRXXX/QA.md`
+
+→ Proceed to Step 6
+
+#### Output
+
+- `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` created
+- `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` created
+
+---
+
+### Step 6: Maintain the spec document (inside worktree)
+
+#### Condition
+
+- Step 5 complete
+
+#### Process
+
+1. Check `.work/specs/` inside the worktree for a related spec
+2. If found → update the relevant sections for this PR
+3. If not found → create a new spec using the template at `.work/specs/xxx.md`
+4. Add a link to the spec in TODO.md's `## 仕様参照` section
+
+→ Proceed to Step 7
+
+---
+
+### Step 7: Record open questions in QA.md (inside worktree)
+
+#### Condition
+
+- Step 6 complete
+
+#### Process
+
+1. Append any open questions from Step 2 to `PR{N}/QA.md` inside the worktree as QA-XXX entries
+2. Skip if there are no open questions
+
+→ Proceed to Step 8
 
 ---
 
