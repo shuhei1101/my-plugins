@@ -29,6 +29,9 @@ python tools/marketplace.py update <ブランチ名>
 
 # 指定ブランチのマーケットプレイスを削除
 python tools/marketplace.py remove <ブランチ名>
+
+# インストール済みプラグインのみ全て最新バージョンに更新（未インストールは触らない）
+python tools/marketplace.py upgrade
 """
 
 import argparse
@@ -77,6 +80,8 @@ def parse_args() -> argparse.Namespace:
 
     remove_parser = sub.add_parser("remove", help="マーケットプレイスを削除（プラグイン uninstall + キャッシュ削除）")
     remove_parser.add_argument("branch", help="削除対象のGitブランチ名")
+
+    sub.add_parser("upgrade", help="インストール済みプラグインのみ全て最新バージョンに更新（未インストールは触らない）")
 
     return parser.parse_args()
 
@@ -537,6 +542,37 @@ def cmd_remove(branch: str) -> None:
     print(f"削除完了: {key} (branch: {branch})")
 
 
+def cmd_upgrade() -> None:
+    """インストール済みプラグインのみ全て最新バージョンに更新する。
+
+    メインマーケットプレイス（KEY_PREFIX）からインストール済みのプラグインが対象。
+    ユーザースコープ・プロジェクトスコープ両方を含む。
+    未インストールのプラグインを新たにインストールすることはしない。
+    スコープの変更もしない。
+    """
+    print(f"マーケットプレイスキャッシュを更新中: {KEY_PREFIX}")
+    run_claude_cmd(["plugin", "marketplace", "update", KEY_PREFIX])
+    print()
+
+    installed_all: dict[str, list[str]] = get_all_installed_plugins()
+    targets: list[str] = sorted(
+        name for name, keys in installed_all.items() if KEY_PREFIX in keys
+    )
+
+    if not targets:
+        print("インストール済みプラグインが見つかりません。")
+        return
+
+    print(f"プラグインを更新中 ({len(targets)} 個)...")
+    for name in targets:
+        run_claude_cmd(["plugin", "update", f"{name}@{KEY_PREFIX}"])
+
+    print()
+    print("更新完了:")
+    for name in targets:
+        print(f" {name}@{KEY_PREFIX}")
+
+
 def main() -> None:
     if not KNOWN_MARKETPLACES.is_file():
         print(f"エラー: {KNOWN_MARKETPLACES} が見つかりません。")
@@ -560,6 +596,8 @@ def main() -> None:
         cmd_update(args.branch)
     elif args.command == "remove":
         cmd_remove(args.branch)
+    elif args.command == "upgrade":
+        cmd_upgrade()
     else:
         parse_args()
         sys.exit(1)
