@@ -108,3 +108,17 @@ prs:
     summary: 'work-start スキルのステップ2確認文削除・ステップ8にコミット→報告順追加・禁止事項にワークツリー外コミット禁止を追加'
     task: '20260516_fix-work-start-skill'
     completed: true
+  - id: 15
+    title: 'PR15 — bump-version-2.6.4'
+    type: chore
+    tags: []
+    summary: 'PR14 のバージョン bump 漏れ分: work-kit を 2.6.3 → 2.6.4 に上げる'
+    task: '20260516_bump-version-2.6.4'
+    completed: true
+  - id: 16
+    title: 'PR16 — add-upgrade-command'
+    type: feat
+    tags: []
+    summary: 'marketplace.py に upgrade コマンドを追加し、インストール済みプラグインのみ全バージョン更新できるようにする'
+    task: '20260516_add-upgrade-command'
+    completed: false
