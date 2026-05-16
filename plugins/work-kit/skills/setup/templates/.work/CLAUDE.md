@@ -25,7 +25,7 @@ Each PR folder holds `TODO.md` (task checklist) and `QA.md` (unresolved question
 
 `TODO.md` is the single source of truth for what a PR does. Create it before starting implementation and keep it current. Mark completed tasks as `- [x]`; confirm all items are checked before merging.
 
-`QA.md` records unresolved questions scoped to this PR. When the user decides, reflect the decision in the relevant spec and delete the entry.
+`QA.md` records unresolved questions scoped to this PR. When the user decides, reflect the decision in the relevant spec or document.
 
 ### specs/
 
