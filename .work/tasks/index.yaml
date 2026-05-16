@@ -37,4 +37,4 @@ prs:
     tags: []
     summary: 'claude-kit プラグインに prompt-injection フック作成スキル hook-creator を追加'
     task: '20260516_add-hook-creator-skill'
-    completed: false
+    completed: true
