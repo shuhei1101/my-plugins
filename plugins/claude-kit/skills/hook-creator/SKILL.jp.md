@@ -383,7 +383,7 @@ stdout に JSON `{"decision":"block","reason":"<プロンプト>"}` を返すこ
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/'my-guard-token'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/f'my-guard-token-{d.get(\"session_id\",\"default\")}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.md"
             ]
           }
@@ -394,7 +394,8 @@ stdout に JSON `{"decision":"block","reason":"<プロンプト>"}` を返すこ
 }
 ```
 
-> ⚠️ トークンファイル名（`my-guard-token`）はフックごとにユニークな名前にすること。複数のフックが同じ名前を使うとトークンが干渉する。
+> ⚠️ トークンファイル名はフックごとにユニークな名前にすること。複数のフックが同じ名前を使うとトークンが干渉する。
+> ✅ `session_id` をファイル名に含めることで、複数の Claude Code セッションが同時に動いていてもトークンが干渉しない（セッション分離）。`session_id` は stdin JSON の `d.get('session_id', 'default')` で取得できる。
 
 ---
 
@@ -425,7 +426,9 @@ if d.get('stop_hook_active'):
 ```python
 import tempfile, pathlib
 
-token = pathlib.Path(tempfile.gettempdir()) / 'my-guard-token'
+# session_id でセッションごとにトークンを分離する
+session_id = d.get('session_id', 'default')
+token = pathlib.Path(tempfile.gettempdir()) / f'my-guard-token-{session_id}'
 
 if token.exists():
     token.unlink()   # トークンを消費
@@ -440,3 +443,5 @@ token.touch()
 - ブロック時にトークンを**作成**
 - 次回実行時にトークンを**消費**して通過
 - その次はまたブロック（毎回確認が必要なフックに適している）
+- `session_id` を含めることで **複数セッション間の干渉を防止**（セッション A のトークンをセッション B が消費することがなくなる）
+- `session_id` は PreToolUse の stdin JSON に `"session_id": "..."` として含まれている

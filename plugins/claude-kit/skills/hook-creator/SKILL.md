@@ -384,7 +384,7 @@ How it works:
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/'my-guard-token'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/f'my-guard-token-{d.get(\"session_id\",\"default\")}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.md"
             ]
           }
@@ -396,6 +396,7 @@ How it works:
 ```
 
 > ⚠️ Use a unique token filename per hook. Shared names cause cross-hook interference.
+> ✅ Including `session_id` in the token name isolates tokens per Claude Code session — prevents Session B from consuming Session A's token. Retrieve it with `d.get('session_id', 'default')` from the stdin JSON.
 
 ---
 
@@ -426,7 +427,9 @@ if d.get('stop_hook_active'):
 ```python
 import tempfile, pathlib
 
-token = pathlib.Path(tempfile.gettempdir()) / 'my-guard-token'
+# Include session_id to isolate tokens per Claude Code session
+session_id = d.get('session_id', 'default')
+token = pathlib.Path(tempfile.gettempdir()) / f'my-guard-token-{session_id}'
 
 if token.exists():
     token.unlink()   # consume the token
@@ -441,3 +444,4 @@ Key points:
 - Token is **created** when blocking
 - Token is **consumed** (and execution allowed) on the next attempt
 - After that, the next attempt blocks again — suitable for "confirm every time" hooks
+- `session_id` from stdin JSON keeps tokens **isolated per session** — parallel Claude Code sessions cannot interfere with each other
