@@ -31,7 +31,6 @@ Each PR folder holds `TODO.md` (task checklist) and `QA.md` (unresolved question
 
 Flat structure (**no subfolders**). One-fact-one-document: never duplicate content; use links instead.
 Update specs whenever implementation changes documented behavior.
-When an unresolved question arises, record it in the PR's `QA.md` immediately — do not leave `TBD` or `要検討` in the spec body.
 
 ---
 
