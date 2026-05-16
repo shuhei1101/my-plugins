@@ -23,7 +23,7 @@
             "command": "python",
             "args": [
               "-c",
-              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else sys.exit(0)",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); print(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False)) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
             ]
           }
