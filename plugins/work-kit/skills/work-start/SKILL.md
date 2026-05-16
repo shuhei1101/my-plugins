@@ -84,6 +84,10 @@ This prevents task documents from being created in the main repository.
 
 - `.work/tasks/index.yaml` updated with the new PR entry (main repository)
 
+#### Notes
+
+- `index.yaml` is excluded by `.work/tasks/.gitignore` — no commit to master is needed
+
 ---
 
 ### Step 4: Create the worktree and branch

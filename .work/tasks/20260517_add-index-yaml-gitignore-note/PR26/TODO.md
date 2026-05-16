@@ -9,9 +9,9 @@ work-start スキルの SKILL.jp.md ステップ3「出力」セクションに�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | ステップ3の「出力」セクションに gitignore 注記を追加 | - `plugins/work-kit/skills/work-start/SKILL.jp.md` |
-| - | 英語版 SKILL.md にも同様の注記を追加 | - `plugins/work-kit/skills/work-start/SKILL.md` |
-| - | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | ステップ3の「出力」セクションに gitignore 注記を追加 | - `plugins/work-kit/skills/work-start/SKILL.jp.md` |
+| 済 | 英語版 SKILL.md にも同様の注記を追加 | - `plugins/work-kit/skills/work-start/SKILL.md` |
+| 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
