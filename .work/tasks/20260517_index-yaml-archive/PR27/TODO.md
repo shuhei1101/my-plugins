@@ -10,11 +10,11 @@ trim スクリプトを追加することで、`index.yaml` を常にアクテ�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | index.yaml に last_id フィールドを追加し、completed: true エントリを archive に移動 | - `.work/tasks/index.yaml`（ローカルのみ） |
-| - | trim スクリプトを作成（completed: true を index.archive.yaml へ移動） | - `plugins/work-kit/scripts/trim-index.py` |
-| - | index.archive.yaml を .gitignore に追加 | - `plugins/work-kit/templates/.work/tasks/.gitignore` |
-| - | work-start ステップ1を last_id 参照に更新 | - `plugins/work-kit/skills/work-start/SKILL.md`<br>- `plugins/work-kit/skills/work-start/SKILL.jp.md` |
-| - | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | index.yaml に last_id フィールドを追加し、completed: true エントリを archive に移動 | - `.work/tasks/index.yaml`（ローカルのみ） |
+| 済 | trim スクリプトを作成（completed: true を index.archive.yaml へ移動） | - `plugins/work-kit/scripts/trim-index.py` |
+| 済 | index.archive.yaml を .gitignore に追加 | - `plugins/work-kit/templates/.work/tasks/.gitignore` |
+| 済 | work-start ステップ1を last_id 参照に更新 | - `plugins/work-kit/skills/work-start/SKILL.md`<br>- `plugins/work-kit/skills/work-start/SKILL.jp.md` |
+| 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
