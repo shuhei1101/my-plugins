@@ -1,15 +1,15 @@
 """
-stop.py — Stop hook for work-kit
+stop.py — work-kit の Stop フック
 
-Reminds Claude to update completed tasks in the PR doc when a response ends.
-Injects a reminder into context when unchecked tasks exist in the current PR.
-Does not block (no decision: block) to avoid infinite loops during partial work.
+応答完了時に未完了タスクの更新を Claude に促す。
+現在の PR に未チェックのタスクがあれば context にリマインドを注入する。
+部分的な作業中の無限ループを避けるため decision: block は使用しない。
 
-Usage:
-  Installed and invoked automatically by Claude Code hooks. Do not run manually.
+使い方:
+  Claude Code フックから自動で呼び出される。直接実行しない。
 
-  Input  (stdin): JSON object sent by Claude Code (Stop event)
-  Output (stdout): JSON with hookSpecificOutput.additionalContext, or nothing
+  入力  (stdin): Claude Code が送る JSON（Stop イベント）
+  出力 (stdout): hookSpecificOutput.additionalContext を含む JSON、またはなし
 """
 
 # ── stdlib ──────────────────────────────────────────────────

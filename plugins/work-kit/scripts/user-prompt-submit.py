@@ -1,15 +1,15 @@
 """
-user-prompt-submit.py — UserPromptSubmit hook for work-kit
+user-prompt-submit.py — work-kit の UserPromptSubmit フック
 
-Injects the current PR's task status into Claude's context on every prompt.
-- In a PR worktree (branch matches PR{N}/...): injects task checklist from the PR doc.
-- On main branch: reminds to create a worktree for new work.
+プロンプト送信のたびに現在の PR タスク状況を Claude の context に注入する。
+- PR ワークツリー（ブランチが PR{N}/... の形式）: PR ドキュメントのタスク一覧を注入
+- main ブランチ: 新規作業時はワークツリーを作成するよう促す
 
-Usage:
-  Installed and invoked automatically by Claude Code hooks. Do not run manually.
+使い方:
+  Claude Code フックから自動で呼び出される。直接実行しない。
 
-  Input  (stdin): JSON object sent by Claude Code (UserPromptSubmit event)
-  Output (stdout): JSON with hookSpecificOutput.additionalContext
+  入力  (stdin): Claude Code が送る JSON（UserPromptSubmit イベント）
+  出力 (stdout): hookSpecificOutput.additionalContext を含む JSON
 """
 
 # ── stdlib ──────────────────────────────────────────────────

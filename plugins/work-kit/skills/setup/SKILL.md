@@ -1,20 +1,18 @@
 ---
 name: setup
 description: |
-  Install work-kit hook scripts into the current project and configure .claude/settings.json.
-  Manual invocation only — use /work-kit:setup to run.
+  Copy work-kit hook scripts into the current project's .claude/hooks/work-kit/ directory.
+  Hook configuration is applied automatically via hooks.json on plugin install.
+  Manual invocation only — use /work-kit:setup.
 disable-model-invocation: true
-allowed-tools: Bash Read Write
+allowed-tools: Bash
 ---
 
-# work-kit:setup — Install Hooks into Current Project
+# work-kit:setup — Copy Hook Scripts into Current Project
 
-Copies the work-kit hook scripts to `.claude/hooks/work-kit/` and adds hook
-configuration to `.claude/settings.json`.
-
-After installation:
-- `UserPromptSubmit`: injects PR task status into Claude's context on every prompt
-- `Stop`: injects a reminder when unchecked tasks exist in the current PR
+Copies the work-kit hook scripts to `.claude/hooks/work-kit/`.
+Hook configuration (hooks.json) is applied automatically on plugin install;
+this skill only handles placing the script files.
 
 Plugin scripts are at: `${CLAUDE_SKILL_DIR}/../../scripts/`
 
@@ -28,14 +26,9 @@ Plugin scripts are at: `${CLAUDE_SKILL_DIR}/../../scripts/`
 
 - Always — run this before anything else
 
-#### Input
-
-- Current directory (project root)
-
 #### Process
 
-1. Confirm the current directory is a Git repository
-2. Create `.claude/hooks/work-kit/`:
+1. Create `.claude/hooks/work-kit/`:
 
 ```bash
 mkdir -p .claude/hooks/work-kit
@@ -46,12 +39,6 @@ mkdir -p .claude/hooks/work-kit
 #### Output
 
 - `.claude/hooks/work-kit/` directory exists
-
-#### Notes
-
-##### Branching
-
-- Not a Git repository → stop and ask the user
 
 ---
 
@@ -88,79 +75,16 @@ cp "${CLAUDE_SKILL_DIR}/../../scripts/stop.py" .claude/hooks/work-kit/
 
 ---
 
-### Step 3: Add hook configuration to settings.json
+### Step 3: Verify installation
 
 #### Condition
 
-- Step 2 complete
-
-#### Input
-
-- `.claude/settings.json` (create from `{}` if it does not exist)
-
-#### Process
-
-1. Read `.claude/settings.json`
-2. Merge the following into the existing `hooks` key (do not overwrite existing entries):
-
-```json
-{
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python .claude/hooks/work-kit/user-prompt-submit.py"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python .claude/hooks/work-kit/stop.py"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-3. Save `.claude/settings.json`
-
-→ Proceed to Step 4
-
-#### Output
-
-- `.claude/settings.json` updated with work-kit hook configuration
-
-#### Notes
-
-##### Prohibitions
-
-- Do not delete existing hook entries — merge only
-- If `UserPromptSubmit` or `Stop` already exists, append to the array
-
----
-
-### Step 4: Verify installation
-
-#### Condition
-
-- All files created and settings updated
+- All files copied
 
 #### Process
 
 1. Confirm all installed files exist
 2. Report completion to the user
-
-#### Output
-
-- Installation complete report
 
 #### Notes
 
@@ -168,24 +92,3 @@ cp "${CLAUDE_SKILL_DIR}/../../scripts/stop.py" .claude/hooks/work-kit/
 
 - [ ] `.claude/hooks/work-kit/user-prompt-submit.py` — exists
 - [ ] `.claude/hooks/work-kit/stop.py` — exists
-- [ ] `.claude/settings.json` — contains `UserPromptSubmit` and `Stop` hook config
-
----
-
-## References
-
-### Hook behavior summary
-
-| Hook event | When | Action |
-|---|---|---|
-| `UserPromptSubmit` | After user submits prompt, before Claude processes it | Injects PR task status into Claude's context |
-| `Stop` | When Claude completes a response | Injects unchecked-task reminder into context |
-
-### Correspondence table
-
-| File path | Description |
-|---|---|
-| `.claude/hooks/work-kit/user-prompt-submit.py` | UserPromptSubmit hook script |
-| `.claude/hooks/work-kit/stop.py` | Stop hook script |
-| `.claude/settings.json` | Hook configuration (hooks key) |
-| `docs/tasks/**/PR{N}.md` | PR task documents referenced by the hook scripts |
