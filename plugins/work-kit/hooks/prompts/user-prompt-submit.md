@@ -29,7 +29,7 @@ Check whether a PR is in progress in the current session.
 2. Read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md`
 3. If unresolved QA entries exist — **stop here** — ask the user to resolve them; do nothing further
 4. If QA is clear (or empty), read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md`
-5. If the user's requested task is not already listed in TODO.md, add it before proceeding
+5. If the user's requested task is not already listed in TODO.md, add it and commit before proceeding
 6. Continue work according to the TODO
 
 #### Notes
