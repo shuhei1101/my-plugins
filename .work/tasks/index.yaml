@@ -45,3 +45,10 @@ prs:
     summary: 'テンプレートを共有配置に移動し、work-kit に update スキルを追加する'
     task: '20260516_add-update-skill'
     completed: true
+  - id: 6
+    title: 'PR6 — remove-vscode-workspace-step'
+    type: docs
+    tags: []
+    summary: 'work-start・merge スキルから VS Code ワークスペース管理ステップを削除する'
+    task: '20260516_remove-vscode-workspace-step'
+    completed: true
