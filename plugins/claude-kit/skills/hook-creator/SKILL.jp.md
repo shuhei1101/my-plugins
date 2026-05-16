@@ -26,7 +26,7 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 
 プロンプト注入の仕組み:
 - `UserPromptSubmit` フック: stdout テキスト → `<system-reminder>` として Claude に注入
-- `Stop` フック: stderr にテキストを書き出し + exit(2) → Claude が作業を継続する
+- `Stop` フック: stdout テキスト → Claude のコンテキストへ注入して作業を継続させる
 - `PreToolUse` フック: JSON `{"decision":"block","reason":"<プロンプト>"}` を stdout → ツール実行をブロックして指示注入
 
 ---
@@ -283,7 +283,7 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 #### [プラグイン用] Stop
 
 `stop_hook_active` チェックで無限ループを防止する。
-stderr にプロンプトテキストを書き出し、exit(2) で「ブロック継続」を伝える。
+stdout にプロンプトテキストを書き出すと Claude のコンテキストへ注入される（UserPromptSubmit と同じ方式）。
 
 ```json
 {
@@ -296,7 +296,7 @@ stderr にプロンプトテキストを書き出し、exit(2) で「ブロッ�
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); (sys.stderr.buffer.write(p.read_text('utf-8').encode('utf-8')),sys.exit(2)) if p.exists() else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
             ]
           }
@@ -320,7 +320,7 @@ stderr にプロンプトテキストを書き出し、exit(2) で「ブロッ�
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); (sys.stderr.buffer.write(p.read_text('utf-8').encode('utf-8')),sys.exit(2)) if p.exists() else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else None",
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.md"
             ]
           }
