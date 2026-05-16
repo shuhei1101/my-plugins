@@ -117,7 +117,7 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 ##### Branching
 
 - Simple rule → explain and offer to create in CLAUDE.md or rules instead
-- Primarily file-sync → offer to switch to `rules-creator`
+- Primarily file-sync → offer to switch to `rule-creator`
 - Mixed → suggest splitting and confirm scope of what the skill will cover
 
 ---
@@ -388,3 +388,78 @@ Tables or definitions referenced by multiple steps
 - [ ] `.claude/skills/<name>/SKILL.jp.md` — Japanese mirror, human reference
 - [ ] Both files have matching heading structure
 - [ ] `description` frontmatter has precise trigger conditions
+
+---
+
+## References
+
+### Step-based structure for skill files
+
+Each section follows this pattern:
+
+```markdown
+---
+name: <skill-name>
+description: |
+  Precise trigger conditions in English.
+  "When the user says X", "when editing Y", "when Z".
+---
+
+# Skill Name — One-line summary
+
+What this skill does in 1-2 sentences.
+
+---
+
+## Overview
+
+Background, purpose, why this skill exists.
+
+---
+
+## Tasks
+
+### Step N: (Action name)
+
+#### Condition
+(Preconditions to enter this step. Stop or branch if not met.)
+
+#### Input
+(Data, files, prior step output, or user input used in this step)
+
+#### Process
+(Numbered list of concrete actions. Include commands if applicable.)
+1. Do X
+→ Proceed to Step N+1 (or → Step N if <condition>)
+
+#### Output
+(What exists as a result of completing this step)
+
+#### Notes
+(Use only the subsections you need)
+
+##### Checklist
+- [ ] Item is done
+
+##### Branching
+("If X → go to Step N", "If Y → stop and ask the user")
+
+##### References
+(Files, URLs, or §References entries used in this step)
+
+---
+
+## References
+(Shared tables, definitions, or reference material used across multiple steps)
+```
+
+### `disable-model-invocation` usage
+
+| Setting | Behavior |
+|---|---|
+| Omitted (default) | Auto-fires when `description` conditions are met |
+| `disable-model-invocation: true` | Only fires on explicit `/skill-name` invocation — never auto-triggered |
+
+### Official docs
+
+- Skills: **https://code.claude.com/docs/en/skills**

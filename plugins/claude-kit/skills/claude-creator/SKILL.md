@@ -105,14 +105,14 @@ without loading that context at every session start.
 
    | If the content is… | Suggest |
    |---|---|
-   | Single-folder conventions or descriptions | ✅ CLAUDE.md (subfolder) if co-location is preferred. `.claude/rules/` is also valid if auditability (one place to see all rules) matters more |
+   | Single-folder conventions or descriptions | ✅ CLAUDE.md (subfolder) if co-location is preferred. `.claude/rules/` is also valid if auditability matters more |
    | Project-wide workflow or global conventions | ✅ CLAUDE.md (root) — correct choice |
    | Cross-path file sync ("edit X → also update Y, Z in different folders") | ⚠️ `.claude/rules/` is more appropriate |
    | A multi-step workflow with user interaction | ⚠️ `.claude/skills/` is more appropriate |
    | Mix of the above | ⚠️ Consider splitting across file types |
 
 2. If the content fits CLAUDE.md → confirm and proceed
-3. If a different file type is more appropriate → explain why and offer to redirect to `rules-creator` or `skill-creator`
+3. If a different file type is more appropriate → explain why and offer to redirect to `rule-creator` or `skill-creator`
 
 → Proceed to Step 3 if CLAUDE.md is confirmed appropriate
 
@@ -124,7 +124,7 @@ without loading that context at every session start.
 
 ##### Branching
 
-- Rules fit better → explain and offer to switch to `rules-creator`
+- Rules fit better → explain and offer to switch to `rule-creator`
 - Skill fits better → explain and offer to switch to `skill-creator`
 - Mixed → suggest splitting: CLAUDE.md for the folder description part, rules/skills for the rest
 
@@ -134,7 +134,7 @@ without loading that context at every session start.
 
 #### Condition
 
-- Step 1 complete
+- Step 2 complete
 
 #### Input
 
@@ -142,10 +142,9 @@ without loading that context at every session start.
 
 #### Process
 
-1. Write `CLAUDE.jp.md` (or `<subfolder>/CLAUDE.jp.md`) in Japanese using the step-based structure
-   (see §References for structure template)
-2. Put shared tables and cross-references in `## 参考資料` at the bottom
-3. Keep the file under ~200 lines — move domain-specific content to `.claude/rules/` if needed
+1. Write `CLAUDE.jp.md` (or `<subfolder>/CLAUDE.jp.md`) in Japanese following the structure
+   example in §References (not step-based — CLAUDE.md uses a description format, not a step format)
+2. Keep the file under ~200 lines — move domain-specific content to `.claude/rules/` if needed
 
 → Proceed to Step 4
 
@@ -218,63 +217,42 @@ without loading that context at every session start.
 
 ## References
 
-### Step-based structure for CLAUDE.md
+### Required sections for CLAUDE.md
+
+The same structure applies for both root and subfolder placements.
+
+| Section | Content | Required |
+|---|---|---|
+| Title | H1 heading | Required |
+| `## Overview` | Description of this project/folder | Required |
+| `## Folder Structure` | Table of paths and their descriptions | Recommended |
+| `## Constraints` | Rules Claude must always follow; prohibitions | Recommended |
+| (Other sections) | Add freely as needed | Optional |
+
+### Structure example
 
 ```markdown
-## 概要
-(What this folder/project does and how AI should work here — 1-3 sentences)
+# Project Name
 
-## 作業内容
+## Overview
 
-### ステップN: (Action name)
+Description of this project/folder.
 
-#### 条件
-(Preconditions to enter this step. If not met, stop or branch.)
+## Folder Structure
 
-#### 入力
-(Data, files, or context this step uses)
+| Path | Overview |
+|------|----------|
+| `src/` | Implementation code |
+| `docs/specs/` | Design specifications |
+| `.claude/` | Claude Code configuration |
 
-#### 処理内容
-(Numbered list of concrete actions. Include commands if applicable.)
-1. Do X
-2. Do Y
-   ```bash
-   command here
-   ```
-→ Proceed to Step N+1 (or → Step N if <condition>)
+## Constraints
 
-#### 出力
-(What exists as a result of completing this step)
+- Always run `npm test` before committing
+- Never push directly to `main`
 
-#### 補足
-
-##### チェックリスト
-(Items to verify before considering this step complete.
-Use "X is done" for required items, "X is not done" for prohibitions.)
-
-- [ ] X is done
-- [ ] X is not done
-
-##### 条件分岐
-("If X → go to Step N", "If Y → stop and ask the user")
-
-##### 参照ドキュメント
-(Files, URLs, or §References entries used in this step)
-
----
-
-## 参考資料
-(Shared tables, definitions, or reference material used across multiple steps)
+## {Additional sections (add freely as needed)}
 ```
-
-### CLAUDE.md vs `.claude/rules/` placement
-
-| Content | Where |
-|---|---|
-| Applies every session, any file | `CLAUDE.md` (root) |
-| Folder-specific descriptions and conventions | `CLAUDE.md` (subfolder) |
-| Applies only when reading/editing a specific file | `.claude/rules/<name>.md` with `paths:` |
-| Multi-step workflow procedure | `.claude/skills/<name>/SKILL.md` |
 
 ### Official docs
 

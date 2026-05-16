@@ -1,14 +1,13 @@
 ---
-name: rules-creator
+name: rule-creator
 description: |
   Create a new path-scoped rule under .claude/rules/ using the step-based structure.
   Trigger when the user says "新しいルール作って", "ルールを新規作成", "make a rule for X", or "create a rule for".
 ---
 
-# rules-creator — Path-Scoped Rule Creator
+# rule-creator — Path-Scoped Rule Creator
 
-Creates a new `.claude/rules/<name>.md` and its `.claude/rules-jp/<name>.md` mirror
-using the step-based structure.
+Creates a new `.claude/rules/<name>.md` and its `.claude/rules-jp/<name>.md` mirror.
 
 ---
 
@@ -181,7 +180,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ##### Branching
 
-- User chooses to merge → apply changes to the existing rule instead of creating a new file → skip to Step 6 (final verification)
+- User chooses to merge → apply changes to the existing rule instead of creating a new file → skip to Step 7 (final verification)
 
 ---
 
@@ -197,9 +196,8 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 #### Process
 
-1. Create `.claude/rules-jp/<name>.md` using the step-based structure (see §References)
+1. Create `.claude/rules-jp/<name>.md` following the structure example in §References
 2. Add the required JP mirror header at the top (after frontmatter, before H1)
-3. Create the cross-reference table in `## 参考資料` using the §References / Correspondence table template
 
 → Proceed to Step 6
 
@@ -224,12 +222,12 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 #### Input
 
-- JP mirror content from Step 4
+- JP mirror content from Step 5
 
 #### Process
 
 1. Translate line-by-line to English
-2. Create `.claude/rules/<name>.md` with the same step-based structure
+2. Create `.claude/rules/<name>.md` with the same structure
 3. Keep heading structure identical to the JP mirror
 
 → Proceed to Step 7
@@ -243,7 +241,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 ##### Prohibitions
 
 - Do not write the body in Japanese — this file is auto-loaded by Claude as directives
-- Keep heading structure and step numbering identical to the JP mirror
+- Keep heading structure identical to the JP mirror
 
 ---
 
@@ -273,69 +271,52 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ## References
 
-### Step-based structure for rule files
+### Required sections for rule files
+
+| Section | Content | Required |
+|---|---|---|
+| Frontmatter `paths:` | Glob patterns that trigger the rule | **Required** |
+| `## Overview` | Description of what this rule governs | Required |
+| `## Related Files` | File paths and their roles | Recommended |
+| `## When Editing` | Checklist of what to verify when any file in the domain changes | Recommended |
+
+### Structure example
 
 ```markdown
 ---
 paths:
-  - "<glob pattern covering the domain>"
+  - "src/models/**/*.py"
+  - "tests/test_models.py"
+  - "docs/specs/models.md"
 ---
 
-> ⚠️ **日本語ミラー** — Claude には読み込まれません。このファイルを更新したときは英語オリジナル `.claude/rules/<name>.md` を必ず同時に更新してください。
+> ⚠️ **Japanese mirror** — not loaded by Claude. When updating this file, always update the English original `.claude/rules/models.md` at the same time.
 
-# (Rule title in Japanese)
+## Overview
 
-## 概要
-(What this rule governs — 1-2 sentences)
+Rule linking implementation, tests, and specs for the models domain.
+When editing any file in this domain, check all the others too.
 
-## 作業内容
+These files are interdependent. Changing a model field requires updating
+both the tests and the spec to stay in sync.
 
-### ステップN: (Action name)
+## Related Files
 
-#### 条件
-(Preconditions to enter this step)
-
-#### 入力
-(Data, files, or context used in this step)
-
-#### 処理内容
-(Numbered list of actions. Include commands if applicable.)
-1. Do X
-→ Proceed to Step N+1
-
-#### 出力
-(What exists as a result of this step)
-
-#### 補足
-
-##### 禁止事項
-(Hard constraints — what must never be done)
-
-##### 条件分岐
-("If X → go to Step N", "If Y → stop and ask the user")
-
-##### 参照ドキュメント
-(Files, URLs, or §References entries used in this step)
-
-##### チェックリスト
-(Items to verify before considering this step complete)
-
----
-
-## 参考資料
-
-### Correspondence table template
-
-```markdown
-### 対応表
-
-| ファイルパス | 概要 |
+| File path | Role |
 |---|---|
-| `<config>` | Configuration file |
-| `src/<domain>/` | Implementation files |
-| `docs/specs/<doc>.md` | Design specification |
-| `.claude/rules/<name>.md` | This rule file |
-```
+| `src/models/**/*.py` | Implementation |
+| `tests/test_models.py` | Tests |
+| `docs/specs/models.md` | Specification |
+| `.claude/rules/models.md` | This rule |
+
+## When Editing
+
+Always check all other files in this domain:
+- [ ] Implementation and tests are consistent
+- [ ] New fields are covered by tests
+- [ ] Spec reflects current behavior and records the reason for the change
+
+## {Additional sections (add freely as needed)}
 ```
 
 ### Official docs
