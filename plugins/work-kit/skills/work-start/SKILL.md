@@ -43,7 +43,7 @@ This prevents task documents from being created in the main repository.
 
 #### Process
 
-1. Ask the user for:
+1. Determine the following:
    - **Title**: short kebab-case label used in the folder name
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **TODO list**: what will be done this PR (becomes the checklist)
@@ -171,15 +171,18 @@ All files must be created **inside the worktree (`../repo-wt-PR{N}/`)**, not the
 
 ---
 
-### Step 8: Report and wait for approval
+### Step 8: Commit created content, then report to user
 
 #### Process
 
-1. Report what was created: branch name, worktree path, TODO.md path, spec path
-2. Wait for user approval before starting implementation
+1. Commit all created files inside the worktree (branch: `PR{N}/{type}/{title}`)
+2. Report what was created: branch name, worktree path, TODO.md path, spec path
+3. Wait for user approval before starting implementation
 
 #### Notes
 
 ##### Prohibitions
 
+- Do not report to the user before committing (always: commit → then report)
 - Do not start implementation without explicit user approval
+- Never commit to anywhere other than the created worktree (`PR{N}/{type}/{title}` branch)
