@@ -18,7 +18,7 @@ from pathlib import Path
 
 # ── constants ───────────────────────────────────────────────
 # スクリプト自身の位置からテンプレートフォルダを解決する
-TEMPLATE_DIR = Path(__file__).parent.parent / "skills" / "setup" / "template" / "docs"
+TEMPLATE_DIR = Path(__file__).parent.parent / "skills" / "setup" / "templates" / "docs"
 
 # ── private helpers ─────────────────────────────────────────
 def _expand(template_dir: Path, target_dir: Path) -> None:
