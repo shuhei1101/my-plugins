@@ -1,0 +1,23 @@
+# PR22 — sync-master-commit-guard-with-guard-kit
+
+## 概要
+
+master-commit-guard フックを guard-kit の git-guard と同じパターンに統一する。
+
+現状（PR21 後）: フック自体はトークンを作成せず、常時ブロック。
+目標: guard-kit と同じ「1回目ブロック+トークン作成、2回目トークン消費でALLOW」パターン。
+worktree 対応（cd / git -C パス検出）は維持する。
+
+## 作業内容
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| - | hooks.json を guard-kit パターンに合わせる（トークン作成+ブロック → 2回目ALLOW）＋ worktree 対応維持 | - `plugins/work-kit/hooks/hooks.json` |
+| - | master-commit-guard.md を git-guard.md スタイルに更新（ユーザー確認を即時強制指示） | - `plugins/work-kit/hooks/prompts/master-commit-guard.md` |
+| - | master-commit-guard.jp.md を同様に更新 | - `plugins/work-kit/hooks/prompts/master-commit-guard.jp.md` |
+| - | work-kit バージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+
+## 参考ドキュメント
+
+- `plugins/guard-kit/hooks/hooks.json`: 参照元パターン
+- `plugins/guard-kit/hooks/prompts/git-guard.md`: 参照元プロンプト
