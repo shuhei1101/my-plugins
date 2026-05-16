@@ -1,22 +1,31 @@
 ---
 name: setup
 description: |
-  Initialize the work-kit document structure (tasks dir, index.yaml, qa.md) in the current project.
+  Initialize the work-kit document structure in the current project by running the setup script.
+  Creates docs/tasks/, docs/specs/, and docs/QA.md from templates.
   Manual invocation only — use /work-kit:setup.
 disable-model-invocation: true
-allowed-tools: Bash Read Write
+allowed-tools: Bash
 ---
 
 # work-kit:setup — Initialize Document Structure
 
-Creates the task management folder, PR index (`index.yaml`), and QA documents
-in the current project. Run once when adopting work-kit in a new project.
+Expands the plugin's template into the project's docs directory.
+The Python script handles file creation; Claude does not create files directly.
+
+Expanded structure:
+```
+{docs_dir}/
+├── tasks/      # Task / PR folders (created dynamically by work-start)
+├── specs/      # Specification documents (empty initially)
+└── QA.md       # Open questions
+```
 
 ---
 
 ## Tasks
 
-### Step 1: Confirm the tasks directory location
+### Step 1: Confirm the docs directory path
 
 #### Condition
 
@@ -24,18 +33,17 @@ in the current project. Run once when adopting work-kit in a new project.
 
 #### Process
 
-1. Ask the user for the tasks directory path (default: `docs/tasks/`)
-2. If the path already exists, confirm before proceeding
+1. Ask the user for the docs directory path (default: `docs`)
 
 → Proceed to Step 2
 
 #### Output
 
-- Tasks directory path is confirmed
+- Docs directory path confirmed
 
 ---
 
-### Step 2: Create the directory and files
+### Step 2: Run the setup script
 
 #### Condition
 
@@ -43,38 +51,17 @@ in the current project. Run once when adopting work-kit in a new project.
 
 #### Process
 
-1. Create the tasks directory
-2. Create `{tasks_dir}/index.yaml`:
+1. Run:
 
-```yaml
-prs: []
-```
-
-3. Create `{tasks_dir}/qa.md`:
-
-```markdown
-# QA — Open Questions
-
-## In Progress
-
-<!-- Record unresolved design and implementation questions here -->
-```
-
-4. Create `{tasks_dir}/qa_history.md`:
-
-```markdown
-# QA History — Resolved
-
-<!-- Move resolved items here from qa.md -->
+```bash
+python "${CLAUDE_SKILL_DIR}/../../scripts/setup.py" {docs_dir}
 ```
 
 → Proceed to Step 3
 
 #### Output
 
-- `{tasks_dir}/index.yaml` created
-- `{tasks_dir}/qa.md` created
-- `{tasks_dir}/qa_history.md` created
+- Template expanded to `{docs_dir}`
 
 ---
 
@@ -82,13 +69,13 @@ prs: []
 
 #### Process
 
-1. Confirm all files exist
+1. Confirm script output shows no errors
 2. Report completion to the user
 
 #### Notes
 
 ##### Checklist
 
-- [ ] `{tasks_dir}/index.yaml` — exists
-- [ ] `{tasks_dir}/qa.md` — exists
-- [ ] `{tasks_dir}/qa_history.md` — exists
+- [ ] `{docs_dir}/tasks/` — exists
+- [ ] `{docs_dir}/specs/` — exists
+- [ ] `{docs_dir}/QA.md` — exists

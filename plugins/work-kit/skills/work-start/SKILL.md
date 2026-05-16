@@ -1,8 +1,8 @@
 ---
 name: work-start
 description: |
-  Start a new PR: determine the next PR number, collect info from the user, create a worktree
-  and branch, create the PR task document and folder, and add an entry to index.yaml.
+  Start a new PR: create the task folder, PR folder, and TODO.md, update the relevant spec
+  in docs/specs/, record unknowns in docs/QA.md, then create the worktree and branch.
   Trigger when the user says "新しい PR を作って", "新しい作業を始めたい", "work-start して",
   "start new work", or "create a new PR".
 allowed-tools: Bash Read Write
@@ -10,8 +10,8 @@ allowed-tools: Bash Read Write
 
 # work-kit:work-start — Start a New PR
 
-Creates a worktree, branch, PR task document, and index.yaml entry for a new PR.
-Waits for user approval before implementation begins.
+Creates the task/PR folder structure with TODO.md, maintains the spec and QA documents,
+then sets up the worktree. Waits for user approval before implementation begins.
 
 ---
 
@@ -25,18 +25,18 @@ Waits for user approval before implementation begins.
 
 #### Process
 
-1. Read `docs/tasks/index.yaml`
-2. Next PR number = max `id` in the `prs` list + 1 (1 if the list is empty)
+1. Scan all `PR{N}/` folders under `docs/tasks/` to find the maximum N
+2. Next PR number = max N + 1 (1 if no folders exist)
 
 → Proceed to Step 2
 
 #### Output
 
-- Next PR number confirmed (e.g., 171)
+- Next PR number confirmed
 
 ---
 
-### Step 2: Collect PR information
+### Step 2: Collect request details
 
 #### Condition
 
@@ -45,20 +45,21 @@ Waits for user approval before implementation begins.
 #### Process
 
 1. Ask the user for:
+   - **Title**: short kebab-case label used in the folder name
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
-   - **Description**: kebab-case short identifier (e.g., `add-bgm-feature`)
-   - **Summary**: one-line PR summary
-   - **Task list**: what will be done (becomes the checklist)
+   - **TODO list**: what will be done this PR (becomes the checklist)
+   - **Spec**: does a related spec exist in `docs/specs/`? Or does one need to be created?
+   - **Open questions**: anything unclear or undecided
 
 → Proceed to Step 3
 
 #### Output
 
-- PR type, description, summary, and task list confirmed
+- Title, type, TODO list, spec info, and open questions confirmed
 
 ---
 
-### Step 3: Create the worktree and branch
+### Step 3: Create task folder, PR folder, and TODO.md
 
 #### Condition
 
@@ -66,18 +67,104 @@ Waits for user approval before implementation begins.
 
 #### Process
 
-1. Create a worktree with a new branch:
+1. Create `docs/tasks/{YYYYMMDD}_{title}/`
+2. Create `docs/tasks/{YYYYMMDD}_{title}/PR{N}/`
+3. Create `docs/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md`:
 
-```bash
-git worktree add -b PR{N}/{type}/{description} ../$(basename $(pwd))-wt-PR{N}
+```markdown
+# PR{N} — {title}
+
+## 仕様参照
+
+<!-- 関連仕様書へのリンク -->
+<!-- 例: [機能名](../../../specs/{spec-name}.md) -->
+
+## TODO
+
+{each task as: - [ ] task}
+
+## 変更ファイル
+
+<!-- Fill in after committing -->
 ```
 
 → Proceed to Step 4
 
 #### Output
 
+- `docs/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` created
+
+---
+
+### Step 4: Maintain the spec document
+
+#### Condition
+
+- Step 3 complete
+
+#### Process
+
+1. Check `docs/specs/` for a related spec
+2. If found → update the relevant sections for this PR
+3. If not found → create a new spec file:
+
+```markdown
+# {Feature Name} Spec
+
+## Overview
+
+{overview}
+
+## Details
+
+{specification}
+```
+
+4. Add a link to the spec in TODO.md's `## 仕様参照` section
+
+→ Proceed to Step 5
+
+#### Output
+
+- Spec document exists and is linked from TODO.md
+
+---
+
+### Step 5: Record open questions in QA.md
+
+#### Condition
+
+- Step 4 complete
+
+#### Process
+
+1. Append any open questions from Step 2 to the `## 進行中` section of `docs/QA.md`
+2. Skip if there are no open questions
+
+→ Proceed to Step 6
+
+---
+
+### Step 6: Create the worktree and branch
+
+#### Condition
+
+- Step 5 complete
+
+#### Process
+
+1. Create the worktree:
+
+```bash
+git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
+```
+
+→ Proceed to Step 7
+
+#### Output
+
 - Worktree created at `../repo-wt-PR{N}`
-- Branch `PR{N}/{type}/{description}` exists
+- Branch `PR{N}/{type}/{title}` exists
 
 #### Notes
 
@@ -87,84 +174,12 @@ git worktree add -b PR{N}/{type}/{description} ../$(basename $(pwd))-wt-PR{N}
 
 ---
 
-### Step 4: Create the PR task document
-
-#### Condition
-
-- Step 3 complete
+### Step 7: Report and wait for approval
 
 #### Process
 
-1. Create the task folder: `docs/tasks/{YYYYMMDD}_{description}/`
-2. Create the PR document: `docs/tasks/{YYYYMMDD}_{description}/PR{N}.md`
-
-Template:
-
-```markdown
-# PR{N} — {summary}
-
-## 概要
-
-{summary}
-
-## 作業内容
-
-{each task item as: - [ ] task}
-
-## 変更ファイル
-
-<!-- Fill in after committing -->
-```
-
-→ Proceed to Step 5
-
-#### Output
-
-- `docs/tasks/{YYYYMMDD}_{description}/PR{N}.md` created
-
----
-
-### Step 5: Add entry to index.yaml
-
-#### Condition
-
-- Step 4 complete
-
-#### Process
-
-1. Append to the `prs` list in `docs/tasks/index.yaml`:
-
-```yaml
-- id: {N}
-  title: 'PR{N} — {summary}'
-  type: {type}
-  tags: []
-  summary: '{summary}'
-  completed: false
-  task: '{YYYYMMDD}_{description}'
-```
-
-→ Proceed to Step 6
-
-#### Output
-
-- `docs/tasks/index.yaml` updated with the new PR entry
-
----
-
-### Step 6: Report and wait for approval
-
-#### Process
-
-1. Report what was created:
-   - Branch name
-   - Worktree path
-   - PR document path
+1. Report what was created: branch name, worktree path, TODO.md path, spec path
 2. Wait for user approval before starting implementation
-
-#### Output
-
-- User has reviewed and approved
 
 #### Notes
 
