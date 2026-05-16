@@ -62,7 +62,7 @@ index.yaml にエントリを追加してからワークツリーを準備する
 
 ---
 
-### ステップ3: タスク・PR フォルダと TODO.md を作成する
+### ステップ3: タスク・PR フォルダと TODO.md・QA.md を作成する
 
 #### 条件
 
@@ -73,12 +73,14 @@ index.yaml にエントリを追加してからワークツリーを準備する
 1. タスクフォルダを作成する: `.work/tasks/{YYYYMMDD}_{title}/`
 2. PR フォルダを作成する: `.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
 3. TODO.md を作成する（テンプレート: `.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` 参照）
+4. QA.md を作成する（テンプレート: `.work/tasks/yyyymmdd_xxx/PRXXX/QA.md` 参照）
 
 → ステップ4へ進む
 
 #### 出力
 
 - `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` 作成済み
+- `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` 作成済み
 
 ---
 
@@ -135,7 +137,7 @@ index.yaml にエントリを追加してからワークツリーを準備する
 
 #### 処理内容
 
-1. ステップ2で確認した不明点を `.work/QA.md` に QA-XXX として追記する
+1. ステップ2で確認した不明点を `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` に QA-XXX として追記する
 2. 不明点がない場合はスキップする
 
 → ステップ7へ進む

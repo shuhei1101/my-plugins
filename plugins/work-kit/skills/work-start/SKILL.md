@@ -61,7 +61,7 @@ Waits for user approval before implementation begins.
 
 ---
 
-### Step 3: Create task folder, PR folder, and TODO.md
+### Step 3: Create task folder, PR folder, TODO.md, and QA.md
 
 #### Condition
 
@@ -72,12 +72,14 @@ Waits for user approval before implementation begins.
 1. Create `.work/tasks/{YYYYMMDD}_{title}/`
 2. Create `.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
 3. Create `TODO.md` using the template at `.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md`
+4. Create `QA.md` using the template at `.work/tasks/yyyymmdd_xxx/PRXXX/QA.md`
 
 → Proceed to Step 4
 
 #### Output
 
 - `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` created
+- `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` created
 
 ---
 
@@ -134,7 +136,7 @@ Waits for user approval before implementation begins.
 
 #### Process
 
-1. Append any open questions from Step 2 to `.work/QA.md` as QA-XXX entries
+1. Append any open questions from Step 2 to `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` as QA-XXX entries
 2. Skip if there are no open questions
 
 → Proceed to Step 7

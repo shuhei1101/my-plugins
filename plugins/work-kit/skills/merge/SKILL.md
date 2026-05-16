@@ -103,7 +103,7 @@ git branch -d PR{N}/{type}/{title}
 
 #### Process
 
-1. Review `.work/QA.md` and move resolved items to the `## 解決済み` section
+1. Review `.work/tasks/{date}_{title}/PR{N}/QA.md` and confirm any remaining unresolved entries with the user
 2. Commit if there are changes:
 
 ```bash

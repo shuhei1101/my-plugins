@@ -106,7 +106,7 @@ git branch -d PR{N}/{type}/{title}
 
 #### 処理内容
 
-1. `.work/QA.md` を確認し、決定済みの事項を「解決済み」セクションへ移す
+1. `.work/tasks/{date}_{title}/PR{N}/QA.md` を確認し、未解決エントリがあればユーザーに確認する
 2. 変更があればコミットする:
 
 ```bash
