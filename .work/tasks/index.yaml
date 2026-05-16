@@ -107,4 +107,4 @@ prs:
     tags: []
     summary: 'work-start スキルのステップ2確認文削除・ステップ8にコミット→報告順追加・禁止事項にワークツリー外コミット禁止を追加'
     task: '20260516_fix-work-start-skill'
-    completed: false
+    completed: true
