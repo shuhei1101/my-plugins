@@ -9,7 +9,7 @@
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib,re,tempfile,subprocess as sp; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+commit\\b',cmd) else None; r=sp.run(['git','branch','--show-current'],capture_output=True,text=True); sys.exit(0) if r.returncode!=0 or r.stdout.strip() not in ('master','main') else None; token=pathlib.Path(tempfile.gettempdir())/f'work-kit-master-commit-guard-{d.get(\"session_id\",\"default\")}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "import sys,json,pathlib,re,subprocess as sp,os; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit(\\s+-C\\s+\\S+)?\\s+commit\\b',cmd) else None; mc=re.search(r'\\bgit\\s+-C\\s+(\\S+)\\s+commit\\b',cmd); mcd=None if mc else re.search(r'(?:^|[;&|])\\s*cd\\s+(\\S+)',cmd); gd=mc.group(1) if mc else (mcd.group(1) if mcd else None); ga=['git','-C',os.path.normpath(os.path.join(os.getcwd(),gd))] if gd else ['git']; r=sp.run(ga+['branch','--show-current'],capture_output=True,text=True); sys.exit(0) if r.returncode!=0 or r.stdout.strip() not in ('master','main') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/master-commit-guard.md"
             ]
           }
