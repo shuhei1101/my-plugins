@@ -69,7 +69,6 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
    - **Skill name** — kebab-case identifier (e.g. `pr-pick`, `topic-generate`, `notify`)
    - **Trigger conditions** — when should this skill auto-fire? Be specific: "when the user says X", "when editing Y file", "when Z condition is met"
    - **What it does** — the workflow steps at a high level
-   - **`disable-model-invocation`** — set to `true` if the skill should only fire on explicit `/skill-name` invocation, never auto-triggered
 
 2. Map the workflow into steps using the structure:
    - Each step has: Condition, Input, Process, Output, Notes
@@ -359,9 +358,6 @@ Tables or definitions referenced by multiple steps
 
 #### Notes
 
-##### Branching
-
-- If `disable-model-invocation: true` needed → add it to the frontmatter (skill will only fire on explicit `/skill-name`, never auto-triggered)
 
 ---
 
@@ -453,12 +449,20 @@ Background, purpose, why this skill exists.
 (Shared tables, definitions, or reference material used across multiple steps)
 ```
 
-### `disable-model-invocation` usage
+### Frontmatter basics
 
-| Setting | Behavior |
-|---|---|
-| Omitted (default) | Auto-fires when `description` conditions are met |
-| `disable-model-invocation: true` | Only fires on explicit `/skill-name` invocation — never auto-triggered |
+```yaml
+---
+name: {skill-name}
+description: |
+  Precise trigger conditions in English.
+  "When the user says X", "when editing Y", "when Z".
+---
+```
+
+Only `name` and `description` are needed. Do not add `allowed-tools`.
+
+Do not use `disable-model-invocation: true` by default. **Exception**: add it for skills that must only be run by a human explicitly — merge, deploy, destructive operations — where AI self-invocation is unacceptable.
 
 ### Official docs
 
