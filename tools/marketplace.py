@@ -15,7 +15,10 @@ python tools/marketplace.py add <ブランチ名>
 # 指定ブランチの指定プラグインをインストール [-l でローカルスコープ]
 python tools/marketplace.py install <ブランチ名> <プラグイン名> [-l]
 
-# マーケットプレイス追加 + 全プラグインをインストール/更新 [-l でローカルスコープ]
+# メインマーケットプレイスの全プラグインをインストール/更新（削除済みは自動アンインストール）
+python tools/marketplace.py sync [-l]
+
+# 指定ブランチのマーケットプレイスを追加 + 全プラグインをインストール/更新 [-l でローカルスコープ]
 python tools/marketplace.py sync <ブランチ名> [-l]
 
 # マーケットプレイス追加 + master と差分のあるプラグインのみインストール [-l でローカルスコープ]
@@ -61,8 +64,8 @@ def parse_args() -> argparse.Namespace:
     install_parser.add_argument("plugin", help="プラグイン名")
     install_parser.add_argument("-l", "--local", action="store_true", help="ローカルスコープでインストール")
 
-    sync_parser = sub.add_parser("sync", help="マーケットプレイス追加/更新 + 全プラグインをインストール/更新（迷ったらこれ）")
-    sync_parser.add_argument("branch", help="対象のGitブランチ名")
+    sync_parser = sub.add_parser("sync", help="全プラグインをインストール/更新（省略時はメイン、ブランチ指定も可）")
+    sync_parser.add_argument("branch", nargs="?", default=None, help="対象のGitブランチ名（省略時はメインマーケットプレイス）")
     sync_parser.add_argument("-l", "--local", action="store_true", help="ローカルスコープでインストール")
 
     install_diff_parser = sub.add_parser("install-diff", help="マーケットプレイス追加 + master と差分のあるプラグインのみインストール")
@@ -395,20 +398,51 @@ def cmd_install(branch: str, plugin_name: str, *, local: bool = False) -> None:
     run_claude_cmd(["plugin", "install", plugin_full, "--scope", scope])
 
 
-def cmd_sync(branch: str, *, local: bool = False) -> None:
-    """マーケットプレイスを追加/更新し、全プラグインをインストール/更新する。
+def uninstall_removed_plugins(available: list[str], marketplace_key: str) -> None:
+    """インストール済みだが利用可能リストにないプラグインをアンインストールする。
 
-    :param branch: 対象のGitブランチ名
+    :param available: 現在利用可能なプラグイン名のリスト
+    :param marketplace_key: 対象マーケットプレイスのキー名
+    """
+    installed: list[str] = get_installed_plugins(marketplace_key)
+    installed_names: list[str] = [p.rsplit("@", 1)[0] for p in installed]
+    to_remove: list[str] = [p for p in installed_names if p not in available]
+    if not to_remove:
+        return
+    print(f"削除されたプラグインをアンインストール中 ({len(to_remove)} 個)...")
+    for p in to_remove:
+        run_claude_cmd(["plugin", "uninstall", f"{p}@{marketplace_key}"], allow_fail=True)
+    print()
+
+
+def cmd_sync(branch: str | None = None, *, local: bool = False) -> None:
+    """全プラグインをインストール/更新し、削除済みプラグインをアンインストールする。
+
+    :param branch: 対象のGitブランチ名（None の場合はメインマーケットプレイスを使用）
     :param local: True ならローカルスコープでインストール
 
-    - マーケットプレイスが未登録なら追加、登録済みなら最新に更新する
-    - 利用可能な全プラグインをインストール（インストール済みなら update、未インストールなら install）
-    """
-    key: str = add_marketplace(branch)
+    branch 省略時:
+    - メインマーケットプレイス（KEY_PREFIX）を update して最新化
+    - 利用可能な全プラグインを install/update
+    - インストール済みだが利用可能リストにないプラグインを自動アンインストール
 
-    plugins: list[str] = get_available_plugins(key)
-    if plugins:
-        install_plugins(plugins, key, local=local)
+    branch 指定時:
+    - 指定ブランチのマーケットプレイスを追加/更新
+    - 同上
+    """
+    if branch is None:
+        key: str = KEY_PREFIX
+        print(f"メインマーケットプレイスを更新中: {key}")
+        run_claude_cmd(["plugin", "marketplace", "update", key])
+        print()
+    else:
+        key = add_marketplace(branch)
+
+    available: list[str] = get_available_plugins(key)
+    uninstall_removed_plugins(available, key)
+
+    if available:
+        install_plugins(available, key, local=local)
     else:
         print("利用可能なプラグインが見つかりませんでした。")
 
