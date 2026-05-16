@@ -21,21 +21,21 @@ One folder per task (`{YYYYMMDD}_{title}/`), containing one or more PR folders (
 A single task may span multiple PRs.
 
 `TODO.md` is the single source of truth for what a PR does. Create it before starting implementation and keep it current throughout. Mark completed tasks as `- [x]`; confirm all items are checked before merging.
-When scope changes, update `TODO.md` before continuing implementation — a doc that lags behind the actual work is worse than none.
+When scope changes, update `TODO.md` before continuing implementation — the doc leads the work.
 
 ### specs/
 
-Flat structure (**no subfolders**). Follow the one-fact-one-document principle: never duplicate content across files; use links instead.
+Flat structure (**no subfolders**). One-fact-one-document: never duplicate content across files; use links instead.
 
 Update specs whenever implementation changes documented behavior.
-When an unresolved question arises while writing a spec, record it immediately in `QA.md` — do not leave `TBD` or `要検討` markers in the spec body.
+When an unresolved question arises, record it in `QA.md` immediately — do not leave `TBD` or `要検討` in the spec body.
 
 ### QA.md
 
-Records unresolved design and implementation questions. Two sections: `## 進行中` (open) and `## 解決済み` (resolved).
+Records unresolved design and implementation questions as QA-XXX numbered entries.
 
 Add entries immediately when questions arise. Always include a recommended approach with reasoning — deferring without a recommendation is not allowed.
-When resolved: reflect the decision in the relevant spec, then move the entry to `## 解決済み` and remove it from `## 進行中` entirely.
+When the user decides: reflect the decision in the relevant spec/document, then delete the QA entry from this file.
 
 ---
 

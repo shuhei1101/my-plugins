@@ -5,7 +5,3 @@
 3. Determine the request type:
    - Continuation of existing PR → continue in the correct worktree
    - New work → run `/work-kit:work-start` first
-
-For detailed rules:
-- Creating or updating TODO.md → use `/work-kit:todo`
-- Recording or closing a QA entry → use `/work-kit:qa`
