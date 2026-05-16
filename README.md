@@ -3,7 +3,7 @@
 ## 推奨コマンド
 - **マーケットプレイス追加 + 全プラグインをインストール/更新**
 ```bash
-python tools/marketplace.py sync
+python tools/marketplace.py upgrade
 ```
 
 - **ローカル編集したプラグインを一括同期**
