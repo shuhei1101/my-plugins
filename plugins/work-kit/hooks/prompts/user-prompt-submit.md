@@ -25,10 +25,12 @@ Check whether a PR is in progress in the current session.
 
 #### Process
 
-1. Read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md`
-2. If unresolved QA entries exist — **stop here** — ask the user to resolve them; do nothing further
-3. If QA is clear (or empty), read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md`
-4. Continue work according to the TODO
+1. Use `git worktree list` to locate the in-progress PR's worktree and navigate to it
+2. Read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md`
+3. If unresolved QA entries exist — **stop here** — ask the user to resolve them; do nothing further
+4. If QA is clear (or empty), read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md`
+5. If the user's requested task is not already listed in TODO.md, add it before proceeding
+6. Continue work according to the TODO
 
 #### Notes
 
