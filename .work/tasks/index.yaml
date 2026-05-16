@@ -52,3 +52,10 @@ prs:
     summary: 'work-start・merge スキルから VS Code ワークスペース管理ステップを削除する'
     task: '20260516_remove-vscode-workspace-step'
     completed: true
+  - id: 7
+    title: 'PR7 — git-guard-hook'
+    type: feat
+    tags: []
+    summary: 'git push / git merge 実行前に毎回無条件でユーザー確認を求める PreToolUse フックを追加'
+    task: '20260516_git-guard-hook'
+    completed: true
