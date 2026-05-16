@@ -141,6 +141,7 @@ How prompt injection works:
 ##### Important
 
 - `Stop` hook prompts should be imperative commands: "Do X", "Verify Y before finishing"
+- **Keep `Stop` hook prompts short** — the `reason` text is printed to stdout and shown directly on the user's screen; a long prompt floods the terminal
 - `UserPromptSubmit` hook prompts are treated as `<system-reminder>` — best for injecting context or standing instructions
 
 ---
