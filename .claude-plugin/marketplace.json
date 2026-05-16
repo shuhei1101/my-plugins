@@ -36,6 +36,12 @@
       "source": "./plugins/yaml-rule",
       "description": "YAML file management conventions for assets and project configuration — index.yaml, settings.yaml, and developer note standards",
       "version": "1.0.0"
+    },
+    {
+      "name": "work-kit",
+      "source": "./plugins/work-kit",
+      "description": "Hook-based project lifecycle management — injects PR task context on every prompt and reminds task updates on stop",
+      "version": "1.0.0"
     }
   ]
 }
