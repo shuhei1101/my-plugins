@@ -1,6 +1,7 @@
 ---
 created_at: YYYY-MM-DD
-updated_at: YYYY-MM-DD
+updates:
+  - YYYY-MM-DD — {更新内容}
 related_specs:
   - {related-spec}.md
 related_prs:
