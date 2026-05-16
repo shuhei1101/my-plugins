@@ -3,6 +3,7 @@
 
 [work-kit] 応答を完了する前に確認すること:
 
-1. 進行中の PR の `TODO.md` を更新し、完了したタスクを `- [x]` にチェックする
-2. 全項目が `- [x]` になっていれば `/work-kit:merge` を提案する
-   （merge スキルが `index.yaml` の `completed: true` 更新とクリーンアップを担う）
+1. `.work/tasks/index.yaml` を読んで `completed: false` の PR を特定する
+2. 該当する `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` を更新し、完了したタスクを `- [x]` にチェックする
+3. 全項目が `- [x]` になっていれば `/work-kit:merge` を提案する
+   （merge スキルが `.work/tasks/index.yaml` の `completed: true` 更新とクリーンアップを担う）
