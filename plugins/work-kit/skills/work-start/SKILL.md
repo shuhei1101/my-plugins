@@ -1,8 +1,9 @@
 ---
 name: work-start
 description: |
-  Start a new PR: create the task folder, PR folder, and TODO.md, update the relevant spec
-  in .work/specs/, record unknowns in .work/QA.md, then create the worktree and branch.
+  Start a new PR: create the task folder, PR folder, TODO.md, add an entry to index.yaml,
+  update the relevant spec in .work/specs/, record unknowns in .work/QA.md, then create
+  the worktree and branch.
   Trigger when the user says "新しい PR を作って", "新しい作業を始めたい", "work-start して",
   "start new work", or "create a new PR".
 allowed-tools: Bash Read Write
@@ -10,8 +11,9 @@ allowed-tools: Bash Read Write
 
 # work-kit:work-start — Start a New PR
 
-Creates the task/PR folder structure with TODO.md, maintains the spec and QA documents,
-then sets up the worktree. Waits for user approval before implementation begins.
+Creates the task/PR folder structure with TODO.md, adds an entry to index.yaml,
+maintains the spec and QA documents, then sets up the worktree.
+Waits for user approval before implementation begins.
 
 ---
 
@@ -25,8 +27,8 @@ then sets up the worktree. Waits for user approval before implementation begins.
 
 #### Process
 
-1. Scan all `PR{N}/` folders under `.work/tasks/` to find the maximum N
-2. Next PR number = max N + 1 (1 if no folders exist)
+1. Read `.work/tasks/index.yaml`
+2. Next PR number = max `id` in the `prs` list + 1 (1 if the list is empty)
 
 → Proceed to Step 2
 
@@ -69,24 +71,7 @@ then sets up the worktree. Waits for user approval before implementation begins.
 
 1. Create `.work/tasks/{YYYYMMDD}_{title}/`
 2. Create `.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
-3. Create `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md`:
-
-```markdown
-# PR{N} — {title}
-
-## 仕様参照
-
-<!-- 関連仕様書へのリンク -->
-<!-- 例: [機能名](../../../specs/{spec-name}.md) -->
-
-## TODO
-
-{each task as: - [ ] task}
-
-## 変更ファイル
-
-<!-- Fill in after committing -->
-```
+3. Create `TODO.md` using the template at `.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md`
 
 → Proceed to Step 4
 
@@ -96,7 +81,7 @@ then sets up the worktree. Waits for user approval before implementation begins.
 
 ---
 
-### Step 4: Maintain the spec document
+### Step 4: Add entry to index.yaml
 
 #### Condition
 
@@ -104,33 +89,27 @@ then sets up the worktree. Waits for user approval before implementation begins.
 
 #### Process
 
-1. Check `.work/specs/` for a related spec
-2. If found → update the relevant sections for this PR
-3. If not found → create a new spec file:
+1. Append to the `prs` list in `.work/tasks/index.yaml`:
 
-```markdown
-# {Feature Name} Spec
-
-## Overview
-
-{overview}
-
-## Details
-
-{specification}
+```yaml
+- id: {N}
+  title: 'PR{N} — {title}'
+  type: {type}
+  tags: []
+  summary: '{summary}'
+  task: '{YYYYMMDD}_{title}'
+  completed: false
 ```
-
-4. Add a link to the spec in TODO.md's `## 仕様参照` section
 
 → Proceed to Step 5
 
 #### Output
 
-- Spec document exists and is linked from TODO.md
+- `.work/tasks/index.yaml` updated with the new PR entry
 
 ---
 
-### Step 5: Record open questions in QA.md
+### Step 5: Maintain the spec document
 
 #### Condition
 
@@ -138,18 +117,35 @@ then sets up the worktree. Waits for user approval before implementation begins.
 
 #### Process
 
-1. Append any open questions from Step 2 to the `## 進行中` section of `.work/QA.md`
-2. Skip if there are no open questions
+1. Check `.work/specs/` for a related spec
+2. If found → update the relevant sections for this PR
+3. If not found → create a new spec using the template at `.work/specs/xxx.md`
+4. Add a link to the spec in TODO.md's `## 仕様参照` section
 
 → Proceed to Step 6
 
 ---
 
-### Step 6: Create the worktree and branch
+### Step 6: Record open questions in QA.md
 
 #### Condition
 
 - Step 5 complete
+
+#### Process
+
+1. Append any open questions from Step 2 to `.work/QA.md` as QA-XXX entries
+2. Skip if there are no open questions
+
+→ Proceed to Step 7
+
+---
+
+### Step 7: Create the worktree and branch
+
+#### Condition
+
+- Step 6 complete
 
 #### Process
 
@@ -159,12 +155,7 @@ then sets up the worktree. Waits for user approval before implementation begins.
 git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 ```
 
-→ Proceed to Step 7
-
-#### Output
-
-- Worktree created at `../repo-wt-PR{N}`
-- Branch `PR{N}/{type}/{title}` exists
+→ Proceed to Step 8
 
 #### Notes
 
@@ -174,7 +165,7 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 ---
 
-### Step 7: Report and wait for approval
+### Step 8: Report and wait for approval
 
 #### Process
 
