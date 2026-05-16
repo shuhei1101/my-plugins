@@ -93,4 +93,4 @@ prs:
     tags: []
     summary: 'hook-creator に Stop フックプロンプトは短くする旨を追記; work-kit UserPromptSubmit フックを decision:block パターンに変更'
     task: '20260516_hook-creator-stop-note'
-    completed: false
+    completed: true
