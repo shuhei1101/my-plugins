@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/work-kit/user-prompt-submit.py"
+            "command": "python -c \"import pathlib,sys; p=pathlib.Path('.claude/hooks/work-kit/prompts/user-prompt-submit.md'); print(p.read_text('utf-8')) if p.exists() else sys.exit(0)\""
           }
         ]
       }
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/work-kit/stop.py"
+            "command": "python -c \"import pathlib,sys; p=pathlib.Path('.claude/hooks/work-kit/prompts/stop.md'); print(p.read_text('utf-8')) if p.exists() else sys.exit(0)\""
           }
         ]
       }

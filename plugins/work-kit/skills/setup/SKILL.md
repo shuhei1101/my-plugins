@@ -1,20 +1,20 @@
 ---
 name: setup
 description: |
-  Copy work-kit hook scripts into the current project's .claude/hooks/work-kit/ directory.
+  Copy work-kit prompt files into the current project's .claude/hooks/work-kit/prompts/ directory.
   Hook configuration is applied automatically via hooks.json on plugin install.
   Manual invocation only — use /work-kit:setup.
 disable-model-invocation: true
 allowed-tools: Bash
 ---
 
-# work-kit:setup — Copy Hook Scripts into Current Project
+# work-kit:setup — Copy Prompt Files into Current Project
 
-Copies the work-kit hook scripts to `.claude/hooks/work-kit/`.
+Copies the work-kit prompt files to `.claude/hooks/work-kit/prompts/`.
 Hook configuration (hooks.json) is applied automatically on plugin install;
-this skill only handles placing the script files.
+this skill only handles placing the prompt files.
 
-Plugin scripts are at: `${CLAUDE_SKILL_DIR}/../../scripts/`
+Plugin prompts are at: `${CLAUDE_SKILL_DIR}/../../prompts/`
 
 ---
 
@@ -28,21 +28,21 @@ Plugin scripts are at: `${CLAUDE_SKILL_DIR}/../../scripts/`
 
 #### Process
 
-1. Create `.claude/hooks/work-kit/`:
+1. Create `.claude/hooks/work-kit/prompts/`:
 
 ```bash
-mkdir -p .claude/hooks/work-kit
+mkdir -p .claude/hooks/work-kit/prompts
 ```
 
 → Proceed to Step 2
 
 #### Output
 
-- `.claude/hooks/work-kit/` directory exists
+- `.claude/hooks/work-kit/prompts/` directory exists
 
 ---
 
-### Step 2: Copy hook scripts
+### Step 2: Copy prompt files
 
 #### Condition
 
@@ -50,28 +50,28 @@ mkdir -p .claude/hooks/work-kit
 
 #### Input
 
-- Plugin scripts at `${CLAUDE_SKILL_DIR}/../../scripts/`
+- Plugin prompts at `${CLAUDE_SKILL_DIR}/../../prompts/`
 
 #### Process
 
-1. Copy `user-prompt-submit.py` to `.claude/hooks/work-kit/`:
+1. Copy `user-prompt-submit.md` to `.claude/hooks/work-kit/prompts/`:
 
 ```bash
-cp "${CLAUDE_SKILL_DIR}/../../scripts/user-prompt-submit.py" .claude/hooks/work-kit/
+cp "${CLAUDE_SKILL_DIR}/../../prompts/user-prompt-submit.md" .claude/hooks/work-kit/prompts/
 ```
 
-2. Copy `stop.py` to `.claude/hooks/work-kit/`:
+2. Copy `stop.md` to `.claude/hooks/work-kit/prompts/`:
 
 ```bash
-cp "${CLAUDE_SKILL_DIR}/../../scripts/stop.py" .claude/hooks/work-kit/
+cp "${CLAUDE_SKILL_DIR}/../../prompts/stop.md" .claude/hooks/work-kit/prompts/
 ```
 
 → Proceed to Step 3
 
 #### Output
 
-- `.claude/hooks/work-kit/user-prompt-submit.py` copied
-- `.claude/hooks/work-kit/stop.py` copied
+- `.claude/hooks/work-kit/prompts/user-prompt-submit.md` copied
+- `.claude/hooks/work-kit/prompts/stop.md` copied
 
 ---
 
@@ -90,5 +90,5 @@ cp "${CLAUDE_SKILL_DIR}/../../scripts/stop.py" .claude/hooks/work-kit/
 
 ##### Checklist
 
-- [ ] `.claude/hooks/work-kit/user-prompt-submit.py` — exists
-- [ ] `.claude/hooks/work-kit/stop.py` — exists
+- [ ] `.claude/hooks/work-kit/prompts/user-prompt-submit.md` — exists
+- [ ] `.claude/hooks/work-kit/prompts/stop.md` — exists

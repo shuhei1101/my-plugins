@@ -12,9 +12,13 @@
 
 ## 概要
 
-work-kit プラグインのフックスクリプトをプロジェクトにコピーする。
+work-kit のプロンプトファイルをプロジェクトにコピーするスキル。
 フック設定（hooks.json）はプラグインインストール時に自動で適用されるため、
-このスキルはスクリプトファイルの配置だけを担う。
+このスキルはプロンプトファイルの配置だけを担う。
+
+インストール後の動作:
+- `UserPromptSubmit`: `prompts/user-prompt-submit.md` の内容が毎回 Claude に渡される
+- `Stop`: `prompts/stop.md` の内容が応答完了時に Claude に渡される
 
 ---
 
@@ -28,21 +32,21 @@ work-kit プラグインのフックスクリプトをプロジェクトにコ�
 
 #### 処理内容
 
-1. `.claude/hooks/work-kit/` ディレクトリを作成する
+1. `.claude/hooks/work-kit/prompts/` ディレクトリを作成する
 
 ```bash
-mkdir -p .claude/hooks/work-kit
+mkdir -p .claude/hooks/work-kit/prompts
 ```
 
 → ステップ2へ進む
 
 #### 出力
 
-- `.claude/hooks/work-kit/` ディレクトリが存在する
+- `.claude/hooks/work-kit/prompts/` ディレクトリが存在する
 
 ---
 
-### ステップ2: フックスクリプトをコピーする
+### ステップ2: プロンプトファイルをコピーする
 
 #### 条件
 
@@ -50,20 +54,20 @@ mkdir -p .claude/hooks/work-kit
 
 #### 入力
 
-- プラグインの `scripts/` ディレクトリ内のスクリプト
-  （SKILL.md では `${CLAUDE_SKILL_DIR}/../../scripts/` として解決される）
+- プラグインの `prompts/` ディレクトリ内のファイル
+  （SKILL.md では `${CLAUDE_SKILL_DIR}/../../prompts/` として解決される）
 
 #### 処理内容
 
-1. `user-prompt-submit.py` をプロジェクトの `.claude/hooks/work-kit/` にコピーする
-2. `stop.py` をプロジェクトの `.claude/hooks/work-kit/` にコピーする
+1. `user-prompt-submit.md` をプロジェクトの `.claude/hooks/work-kit/prompts/` にコピーする
+2. `stop.md` をプロジェクトの `.claude/hooks/work-kit/prompts/` にコピーする
 
 → ステップ3へ進む
 
 #### 出力
 
-- `.claude/hooks/work-kit/user-prompt-submit.py` コピー済み
-- `.claude/hooks/work-kit/stop.py` コピー済み
+- `.claude/hooks/work-kit/prompts/user-prompt-submit.md` コピー済み
+- `.claude/hooks/work-kit/prompts/stop.md` コピー済み
 
 ---
 
@@ -82,5 +86,5 @@ mkdir -p .claude/hooks/work-kit
 
 ##### チェックリスト
 
-- [ ] `.claude/hooks/work-kit/user-prompt-submit.py` — 存在する
-- [ ] `.claude/hooks/work-kit/stop.py` — 存在する
+- [ ] `.claude/hooks/work-kit/prompts/user-prompt-submit.md` — 存在する
+- [ ] `.claude/hooks/work-kit/prompts/stop.md` — 存在する
