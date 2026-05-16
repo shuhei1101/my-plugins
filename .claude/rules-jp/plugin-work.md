@@ -27,15 +27,9 @@ paths:
 - [ ] `plugins/{name}/.claude-plugin/plugin.json` — `version` をバンプ
 - [ ] `.claude-plugin/marketplace.json` — 対応するプラグインの `version` をバンプ
 
-## 作業の前提
+## 参考
 
-すべての作業はワークツリーで行う。master に直接コミットしない。
-
-```bash
-/wt:wt
-```
-
-## plugin.json の形式
+### plugin.json の形式
 
 ```json
 {
@@ -48,16 +42,8 @@ paths:
 - `name`: kebab-case 識別子（スキルの名前空間にもなる）
 - `version`: セマンティックバージョニング（`MAJOR.MINOR.PATCH`）
 
-## SKILL.md フロントマター
 
-```yaml
----
-name: {skill-name}
-description: {トリガー条件と動作内容。具体的なフレーズやコンテキストを記載}
----
-```
-
-## marketplace.json エントリの形式
+### marketplace.json エントリの形式
 
 ```json
 {
@@ -75,13 +61,3 @@ description: {トリガー条件と動作内容。具体的なフレーズやコ
 | バグ修正・小さな修正 | PATCH（`1.0.0` → `1.0.1`） | コマンドの誤り修正、ロジックのタイポ |
 | 新しいセクション・新機能追加 | MINOR（`1.0.0` → `1.1.0`） | ワークフローのセクション追加 |
 | 完全な書き直し・破壊的変更 | MAJOR（`1.0.0` → `2.0.0`） | スキル全体のアプローチを刷新 |
-
-## ローカルテスト
-
-```bash
-/plugin marketplace add ./
-/plugin install {plugin-name}@my-plugins   # Local スコープを選択
-# テスト後クリーンアップ
-/plugin uninstall {plugin-name}@my-plugins
-/plugin marketplace remove my-plugins
-```
