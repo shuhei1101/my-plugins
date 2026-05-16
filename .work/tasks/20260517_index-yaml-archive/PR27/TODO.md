@@ -15,7 +15,7 @@ trim スクリプトを追加することで、`index.yaml` を常にアクテ�
 | 済 | index.archive.yaml を .gitignore に追加 | - `plugins/work-kit/templates/.work/tasks/.gitignore` |
 | 済 | work-start ステップ1を last_id 参照に更新 | - `plugins/work-kit/skills/work-start/SKILL.md`<br>- `plugins/work-kit/skills/work-start/SKILL.jp.md` |
 | 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | update スキルに index.yaml last_id マイグレーションステップを追加 | - `plugins/work-kit/skills/update/SKILL.md`<br>- `plugins/work-kit/skills/update/SKILL.jp.md` |
+| 済 | update スキルに index.yaml last_id マイグレーションステップを追加 | - `plugins/work-kit/skills/update/SKILL.md`<br>- `plugins/work-kit/skills/update/SKILL.jp.md` |
 
 ## 参考ドキュメント
 
