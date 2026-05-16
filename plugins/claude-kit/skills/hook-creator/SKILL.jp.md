@@ -96,7 +96,9 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 
 1. イベントに応じたパターンを選択する（§参考資料 / フックパターン一覧 を参照）
 
-2. `Stop` または `PreToolUse` ブロック用の場合: `stop_hook_active` チェックが必要であることをユーザーに説明する
+2. ブロック系フックのループ防止を確認する（§参考資料 / ループ防止 を参照）:
+   - `Stop` フック: `stop_hook_active` チェックで防止
+   - `PreToolUse` フック（条件付きブロック）: ワンタイムトークンで防止
 
 → ステップ 4 へ
 
@@ -331,9 +333,9 @@ stdout に JSON `{"decision":"block","reason":"<プロンプト>"}` を返すこ
 }
 ```
 
-#### [プロジェクト用] PreToolUse — ツール実行前にブロック
+#### [プロジェクト用] PreToolUse — ツール実行前にブロック（無条件）
 
-`matcher` でツールを絞り込める。
+`matcher` でツールを絞り込める。**すべての実行をブロック**したい場合はこのパターン。
 
 ```json
 {
@@ -357,3 +359,84 @@ stdout に JSON `{"decision":"block","reason":"<プロンプト>"}` を返すこ
   }
 }
 ```
+
+#### [プロジェクト用] PreToolUse — 条件付きブロック＋ループ防止（ワンタイムトークン）
+
+**「毎回確認を求めるが、確認後は1回だけ通す」** パターン。
+無条件ブロックのままだとClaude が再試行するたびにブロックされ続ける（無限ループ）ため、ワンタイムトークンで防止する。
+
+仕組み:
+1. フックが条件に一致 → トークンなし → **ブロック** + トークンファイルを作成
+2. Claude がユーザーに確認 → ユーザーが承認 → Claude が同じコマンドを再実行
+3. フックが再び発火 → トークンあり → **トークン削除** + 通過（exit 0）
+4. 次回同じコマンド → トークンなし → また**ブロック**
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/'my-guard-token'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+> ⚠️ トークンファイル名（`my-guard-token`）はフックごとにユニークな名前にすること。複数のフックが同じ名前を使うとトークンが干渉する。
+
+---
+
+### ループ防止
+
+ブロック系フック（`Stop` / `PreToolUse`）は、ブロックに応答した Claude がまた同じ操作をすることで無限ループになる場合がある。
+
+| フック | 問題 | 防止策 |
+|---|---|---|
+| `Stop` | Claude が作業を続けて → また Stop → フックが発火 → 無限ループ | `stop_hook_active` フラグで2回目以降をスキップ |
+| `PreToolUse` | Claude が再試行 → フックがまたブロック → 無限ループ | ワンタイムトークンで「ブロック→通過」を1サイクルに制御 |
+
+#### Stop フックのループ防止
+
+stdin JSON に `stop_hook_active: true` が含まれている場合はフックが再発火中なので `exit(0)` で抜ける。
+
+```python
+d = json.loads(sys.stdin.read())
+if d.get('stop_hook_active'):
+    sys.exit(0)  # 再発火 → スルー
+# ↓ 通常の処理
+```
+
+#### PreToolUse フックのループ防止（ワンタイムトークン）
+
+`stop_hook_active` は PreToolUse には存在しない。代わりに一時ファイルをトークンとして使う。
+
+```python
+import tempfile, pathlib
+
+token = pathlib.Path(tempfile.gettempdir()) / 'my-guard-token'
+
+if token.exists():
+    token.unlink()   # トークンを消費
+    sys.exit(0)      # 今回は通過
+
+# トークンなし → ブロック + トークン作成
+token.touch()
+# → ブロック処理へ
+```
+
+ポイント:
+- ブロック時にトークンを**作成**
+- 次回実行時にトークンを**消費**して通過
+- その次はまたブロック（毎回確認が必要なフックに適している）

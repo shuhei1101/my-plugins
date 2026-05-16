@@ -96,7 +96,9 @@ How prompt injection works:
 #### Process
 
 1. Select the pattern matching the event (see §References / Hook patterns)
-2. For `Stop` or `PreToolUse` block patterns: explain the `stop_hook_active` guard to the user
+2. Confirm loop prevention for blocking hooks (see §References / Preventing Infinite Loops):
+   - `Stop` hook: use `stop_hook_active` guard
+   - `PreToolUse` hook (conditional block): use one-time token
 
 → Proceed to Step 4
 
@@ -331,9 +333,9 @@ Returns JSON `{"decision":"block","reason":"<prompt>"}` to stdout to make Claude
 }
 ```
 
-#### [Project] PreToolUse — block tool and inject prompt
+#### [Project] PreToolUse — unconditional block
 
-Use `matcher` to target specific tools.
+Use `matcher` to target specific tools. Blocks **every** matching tool call.
 
 ```json
 {
@@ -357,3 +359,85 @@ Use `matcher` to target specific tools.
   }
 }
 ```
+
+#### [Project] PreToolUse — conditional block with one-time token (loop-safe)
+
+**"Require confirmation each time, but let through once after confirming"** pattern.
+Without a loop guard, Claude's retry after user approval hits the hook again — infinite loop.
+The one-time token breaks the cycle.
+
+How it works:
+1. Hook matches condition → no token → **block** + create token file
+2. Claude asks user → user approves → Claude retries the same command
+3. Hook fires again → token exists → **consume token** + allow (exit 0)
+4. Next occurrence → no token → **block** again
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/'my-guard-token'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+> ⚠️ Use a unique token filename per hook. Shared names cause cross-hook interference.
+
+---
+
+### Preventing Infinite Loops
+
+Blocking hooks (`Stop` / `PreToolUse`) can loop: the blocked Claude retries → hook fires again → loop.
+
+| Hook | Problem | Fix |
+|---|---|---|
+| `Stop` | Claude continues → stops again → hook fires → infinite loop | `stop_hook_active` flag — skip on re-fire |
+| `PreToolUse` | Claude retries → hook blocks again → infinite loop | One-time token — allow exactly one retry per block |
+
+#### Stop hook loop prevention
+
+When `stop_hook_active: true` is in the stdin JSON, the hook is re-firing — exit 0 to skip.
+
+```python
+d = json.loads(sys.stdin.read())
+if d.get('stop_hook_active'):
+    sys.exit(0)  # re-fire → skip
+# normal processing below
+```
+
+#### PreToolUse loop prevention — one-time token
+
+`stop_hook_active` does not exist in PreToolUse. Use a temp file as a one-time token instead.
+
+```python
+import tempfile, pathlib
+
+token = pathlib.Path(tempfile.gettempdir()) / 'my-guard-token'
+
+if token.exists():
+    token.unlink()   # consume the token
+    sys.exit(0)      # allow this execution
+
+# no token → block + create token
+token.touch()
+# → proceed to block output
+```
+
+Key points:
+- Token is **created** when blocking
+- Token is **consumed** (and execution allowed) on the next attempt
+- After that, the next attempt blocks again — suitable for "confirm every time" hooks
