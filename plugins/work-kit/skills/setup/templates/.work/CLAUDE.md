@@ -36,11 +36,10 @@ Update specs whenever implementation changes documented behavior.
 
 ## Conventions
 
-- Read `tasks/index.yaml` at session start to find the active PR
-- Mark completed tasks as `- [x]`
+- Mark completed rows in the TODO.md task table with `済` in the Done column
 - Reflect spec changes in the relevant `specs/` document
 - Append unresolved questions to the PR's `QA.md`
-- Confirm all `## TODO` items are `- [x]` before merging
+- Confirm all rows in the task table are `済` before merging
 
 ---
 
