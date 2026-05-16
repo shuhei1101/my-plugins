@@ -10,10 +10,10 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `cmd_upgrade()` 関数を追加（メインマーケットプレイスキャッシュ更新 → インストール済みプラグインのみ更新） | - `tools/marketplace.py` |
-| - | `parse_args()` に `upgrade` サブコマンドを追加 | - `tools/marketplace.py` |
-| - | `main()` に `upgrade` コマンドの分岐を追加 | - `tools/marketplace.py` |
-| - | docstring の Usage に `upgrade` の使い方を追記 | - `tools/marketplace.py` |
+| 済 | `cmd_upgrade()` 関数を追加（メインマーケットプレイスキャッシュ更新 → インストール済みプラグインのみ更新） | - `tools/marketplace.py` |
+| 済 | `parse_args()` に `upgrade` サブコマンドを追加 | - `tools/marketplace.py` |
+| 済 | `main()` に `upgrade` コマンドの分岐を追加 | - `tools/marketplace.py` |
+| 済 | docstring の Usage に `upgrade` の使い方を追記 | - `tools/marketplace.py` |
 
 ## 参考ドキュメント
 
