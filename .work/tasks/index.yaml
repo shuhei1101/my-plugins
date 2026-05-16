@@ -122,3 +122,10 @@ prs:
     summary: 'marketplace.py に upgrade コマンドを追加し、インストール済みプラグインのみ全バージョン更新できるようにする'
     task: '20260516_add-upgrade-command'
     completed: true
+  - id: 17
+    title: 'PR17 — add-master-commit-guard-hook'
+    type: feat
+    tags: []
+    summary: 'guard-kit に master/main への直接 git commit を防ぐ PreToolUse フックを追加'
+    task: '20260516_add-master-commit-guard-hook'
+    completed: true
