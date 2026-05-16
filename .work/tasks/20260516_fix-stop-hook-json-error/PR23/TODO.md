@@ -10,8 +10,8 @@ Stop フックの Python スクリプトが `json.loads(sys.stdin.read())` で C
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | Stop フックに try/except を追加（JSON パース失敗時は sys.exit(0)） | - `plugins/work-kit/hooks/hooks.json` |
-| - | サブエージェントを使って Stop フックの動作を確認 | - |
+| 済 | Stop フックに try/except を追加（JSON パース失敗時は sys.exit(0)） | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | サブエージェントを使って Stop フックの動作を確認 | - |
 
 ## 参考ドキュメント
 
