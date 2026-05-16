@@ -1,10 +1,14 @@
-Direct commit to master/main detected.
+[master-commit-guard] Direct commit to master/main detected. STOP immediately.
 
-**Run `/work-kit:work-start` to create a worktree, then commit there.**
+You MUST ask the user for explicit confirmation RIGHT NOW before proceeding:
 
-Correct flow:
-1. Run `/work-kit:work-start` to create a PR branch and worktree
-2. Commit inside the worktree (`../repo-wt-PR{N}/`)
-3. Run `/work-kit:merge` to merge into master
+> "I am about to commit directly to master. May I proceed?"
 
-If committing directly to master is truly necessary, ask the user for explicit permission first.
+CRITICAL RULES — no exceptions:
+
+- Prior approval from earlier in this conversation does NOT count for this operation.
+- Even if the user said "commit directly" or "go ahead" earlier, that approval has expired.
+- Ask every single time, immediately before each direct commit to master.
+- Do NOT proceed until the user gives a clear "yes", "ok", "go ahead", or equivalent for THIS specific operation.
+
+If the user approves, retry the commit — it will be allowed automatically this time.
