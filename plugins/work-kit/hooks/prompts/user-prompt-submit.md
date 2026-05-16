@@ -1,25 +1,59 @@
-[work-kit] **MANDATORY CHECK — Complete this before any implementation, commit, or file edit. No exceptions. No skipping.**
+[work-kit] **Before processing this prompt, complete the steps below. No skipping. No exceptions.**
 
-## Rules (strictly enforced)
+---
 
-- **Direct commits to master are FORBIDDEN.** All implementation must happen in a worktree on a PR branch.
-- **Do NOT begin implementation without a PR branch.** If the user asks for implementation, complete this check first.
-- Knowing this check exists does not grant permission to skip it. Run it every time.
+### Step 1: Determine whether a PR is in progress
 
-## Check procedure
+#### Condition
 
-1. **If there is a PR in progress in the current session:**
-   a. Read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md`
-   b. If unresolved QA entries exist — **STOP all work** and ask the user to resolve them. Continuing implementation while QA is open is forbidden.
-   c. If QA is clear (or empty), read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` and continue work.
+- Always run this first
 
-2. **If no PR is in progress:**
-   - Run `/work-kit:work-start` to create a PR first, then begin.
-   - Skipping work-start and committing directly is forbidden.
+#### Process
 
-## Forbidden patterns (never do these)
+Check whether a PR is in progress in the current session.
 
-- Edit files and commit without running work-start first
-- Run `git commit` while on the master branch
-- Continue TODO implementation while QA entries remain unresolved
-- Decide to skip this check "just this once"
+→ PR exists → proceed to Step 2
+→ No PR → proceed to Step 3
+
+---
+
+### Step 2: Check QA before reading TODO
+
+#### Condition
+
+- A PR is in progress
+
+#### Process
+
+1. Read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md`
+2. If unresolved QA entries exist — **stop here** — ask the user to resolve them; do nothing further
+3. If QA is clear (or empty), read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md`
+4. Continue work according to the TODO
+
+#### Notes
+
+##### Prohibitions
+
+- Continuing implementation while QA entries remain unresolved
+- Running `git commit` while on the master branch
+
+---
+
+### Step 3: Run work-start before doing anything
+
+#### Condition
+
+- No PR is in progress
+
+#### Process
+
+1. Run `/work-kit:work-start` to create a PR
+2. Once the PR is created, proceed to Step 2
+
+#### Notes
+
+##### Prohibitions
+
+- Editing or committing files without running work-start first
+- Committing directly to master
+- Skipping this check "just this once"
