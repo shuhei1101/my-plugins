@@ -25,7 +25,7 @@ Runs the full merge flow: TODO checklist verification → `--no-ff` merge
 
 #### Process
 
-1. Scan `.work/tasks/` for `PR{N}/` folders
+1. Read `.work/tasks/index.yaml` and find PRs with `completed: false`
 2. If multiple exist, ask the user which one to merge
 3. Confirm the branch name: `PR{N}/{type}/{title}`
 
