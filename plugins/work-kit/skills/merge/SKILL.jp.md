@@ -86,6 +86,11 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
+2. VS Code ワークスペースファイルからエントリを削除する:
+   - `REPO=$(basename $(pwd))` でリポジトリ名を取得する
+   - `../${REPO}.code-workspace` を探す（なければ `../` 配下を検索、それでもなければユーザーに確認）
+   - `{"path": "./${REPO}-wt-PR{N}"}` のエントリを `folders` 配列から削除する
+
 → ステップ5へ進む
 
 #### 補足

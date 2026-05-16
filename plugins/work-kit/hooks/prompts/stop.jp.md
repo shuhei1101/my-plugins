@@ -5,5 +5,7 @@
 
 1. `.work/tasks/index.yaml` を読んで `completed: false` の PR を特定する
 2. 該当する `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` を更新し、完了したタスクを `- [x]` にチェックする
-3. 全項目が `- [x]` になっていれば `/work-kit:merge` を提案する
-   （merge スキルが `.work/tasks/index.yaml` の `completed: true` 更新とクリーンアップを担う）
+3. 全項目が `- [x]` になっていれば、ユーザーに `/work-kit:merge` の実行を**提案するだけ**にする
+
+⚠️ **絶対禁止**: `/work-kit:merge` を Claude が自動で起動・実行することは厳禁。
+マージはユーザーからの明示的な承認・指示がない限り、いかなる理由があっても実行してはならない。

@@ -165,7 +165,33 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 ---
 
-### Step 8: Report and wait for approval
+### Step 8: Add worktree to VS Code workspace
+
+#### Condition
+
+- Step 7 complete
+
+#### Process
+
+1. Get the repository name: `REPO=$(basename $(pwd))`
+2. Look for `../${REPO}.code-workspace`
+3. If not found, scan `../` for `*.code-workspace` files containing `${REPO}`
+4. If still not found, ask the user for the workspace file path
+5. Add the following entry to the `folders` array in the workspace file:
+
+```json
+{"path": "./${REPO}-wt-PR{N}"}
+```
+
+→ Proceed to Step 9
+
+#### Output
+
+- Workspace file updated with the new worktree entry
+
+---
+
+### Step 9: Report and wait for approval
 
 #### Process
 

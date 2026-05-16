@@ -84,6 +84,11 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
+2. Remove the entry from the VS Code workspace file:
+   - Get the repository name: `REPO=$(basename $(pwd))`
+   - Locate `../${REPO}.code-workspace` (scan `../` if not found; ask the user if still missing)
+   - Remove `{"path": "./${REPO}-wt-PR{N}"}` from the `folders` array
+
 → Proceed to Step 5
 
 #### Notes
