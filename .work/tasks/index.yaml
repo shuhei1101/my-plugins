@@ -94,3 +94,17 @@ prs:
     summary: 'hook-creator に Stop フックプロンプトは短くする旨を追記; work-kit UserPromptSubmit フックを decision:block パターンに変更'
     task: '20260516_hook-creator-stop-note'
     completed: true
+  - id: 13
+    title: 'PR13 — add-guard-kit-plugin'
+    type: feat
+    tags: []
+    summary: 'work-kit の git-guard フックを新プラグイン guard-kit へ切り出す'
+    task: '20260516_add-guard-kit-plugin'
+    completed: true
+  - id: 14
+    title: 'PR14 — fix-work-start-skill'
+    type: fix
+    tags: []
+    summary: 'work-start スキルのステップ2確認文削除・ステップ8にコミット→報告順追加・禁止事項にワークツリー外コミット禁止を追加'
+    task: '20260516_fix-work-start-skill'
+    completed: false
