@@ -80,11 +80,12 @@ Optional frontmatter fields:
 
 | Plugin | Version | Description |
 |--------|---------|-------------|
-| `wiki` | 1.0.0 | Project documentation Wiki management with Issue-driven decision tracking |
-| `py` | 1.0.0 | Python project coding standards and conventions |
-| `wt` | 1.0.1 | Git worktree-based implementation workflow management |
-| `claude-rule` | 1.0.0 | Authoring conventions for Claude instruction files — English-only AI directives with paired Japanese reference files |
+| `docs-manage` | 1.2.0 | Project documentation management with Issue-driven decision tracking |
+| `py` | 1.1.0 | Python project coding standards and conventions |
+| `wt` | 1.1.0 | Git worktree-based implementation workflow management |
+| `claude-kit` | 3.2.0 | Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills |
 | `yaml-rule` | 1.0.0 | YAML file management conventions for assets and project configuration — index.yaml, settings.yaml, and developer note standards |
+| `work-kit` | 2.0.0 | Hook-based project lifecycle management — injects PR task context on every prompt and reminds task updates on stop |
 
 ---
 
