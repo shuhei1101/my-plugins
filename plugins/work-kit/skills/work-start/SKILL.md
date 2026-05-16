@@ -2,7 +2,7 @@
 name: work-start
 description: |
   Start a new PR: create the task folder, PR folder, and TODO.md, update the relevant spec
-  in docs/specs/, record unknowns in docs/QA.md, then create the worktree and branch.
+  in .work/specs/, record unknowns in .work/QA.md, then create the worktree and branch.
   Trigger when the user says "新しい PR を作って", "新しい作業を始めたい", "work-start して",
   "start new work", or "create a new PR".
 allowed-tools: Bash Read Write
@@ -25,7 +25,7 @@ then sets up the worktree. Waits for user approval before implementation begins.
 
 #### Process
 
-1. Scan all `PR{N}/` folders under `docs/tasks/` to find the maximum N
+1. Scan all `PR{N}/` folders under `.work/tasks/` to find the maximum N
 2. Next PR number = max N + 1 (1 if no folders exist)
 
 → Proceed to Step 2
@@ -48,7 +48,7 @@ then sets up the worktree. Waits for user approval before implementation begins.
    - **Title**: short kebab-case label used in the folder name
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **TODO list**: what will be done this PR (becomes the checklist)
-   - **Spec**: does a related spec exist in `docs/specs/`? Or does one need to be created?
+   - **Spec**: does a related spec exist in `.work/specs/`? Or does one need to be created?
    - **Open questions**: anything unclear or undecided
 
 → Proceed to Step 3
@@ -67,9 +67,9 @@ then sets up the worktree. Waits for user approval before implementation begins.
 
 #### Process
 
-1. Create `docs/tasks/{YYYYMMDD}_{title}/`
-2. Create `docs/tasks/{YYYYMMDD}_{title}/PR{N}/`
-3. Create `docs/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md`:
+1. Create `.work/tasks/{YYYYMMDD}_{title}/`
+2. Create `.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
+3. Create `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md`:
 
 ```markdown
 # PR{N} — {title}
@@ -92,7 +92,7 @@ then sets up the worktree. Waits for user approval before implementation begins.
 
 #### Output
 
-- `docs/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` created
+- `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` created
 
 ---
 
@@ -104,7 +104,7 @@ then sets up the worktree. Waits for user approval before implementation begins.
 
 #### Process
 
-1. Check `docs/specs/` for a related spec
+1. Check `.work/specs/` for a related spec
 2. If found → update the relevant sections for this PR
 3. If not found → create a new spec file:
 
@@ -138,7 +138,7 @@ then sets up the worktree. Waits for user approval before implementation begins.
 
 #### Process
 
-1. Append any open questions from Step 2 to the `## 進行中` section of `docs/QA.md`
+1. Append any open questions from Step 2 to the `## 進行中` section of `.work/QA.md`
 2. Skip if there are no open questions
 
 → Proceed to Step 6

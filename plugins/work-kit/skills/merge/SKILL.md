@@ -25,7 +25,7 @@ Runs the full merge flow: TODO checklist verification → `--no-ff` merge
 
 #### Process
 
-1. Scan `docs/tasks/` for `PR{N}/` folders
+1. Scan `.work/tasks/` for `PR{N}/` folders
 2. If multiple exist, ask the user which one to merge
 3. Confirm the branch name: `PR{N}/{type}/{title}`
 
@@ -45,7 +45,7 @@ Runs the full merge flow: TODO checklist verification → `--no-ff` merge
 
 #### Process
 
-1. Read `## TODO` in `docs/tasks/{date}_{title}/PR{N}/TODO.md`
+1. Read `## TODO` in `.work/tasks/{date}_{title}/PR{N}/TODO.md`
 2. Confirm no unchecked items (`- [ ]`) remain
 
 → Proceed to Step 3 only if all items are `- [x]`
@@ -98,11 +98,11 @@ git branch -d PR{N}/{type}/{title}
 
 #### Process
 
-1. Review `docs/QA.md` and move resolved items to the `## 解決済み` section
+1. Review `.work/QA.md` and move resolved items to the `## 解決済み` section
 2. Commit if there are changes:
 
 ```bash
-git add docs/
+git add .work/
 git commit -m "docs: post-merge update for PR{N}"
 ```
 
@@ -115,7 +115,7 @@ git commit -m "docs: post-merge update for PR{N}"
 #### Process
 
 1. Report merge complete to the user
-2. List any remaining in-progress PRs under `docs/tasks/`
+2. List any remaining in-progress PRs under `.work/tasks/`
 
 #### Notes
 

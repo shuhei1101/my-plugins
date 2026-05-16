@@ -1,24 +1,22 @@
 """
 setup.py — work-kit セットアップスクリプト
 
-プラグインのテンプレートを指定のプロジェクトディレクトリに展開する。
+カレントディレクトリに .work/ ドキュメント構造を展開する。
 既存ファイルはスキップする（上書きしない）。
 
 使い方:
-  python setup.py <target_dir>
-
-  <target_dir>: テンプレートを展開するプロジェクトルート（例: docs）
+  python setup.py
 """
 
 # ── stdlib ──────────────────────────────────────────────────
-import argparse
 import shutil
 import sys
 from pathlib import Path
 
 # ── constants ───────────────────────────────────────────────
-# スクリプト自身の位置からテンプレートフォルダを解決する
-TEMPLATE_DIR = Path(__file__).parent.parent / "skills" / "setup" / "templates" / "docs"
+# scripts/ → setup/ (SKILL.md と同階層) → templates/.work/
+TEMPLATE_DIR = Path(__file__).parent.parent / "templates" / ".work"
+TARGET_DIR = Path.cwd() / ".work"
 
 # ── private helpers ─────────────────────────────────────────
 def _expand(template_dir: Path, target_dir: Path) -> None:
@@ -41,7 +39,6 @@ def _expand(template_dir: Path, target_dir: Path) -> None:
             dst.mkdir(parents=True, exist_ok=True)
             continue
 
-        # .gitkeep はフォルダ維持用のみでコピー対象外
         if src.name == ".gitkeep":
             dst.parent.mkdir(parents=True, exist_ok=True)
             continue
@@ -54,32 +51,18 @@ def _expand(template_dir: Path, target_dir: Path) -> None:
             print(f"  created:       {relative}")
 
 # ── main ────────────────────────────────────────────────────
-def main(args: argparse.Namespace) -> None:
-    """メイン処理。テンプレートをターゲットに展開する。"""
-    target = Path(args.target_dir).resolve()
-    target.mkdir(parents=True, exist_ok=True)
+def main() -> None:
+    """メイン処理。.work/ をカレントディレクトリに展開する。"""
+    TARGET_DIR.mkdir(exist_ok=True)
+    print(f"Expanding template to: {TARGET_DIR}")
+    _expand(TEMPLATE_DIR, TARGET_DIR)
 
-    print(f"Expanding template to: {target}")
-    _expand(TEMPLATE_DIR, target)
-
-    # tasks/ は動的生成フォルダなのでテンプレートには含めず、ここで作成する
-    tasks_dir = target / "tasks"
-    tasks_dir.mkdir(exist_ok=True)
+    # tasks/ は動的生成フォルダなのでテンプレートには含めずここで作成する
+    (TARGET_DIR / "tasks").mkdir(exist_ok=True)
     print(f"  created:       tasks/")
 
-    print(f"\nSetup complete.")
-
-
-def parse_args() -> argparse.Namespace:
-    """コマンドライン引数を解析する。:return: 解析済み引数"""
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    parser.add_argument("target_dir", help="テンプレートを展開するプロジェクトルート")
-    return parser.parse_args()
+    print(f"\nSetup complete: {TARGET_DIR}")
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    main(args)
+    main()
