@@ -5,7 +5,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -c \"import pathlib,sys; p=pathlib.Path('.claude/hooks/work-kit/prompts/user-prompt-submit.md'); print(p.read_text('utf-8')) if p.exists() else sys.exit(0)\""
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); print(p.read_text('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/user-prompt-submit.md"
+            ]
           }
         ]
       }
@@ -15,7 +20,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -c \"import pathlib,sys; p=pathlib.Path('.claude/hooks/work-kit/prompts/stop.md'); print(p.read_text('utf-8')) if p.exists() else sys.exit(0)\""
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); print(p.read_text('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
+            ]
           }
         ]
       }

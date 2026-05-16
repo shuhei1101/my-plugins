@@ -1,94 +1,94 @@
 ---
 name: setup
 description: |
-  Copy work-kit prompt files into the current project's .claude/hooks/work-kit/prompts/ directory.
-  Hook configuration is applied automatically via hooks.json on plugin install.
+  Initialize the work-kit document structure (tasks dir, index.yaml, qa.md) in the current project.
   Manual invocation only — use /work-kit:setup.
 disable-model-invocation: true
-allowed-tools: Bash
+allowed-tools: Bash Read Write
 ---
 
-# work-kit:setup — Copy Prompt Files into Current Project
+# work-kit:setup — Initialize Document Structure
 
-Copies the work-kit prompt files to `.claude/hooks/work-kit/prompts/`.
-Hook configuration (hooks.json) is applied automatically on plugin install;
-this skill only handles placing the prompt files.
-
-Plugin prompts are at: `${CLAUDE_SKILL_DIR}/../../prompts/`
+Creates the task management folder, PR index (`index.yaml`), and QA documents
+in the current project. Run once when adopting work-kit in a new project.
 
 ---
 
 ## Tasks
 
-### Step 1: Prepare the installation directory
+### Step 1: Confirm the tasks directory location
 
 #### Condition
 
-- Always — run this before anything else
+- Always — run first
 
 #### Process
 
-1. Create `.claude/hooks/work-kit/prompts/`:
-
-```bash
-mkdir -p .claude/hooks/work-kit/prompts
-```
+1. Ask the user for the tasks directory path (default: `docs/tasks/`)
+2. If the path already exists, confirm before proceeding
 
 → Proceed to Step 2
 
 #### Output
 
-- `.claude/hooks/work-kit/prompts/` directory exists
+- Tasks directory path is confirmed
 
 ---
 
-### Step 2: Copy prompt files
+### Step 2: Create the directory and files
 
 #### Condition
 
 - Step 1 complete
 
-#### Input
-
-- Plugin prompts at `${CLAUDE_SKILL_DIR}/../../prompts/`
-
 #### Process
 
-1. Copy `user-prompt-submit.md` to `.claude/hooks/work-kit/prompts/`:
+1. Create the tasks directory
+2. Create `{tasks_dir}/index.yaml`:
 
-```bash
-cp "${CLAUDE_SKILL_DIR}/../../prompts/user-prompt-submit.md" .claude/hooks/work-kit/prompts/
+```yaml
+prs: []
 ```
 
-2. Copy `stop.md` to `.claude/hooks/work-kit/prompts/`:
+3. Create `{tasks_dir}/qa.md`:
 
-```bash
-cp "${CLAUDE_SKILL_DIR}/../../prompts/stop.md" .claude/hooks/work-kit/prompts/
+```markdown
+# QA — Open Questions
+
+## In Progress
+
+<!-- Record unresolved design and implementation questions here -->
+```
+
+4. Create `{tasks_dir}/qa_history.md`:
+
+```markdown
+# QA History — Resolved
+
+<!-- Move resolved items here from qa.md -->
 ```
 
 → Proceed to Step 3
 
 #### Output
 
-- `.claude/hooks/work-kit/prompts/user-prompt-submit.md` copied
-- `.claude/hooks/work-kit/prompts/stop.md` copied
+- `{tasks_dir}/index.yaml` created
+- `{tasks_dir}/qa.md` created
+- `{tasks_dir}/qa_history.md` created
 
 ---
 
-### Step 3: Verify installation
-
-#### Condition
-
-- All files copied
+### Step 3: Verify and report
 
 #### Process
 
-1. Confirm all installed files exist
+1. Confirm all files exist
 2. Report completion to the user
 
 #### Notes
 
 ##### Checklist
 
-- [ ] `.claude/hooks/work-kit/prompts/user-prompt-submit.md` — exists
-- [ ] `.claude/hooks/work-kit/prompts/stop.md` — exists
+- [ ] `{tasks_dir}/index.yaml` — exists
+- [ ] `{tasks_dir}/qa.md` — exists
+- [ ] `{tasks_dir}/qa_history.md` — exists

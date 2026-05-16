@@ -12,19 +12,14 @@
 
 ## 概要
 
-work-kit のプロンプトファイルをプロジェクトにコピーするスキル。
-フック設定（hooks.json）はプラグインインストール時に自動で適用されるため、
-このスキルはプロンプトファイルの配置だけを担う。
-
-インストール後の動作:
-- `UserPromptSubmit`: `prompts/user-prompt-submit.md` の内容が毎回 Claude に渡される
-- `Stop`: `prompts/stop.md` の内容が応答完了時に Claude に渡される
+work-kit が前提とするドキュメント構造をプロジェクト内に初期化するスキル。
+タスク管理フォルダ・PR 索引（index.yaml）・QA ドキュメントを作成する。
 
 ---
 
 ## 作業内容
 
-### ステップ1: インストール先を準備する
+### ステップ1: タスクディレクトリの場所を確認する
 
 #### 条件
 
@@ -32,59 +27,72 @@ work-kit のプロンプトファイルをプロジェクトにコピーする�
 
 #### 処理内容
 
-1. `.claude/hooks/work-kit/prompts/` ディレクトリを作成する
-
-```bash
-mkdir -p .claude/hooks/work-kit/prompts
-```
+1. ユーザーに以下を確認する:
+   - タスク管理フォルダのパス（デフォルト: `docs/tasks/`）
+2. 指定されたパスが既に存在する場合、上書き確認をする
 
 → ステップ2へ進む
 
 #### 出力
 
-- `.claude/hooks/work-kit/prompts/` ディレクトリが存在する
+- タスクディレクトリのパスが確定している
 
 ---
 
-### ステップ2: プロンプトファイルをコピーする
+### ステップ2: ディレクトリとファイルを作成する
 
 #### 条件
 
 - ステップ1が完了していること
 
-#### 入力
-
-- プラグインの `prompts/` ディレクトリ内のファイル
-  （SKILL.md では `${CLAUDE_SKILL_DIR}/../../prompts/` として解決される）
-
 #### 処理内容
 
-1. `user-prompt-submit.md` をプロジェクトの `.claude/hooks/work-kit/prompts/` にコピーする
-2. `stop.md` をプロジェクトの `.claude/hooks/work-kit/prompts/` にコピーする
+1. タスクディレクトリを作成する
+2. `{tasks_dir}/index.yaml` を作成する:
+
+```yaml
+prs: []
+```
+
+3. `{tasks_dir}/qa.md` を作成する:
+
+```markdown
+# QA — 未決定事項
+
+## 進行中の検討事項
+
+<!-- 未決定の設計・実装上の問題をここに記録する -->
+```
+
+4. `{tasks_dir}/qa_history.md` を作成する:
+
+```markdown
+# QA 履歴 — 決定済み事項
+
+<!-- 決定した事項を qa.md からここへ移す -->
+```
 
 → ステップ3へ進む
 
 #### 出力
 
-- `.claude/hooks/work-kit/prompts/user-prompt-submit.md` コピー済み
-- `.claude/hooks/work-kit/prompts/stop.md` コピー済み
+- `{tasks_dir}/index.yaml` 作成済み
+- `{tasks_dir}/qa.md` 作成済み
+- `{tasks_dir}/qa_history.md` 作成済み
 
 ---
 
-### ステップ3: インストール確認
-
-#### 条件
-
-- 全ファイルがコピー済みであること
+### ステップ3: 完了確認
 
 #### 処理内容
 
-1. コピーしたファイルの存在を確認する
-2. ユーザーにインストール完了を報告する
+1. 作成したファイルの存在を確認する
+2. ユーザーに完了を報告する
 
 #### 補足
 
 ##### チェックリスト
 
-- [ ] `.claude/hooks/work-kit/prompts/user-prompt-submit.md` — 存在する
-- [ ] `.claude/hooks/work-kit/prompts/stop.md` — 存在する
+- [ ] `{tasks_dir}/index.yaml` — 存在する
+- [ ] `{tasks_dir}/qa.md` — 存在する
+- [ ] `{tasks_dir}/qa_history.md` — 存在する
