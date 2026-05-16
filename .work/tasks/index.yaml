@@ -87,3 +87,10 @@ prs:
     summary: 'git-guard トークンを session_id でセッション分離し複数セッション干渉を防止'
     task: '20260516_git-guard-session-isolation'
     completed: true
+  - id: 12
+    title: 'PR12 — hook-creator-stop-note'
+    type: fix
+    tags: []
+    summary: 'hook-creator に Stop フックプロンプトは短くする旨を追記; work-kit UserPromptSubmit フックを decision:block パターンに変更'
+    task: '20260516_hook-creator-stop-note'
+    completed: false
