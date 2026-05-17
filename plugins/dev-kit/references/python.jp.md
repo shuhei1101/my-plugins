@@ -1,9 +1,9 @@
-# Python Standards — py-kit 共通リファレンス（日本語ミラー）
+# Python — dev-kit 共通リファレンス（日本語ミラー）
 
-> このファイルは `python-standards.md` の日本語ミラーです。Claude Code には読み込まれません。
-> 変更する場合は JP ミラーを先に更新し、その後 `python-standards.md` にも反映してください。
+> このファイルは `python.md` の日本語ミラーです。Claude Code には読み込まれません。
+> 変更する場合は JP ミラーを先に更新し、その後 `python.md` にも反映してください。
 
-全 py-kit スキルがこのドキュメントを参照する。スキルファイル内に内容を重複して書かない。
+全 dev-kit Python スキルがこのドキュメントを参照する。スキルファイル内に内容を重複して書かない。
 
 ---
 

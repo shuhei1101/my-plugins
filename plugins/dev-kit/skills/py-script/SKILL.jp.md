@@ -1,20 +1,20 @@
-# SKILL.jp.md — py-kit:py-script（日本語ミラー）
+# SKILL.jp.md — dev-kit:py-script（日本語ミラー）
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
 
 ---
 
-**スキル名**: py-kit:py-script
+**スキル名**: dev-kit:py-script
 **トリガー**: 単一ファイルまたは数ファイル程度の簡易 Python スクリプト作成依頼時。
 「スクリプト作って」「ちょっとした Python ファイル書いて」「自動化スクリプトほしい」など。
-`pyproject.toml` や `tests/` を必要とする本格プロジェクトには使わない → `py-kit:py-new-project` を使う。
+`pyproject.toml` や `tests/` を必要とする本格プロジェクトには使わない → `dev-kit:py-project` を使う。
 
 ---
 
-# py-kit:py-script — 簡易 Python スクリプト作成
+# dev-kit:py-script — 簡易 Python スクリプト作成
 
-py-kit 規約に従ったクリーンな単一ファイルスクリプトを作成する。
+dev-kit 規約に従ったクリーンな単一ファイルスクリプトを作成する。
 
 ---
 
@@ -25,7 +25,7 @@ py-kit 規約に従ったクリーンな単一ファイルスクリプトを作�
 共通 Python 規約を読み込む：
 
 ```
-{plugin_root}/references/python-standards.md
+{plugin_root}/references/python.md
 ```
 
 対象セクション：**簡易スクリプト構造**・**命名規則**・**型ヒント**・**コメントルール**・**言語ルール**
@@ -60,7 +60,7 @@ py-kit 規約に従ったクリーンな単一ファイルスクリプトを作�
 
 #### 出力
 
-- py-kit 規約に従ったスクリプトファイルが作成済み
+- dev-kit 規約に従ったスクリプトファイルが作成済み
 
 #### 補足
 
@@ -73,7 +73,7 @@ py-kit 規約に従ったクリーンな単一ファイルスクリプトを作�
 
 ## 参考資料
 
-`{plugin_root}/references/python-standards.md` の以下のセクション：
+`{plugin_root}/references/python.md` の以下のセクション：
 - 簡易スクリプト構造
 - 型ヒント
 - 命名規則

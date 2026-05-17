@@ -1,14 +1,14 @@
 ---
-name: py-kit:py-script
+name: dev-kit:py-script
 description: >
   Create a simple Python script (single file or a few files, no full project scaffold).
   Trigger when the user asks for a quick script, a one-off automation, or anything that
   does not need pyproject.toml, a package directory, or tests.
   Examples: "write a script that...", "make a quick Python file to...", "スクリプト作って".
-  Do NOT trigger for full project creation — use py-kit:py-new-project instead.
+  Do NOT trigger for full project creation — use dev-kit:py-project instead.
 ---
 
-# py-kit:py-script — Simple Python Script
+# dev-kit:py-script — Simple Python Script
 
 Creates a clean, standards-compliant single-file Python script.
 
@@ -21,7 +21,7 @@ Creates a clean, standards-compliant single-file Python script.
 Read the shared Python standards:
 
 ```
-{plugin_root}/references/python-standards.md
+{plugin_root}/references/python.md
 ```
 
 The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-script` → plugin root is `.../{plugin-name}/`).
@@ -57,7 +57,7 @@ Focus on: **Simple Script Structure**, **Naming Conventions**, **Type Hints**, *
 
 #### Output
 
-- Script file created following py-kit standards
+- Script file created following dev-kit standards
 
 #### Notes
 
@@ -70,7 +70,7 @@ Focus on: **Simple Script Structure**, **Naming Conventions**, **Type Hints**, *
 
 ## References
 
-See `{plugin_root}/references/python-standards.md` — specifically:
+See `{plugin_root}/references/python.md` — specifically:
 - Simple Script Structure
 - Type Hints
 - Naming Conventions

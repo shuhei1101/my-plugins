@@ -1,6 +1,6 @@
-# Python Standards — py-kit Shared Reference
+# Python — dev-kit Shared Reference
 
-All py-kit skills draw from this document. Do not duplicate content in skill files — reference this instead.
+All dev-kit Python skills draw from this document. Do not duplicate content in skill files — reference this instead.
 
 ---
 
