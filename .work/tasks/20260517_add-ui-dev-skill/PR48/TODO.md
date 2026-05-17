@@ -30,6 +30,7 @@ JSON でクリップボードにコピーできるデバッグモーダルを開
 | 済 | `references/css.md` 雛形を新規作成 | - `plugins/dev-kit/references/css.md`, `css.jp.md` |
 | 済 | `references/js.md` 雛形を新規作成 | - `plugins/dev-kit/references/js.md`, `js.jp.md` |
 | 済 | dev-kit のバージョン更新(1.0.0 → 1.1.0) | - `plugins/dev-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | `references/frontend.md` に「frontend-design スキルを必ず使う」ルールを追加 | - `plugins/dev-kit/references/frontend.md`, `frontend.jp.md` |
 | 済 | ルール・CLAUDE.md を整備する(必要があれば) | - `CLAUDE.md`, `CLAUDE.jp.md` |
 
 ## 参考ドキュメント
