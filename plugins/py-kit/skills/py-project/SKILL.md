@@ -24,6 +24,8 @@ Read the shared Python standards:
 {plugin_root}/references/python-standards.md
 ```
 
+The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-project` → plugin root is `.../{plugin-name}/`).
+
 Read the entire document. This skill uses all sections depending on what the task requires.
 
 → Proceed to Step 2

@@ -24,6 +24,8 @@ Read the shared Python standards:
 {plugin_root}/references/python-standards.md
 ```
 
+The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-new-project` → plugin root is `.../{plugin-name}/`).
+
 Read the entire document. Key sections for this skill: **Project Folder Structure**, **Layered Architecture**, **No Hardcoding**, **SOLID**, **Extensibility-Focused Design**, **Dependency Inversion**, **Pydantic Boundaries**, **Logger Specification**, **Test Policy**, **Bat Launcher Template**.
 
 → Proceed to Step 2
