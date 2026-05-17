@@ -12,7 +12,8 @@ Claude はここのファイルを読み書きして作業状態を追跡する�
 
 | パス | 役割 |
 |---|---|
-| `tasks/index.yaml` | PR 索引（`completed: false` = 進行中） |
+| `tasks/index.yaml` | PR 索引（`completed: false` = 進行中）。`last_id` フィールドで次の PR 番号を管理する |
+| `tasks/index.archive.yaml` | アーカイブ済み（`completed: true`）の PR エントリ。`trim-index.py` で自動生成される |
 | `tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` | PR の作業チェックリストと仕様参照 |
 | `tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` | この PR の未解決事項（PR スコープ） |
 | `specs/{機能名}.md` | 機能仕様書（タスクをまたいで参照） |
@@ -20,6 +21,7 @@ Claude はここのファイルを読み書きして作業状態を追跡する�
 ### tasks/
 
 `tasks/index.yaml` が PR の一元管理場所。進行中の PR は `completed: false`、マージ済みは `completed: true`。
+`last_id` フィールドが次の PR 番号の基準値。マージのたびに `trim-index.py` が完了済みエントリを `index.archive.yaml` へ移動し、`index.yaml` をアクティブな PR のみに保つ。
 作業開始時は必ず index.yaml を読んで進行中の PR を確認する。
 
 タスクごとにフォルダ（`{YYYYMMDD}_{title}/`）を切り、その中に PR フォルダ（`PR{N}/`）を置く。
@@ -39,11 +41,10 @@ Claude はここのファイルを読み書きして作業状態を追跡する�
 
 ## 規約
 
-- 作業開始時は `tasks/index.yaml` を読んで進行中の PR を確認する
-- 完了したタスクは `- [x]` にチェックする
+- `TODO.md` の作業内容テーブルで完了した行は `完了` 列を `済` にする
 - 仕様変更は `specs/` の該当ドキュメントにも反映する
 - 疑問点・未確定事項は PR の `QA.md` に追記する
-- マージ前に `## TODO` が全て `- [x]` であることを確認する
+- マージ前に作業内容テーブルの全行が `[x]` であることを確認する
 
 ---
 
