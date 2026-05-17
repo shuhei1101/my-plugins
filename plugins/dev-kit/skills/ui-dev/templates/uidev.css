@@ -1,0 +1,298 @@
+/*
+  uidev.css — dev-kit:ui-dev フロートデバッグ UI スタイル
+  See: plugins/dev-kit/skills/ui-dev/SKILL.md
+*/
+
+.uidev-fab,
+.uidev-modal-backdrop,
+.uidev-modal,
+.uidev-modal * {
+  box-sizing: border-box;
+}
+
+.uidev-root {
+  --uidev-panel:   #161618;
+  --uidev-panel-2: #1f1f23;
+  --uidev-border:  #2a2a2f;
+  --uidev-text:    #e8e8ea;
+  --uidev-dim:     #a1a1aa;
+  --uidev-accent:  #7cd4ff;
+  --uidev-accent-2:#2e7fff;
+  --uidev-danger:  #ff6b6b;
+  --uidev-warn:    #ffb547;
+  --uidev-ok:      #7cdc97;
+}
+
+/* ── フロートデバッグボタン ─────────────────────────────── */
+.uidev-fab {
+  position: fixed;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #0b0b0d;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.06);
+  transition: transform .12s ease, background .12s ease;
+  z-index: 9999;
+  user-select: none;
+}
+.uidev-fab:hover { transform: scale(1.06); background: #1f1f23; }
+.uidev-fab[data-pos="bottom-right"] { right: 16px; bottom: 16px; }
+.uidev-fab[data-pos="bottom-left"]  { left: 16px;  bottom: 16px; }
+.uidev-fab[data-pos="top-right"]    { right: 16px; top: 16px; }
+.uidev-fab[data-pos="top-left"]     { left: 16px;  top: 16px; }
+
+/* ── モーダル ─────────────────────────────────────────── */
+.uidev-modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(2px);
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.uidev-modal-backdrop[data-open="true"] { display: flex; }
+
+.uidev-modal {
+  width: min(880px, 92vw);
+  height: 86vh;
+  background: var(--uidev-panel, #161618);
+  color: var(--uidev-text, #e8e8ea);
+  border-radius: 12px;
+  border: 1px solid var(--uidev-border, #2a2a2f);
+  box-shadow: 0 24px 64px rgba(0,0,0,.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif;
+}
+
+.uidev-modal header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--uidev-border, #2a2a2f);
+  background: var(--uidev-panel-2, #1f1f23);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.uidev-modal header .title {
+  flex: 1;
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 600;
+}
+.uidev-modal header .title .badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: rgba(124,212,255,.12);
+  color: var(--uidev-accent, #7cd4ff);
+  border-radius: 4px;
+  border: 1px solid rgba(124,212,255,.22);
+}
+.uidev-modal header .pos-field {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px;
+  color: var(--uidev-dim, #a1a1aa);
+}
+.uidev-modal header .pos-field select {
+  background: var(--uidev-panel, #161618);
+  color: var(--uidev-text, #e8e8ea);
+  border: 1px solid var(--uidev-border, #2a2a2f);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+.uidev-modal header .copy {
+  padding: 10px 16px;
+  background: var(--uidev-accent-2, #2e7fff);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.uidev-modal header .copy:hover { filter: brightness(1.1); }
+.uidev-modal header .copy.copied { background: var(--uidev-ok, #7cdc97); color: #0b0b0d; }
+.uidev-modal header .close {
+  background: transparent;
+  color: var(--uidev-dim, #a1a1aa);
+  border: 1px solid var(--uidev-border, #2a2a2f);
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.uidev-modal header .close:hover { color: var(--uidev-text, #e8e8ea); background: var(--uidev-panel, #161618); }
+
+/* 本体 */
+.uidev-body { overflow: auto; flex: 1; padding: 16px; }
+.uidev-body section { margin-bottom: 24px; }
+.uidev-body section:last-child { margin-bottom: 0; }
+.uidev-body section .section-head {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 0 10px;
+}
+.uidev-body section .section-head h3 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--uidev-dim, #a1a1aa);
+}
+.uidev-body section .section-head .controls {
+  margin-left: auto;
+  display: flex; gap: 8px; align-items: center;
+}
+.uidev-body section .section-head .controls .inline-field {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px;
+  color: var(--uidev-dim, #a1a1aa);
+}
+.uidev-body section .section-head .controls .inline-field input,
+.uidev-body section .section-head .controls .inline-field select {
+  background: var(--uidev-panel, #161618);
+  color: var(--uidev-text, #e8e8ea);
+  border: 1px solid var(--uidev-border, #2a2a2f);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+.uidev-body section .section-head .controls .inline-field input { width: 70px; }
+.uidev-body section .section-head .count {
+  font-size: 11px;
+  color: var(--uidev-dim, #a1a1aa);
+  font-weight: 400;
+}
+
+/* 画面情報カード */
+.uidev-info-card {
+  background: var(--uidev-panel-2, #1f1f23);
+  border: 1px solid var(--uidev-border, #2a2a2f);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.uidev-info-card .row { display: flex; gap: 8px; align-items: baseline; }
+.uidev-info-card .row + .row { margin-top: 4px; }
+.uidev-info-card .row .key {
+  color: var(--uidev-dim, #a1a1aa);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  min-width: 56px;
+}
+.uidev-info-card .row .val {
+  font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+/* 関連ファイル */
+.uidev-files {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.uidev-files .group {
+  background: var(--uidev-panel-2, #1f1f23);
+  border: 1px solid var(--uidev-border, #2a2a2f);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.uidev-files .group .label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px;
+  color: var(--uidev-dim, #a1a1aa);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.uidev-files .group .tag {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--uidev-border, #2a2a2f);
+  color: var(--uidev-dim, #a1a1aa);
+}
+.uidev-files ul { list-style: none; margin: 0; padding: 0; }
+.uidev-files li {
+  font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: var(--uidev-text, #e8e8ea);
+  padding: 2px 0;
+}
+.uidev-files-empty {
+  background: var(--uidev-panel-2, #1f1f23);
+  border: 1px solid var(--uidev-border, #2a2a2f);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+  color: var(--uidev-dim, #a1a1aa);
+}
+
+/* ログ */
+.uidev-logs {
+  background: #08080a;
+  border: 1px solid var(--uidev-border, #2a2a2f);
+  border-radius: 8px;
+  height: 320px;
+  overflow: auto;
+  padding: 6px 0;
+}
+.uidev-logs .row {
+  display: grid;
+  grid-template-columns: 84px 56px 1fr;
+  gap: 8px;
+  align-items: baseline;
+  font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-bottom: 1px solid #0e0e10;
+}
+.uidev-logs .row .ts    { color: var(--uidev-dim, #a1a1aa); }
+.uidev-logs .row .level {
+  padding: 1px 6px; border-radius: 4px; text-align: center;
+  font-size: 10px; letter-spacing: .05em; text-transform: uppercase;
+  background: rgba(255,255,255,.06); color: var(--uidev-dim, #a1a1aa);
+}
+.uidev-logs .row[data-level="error"] .level { background: rgba(255,107,107,.16); color: var(--uidev-danger, #ff6b6b); }
+.uidev-logs .row[data-level="warn"]  .level { background: rgba(255,181,71,.16); color: var(--uidev-warn, #ffb547); }
+.uidev-logs .row[data-level="info"]  .level { background: rgba(124,212,255,.16); color: var(--uidev-accent, #7cd4ff); }
+.uidev-logs .row[data-level="debug"] .level { background: rgba(255,255,255,.06); color: var(--uidev-dim, #a1a1aa); }
+.uidev-logs .row .msg { color: var(--uidev-text, #e8e8ea); white-space: pre-wrap; word-break: break-all; }
+.uidev-logs .empty { padding: 16px; text-align: center; color: var(--uidev-dim, #a1a1aa); }
+
+.uidev-footer-hint {
+  border-top: 1px solid var(--uidev-border, #2a2a2f);
+  background: var(--uidev-panel-2, #1f1f23);
+  padding: 8px 16px;
+  font-size: 11px;
+  color: var(--uidev-dim, #a1a1aa);
+  text-align: center;
+  flex-shrink: 0;
+}
+.uidev-footer-hint kbd {
+  background: var(--uidev-panel, #161618);
+  border: 1px solid var(--uidev-border, #2a2a2f);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  color: var(--uidev-text, #e8e8ea);
+  font-family: inherit;
+}
+
+.uidev-setting-hint {
+  font-size: 11px;
+  color: var(--uidev-dim, #a1a1aa);
+  margin-top: 4px;
+}

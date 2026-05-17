@@ -18,19 +18,19 @@ JSON でクリップボードにコピーできるデバッグモーダルを開
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | QA.md に未決定事項を記録する(QA-001〜010) | - `.work/tasks/20260517_add-ui-dev-skill/PR48/QA.md` |
-| - | 仕様書 `ui-dev-design.md` を最終仕様に合わせて更新 | - `.work/specs/ui-dev-design.md` |
-| - | `templates/uidev.css` を新規作成(モックから抽出) | - `plugins/dev-kit/skills/ui-dev/templates/uidev.css` |
-| - | `templates/uidev.js` を新規作成(モックから抽出) | - `plugins/dev-kit/skills/ui-dev/templates/uidev.js` |
-| - | `templates/README.md` を新規作成(使い方ガイド) | - `plugins/dev-kit/skills/ui-dev/templates/README.md` |
-| - | `templates/example.html` を新規作成(参考実装例) | - `plugins/dev-kit/skills/ui-dev/templates/example.html` |
-| - | `skills/ui-dev/SKILL.md` を新規作成 | - `plugins/dev-kit/skills/ui-dev/SKILL.md` |
-| - | `skills/ui-dev/SKILL.jp.md` を新規作成(日本語ミラー) | - `plugins/dev-kit/skills/ui-dev/SKILL.jp.md` |
-| - | `references/common.md` にログ規約セクションを追加 | - `plugins/dev-kit/references/common.md`, `common.jp.md` |
-| - | `references/html.md` 雛形を新規作成 | - `plugins/dev-kit/references/html.md`, `html.jp.md` |
-| - | `references/css.md` 雛形を新規作成 | - `plugins/dev-kit/references/css.md`, `css.jp.md` |
-| - | `references/js.md` 雛形を新規作成 | - `plugins/dev-kit/references/js.md`, `js.jp.md` |
-| - | dev-kit のバージョン更新(1.0.0 → 1.1.0) | - `plugins/dev-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | ルール・CLAUDE.md を整備する(必要があれば) | - `CLAUDE.md`, `CLAUDE.jp.md` |
+| 済 | 仕様書 `ui-dev-design.md` を最終仕様に合わせて更新 | - `.work/specs/ui-dev-design.md` |
+| 済 | `templates/uidev.css` を新規作成(モックから抽出) | - `plugins/dev-kit/skills/ui-dev/templates/uidev.css` |
+| 済 | `templates/uidev.js` を新規作成(モックから抽出) | - `plugins/dev-kit/skills/ui-dev/templates/uidev.js` |
+| 済 | `templates/README.md` を新規作成(使い方ガイド) | - `plugins/dev-kit/skills/ui-dev/templates/README.md` |
+| 済 | `templates/example.html` を新規作成(参考実装例) | - `plugins/dev-kit/skills/ui-dev/templates/example.html` |
+| 済 | `skills/ui-dev/SKILL.md` を新規作成 | - `plugins/dev-kit/skills/ui-dev/SKILL.md` |
+| 済 | `skills/ui-dev/SKILL.jp.md` を新規作成(日本語ミラー) | - `plugins/dev-kit/skills/ui-dev/SKILL.jp.md` |
+| 済 | `references/common.md` にログ規約セクションを追加 | - `plugins/dev-kit/references/common.md`, `common.jp.md` |
+| 済 | `references/html.md` 雛形を新規作成 | - `plugins/dev-kit/references/html.md`, `html.jp.md` |
+| 済 | `references/css.md` 雛形を新規作成 | - `plugins/dev-kit/references/css.md`, `css.jp.md` |
+| 済 | `references/js.md` 雛形を新規作成 | - `plugins/dev-kit/references/js.md`, `js.jp.md` |
+| 済 | dev-kit のバージョン更新(1.0.0 → 1.1.0) | - `plugins/dev-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | ルール・CLAUDE.md を整備する(必要があれば) | - `CLAUDE.md`, `CLAUDE.jp.md` |
 
 ## 参考ドキュメント
 

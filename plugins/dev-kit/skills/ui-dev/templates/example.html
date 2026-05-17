@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ui-dev — 組み込み例</title>
+
+<!-- ① CSS / JS を 1 回読み込み(各画面で共通) -->
+<link rel="stylesheet" href="./uidev.css" />
+<script src="./uidev.js" defer></script>
+
+<style>
+  body { font-family: system-ui, sans-serif; padding: 24px; background: #fafafa; }
+  .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px; max-width: 720px; }
+  button.act { margin-top: 12px; padding: 8px 12px; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 13px; }
+</style>
+</head>
+
+<!-- ② この画面に関連するファイルを data-debug-files で宣言 -->
+<body data-debug-files='{"html":["pages/example.html"],"css":["styles/example.css"],"js":["scripts/example.js"],"backend":["api/example.py"]}'>
+
+<h1>ui-dev 組み込み例</h1>
+<p>このサンプルは <code>plugins/dev-kit/skills/ui-dev/templates/</code> の <code>uidev.css</code> + <code>uidev.js</code> を読み込み、<code>data-debug-files</code> 属性で関連ファイルを宣言するだけの最小実装です。</p>
+
+<div class="card">
+  <strong>右下の 🐛 を押すとデバッグパネルが開きます。</strong>
+  <p>動作確認用にログを出してみてください。</p>
+  <button class="act" style="background:#2e7fff;" onclick="console.info('[example] info 出力')">info</button>
+  <button class="act" style="background:#ffb547; color:#111;" onclick="console.warn('[example] warn 出力')">warn</button>
+  <button class="act" style="background:#ff6b6b;" onclick="console.error('[example] error 出力')">error</button>
+  <button class="act" style="background:#666;" onclick="console.debug('[example] debug 出力', { state: { count: 1 } })">debug</button>
+</div>
+
+</body>
+</html>
