@@ -12,10 +12,10 @@ VS Codeワークスペースファイル（`.code-workspace`）と `git worktree
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | スキル定義 SKILL.md を作成 | - `plugins/work-kit/skills/vscode-workspace-sync/SKILL.md` |
-| - | スキル定義 SKILL.jp.md を作成 | - `plugins/work-kit/skills/vscode-workspace-sync/SKILL.jp.md` |
-| - | plugin.json のスキル一覧に追加 | - `plugins/work-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json のバージョンを更新 | - `.claude-plugin/marketplace.json` |
+| 済 | スキル定義 SKILL.md を作成 | - `plugins/work-kit/skills/vscode-workspace-sync/SKILL.md` |
+| 済 | スキル定義 SKILL.jp.md を作成 | - `plugins/work-kit/skills/vscode-workspace-sync/SKILL.jp.md` |
+| 済 | plugin.json のスキル一覧に追加 | - `plugins/work-kit/.claude-plugin/plugin.json` |
+| 済 | marketplace.json のバージョンを更新 | - `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
