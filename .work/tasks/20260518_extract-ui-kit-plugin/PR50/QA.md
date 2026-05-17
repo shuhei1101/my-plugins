@@ -93,28 +93,27 @@ ui-kit/skills/:
 
 ## QA-008: CSS-JS 紐付けルール
 
-**状態**: 未決定
+**状態**: 決定済み(2026-05-18)
 
-`/rule-creator` で `.claude/rules/` 配下にルールを作成するが、対象パスとチェック内容を確定する必要あり:
+スコープ: **FLOCSS 定義クラス ↔ JS 取得**。
+CSS で定義された `.c-*` / `.p-*` / `.l-*` / `.u-*` クラスと、JS の `querySelector`/`getElementById` 等の DOM 取得式を紐付け、片方の変更時に他方の同期確認を促す。
 
-候補内容:
-- 対象 path: `**/*.css`, `**/*.js`, `**/*.html` または FLOCSS の各レイヤーごと
-- トリガー: CSS クラス名追加・削除・改名時、JS の DOM アクセスが対応する CSS と紐づくか確認
-- 命名規則(BEM)と DOM 取得(`document.querySelector(".c-Button__icon")`)の整合確認
-
-**前提**: rule-creator スキル実行時にユーザーと相談しながら決定する。
+`/rule-creator` で `.claude/rules/{name}.md` を作成。
 
 ---
 
 ## QA-009: ログレベル定義(`logging` スキル内容)
 
-**状態**: 未決定
+**状態**: 決定済み(2026-05-18)
 
-`logging` スキルに書くレベル別ガイドの初版は、Claude が Web 等を参考に「適当に」書き、ユーザーがレビューする方針。
-具体的に何の出典・サイトをベースにするか:
+**Web 実情版**: `debug` / `info` / `warn` / `error` の 4 段階。
+critical は `error` に統合(重大事故も同じレベル)。Web フロントエンドの実情に合わせた最小構成。
 
-- A: 業界一般のベストプラクティス(syslog レベル準拠:debug/info/notice/warning/error/critical/alert/emergency)
-- B: Python `logging` モジュール準拠(DEBUG/INFO/WARNING/ERROR/CRITICAL)
-- C: Web フロントエンドの実情に合わせて簡略化(debug/info/warn/error のみ、critical は重大事故時)
+---
 
-**前提**: TODO の現案は B(Python logging に揃える)+ ユーザーレビュー後に調整。
+## QA-010: JS 規約の必須化レベル
+
+**状態**: 決定済み(2026-05-18)
+
+バニラ JS + `// @ts-check` + JSDoc 型注釈を**必須**化(principles.md に明記)。
+TypeScript / Node.js 環境は導入しない。

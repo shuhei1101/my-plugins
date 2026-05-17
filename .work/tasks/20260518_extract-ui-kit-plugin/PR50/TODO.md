@@ -15,7 +15,7 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260518_extract-ui-kit-plugin/PR50/QA.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260518_extract-ui-kit-plugin/PR50/QA.md` |
 | - | 仕様書 `ui-kit-design.md` を新規作成 | - `.work/specs/ui-kit-design.md` |
 | - | 仕様書 `dev-kit-design.md` を更新(UI 関連を削除) | - `.work/specs/dev-kit-design.md` |
 | - | `ui-kit` プラグインスケルトン作成 | - `plugins/ui-kit/.claude-plugin/plugin.json` |

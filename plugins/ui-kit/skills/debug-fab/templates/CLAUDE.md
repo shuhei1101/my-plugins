@@ -1,9 +1,9 @@
-# ui-dev templates
+# debug-fab templates
 
 > Japanese mirror: `CLAUDE.jp.md` (human reference only — not auto-loaded by Claude Code).
 > When editing: update the JP mirror first, then apply the same change here.
 
-Shared debug widget templates provided by the `dev-kit:ui-dev` skill.
+Shared debug widget templates provided by the `ui-kit:debug-fab` skill.
 Source files for the floating debug button + modal that every development-support screen must embed.
 
 ---
@@ -107,6 +107,6 @@ Paste directly into Claude Code with "debug this for me" and Claude will read th
 ## Constraints
 
 - `uidev.js` initializes only once per page even if loaded multiple times (`window.__uidevLoaded` guard).
-- Never load this on production user-facing screens — `ui-dev` is for development-support screens only.
+- Never load this on production user-facing screens — `debug-fab` is for development-support screens only.
 - Log buffer is capped at 2000 entries (oldest discarded).
 - Do not modify these templates inline per screen. If a project needs customization, fork the files inside the project (not here).

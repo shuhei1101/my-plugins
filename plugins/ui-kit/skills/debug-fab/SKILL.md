@@ -1,18 +1,19 @@
 ---
-name: dev-kit:ui-dev
+name: ui-kit:debug-fab
 description: >
-  UI conventions for development-support screens (admin panels, internal tools, debug pages).
-  Every dev screen must include a floating debug button that opens a modal showing related files
-  and recent JS logs, and a "Copy" button that exports them as JSON for pasting into Claude Code.
-  Trigger when creating or editing development-only UI screens (not for end-user production screens).
+  Embed a floating debug button (FAB) + modal on every development-support screen.
+  The FAB opens a modal that shows related files and recent JS logs, with a "Copy as JSON"
+  button so the developer can paste the snapshot directly into Claude Code for debugging.
+  Trigger when creating or editing development-only UI screens (admin panels, internal tools,
+  debug pages) — not production user-facing screens.
   Examples: "管理画面作って", "内部ツール用 UI を追加", "開発用デバッグ画面を直して".
 ---
 
-# dev-kit:ui-dev — Development Screen UI Conventions
+# ui-kit:debug-fab — Floating Debug Button + Modal
 
-Adds a shared floating debug widget to every development-support screen. The widget collects
-related files and recent JS logs and exposes a one-click "Copy as JSON" so the developer can
-paste the snapshot into Claude Code for debugging assistance.
+Adds a shared floating debug widget (FAB + modal) to every development-support screen.
+The widget collects related files and recent JS logs and exposes a one-click "Copy as JSON"
+so the developer can paste the snapshot into Claude Code for debugging assistance.
 
 This skill ships a **shared module** (`templates/uidev.css` + `templates/uidev.js`) — each screen
 imports it once and declares only the screen-specific related files. Never copy the widget code
@@ -27,15 +28,16 @@ into individual screens.
 Read for context:
 
 ```
-{plugin_root}/references/common.md      # logging conventions (mandatory)
-{plugin_root}/references/frontend.md    # frontend overview (reference)
-{plugin_root}/references/html.md        # HTML conventions (reference)
-{plugin_root}/references/css.md         # CSS conventions (reference)
-{plugin_root}/references/js.md          # JS conventions (reference)
+{plugin_root}/references/principles.md   # UI principles (DRY, CSS, JS, frontend-design)
 ```
 
-The plugin root is two levels above this skill file. Focus on the **logging** section in `common.md`:
-JSON Lines format, logger required, operation logs encouraged, one-line entries short.
+Plus the logging skill's conventions:
+
+```
+{plugin_root}/skills/logging/SKILL.md    # logging conventions
+```
+
+The plugin root is two levels above this skill file.
 
 → Proceed to Step 2
 
@@ -58,7 +60,7 @@ If it is a production screen, **do not apply this skill** and stop.
 
 #### Process
 
-1. Copy `{plugin_root}/skills/ui-dev/templates/uidev.css` and `uidev.js` into the project's static
+1. Copy `{plugin_root}/skills/debug-fab/templates/uidev.css` and `uidev.js` into the project's static
    assets directory (e.g. `static/`, `public/`, `assets/`).
 2. If the files already exist in the project, do not overwrite — just confirm the path.
 3. Confirm the URLs from which the browser will load them.
@@ -140,10 +142,13 @@ Skip framework/library files. The goal is "files Claude needs to read to debug t
 
 #### Process
 
-1. Confirm the project uses a logger (not raw `console.log`) per `references/common.md`.
-2. If absent, introduce one. Output format must be JSON Lines.
-3. Add operation logs at key user interactions and state transitions.
-4. Keep each log line short — never dump large objects across multiple lines.
+Confirm the project follows `ui-kit:logging` conventions:
+- Logger object (not raw `console.log` in handlers)
+- JSON Lines output format
+- Operation logs at key user interactions and state transitions
+- Each log line short (no multi-line object dumps)
+
+If the project does not yet have a logger, run `/ui-kit:logging` first.
 
 → Done
 
@@ -169,7 +174,6 @@ Skip framework/library files. The goal is "files Claude needs to read to debug t
 
 See:
 
-- `{plugin_root}/references/common.md` — logging conventions (mandatory section)
-- `{plugin_root}/references/frontend.md` — frontend overview
-- `{plugin_root}/references/html.md` / `css.md` / `js.md` — language references
-- `{plugin_root}/skills/ui-dev/templates/CLAUDE.md` — widget usage details (auto-loaded when working in that folder)
+- `{plugin_root}/references/principles.md` — UI principles (mandatory)
+- `{plugin_root}/skills/logging/SKILL.md` — logging conventions
+- `{plugin_root}/skills/debug-fab/templates/CLAUDE.md` — widget usage details (auto-loaded when working in that folder)
