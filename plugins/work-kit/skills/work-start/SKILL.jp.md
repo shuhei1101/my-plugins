@@ -94,7 +94,6 @@ python plugins/work-kit/scripts/index-tool.py add .work/tasks/index.yaml \
 #### 注記
 
 - `index.yaml` は `.work/tasks/.gitignore` で除外されているため、マスターへのコミットは不要
-- `index.yaml` が肥大化したら `python plugins/work-kit/scripts/trim-index.py` を実行すると完了済みエントリが `index.archive.yaml` に移動する
 
 ---
 

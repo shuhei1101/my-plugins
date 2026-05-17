@@ -28,7 +28,7 @@ work-start・merge スキルのステップから `index.yaml` の直接 Read �
 | 済 | work-kit:archive スキルを削除（merge フロー内に統合するため不要） | - `plugins/work-kit/skills/archive/SKILL.md`<br>- `plugins/work-kit/skills/archive/SKILL.jp.md` |
 | 済 | merge スキルを修正：ステップ2と3の間に archive ステップを追加、閾値・completed-count チェックを削除、ステップ番号を整理 | - `plugins/work-kit/skills/merge/SKILL.md`<br>- `plugins/work-kit/skills/merge/SKILL.jp.md` |
 | 済 | バージョンを 2.9.0 → 2.10.0 に bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | work-start ステップ3の注記から手動 trim 案内を削除（merge が自動実行するため不要） | - `plugins/work-kit/skills/work-start/SKILL.md`<br>- `plugins/work-kit/skills/work-start/SKILL.jp.md` |
+| 済 | work-start ステップ3の注記から手動 trim 案内を削除（merge が自動実行するため不要） | - `plugins/work-kit/skills/work-start/SKILL.md`<br>- `plugins/work-kit/skills/work-start/SKILL.jp.md` |
 
 ## 参考ドキュメント
 

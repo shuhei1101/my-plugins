@@ -90,7 +90,6 @@ python plugins/work-kit/scripts/index-tool.py add .work/tasks/index.yaml \
 #### Notes
 
 - `index.yaml` is excluded by `.work/tasks/.gitignore` — no commit to master is needed
-- When `index.yaml` grows large, run `python plugins/work-kit/scripts/trim-index.py` to archive completed entries to `index.archive.yaml`
 
 ---
 
