@@ -20,4 +20,4 @@ work-start スキルのテンプレート参照を `${CLAUDE_PLUGIN_ROOT}/templa
 | 済 | `SKILL.md` Step 6 のテンプレートパスを `${CLAUDE_PLUGIN_ROOT}/templates/` に修正 |
 | 済 | `SKILL.jp.md` 同様に修正 |
 | 済 | `plugin.json` / `marketplace.json` バージョンバンプ |
-| | `merge` スキル Step 3: index.archive.yaml を master 直接ではなく PR ブランチにコミットするよう修正 |
+| 済 | `merge` スキル Step 3: index.archive.yaml を master 直接ではなく PR ブランチにコミットするよう修正 |
