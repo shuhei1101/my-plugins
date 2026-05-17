@@ -192,6 +192,16 @@ prs:
   summary: last_id フィールド追加・trim スクリプト作成で index.yaml の肥大化を防ぐ
   task: 20260517_index-yaml-archive
   completed: true
+- id: 28
+  title: PR28 — restructure-py-kit-plugin
+  type: refactor
+  tags:
+  - py-kit
+  - python
+  - skills
+  summary: pyプラグインをpy-kitにリネームし、スキルを3分割・references追加・ルール作成
+  task: 20260517_restructure-py-kit-plugin
+  completed: true
 - id: 29
   title: PR29 — add-rename-reference-check-rule
   type: docs
@@ -214,4 +224,38 @@ prs:
   tags: []
   summary: index-tool.py と trim-index.py の stdout を UTF-8 に固定して Windows CP932 エラーを解消
   task: 20260517_fix-cp932-encoding
+  completed: true
+- id: 33
+  title: PR33 — fix-update-skill-trim-note
+  type: docs
+  tags: []
+  summary: update スキルのステップ4から手動 trim 案内を削除（merge が自動実行するため不要）
+  task: 20260517_fix-update-skill-trim-note
+  completed: true
+- id: 34
+  title: PR34 — clarify-step1-session-scope
+  type: fix
+  tags:
+  - work-kit
+  - hooks
+  summary: user-prompt-submit のステップ1で「進行中PR」が現在の会話セッション内のものに限定されることを明確化
+  task: 20260517_clarify-step1-session-scope
+  completed: true
+- id: 35
+  title: PR35 — add-git-status-check-to-commit-guard
+  type: fix
+  tags:
+  - work-kit
+  - hooks
+  summary: master-commit-guard に「確認前に git status で変更有無を確認する」注記を追加し、不要なコミット確認を防ぐ
+  task: 20260517_add-git-status-check-to-commit-guard
+  completed: true
+- id: 36
+  title: PR36 — fix-upgrade-skip-removed-plugins
+  type: fix
+  tags:
+  - marketplace
+  - tools
+  summary: upgradeコマンドで削除・リネームされたプラグインをアンインストールし、存在するものだけ更新する
+  task: 20260517_fix-upgrade-skip-removed-plugins
   completed: true
