@@ -134,12 +134,16 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 #### 処理内容
 
-以下のファイルはすべて **ワークツリー（`../repo-wt-PR{N}/`）内**に作成する。
+以下のスクリプトを実行してタスクフォルダと初期ドキュメントを作成する:
 
-1. タスクフォルダを作成する: `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/`
-2. PR フォルダを作成する: `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
-3. TODO.md を作成する（テンプレート: `${CLAUDE_PLUGIN_ROOT}/templates/TODO.md` 参照）
-4. QA.md を作成する（テンプレート: `${CLAUDE_PLUGIN_ROOT}/templates/QA.md` 参照）
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
+  ../$(basename $(pwd))-wt-PR{N} \
+  --pr {N} \
+  --title {title} \
+  --date {YYYYMMDD} \
+  --plugin-root ${CLAUDE_PLUGIN_ROOT}
+```
 
 → ステップ6へ進む
 
@@ -150,7 +154,7 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 ---
 
-### ステップ6: 仕様書を整備する（ワークツリー内）
+### ステップ6: TODO.md に作業内容を記載する（ワークツリー内）
 
 #### 条件
 
@@ -158,16 +162,21 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 #### 処理内容
 
-1. ワークツリー内の `.work/specs/` を確認する
-2. 関連する仕様書が存在する場合 → 今回の変更に関わる箇所を更新する
-3. 存在しない場合 → テンプレート（`${CLAUDE_PLUGIN_ROOT}/templates/spec.md` 参照）を元に新規作成する
-4. TODO.md の「仕様参照」セクションに仕様書へのリンクを追記する
+ワークツリー内の `TODO.md` を開き、テンプレートのひな形行を実際の作業内容に書き換える。
+以下の項目は必ず含める（削除・省略禁止）:
+
+| 完了 | 作業内容 |
+|---|---|
+| - | QA.md に未決定事項を記録する |
+| - | `.work/specs/` の仕様書を更新する |
+| - | （実装タスク: PR 固有の作業内容に書き換える） |
+| - | ルール・CLAUDE.md を整備する |
 
 → ステップ7へ進む
 
 ---
 
-### ステップ7: 不明点を QA.md に記録する（ワークツリー内）
+### ステップ7: 仕様書を整備する（ワークツリー内）
 
 #### 条件
 
@@ -175,14 +184,31 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 #### 処理内容
 
-1. ステップ2で確認した不明点をワークツリー内の `PR{N}/QA.md` に QA-XXX として追記する
-2. 不明点がない場合はスキップする
+1. ワークツリー内の `.work/specs/` を確認する
+2. 関連する仕様書が存在する場合 → 今回の変更に関わる箇所を更新する
+3. 存在しない場合 → テンプレート（`${CLAUDE_PLUGIN_ROOT}/templates/spec.md` 参照）を元に新規作成する
+4. TODO.md の「参考ドキュメント」セクションに仕様書へのリンクを追記する
 
 → ステップ8へ進む
 
 ---
 
-### ステップ8: 作成内容をコミットしてユーザーに報告し、実装を開始する
+### ステップ8: 不明点を QA.md に記録する（ワークツリー内）
+
+#### 条件
+
+- ステップ7が完了していること
+
+#### 処理内容
+
+1. ステップ2で確認した不明点をワークツリー内の `PR{N}/QA.md` に QA-XXX として追記する
+2. 不明点がない場合はスキップする
+
+→ ステップ9へ進む
+
+---
+
+### ステップ9: 作成内容をコミットしてユーザーに報告し、実装を開始する
 
 #### 処理内容
 
