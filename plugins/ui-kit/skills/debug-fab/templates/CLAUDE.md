@@ -76,34 +76,38 @@ A and B can coexist (both are merged). Use B for dynamic additions; A is simpler
 | `Ctrl + Shift + D` | Toggle modal open/close |
 | Level / line-count selectors in the modal | Filter display + copy (saved to localStorage) |
 | "Button position" selector in the header | Move the floating button (saved to localStorage) |
-| "XPath format" selector | Choose short vs full XPath for the element picker (saved to localStorage) |
-
-### Element picker mode
+### Element picker mode (multi-select)
 
 1. Click "🎯 要素選択" in the modal header
-2. The modal hides and a hint bar appears: hover an element to highlight it
-3. Click the target element → its info is copied to clipboard as JSON
-4. `Esc` cancels the mode without copying
+2. The modal hides and a hint bar appears
+3. **Click elements to add to the selection** (cyan outline = hover, green outline = selected)
+4. **Click an already-selected element to deselect** it (toggle)
+5. The floating button transforms into **📋 N** (N = current selection count)
+6. Click 📋 N to copy a JSON snippet to the clipboard
+7. `Esc` cancels the mode without copying
 
-Copied JSON shape:
+Copied JSON shape — same as the regular Copy button, with `elements: [...]` added:
 
 ```json
 {
   "page": "/path",
   "url":  "https://.../path?tab=...",
-  "element": {
-    "xpath":   "//*[@id=\"user-list\"]/li[3]/button",
-    "mode":    "short",
-    "tag":     "BUTTON",
-    "id":      null,
-    "classes": ["c-button", "c-button--ghost"],
-    "text":    "Edit"
-  },
+  "files": { "html": [], "css": [], "js": [] },
+  "logs":  { "limit": 100, "level": "error", "entries": [ ... ] },
+  "elements": [
+    {
+      "xpath":   "//*[@id=\"user-list\"]/li[3]/button",
+      "tag":     "BUTTON",
+      "id":      null,
+      "classes": ["c-button", "c-button--ghost"],
+      "text":    "Edit"
+    }
+  ],
   "capturedAt": "ISO8601"
 }
 ```
 
-XPath mode (`short` / `full`) is chosen in the modal's "要素ピッカー設定" section.
+The regular Copy button emits the same shape with `elements: []` (empty). XPath is fixed to the short / relative form (anchored at the nearest ancestor with an `id`).
 
 ---
 

@@ -19,8 +19,8 @@
   window.__uidevLoaded = true;
 
   // ── ストレージキー ───────────────────────────────────────
-  const LS = { lines: "uidev.lines", level: "uidev.level", pos: "uidev.pos", xpath: "uidev.xpath" };
-  const DEFAULTS = { lines: 100, level: "error", pos: "bottom-right", xpath: "short" };
+  const LS = { lines: "uidev.lines", level: "uidev.level", pos: "uidev.pos" };
+  const DEFAULTS = { lines: 100, level: "error", pos: "bottom-right" };
   const getS = (k) => localStorage.getItem(LS[k]) ?? DEFAULTS[k];
   const setS = (k, v) => localStorage.setItem(LS[k], v);
 
@@ -136,21 +136,13 @@
             </section>
             <section>
               <div class="section-head">
-                <h3>要素ピッカー設定</h3>
-                <div class="controls">
-                  <div class="inline-field">
-                    <span>XPath 形式</span>
-                    <select data-uidev="xpath">
-                      <option value="short">short (直近 ID 起点)</option>
-                      <option value="full">full (/html/body/...)</option>
-                    </select>
-                  </div>
-                </div>
+                <h3>要素ピッカー</h3>
               </div>
               <div class="uidev-setting-hint">
-                ヘッダの「🎯 要素選択」を押す → モーダル一時非表示 → 任意の要素をクリック →
-                <code>{ page, url, element: { xpath, tag, text } }</code> がクリップボードへ。
-                <kbd>Esc</kbd> でキャンセル。
+                ヘッダの「🎯 要素選択」を押すと、モーダルが一時非表示になり要素ピッカーモードに入る。
+                <strong>クリックで複数選択(再クリックで解除)</strong>、画面右下の <strong>🐛 → 📋 N</strong> ボタンを押すと
+                通常の JSON コピー(files + logs)に <code>elements: [...]</code> を加えてクリップボードへ。
+                <kbd>Esc</kbd> でキャンセル。XPath は短縮形式(相対)で固定。
               </div>
             </section>
           </div>
@@ -223,52 +215,64 @@
     })[c]);
   }
 
-  // ── コピー処理 ─────────────────────────────────────────
-  async function copyDebugJSON(root) {
+  // ── ペイロード組立(共通) ─────────────────────────────
+  /**
+   * @param {Element[]} [elements] 要素ピッカーで選択された要素配列(なければ空)
+   */
+  function buildPayload(elements) {
+    const els = Array.isArray(elements) ? elements : [];
     const lines = parseInt(getS("lines"), 10) || DEFAULTS.lines;
     const minLevel = LEVEL_ORDER[getS("level")] ?? LEVEL_ORDER[DEFAULTS.level];
     const entries = buffer.filter((e) => (LEVEL_ORDER[e.level] ?? 20) >= minLevel).slice(-lines);
 
-    const payload = {
+    return {
       page: location.pathname || "/",
       url:  location.href,
       files: collectFiles(),
       logs: { limit: lines, level: getS("level"), entries: entries },
+      elements: els.map(describeElement),
       capturedAt: new Date().toISOString(),
     };
+  }
+
+  /** @param {Element} el */
+  function describeElement(el) {
+    const cls = el.className && typeof el.className === "string"
+      ? el.className.split(/\s+/).filter(Boolean)
+      : [];
+    return {
+      xpath:   shortXPath(el),
+      tag:     el.tagName,
+      id:      el.id || null,
+      classes: cls,
+      text:    (el.textContent || "").trim().slice(0, 120),
+    };
+  }
+
+  /** @param {Element} target  クリップボードにコピーしフィードバック表示 */
+  async function copyJSON(payload, btn) {
     const text = JSON.stringify(payload, null, 2);
-    const btn = root.querySelector('[data-uidev="copy"]');
     try {
       await navigator.clipboard.writeText(text);
-      const original = btn.innerHTML;
-      btn.classList.add("copied");
-      btn.innerHTML = "✓ コピーしました";
-      setTimeout(() => { btn.classList.remove("copied"); btn.innerHTML = original; }, 1500);
+      if (btn) {
+        const original = btn.innerHTML;
+        btn.classList.add("copied");
+        btn.innerHTML = "✓ コピーしました";
+        setTimeout(() => { btn.classList.remove("copied"); btn.innerHTML = original; }, 1500);
+      }
+      return true;
     } catch (e) {
       alert("コピーに失敗しました: " + e.message);
+      return false;
     }
   }
 
-  // ── XPath 生成 ──────────────────────────────────────────
-  /** @param {Element} el */
-  function fullXPath(el) {
-    if (el.nodeType !== 1) return "";
-    if (el === document.documentElement) return "/html";
-    const segments = [];
-    let node = /** @type {Element|null} */ (el);
-    while (node && node.nodeType === 1 && node !== document.documentElement) {
-      let i = 1;
-      let sib = node.previousElementSibling;
-      while (sib) {
-        if (sib.tagName === node.tagName) i++;
-        sib = sib.previousElementSibling;
-      }
-      segments.unshift(`${node.tagName.toLowerCase()}[${i}]`);
-      node = node.parentElement;
-    }
-    return "/html/" + segments.join("/");
+  async function copyDebugJSON(root) {
+    const btn = root.querySelector('[data-uidev="copy"]');
+    await copyJSON(buildPayload([]), btn);
   }
 
+  // ── XPath 生成(短縮形式・相対) ──────────────────────────
   /** @param {Element} el  short XPath: 直近の id を起点に */
   function shortXPath(el) {
     if (!el || el.nodeType !== 1) return "";
@@ -295,70 +299,96 @@
     return "/" + segments.join("/");
   }
 
-  // ── 要素ピッカー ────────────────────────────────────────
+  // ── 要素ピッカー(多選択 + FAB コピー) ─────────────────
   /** @param {ReturnType<typeof buildDOM>} root */
   function startPicker(root) {
     const backdrop = root.querySelector(".uidev-modal-backdrop");
+    const fab      = /** @type {HTMLElement} */ (root.querySelector(".uidev-fab"));
+    const originalFabHTML  = fab.innerHTML;
+    const originalFabTitle = fab.title;
     const wasOpen = backdrop.getAttribute("data-open") === "true";
     backdrop.setAttribute("data-open", "false");
     document.body.classList.add("uidev-picker-active");
+    fab.setAttribute("data-picker-active", "true");
 
     const hint = document.createElement("div");
     hint.className = "uidev-picker-hint";
-    hint.innerHTML = `要素ピッカーモード — クリックで JSON コピー / <kbd>Esc</kbd> でキャンセル`;
+    hint.innerHTML = `要素ピッカーモード — クリックで複数選択(再クリックで解除) / 右下のボタンでコピー / <kbd>Esc</kbd> でキャンセル`;
     document.body.appendChild(hint);
 
-    let highlighted = /** @type {Element|null} */ (null);
+    const selected = /** @type {Set<Element>} */ (new Set());
+    let hovered = /** @type {Element|null} */ (null);
 
-    function clearHighlight() {
-      if (highlighted) highlighted.classList.remove("uidev-picker-highlight");
-      highlighted = null;
+    function clearHover() {
+      if (hovered && !selected.has(hovered)) hovered.classList.remove("uidev-picker-highlight");
+      hovered = null;
+    }
+
+    function refreshFab() {
+      const n = selected.size;
+      fab.innerHTML = n > 0 ? `📋 ${n}` : "📋";
+      fab.title = n > 0 ? `選択中 ${n} 件 — クリックで JSON コピー` : "要素を 1 つ以上選択してください";
     }
 
     /** @param {MouseEvent} e */
     function onMove(e) {
       const el = /** @type {Element} */ (e.target);
-      if (!el || el === hint || hint.contains(el)) return;
-      if (highlighted !== el) {
-        clearHighlight();
-        highlighted = el;
-        el.classList.add("uidev-picker-highlight");
+      if (!el || el === hint || hint.contains(el) || el === fab || fab.contains(el)) return;
+      if (hovered !== el) {
+        clearHover();
+        hovered = el;
+        if (!selected.has(el)) el.classList.add("uidev-picker-highlight");
       }
     }
 
     /** @param {MouseEvent} e */
     async function onClick(e) {
       const el = /** @type {Element} */ (e.target);
-      if (!el || el === hint || hint.contains(el)) return;
+      if (!el) return;
+
+      // FAB クリック → コピーして終了
+      if (el === fab || fab.contains(el)) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (selected.size === 0) {
+          flashHint("要素を 1 つ以上選択してください");
+          return;
+        }
+        const ok = await copyJSON(buildPayload(Array.from(selected)));
+        if (ok) {
+          const toast = document.createElement("div");
+          toast.className = "uidev-picker-toast";
+          toast.textContent = `✓ ${selected.size} 件の要素 + files + logs を JSON でコピーしました`;
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 1800);
+        }
+        stop();
+        if (wasOpen) backdrop.setAttribute("data-open", "true");
+        return;
+      }
+
+      // hint をクリックされた場合は無視
+      if (el === hint || hint.contains(el)) return;
+
       e.preventDefault();
       e.stopPropagation();
-      const xpathMode = getS("xpath");
-      const xpath = xpathMode === "full" ? fullXPath(el) : shortXPath(el);
-      const payload = {
-        page: location.pathname || "/",
-        url:  location.href,
-        element: {
-          xpath: xpath,
-          mode:  xpathMode,
-          tag:   el.tagName,
-          id:    el.id || null,
-          classes: el.className && typeof el.className === "string" ? el.className.split(/\s+/).filter(Boolean) : [],
-          text:  (el.textContent || "").trim().slice(0, 120),
-        },
-        capturedAt: new Date().toISOString(),
-      };
-      try {
-        await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-        const toast = document.createElement("div");
-        toast.className = "uidev-picker-toast";
-        toast.textContent = "✓ 要素情報を JSON でコピーしました";
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 1500);
-      } catch (err) {
-        alert("コピーに失敗しました: " + err.message);
+
+      // トグル選択
+      if (selected.has(el)) {
+        selected.delete(el);
+        el.classList.remove("uidev-picker-selected");
+      } else {
+        selected.add(el);
+        el.classList.remove("uidev-picker-highlight");
+        el.classList.add("uidev-picker-selected");
       }
-      stop();
-      if (wasOpen) backdrop.setAttribute("data-open", "true");
+      refreshFab();
+    }
+
+    function flashHint(msg) {
+      const original = hint.innerHTML;
+      hint.innerHTML = msg;
+      setTimeout(() => { hint.innerHTML = original; }, 1200);
     }
 
     function onKey(e) {
@@ -370,14 +400,20 @@
     }
 
     function stop() {
-      clearHighlight();
+      clearHover();
+      selected.forEach((el) => el.classList.remove("uidev-picker-selected"));
+      selected.clear();
       document.body.classList.remove("uidev-picker-active");
+      fab.removeAttribute("data-picker-active");
+      fab.innerHTML = originalFabHTML;
+      fab.title = originalFabTitle;
       hint.remove();
       document.removeEventListener("mousemove", onMove, true);
       document.removeEventListener("click", onClick, true);
       document.removeEventListener("keydown", onKey, true);
     }
 
+    refreshFab();
     document.addEventListener("mousemove", onMove, true);
     document.addEventListener("click", onClick, true);
     document.addEventListener("keydown", onKey, true);
@@ -394,12 +430,10 @@
     const linesEl   = root.querySelector('[data-uidev="lines"]');
     const levelEl   = root.querySelector('[data-uidev="level"]');
     const posEl     = root.querySelector('[data-uidev="pos"]');
-    const xpathEl   = root.querySelector('[data-uidev="xpath"]');
 
     linesEl.value = getS("lines");
     levelEl.value = getS("level");
     posEl.value   = getS("pos");
-    xpathEl.value = getS("xpath");
 
     function openModal()  { backdrop.setAttribute("data-open", "true");  renderOverview(root); renderLogs(root); }
     function closeModal() { backdrop.setAttribute("data-open", "false"); }
@@ -412,7 +446,6 @@
     linesEl.addEventListener("change", () => { setS("lines", linesEl.value); renderLogs(root); });
     levelEl.addEventListener("change", () => { setS("level", levelEl.value); renderLogs(root); });
     posEl.addEventListener("change",   () => { setS("pos",   posEl.value);   fab.setAttribute("data-pos", posEl.value); });
-    xpathEl.addEventListener("change", () => { setS("xpath", xpathEl.value); });
 
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "d") {

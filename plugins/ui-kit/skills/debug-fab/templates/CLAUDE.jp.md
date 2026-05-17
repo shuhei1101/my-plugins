@@ -76,34 +76,39 @@ A と B は併用可能(両方マージ)。動的に追加したいときは B�
 | `Ctrl + Shift + D` | モーダル開閉トグル |
 | モーダル内のレベル/行数セレクタ | 表示・コピー対象を絞り込み(localStorage に保存) |
 | ヘッダーの「ボタン位置」セレクタ | フロートボタンの配置を変更(localStorage に保存) |
-| 「XPath 形式」セレクタ | ピッカーで取得する XPath の short / full を切替(localStorage に保存) |
-
-### 要素ピッカーモード
+### 要素ピッカーモード(多選択)
 
 1. モーダルヘッダの「🎯 要素選択」をクリック
-2. モーダルが非表示になりヒントバーが出る。要素にホバーするとハイライト
-3. 対象要素をクリック → その要素情報が JSON でクリップボードへコピーされる
-4. `Esc` でコピーせずにキャンセル
+2. モーダルが非表示になりヒントバーが出る
+3. **クリックで要素を選択に追加**(シアンの枠 = ホバー、緑の枠 = 選択中)
+4. **選択済み要素を再クリック → 解除**(トグル)
+5. フロートボタンが **📋 N**(N = 選択中の数)に変身
+6. 📋 N をクリック → JSON 形式でクリップボードへコピー
+7. `Esc` でコピーせずにキャンセル
 
-コピーされる JSON 形式:
+コピーされる JSON 形式 — 通常コピーと同じスキーマに `elements: [...]` を追加:
 
 ```json
 {
   "page": "/path",
   "url":  "https://.../path?tab=...",
-  "element": {
-    "xpath":   "//*[@id=\"user-list\"]/li[3]/button",
-    "mode":    "short",
-    "tag":     "BUTTON",
-    "id":      null,
-    "classes": ["c-button", "c-button--ghost"],
-    "text":    "Edit"
-  },
+  "files": { "html": [], "css": [], "js": [] },
+  "logs":  { "limit": 100, "level": "error", "entries": [ ... ] },
+  "elements": [
+    {
+      "xpath":   "//*[@id=\"user-list\"]/li[3]/button",
+      "tag":     "BUTTON",
+      "id":      null,
+      "classes": ["c-button", "c-button--ghost"],
+      "text":    "Edit"
+    }
+  ],
   "capturedAt": "ISO8601"
 }
 ```
 
-XPath モード(`short` / `full`)はモーダルの「要素ピッカー設定」セクションで選ぶ。
+通常コピーボタンは同じスキーマで `elements: []`(空配列)を出力する。
+XPath は短縮形式 / 相対(直近の `id` を持つ祖先を起点)で固定。
 
 ---
 
