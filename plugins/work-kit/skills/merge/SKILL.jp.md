@@ -28,15 +28,16 @@ TODO 確認 → index アーカイブ → `--no-ff` マージ → ワークツ�
 
 #### 処理内容
 
-1. 以下を実行してアクティブな PR 一覧を取得する:
+1. 現在の会話セッションで PR が特定できている場合はそのPRを使用し、ステップ2へ進む
+2. 特定できていない場合は、以下を実行してアクティブな PR 一覧を取得する:
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index.yaml
 ```
 
    出力形式: `id|title|type|task`（1行1PR）
-2. 複数ある場合はユーザーにどれをマージするか確認する
-3. 対応するブランチ名を特定する: `PR{N}/{type}/{title}`
+3. 複数ある場合はユーザーにどれをマージするか確認する
+4. 対応するブランチ名を特定する: `PR{N}/{type}/{title}`
 
 → ステップ2へ進む
 
@@ -71,14 +72,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 処理内容
 
-1. `${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py` が存在しない場合はこのステップをスキップする
-2. 完了済みエントリを `index.yaml` から `index.archive.yaml` へ移動する:
-
-```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
-```
-
-3. 「Nothing to archive」と出力された場合は以下のコミットをスキップする
+1. `.work/tasks/index.yaml` を読み込み、完了済み（すべての作業が `済` の）エントリを特定する
+2. 完了済みエントリを `index.yaml` から削除し、`.work/tasks/index.archive.yaml` に追記する
+3. 移動するエントリがない場合はこのステップをスキップする
 4. `index.archive.yaml` が作成・更新された場合は、マージ対象の PR ブランチにコミットする
 
 → ステップ4へ進む
@@ -86,7 +82,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
 #### 補足
 
 - `index.yaml` は gitignore 対象のためコミット不要
-- `index.archive.yaml` は git 追跡対象 — master に直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ4のマージに含まれる）
+- `index.archive.yaml` は git 追跡対象 — 派生元ブランチに直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ4のマージに含まれる）
 
 ---
 
@@ -94,7 +90,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
 
 #### 処理内容
 
-1. メインブランチにいることを確認する
+1. PR の派生元ブランチ（例: `master` から派生していれば `master`、`develop` から派生していれば `develop`）にいることを確認する
 2. `--no-ff` でマージする:
 
 ```bash
@@ -157,4 +153,4 @@ git commit -m "docs: PR{N} マージ後ドキュメント更新"
 - [ ] マージコミットが存在する
 - [ ] ワークツリーとブランチが削除済み
 - [ ] QA.md が更新済み
-- [ ] index.archive.yaml がコミット済み（trim-index.py があり対象エントリが存在した場合）
+- [ ] index.archive.yaml がマージ対象の PR ブランチに同梱されてコミットされていること（完了済みエントリが存在した場合）
