@@ -28,6 +28,8 @@
 {plugin_root}/references/python-standards.md
 ```
 
+プラグインルートはこのスキルファイルの2階層上（例：`Base directory: .../skills/py-project` → プラグインルートは `.../{plugin-name}/`）。
+
 タスクの内容によって全セクションを使用する。
 
 → ステップ2へ

@@ -11,7 +11,7 @@
       "name": "py-kit",
       "source": "./plugins/py-kit",
       "description": "Python development toolkit — scripts, new projects, existing project review, SOLID/DDD standards, and automated rules",
-      "version": "2.0.0"
+      "version": "2.0.1"
     },
     {
       "name": "claude-kit",

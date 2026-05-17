@@ -28,6 +28,8 @@
 {plugin_root}/references/python-standards.md
 ```
 
+プラグインルートはこのスキルファイルの2階層上（例：`Base directory: .../skills/py-new-project` → プラグインルートは `.../{plugin-name}/`）。
+
 特に注目するセクション：**プロジェクトフォルダ構成**・**レイヤー構造**・**ハードコード禁止**・**SOLID**・**拡張性重視設計**・**依存性逆転**・**Pydantic の境界**・**ロガー仕様**・**テスト方針**・**bat ランチャーテンプレート（Windows のみ）**。
 
 → ステップ2へ
