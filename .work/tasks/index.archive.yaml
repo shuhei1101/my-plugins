@@ -208,3 +208,10 @@ prs:
   summary: index.yaml の読み書きを Python スクリプトに委譲し Claude のコンテキスト消費を削減
   task: 20260517_index-yaml-script-ops
   completed: true
+- id: 32
+  title: PR32 — fix-cp932-encoding
+  type: fix
+  tags: []
+  summary: index-tool.py と trim-index.py の stdout を UTF-8 に固定して Windows CP932 エラーを解消
+  task: 20260517_fix-cp932-encoding
+  completed: true
