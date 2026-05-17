@@ -25,11 +25,11 @@
 | 済 | `py-project` Step5 を修正: ルールが未存在の場合 `/claude-kit:rule-creator` を使う指示に変更 | - `plugins/py-kit/skills/py-project/SKILL.md`<br>- `plugins/py-kit/skills/py-project/SKILL.jp.md` |
 | 済 | `references/python-standards.jp.md` を作成（日本語ミラー） | - `plugins/py-kit/references/python-standards.jp.md` |
 
-| - | bat/Windows 関連セクションに「Linux 環境では不要」の注記を追加（python-standards.md / jp.md） | - `plugins/py-kit/references/python-standards.md`<br>- `plugins/py-kit/references/python-standards.jp.md` |
-| - | DDD セクションを削除（両ファイル + 各スキルから参照を除去） | - `python-standards.md`・`python-standards.jp.md`<br>- `py-new-project/SKILL.md`・`py-new-project/SKILL.jp.md` |
-| - | 「レイヤー構造・外部境界の分離設計」セクションを追加（フォルダ名は指定しない・Interface/Protocol で分離・拡張性・保守性） | - `python-standards.md`・`python-standards.jp.md` |
-| - | 「ハードコード禁止」チェック項目を追加（設定値・パスは全て外出し） | - `python-standards.md`・`python-standards.jp.md` |
-| - | `py-project` の品質チェックにレイヤー分離・ハードコード禁止・重複ロジックチェックを追加 | - `py-project/SKILL.md`・`py-project/SKILL.jp.md` |
+| 済 | bat/Windows 関連セクションに「Linux 環境では不要」の注記を追加（python-standards.md / jp.md） | - `plugins/py-kit/references/python-standards.md`<br>- `plugins/py-kit/references/python-standards.jp.md` |
+| 済 | DDD セクションを削除（両ファイル + 各スキルから参照を除去） | - `python-standards.md`・`python-standards.jp.md`<br>- `py-new-project/SKILL.md`・`py-new-project/SKILL.jp.md` |
+| 済 | 「レイヤー構造・外部境界の分離設計」セクションを追加（フォルダ名は指定しない・Interface/Protocol で分離・拡張性・保守性） | - `python-standards.md`・`python-standards.jp.md` |
+| 済 | 「ハードコード禁止」チェック項目を追加（設定値・パスは全て外出し） | - `python-standards.md`・`python-standards.jp.md` |
+| 済 | `py-project` の品質チェックにレイヤー分離・ハードコード禁止・重複ロジックチェックを追加 | - `py-project/SKILL.md`・`py-project/SKILL.jp.md` |
 
 ## 参考ドキュメント
 
