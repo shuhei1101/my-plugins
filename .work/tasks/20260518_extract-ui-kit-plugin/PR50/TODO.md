@@ -37,6 +37,9 @@
 | 済 | 共通コンポーネント先読み強制ルールテンプレを追加 | - `plugins/ui-kit/templates/rules/common-component-first.md` |
 | 済 | 既存スキル(mock/flocss-apply/debug-fab/logging)に「最終ステップで rule-creator でリンク」「最初に共通コンポーネント/定数/ルーティング確認」を追記 | - `plugins/ui-kit/skills/*/SKILL.md`, `SKILL.jp.md` |
 | 済 | 新スキル `ui-kit:implement` 作成(モック → 実装フェーズ用、最初に constants / routing / common-components を確認 → 設計 → 実装 → ルール連携) | - `plugins/ui-kit/skills/implement/SKILL.md`, `SKILL.jp.md` |
+| - | ルールテンプレートに日本語版を追加(`.jp.md` ペア。`.claude/rules-jp/` へコピー) | - `plugins/ui-kit/templates/rules/{css-js-link,common-component-first}.jp.md` |
+| - | flocss-apply / implement スキルの「ルール導入」ステップを EN+JP の両方コピーに更新 | - `plugins/ui-kit/skills/flocss-apply/SKILL.md`, `implement/SKILL.md` (各 JP も) |
+| - | ui-design.md の「共通コンポーネント一覧」に Header / Button / FAB を明示し、運用ガイド(「よく使うものはここに集約」)を追加 | - `plugins/ui-kit/references/ui-design.md`, `ui-design.jp.md` |
 | 済 | spec ui-kit-design.md を最終構成に更新 | - `.work/specs/ui-kit-design.md` |
 | 済 | ルール・CLAUDE.md を整備する | - `CLAUDE.md`, `CLAUDE.jp.md`(必要に応じて) |
 

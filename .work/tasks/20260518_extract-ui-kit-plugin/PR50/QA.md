@@ -224,6 +224,48 @@ UI 実装系スキル(mock / implement / flocss-apply / debug-fab / logging)で�
 - 生成された JS/CSS/HTML が散らからないよう、`/rule-creator` でルール作成 or 既存ルール導入を促す
 - 既に `css-js-link.md` がコピーされていれば導入済み扱い
 
+---
+
+## QA-019: ルールテンプレートの多言語化
+
+**状態**: 決定済み(2026-05-18)
+
+ユーザー運用に合わせる:
+- `.claude/rules/` (英、Claude が自動読み込み)
+- `.claude/rules-jp/` (日、人間用ミラー、Claude 読み込み対象外)
+
+プラグイン側 templates 構造:
+```
+plugins/ui-kit/templates/rules/
+├── css-js-link.md           → user .claude/rules/css-js-link.md
+├── css-js-link.jp.md        → user .claude/rules-jp/css-js-link.md  (.jp サフィックスは落とす)
+├── common-component-first.md       → user .claude/rules/common-component-first.md
+└── common-component-first.jp.md    → user .claude/rules-jp/common-component-first.md
+```
+
+flocss-apply / implement スキルが両方をコピーする。
+
+---
+
+## QA-020: 共通コンポーネントの具体例
+
+**状態**: 決定済み(2026-05-18)
+
+ui-design.md の「共通コンポーネント化必須」セクションに、よく使う部品を明示:
+- Header(ヘッダー)
+- Sidebar / Drawer(サイドバー / ドロワー)
+- Buttons(各種ボタン variant)
+- FAB(Floating Action Button)
+- Modal / Dialog(モーダル / 確認ダイアログ)
+- Toast(通知)
+- Form Field(ラベル + 入力 + エラー)
+- Loading Skeleton / Spinner
+- Empty State Card
+- Tab Bar / Card Grid / Action Bar
+- その他、複数画面で使い回す可能性のあるものはここに集約
+
+運用ガイドとして「よく使うものはここに入れましょう」を明文化。
+
 ユーザーから明示されたトピック:
 - 画面操作系: タブ切替・サイドメニュー多用
 - レイアウト: 2 ペイン / 3 ペイン構造
