@@ -14,7 +14,7 @@
 ## 概要
 
 PR のマージフローを実行するスキル。
-TODO チェックリスト確認 → `--no-ff` マージ → ワークツリークリーンアップ → ドキュメント更新を行う。
+TODO 確認 → index アーカイブ → `--no-ff` マージ → ワークツリークリーンアップ → ドキュメント更新を行う。
 
 ---
 
@@ -28,7 +28,13 @@ TODO チェックリスト確認 → `--no-ff` マージ → ワークツリー�
 
 #### 処理内容
 
-1. `.work/tasks/index.yaml` を読んで `completed: false` の PR を確認する
+1. 以下を実行してアクティブな PR 一覧を取得する:
+
+```bash
+python plugins/work-kit/scripts/index-tool.py list-active .work/tasks/index.yaml
+```
+
+   出力形式: `id|title|type|task`（1行1PR）
 2. 複数ある場合はユーザーにどれをマージするか確認する
 3. 対応するブランチ名を特定する: `PR{N}/{type}/{title}`
 
@@ -40,7 +46,7 @@ TODO チェックリスト確認 → `--no-ff` マージ → ワークツリー�
 
 ---
 
-### ステップ2: TODO チェックリストを確認する
+### ステップ2: 作業内容テーブルを確認する
 
 #### 条件
 
@@ -48,20 +54,48 @@ TODO チェックリスト確認 → `--no-ff` マージ → ワークツリー�
 
 #### 処理内容
 
-1. `.work/tasks/{date}_{title}/PR{N}/TODO.md` の `## TODO` セクションを読む
-2. 未完了（`- [ ]`）のタスクがないか確認する
+1. `.work/tasks/{date}_{title}/PR{N}/TODO.md` の `## 作業内容` テーブルを読む
+2. 全行の「完了」列が `済` であることを確認する
 
-→ 全て `- [x]` ならステップ3へ進む
+→ 全て `済` ならステップ3へ進む
 
 #### 補足
 
 ##### 条件分岐
 
-- 未完了タスクがある → マージせずユーザーに報告し停止する
+- 未完了行がある → マージせずユーザーに報告し停止する
 
 ---
 
-### ステップ3: マージを実行する
+### ステップ3: 完了済みエントリをアーカイブする
+
+#### 処理内容
+
+1. `plugins/work-kit/scripts/trim-index.py` が存在しない場合はこのステップをスキップする
+2. 完了済みエントリを `index.yaml` から `index.archive.yaml` へ移動する:
+
+```bash
+python plugins/work-kit/scripts/trim-index.py .work/tasks/index.yaml
+```
+
+3. 「Nothing to archive」と出力された場合は以下のコミットをスキップする
+4. `index.archive.yaml` が作成・更新された場合はコミットする:
+
+```bash
+git add .work/tasks/index.archive.yaml
+git commit -m "chore: archive completed PR entries"
+```
+
+→ ステップ4へ進む
+
+#### 補足
+
+- `index.yaml` は gitignore 対象のためコミット不要
+- `index.archive.yaml` は git 追跡対象 — このマージフローの一部として master に直接コミットする
+
+---
+
+### ステップ4: マージを実行する
 
 #### 処理内容
 
@@ -72,11 +106,11 @@ TODO チェックリスト確認 → `--no-ff` マージ → ワークツリー�
 git merge --no-ff -m "{type}: {title} #PR{N}" PR{N}/{type}/{title}
 ```
 
-→ ステップ4へ進む
+→ ステップ5へ進む
 
 ---
 
-### ステップ4: ワークツリーとブランチを削除する
+### ステップ5: ワークツリーとブランチを削除する
 
 #### 処理内容
 
@@ -87,7 +121,7 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
-→ ステップ5へ進む
+→ ステップ6へ進む
 
 #### 補足
 
@@ -98,7 +132,7 @@ git branch -d PR{N}/{type}/{title}
 
 ---
 
-### ステップ5: ドキュメントを更新する
+### ステップ6: ドキュメントを更新する
 
 #### 処理内容
 
@@ -110,28 +144,7 @@ git add .work/
 git commit -m "docs: PR{N} マージ後ドキュメント更新"
 ```
 
-→ ステップ6へ進む
-
----
-
-### ステップ6: index.yaml をアーカイブする
-
-#### 処理内容
-
-1. `plugins/work-kit/scripts/trim-index.py` が存在するか確認する
-2. 存在する場合、以下を実行して完了済みエントリを `index.archive.yaml` へ移動する:
-
-```bash
-python plugins/work-kit/scripts/trim-index.py .work/tasks/index.yaml
-```
-
-3. trim-index.py が存在しない場合はこのステップをスキップする
-
 → ステップ7へ進む
-
-#### 補足
-
-- `index.yaml` / `index.archive.yaml` はどちらも gitignore 対象のためコミット不要
 
 ---
 
@@ -149,4 +162,4 @@ python plugins/work-kit/scripts/trim-index.py .work/tasks/index.yaml
 - [ ] マージコミットが存在する
 - [ ] ワークツリーとブランチが削除済み
 - [ ] QA.md が更新済み
-- [ ] index.yaml がアーカイブ済み（trim-index.py がある場合）
+- [ ] index.archive.yaml がコミット済み（trim-index.py があり対象エントリが存在した場合）

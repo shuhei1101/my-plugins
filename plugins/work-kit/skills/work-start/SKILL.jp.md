@@ -29,9 +29,11 @@
 #### 処理内容
 
 1. ユーザーが既に PR 番号・ブランチ名を指定している場合はその値を使う
-2. 指定がない場合は `.work/tasks/index.yaml` を読む:
-   - `last_id` フィールドがある → `last_id + 1` を次の PR 番号とする
-   - `last_id` がない場合は → 全エントリの `max(id) + 1` にフォールバック（リストが空なら 1）
+2. 指定がない場合は以下を実行し、出力された番号を使う:
+
+```bash
+python plugins/work-kit/scripts/index-tool.py next-id .work/tasks/index.yaml
+```
 
 → ステップ2へ進む
 
@@ -72,19 +74,15 @@
 
 #### 処理内容
 
-1. `index.yaml` の先頭で `last_id` を `{N}` に更新する
-2. メインリポジトリの `.work/tasks/index.yaml` の `prs` リストに以下を追記する:
+1. 以下を実行して PR エントリを追加する:
 
-```yaml
-last_id: {N}
-prs:
-  - id: {N}
-    title: 'PR{N} — {title}'
-    type: {type}
-    tags: []
-    summary: '{summary}'
-    task: '{YYYYMMDD}_{title}'
-    completed: false
+```bash
+python plugins/work-kit/scripts/index-tool.py add .work/tasks/index.yaml \
+  --id {N} \
+  --title "PR{N} — {title}" \
+  --type {type} \
+  --summary "{summary}" \
+  --task "{YYYYMMDD}_{title}"
 ```
 
 → ステップ4へ進む
@@ -96,7 +94,6 @@ prs:
 #### 注記
 
 - `index.yaml` は `.work/tasks/.gitignore` で除外されているため、マスターへのコミットは不要
-- `index.yaml` が肥大化したら `python plugins/work-kit/scripts/trim-index.py` を実行すると完了済みエントリが `index.archive.yaml` に移動する
 
 ---
 

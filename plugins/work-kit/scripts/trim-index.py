@@ -72,7 +72,7 @@ def main(args: argparse.Namespace) -> None:
     done = [p for p in prs if p.get("completed", False)]
 
     if not done:
-        print("Nothing to archive — no completed entries found.")
+        print("Nothing to archive - no completed entries found.")
         return
 
     # Merge into archive (skip duplicates by id)
@@ -80,6 +80,7 @@ def main(args: argparse.Namespace) -> None:
     existing: list[dict] = archive_data.get("prs", [])
     existing_ids = {p["id"] for p in existing}
     merged = existing + [p for p in done if p["id"] not in existing_ids]
+    merged.sort(key=lambda p: p["id"])
 
     prefix = HEADER_COMMENT if not archive_path.exists() else ""
     archive_path.write_text(prefix + _dump({"prs": merged}), encoding="utf-8")
