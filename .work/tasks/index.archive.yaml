@@ -275,3 +275,10 @@ prs:
   summary: work-kit テンプレート .work/CLAUDE.md / .jp.md に残った古い [x] 表記をテーブル形式の 済 に統一
   task: 20260517_fix-template-claude-checkbox-notation
   completed: true
+- id: 47
+  title: PR47 — create-dev-kit-plugin
+  type: refactor
+  tags: []
+  summary: py-kit と yaml-rule を統合した dev-kit プラグインを新設し、references/ 構造を導入
+  task: 20260517_create-dev-kit-plugin
+  completed: true
