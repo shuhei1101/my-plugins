@@ -59,6 +59,22 @@ When a skill name, file name, or folder name is changed, other files in the same
 
 > Skills can be referenced or called from `trigger` fields in SKILL.md or from steps in other skills. Renaming on the filesystem alone is not enough.
 
+## Script Paths in Skills
+
+When a skill (SKILL.md) step calls a script, never use `plugins/{name}/scripts/` — that path only works inside the `my-plugins` repository. When the plugin is installed in another project, the scripts live in the plugin cache. Always use `${CLAUDE_PLUGIN_ROOT}/scripts/` instead.
+
+```bash
+# Wrong — only works inside my-plugins
+python plugins/work-kit/scripts/index-tool.py next-id ...
+
+# Correct — works in any project
+python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" next-id ...
+```
+
+`${CLAUDE_PLUGIN_ROOT}` is the plugin root — two levels above `skills/{skill-name}/`.
+
+---
+
 ## Version Bump Rules
 
 | Change type | Bump | Example |

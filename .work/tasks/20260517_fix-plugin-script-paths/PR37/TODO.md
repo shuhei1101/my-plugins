@@ -13,7 +13,7 @@
 | 済 | work-start のスクリプトパスを ${CLAUDE_PLUGIN_ROOT}/scripts/ に変更 | - `plugins/work-kit/skills/work-start/SKILL.md`<br>- `plugins/work-kit/skills/work-start/SKILL.jp.md` |
 | 済 | merge のスクリプトパスを ${CLAUDE_PLUGIN_ROOT}/scripts/ に変更 | - `plugins/work-kit/skills/merge/SKILL.md`<br>- `plugins/work-kit/skills/merge/SKILL.jp.md` |
 | 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | plugin-work ルールに ${CLAUDE_PLUGIN_ROOT}/scripts/ パス規約を追記 | - `.claude/rules/plugin-work.md`<br>- `.claude/rules-jp/plugin-work.md` |
+| 済 | plugin-work ルールに ${CLAUDE_PLUGIN_ROOT}/scripts/ パス規約を追記 | - `.claude/rules/plugin-work.md`<br>- `.claude/rules-jp/plugin-work.md` |
 
 ## 参考ドキュメント
 
