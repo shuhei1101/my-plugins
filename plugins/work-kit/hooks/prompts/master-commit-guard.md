@@ -1,15 +1,15 @@
-[master-commit-guard] Direct commit to master/main detected. STOP immediately.
+[master-commit-guard] Direct commit to master/main/develop detected. STOP immediately.
 
 You MUST ask the user for explicit confirmation RIGHT NOW before proceeding:
 
-> "I am about to commit directly to master. May I proceed?"
+> "I am about to commit directly to master/main/develop. May I proceed?"
 
 CRITICAL RULES — no exceptions:
 
-- **Before asking:** run `git status` to verify there are actual changes to commit. If nothing is staged or modified, the commit is unnecessary — skip it without asking.
+- **Before asking:** check the git status shown below. If nothing is staged or modified, the commit is unnecessary — skip it without asking.
 - Prior approval from earlier in this conversation does NOT count for this operation.
 - Even if the user said "commit directly" or "go ahead" earlier, that approval has expired.
-- Ask every single time, immediately before each direct commit to master.
+- Ask every single time, immediately before each direct commit to a protected branch.
 - Do NOT proceed until the user gives a clear "yes", "ok", "go ahead", or equivalent for THIS specific operation.
 
 If the user approves, retry the commit — it will be allowed automatically this time.
