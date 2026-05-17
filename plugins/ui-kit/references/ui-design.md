@@ -220,23 +220,35 @@ Avoid bouncy springs, looping animations, or "wow factor" effects in tool screen
 ## Implement every pattern as a shared component
 
 **Mandatory**: all patterns described in this document must be implemented as **shared
-components**, never duplicated per screen. This applies to:
+components**, never duplicated per screen. Anything that appears (or is likely to appear) on
+two or more screens goes here.
 
-- Loading skeletons, spinners, progress bars
-- Empty-state cards, error cards, toast notifications
-- Form fields with label / helper / error layout
-- Confirmation dialogs (modal)
-- Keyboard-shortcut help modal
-- Drawer, sidebar, header
-- Tab bar, card grid, action bar
-- Theme toggle, motion-aware wrappers
+### Components to share by default
 
-Each lives in the project's `c-*` (component) layer. A page reuses these via class names and JS
-imports — it never reimplements its own toast, dialog, or skeleton.
+| Group | Items |
+|---|---|
+| Navigation     | **Header**, **Sidebar**, **Drawer** (mobile), Top tab bar |
+| Buttons        | **Buttons** (primary / secondary / ghost / danger variants), Icon button, **FAB** (Floating Action Button) |
+| Overlays       | **Modal**, **Confirmation dialog**, **Toast** notifications, Keyboard-shortcut help modal |
+| Form           | **Form field** (label + input + helper + error), Form group, Inline error, Form summary |
+| State          | **Loading skeleton**, Spinner, Progress bar, **Empty state card**, **Error card** |
+| Surfaces       | **Card**, Card grid, Action bar, Section heading |
+| Misc           | Theme toggle, Motion-aware wrapper, Icon |
+
+This is the **default list**. If a piece is likely to be reused, add it here even if only one
+screen uses it today. "よく使うものはここに入れる" — when in doubt, add it to the shared layer.
+
+### Placement
+
+- All of the above live in the project's `c-*` (Component) layer
+- Composites built specifically for one screen (e.g. `p-userList`, `p-settingsAccount`) live in
+  the `p-*` (Project) layer and **import the `c-*` components** above instead of reimplementing them
+
+### Workflow
 
 When implementing or mocking a screen, the **first step is always to look up the existing
-shared components** (`c-*`, `p-*`) before writing new markup. See the `ui-kit:implement` skill
-for the enforced workflow.
+shared components** (`c-*`, `p-*`) before writing new markup. See the `ui-kit:implement`
+skill and the `.claude/rules/common-component-first.md` rule for the enforced workflow.
 
 ---
 

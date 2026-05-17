@@ -189,12 +189,18 @@ FLOCSS のレイヤー構造と Design Tokens(CSS Custom Properties)を画面に
 
 #### 処理内容
 
-プロジェクトの `.claude/rules/` に以下のルールテンプレートをコピーする(なければ):
+プロジェクトにルールテンプレートをコピーする。**英語版と日本語版の両方**をコピー:
+英語版は Claude が自動読み込み、日本語版は人間用ミラー。
 
-```
-{plugin_root}/templates/rules/css-js-link.md            → .claude/rules/css-js-link.md
-{plugin_root}/templates/rules/common-component-first.md → .claude/rules/common-component-first.md
-```
+| コピー元(プラグイン) | コピー先(プロジェクト) |
+|---|---|
+| `{plugin_root}/templates/rules/css-js-link.md`              | `.claude/rules/css-js-link.md` |
+| `{plugin_root}/templates/rules/css-js-link.jp.md`           | `.claude/rules-jp/css-js-link.md`(`.jp` サフィックスは落とす) |
+| `{plugin_root}/templates/rules/common-component-first.md`   | `.claude/rules/common-component-first.md` |
+| `{plugin_root}/templates/rules/common-component-first.jp.md`| `.claude/rules-jp/common-component-first.md` |
+
+コピー先が既に存在するペアはスキップ(上書きしない)。
+`.claude/rules-jp/` ディレクトリがなければ作成する。
 
 これらは Claude が `.css`・`.js`・`.html` を読むときに自動でロードされ:
 - FLOCSS クラス定義と JS / HTML での使用箇所の紐付けを強制

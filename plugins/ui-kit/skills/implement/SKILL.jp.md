@@ -143,13 +143,18 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 
 #### 処理内容
 
-この画面で生成した JS/CSS/HTML が散らからないよう、プロジェクトの `.claude/rules/` に以下が
-配置されていることを確認する:
+この画面で生成した JS/CSS/HTML が散らからないよう、英語版と日本語版の両ミラーをコピー
+(コピー先が既に存在するペアはスキップ):
 
-1. `.claude/rules/css-js-link.md`
-   - なければ `{plugin_root}/templates/rules/css-js-link.md` からコピー
-2. `.claude/rules/common-component-first.md`
-   - なければ `{plugin_root}/templates/rules/common-component-first.md` からコピー
+| コピー元(プラグイン) | コピー先(プロジェクト) |
+|---|---|
+| `{plugin_root}/templates/rules/css-js-link.md`              | `.claude/rules/css-js-link.md` |
+| `{plugin_root}/templates/rules/css-js-link.jp.md`           | `.claude/rules-jp/css-js-link.md`(`.jp` サフィックスは落とす) |
+| `{plugin_root}/templates/rules/common-component-first.md`   | `.claude/rules/common-component-first.md` |
+| `{plugin_root}/templates/rules/common-component-first.jp.md`| `.claude/rules-jp/common-component-first.md` |
+
+`.claude/rules/*.md` は Claude が対象ファイルを読むときに自動ロード、
+`.claude/rules-jp/*.md` は人間用ミラー(Claude は読まない)。
 
 プロジェクト固有の追加ルール(例: 特定の設定ファイル ↔ 特定の画面の紐付け)が必要なら、
 `/rule-creator` で作成する。

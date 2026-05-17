@@ -187,12 +187,18 @@ The `.claude/rules/` rule for CSS-JS linkage will fire and require checking both
 
 #### Process
 
-Copy two rule templates into the project's `.claude/rules/` (if missing):
+Copy the rule templates into the project. **Both English and Japanese versions** — English
+auto-loads, Japanese is a human reference mirror.
 
-```
-{plugin_root}/templates/rules/css-js-link.md            → .claude/rules/css-js-link.md
-{plugin_root}/templates/rules/common-component-first.md → .claude/rules/common-component-first.md
-```
+| From (plugin) | To (project) |
+|---|---|
+| `{plugin_root}/templates/rules/css-js-link.md`              | `.claude/rules/css-js-link.md` |
+| `{plugin_root}/templates/rules/css-js-link.jp.md`           | `.claude/rules-jp/css-js-link.md` (drop `.jp` suffix) |
+| `{plugin_root}/templates/rules/common-component-first.md`   | `.claude/rules/common-component-first.md` |
+| `{plugin_root}/templates/rules/common-component-first.jp.md`| `.claude/rules-jp/common-component-first.md` |
+
+Skip any pair whose destination already exists (do not overwrite).
+Create the `.claude/rules-jp/` directory if missing.
 
 The rules auto-load whenever Claude reads a `.css`, `.js`, or `.html` file and enforce:
 - FLOCSS class definitions are kept in sync with JS / HTML usage

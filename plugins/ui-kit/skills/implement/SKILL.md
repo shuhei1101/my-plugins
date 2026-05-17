@@ -142,13 +142,18 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 
 #### Process
 
-Generated JS, CSS, and HTML files for this screen must stay linked. Ensure the following
-rules are present in the project's `.claude/rules/`:
+Generated JS, CSS, and HTML files for this screen must stay linked. Copy both English and
+Japanese rule mirrors into the project (skip pairs whose destination already exists):
 
-1. `.claude/rules/css-js-link.md`
-   - Copy from `{plugin_root}/templates/rules/css-js-link.md` if not present
-2. `.claude/rules/common-component-first.md`
-   - Copy from `{plugin_root}/templates/rules/common-component-first.md` if not present
+| From (plugin) | To (project) |
+|---|---|
+| `{plugin_root}/templates/rules/css-js-link.md`              | `.claude/rules/css-js-link.md` |
+| `{plugin_root}/templates/rules/css-js-link.jp.md`           | `.claude/rules-jp/css-js-link.md` (drop `.jp` suffix) |
+| `{plugin_root}/templates/rules/common-component-first.md`   | `.claude/rules/common-component-first.md` |
+| `{plugin_root}/templates/rules/common-component-first.jp.md`| `.claude/rules-jp/common-component-first.md` |
+
+`.claude/rules/*.md` auto-load when Claude reads matching files; `.claude/rules-jp/*.md` is a
+human reference mirror.
 
 If the project needs an additional rule (e.g. tying a specific config file to a specific
 screen), invoke `/rule-creator` to author it.
