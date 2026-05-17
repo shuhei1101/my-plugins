@@ -126,7 +126,7 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 ---
 
-### ステップ5: タスク・PR フォルダと TODO.md・QA.md を作成する（ワークツリー内）
+### ステップ5: タスクフォルダを決定する（新規 or 既存）
 
 #### 条件
 
@@ -134,7 +134,35 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 #### 処理内容
 
-以下のスクリプトを実行してタスクフォルダと初期ドキュメントを作成する:
+1. ワークツリー内の `.work/tasks/` に既存のタスクフォルダがあるか確認する:
+
+```bash
+ls ../$(basename $(pwd))-wt-PR{N}/.work/tasks/ 2>/dev/null || echo "(なし)"
+```
+
+2. 結果をユーザーに提示し、以下を選択させる:
+   - **新規**: 今回のタイトルと日付で新しいタスクフォルダを作る → `--date {YYYYMMDD} --title {title}` を使用
+   - **既存**: リストから既存フォルダを選択して追加する → `--task-dir {folder_name}` を使用
+
+→ ステップ6へ進む
+
+#### 出力
+
+- タスクフォルダの種別（新規 or 既存）と使用する引数が確定している
+
+---
+
+### ステップ6: タスク・PR フォルダと TODO.md・QA.md を作成する（ワークツリー内）
+
+#### 条件
+
+- ステップ5が完了していること
+
+#### 処理内容
+
+ステップ5の判定結果に応じて以下のいずれかを実行する:
+
+**新規タスクフォルダの場合:**
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
@@ -145,20 +173,31 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
 ```
 
-→ ステップ6へ進む
+**既存タスクフォルダに追加する場合:**
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
+  ../$(basename $(pwd))-wt-PR{N} \
+  --pr {N} \
+  --task-dir {existing_folder_name} \
+  --title {title} \
+  --plugin-root ${CLAUDE_PLUGIN_ROOT}
+```
+
+→ ステップ7へ進む
 
 #### 出力
 
-- `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` 作成済み
-- `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` 作成済み
+- `../repo-wt-PR{N}/.work/tasks/{task_folder}/PR{N}/TODO.md` 作成済み
+- `../repo-wt-PR{N}/.work/tasks/{task_folder}/PR{N}/QA.md` 作成済み
 
 ---
 
-### ステップ6: TODO.md に作業内容を記載する（ワークツリー内）
+### ステップ7: TODO.md に作業内容を記載する（ワークツリー内）
 
 #### 条件
 
-- ステップ5が完了していること
+- ステップ6が完了していること
 
 #### 処理内容
 
@@ -172,15 +211,15 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 | - | （実装タスク: PR 固有の作業内容に書き換える） |
 | - | ルール・CLAUDE.md を整備する |
 
-→ ステップ7へ進む
+→ ステップ8へ進む
 
 ---
 
-### ステップ7: 仕様書を整備する（ワークツリー内）
+### ステップ8: 仕様書を整備する（ワークツリー内）
 
 #### 条件
 
-- ステップ6が完了していること
+- ステップ7が完了していること
 
 #### 処理内容
 
@@ -189,26 +228,26 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 3. 存在しない場合 → テンプレート（`${CLAUDE_PLUGIN_ROOT}/templates/spec.md` 参照）を元に新規作成する
 4. TODO.md の「参考ドキュメント」セクションに仕様書へのリンクを追記する
 
-→ ステップ8へ進む
+→ ステップ9へ進む
 
 ---
 
-### ステップ8: 不明点を QA.md に記録する（ワークツリー内）
+### ステップ9: 不明点を QA.md に記録する（ワークツリー内）
 
 #### 条件
 
-- ステップ7が完了していること
+- ステップ8が完了していること
 
 #### 処理内容
 
 1. ステップ2で確認した不明点をワークツリー内の `PR{N}/QA.md` に QA-XXX として追記する
 2. 不明点がない場合はスキップする
 
-→ ステップ9へ進む
+→ ステップ10へ進む
 
 ---
 
-### ステップ9: 作成内容をコミットしてユーザーに報告し、実装を開始する
+### ステップ10: 作成内容をコミットしてユーザーに報告し、実装を開始する
 
 #### 処理内容
 
