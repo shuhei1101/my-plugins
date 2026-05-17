@@ -39,11 +39,34 @@ Update strategy differs by file type:
 
 ---
 
-### Step 2: Overwrite CLAUDE.md and CLAUDE.jp.md
+### Step 2: Run work-start to prepare a PR branch
 
 #### Condition
 
 - Step 1 complete
+
+#### Process
+
+1. Invoke the `/work-kit:work-start` skill
+2. Wait until the PR branch and worktree are created
+
+→ Proceed to Step 3
+
+#### Output
+
+- PR branch exists and worktree is ready
+
+#### Notes
+
+- All subsequent file edits and commits in later steps happen inside this worktree on the PR branch
+
+---
+
+### Step 3: Overwrite CLAUDE.md and CLAUDE.jp.md
+
+#### Condition
+
+- Step 2 complete
 
 #### Process
 
@@ -57,11 +80,11 @@ Update strategy differs by file type:
 
 ---
 
-### Step 3: Sync .gitignore
+### Step 4: Sync .gitignore
 
 #### Condition
 
-- Step 2 complete
+- Step 3 complete
 
 #### Process
 
@@ -74,11 +97,11 @@ Update strategy differs by file type:
 
 ---
 
-### Step 4: Migrate index.yaml — add last_id if missing
+### Step 5: Migrate index.yaml — add last_id if missing
 
 #### Condition
 
-- Step 3 complete
+- Step 4 complete
 - `.work/tasks/index.yaml` exists
 
 #### Process
@@ -101,11 +124,11 @@ Update strategy differs by file type:
 
 ---
 
-### Step 5: Diff and patch QA.md files
+### Step 6: Diff and patch QA.md files
 
 #### Condition
 
-- Step 4 complete
+- Step 5 complete
 
 #### Process
 
@@ -123,11 +146,11 @@ Update strategy differs by file type:
 
 ---
 
-### Step 6: Diff and patch TODO.md files
+### Step 7: Diff and patch TODO.md files
 
 #### Condition
 
-- Step 5 complete
+- Step 6 complete
 
 #### Process
 
@@ -145,7 +168,7 @@ Update strategy differs by file type:
 
 ---
 
-### Step 7: Report completion
+### Step 8: Report completion
 
 #### Process
 
