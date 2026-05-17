@@ -303,3 +303,10 @@ prs:
   summary: dev-kit から UI 関連を ui-kit プラグインへ切り出し、新スキル(debug-fab/logging/flocss-apply)を追加
   task: 20260518_extract-ui-kit-plugin
   completed: true
+- id: 51
+  title: PR51 — summarize-official-plugins
+  type: docs
+  tags: []
+  summary: claude-plugins-official マーケットプレイスの各プラグイン解説を tmp/ に作成
+  task: 20260518_summarize-official-plugins
+  completed: true
