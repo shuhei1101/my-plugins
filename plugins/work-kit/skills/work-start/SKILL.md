@@ -28,7 +28,7 @@ This prevents task documents from being created in the main repository.
 2. Otherwise run the following command and use the printed number:
 
 ```bash
-python plugins/work-kit/scripts/index-tool.py next-id .work/tasks/index.yaml
+python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yaml
 ```
 
 → Proceed to Step 2
@@ -73,7 +73,7 @@ python plugins/work-kit/scripts/index-tool.py next-id .work/tasks/index.yaml
 1. Run the following command to add the new PR entry:
 
 ```bash
-python plugins/work-kit/scripts/index-tool.py add .work/tasks/index.yaml \
+python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --id {N} \
   --title "PR{N} — {title}" \
   --type {type} \

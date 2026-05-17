@@ -27,7 +27,7 @@ Runs the full merge flow: TODO checklist verification → index archive → `--n
 1. Run the following command to list active PRs:
 
 ```bash
-python plugins/work-kit/scripts/index-tool.py list-active .work/tasks/index.yaml
+python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index.yaml
 ```
 
    Each output line is: `id|title|type|task`
@@ -67,11 +67,11 @@ python plugins/work-kit/scripts/index-tool.py list-active .work/tasks/index.yaml
 
 #### Process
 
-1. If `plugins/work-kit/scripts/trim-index.py` does not exist, skip this step
+1. If `${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py` does not exist, skip this step
 2. Run trim to move completed entries from `index.yaml` to `index.archive.yaml`:
 
 ```bash
-python plugins/work-kit/scripts/trim-index.py .work/tasks/index.yaml
+python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
 ```
 
 3. If output is "Nothing to archive", skip the commit below

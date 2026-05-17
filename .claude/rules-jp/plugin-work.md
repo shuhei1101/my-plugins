@@ -64,6 +64,24 @@ paths:
 
 > スキルは SKILL.md 内の `trigger` や他スキルの手順から参照・呼び出しされることがある。ファイルシステム上のリネームだけでは不十分。
 
+## スキルからスクリプトを参照するとき
+
+スキル（SKILL.md）内でスクリプトを呼び出す場合、`plugins/{name}/scripts/` という相対パスは
+**`my-plugins` リポジトリ内でしか動作しない**。他プロジェクトにインストールされた場合は
+スクリプトがプラグインキャッシュにあるため、必ず `${CLAUDE_PLUGIN_ROOT}/scripts/` を使うこと。
+
+```bash
+# NG — my-plugins 以外では動かない
+python plugins/work-kit/scripts/index-tool.py next-id ...
+
+# OK — どのプロジェクトでも動く
+python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" next-id ...
+```
+
+`${CLAUDE_PLUGIN_ROOT}` は `skills/{skill-name}/` の2階層上（プラグインルート）を指す。
+
+---
+
 ## バージョンバンプの規則
 
 | 変更の種類 | バンプ | 例 |
