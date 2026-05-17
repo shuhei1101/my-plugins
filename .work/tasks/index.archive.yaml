@@ -282,3 +282,10 @@ prs:
   summary: py-kit と yaml-rule を統合した dev-kit プラグインを新設し、references/ 構造を導入
   task: 20260517_create-dev-kit-plugin
   completed: true
+- id: 47
+  title: PR47 — improve-merge-skill
+  type: fix
+  tags: []
+  summary: 'merge スキルの改善: セッションPR検出・スクリプト不要アーカイブ・派生元ブランチ対応'
+  task: 20260517_improve-merge-skill
+  completed: true
