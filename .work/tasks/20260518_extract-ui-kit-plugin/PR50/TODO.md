@@ -32,6 +32,12 @@
 | 済 | `ui-kit/skills/mock/` 新規作成(モック画面生成スキル・案 A〜E のタブ切替形式) | - `plugins/ui-kit/skills/mock/SKILL.md`, `SKILL.jp.md` |
 | 済 | `mock` スキル用テンプレート(タブ切替モック雛形 HTML) | - `plugins/ui-kit/skills/mock/templates/` |
 | 済 | ui-kit-design.md 仕様書に mock スキル + ui-design.md を追記 | - `.work/specs/ui-kit-design.md` |
+| - | principles.md 強化(JSDoc リテラル/型エイリアス/アロー関数/引数注入、AI 前提の拡張性、ルーティング集約、定数集約) | - `plugins/ui-kit/references/principles.md`, `principles.jp.md` |
+| - | ui-design.md に「共通コンポーネント化必須」の方針を明記(状態系/入力系/a11y/モーション) | - `plugins/ui-kit/references/ui-design.md`, `ui-design.jp.md` |
+| - | 共通コンポーネント先読み強制ルールテンプレを追加 | - `plugins/ui-kit/templates/rules/common-component-first.md` |
+| - | 既存スキル(mock/flocss-apply/debug-fab/logging)に「最終ステップで rule-creator でリンク」「最初に共通コンポーネント/定数/ルーティング確認」を追記 | - `plugins/ui-kit/skills/*/SKILL.md`, `SKILL.jp.md` |
+| - | 新スキル `ui-kit:implement` 作成(モック → 実装フェーズ用、最初に constants / routing / common-components を確認 → 設計 → 実装 → ルール連携) | - `plugins/ui-kit/skills/implement/SKILL.md`, `SKILL.jp.md` |
+| - | spec ui-kit-design.md を最終構成に更新 | - `.work/specs/ui-kit-design.md` |
 | 済 | ルール・CLAUDE.md を整備する | - `CLAUDE.md`, `CLAUDE.jp.md`(必要に応じて) |
 
 ## 参考ドキュメント
