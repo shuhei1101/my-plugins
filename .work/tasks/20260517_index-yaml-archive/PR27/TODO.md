@@ -17,6 +17,9 @@ trim スクリプトを追加することで、`index.yaml` を常にアクテ�
 | 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 | 済 | update スキルに index.yaml last_id マイグレーションステップを追加 | - `plugins/work-kit/skills/update/SKILL.md`<br>- `plugins/work-kit/skills/update/SKILL.jp.md` |
 | 済 | trim-index.py を py:py 規約に従って書き直す | - `plugins/work-kit/scripts/trim-index.py` |
+| - | merge スキルに trim 自動実行ステップを追加（案B） | - `plugins/work-kit/skills/merge/SKILL.md`<br>- `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| - | CLAUDE.md/jp.md に index.archive.yaml の説明を追記 | - `plugins/work-kit/templates/.work/CLAUDE.md`<br>- `plugins/work-kit/templates/.work/CLAUDE.jp.md` |
+| - | プロジェクトの .work/tasks/.gitignore に index.archive.yaml を追記（既存プロジェクト対応） | - `.work/tasks/.gitignore` |
 
 ## 参考ドキュメント
 
