@@ -33,6 +33,13 @@ stop hook プロンプトに、QA確認とスペック確認のチェック項�
 | 済 | work-start に「タスクフォルダ判定」ステップを追加（Step 5として挿入） | - `plugins/work-kit/skills/work-start/SKILL.jp.md`<br>- `plugins/work-kit/skills/work-start/SKILL.md` |
 | 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
+## 作業内容（追加3）
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| - | work-start Step 5 を「AIが自律的に判定して既存/新規を決める」に書き直し | - `plugins/work-kit/skills/work-start/SKILL.jp.md`<br>- `plugins/work-kit/skills/work-start/SKILL.md` |
+| - | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+
 ## 参考ドキュメント
 
 - `.work/specs/work-kit-stop-hook.md`: stop hook のチェック仕様
