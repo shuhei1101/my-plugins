@@ -34,7 +34,7 @@ Expanded structure:
 1. Run:
 
 ```bash
-python "${CLAUDE_SKILL_DIR}/scripts/setup.py"
+python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/setup.py"
 ```
 
 → Proceed to Step 2

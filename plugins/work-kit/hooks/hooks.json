@@ -8,8 +8,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "-c",
-              "import sys,json,pathlib,re,subprocess as sp,os,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit(\\s+-C\\s+\\S+)?\\s+commit\\b',cmd) else None; mc=re.search(r'\\bgit\\s+-C\\s+(\\S+)\\s+commit\\b',cmd); mcd=None if mc else re.search(r'(?:^|[;&|])\\s*cd\\s+(\\S+)',cmd); gd=mc.group(1) if mc else (mcd.group(1) if mcd else None); ga=['git','-C',os.path.normpath(os.path.join(os.getcwd(),gd))] if gd else ['git']; r=sp.run(ga+['branch','--show-current'],capture_output=True,text=True); sys.exit(0) if r.returncode!=0 or r.stdout.strip() not in ('master','main','develop') else None; mr=sp.run(ga+['rev-parse','--verify','MERGE_HEAD'],capture_output=True); sys.exit(0) if mr.returncode==0 else None; token=pathlib.Path(tempfile.gettempdir())/f'work-kit-master-commit-guard-{d.get(\"session_id\",\"default\")}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); base=p.read_text('utf-8') if p.exists() else ''; gs=sp.run(ga+['status'],capture_output=True,text=True); status_out=gs.stdout.strip() if gs.returncode==0 else '(git status failed)'; reason=base+'\\n\\n---\\n\\n**git status:**\\n\\n```\\n'+status_out+'\\n```'; sys.stdout.buffer.write(json.dumps({'decision':'block','reason':reason},ensure_ascii=False).encode('utf-8'))",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/master-commit-guard.py",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/master-commit-guard.md"
             ]
           }
@@ -23,8 +22,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "-c",
-              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/user-prompt-submit.py",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/user-prompt-submit.md"
             ]
           }
@@ -38,8 +36,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "-c",
-              "import sys,json,pathlib\ntry:\n    d=json.loads(sys.stdin.read())\nexcept Exception:\n    sys.exit(0)\nif d.get('stop_hook_active'):\n    sys.exit(0)\np=pathlib.Path(sys.argv[1])\nif p.exists():\n    sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8'))",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/stop.py",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
             ]
           }

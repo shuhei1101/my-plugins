@@ -310,3 +310,13 @@ prs:
   summary: claude-plugins-official マーケットプレイスの各プラグイン解説を tmp/ に作成
   task: 20260518_summarize-official-plugins
   completed: true
+- id: 52
+  title: PR52 — hooks のインライン Python をスクリプトに分離 + CLAUDE_SKILL_DIR を CLAUDE_PLUGIN_ROOT
+    に統一
+  type: refactor
+  tags: []
+  summary: guard-kit / work-kit の hooks.json に詰め込まれたインライン Python を hooks/scripts/*.py
+    に切り出してコメントを付与。あわせて work-kit/skills/setup の ${CLAUDE_SKILL_DIR} 参照を ${CLAUDE_PLUGIN_ROOT}
+    に統一する。
+  task: 20260518_split-hook-inline-python
+  completed: true
