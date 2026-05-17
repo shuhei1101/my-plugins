@@ -8,11 +8,11 @@ anthropics/claude-code リポジトリの公式プラグインマーケットプ
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260518_summarize-official-plugins/PR51/QA.md` |
-| - | claude-plugins-official のマーケットプレイス定義 (marketplace.json) を取得 | - WebFetch |
-| - | 各プラグインの README / plugin.json を確認し機能を整理 | - WebFetch |
-| - | 解説 markdown を作成 | - `tmp/claude-plugins-official解説.md` |
-| - | ルール・CLAUDE.md を整備する (今回は対象外なら省略可) | - - |
+| 済 | QA.md に未決定事項を記録する (未決定事項なし) | - `.work/tasks/20260518_summarize-official-plugins/PR51/QA.md` |
+| 済 | claude-plugins-official のマーケットプレイス定義 (marketplace.json) を取得 | - WebFetch |
+| 済 | 各プラグインの README / plugin.json を確認し機能を整理 | - WebFetch |
+| 済 | 解説 markdown を作成 | - `tmp/claude-plugins-official解説.md` |
+| 済 | ルール・CLAUDE.md の整備 (今回は対象外につき不要) | - - |
 
 ## 参考ドキュメント
 
