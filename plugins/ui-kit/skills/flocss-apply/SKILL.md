@@ -187,16 +187,16 @@ The `.claude/rules/` rule for CSS-JS linkage will fire and require checking both
 
 #### Process
 
-If `.claude/rules/css-js-link.md` does not exist in the project, copy it from:
+Copy two rule templates into the project's `.claude/rules/` (if missing):
 
 ```
-{plugin_root}/templates/rules/css-js-link.md
+{plugin_root}/templates/rules/css-js-link.md            → .claude/rules/css-js-link.md
+{plugin_root}/templates/rules/common-component-first.md → .claude/rules/common-component-first.md
 ```
 
-into `.claude/rules/css-js-link.md` in the project root.
-
-The rule auto-loads whenever Claude reads a `.css`, `.js`, or `.html` file and enforces the
-linkage between FLOCSS class definitions and JS / HTML usage.
+The rules auto-load whenever Claude reads a `.css`, `.js`, or `.html` file and enforce:
+- FLOCSS class definitions are kept in sync with JS / HTML usage
+- New UI work reads existing shared components / constants / routes first
 
 → Done
 

@@ -1,0 +1,180 @@
+---
+name: ui-kit:implement
+description: >
+  Implement a UI screen — turn a mock (from ui-kit:mock) or a feature request into real code.
+  Strictly enforces the workflow: read shared resources first (constants, routes, components),
+  design what to reuse / extend / add, then implement, then wire rules so the new files stay
+  linked. Trigger when starting implementation after mock approval, when extending an existing
+  screen, or when porting a design into code.
+  Examples: "モック確定したから実装して", "この画面に機能追加して", "モックを実装に落とし込んで".
+---
+
+# ui-kit:implement — Screen Implementation Workflow
+
+Brings a mock or feature spec into real code while enforcing reuse of the project's shared
+resources (constants, routes, components). The skill exists specifically to **prevent ad-hoc
+duplication** that creeps in when each screen is implemented in isolation.
+
+---
+
+## Tasks
+
+### Step 1: Load references
+
+Read:
+
+```
+{plugin_root}/references/principles.md   # DRY/centralization, FLOCSS, JS rules
+{plugin_root}/references/ui-design.md    # UX patterns, shared-component mandate
+```
+
+→ Proceed to Step 2
+
+---
+
+### Step 2: Read shared resources first (mandatory)
+
+#### Process
+
+Before writing any code, read the project's shared resources:
+
+1. **Constants file** — e.g. `static/js/constants.js`. Note: design tokens, breakpoints, API endpoints, default values.
+2. **Routes file** — e.g. `static/js/routes.js`. Note: existing route names, URL patterns, current route table shape.
+3. **Component layer (CSS)** — e.g. `static/css/component.css` (or the project's `c-*` definitions). List every existing component.
+4. **Component layer (JS)** — e.g. `static/js/components/`. List every shared component module.
+5. **api/ layer** — list existing API wrappers.
+
+If any of these does **not yet exist** in the project: create the file as part of this step
+(empty scaffold with `// @ts-check` header) before moving on. Centralization is not optional.
+
+→ Proceed to Step 3
+
+#### Output
+
+- A short inventory note: what shared things exist, in which file/path
+
+#### Notes
+
+##### Prohibitions
+
+- Do not begin implementation before this inventory is complete
+- Do not skip files just because "I think they're not needed for this screen"
+
+---
+
+### Step 3: Plan reuse / extend / add
+
+#### Process
+
+Walk through the mock (or feature spec) and assign each piece to one of three buckets:
+
+| Bucket | Action |
+|---|---|
+| **Reuse**  | Use an existing shared component as-is (e.g. existing `c-button`) |
+| **Extend** | Add a modifier / variant to an existing component (e.g. `c-button--ghost`); changes go into the shared layer, not the screen |
+| **Add**    | Genuinely new general-purpose component → add to shared layer first, then use it; or screen-specific → place under the `p-*` layer for this screen |
+
+Write the plan out (in chat or as a code comment) and confirm with the user before proceeding.
+
+#### Output
+
+- A reuse/extend/add table for the screen
+- For each "Add" item: where it goes (`c-*` shared or `p-*` screen-specific)
+
+→ Proceed to Step 4
+
+---
+
+### Step 4: Design extension points
+
+#### Process
+
+For any new component or behavior, define the **JSDoc types first**:
+
+```js
+// @ts-check
+
+/** @typedef {"primary"|"secondary"|"ghost"|"danger"} ButtonVariant */
+/** @typedef {{ label: string; variant?: ButtonVariant; onClick?: () => void; disabled?: boolean }} ButtonProps */
+```
+
+Then write the implementation against those types. The types are the contract — they make
+future variants slot in without refactoring.
+
+For factories / DI:
+
+```js
+/**
+ * @param {{ api: Api; logger: Logger }} deps
+ * @returns {{ submit: (form: FormData) => Promise<void> }}
+ */
+export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
+```
+
+→ Proceed to Step 5
+
+---
+
+### Step 5: Implement
+
+#### Process
+
+1. Implement following:
+   - FLOCSS layers + Design Tokens (`principles.md` Section 2)
+   - `// @ts-check` + JSDoc types (Section 3)
+   - Arrow functions + function-parameter DI (Section 3)
+   - Layer separation UI / State / API (Section 3)
+   - No inline `<script>` / `onclick`
+   - All values via constants / tokens / routes — no hardcoded strings or hexes
+2. New shared components go into `c-*` layer first; the screen consumes them
+3. Screen-specific composites go into `p-{screenName}` (`p-userList`, `p-loginForm`)
+4. JS DOM selectors match CSS class names (FLOCSS prefix preserved)
+
+→ Proceed to Step 6
+
+#### Output
+
+- Implementation in place, all paths follow centralization rules
+
+---
+
+### Step 6: Wire rules to link the files (mandatory)
+
+#### Process
+
+Generated JS, CSS, and HTML files for this screen must stay linked. Ensure the following
+rules are present in the project's `.claude/rules/`:
+
+1. `.claude/rules/css-js-link.md`
+   - Copy from `{plugin_root}/templates/rules/css-js-link.md` if not present
+2. `.claude/rules/common-component-first.md`
+   - Copy from `{plugin_root}/templates/rules/common-component-first.md` if not present
+
+If the project needs an additional rule (e.g. tying a specific config file to a specific
+screen), invoke `/rule-creator` to author it.
+
+→ Done
+
+#### Output
+
+- Linkage rules in place
+- Future edits to the screen will trigger the rule and prompt cross-file checks
+
+---
+
+## Notes
+
+- This skill assumes a mock already exists or the feature spec is clear. If neither, run
+  `/ui-kit:mock` first to gather feedback before committing to implementation.
+- For new projects without any shared layer yet, this skill creates the scaffolding files
+  during Step 2. Future screens inherit the structure.
+
+---
+
+## References
+
+- `{plugin_root}/references/principles.md` — DRY, FLOCSS, JS rules
+- `{plugin_root}/references/ui-design.md` — UX patterns, shared-component mandate
+- `{plugin_root}/skills/mock/SKILL.md` — companion mock generation
+- `{plugin_root}/skills/flocss-apply/SKILL.md` — when adding new CSS architecture
+- `{plugin_root}/skills/logging/SKILL.md` — logger conventions

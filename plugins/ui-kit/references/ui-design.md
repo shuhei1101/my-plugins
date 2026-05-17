@@ -217,6 +217,29 @@ Avoid bouncy springs, looping animations, or "wow factor" effects in tool screen
 
 ---
 
+## Implement every pattern as a shared component
+
+**Mandatory**: all patterns described in this document must be implemented as **shared
+components**, never duplicated per screen. This applies to:
+
+- Loading skeletons, spinners, progress bars
+- Empty-state cards, error cards, toast notifications
+- Form fields with label / helper / error layout
+- Confirmation dialogs (modal)
+- Keyboard-shortcut help modal
+- Drawer, sidebar, header
+- Tab bar, card grid, action bar
+- Theme toggle, motion-aware wrappers
+
+Each lives in the project's `c-*` (component) layer. A page reuses these via class names and JS
+imports — it never reimplements its own toast, dialog, or skeleton.
+
+When implementing or mocking a screen, the **first step is always to look up the existing
+shared components** (`c-*`, `p-*`) before writing new markup. See the `ui-kit:implement` skill
+for the enforced workflow.
+
+---
+
 ## Mock generation hand-off
 
 When generating mocks via `ui-kit:mock`, apply the patterns in this document.

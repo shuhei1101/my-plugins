@@ -5,17 +5,34 @@ Every skill in `ui-kit` references this document. Read in full when writing any 
 
 ---
 
-## 1. Centralization (DRY)
+## 1. Centralization (DRY) — design for extensibility from day 1
 
 The single biggest rule: **never duplicate the same concept in two places**.
 
-- Design values (colors, spacing, typography) → CSS Custom Properties in the Foundation layer
+- Design values (colors, spacing, typography) → CSS Custom Properties in the Foundation layer (`constants` view of the codebase)
 - DOM selectors → constants in a shared module, never raw strings scattered across handlers
 - Network endpoints → an `api/` layer, never `fetch('...')` inside UI code
 - Repeated DOM structure → a small component, not copy-pasted markup
+- **Routing**: all path / route definitions in one file (e.g. `static/js/routes.js`). UI / API
+  modules import from it. Hardcoding URLs in screens is forbidden.
+- **Constants**: all constants (breakpoints in px, color token names, API endpoints, default values)
+  centralized in one file (e.g. `static/js/constants.js`). Optional follow-up: a tiny in-app
+  "design settings" screen that lets the user tweak token values at runtime.
 
 When the same string or pattern appears 3+ times, extract it. Audit duplication via the
 companion rules under `.claude/rules/` (which load whenever you touch related files).
+
+### Why "build for extension from day 1" (not YAGNI)
+
+Because Claude / AI agents do the implementation, the marginal cost of designing for extension
+upfront is near zero — but the cost of refactoring tangled hardcoded screens later is high.
+
+So:
+- Do **not** "just hardcode it for now". Even one-off screens go through tokens / constants / routes.
+- Pick interfaces (JSDoc `@typedef`) before writing the implementation; the implementation flows
+  from them.
+- A new requirement should slot into an existing extension point, not force a refactor of code
+  that "wasn't designed for this case".
 
 ---
 
@@ -85,20 +102,70 @@ This enables TypeScript-server-driven type checking in editors without requiring
 
 ### Type annotations via JSDoc
 
-All exported functions, public variables, and complex objects carry JSDoc types:
+All exported functions, public variables, and complex objects carry JSDoc types.
+Treat JSDoc + `// @ts-check` as the project's type system — almost everything from TypeScript
+is available without a build step.
+
+#### What's available
+
+| TypeScript feature | JSDoc equivalent |
+|---|---|
+| Type alias `type X = {...}` | `/** @typedef {{ ... }} X */` |
+| Literal union `"a" \| "b" \| "c"` | `@typedef {"a"\|"b"\|"c"} ABC` |
+| Plain union `string \| number` | `@param {string\|number} id` |
+| Intersection `A & B` | `@typedef {Readable & Writable} RW` (combine with `@typedef`s) |
+| Generics `<T>` | `@template T` on a function or typedef |
+| Readonly / Partial / Pick / Omit | Use `Readonly<T>`, `Partial<T>`, `Pick<T, K>`, `Omit<T, K>` in `@type` and `@typedef` |
+| `keyof T` | `@type {keyof T}` |
+| Indexed access `T[K]` | `@type {T[K]}` |
 
 ```js
-/**
- * @param {string} userId
- * @param {{ includeDeleted?: boolean }} [opts]
- * @returns {Promise<User>}
- */
-export async function fetchUser(userId, opts = {}) { ... }
+// @ts-check
 
-/** @typedef {{ id: string; name: string; createdAt: string }} User */
+/** @typedef {"draft"|"published"|"archived"} PostStatus */
+/** @typedef {{ id: string; title: string; status: PostStatus }} Post */
+
+/**
+ * @param {string} postId
+ * @param {Partial<Post>} patch
+ * @returns {Promise<Post>}
+ */
+export const updatePost = async (postId, patch) => { /* ... */ };
 ```
 
-Use `@typedef` for shared shapes. Use `@template` for generics. Avoid bare `any`.
+Avoid bare `any`. When you genuinely don't know a type, use `unknown` and narrow.
+
+### Function-oriented over class-oriented
+
+With JSDoc types handling shape definitions, **classes are almost never needed**.
+
+- Default to **arrow functions** assigned to `const`: `const fn = (...) => { ... }`
+- Only use `function ...` declarations when hoisting is genuinely required (rare)
+- Composition via small functions + closures, not inheritance chains
+- "Constructor injection" → **function parameter injection**: pass dependencies as parameters
+
+```js
+// Bad — class with a constructor
+class UserService {
+  constructor(api, logger) { this.api = api; this.logger = logger; }
+  async load(id) { /* uses this.api / this.logger */ }
+}
+
+// Good — function with injected deps
+/**
+ * @param {{ api: UserApi; logger: Logger }} deps
+ * @returns {{ load: (id: string) => Promise<User> }}
+ */
+export const createUserService = ({ api, logger }) => ({
+  load: async (id) => {
+    logger.info("user.load", { id });
+    return api.get(`/users/${id}`);
+  },
+});
+```
+
+The factory returns an object of functions that share the closed-over deps — same DI benefits
+as a class, no `this`, fully type-checkable via JSDoc.
 
 ### Layer separation
 
@@ -109,11 +176,6 @@ Use `@typedef` for shared shapes. Use `@template` for generics. Avoid bare `any`
 | **API**   | All network I/O. Wraps `fetch`. Returns typed promises. No DOM access. |
 
 Cross-layer calls flow downward only (UI → State → API). State and API never import UI.
-
-### Function-oriented over class-oriented
-
-Default to plain functions + closures. Reach for classes only when you genuinely need instance
-identity (rare in vanilla DOM code). No inheritance chains.
 
 ### Inline scripts: minimal
 

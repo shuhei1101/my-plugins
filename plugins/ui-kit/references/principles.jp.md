@@ -8,17 +8,32 @@ ui-kit の全スキルがこの文書を参照する。UI コードを書くと�
 
 ---
 
-## 1. 共通化原則(DRY)
+## 1. 共通化原則(DRY)— 初日から拡張性を設計する
 
 最重要ルール: **同じ概念を 2 箇所以上に書かない**。
 
-- デザイン値(色・余白・タイポ)→ Foundation 層の CSS Custom Properties
+- デザイン値(色・余白・タイポ)→ Foundation 層の CSS Custom Properties(コード上の `constants` ビュー)
 - DOM セレクタ → 共有モジュールの定数に集約、ハンドラ内に生文字列を散らかさない
 - ネットワーク呼び出し先 → `api/` レイヤーに集約、UI コード内で `fetch('...')` しない
 - 繰り返す DOM 構造 → 小さなコンポーネント化、マークアップのコピペは禁止
+- **ルーティング**: 全ルート定義を 1 ファイルに集約(例: `static/js/routes.js`)。
+  UI / API モジュールはここからインポートする。画面内に URL ハードコード禁止。
+- **定数**: 全定数(ピクセル単位のブレイクポイント・色トークン名・API エンドポイント・
+  デフォルト値)を 1 ファイルに集約(例: `static/js/constants.js`)。
+  任意の発展: アプリ内に「デザイン設定画面」を用意し、トークン値をランタイムから調整できるようにする。
 
 同じ文字列・パターンが 3 回以上現れたら抽出する。重複監査は `.claude/rules/` 配下の
 コンパニオンルール(関連ファイルを触ったときに読み込まれる)で行う。
+
+### なぜ「初日から拡張性を入れる」(YAGNI ではなく)
+
+実装は Claude / AI エージェントが行うため、拡張性を最初から設計する追加コストはほぼゼロ。
+一方、ハードコードで絡まった画面を後でリファクタするコストは大きい。
+
+そのため:
+- 「とりあえずハードコード」は禁止。一回限りの画面でもトークン / 定数 / ルート経由で書く
+- インターフェース(JSDoc `@typedef`)を実装より先に決める。実装はそこから派生する
+- 新しい要件は既存の拡張ポイントに収まるべき。「この場合は想定外だから書き直す」は避ける
 
 ---
 
@@ -88,20 +103,70 @@ ui-kit の全スキルがこの文書を参照する。UI コードを書くと�
 
 ### JSDoc による型注釈
 
-エクスポート関数・公開変数・複雑なオブジェクトには JSDoc 型を付ける:
+エクスポート関数・公開変数・複雑なオブジェクトには JSDoc 型を付ける。
+`JSDoc + // @ts-check` をプロジェクトの型システムとして扱う —
+ビルドステップなしで TypeScript の大半の機能が使える。
+
+#### 使える機能
+
+| TypeScript 機能 | JSDoc 相当 |
+|---|---|
+| 型エイリアス `type X = {...}` | `/** @typedef {{ ... }} X */` |
+| リテラルユニオン `"a" \| "b" \| "c"` | `@typedef {"a"\|"b"\|"c"} ABC` |
+| 通常ユニオン `string \| number` | `@param {string\|number} id` |
+| インターセクション `A & B` | `@typedef {Readable & Writable} RW`(`@typedef` を組み合わせる) |
+| ジェネリクス `<T>` | 関数 / typedef に `@template T` |
+| Readonly / Partial / Pick / Omit | `@type` / `@typedef` 内で `Readonly<T>` / `Partial<T>` / `Pick<T, K>` / `Omit<T, K>` |
+| `keyof T` | `@type {keyof T}` |
+| インデックスアクセス `T[K]` | `@type {T[K]}` |
 
 ```js
-/**
- * @param {string} userId
- * @param {{ includeDeleted?: boolean }} [opts]
- * @returns {Promise<User>}
- */
-export async function fetchUser(userId, opts = {}) { ... }
+// @ts-check
 
-/** @typedef {{ id: string; name: string; createdAt: string }} User */
+/** @typedef {"draft"|"published"|"archived"} PostStatus */
+/** @typedef {{ id: string; title: string; status: PostStatus }} Post */
+
+/**
+ * @param {string} postId
+ * @param {Partial<Post>} patch
+ * @returns {Promise<Post>}
+ */
+export const updatePost = async (postId, patch) => { /* ... */ };
 ```
 
-共有型は `@typedef`、ジェネリクスは `@template` を使う。裸の `any` は避ける。
+裸の `any` は避ける。本当に型不明なら `unknown` を使って絞り込む。
+
+### 関数指向 > クラス指向
+
+JSDoc 型が形状定義を担うので、**クラスはほぼ不要**。
+
+- **アロー関数を `const` に代入**するのをデフォルトに: `const fn = (...) => { ... }`
+- `function ...` 宣言はホイスティングが本当に必要なときだけ(稀)
+- 構成は小さな関数 + クロージャ、継承チェーンなし
+- 「コンストラクタ注入」 → **関数引数注入**(依存をパラメータで渡す)
+
+```js
+// 悪い例 — コンストラクタ付きのクラス
+class UserService {
+  constructor(api, logger) { this.api = api; this.logger = logger; }
+  async load(id) { /* this.api / this.logger を使う */ }
+}
+
+// 良い例 — 依存を関数引数で注入
+/**
+ * @param {{ api: UserApi; logger: Logger }} deps
+ * @returns {{ load: (id: string) => Promise<User> }}
+ */
+export const createUserService = ({ api, logger }) => ({
+  load: async (id) => {
+    logger.info("user.load", { id });
+    return api.get(`/users/${id}`);
+  },
+});
+```
+
+ファクトリ関数がクロージャで閉じ込めた依存を共有するオブジェクト(関数群)を返す。
+クラスの DI と同じ利点を `this` なしで得られ、JSDoc で完全に型チェックできる。
 
 ### レイヤー分離
 
@@ -112,11 +177,6 @@ export async function fetchUser(userId, opts = {}) { ... }
 | **API**   | 通信 I/O 全般。`fetch` のラッパー。型付き Promise を返す。DOM 触らない |
 
 呼び出しは下方向のみ(UI → State → API)。State と API は UI をインポートしない。
-
-### 関数指向 > クラス指向
-
-デフォルトは普通の関数 + クロージャ。インスタンス同一性が真に必要な場合(バニラ DOM コードでは稀)
-のみクラスを使う。継承チェーンは作らない。
 
 ### インラインスクリプトは最小限
 

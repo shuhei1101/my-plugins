@@ -19,14 +19,26 @@ top tabs. Each variant follows `principles.md` (FLOCSS + Design Tokens, JS rules
 
 ## Tasks
 
-### Step 1: Load references
+### Step 1: Load references AND inventory shared resources
 
-Read in full:
+#### Process
 
-```
-{plugin_root}/references/principles.md   # FLOCSS, design tokens, JS rules
-{plugin_root}/references/ui-design.md    # UX patterns by screen type
-```
+1. Read in full:
+
+   ```
+   {plugin_root}/references/principles.md   # FLOCSS, design tokens, JS rules
+   {plugin_root}/references/ui-design.md    # UX patterns by screen type
+   ```
+
+2. **Inventory shared resources in the project** (mandatory — applies to mocks too, so
+   variants reuse existing components instead of inventing parallel ones):
+   - `static/js/constants.js` (or equivalent) — design tokens, breakpoints
+   - `static/js/routes.js` (or equivalent) — route names / URL patterns
+   - The component layer of CSS — every `c-*` definition
+   - The component layer of JS — every shared component module
+
+   If these don't exist in the project yet, note their absence — the mock should still hint at
+   what would belong there.
 
 The plugin root is two levels above this skill file.
 
@@ -149,6 +161,8 @@ Implementation rules:
 1. Confirm the file exists at `tmp/mocks/...` and opens in a browser
 2. Tell the user the path and the variants' axes
 3. Suggest opening it for review; iterate based on feedback
+4. When the mock is approved, recommend `/ui-kit:implement` for the implementation phase
+   (it enforces shared-resource reuse during real implementation)
 
 → Done
 

@@ -46,19 +46,22 @@ plugins/ui-kit/
 │       └ モーション規約
 ├── templates/
 │   └── rules/
-│       └── css-js-link.md   # FLOCSS クラス ↔ JS DOM アクセス紐付けルール(プロジェクトの .claude/rules/ にコピー)
+│       ├── css-js-link.md             # FLOCSS クラス ↔ JS DOM アクセス紐付けルール
+│       └── common-component-first.md  # 共通リソース先読み強制ルール
 └── skills/
     ├── debug-fab/           # フロートデバッグボタン + モーダル(旧 ui-dev)
     │   ├── SKILL.md / SKILL.jp.md
     │   └── templates/       # 共通モジュール(uidev.css/uidev.js/example.html)
     ├── logging/             # ログ整備スキル(レベル別ガイド)
     │   └── SKILL.md / SKILL.jp.md
-    ├── flocss-apply/        # FLOCSS + Design Tokens 適用(新規/既存両対応)
+    ├── flocss-apply/        # FLOCSS + Design Tokens 適用(新規/既存両対応 + ルール導入)
     │   └── SKILL.md / SKILL.jp.md
-    └── mock/                # 単一画面タイプの複数案モック生成(タブ切替)
-        ├── SKILL.md / SKILL.jp.md
-        └── templates/
-            └── mock-skeleton.html
+    ├── mock/                # 単一画面タイプの複数案モック生成(タブ切替)
+    │   ├── SKILL.md / SKILL.jp.md
+    │   └── templates/
+    │       └── mock-skeleton.html
+    └── implement/           # モック → 実装フェーズ専用(共通リソース強制再利用)
+        └── SKILL.md / SKILL.jp.md
 ```
 
 ## references/principles.md の構成
@@ -140,6 +143,21 @@ FLOCSS + Design Tokens を画面に適用するスキル。
 - 各案は意味のあるデザイン軸(レイアウト・密度・ナビゲーション等)で差をつける(色違いだけは NG)
 - モバイル対応必須(`ui-design.md` のブレイクポイントに従う)
 - 美的方向性は `frontend-design` スキルで確定し、案内で共有
+- ステップ1で共通リソースを棚卸し、案がそれを反映する
+- 終了時に `/ui-kit:implement` を推奨
+
+### implement
+
+モック確定後の実装フェーズ専用スキル。
+
+- ステップ2(必須): 既存 constants / routes / `c-*` / `p-*` / api/ を棚卸し
+  (なければ空スキャフォールドを作成する)
+- ステップ3: 再利用 / 拡張 / 新規追加の振り分け
+- ステップ4: JSDoc 型を先に書く(契約)、関数引数 DI を採用
+- ステップ5: FLOCSS + Design Tokens で実装
+- ステップ6: `.claude/rules/` に `css-js-link.md` と `common-component-first.md` を導入
+
+「画面ごとに独自実装が量産される」のを構造的に防ぐ。
 
 ## 移行
 

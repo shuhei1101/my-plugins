@@ -189,16 +189,16 @@ FLOCSS のレイヤー構造と Design Tokens(CSS Custom Properties)を画面に
 
 #### 処理内容
 
-プロジェクトに `.claude/rules/css-js-link.md` がなければ、以下からコピーする:
+プロジェクトの `.claude/rules/` に以下のルールテンプレートをコピーする(なければ):
 
 ```
-{plugin_root}/templates/rules/css-js-link.md
+{plugin_root}/templates/rules/css-js-link.md            → .claude/rules/css-js-link.md
+{plugin_root}/templates/rules/common-component-first.md → .claude/rules/common-component-first.md
 ```
 
-をプロジェクトルートの `.claude/rules/css-js-link.md` に配置する。
-
-このルールは Claude が `.css`・`.js`・`.html` ファイルを読むときに自動でロードされ、
-FLOCSS クラス定義と JS / HTML での使用箇所の紐付けを強制する。
+これらは Claude が `.css`・`.js`・`.html` を読むときに自動でロードされ:
+- FLOCSS クラス定義と JS / HTML での使用箇所の紐付けを強制
+- 新規 UI 作業前に既存の共通コンポーネント・定数・ルートを先に読ませる
 
 → 完了
 
