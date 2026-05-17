@@ -122,7 +122,7 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 ---
 
-### Step 5: Determine the task folder (new or existing)
+### Step 5: Determine the task folder (autonomous judgment)
 
 #### Condition
 
@@ -130,21 +130,25 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 #### Process
 
-1. List existing task folders in the worktree:
-
-```bash
-ls ../$(basename $(pwd))-wt-PR{N}/.work/tasks/ 2>/dev/null || echo "(none)"
-```
-
-2. Present the list to the user and ask them to choose:
-   - **New**: create a new task folder using today's date and title → use `--date {YYYYMMDD} --title {title}`
-   - **Existing**: select an existing folder to add this PR to → use `--task-dir {folder_name}`
+1. Read all folder names under `.work/tasks/` in the worktree
+2. Compare each folder name (`YYYYMMDD_title` format) against the purpose of this PR and decide:
+   - **Add to existing folder**: an existing folder covers the same goal or feature area, and this PR fits naturally as part of it
+     - Examples: splitting a feature across multiple PRs, a follow-up fix, related refactoring
+   - **Create new folder**: no existing folder is closely related, or `.work/tasks/` is empty
+3. Confirm the argument to pass to the next step:
+   - Adding to existing → use `--task-dir {folder_name}`
+   - Creating new → use `--date {YYYYMMDD} --title {title}`
 
 → Proceed to Step 6
 
 #### Output
 
 - Task folder strategy (new or existing) and the arguments to use are confirmed
+
+#### Notes
+
+- Do not ask the user — decide autonomously based on content
+- When in doubt, create a new folder (folders can be consolidated later)
 
 ---
 
