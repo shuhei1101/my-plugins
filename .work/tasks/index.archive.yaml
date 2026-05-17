@@ -268,3 +268,10 @@ prs:
   summary: claude-kitにstatusline-setupスキルを追加。settings.jsonのstatusLineキーを現在の設定値に書き換えるスクリプトを実行する
   task: 20260517_add-statusline-setup-skill
   completed: true
+- id: 46
+  title: PR46 — fix-template-claude-checkbox-notation
+  type: fix
+  tags: []
+  summary: work-kit テンプレート .work/CLAUDE.md / .jp.md に残った古い [x] 表記をテーブル形式の 済 に統一
+  task: 20260517_fix-template-claude-checkbox-notation
+  completed: true
