@@ -10,12 +10,12 @@ py-kit の `py-project` と `py-new-project` の SKILL.md に、`{plugin_root}` 
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | py-project SKILL.md に plugin_root の説明を追加 | - `plugins/py-kit/skills/py-project/SKILL.md` |
-| - | py-project SKILL.jp.md を更新 | - `plugins/py-kit/skills/py-project/SKILL.jp.md` |
-| - | py-new-project SKILL.md に plugin_root の説明を追加 | - `plugins/py-kit/skills/py-new-project/SKILL.md` |
-| - | py-new-project SKILL.jp.md を更新 | - `plugins/py-kit/skills/py-new-project/SKILL.jp.md` |
-| - | plugin.json のバージョンをバンプ | - `plugins/py-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json を更新 | - `.claude-plugin/marketplace.json` |
+| 済 | py-project SKILL.md に plugin_root の説明を追加 | - `plugins/py-kit/skills/py-project/SKILL.md` |
+| 済 | py-project SKILL.jp.md を更新 | - `plugins/py-kit/skills/py-project/SKILL.jp.md` |
+| 済 | py-new-project SKILL.md に plugin_root の説明を追加 | - `plugins/py-kit/skills/py-new-project/SKILL.md` |
+| 済 | py-new-project SKILL.jp.md を更新 | - `plugins/py-kit/skills/py-new-project/SKILL.jp.md` |
+| 済 | plugin.json のバージョンをバンプ | - `plugins/py-kit/.claude-plugin/plugin.json` |
+| 済 | marketplace.json を更新 | - `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
