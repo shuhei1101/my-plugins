@@ -84,7 +84,7 @@ plugins/py-kit/
 ## ルール管理
 
 ルールは `py-new-project` / `py-project` スキルの実行ステップとして
-プロジェクトの `.claude/rules/` に自動生成する（案B採用予定 — QA-001 参照）。
+作業中プロジェクトの `.claude/rules/`（英語）と `.claude/rules-jp/`（日本語）に自動生成する。
 
 ### class-structure ルール
 
