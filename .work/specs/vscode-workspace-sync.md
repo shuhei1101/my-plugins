@@ -39,10 +39,10 @@ related_prs:
 - `.code-workspace` のパスはフック内にハードコード（スキル実行時に確定）
 - `folders` 配列の各要素は `{"path": "..."}` 形式
 
-## 未決定事項
+## 確定事項
 
-QA.md を参照:
-- QA-001: スキル名の確定
-- QA-002: フックのマッチングパターン
-- QA-003: スクリプト言語の選定
-- QA-004: ワークスペースファイルが見つからない場合の挙動
+- スキル名: `vscode-workspace-sync`
+- フックの種別: PostToolUse (Bash)
+- マッチング: `tool_input.command` に `git worktree add` / `git worktree remove` が含まれるか文字列チェック
+- スクリプト言語: Python (`json` モジュール)
+- ワークスペースが見つからない場合: エラー表示 + ユーザーにパス入力を求める
