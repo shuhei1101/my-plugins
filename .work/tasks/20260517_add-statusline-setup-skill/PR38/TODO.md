@@ -10,11 +10,11 @@ claude-kit プラグインに `statusline-setup` スキルを追加する。
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | SKILL.jp.md を作成 | - `plugins/claude-kit/skills/statusline-setup/SKILL.jp.md` |
-| - | SKILL.md を作成（JP mirrorから翻訳） | - `plugins/claude-kit/skills/statusline-setup/SKILL.md` |
-| - | 適用スクリプトを作成 | - `plugins/claude-kit/scripts/apply-statusline.py` |
-| - | marketplace.json に statusline-setup を追記 | - `.claude-plugin/marketplace.json` |
-| - | plugin.json のバージョンを更新 | - `plugins/claude-kit/.claude-plugin/plugin.json` |
+| 済 | SKILL.jp.md を作成 | - `plugins/claude-kit/skills/statusline-setup/SKILL.jp.md` |
+| 済 | SKILL.md を作成（JP mirrorから翻訳） | - `plugins/claude-kit/skills/statusline-setup/SKILL.md` |
+| 済 | 適用スクリプトを作成 | - `plugins/claude-kit/scripts/apply-statusline.py` |
+| 済 | marketplace.json バージョンを更新 | - `.claude-plugin/marketplace.json` |
+| 済 | plugin.json のバージョンを更新 | - `plugins/claude-kit/.claude-plugin/plugin.json` |
 
 ## 参考ドキュメント
 
