@@ -20,6 +20,10 @@
 | 済 | ルールテンプレート作成: ソースコード ↔ テスト連携 | - `plugins/py-kit/rules/source-test-link.md` |
 | 済 | 旧 `py` プラグインフォルダを削除 | - `plugins/py/` （削除済み） |
 | 済 | plugin.json のバージョン更新、marketplace.json 更新 | - `plugins/py-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| - | `plugins/py-kit/rules/` フォルダを削除（プラグイン内にルールテンプレートは持たない） | - `plugins/py-kit/rules/class-structure.md`<br>- `plugins/py-kit/rules/config-source-link.md`<br>- `plugins/py-kit/rules/source-test-link.md` |
+| - | `py-new-project` Step6 を修正: テンプレートコピーではなく `/claude-kit:rule-creator` を使う指示に変更 | - `plugins/py-kit/skills/py-new-project/SKILL.md`<br>- `plugins/py-kit/skills/py-new-project/SKILL.jp.md` |
+| - | `py-project` Step5 を修正: ルールが未存在の場合 `/claude-kit:rule-creator` を使う指示に変更 | - `plugins/py-kit/skills/py-project/SKILL.md`<br>- `plugins/py-kit/skills/py-project/SKILL.jp.md` |
+| - | `references/python-standards.jp.md` を作成（日本語ミラー） | - `plugins/py-kit/references/python-standards.jp.md` |
 
 ## 参考ドキュメント
 
