@@ -33,14 +33,32 @@ plugins/ui-kit/
 │   │   ├ CSS アーキテクチャ(FLOCSS + Design Tokens)
 │   │   ├ JS 規約(`@ts-check` + JSDoc + レイヤー分け + インライン抑制)
 │   │   └ frontend-design スキル必須ルール
+│   └── ui-design.md / ui-design.jp.md
+│       ├ ナビゲーション & レイアウト(サイドバー / 2 ペイン / トップタブ等)
+│       ├ ヘッダー / サイドバー(PC) / ドロワー(モバイル)
+│       ├ アクションボタン位置の固定ルール
+│       ├ レスポンシブ(640 / 1024 ブレイクポイント、タッチターゲット 44px)
+│       ├ 画面タイプ別パターン(トップ / 設定 / 一覧+詳細)
+│       ├ フォーム・確認ダイアログ・キーボードショートカット
+│       ├ 状態表示(loading/empty/error/toast)
+│       ├ アクセシビリティ
+│       ├ ダークモード
+│       └ モーション規約
+├── templates/
+│   └── rules/
+│       └── css-js-link.md   # FLOCSS クラス ↔ JS DOM アクセス紐付けルール(プロジェクトの .claude/rules/ にコピー)
 └── skills/
     ├── debug-fab/           # フロートデバッグボタン + モーダル(旧 ui-dev)
     │   ├── SKILL.md / SKILL.jp.md
     │   └── templates/       # 共通モジュール(uidev.css/uidev.js/example.html)
     ├── logging/             # ログ整備スキル(レベル別ガイド)
     │   └── SKILL.md / SKILL.jp.md
-    └── flocss-apply/        # FLOCSS + Design Tokens 適用(新規/既存両対応)
-        └── SKILL.md / SKILL.jp.md
+    ├── flocss-apply/        # FLOCSS + Design Tokens 適用(新規/既存両対応)
+    │   └── SKILL.md / SKILL.jp.md
+    └── mock/                # 単一画面タイプの複数案モック生成(タブ切替)
+        ├── SKILL.md / SKILL.jp.md
+        └── templates/
+            └── mock-skeleton.html
 ```
 
 ## references/principles.md の構成
@@ -110,6 +128,18 @@ FLOCSS + Design Tokens を画面に適用するスキル。
 最初のステップで分岐:
 - 新規 — Foundation → Layout → Object の順で骨格を作る
 - 既存 — 既存スタイルを FLOCSS レイヤーへ再分類
+
+両パス終了後、共通ステップで `.claude/rules/css-js-link.md` をプロジェクトに導入する。
+
+### mock
+
+単一画面タイプの複数デザイン案を上部タブ切替で単一 HTML に並べるスキル。
+
+- 出力先: `tmp/mocks/{画面タイプ}-{日付}.html`
+- 対応画面タイプ: トップ / 設定 / 一覧+詳細(テーブル系は対象外)
+- 各案は意味のあるデザイン軸(レイアウト・密度・ナビゲーション等)で差をつける(色違いだけは NG)
+- モバイル対応必須(`ui-design.md` のブレイクポイントに従う)
+- 美的方向性は `frontend-design` スキルで確定し、案内で共有
 
 ## 移行
 

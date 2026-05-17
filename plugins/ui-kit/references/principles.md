@@ -158,3 +158,12 @@ The skill enforces:
 - Production-grade implementation matched to the aesthetic vision
 
 Do not write UI by ad-hoc taste. Route every visual decision through this skill.
+
+---
+
+## 5. See also: `ui-design.md`
+
+Layout patterns (sidebar / 2-pane / tabs), screen-type templates (top / settings / list+detail),
+responsive behavior, form / dialog / shortcut conventions, state-feedback patterns,
+accessibility, dark mode, and motion details live in `ui-design.md` alongside this file.
+Read both together when designing any UI.
