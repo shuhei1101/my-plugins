@@ -247,6 +247,41 @@ flocss-apply / implement スキルが両方をコピーする。
 
 ---
 
+## QA-025: 要素ピッカーの多選択化 + コピー統合
+
+**状態**: 決定済み(2026-05-18)
+
+要素ピッカーをシングルクリック即コピーから**多選択 + 統合コピー**に変更:
+
+- 🎯「要素選択」 → ピッカーモードに入る
+- 要素クリック → 選択(青色の persistent border)。再クリックで解除(トグル)
+- ピッカーモード中、フロート 🐛 ボタンは「📋 N」(N = 選択数)に変化
+- 「📋 N」をクリック → 通常コピーと**同じスキーマ**(files + logs)に `elements: [...]` を追加してコピー
+- Esc でキャンセル
+
+JSON スキーマ(統一):
+```json
+{
+  "page": "...",
+  "url":  "...",
+  "files": { "html": [], "css": [], "js": [] },
+  "logs":  { "limit": 100, "level": "error", "entries": [...] },
+  "elements": [
+    { "xpath": "...", "tag": "BUTTON", "id": null, "classes": [], "text": "..." }
+  ],
+  "capturedAt": "ISO8601"
+}
+```
+
+- 通常コピー: `elements: []`
+- ピッカーコピー: `elements: [n 個]`
+
+XPath 形式は **short(相対)固定**(モード切替設定は削除)。
+
+実装方針: `buildPayload(elements = [])` を共通関数化し、`copyDebugJSON` と `startPicker` の両方から呼ぶ。
+
+---
+
 ## QA-024: debug-fab files カテゴリの簡略化
 
 **状態**: 決定済み(2026-05-18)
