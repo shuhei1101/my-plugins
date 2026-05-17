@@ -79,11 +79,12 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
 ```
 
 3. 「Nothing to archive」と出力された場合は以下のコミットをスキップする
-4. `index.archive.yaml` が作成・更新された場合はコミットする:
+4. `index.archive.yaml` が作成・更新された場合は、**ワークツリー（PR ブランチ）にコピーしてコミットする**:
 
 ```bash
-git add .work/tasks/index.archive.yaml
-git commit -m "chore: archive completed PR entries"
+cp .work/tasks/index.archive.yaml ../$(basename $(pwd))-wt-PR{N}/.work/tasks/index.archive.yaml
+git -C ../$(basename $(pwd))-wt-PR{N} add .work/tasks/index.archive.yaml
+git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive completed PR entries"
 ```
 
 → ステップ4へ進む
@@ -91,7 +92,7 @@ git commit -m "chore: archive completed PR entries"
 #### 補足
 
 - `index.yaml` は gitignore 対象のためコミット不要
-- `index.archive.yaml` は git 追跡対象 — このマージフローの一部として master に直接コミットする
+- `index.archive.yaml` は git 追跡対象 — master に直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ4のマージに含まれる）
 
 ---
 
