@@ -198,6 +198,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 1. Create `.claude/rules-jp/<name>.md` following the structure example in §References
 2. Add the required JP mirror header at the top (after frontmatter, before H1)
+3. **Always include the `## Rule Maintenance` section** — prompts Claude to update the rule itself when files are added, removed, or renamed
 
 → Proceed to Step 6
 
@@ -279,6 +280,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 | `## Overview` | Description of what this rule governs | Required |
 | `## Related Files` | File paths and their roles | Recommended |
 | `## When Editing` | Checklist of what to verify when any file in the domain changes | Recommended |
+| `## Rule Maintenance` | How to update the rule itself when files are added, removed, or renamed | **Recommended** |
 
 ### Structure example
 
@@ -315,6 +317,14 @@ Always check all other files in this domain:
 - [ ] Implementation and tests are consistent
 - [ ] New fields are covered by tests
 - [ ] Spec reflects current behavior and records the reason for the change
+- [ ] If **new files were added** to this domain, have you updated this rule's `paths:` and Related Files list?
+
+## Rule Maintenance
+
+When performing file operations in this domain:
+- **Added a new file** → add it to `paths:` and the Related Files list
+- **Deleted or renamed a file** → remove or update it in `paths:` and Related Files
+- **Domain responsibilities changed** → update the Overview section
 
 ## {Additional sections (add freely as needed)}
 ```

@@ -1,5 +1,5 @@
 {
   "name": "claude-kit",
   "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
-  "version": "3.5.0"
+  "version": "3.6.0"
 }
