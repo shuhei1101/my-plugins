@@ -289,3 +289,10 @@ prs:
   summary: 'merge スキルの改善: セッションPR検出・スクリプト不要アーカイブ・派生元ブランチ対応'
   task: 20260517_improve-merge-skill
   completed: true
+- id: 48
+  title: PR48 — add-ui-dev-skill
+  type: feat
+  tags: []
+  summary: dev-kit に ui-dev スキルを新設 — 開発系画面にフロートデバッグボタンを設置する規約
+  task: 20260517_add-ui-dev-skill
+  completed: true
