@@ -14,6 +14,9 @@ my-plugins/
 │   └── {plugin-name}/
 │       ├── .claude-plugin/
 │       │   └── plugin.json    # Plugin manifest (name, description, version)
+│       ├── references/        # Optional: shared reference docs read by skills
+│       │   ├── {topic}.md        # Reference content (English, loaded on demand)
+│       │   └── {topic}.jp.md     # Japanese translation (reference only)
 │       └── skills/
 │           └── {skill-name}/
 │               ├── SKILL.md      # Skill definition (English, auto-loaded)
