@@ -10,7 +10,7 @@ index アーカイブをスクリプト不要の直接操作に変更、マー�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260517_improve-merge-skill/PR47/QA.md` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/20260517_improve-merge-skill/PR47/QA.md` |
 | 済 | ステップ1: セッションで PR が特定済みの場合はステップ2へ進む分岐を追加 | `plugins/work-kit/skills/merge/SKILL.md`, `SKILL.jp.md` |
 | 済 | ステップ3: スクリプト依存を廃止し index.yaml を直接操作に変更 | `plugins/work-kit/skills/merge/SKILL.md`, `SKILL.jp.md` |
 | 済 | ステップ4: 「メインブランチ」を「派生元ブランチ」に変更 | `plugins/work-kit/skills/merge/SKILL.md`, `SKILL.jp.md` |
