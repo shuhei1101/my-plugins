@@ -15,7 +15,7 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `cmd_upgrade()` を修正: 利用可能プラグインと照合し、削除済みを uninstall・存在するものだけ update | - `tools/marketplace.py` |
+| 済 | `cmd_upgrade()` を修正: 利用可能プラグインと照合し、削除済みを uninstall・存在するものだけ update | - `tools/marketplace.py` |
 
 ## 参考ドキュメント
 

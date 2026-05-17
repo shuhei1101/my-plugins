@@ -549,6 +549,9 @@ def cmd_upgrade() -> None:
     ユーザースコープ・プロジェクトスコープ両方を含む。
     未インストールのプラグインを新たにインストールすることはしない。
     スコープの変更もしない。
+
+    マーケットプレイスから削除・リネームされたプラグインはアンインストールし、
+    存在するものだけ update する。リネーム後の新名称は自動インストールしない。
     """
     print(f"マーケットプレイスキャッシュを更新中: {KEY_PREFIX}")
     run_claude_cmd(["plugin", "marketplace", "update", KEY_PREFIX])
@@ -563,13 +566,29 @@ def cmd_upgrade() -> None:
         print("インストール済みプラグインが見つかりません。")
         return
 
-    print(f"プラグインを更新中 ({len(targets)} 個)...")
-    for name in targets:
+    available: list[str] = get_available_plugins(KEY_PREFIX)
+
+    removed: list[str] = [name for name in targets if name not in available]
+    to_update: list[str] = [name for name in targets if name in available]
+
+    if removed:
+        print(f"削除・リネームされたプラグインをアンインストール中 ({len(removed)} 個)...")
+        for name in removed:
+            print(f" {name}@{KEY_PREFIX} はマーケットプレイスに存在しません — アンインストールします")
+            run_claude_cmd(["plugin", "uninstall", f"{name}@{KEY_PREFIX}"], allow_fail=True)
+        print()
+
+    if not to_update:
+        print("更新対象のプラグインがありません。")
+        return
+
+    print(f"プラグインを更新中 ({len(to_update)} 個)...")
+    for name in to_update:
         run_claude_cmd(["plugin", "update", f"{name}@{KEY_PREFIX}"])
 
     print()
     print("更新完了:")
-    for name in targets:
+    for name in to_update:
         print(f" {name}@{KEY_PREFIX}")
 
 
