@@ -296,3 +296,10 @@ prs:
   summary: dev-kit に ui-dev スキルを新設 — 開発系画面にフロートデバッグボタンを設置する規約
   task: 20260517_add-ui-dev-skill
   completed: true
+- id: 50
+  title: PR50 — extract-ui-kit-plugin
+  type: refactor
+  tags: []
+  summary: dev-kit から UI 関連を ui-kit プラグインへ切り出し、新スキル(debug-fab/logging/flocss-apply)を追加
+  task: 20260518_extract-ui-kit-plugin
+  completed: true
