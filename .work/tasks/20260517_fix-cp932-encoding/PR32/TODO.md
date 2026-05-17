@@ -10,9 +10,9 @@ stdout を UTF-8 に明示的に設定することで解消する。
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | index-tool.py の stdout を UTF-8 に固定 | - `plugins/work-kit/scripts/index-tool.py` |
-| - | trim-index.py の stdout を UTF-8 に固定 | - `plugins/work-kit/scripts/trim-index.py` |
-| - | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | index-tool.py の stdout を UTF-8 に固定 | - `plugins/work-kit/scripts/index-tool.py` |
+| 済 | trim-index.py の stdout を UTF-8 に固定 | - `plugins/work-kit/scripts/trim-index.py` |
+| 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 

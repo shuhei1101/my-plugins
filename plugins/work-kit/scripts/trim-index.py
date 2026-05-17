@@ -17,6 +17,8 @@ import argparse
 import sys
 from pathlib import Path
 
+sys.stdout.reconfigure(encoding="utf-8")
+
 # ── third-party ─────────────────────────────────────────────
 try:
     import yaml  # pip install pyyaml
