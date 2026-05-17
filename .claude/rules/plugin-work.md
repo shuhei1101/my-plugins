@@ -49,6 +49,16 @@ Always update both before committing:
 }
 ```
 
+## When Renaming Files or Skills
+
+When a skill name, file name, or folder name is changed, other files in the same plugin may reference it. After any rename, always:
+
+1. Search the entire plugin directory for the old name
+2. Update every reference to the new name
+3. Confirm no references remain before committing
+
+> Skills can be referenced or called from `trigger` fields in SKILL.md or from steps in other skills. Renaming on the filesystem alone is not enough.
+
 ## Version Bump Rules
 
 | Change type | Bump | Example |
