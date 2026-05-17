@@ -9,49 +9,37 @@
 
 ## QA-001: 旧 py-kit / yaml-rule プラグインの扱い
 
-**状態**: 未決定
+**状態**: 決定済み（2026-05-17）
 
-`dev-kit` に統合後、旧 `plugins/py-kit/` と `plugins/yaml-rule/` をどう扱うか:
-
-- A: 完全に削除する（`marketplace.json` からも除外）
-- B: `marketplace.json` からは外すが、ディレクトリは残す
-- C: ディレクトリも残し、`marketplace.json` でも別名で残す（移行期間）
-
-**前提**: TODO の現案は A（削除）。
+完全に削除する。`marketplace.json` からも除外し、`plugins/py-kit/` と `plugins/yaml-rule/` のディレクトリも削除する。
 
 ---
 
 ## QA-002: `references/` 初期内容のスコープ
 
-**状態**: 未決定
+**状態**: 決定済み（2026-05-17）
 
-`references/` 配下に置く各ファイルの初期内容:
-
-- `python.md`: 旧 `py-kit/references/python-standards.md` の内容を移植（中身ほぼそのまま）
-- `yaml.md`: 旧 `yaml-rule/skills/yaml-rule/SKILL.md` から規約部分を抽出
-- `common.md` / `frontend.md` / `backend.md` / `vscode-extension.md`: 雛形のみ（プレースホルダ）で OK か?
-
-**前提**: TODO の現案は「python.md と yaml.md は実内容を入れ、それ以外は雛形のみ」。
+- `python.md` / `yaml.md`: 実内容を移植
+- `common.md` / `frontend.md` / `backend.md` / `vscode-extension.md`: 雛形のみ（「TODO: 今後追記」のプレースホルダ）
 
 ---
 
-## QA-003: スキル名の維持
+## QA-003: スキル名
 
-**状態**: 未決定
+**状態**: 決定済み（2026-05-17）
 
-統合に合わせてスキル名を変更するか:
+スキル構成:
 
-- A: 現状維持（`py-script`, `py-project`, `py-new-project`, `yaml-rule`）
-- B: `dev-kit:` プレフィックスを意識した命名にリネーム
-
-**前提**: TODO の現案は A（現状維持）。プラグイン名が `dev-kit` になることで自動的に `dev-kit:py-script` のように呼ばれるため、スキル単体の名前は変えない。
+- `py-script` — Python 簡易スクリプト作成（現状維持）
+- `py-project` — Python プロジェクト全般（**現 `py-new-project` と `py-project` を統合**）
+  - 最初のステップで「新規プロジェクト作成 / 既存プロジェクト対応」の分岐を入れる
+  - 既存プロジェクトを扱う場合は分岐後のステップ X から始める形にする
+- `yaml` — YAML 規約（現 `yaml-rule` から改名）
 
 ---
 
 ## QA-004: `dev-kit` プラグインの初期バージョン
 
-**状態**: 未決定
+**状態**: 決定済み（2026-05-17）
 
-新プラグインの `version` を `1.0.0` で開始するか、`py-kit` の `2.0.1` を継承するか。
-
-**前提**: TODO の現案は `1.0.0`（新プラグインとして新規開始）。
+初期バージョンは `1.0.0` で開始する。

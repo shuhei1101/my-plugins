@@ -26,9 +26,8 @@
 | - | `references/yaml.md` を新規作成（yaml-rule から内容を抽出） | - `plugins/dev-kit/references/yaml.md`, `yaml.jp.md` |
 | - | `references/common.md` / `frontend.md` / `backend.md` / `vscode-extension.md` を雛形作成 | - `plugins/dev-kit/references/*.md` |
 | - | `skills/py-script` を py-kit から移植 | - `plugins/dev-kit/skills/py-script/` |
-| - | `skills/py-project` を py-kit から移植 | - `plugins/dev-kit/skills/py-project/` |
-| - | `skills/py-new-project` を py-kit から移植 | - `plugins/dev-kit/skills/py-new-project/` |
-| - | `skills/yaml-rule` を yaml-rule から移植 | - `plugins/dev-kit/skills/yaml-rule/` |
+| - | `skills/py-project` を統合作成（py-new-project + py-project を 1 つに、最初の分岐で新規/既存を判定） | - `plugins/dev-kit/skills/py-project/` |
+| - | `skills/yaml` を yaml-rule から移植・改名 | - `plugins/dev-kit/skills/yaml/` |
 | - | スキル内の references 参照パスを更新 | - `plugins/dev-kit/skills/**/SKILL.md` |
 | - | `marketplace.json` に `dev-kit` を追加、`py-kit` と `yaml-rule` を削除 | - `.claude-plugin/marketplace.json` |
 | - | 旧 `plugins/py-kit/` と `plugins/yaml-rule/` を削除 | - `plugins/py-kit/`, `plugins/yaml-rule/` |

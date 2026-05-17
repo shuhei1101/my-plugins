@@ -34,10 +34,15 @@ plugins/dev-kit/
 │   └── vscode-extension.md        # VS Code 拡張の作り方
 └── skills/
     ├── py-script/                 # Python 簡易スクリプト作成
-    ├── py-new-project/            # Python 新規プロジェクト作成
-    ├── py-project/                # Python 既存プロジェクト対応
-    └── yaml-rule/                 # YAML ファイル管理規約
+    ├── py-project/                # Python プロジェクト全般（新規作成 + 既存対応を統合）
+    └── yaml/                      # YAML ファイル管理規約
 ```
+
+### スキル統合の方針
+
+旧 `py-kit` には `py-new-project`（新規作成）と `py-project`（既存対応）の 2 スキルがあったが、
+`dev-kit` では `py-project` 1 つに統合する。最初のステップで「新規 / 既存」を判定し、
+既存プロジェクトの場合は分岐後のステップ（プロジェクト構造把握 → 品質チェック → 変更実装 …）から開始する。
 
 ## 設計方針
 
@@ -63,9 +68,8 @@ plugins/dev-kit/
 |---|---|
 | `plugins/py-kit/references/python-standards.md` | `plugins/dev-kit/references/python.md` |
 | `plugins/py-kit/skills/py-script/` | `plugins/dev-kit/skills/py-script/` |
-| `plugins/py-kit/skills/py-new-project/` | `plugins/dev-kit/skills/py-new-project/` |
-| `plugins/py-kit/skills/py-project/` | `plugins/dev-kit/skills/py-project/` |
-| `plugins/yaml-rule/skills/yaml-rule/` | `plugins/dev-kit/skills/yaml-rule/`、規約部分は `plugins/dev-kit/references/yaml.md` に分離 |
+| `plugins/py-kit/skills/py-new-project/` + `py-project/` | `plugins/dev-kit/skills/py-project/`（統合） |
+| `plugins/yaml-rule/skills/yaml-rule/` | `plugins/dev-kit/skills/yaml/`、規約部分は `plugins/dev-kit/references/yaml.md` に分離 |
 
 ## 拡張予定
 
