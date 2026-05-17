@@ -64,7 +64,45 @@
 
 ---
 
-### ステップ3: 再利用 / 拡張 / 新規追加の計画
+### ステップ3: FLOCSS + Design Tokens のセットアップを確保する
+
+#### 処理内容
+
+プロジェクトの CSS 構造を確認し、ケースで分岐:
+
+**ケース A — まだ CSS がない(またはデザイントークン未整備)**: FLOCSS スキャフォールドをゼロから組む
+1. `foundation.css`(またはプロジェクトの CSS を拡張)を作成:
+   - 最小リセット(margin / padding / box-sizing / フォント基本)
+   - `:root` のデザイントークン: `--color-*`・`--space-*`(4 or 8px グリッド)・`--font-*`・`--radius-*`・`--shadow-*`
+   - ダークモード予定があれば `:root[data-theme="dark"] { ... }` を定義
+2. `layout.css`(`l-*`)・`component.css`(`c-*`)・`project.css`(`p-*`)・`utility.css`(`u-*`)の空ファイルを作成
+3. 読み込み順を確認: `foundation.css` → `layout.css` → `component.css` → `project.css` → `utility.css`
+4. トークン名は契約になるのでユーザーに確認
+
+**ケース B — 既存 CSS あるが FLOCSS ではない**: レイヤー構造へ再分類
+1. 既存ルールを頭の中で分類:
+   - reset 相当 → Foundation
+   - レイアウト構造 → Layout
+   - 再利用ウィジェット → Component
+   - 画面固有のコンポジット → Project
+   - 単発ヘルパ → Utility
+2. ハードコード値(色・余白・角丸など)を `:root` トークンへ。使用箇所を `var(--token)` に置換
+3. クラス名に正しい FLOCSS プレフィックスを付ける(`.button` → `.c-button`、`.user-list` → `.p-userList`)
+4. 消費側を全て更新 — HTML マークアップ・JS の `querySelector`・テスト
+5. `c-/p-/l-` ルール内にハードコードのデザイン値が残っていないことを確認
+
+**ケース C — 既に FLOCSS + トークンを採用している**: このステップはスキップ
+
+全ケース共通:
+- コンポーネント内部は BEM 風命名(`c-button__icon--large`)
+- 外側のレイヤーから内側のレイヤーには手を出さない(`c-*` 内で他の `c-*` や `p-*` を呼ばない)
+- 横断的な変更はトークン経由
+
+→ ステップ4へ
+
+---
+
+### ステップ4: 再利用 / 拡張 / 新規追加の計画
 
 #### 処理内容
 
@@ -83,11 +121,11 @@
 - 画面ごとの 再利用/拡張/新規 テーブル
 - 各「新規」項目: どこに置くか(`c-*` 共有 or `p-*` 画面固有)
 
-→ ステップ4へ
+→ ステップ5へ
 
 ---
 
-### ステップ4: 拡張ポイントの設計
+### ステップ5: 拡張ポイントの設計
 
 #### 処理内容
 
@@ -112,11 +150,11 @@
 export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 ```
 
-→ ステップ5へ
+→ ステップ6へ
 
 ---
 
-### ステップ5: 実装
+### ステップ6: 実装
 
 #### 処理内容
 
@@ -131,7 +169,7 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 3. 画面固有コンポジットは `p-{画面名}` 層(`p-userList`、`p-loginForm`)
 4. JS の DOM セレクタは CSS のクラス名と一致(FLOCSS プレフィックス維持)
 
-→ ステップ6へ
+→ ステップ7へ
 
 #### 出力
 
@@ -139,7 +177,7 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 
 ---
 
-### ステップ6: ルールを導入してファイル間を紐付ける(必須)
+### ステップ7: ルールを導入してファイル間を紐付ける(必須)
 
 #### 処理内容
 
@@ -182,5 +220,4 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 - `{plugin_root}/references/principles.md` — DRY、FLOCSS、JS 規約
 - `{plugin_root}/references/ui-design.md` — UX パターン、共通コンポーネント化必須
 - `{plugin_root}/skills/mock/SKILL.md` — モック生成(コンパニオン)
-- `{plugin_root}/skills/flocss-apply/SKILL.md` — CSS アーキテクチャ追加時
 - `{plugin_root}/skills/logging/SKILL.md` — ロガー規約

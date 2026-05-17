@@ -4,7 +4,7 @@
 > 変更時は JP ミラーを先に更新し、その後 `ui-design.md` にも反映する。
 
 開発支援画面向けの UI / UX パターンと規約。
-`principles.md` と併読する。`mock`・`flocss-apply`・`debug-fab` スキルから参照される。
+`principles.md` と併読する。`mock`・`implement`・`debug-fab` スキルから参照される。
 
 ---
 

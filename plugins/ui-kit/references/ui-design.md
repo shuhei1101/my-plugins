@@ -1,7 +1,7 @@
 # UI Design — ui-kit Shared Reference
 
 UI / UX patterns and conventions for development-support screens.
-Read alongside `principles.md`. Used by `mock`, `flocss-apply`, and `debug-fab` skills.
+Read alongside `principles.md`. Used by `mock`, `implement`, and `debug-fab` skills.
 
 ---
 

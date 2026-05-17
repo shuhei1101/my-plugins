@@ -247,6 +247,26 @@ flocss-apply / implement スキルが両方をコピーする。
 
 ---
 
+## QA-021: flocss-apply と implement の統合
+
+**状態**: 決定済み(2026-05-18)
+
+`flocss-apply` の機能は `implement` の構造把握 + 実装ステップに内包される。
+両者で「ルール導入」テーブルが重複していたこともあり、**`flocss-apply` を `implement` に統合して削除**する。
+
+統合後の `implement` ステップ:
+1. リファレンス読み込み
+2. 共通リソース棚卸し
+3. **FLOCSS セットアップ**(未整備なら Foundation→Layout→Object 構築 / 既存 CSS あるが FLOCSS でないなら再分類)
+4. 再利用 / 拡張 / 新規追加 の振り分け
+5. JSDoc 型を先に書く
+6. 実装
+7. ルール導入(EN+JP 両方コピー)
+
+ui-kit/skills は `debug-fab` / `logging` / `mock` / `implement` の 4 つに集約。
+
+---
+
 ## QA-020: 共通コンポーネントの具体例
 
 **状態**: 決定済み(2026-05-18)

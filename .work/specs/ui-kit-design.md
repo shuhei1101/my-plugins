@@ -46,21 +46,19 @@ plugins/ui-kit/
 │       └ モーション規約
 ├── templates/
 │   └── rules/
-│       ├── css-js-link.md             # FLOCSS クラス ↔ JS DOM アクセス紐付けルール
-│       └── common-component-first.md  # 共通リソース先読み強制ルール
+│       ├── css-js-link.md / css-js-link.jp.md           # FLOCSS クラス ↔ JS DOM アクセス紐付け
+│       └── common-component-first.md / .jp.md           # 共通リソース先読み強制
 └── skills/
-    ├── debug-fab/           # フロートデバッグボタン + モーダル(旧 ui-dev)
+    ├── debug-fab/    # フロートデバッグボタン + モーダル
     │   ├── SKILL.md / SKILL.jp.md
     │   └── templates/       # 共通モジュール(uidev.css/uidev.js/example.html)
-    ├── logging/             # ログ整備スキル(レベル別ガイド)
+    ├── logging/      # ログ整備スキル(レベル別ガイド)
     │   └── SKILL.md / SKILL.jp.md
-    ├── flocss-apply/        # FLOCSS + Design Tokens 適用(新規/既存両対応 + ルール導入)
-    │   └── SKILL.md / SKILL.jp.md
-    ├── mock/                # 単一画面タイプの複数案モック生成(タブ切替)
+    ├── mock/         # 単一画面タイプの複数案モック生成(タブ切替)
     │   ├── SKILL.md / SKILL.jp.md
     │   └── templates/
     │       └── mock-skeleton.html
-    └── implement/           # モック → 実装フェーズ専用(共通リソース強制再利用)
+    └── implement/    # UI 画面実装(共通リソース棚卸し + FLOCSS セットアップ + 実装 + ルール導入)
         └── SKILL.md / SKILL.jp.md
 ```
 
@@ -124,16 +122,6 @@ UI 設計判断時は例外なく `frontend-design:frontend-design` スキルを
 - シークレット禁止
 - 本番デフォルトレベルは `error`、開発時は `debug` に切替可能
 
-### flocss-apply
-
-FLOCSS + Design Tokens を画面に適用するスキル。
-
-最初のステップで分岐:
-- 新規 — Foundation → Layout → Object の順で骨格を作る
-- 既存 — 既存スタイルを FLOCSS レイヤーへ再分類
-
-両パス終了後、共通ステップで `.claude/rules/css-js-link.md` をプロジェクトに導入する。
-
 ### mock
 
 単一画面タイプの複数デザイン案を上部タブ切替で単一 HTML に並べるスキル。
@@ -148,16 +136,21 @@ FLOCSS + Design Tokens を画面に適用するスキル。
 
 ### implement
 
-モック確定後の実装フェーズ専用スキル。
+UI 画面実装の単一エントリポイント(旧 `flocss-apply` を統合)。
 
+- ステップ1: リファレンス読み込み
 - ステップ2(必須): 既存 constants / routes / `c-*` / `p-*` / api/ を棚卸し
   (なければ空スキャフォールドを作成する)
-- ステップ3: 再利用 / 拡張 / 新規追加の振り分け
-- ステップ4: JSDoc 型を先に書く(契約)、関数引数 DI を採用
-- ステップ5: FLOCSS + Design Tokens で実装
-- ステップ6: `.claude/rules/` に `css-js-link.md` と `common-component-first.md` を導入
+- ステップ3: FLOCSS + Design Tokens セットアップ
+  - ケース A: CSS 無し → ゼロから FLOCSS レイヤー構築
+  - ケース B: 既存 CSS あるが FLOCSS でない → レイヤーへ再分類 + トークン化
+  - ケース C: 既に整備済み → スキップ
+- ステップ4: 再利用 / 拡張 / 新規追加の振り分け
+- ステップ5: JSDoc 型を先に書く(契約)、関数引数 DI を採用
+- ステップ6: 実装
+- ステップ7: `.claude/rules/` と `.claude/rules-jp/` に ルールテンプレを EN+JP コピー
 
-「画面ごとに独自実装が量産される」のを構造的に防ぐ。
+「画面ごとに独自実装が量産される」「FLOCSS が画面ごとにバラバラに整備される」を構造的に防ぐ。
 
 ## 移行
 

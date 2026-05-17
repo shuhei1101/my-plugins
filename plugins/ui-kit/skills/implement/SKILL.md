@@ -62,7 +62,45 @@ If any of these does **not yet exist** in the project: create the file as part o
 
 ---
 
-### Step 3: Plan reuse / extend / add
+### Step 3: Ensure FLOCSS + Design Tokens are set up
+
+#### Process
+
+Inspect the project's CSS structure and branch:
+
+**Case A — No CSS yet (or no design tokens)**: build the FLOCSS scaffold from scratch.
+1. Create `foundation.css` (or extend the project's CSS) with:
+   - Minimal reset (margin / padding / box-sizing / font basics)
+   - Design tokens under `:root`: `--color-*`, `--space-*` (4 or 8px grid), `--font-*`, `--radius-*`, `--shadow-*`
+   - If the project uses dark mode: `:root[data-theme="dark"] { ... }` overrides
+2. Create empty layer files for `layout.css` (`l-*`), `component.css` (`c-*`), `project.css` (`p-*`), `utility.css` (`u-*`)
+3. Confirm load order: `foundation.css` → `layout.css` → `component.css` → `project.css` → `utility.css`
+4. Confirm tokens with the user before continuing (they become a contract)
+
+**Case B — Existing CSS, but not FLOCSS**: reclassify into the layered structure.
+1. Categorize each existing rule mentally:
+   - reset-like → Foundation
+   - layout structure → Layout
+   - reusable widget → Component
+   - screen-specific composite → Project
+   - one-off helper → Utility
+2. Move hardcoded values (colors, paddings, radii) into `:root` tokens; replace usages with `var(--token)`
+3. Rename classes by adding the right FLOCSS prefix (`.button` → `.c-button`, `.user-list` → `.p-userList`)
+4. Update every consumer — HTML markup, JS `querySelector`, tests
+5. Verify no hardcoded design values remain inside `c-/p-/l-` rules
+
+**Case C — Project already uses FLOCSS + tokens**: skip this step.
+
+For all cases:
+- Inside a component, use BEM-style naming: `c-button__icon--large`
+- Outer layer never reaches inward (a `c-*` rule cannot use another `c-*` or `p-*` class)
+- Cross-cutting changes go through tokens, not direct overrides
+
+→ Proceed to Step 4
+
+---
+
+### Step 4: Plan reuse / extend / add
 
 #### Process
 
@@ -81,11 +119,11 @@ Write the plan out (in chat or as a code comment) and confirm with the user befo
 - A reuse/extend/add table for the screen
 - For each "Add" item: where it goes (`c-*` shared or `p-*` screen-specific)
 
-→ Proceed to Step 4
+→ Proceed to Step 5
 
 ---
 
-### Step 4: Design extension points
+### Step 5: Design extension points
 
 #### Process
 
@@ -111,11 +149,11 @@ For factories / DI:
 export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 ```
 
-→ Proceed to Step 5
+→ Proceed to Step 6
 
 ---
 
-### Step 5: Implement
+### Step 6: Implement
 
 #### Process
 
@@ -130,7 +168,7 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 3. Screen-specific composites go into `p-{screenName}` (`p-userList`, `p-loginForm`)
 4. JS DOM selectors match CSS class names (FLOCSS prefix preserved)
 
-→ Proceed to Step 6
+→ Proceed to Step 7
 
 #### Output
 
@@ -138,7 +176,7 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 
 ---
 
-### Step 6: Wire rules to link the files (mandatory)
+### Step 7: Wire rules to link the files (mandatory)
 
 #### Process
 
@@ -181,5 +219,4 @@ screen), invoke `/rule-creator` to author it.
 - `{plugin_root}/references/principles.md` — DRY, FLOCSS, JS rules
 - `{plugin_root}/references/ui-design.md` — UX patterns, shared-component mandate
 - `{plugin_root}/skills/mock/SKILL.md` — companion mock generation
-- `{plugin_root}/skills/flocss-apply/SKILL.md` — when adding new CSS architecture
 - `{plugin_root}/skills/logging/SKILL.md` — logger conventions

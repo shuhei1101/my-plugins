@@ -39,6 +39,10 @@
 | 済 | 新スキル `ui-kit:implement` 作成(モック → 実装フェーズ用、最初に constants / routing / common-components を確認 → 設計 → 実装 → ルール連携) | - `plugins/ui-kit/skills/implement/SKILL.md`, `SKILL.jp.md` |
 | 済 | ルールテンプレートに日本語版を追加(`.jp.md` ペア。`.claude/rules-jp/` へコピー) | - `plugins/ui-kit/templates/rules/{css-js-link,common-component-first}.jp.md` |
 | 済 | flocss-apply / implement スキルの「ルール導入」ステップを EN+JP の両方コピーに更新 | - `plugins/ui-kit/skills/flocss-apply/SKILL.md`, `implement/SKILL.md` (各 JP も) |
+| 済 | `flocss-apply` を `implement` に統合(FLOCSS セットアップ手順を implement の Step 3 に挿入) | - `plugins/ui-kit/skills/implement/SKILL.md`, `SKILL.jp.md` |
+| 済 | `flocss-apply/` スキル削除 | - `plugins/ui-kit/skills/flocss-apply/`(削除) |
+| 済 | spec ui-kit-design.md から flocss-apply を削除し implement に統合された旨を記載 | - `.work/specs/ui-kit-design.md` |
+| 済 | mock スキルから flocss-apply 参照を implement へ修正 | - `plugins/ui-kit/skills/mock/SKILL.md`, `SKILL.jp.md` |
 | 済 | ui-design.md の「共通コンポーネント一覧」に Header / Button / FAB を明示し、運用ガイド(「よく使うものはここに集約」)を追加 | - `plugins/ui-kit/references/ui-design.md`, `ui-design.jp.md` |
 | 済 | spec ui-kit-design.md を最終構成に更新 | - `.work/specs/ui-kit-design.md` |
 | 済 | ルール・CLAUDE.md を整備する | - `CLAUDE.md`, `CLAUDE.jp.md`(必要に応じて) |
