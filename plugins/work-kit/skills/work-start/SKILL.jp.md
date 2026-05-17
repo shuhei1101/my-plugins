@@ -138,8 +138,8 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 1. タスクフォルダを作成する: `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/`
 2. PR フォルダを作成する: `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
-3. TODO.md を作成する（テンプレート: `.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` 参照）
-4. QA.md を作成する（テンプレート: `.work/tasks/yyyymmdd_xxx/PRXXX/QA.md` 参照）
+3. TODO.md を作成する（テンプレート: `${CLAUDE_PLUGIN_ROOT}/templates/TODO.md` 参照）
+4. QA.md を作成する（テンプレート: `${CLAUDE_PLUGIN_ROOT}/templates/QA.md` 参照）
 
 → ステップ6へ進む
 
@@ -160,7 +160,7 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 1. ワークツリー内の `.work/specs/` を確認する
 2. 関連する仕様書が存在する場合 → 今回の変更に関わる箇所を更新する
-3. 存在しない場合 → テンプレート（`.work/specs/xxx.md` 参照）を元に新規作成する
+3. 存在しない場合 → テンプレート（`${CLAUDE_PLUGIN_ROOT}/templates/spec.md` 参照）を元に新規作成する
 4. TODO.md の「仕様参照」セクションに仕様書へのリンクを追記する
 
 → ステップ7へ進む

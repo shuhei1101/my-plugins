@@ -75,19 +75,14 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
 ```
 
 3. If output is "Nothing to archive", skip the commit below
-4. If `index.archive.yaml` was created or updated, commit it:
-
-```bash
-git add .work/tasks/index.archive.yaml
-git commit -m "chore: archive completed PR entries"
-```
+4. If `index.archive.yaml` was created or updated, commit it to the PR branch being merged
 
 → Proceed to Step 4
 
 #### Notes
 
 - `index.yaml` remains gitignored — no commit needed for it
-- `index.archive.yaml` is git-tracked — commit it directly to master as part of this merge flow
+- `index.archive.yaml` is git-tracked — commit it to the **PR branch** (not directly to master); it will be included in the --no-ff merge in Step 4
 
 ---
 
