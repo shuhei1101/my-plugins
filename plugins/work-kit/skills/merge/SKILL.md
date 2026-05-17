@@ -109,7 +109,28 @@ git commit -m "docs: post-merge update for PR{N}"
 
 ---
 
-### Step 6: Report completion
+### Step 6: Archive index.yaml
+
+#### Process
+
+1. Check whether `plugins/work-kit/scripts/trim-index.py` exists
+2. If it exists, run it to move completed entries to `index.archive.yaml`:
+
+```bash
+python plugins/work-kit/scripts/trim-index.py .work/tasks/index.yaml
+```
+
+3. If `trim-index.py` is not found, skip this step
+
+→ Proceed to Step 7
+
+#### Notes
+
+- Both `index.yaml` and `index.archive.yaml` are gitignored — no commit needed
+
+---
+
+### Step 7: Report completion
 
 #### Process
 
@@ -123,3 +144,4 @@ git commit -m "docs: post-merge update for PR{N}"
 - [ ] Merge commit exists
 - [ ] Worktree and branch deleted
 - [ ] QA.md reviewed and updated
+- [ ] index.yaml archived (if trim-index.py is present)

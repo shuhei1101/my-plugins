@@ -114,7 +114,28 @@ git commit -m "docs: PR{N} マージ後ドキュメント更新"
 
 ---
 
-### ステップ6: 完了報告
+### ステップ6: index.yaml をアーカイブする
+
+#### 処理内容
+
+1. `plugins/work-kit/scripts/trim-index.py` が存在するか確認する
+2. 存在する場合、以下を実行して完了済みエントリを `index.archive.yaml` へ移動する:
+
+```bash
+python plugins/work-kit/scripts/trim-index.py .work/tasks/index.yaml
+```
+
+3. trim-index.py が存在しない場合はこのステップをスキップする
+
+→ ステップ7へ進む
+
+#### 補足
+
+- `index.yaml` / `index.archive.yaml` はどちらも gitignore 対象のためコミット不要
+
+---
+
+### ステップ7: 完了報告
 
 #### 処理内容
 
@@ -128,3 +149,4 @@ git commit -m "docs: PR{N} マージ後ドキュメント更新"
 - [ ] マージコミットが存在する
 - [ ] ワークツリーとブランチが削除済み
 - [ ] QA.md が更新済み
+- [ ] index.yaml がアーカイブ済み（trim-index.py がある場合）

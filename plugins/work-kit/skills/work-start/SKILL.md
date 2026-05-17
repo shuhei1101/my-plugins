@@ -25,7 +25,9 @@ This prevents task documents from being created in the main repository.
 #### Process
 
 1. If the user has already specified a PR number or branch name, use that value
-2. Otherwise read `.work/tasks/index.yaml` and use max `id` + 1 as the next PR number (1 if the list is empty)
+2. Otherwise read `.work/tasks/index.yaml`:
+   - If `last_id` field exists → use `last_id + 1` as the next PR number
+   - If `last_id` is absent → fall back to `max(id) + 1` across all entries (1 if the list is empty)
 
 → Proceed to Step 2
 
@@ -66,27 +68,31 @@ This prevents task documents from being created in the main repository.
 
 #### Process
 
-1. Append to the `prs` list in the main repository's `.work/tasks/index.yaml`:
+1. Update `last_id` to `{N}` at the top of `index.yaml`
+2. Append to the `prs` list in the main repository's `.work/tasks/index.yaml`:
 
 ```yaml
-- id: {N}
-  title: 'PR{N} — {title}'
-  type: {type}
-  tags: []
-  summary: '{summary}'
-  task: '{YYYYMMDD}_{title}'
-  completed: false
+last_id: {N}
+prs:
+  - id: {N}
+    title: 'PR{N} — {title}'
+    type: {type}
+    tags: []
+    summary: '{summary}'
+    task: '{YYYYMMDD}_{title}'
+    completed: false
 ```
 
 → Proceed to Step 4
 
 #### Output
 
-- `.work/tasks/index.yaml` updated with the new PR entry (main repository)
+- `.work/tasks/index.yaml` updated with the new PR entry and `last_id` (main repository)
 
 #### Notes
 
 - `index.yaml` is excluded by `.work/tasks/.gitignore` — no commit to master is needed
+- When `index.yaml` grows large, run `python plugins/work-kit/scripts/trim-index.py` to archive completed entries to `index.archive.yaml`
 
 ---
 

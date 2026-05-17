@@ -74,11 +74,39 @@ Update strategy differs by file type:
 
 ---
 
-### Step 4: Diff and patch QA.md files
+### Step 4: Migrate index.yaml — add last_id if missing
 
 #### Condition
 
 - Step 3 complete
+- `.work/tasks/index.yaml` exists
+
+#### Process
+
+1. Read `.work/tasks/index.yaml`
+2. If `last_id` field is already present → skip this step
+3. If `last_id` is absent:
+   - Compute `last_id` = `max(id)` across all entries in the `prs` list (0 if empty)
+   - Add `last_id: {N}` to the top of the `prs` section
+   - Write the updated file
+
+#### Output
+
+- `last_id` present in `.work/tasks/index.yaml`
+- If already present: report "index.yaml already has last_id — skipped"
+
+#### Notes
+
+- `index.yaml` is gitignored — no commit needed
+- To archive completed entries and shrink the file, run: `python plugins/work-kit/scripts/trim-index.py`
+
+---
+
+### Step 5: Diff and patch QA.md files
+
+#### Condition
+
+- Step 4 complete
 
 #### Process
 
@@ -96,11 +124,11 @@ Update strategy differs by file type:
 
 ---
 
-### Step 5: Diff and patch TODO.md files
+### Step 6: Diff and patch TODO.md files
 
 #### Condition
 
-- Step 4 complete
+- Step 5 complete
 
 #### Process
 
@@ -118,7 +146,7 @@ Update strategy differs by file type:
 
 ---
 
-### Step 6: Report completion
+### Step 7: Report completion
 
 #### Process
 
