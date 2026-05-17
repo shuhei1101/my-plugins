@@ -94,7 +94,7 @@ Read the entire document. This skill uses all sections depending on what the tas
    - **Class structure change** → check all classes in the inheritance / Protocol hierarchy for needed updates
    - **Config change** → check source files that read this config; or vice versa
    - **Source change** → check corresponding test files need updating
-3. If `.claude/rules/` does not yet exist in the project, create it now using the templates from `{plugin_root}/rules/`.
+3. If `.claude/rules/` does not yet exist in the project, create the rules now using `/claude-kit:rule-creator` (class-structure / config-source-link / source-test-link).
 
 → Proceed to Step 6
 

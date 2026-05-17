@@ -113,21 +113,42 @@ Read the entire document. Key sections for this skill: **Project Folder Structur
 
 ---
 
-### Step 6: Deploy rules
+### Step 6: Create linkage rules
+
+After the scaffold is generated, create rules to keep implementation, docs, and tests in sync.
+Use the `/claude-kit:rule-creator` skill for each rule below.
+
+#### Rules to create
+
+1. **Class structure linkage** — links abstract classes / Protocols and their concrete implementations.
+   Trigger: any class in the inheritance or Protocol hierarchy changes.
+   Check: verify the full hierarchy for ripple effects (signatures, LSP, sibling classes).
+
+2. **Config ↔ source linkage** — links config files (`.yaml`, `.toml`, `.env`, `.json`) and the source files that read them.
+   Trigger: config file or config-reading source file changes.
+   Check: new/renamed/removed keys propagate to both sides.
+
+3. **Source ↔ test linkage** — links `src/**/*.py` and `tests/**/*.py`.
+   Trigger: source file changes.
+   Check: corresponding test file is updated.
 
 #### Process
 
-1. Create `.claude/rules/class-structure.md` in the project root using the template from `{plugin_root}/rules/class-structure.md`.
-2. Create `.claude/rules/config-source-link.md` using the template from `{plugin_root}/rules/config-source-link.md`.
-3. Create `.claude/rules/source-test-link.md` using the template from `{plugin_root}/rules/source-test-link.md`.
-4. Create `.claude/rules-jp/` versions (Japanese mirrors) for each rule.
-5. Commit: `git add .claude/rules/ .claude/rules-jp/ && git commit -m "chore: add py-kit rules"`.
+For each rule above, run `/claude-kit:rule-creator` and provide:
+- The files to link (globs)
+- The trigger condition
+- The check to perform
+
+Commit after all rules are created:
+```
+git add .claude/rules/ .claude/rules-jp/ && git commit -m "chore: add py-kit rules"
+```
 
 → Proceed to Step 7
 
 #### Output
 
-- Three rule files deployed to `.claude/rules/` and `.claude/rules-jp/`
+- Three rules created in `.claude/rules/` and `.claude/rules-jp/` via `/claude-kit:rule-creator`
 
 ---
 

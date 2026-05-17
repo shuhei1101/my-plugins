@@ -97,17 +97,42 @@ DDD レイヤー構造・DI 設計・ルールファイル・テスト雛形を�
 
 ---
 
-### ステップ6: ルール展開
+### ステップ6: 連携ルールを作成する
+
+スキャフォールド生成後、実装・ドキュメント・テストを同期させるためのルールを作成する。
+各ルールの作成には `/claude-kit:rule-creator` スキルを使用する。
+
+#### 作成するルール
+
+1. **クラス構造連携** — 抽象クラス / Protocol と具象実装クラスをリンクする。
+   トリガー：継承ツリーまたは Protocol 実装クラスのいずれかが変更されたとき。
+   チェック：階層全体への波及確認（シグネチャ・LSP・兄弟クラスへの影響）。
+
+2. **設定 ↔ ソース連携** — 設定ファイル（`.yaml`・`.toml`・`.env`・`.json`）と、それを読み込むソースファイルをリンクする。
+   トリガー：設定ファイルまたは設定読み込みソースが変更されたとき。
+   チェック：追加・変更・削除されたキーが両側に反映されているか確認。
+
+3. **ソース ↔ テスト連携** — `src/**/*.py` と `tests/**/*.py` をリンクする。
+   トリガー：ソースファイルが変更されたとき。
+   チェック：対応するテストファイルが更新されているか確認。
 
 #### 処理内容
 
-1. `{plugin_root}/rules/class-structure.md` テンプレートを使用してプロジェクトの `.claude/rules/class-structure.md` を作成。
-2. `{plugin_root}/rules/config-source-link.md` テンプレートを使用して `.claude/rules/config-source-link.md` を作成。
-3. `{plugin_root}/rules/source-test-link.md` テンプレートを使用して `.claude/rules/source-test-link.md` を作成。
-4. `.claude/rules-jp/` 配下に各ルールの日本語ミラーを作成。
-5. コミット：`git add .claude/rules/ .claude/rules-jp/ && git commit -m "chore: add py-kit rules"`。
+上記の各ルールに対して `/claude-kit:rule-creator` を実行し、以下を伝える：
+- リンクするファイル（glob パターン）
+- トリガー条件
+- 実行するチェック内容
+
+全ルール作成後にコミット：
+```
+git add .claude/rules/ .claude/rules-jp/ && git commit -m "chore: add py-kit rules"
+```
 
 → ステップ7へ
+
+#### 出力
+
+- `/claude-kit:rule-creator` 経由で3つのルールが `.claude/rules/` と `.claude/rules-jp/` に作成済み
 
 ---
 
