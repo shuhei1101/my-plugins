@@ -2,9 +2,11 @@
 created_at: 2026-05-17
 updates:
   - 2026-05-17 — 初版作成（PR41）
+  - 2026-05-18 — インライン Python を `hooks/scripts/stop.py` に分離（PR52）
 related_specs: []
 related_prs:
   - PR41
+  - PR52
 ---
 
 # work-kit stop hook — セッション終了前チェック
@@ -33,4 +35,14 @@ related_prs:
 |---|---|
 | `plugins/work-kit/hooks/prompts/stop.md` | Claude Code が読み込む英語プロンプト |
 | `plugins/work-kit/hooks/prompts/stop.jp.md` | 日本語ミラー（人間参照用） |
+| `plugins/work-kit/hooks/scripts/stop.py` | stop フック実装本体（プロンプトを読んで block を返すだけ） |
 | `plugins/work-kit/hooks/hooks.json` | stop フックの登録 |
+
+## 実装方針
+
+`hooks.json` には `python -c "..."` の長大ワンライナーを書かず、`hooks/scripts/stop.py` を呼び出す形にする。
+他のフック（`master-commit-guard`, `user-prompt-submit`）も同様に独立 Python ファイルとして管理する。
+
+`stop.py` のループ防止:
+- 入力 JSON の `stop_hook_active` が真のときは何もせず終了する。これがないと
+  「Stop → block → 再開 → Stop」を繰り返してしまう。

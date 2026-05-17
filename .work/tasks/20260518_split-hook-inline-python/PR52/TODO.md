@@ -14,15 +14,15 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260518_split-hook-inline-python/PR52/QA.md` |
-| - | guard-kit: `git-guard.py` を切り出してコメント付与 | - `plugins/guard-kit/hooks/scripts/git-guard.py`<br>- `plugins/guard-kit/hooks/hooks.json` |
-| - | work-kit: `master-commit-guard.py` を切り出してコメント付与 | - `plugins/work-kit/hooks/scripts/master-commit-guard.py`<br>- `plugins/work-kit/hooks/hooks.json` |
-| - | work-kit: `user-prompt-submit.py` を切り出してコメント付与 | - `plugins/work-kit/hooks/scripts/user-prompt-submit.py` |
-| - | work-kit: `stop.py` を切り出してコメント付与 | - `plugins/work-kit/hooks/scripts/stop.py` |
-| - | setup skill の `${CLAUDE_SKILL_DIR}` を `${CLAUDE_PLUGIN_ROOT}` に統一 | - `plugins/work-kit/skills/setup/SKILL.md`<br>- `plugins/work-kit/skills/setup/SKILL.jp.md` |
-| - | spec を更新（guard-kit / work-kit-stop-hook） | - `.work/specs/guard-kit.md`<br>- `.work/specs/work-kit-stop-hook.md` |
-| - | guard-kit / work-kit の `plugin.json` バージョン bump | - `plugins/guard-kit/.claude-plugin/plugin.json`<br>- `plugins/work-kit/.claude-plugin/plugin.json` |
-| - | `marketplace.json` のバージョンを揃える | - `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260518_split-hook-inline-python/PR52/QA.md` |
+| 済 | guard-kit: `git-guard.py` を切り出してコメント付与 | - `plugins/guard-kit/hooks/scripts/git-guard.py`<br>- `plugins/guard-kit/hooks/hooks.json` |
+| 済 | work-kit: `master-commit-guard.py` を切り出してコメント付与 | - `plugins/work-kit/hooks/scripts/master-commit-guard.py`<br>- `plugins/work-kit/hooks/hooks.json` |
+| 済 | work-kit: `user-prompt-submit.py` を切り出してコメント付与 | - `plugins/work-kit/hooks/scripts/user-prompt-submit.py` |
+| 済 | work-kit: `stop.py` を切り出してコメント付与 | - `plugins/work-kit/hooks/scripts/stop.py` |
+| 済 | setup skill の `${CLAUDE_SKILL_DIR}` を `${CLAUDE_PLUGIN_ROOT}` に統一 | - `plugins/work-kit/skills/setup/SKILL.md`<br>- `plugins/work-kit/skills/setup/SKILL.jp.md` |
+| 済 | spec を更新（guard-kit / work-kit-stop-hook） | - `.work/specs/guard-kit.md`<br>- `.work/specs/work-kit-stop-hook.md` |
+| 済 | guard-kit / work-kit の `plugin.json` バージョン bump | - `plugins/guard-kit/.claude-plugin/plugin.json`<br>- `plugins/work-kit/.claude-plugin/plugin.json` |
+| 済 | `marketplace.json` のバージョンを揃える | - `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
