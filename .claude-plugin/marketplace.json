@@ -17,7 +17,7 @@
       "name": "claude-kit",
       "source": "./plugins/claude-kit",
       "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
-      "version": "3.4.1"
+      "version": "3.5.0"
     },
     {
       "name": "yaml-rule",

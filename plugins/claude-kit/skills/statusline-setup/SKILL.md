@@ -1,0 +1,76 @@
+---
+name: statusline-setup
+description: |
+  Use this skill to configure the user's Claude Code status line setting.
+  Trigger when the user says "set up the status line", "configure statusline", "apply statusline",
+  "ステータスラインを設定して", "ステータスラインをセットアップして", or invoked explicitly as `/statusline-setup`.
+---
+
+# statusline-setup — Apply status line configuration
+
+Overwrites the `statusLine` key in `~/.claude/settings.json` with the predefined configuration.
+
+---
+
+## Overview
+
+Claude Code's status line can display model name, context usage, and rate limit status with color coding.
+This skill runs `apply-statusline.py` to apply the following display configuration in one step.
+
+**Display example**:
+```
+my-plugins/ | Claude Sonnet 4.6 | ctx 23% (47k/200k)
+5h 12% (~14:30) | 7d 8% (~05/20)
+```
+
+**What gets applied**:
+- Line 1: `workspace/ | model name (colored) | ctx XX% (color at ≥50% yellow, ≥70% red)`
+- Line 2: `5h XX% (five-hour rate) | 7d XX% (seven-day rate)` (color changes with usage)
+- Model colors: opus → red, sonnet → yellow
+
+---
+
+## Tasks
+
+### Step 1: Run the script
+
+#### Condition
+
+- Always
+
+#### Process
+
+Run the following command:
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/scripts/apply-statusline.py"
+```
+
+→ Proceed to Step 2
+
+#### Output
+
+- `~/.claude/settings.json` updated with the new `statusLine` value
+
+#### Notes
+
+##### Branching
+
+- If the script returns an error → report the error message to the user and stop
+
+---
+
+### Step 2: Report the result
+
+#### Condition
+
+- Step 1 complete
+
+#### Process
+
+1. Inform the user that the configuration was applied
+2. Note that a Claude Code restart may be required for the change to take effect
+
+#### Output
+
+- Completion message shown to the user
