@@ -32,7 +32,7 @@
 2. 指定がない場合は以下を実行し、出力された番号を使う:
 
 ```bash
-python plugins/work-kit/scripts/index-tool.py next-id .work/tasks/index.yaml
+python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yaml
 ```
 
 → ステップ2へ進む
@@ -77,7 +77,7 @@ python plugins/work-kit/scripts/index-tool.py next-id .work/tasks/index.yaml
 1. 以下を実行して PR エントリを追加する:
 
 ```bash
-python plugins/work-kit/scripts/index-tool.py add .work/tasks/index.yaml \
+python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --id {N} \
   --title "PR{N} — {title}" \
   --type {type} \

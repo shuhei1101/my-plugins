@@ -31,7 +31,7 @@ TODO 確認 → index アーカイブ → `--no-ff` マージ → ワークツ�
 1. 以下を実行してアクティブな PR 一覧を取得する:
 
 ```bash
-python plugins/work-kit/scripts/index-tool.py list-active .work/tasks/index.yaml
+python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index.yaml
 ```
 
    出力形式: `id|title|type|task`（1行1PR）
@@ -71,11 +71,11 @@ python plugins/work-kit/scripts/index-tool.py list-active .work/tasks/index.yaml
 
 #### 処理内容
 
-1. `plugins/work-kit/scripts/trim-index.py` が存在しない場合はこのステップをスキップする
+1. `${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py` が存在しない場合はこのステップをスキップする
 2. 完了済みエントリを `index.yaml` から `index.archive.yaml` へ移動する:
 
 ```bash
-python plugins/work-kit/scripts/trim-index.py .work/tasks/index.yaml
+python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
 ```
 
 3. 「Nothing to archive」と出力された場合は以下のコミットをスキップする
