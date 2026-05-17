@@ -6,6 +6,7 @@ You MUST ask the user for explicit confirmation RIGHT NOW before proceeding:
 
 CRITICAL RULES — no exceptions:
 
+- **Before asking:** run `git status` to verify there are actual changes to commit. If nothing is staged or modified, the commit is unnecessary — skip it without asking.
 - Prior approval from earlier in this conversation does NOT count for this operation.
 - Even if the user said "commit directly" or "go ahead" earlier, that approval has expired.
 - Ask every single time, immediately before each direct commit to master.
