@@ -28,6 +28,10 @@
 | 済 | dev-kit バージョン更新(1.1.0 → 2.0.0、破壊的変更) | - `plugins/dev-kit/.claude-plugin/plugin.json` |
 | 済 | marketplace.json に ui-kit 追加、dev-kit バージョン更新 | - `.claude-plugin/marketplace.json` |
 | 済 | CSS-JS 紐付けルールを `/rule-creator` で作成 | - `.claude/rules/{name}.md`(rule-creator が決定) |
+| - | `ui-kit/references/ui-design.md` 新規作成(画面設計規約・画面タイプ別パターン・レスポンシブ) | - `plugins/ui-kit/references/ui-design.md`, `ui-design.jp.md` |
+| - | `ui-kit/skills/mock/` 新規作成(モック画面生成スキル・案 A〜E のタブ切替形式) | - `plugins/ui-kit/skills/mock/SKILL.md`, `SKILL.jp.md` |
+| - | `mock` スキル用テンプレート(タブ切替モック雛形 HTML) | - `plugins/ui-kit/skills/mock/templates/` |
+| - | ui-kit-design.md 仕様書に mock スキル + ui-design.md を追記 | - `.work/specs/ui-kit-design.md` |
 | 済 | ルール・CLAUDE.md を整備する | - `CLAUDE.md`, `CLAUDE.jp.md`(必要に応じて) |
 
 ## 参考ドキュメント
