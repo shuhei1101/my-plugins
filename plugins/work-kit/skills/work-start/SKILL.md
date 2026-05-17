@@ -25,9 +25,11 @@ This prevents task documents from being created in the main repository.
 #### Process
 
 1. If the user has already specified a PR number or branch name, use that value
-2. Otherwise read `.work/tasks/index.yaml`:
-   - If `last_id` field exists → use `last_id + 1` as the next PR number
-   - If `last_id` is absent → fall back to `max(id) + 1` across all entries (1 if the list is empty)
+2. Otherwise run the following command and use the printed number:
+
+```bash
+python plugins/work-kit/scripts/index-tool.py next-id .work/tasks/index.yaml
+```
 
 → Proceed to Step 2
 
@@ -68,19 +70,15 @@ This prevents task documents from being created in the main repository.
 
 #### Process
 
-1. Update `last_id` to `{N}` at the top of `index.yaml`
-2. Append to the `prs` list in the main repository's `.work/tasks/index.yaml`:
+1. Run the following command to add the new PR entry:
 
-```yaml
-last_id: {N}
-prs:
-  - id: {N}
-    title: 'PR{N} — {title}'
-    type: {type}
-    tags: []
-    summary: '{summary}'
-    task: '{YYYYMMDD}_{title}'
-    completed: false
+```bash
+python plugins/work-kit/scripts/index-tool.py add .work/tasks/index.yaml \
+  --id {N} \
+  --title "PR{N} — {title}" \
+  --type {type} \
+  --summary "{summary}" \
+  --task "{YYYYMMDD}_{title}"
 ```
 
 → Proceed to Step 4

@@ -28,7 +28,13 @@ TODO チェックリスト確認 → `--no-ff` マージ → ワークツリー�
 
 #### 処理内容
 
-1. `.work/tasks/index.yaml` を読んで `completed: false` の PR を確認する
+1. 以下を実行してアクティブな PR 一覧を取得する:
+
+```bash
+python plugins/work-kit/scripts/index-tool.py list-active .work/tasks/index.yaml
+```
+
+   出力形式: `id|title|type|task`（1行1PR）
 2. 複数ある場合はユーザーにどれをマージするか確認する
 3. 対応するブランチ名を特定する: `PR{N}/{type}/{title}`
 
