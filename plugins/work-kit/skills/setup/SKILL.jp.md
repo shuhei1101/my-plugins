@@ -38,7 +38,7 @@
 1. 以下のコマンドを実行する:
 
 ```bash
-python "${CLAUDE_SKILL_DIR}/scripts/setup.py"
+python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/setup.py"
 ```
 
 → ステップ2へ進む
