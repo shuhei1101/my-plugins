@@ -104,7 +104,7 @@ If ambiguous, ask. Then branch.
 2. Each utility is single-purpose. Do not duplicate component styles as utilities.
 3. Utilities live in their own file `utility.css` loaded last.
 
-→ Done (new path complete)
+→ Proceed to Step 11 (common final step)
 
 #### Output
 
@@ -172,13 +172,40 @@ The `.claude/rules/` rule for CSS-JS linkage will fire and require checking both
 3. Confirm load order: foundation → layout → component → project → utility.
 4. Visually verify the screen still renders correctly.
 
-→ Done (existing path complete)
+→ Proceed to Step 11
 
 #### Output
 
 - Existing styles reclassified into FLOCSS layers
 - Hardcoded values consolidated into design tokens
-- CSS-JS linkage rule satisfied
+
+---
+
+## Common final step
+
+### Step 11: Install the CSS-JS link rule
+
+#### Process
+
+If `.claude/rules/css-js-link.md` does not exist in the project, copy it from:
+
+```
+{plugin_root}/templates/rules/css-js-link.md
+```
+
+into `.claude/rules/css-js-link.md` in the project root.
+
+The rule auto-loads whenever Claude reads a `.css`, `.js`, or `.html` file and enforces the
+linkage between FLOCSS class definitions and JS / HTML usage.
+
+→ Done
+
+#### Notes
+
+- This step applies to both new and existing paths
+- If the project already has the file, leave it untouched
+- If the project's FLOCSS prefix set differs from the default (`c-`/`p-`/`l-`/`u-`), edit the
+  rule body to match before committing
 
 ---
 
