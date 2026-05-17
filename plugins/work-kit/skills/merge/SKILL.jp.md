@@ -79,13 +79,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
 ```
 
 3. 「Nothing to archive」と出力された場合は以下のコミットをスキップする
-4. `index.archive.yaml` が作成・更新された場合は、**ワークツリー（PR ブランチ）にコピーしてコミットする**:
-
-```bash
-cp .work/tasks/index.archive.yaml ../$(basename $(pwd))-wt-PR{N}/.work/tasks/index.archive.yaml
-git -C ../$(basename $(pwd))-wt-PR{N} add .work/tasks/index.archive.yaml
-git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive completed PR entries"
-```
+4. `index.archive.yaml` が作成・更新された場合は、マージ対象の PR ブランチにコミットする
 
 → ステップ4へ進む
 
