@@ -103,10 +103,9 @@
 
 ```html
 <body data-debug-files='{
-  "html":    ["pages/user_list.html"],
-  "css":     ["styles/user_list.css"],
-  "js":      ["scripts/user_list.js"],
-  "backend": ["api/users.py"]
+  "html": ["pages/user_list.html"],
+  "css":  ["styles/user_list.css"],
+  "js":   ["scripts/user_list.js"]
 }'>
 ```
 
@@ -117,8 +116,8 @@
 ```html
 <script>
   window.__uidevFiles = {
-    html:    ["pages/user_list.html"],
-    backend: ["api/users.py"]
+    html: ["pages/user_list.html"],
+    js:   ["scripts/user_list.js"]
   };
 </script>
 ```
@@ -129,13 +128,14 @@
 
 ##### 何を登録するか
 
-- `html`:    この画面を描画するページテンプレート / 部分テンプレート
-- `css`:     この画面固有のスタイルシート(global reset 等は除く)
-- `js`:      この画面固有のスクリプト(フレームワークランタイムは除く)
-- `backend`: この画面が呼ぶ API ハンドラ / ルート関数
-- `other`:   その他関連するもの(設定ファイル・データソース)
+- `html`: この画面を描画するページテンプレート / 部分テンプレート
+- `css`:  この画面固有のスタイルシート(global reset 等は除く)
+- `js`:   この画面固有のスクリプト(フレームワークランタイムは除く)
 
-フレームワーク/ライブラリのファイルは登録しない。「この画面をデバッグするために Claude が読む必要があるファイル」だけを入れる。
+フレームワーク / ライブラリのファイルは登録しない。
+「この画面をデバッグするために Claude が読む必要があるファイル」だけ入れる。
+バックエンド / API 先は **意図的に登録しない** — JS ファイル内の `fetch` 呼び出しから辿れるため。
+設定ファイル・データソース等も同様。
 
 ---
 

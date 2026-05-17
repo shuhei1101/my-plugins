@@ -37,18 +37,17 @@ From the moment `uidev.js` loads, it captures all `console.log/info/warn/error/d
 
 ```html
 <body data-debug-files='{
-  "html":    ["pages/user_list.html"],
-  "css":     ["styles/user_list.css"],
-  "js":      ["scripts/user_list.js"],
-  "backend": ["api/users.py"]
+  "html": ["pages/user_list.html"],
+  "css":  ["styles/user_list.css"],
+  "js":   ["scripts/user_list.js"]
 }'>
 ```
 
 Multiple elements can each declare a subset; entries are merged:
 
 ```html
-<form data-debug-files='{"backend":["api/auth.py"]}'>...</form>
-<table data-debug-files='{"backend":["api/users.py"]}'>...</table>
+<form data-debug-files='{"js":["scripts/auth.js"]}'>...</form>
+<table data-debug-files='{"js":["scripts/user_list.js"]}'>...</table>
 ```
 
 **B. `window.__uidevFiles` global**
@@ -56,10 +55,9 @@ Multiple elements can each declare a subset; entries are merged:
 ```html
 <script>
   window.__uidevFiles = {
-    html:    ["pages/user_list.html"],
-    css:     ["styles/user_list.css"],
-    js:      ["scripts/user_list.js"],
-    backend: ["api/users.py"]
+    html: ["pages/user_list.html"],
+    css:  ["styles/user_list.css"],
+    js:   ["scripts/user_list.js"]
   };
 </script>
 ```
@@ -116,7 +114,7 @@ XPath mode (`short` / `full`) is chosen in the modal's "要素ピッカー設定
   "page": "{location.pathname}",
   "url":  "{location.href}",
   "files": {
-    "html": [], "css": [], "js": [], "backend": [], "other": []
+    "html": [], "css": [], "js": []
   },
   "logs": {
     "limit": 100,

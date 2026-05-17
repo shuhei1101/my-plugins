@@ -102,10 +102,9 @@ Pick one of the two registration methods (or both, they merge):
 
 ```html
 <body data-debug-files='{
-  "html":    ["pages/user_list.html"],
-  "css":     ["styles/user_list.css"],
-  "js":      ["scripts/user_list.js"],
-  "backend": ["api/users.py"]
+  "html": ["pages/user_list.html"],
+  "css":  ["styles/user_list.css"],
+  "js":   ["scripts/user_list.js"]
 }'>
 ```
 
@@ -116,8 +115,8 @@ Multiple elements can each declare a subset; entries are merged.
 ```html
 <script>
   window.__uidevFiles = {
-    html:    ["pages/user_list.html"],
-    backend: ["api/users.py"]
+    html: ["pages/user_list.html"],
+    js:   ["scripts/user_list.js"]
   };
 </script>
 ```
@@ -128,13 +127,13 @@ Multiple elements can each declare a subset; entries are merged.
 
 ##### What to register
 
-- `html`:    page templates / partial templates rendering this screen
-- `css`:     stylesheets specific to this screen (skip global resets)
-- `js`:      scripts specific to this screen (skip framework runtime)
-- `backend`: API handlers / route functions called by this screen
-- `other`:   anything else relevant (config files, data sources)
+- `html`: page templates / partial templates rendering this screen
+- `css`:  stylesheets specific to this screen (skip global resets)
+- `js`:   scripts specific to this screen (skip framework runtime)
 
-Skip framework/library files. The goal is "files Claude needs to read to debug this screen."
+Skip framework / library files. The goal is "files Claude needs to read to debug this screen."
+Backend / API targets are intentionally NOT registered here — they can be derived from the JS
+files (look for `fetch` / API calls). Likewise for config files, data sources, etc.
 
 ---
 

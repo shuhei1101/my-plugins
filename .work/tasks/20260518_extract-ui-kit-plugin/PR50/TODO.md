@@ -47,6 +47,7 @@
 | 済 | spec ui-kit-design.md を最終構成に更新 | - `.work/specs/ui-kit-design.md` |
 | 済 | 「URL クエリストリングで画面状態反映」必須ルールを principles.md / ui-design.md に追加 | - `plugins/ui-kit/references/principles.md`, `principles.jp.md`, `ui-design.md`, `ui-design.jp.md` |
 | 済 | debug-fab に要素ピッカー機能追加(クリックした要素の XPath + URL を JSON コピー、XPath フル/短縮を設定で切替) | - `plugins/ui-kit/skills/debug-fab/templates/uidev.css`, `uidev.js`, `CLAUDE.md`, `CLAUDE.jp.md`, `SKILL.md`, `SKILL.jp.md` |
+| 済 | debug-fab の files カテゴリを `html`/`css`/`js` のみに簡略化(backend/other は JS から辿れるため削除) | - `plugins/ui-kit/skills/debug-fab/templates/*`, `SKILL.md`, `SKILL.jp.md` |
 | 済 | ルール・CLAUDE.md を整備する | - `CLAUDE.md`, `CLAUDE.jp.md`(必要に応じて) |
 
 ## 参考ドキュメント

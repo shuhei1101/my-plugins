@@ -54,7 +54,7 @@
 
   // ── 関連ファイル収集 ─────────────────────────────────────
   function collectFiles() {
-    const out = { html: [], css: [], js: [], backend: [], other: [] };
+    const out = { html: [], css: [], js: [] };
     if (window.__uidevFiles && typeof window.__uidevFiles === "object") {
       for (const k of Object.keys(out)) {
         if (Array.isArray(window.__uidevFiles[k])) out[k].push(...window.__uidevFiles[k]);
@@ -178,7 +178,7 @@
     const files = collectFiles();
     const wrap = root.querySelector('[data-uidev="files"]');
     wrap.innerHTML = "";
-    const groups = [["html","HTML"],["css","CSS"],["js","JS"],["backend","Backend"],["other","Other"]];
+    const groups = [["html","HTML"],["css","CSS"],["js","JS"]];
     let hasAny = false;
     groups.forEach(([k, lbl]) => {
       if (!files[k].length) return;

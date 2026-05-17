@@ -247,6 +247,20 @@ flocss-apply / implement スキルが両方をコピーする。
 
 ---
 
+## QA-024: debug-fab files カテゴリの簡略化
+
+**状態**: 決定済み(2026-05-18)
+
+`data-debug-files` / コピー JSON の `files` から **`backend` と `other` を削除**。
+残すのは `html` / `css` / `js` のみ。
+
+理由: バックエンド / API 先は JS ファイル内の `fetch` 呼び出しから辿れる。設定ファイル等も同様。
+登録項目を絞ったほうが運用が軽くなる。
+
+`uidev.js`、CLAUDE.md(EN+JP)、SKILL.md(EN+JP)、example.html を更新済み。
+
+---
+
 ## QA-023: debug-fab 要素ピッカー機能
 
 **状態**: 決定済み(2026-05-18)

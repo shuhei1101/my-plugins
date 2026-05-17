@@ -37,18 +37,17 @@
 
 ```html
 <body data-debug-files='{
-  "html":    ["pages/user_list.html"],
-  "css":     ["styles/user_list.css"],
-  "js":      ["scripts/user_list.js"],
-  "backend": ["api/users.py"]
+  "html": ["pages/user_list.html"],
+  "css":  ["styles/user_list.css"],
+  "js":   ["scripts/user_list.js"]
 }'>
 ```
 
 複数要素に分けて書いてもよい(マージされる):
 
 ```html
-<form data-debug-files='{"backend":["api/auth.py"]}'>...</form>
-<table data-debug-files='{"backend":["api/users.py"]}'>...</table>
+<form data-debug-files='{"js":["scripts/auth.js"]}'>...</form>
+<table data-debug-files='{"js":["scripts/user_list.js"]}'>...</table>
 ```
 
 **B. `window.__uidevFiles` グローバルで宣言**
@@ -56,10 +55,9 @@
 ```html
 <script>
   window.__uidevFiles = {
-    html:    ["pages/user_list.html"],
-    css:     ["styles/user_list.css"],
-    js:      ["scripts/user_list.js"],
-    backend: ["api/users.py"]
+    html: ["pages/user_list.html"],
+    css:  ["styles/user_list.css"],
+    js:   ["scripts/user_list.js"]
   };
 </script>
 ```
@@ -116,7 +114,7 @@ XPath モード(`short` / `full`)はモーダルの「要素ピッカー設定�
   "page": "{location.pathname}",
   "url":  "{location.href}",
   "files": {
-    "html": [], "css": [], "js": [], "backend": [], "other": []
+    "html": [], "css": [], "js": []
   },
   "logs": {
     "limit": 100,
