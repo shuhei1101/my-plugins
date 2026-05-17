@@ -74,9 +74,38 @@ A and B can coexist (both are merged). Use B for dynamic additions; A is simpler
 |---|---|
 | Click the 🐛 (default bottom-right, or configured position) | Opens the debug modal |
 | Click the "📋 Copy" button in the header | Copies related files + logs as JSON to clipboard |
+| Click the "🎯 要素選択" button in the header | Enters element picker mode — see below |
 | `Ctrl + Shift + D` | Toggle modal open/close |
 | Level / line-count selectors in the modal | Filter display + copy (saved to localStorage) |
 | "Button position" selector in the header | Move the floating button (saved to localStorage) |
+| "XPath format" selector | Choose short vs full XPath for the element picker (saved to localStorage) |
+
+### Element picker mode
+
+1. Click "🎯 要素選択" in the modal header
+2. The modal hides and a hint bar appears: hover an element to highlight it
+3. Click the target element → its info is copied to clipboard as JSON
+4. `Esc` cancels the mode without copying
+
+Copied JSON shape:
+
+```json
+{
+  "page": "/path",
+  "url":  "https://.../path?tab=...",
+  "element": {
+    "xpath":   "//*[@id=\"user-list\"]/li[3]/button",
+    "mode":    "short",
+    "tag":     "BUTTON",
+    "id":      null,
+    "classes": ["c-button", "c-button--ghost"],
+    "text":    "Edit"
+  },
+  "capturedAt": "ISO8601"
+}
+```
+
+XPath mode (`short` / `full`) is chosen in the modal's "要素ピッカー設定" section.
 
 ---
 

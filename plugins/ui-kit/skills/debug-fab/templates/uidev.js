@@ -19,8 +19,8 @@
   window.__uidevLoaded = true;
 
   // ── ストレージキー ───────────────────────────────────────
-  const LS = { lines: "uidev.lines", level: "uidev.level", pos: "uidev.pos" };
-  const DEFAULTS = { lines: 100, level: "error", pos: "bottom-right" };
+  const LS = { lines: "uidev.lines", level: "uidev.level", pos: "uidev.pos", xpath: "uidev.xpath" };
+  const DEFAULTS = { lines: 100, level: "error", pos: "bottom-right", xpath: "short" };
   const getS = (k) => localStorage.getItem(LS[k]) ?? DEFAULTS[k];
   const setS = (k, v) => localStorage.setItem(LS[k], v);
 
@@ -94,6 +94,7 @@
                 <option value="top-left">左上</option>
               </select>
             </div>
+            <button class="pick" data-uidev="pick" title="要素ピッカーモードに入る(クリックで XPath + URL を JSON コピー)">🎯 要素選択</button>
             <button class="copy" data-uidev="copy" title="関連ファイル情報 + 直近 N 行ログを JSON でコピー">📋 コピー</button>
             <button class="close" data-uidev="close" aria-label="閉じる">×</button>
           </header>
@@ -132,6 +133,25 @@
               </div>
               <div class="uidev-logs" data-uidev="logs"></div>
               <div class="uidev-setting-hint">バッファは全レベル収集、表示・コピーはこのフィルタで絞り込みます。</div>
+            </section>
+            <section>
+              <div class="section-head">
+                <h3>要素ピッカー設定</h3>
+                <div class="controls">
+                  <div class="inline-field">
+                    <span>XPath 形式</span>
+                    <select data-uidev="xpath">
+                      <option value="short">short (直近 ID 起点)</option>
+                      <option value="full">full (/html/body/...)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="uidev-setting-hint">
+                ヘッダの「🎯 要素選択」を押す → モーダル一時非表示 → 任意の要素をクリック →
+                <code>{ page, url, element: { xpath, tag, text } }</code> がクリップボードへ。
+                <kbd>Esc</kbd> でキャンセル。
+              </div>
             </section>
           </div>
           <div class="uidev-footer-hint">
@@ -229,6 +249,140 @@
     }
   }
 
+  // ── XPath 生成 ──────────────────────────────────────────
+  /** @param {Element} el */
+  function fullXPath(el) {
+    if (el.nodeType !== 1) return "";
+    if (el === document.documentElement) return "/html";
+    const segments = [];
+    let node = /** @type {Element|null} */ (el);
+    while (node && node.nodeType === 1 && node !== document.documentElement) {
+      let i = 1;
+      let sib = node.previousElementSibling;
+      while (sib) {
+        if (sib.tagName === node.tagName) i++;
+        sib = sib.previousElementSibling;
+      }
+      segments.unshift(`${node.tagName.toLowerCase()}[${i}]`);
+      node = node.parentElement;
+    }
+    return "/html/" + segments.join("/");
+  }
+
+  /** @param {Element} el  short XPath: 直近の id を起点に */
+  function shortXPath(el) {
+    if (!el || el.nodeType !== 1) return "";
+    const segments = [];
+    let node = /** @type {Element|null} */ (el);
+    while (node && node.nodeType === 1) {
+      if (node.id) {
+        segments.unshift(`//*[@id="${node.id}"]`);
+        return segments.join("/").replace(/^\/\//, "//");
+      }
+      let i = 1;
+      let sib = node.previousElementSibling;
+      while (sib) {
+        if (sib.tagName === node.tagName) i++;
+        sib = sib.previousElementSibling;
+      }
+      const parent = node.parentElement;
+      const hasSameTagSibling = parent
+        ? Array.from(parent.children).filter((c) => c.tagName === node.tagName).length > 1
+        : false;
+      segments.unshift(`${node.tagName.toLowerCase()}${hasSameTagSibling ? `[${i}]` : ""}`);
+      node = parent;
+    }
+    return "/" + segments.join("/");
+  }
+
+  // ── 要素ピッカー ────────────────────────────────────────
+  /** @param {ReturnType<typeof buildDOM>} root */
+  function startPicker(root) {
+    const backdrop = root.querySelector(".uidev-modal-backdrop");
+    const wasOpen = backdrop.getAttribute("data-open") === "true";
+    backdrop.setAttribute("data-open", "false");
+    document.body.classList.add("uidev-picker-active");
+
+    const hint = document.createElement("div");
+    hint.className = "uidev-picker-hint";
+    hint.innerHTML = `要素ピッカーモード — クリックで JSON コピー / <kbd>Esc</kbd> でキャンセル`;
+    document.body.appendChild(hint);
+
+    let highlighted = /** @type {Element|null} */ (null);
+
+    function clearHighlight() {
+      if (highlighted) highlighted.classList.remove("uidev-picker-highlight");
+      highlighted = null;
+    }
+
+    /** @param {MouseEvent} e */
+    function onMove(e) {
+      const el = /** @type {Element} */ (e.target);
+      if (!el || el === hint || hint.contains(el)) return;
+      if (highlighted !== el) {
+        clearHighlight();
+        highlighted = el;
+        el.classList.add("uidev-picker-highlight");
+      }
+    }
+
+    /** @param {MouseEvent} e */
+    async function onClick(e) {
+      const el = /** @type {Element} */ (e.target);
+      if (!el || el === hint || hint.contains(el)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const xpathMode = getS("xpath");
+      const xpath = xpathMode === "full" ? fullXPath(el) : shortXPath(el);
+      const payload = {
+        page: location.pathname || "/",
+        url:  location.href,
+        element: {
+          xpath: xpath,
+          mode:  xpathMode,
+          tag:   el.tagName,
+          id:    el.id || null,
+          classes: el.className && typeof el.className === "string" ? el.className.split(/\s+/).filter(Boolean) : [],
+          text:  (el.textContent || "").trim().slice(0, 120),
+        },
+        capturedAt: new Date().toISOString(),
+      };
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+        const toast = document.createElement("div");
+        toast.className = "uidev-picker-toast";
+        toast.textContent = "✓ 要素情報を JSON でコピーしました";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 1500);
+      } catch (err) {
+        alert("コピーに失敗しました: " + err.message);
+      }
+      stop();
+      if (wasOpen) backdrop.setAttribute("data-open", "true");
+    }
+
+    function onKey(e) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        stop();
+        if (wasOpen) backdrop.setAttribute("data-open", "true");
+      }
+    }
+
+    function stop() {
+      clearHighlight();
+      document.body.classList.remove("uidev-picker-active");
+      hint.remove();
+      document.removeEventListener("mousemove", onMove, true);
+      document.removeEventListener("click", onClick, true);
+      document.removeEventListener("keydown", onKey, true);
+    }
+
+    document.addEventListener("mousemove", onMove, true);
+    document.addEventListener("click", onClick, true);
+    document.addEventListener("keydown", onKey, true);
+  }
+
   // ── 起動 ───────────────────────────────────────────────
   function init() {
     const root = buildDOM();
@@ -236,13 +390,16 @@
     const backdrop  = root.querySelector(".uidev-modal-backdrop");
     const closeBtn  = root.querySelector('[data-uidev="close"]');
     const copyBtn   = root.querySelector('[data-uidev="copy"]');
+    const pickBtn   = root.querySelector('[data-uidev="pick"]');
     const linesEl   = root.querySelector('[data-uidev="lines"]');
     const levelEl   = root.querySelector('[data-uidev="level"]');
     const posEl     = root.querySelector('[data-uidev="pos"]');
+    const xpathEl   = root.querySelector('[data-uidev="xpath"]');
 
     linesEl.value = getS("lines");
     levelEl.value = getS("level");
     posEl.value   = getS("pos");
+    xpathEl.value = getS("xpath");
 
     function openModal()  { backdrop.setAttribute("data-open", "true");  renderOverview(root); renderLogs(root); }
     function closeModal() { backdrop.setAttribute("data-open", "false"); }
@@ -251,9 +408,11 @@
     closeBtn.addEventListener("click", closeModal);
     backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
     copyBtn.addEventListener("click", () => copyDebugJSON(root));
+    pickBtn.addEventListener("click", () => startPicker(root));
     linesEl.addEventListener("change", () => { setS("lines", linesEl.value); renderLogs(root); });
     levelEl.addEventListener("change", () => { setS("level", levelEl.value); renderLogs(root); });
     posEl.addEventListener("change",   () => { setS("pos",   posEl.value);   fab.setAttribute("data-pos", posEl.value); });
+    xpathEl.addEventListener("change", () => { setS("xpath", xpathEl.value); });
 
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "d") {

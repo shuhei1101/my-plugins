@@ -168,6 +168,14 @@ If the project does not yet have a logger, run `/ui-kit:logging` first.
 4. Click 📋 Copy — JSON payload is now on the clipboard
 5. Paste into Claude Code with "これでデバッグして" → Claude reads related files and logs together
 
+### Element picker (alternative copy)
+
+Use the 🎯 "要素選択" button in the modal header to enter element picker mode. Hovering
+highlights an element; clicking it copies a JSON snippet describing that element (URL + XPath +
+tag + classes + truncated text). XPath format (short / full) is configurable in the modal.
+
+Useful when asking Claude "fix this specific element" — paste the snippet alongside your request.
+
 ---
 
 ## References
