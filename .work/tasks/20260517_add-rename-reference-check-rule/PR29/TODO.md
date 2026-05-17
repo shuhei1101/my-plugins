@@ -8,5 +8,5 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | JP ミラーにルールを追記 | - `.claude/rules-jp/plugin-work.md` |
-| - | 英語本体にルールを追記 | - `.claude/rules/plugin-work.md` |
+| 済 | JP ミラーにルールを追記 | - `.claude/rules-jp/plugin-work.md` |
+| 済 | 英語本体にルールを追記 | - `.claude/rules/plugin-work.md` |
