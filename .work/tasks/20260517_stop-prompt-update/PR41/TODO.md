@@ -16,6 +16,15 @@ stop hook プロンプトに、QA確認とスペック確認のチェック項�
 | 済 | stop.md を更新（JP ミラーの内容を英語で反映） | - `plugins/work-kit/hooks/prompts/stop.md` |
 | 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
+## 作業内容（追加）
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| - | タスクフォルダ・TODO・QA作成スクリプトを実装 | - `plugins/work-kit/scripts/setup-task.py` |
+| - | work-start Step 5 をスクリプト呼び出しに変更 | - `plugins/work-kit/skills/work-start/SKILL.jp.md`<br>- `plugins/work-kit/skills/work-start/SKILL.md` |
+| - | work-start Step 5 と Step 6 の間に「TODO記載」ステップを追加 | - `plugins/work-kit/skills/work-start/SKILL.jp.md`<br>- `plugins/work-kit/skills/work-start/SKILL.md` |
+| - | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+
 ## 参考ドキュメント
 
 - `.work/specs/work-kit-stop-hook.md`: stop hook のチェック仕様
