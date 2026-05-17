@@ -126,7 +126,7 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 ---
 
-### ステップ5: タスク・PR フォルダと TODO.md・QA.md を作成する（ワークツリー内）
+### ステップ5: タスクフォルダを決定する（AI 自律判断）
 
 #### 条件
 
@@ -134,23 +134,30 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 #### 処理内容
 
-以下のファイルはすべて **ワークツリー（`../repo-wt-PR{N}/`）内**に作成する。
+1. ワークツリー内の `.work/tasks/` 配下のフォルダ名をすべて確認する
+2. 各フォルダ名（`YYYYMMDD_title` 形式）と今回の PR の内容を照合し、以下の基準で判断する:
+   - **既存フォルダに追加する**: 同じ大きな目的・機能領域のタスクが既存フォルダとして存在し、今回の PR がその一部として自然にまとめられる場合
+     - 例: 同じ機能を複数 PR に分割している、バグ修正の続き、関連するリファクタリング
+   - **新規フォルダを作成する**: 既存フォルダとの関連が薄い、または `.work/tasks/` が空の場合
 
-1. タスクフォルダを作成する: `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/`
-2. PR フォルダを作成する: `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
-3. TODO.md を作成する（テンプレート: `${CLAUDE_PLUGIN_ROOT}/templates/TODO.md` 参照）
-4. QA.md を作成する（テンプレート: `${CLAUDE_PLUGIN_ROOT}/templates/QA.md` 参照）
+3. 判断結果に応じて以下を確定させる:
+   - 既存フォルダに追加 → `--task-dir {folder_name}` を使用
+   - 新規作成 → `--date {YYYYMMDD} --title {title}` を使用
 
 → ステップ6へ進む
 
 #### 出力
 
-- `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` 作成済み
-- `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` 作成済み
+- タスクフォルダの種別（新規 or 既存）と使用する引数が確定している
+
+#### 補足
+
+- ユーザーへの確認は不要。AI が内容を見て自律的に判断する
+- 判断に迷う場合は新規作成を選ぶ（後からまとめることはできる）
 
 ---
 
-### ステップ6: 仕様書を整備する（ワークツリー内）
+### ステップ6: タスク・PR フォルダと TODO.md・QA.md を作成する（ワークツリー内）
 
 #### 条件
 
@@ -158,16 +165,40 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 #### 処理内容
 
-1. ワークツリー内の `.work/specs/` を確認する
-2. 関連する仕様書が存在する場合 → 今回の変更に関わる箇所を更新する
-3. 存在しない場合 → テンプレート（`${CLAUDE_PLUGIN_ROOT}/templates/spec.md` 参照）を元に新規作成する
-4. TODO.md の「仕様参照」セクションに仕様書へのリンクを追記する
+ステップ5の判定結果に応じて以下のいずれかを実行する:
+
+**新規タスクフォルダの場合:**
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
+  ../$(basename $(pwd))-wt-PR{N} \
+  --pr {N} \
+  --title {title} \
+  --date {YYYYMMDD} \
+  --plugin-root ${CLAUDE_PLUGIN_ROOT}
+```
+
+**既存タスクフォルダに追加する場合:**
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
+  ../$(basename $(pwd))-wt-PR{N} \
+  --pr {N} \
+  --task-dir {existing_folder_name} \
+  --title {title} \
+  --plugin-root ${CLAUDE_PLUGIN_ROOT}
+```
 
 → ステップ7へ進む
 
+#### 出力
+
+- `../repo-wt-PR{N}/.work/tasks/{task_folder}/PR{N}/TODO.md` 作成済み
+- `../repo-wt-PR{N}/.work/tasks/{task_folder}/PR{N}/QA.md` 作成済み
+
 ---
 
-### ステップ7: 不明点を QA.md に記録する（ワークツリー内）
+### ステップ7: TODO.md に作業内容を記載する（ワークツリー内）
 
 #### 条件
 
@@ -175,14 +206,53 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 #### 処理内容
 
-1. ステップ2で確認した不明点をワークツリー内の `PR{N}/QA.md` に QA-XXX として追記する
-2. 不明点がない場合はスキップする
+ワークツリー内の `TODO.md` を開き、テンプレートのひな形行を実際の作業内容に書き換える。
+以下の項目は必ず含める（削除・省略禁止）:
+
+| 完了 | 作業内容 |
+|---|---|
+| - | QA.md に未決定事項を記録する |
+| - | `.work/specs/` の仕様書を更新する |
+| - | （実装タスク: PR 固有の作業内容に書き換える） |
+| - | ルール・CLAUDE.md を整備する |
 
 → ステップ8へ進む
 
 ---
 
-### ステップ8: 作成内容をコミットしてユーザーに報告し、実装を開始する
+### ステップ8: 仕様書を整備する（ワークツリー内）
+
+#### 条件
+
+- ステップ7が完了していること
+
+#### 処理内容
+
+1. ワークツリー内の `.work/specs/` を確認する
+2. 関連する仕様書が存在する場合 → 今回の変更に関わる箇所を更新する
+3. 存在しない場合 → テンプレート（`${CLAUDE_PLUGIN_ROOT}/templates/spec.md` 参照）を元に新規作成する
+4. TODO.md の「参考ドキュメント」セクションに仕様書へのリンクを追記する
+
+→ ステップ9へ進む
+
+---
+
+### ステップ9: 不明点を QA.md に記録する（ワークツリー内）
+
+#### 条件
+
+- ステップ8が完了していること
+
+#### 処理内容
+
+1. ステップ2で確認した不明点をワークツリー内の `PR{N}/QA.md` に QA-XXX として追記する
+2. 不明点がない場合はスキップする
+
+→ ステップ10へ進む
+
+---
+
+### ステップ10: 作成内容をコミットしてユーザーに報告し、実装を開始する
 
 #### 処理内容
 

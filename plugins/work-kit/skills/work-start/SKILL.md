@@ -122,7 +122,7 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 ---
 
-### Step 5: Create task folder, PR folder, TODO.md, and QA.md (inside worktree)
+### Step 5: Determine the task folder (autonomous judgment)
 
 #### Condition
 
@@ -130,23 +130,29 @@ git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
 
 #### Process
 
-All files must be created **inside the worktree (`../repo-wt-PR{N}/`)**, not the main repository.
-
-1. Create `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/`
-2. Create `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
-3. Create `TODO.md` using the template at `${CLAUDE_PLUGIN_ROOT}/templates/TODO.md`
-4. Create `QA.md` using the template at `${CLAUDE_PLUGIN_ROOT}/templates/QA.md`
+1. Read all folder names under `.work/tasks/` in the worktree
+2. Compare each folder name (`YYYYMMDD_title` format) against the purpose of this PR and decide:
+   - **Add to existing folder**: an existing folder covers the same goal or feature area, and this PR fits naturally as part of it
+     - Examples: splitting a feature across multiple PRs, a follow-up fix, related refactoring
+   - **Create new folder**: no existing folder is closely related, or `.work/tasks/` is empty
+3. Confirm the argument to pass to the next step:
+   - Adding to existing → use `--task-dir {folder_name}`
+   - Creating new → use `--date {YYYYMMDD} --title {title}`
 
 → Proceed to Step 6
 
 #### Output
 
-- `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` created
-- `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` created
+- Task folder strategy (new or existing) and the arguments to use are confirmed
+
+#### Notes
+
+- Do not ask the user — decide autonomously based on content
+- When in doubt, create a new folder (folders can be consolidated later)
 
 ---
 
-### Step 6: Maintain the spec document (inside worktree)
+### Step 6: Create PR folder, TODO.md, and QA.md (inside worktree)
 
 #### Condition
 
@@ -154,16 +160,40 @@ All files must be created **inside the worktree (`../repo-wt-PR{N}/`)**, not the
 
 #### Process
 
-1. Check `.work/specs/` inside the worktree for a related spec
-2. If found → update the relevant sections for this PR
-3. If not found → create a new spec using the template at `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`
-4. Add a link to the spec in TODO.md's `## 仕様参照` section
+Run one of the following depending on the choice in Step 5:
+
+**New task folder:**
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
+  ../$(basename $(pwd))-wt-PR{N} \
+  --pr {N} \
+  --title {title} \
+  --date {YYYYMMDD} \
+  --plugin-root ${CLAUDE_PLUGIN_ROOT}
+```
+
+**Add to existing task folder:**
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
+  ../$(basename $(pwd))-wt-PR{N} \
+  --pr {N} \
+  --task-dir {existing_folder_name} \
+  --title {title} \
+  --plugin-root ${CLAUDE_PLUGIN_ROOT}
+```
 
 → Proceed to Step 7
 
+#### Output
+
+- `../repo-wt-PR{N}/.work/tasks/{task_folder}/PR{N}/TODO.md` created
+- `../repo-wt-PR{N}/.work/tasks/{task_folder}/PR{N}/QA.md` created
+
 ---
 
-### Step 7: Record open questions in QA.md (inside worktree)
+### Step 7: Fill in TODO.md with the work plan (inside worktree)
 
 #### Condition
 
@@ -171,14 +201,53 @@ All files must be created **inside the worktree (`../repo-wt-PR{N}/`)**, not the
 
 #### Process
 
-1. Append any open questions from Step 2 to `PR{N}/QA.md` inside the worktree as QA-XXX entries
-2. Skip if there are no open questions
+Open `TODO.md` in the worktree and replace the template placeholder rows with the actual tasks.
+The following rows are mandatory and must not be removed or skipped:
+
+| Done | Task |
+|---|---|
+| - | Record open questions in QA.md |
+| - | Update the spec document in `.work/specs/` |
+| - | (Implementation tasks: replace with PR-specific work) |
+| - | Update rules / CLAUDE.md |
 
 → Proceed to Step 8
 
 ---
 
-### Step 8: Commit created content, report to user, then start implementation
+### Step 8: Maintain the spec document (inside worktree)
+
+#### Condition
+
+- Step 7 complete
+
+#### Process
+
+1. Check `.work/specs/` inside the worktree for a related spec
+2. If found → update the relevant sections for this PR
+3. If not found → create a new spec using the template at `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`
+4. Add a link to the spec in TODO.md's `## 参考ドキュメント` section
+
+→ Proceed to Step 9
+
+---
+
+### Step 9: Record open questions in QA.md (inside worktree)
+
+#### Condition
+
+- Step 8 complete
+
+#### Process
+
+1. Append any open questions from Step 2 to `PR{N}/QA.md` inside the worktree as QA-XXX entries
+2. Skip if there are no open questions
+
+→ Proceed to Step 10
+
+---
+
+### Step 10: Commit created content, report to user, then start implementation
 
 #### Process
 
