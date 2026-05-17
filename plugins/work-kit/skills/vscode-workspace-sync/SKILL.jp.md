@@ -1,0 +1,124 @@
+---
+name: vscode-workspace-sync
+description: |
+  VS Code の .code-workspace ファイルと git worktree を同期する PostToolUse フックをセットアップする。
+  実行すると、ワークスペースファイルを検索してユーザーに確認後、
+  .claude/settings.json に2つのフックを書き込む:
+  git worktree add 時に folders にパスを追加、git worktree remove 時にパスを削除。
+  「ワークスペース同期を設定して」「VS Codeのワークツリーを自動追加したい」などで起動。
+  明示的には /work-kit:vscode-workspace-sync。
+---
+
+# work-kit:vscode-workspace-sync — VS Code ワークスペース ↔ ワークツリー同期
+
+Claude Code が git worktree を作成・削除するたびに VS Code の `.code-workspace` ファイルを
+自動更新する `PostToolUse` フックを `.claude/settings.json` に書き込む。
+
+---
+
+## タスク
+
+### Step 1: `.code-workspace` ファイルを探す
+
+#### 条件
+
+- 常に最初に実行
+
+#### 処理
+
+1. 以下の場所で `*.code-workspace` ファイルを検索:
+   - カレントプロジェクトディレクトリ（`${CLAUDE_PROJECT_DIR}`）
+   - 1階層上（`..`）
+2. **1件見つかった場合** → そのまま使用
+3. **複数見つかった場合** → リストを提示してユーザーに選択を求める
+4. **見つからない場合** → 以下のメッセージを表示し、絶対パスをユーザーに入力してもらう:
+
+   > `.code-workspace` ファイルが見つかりませんでした。絶対パスを入力してください。
+
+→ Step 2 へ
+
+#### 出力
+
+- `.code-workspace` ファイルの絶対パス確定（`WORKSPACE_PATH` として保持）
+
+---
+
+### Step 2: ユーザーに確認
+
+#### 条件
+
+- Step 1 完了
+
+#### 処理
+
+1. 解決したパスを表示してユーザーに確認:
+
+   > 使用するワークスペースファイル: `{WORKSPACE_PATH}`  
+   > このファイルにフックを設定しますか？
+
+2. ユーザーの確認を待ってから進む
+
+→ Step 3 へ
+
+#### 出力
+
+- `WORKSPACE_PATH` 確定
+
+---
+
+### Step 3: `.claude/settings.json` にフックを書き込む
+
+#### 条件
+
+- Step 2 完了
+
+#### 処理
+
+1. `${CLAUDE_PROJECT_DIR}/.claude/settings.json` を読む。ファイルがなければ `{}` から開始
+2. 以下の2つのフックを `hooks.PostToolUse` 配列にマージ
+   （既存の `matcher: "Bash"` エントリに追記。重複追加しない）
+3. `WORKSPACE_PATH` を Step 1 で確定した絶対パスに置換
+4. `.claude/settings.json` に書き戻す
+
+**フック1 — worktree 追加時にワークスペースの folders にパスを追加:**
+
+SKILL.md の Hook 1 JSON 参照
+
+**フック2 — worktree 削除時にワークスペースの folders からパスを削除:**
+
+SKILL.md の Hook 2 JSON 参照
+
+#### 注意事項
+
+- 2つのフックは `PostToolUse` 配列内で**別々の**オブジェクトにする（1つの `matcher: "Bash"` にまとめない）
+- `.claude/` ディレクトリが存在しない場合は先に作成
+- `WORKSPACE_PATH` は絶対パスで指定（Windows ではスラッシュ区切りでも動作）
+
+→ Step 4 へ
+
+#### 出力
+
+- `.claude/settings.json` に2件のフックエントリが追加された状態
+
+---
+
+### Step 4: ユーザーに報告
+
+#### 条件
+
+- Step 3 完了
+
+#### 処理
+
+1. 作成・更新したファイルをリストアップ
+2. 確認方法を案内:
+
+   > **確認方法**:  
+   > 1. Claude Code を再起動してフックを読み込む  
+   > 2. `git worktree add` を実行 → `.code-workspace` の `folders` にパスが追加されることを確認  
+   > 3. `git worktree remove` を実行 → `folders` からパスが削除されることを確認
+
+#### チェックリスト
+
+- [ ] `.claude/settings.json` に `PostToolUse` フックが2件追加されている
+- [ ] 両フックの `WORKSPACE_PATH` が実際のファイルパスに置換されている
