@@ -10,10 +10,16 @@
 
 #### Process
 
-Check whether a PR is in progress in the current session.
+Check whether a PR is in progress in **the current Claude Code conversation session**.
 
 → PR exists → proceed to Step 2
 → No PR → proceed to Step 3
+
+#### Notes
+
+- "In-progress PR" means a PR that was created or explicitly mentioned within this conversation.
+- Do NOT read `index.yaml` or any other files to look for in-progress PRs.
+- If unsure, treat it as "no PR" and proceed to Step 3.
 
 ---
 
