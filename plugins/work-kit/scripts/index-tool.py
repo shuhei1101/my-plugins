@@ -92,12 +92,21 @@ def cmd_list_active(args: argparse.Namespace) -> None:
         print(f"{p['id']}|{p['title']}|{p['type']}|{p['task']}")
 
 
+def cmd_completed_count(args: argparse.Namespace) -> None:
+    """Print the number of completed PR entries."""
+    index_path = Path(args.index_yaml)
+    data = _load(index_path)
+    count = sum(1 for p in data.get("prs", []) if p.get("completed", False))
+    print(count)
+
+
 # ── main ────────────────────────────────────────────────────
 def main(args: argparse.Namespace) -> None:
     handlers = {
         "next-id": cmd_next_id,
         "add": cmd_add,
         "list-active": cmd_list_active,
+        "completed-count": cmd_completed_count,
     }
     handlers[args.subcommand](args)
 
@@ -125,6 +134,10 @@ def parse_args() -> argparse.Namespace:
     # list-active
     p_list = sub.add_parser("list-active", help="List active (not completed) PRs")
     p_list.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+
+    # completed-count
+    p_count = sub.add_parser("completed-count", help="Print count of completed PRs")
+    p_count.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
 
     return parser.parse_args()
 

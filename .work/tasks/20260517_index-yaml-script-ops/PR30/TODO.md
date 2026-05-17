@@ -19,11 +19,11 @@ work-start・merge スキルのステップから `index.yaml` の直接 Read �
 | 済 | trim-index.py バグ修正（em dash → ハイフン・ID ソート追加） | - `plugins/work-kit/scripts/trim-index.py` |
 | 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
-| - | index.archive.yaml を .gitignore から削除（テンプレート・プロジェクト両方） | - `plugins/work-kit/templates/.work/tasks/.gitignore`<br>- `.work/tasks/.gitignore` |
-| - | index-tool.py に completed-count サブコマンドを追加 | - `plugins/work-kit/scripts/index-tool.py` |
-| - | work-kit:archive スキルを新規作成（任意タイミングで実行可能） | - `plugins/work-kit/skills/archive/SKILL.md`<br>- `plugins/work-kit/skills/archive/SKILL.jp.md` |
-| - | merge ステップ6を更新（count≥100 かつ .work/ 追跡時のみ archive フロー起動） | - `plugins/work-kit/skills/merge/SKILL.md`<br>- `plugins/work-kit/skills/merge/SKILL.jp.md` |
-| - | バージョンを 2.8.0 → 2.9.0 に bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | index.archive.yaml を .gitignore から削除（テンプレート・プロジェクト両方） | - `plugins/work-kit/templates/.work/tasks/.gitignore`<br>- `.work/tasks/.gitignore` |
+| 済 | index-tool.py に completed-count サブコマンドを追加 | - `plugins/work-kit/scripts/index-tool.py` |
+| 済 | work-kit:archive スキルを新規作成（任意タイミングで実行可能） | - `plugins/work-kit/skills/archive/SKILL.md`<br>- `plugins/work-kit/skills/archive/SKILL.jp.md` |
+| 済 | merge ステップ6を更新（count≥100 かつ .work/ 追跡時のみ archive フロー起動） | - `plugins/work-kit/skills/merge/SKILL.md`<br>- `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| 済 | バージョンを 2.8.0 → 2.9.0 に bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 

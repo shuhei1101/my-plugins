@@ -115,24 +115,33 @@ git commit -m "docs: post-merge update for PR{N}"
 
 ---
 
-### Step 6: Archive index.yaml
+### Step 6: Check archive threshold
 
 #### Process
 
-1. Check whether `plugins/work-kit/scripts/trim-index.py` exists
-2. If it exists, run it to move completed entries to `index.archive.yaml`:
+1. If `plugins/work-kit/scripts/index-tool.py` does not exist, skip this step
+2. Check whether `.work/` is gitignored:
 
 ```bash
-python plugins/work-kit/scripts/trim-index.py .work/tasks/index.yaml
+git check-ignore -q .work/
 ```
 
-3. If `trim-index.py` is not found, skip this step
+   - Exit 0 (gitignored) → skip this step
+3. Get the completed PR count:
+
+```bash
+python plugins/work-kit/scripts/index-tool.py completed-count .work/tasks/index.yaml
+```
+
+4. If count < 100 → skip this step
+5. If count ≥ 100 → run `/work-kit:archive` to archive the completed entries
 
 → Proceed to Step 7
 
 #### Notes
 
-- Both `index.yaml` and `index.archive.yaml` are gitignored — no commit needed
+- `index.yaml` remains gitignored; only `index.archive.yaml` is committed (via archive branch)
+- The archive branch created by `/work-kit:archive` can be merged separately after this PR
 
 ---
 

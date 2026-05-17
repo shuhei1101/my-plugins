@@ -120,24 +120,33 @@ git commit -m "docs: PR{N} マージ後ドキュメント更新"
 
 ---
 
-### ステップ6: index.yaml をアーカイブする
+### ステップ6: アーカイブ閾値を確認する
 
 #### 処理内容
 
-1. `plugins/work-kit/scripts/trim-index.py` が存在するか確認する
-2. 存在する場合、以下を実行して完了済みエントリを `index.archive.yaml` へ移動する:
+1. `plugins/work-kit/scripts/index-tool.py` が存在しない場合はこのステップをスキップする
+2. `.work/` が gitignore 対象か確認する:
 
 ```bash
-python plugins/work-kit/scripts/trim-index.py .work/tasks/index.yaml
+git check-ignore -q .work/
 ```
 
-3. trim-index.py が存在しない場合はこのステップをスキップする
+   - exit 0（gitignore 対象）→ このステップをスキップする
+3. 完了済み PR 件数を取得する:
+
+```bash
+python plugins/work-kit/scripts/index-tool.py completed-count .work/tasks/index.yaml
+```
+
+4. 件数が 100 未満 → このステップをスキップする
+5. 件数が 100 以上 → `/work-kit:archive` を実行して完了済みエントリをアーカイブする
 
 → ステップ7へ進む
 
 #### 補足
 
-- `index.yaml` / `index.archive.yaml` はどちらも gitignore 対象のためコミット不要
+- `index.yaml` は gitignore 対象のままにする
+- `index.archive.yaml` は `/work-kit:archive` が作成したブランチ経由でコミットされる（master への直接コミットはしない）
 
 ---
 
