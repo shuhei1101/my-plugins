@@ -11,7 +11,7 @@ work-kit v2.15.0 のテンプレートに合わせて `.work/CLAUDE.md` と `.wo
 |---|---|---|
 | 済 | `.work/CLAUDE.jp.md` を最新テンプレートで上書き | - `.work/CLAUDE.jp.md` |
 | 済 | `.work/CLAUDE.md` を最新テンプレートで上書き | - `.work/CLAUDE.md` |
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260517_update-work-claude-md/PR44/QA.md` |
+| 済 | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/20260517_update-work-claude-md/PR44/QA.md` |
 
 ## 参考ドキュメント
 
