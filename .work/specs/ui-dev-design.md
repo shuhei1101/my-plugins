@@ -40,7 +40,8 @@ plugins/dev-kit/skills/ui-dev/templates/
 ├── uidev.css       — フロートボタン + モーダルのスタイル
 ├── uidev.js        — ロガーフック + モーダル制御 + コピー処理
 ├── example.html    — 参考実装例(任意の画面に組み込む形)
-└── README.md       — 使い方(各画面でのインポート方法・引数渡し方)
+├── CLAUDE.md       — フォルダ用ガイド(自動読み込み、英語)
+└── CLAUDE.jp.md    — 上記の日本語ミラー
 ```
 
 各画面側はこの 2 ファイルを 1 回読み込み、関連ファイル情報を **`data-debug-files` 属性**

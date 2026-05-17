@@ -172,4 +172,4 @@
 - `{plugin_root}/references/common.md` — ログ規約(必読セクション)
 - `{plugin_root}/references/frontend.md` — フロントエンド概観
 - `{plugin_root}/references/html.md` / `css.md` / `js.md` — 言語別リファレンス
-- `{plugin_root}/skills/ui-dev/templates/README.md` — ウィジェット使い方詳細
+- `{plugin_root}/skills/ui-dev/templates/CLAUDE.md` — ウィジェット使い方詳細(フォルダ作業時に自動読み込み)

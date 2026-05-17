@@ -21,7 +21,7 @@ JSON でクリップボードにコピーできるデバッグモーダルを開
 | 済 | 仕様書 `ui-dev-design.md` を最終仕様に合わせて更新 | - `.work/specs/ui-dev-design.md` |
 | 済 | `templates/uidev.css` を新規作成(モックから抽出) | - `plugins/dev-kit/skills/ui-dev/templates/uidev.css` |
 | 済 | `templates/uidev.js` を新規作成(モックから抽出) | - `plugins/dev-kit/skills/ui-dev/templates/uidev.js` |
-| 済 | `templates/README.md` を新規作成(使い方ガイド) | - `plugins/dev-kit/skills/ui-dev/templates/README.md` |
+| 済 | `templates/CLAUDE.md` + `CLAUDE.jp.md` を作成(フォルダ用ガイド、Claude 自動読み込み) | - `plugins/dev-kit/skills/ui-dev/templates/CLAUDE.md`, `CLAUDE.jp.md` |
 | 済 | `templates/example.html` を新規作成(参考実装例) | - `plugins/dev-kit/skills/ui-dev/templates/example.html` |
 | 済 | `skills/ui-dev/SKILL.md` を新規作成 | - `plugins/dev-kit/skills/ui-dev/SKILL.md` |
 | 済 | `skills/ui-dev/SKILL.jp.md` を新規作成(日本語ミラー) | - `plugins/dev-kit/skills/ui-dev/SKILL.jp.md` |

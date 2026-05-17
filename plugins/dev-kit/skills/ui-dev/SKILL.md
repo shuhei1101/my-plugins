@@ -172,4 +172,4 @@ See:
 - `{plugin_root}/references/common.md` — logging conventions (mandatory section)
 - `{plugin_root}/references/frontend.md` — frontend overview
 - `{plugin_root}/references/html.md` / `css.md` / `js.md` — language references
-- `{plugin_root}/skills/ui-dev/templates/README.md` — widget usage details
+- `{plugin_root}/skills/ui-dev/templates/CLAUDE.md` — widget usage details (auto-loaded when working in that folder)
