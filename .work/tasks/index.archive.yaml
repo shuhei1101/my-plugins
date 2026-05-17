@@ -259,3 +259,12 @@ prs:
   summary: upgradeコマンドで削除・リネームされたプラグインをアンインストールし、存在するものだけ更新する
   task: 20260517_fix-upgrade-skip-removed-plugins
   completed: true
+- id: 38
+  title: PR38 — add-statusline-setup-skill
+  type: feat
+  tags:
+  - claude-kit
+  - statusline
+  summary: claude-kitにstatusline-setupスキルを追加。settings.jsonのstatusLineキーを現在の設定値に書き換えるスクリプトを実行する
+  task: 20260517_add-statusline-setup-skill
+  completed: true
