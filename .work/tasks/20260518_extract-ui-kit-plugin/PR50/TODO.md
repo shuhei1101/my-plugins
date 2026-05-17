@@ -45,6 +45,7 @@
 | 済 | mock スキルから flocss-apply 参照を implement へ修正 | - `plugins/ui-kit/skills/mock/SKILL.md`, `SKILL.jp.md` |
 | 済 | ui-design.md の「共通コンポーネント一覧」に Header / Button / FAB を明示し、運用ガイド(「よく使うものはここに集約」)を追加 | - `plugins/ui-kit/references/ui-design.md`, `ui-design.jp.md` |
 | 済 | spec ui-kit-design.md を最終構成に更新 | - `.work/specs/ui-kit-design.md` |
+| 済 | 「URL クエリストリングで画面状態反映」必須ルールを principles.md / ui-design.md に追加 | - `plugins/ui-kit/references/principles.md`, `principles.jp.md`, `ui-design.md`, `ui-design.jp.md` |
 | 済 | ルール・CLAUDE.md を整備する | - `CLAUDE.md`, `CLAUDE.jp.md`(必要に応じて) |
 
 ## 参考ドキュメント

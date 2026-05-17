@@ -7,6 +7,17 @@ Read alongside `principles.md`. Used by `mock`, `implement`, and `debug-fab` ski
 
 ## Navigation & Layout
 
+### Mandatory: URL query strings for all screen switching
+
+Every interaction that switches what the user sees — tabs, sidebar items, list↔detail,
+pagination, filters, sort — **must** update the URL via query string. The URL is the single
+source of truth for "where I am". See `principles.md` Section 1 ("Reflect screen state in the URL")
+for the centralized `url-state.js` helper.
+
+Examples: `?tab=settings`, `?nav=tools`, `?view=detail&id=42`, `?page=3&filter=active`.
+
+This makes a pasted URL fully describe the user's context to Claude when they ask for help.
+
 ### Primary structures
 
 | Structure | When to use |

@@ -35,6 +35,53 @@ ui-kit の全スキルがこの文書を参照する。UI コードを書くと�
 - インターフェース(JSDoc `@typedef`)を実装より先に決める。実装はそこから派生する
 - 新しい要件は既存の拡張ポイントに収まるべき。「この場合は想定外だから書き直す」は避ける
 
+### 画面状態を URL クエリストリングに反映する — 必須
+
+**画面切替系のインタラクションすべて**で URL クエリストリングを更新し、アクティブ状態を
+URL に反映する。**例外なし**。
+
+- トップタブ                → `?tab=settings`
+- サイドバーメニュー        → `?nav=tools`
+- 一覧 ↔ 詳細遷移            → `?view=detail&id=42`
+- ページネーション / フィルタ / ソート → `?page=3&filter=active&sort=name`
+
+#### なぜ
+
+- 開発者が Claude Code に URL を貼るだけで、どの画面・タブ・選択について話しているかが伝わる
+- ブラウザの戻る / 進むで状態が復元される
+- URL を共有・ブックマークできる
+- DOM 状態と URL が同期する — 「タブ X にいるが URL はデフォルトのまま」が起こらない
+
+#### どう実装するか
+
+URL 状態のロジックは 1 モジュールに集約(例: `static/js/url-state.js`):
+
+```js
+// @ts-check
+/** @typedef {Record<string, string>} UrlState */
+
+/** @returns {UrlState} */
+export const readState = () =>
+  Object.fromEntries(new URLSearchParams(location.search));
+
+/** @param {Partial<UrlState>} patch */
+export const writeState = (patch) => {
+  const params = new URLSearchParams(location.search);
+  for (const [k, v] of Object.entries(patch)) {
+    if (v == null || v === "") params.delete(k);
+    else params.set(k, /** @type {string} */ (v));
+  }
+  const next = params.toString();
+  const url = next ? `${location.pathname}?${next}` : location.pathname;
+  history.pushState(null, "", url);
+  window.dispatchEvent(new CustomEvent("urlstatechange"));
+};
+```
+
+各切替ウィジェットは `writeState({ tab: "..." })` を呼び、`urlstatechange`(と `popstate`)を
+購読して再描画する。ウィジェットが自前の「アクティブ状態」を単独で保持しない —
+URL が唯一の真実の源(single source of truth)。
+
 ---
 
 ## 2. CSS アーキテクチャ — FLOCSS + Design Tokens

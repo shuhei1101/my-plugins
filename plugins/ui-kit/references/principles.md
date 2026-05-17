@@ -34,6 +34,54 @@ So:
 - A new requirement should slot into an existing extension point, not force a refactor of code
   that "wasn't designed for this case".
 
+### Reflect screen state in the URL — mandatory
+
+**Every screen-switching interaction** must update the URL query string so the active state
+is reflected there. Without exception.
+
+- Top tabs                  → `?tab=settings`
+- Sidebar menu items        → `?nav=tools`
+- List ↔ detail navigation  → `?view=detail&id=42`
+- Pagination / filters / sort → `?page=3&filter=active&sort=name`
+
+#### Why
+
+- The developer can paste the URL into Claude Code and Claude immediately knows which screen,
+  tab, and selection is being discussed
+- Browser back / forward restores state
+- URLs are shareable and bookmarkable
+- The DOM state and the URL stay in sync — no "I'm on tab X but the URL still says default"
+
+#### How
+
+Centralize the URL-state logic in one module (e.g. `static/js/url-state.js`):
+
+```js
+// @ts-check
+/** @typedef {Record<string, string>} UrlState */
+
+/** @returns {UrlState} */
+export const readState = () =>
+  Object.fromEntries(new URLSearchParams(location.search));
+
+/** @param {Partial<UrlState>} patch */
+export const writeState = (patch) => {
+  const params = new URLSearchParams(location.search);
+  for (const [k, v] of Object.entries(patch)) {
+    if (v == null || v === "") params.delete(k);
+    else params.set(k, /** @type {string} */ (v));
+  }
+  const next = params.toString();
+  const url = next ? `${location.pathname}?${next}` : location.pathname;
+  history.pushState(null, "", url);
+  window.dispatchEvent(new CustomEvent("urlstatechange"));
+};
+```
+
+Each screen-switching widget calls `writeState({ tab: "..." })` and listens to `urlstatechange`
+(plus `popstate`) to re-render. No widget manages its own private "active" state alone — the
+URL is the single source of truth.
+
 ---
 
 ## 2. CSS Architecture — FLOCSS + Design Tokens
