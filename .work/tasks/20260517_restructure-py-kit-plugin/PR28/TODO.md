@@ -10,16 +10,16 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | プラグイン名を `py` → `py-kit` にリネーム（フォルダ名・plugin.json・marketplace.json） | - `plugins/py-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | `references/` フォルダ作成・共通 Python ルール資料を1ファイルにまとめる（命名規則・SOLID・DRY・DDD・拡張設計・テスト方針） | - `plugins/py-kit/references/python-standards.md` |
-| - | スキル分割: `py-script`（簡易スクリプト作成） | - `plugins/py-kit/skills/py-script/SKILL.md`<br>- `plugins/py-kit/skills/py-script/SKILL.jp.md` |
-| - | スキル分割: `py-new-project`（新規プロジェクト作成） | - `plugins/py-kit/skills/py-new-project/SKILL.md`<br>- `plugins/py-kit/skills/py-new-project/SKILL.jp.md` |
-| - | スキル分割: `py-project`（既存プロジェクト確認・修正） | - `plugins/py-kit/skills/py-project/SKILL.md`<br>- `plugins/py-kit/skills/py-project/SKILL.jp.md` |
-| - | ルール作成（`/rule-creator`）: クラス構造連携（親クラス・インターフェース変更時の波及確認） | - `plugins/py-kit/rules/class-structure.md`（予定） |
-| - | ルール作成（`/rule-creator`）: 設定ファイル ↔ ソースコード連携 | - `plugins/py-kit/rules/config-source-link.md`（予定） |
-| - | ルール作成（`/rule-creator`）: ソースコード ↔ テスト連携 | - `plugins/py-kit/rules/source-test-link.md`（予定） |
-| - | 旧 `py` スキル（SKILL.md / SKILL.jp.md）を削除 | - `plugins/py/skills/py/SKILL.md`<br>- `plugins/py/skills/py/SKILL.jp.md` |
-| - | plugin.json のバージョン更新、marketplace.json 更新 | - `plugins/py-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | プラグイン名を `py` → `py-kit` にリネーム（フォルダ名・plugin.json・marketplace.json） | - `plugins/py-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | `references/` フォルダ作成・共通 Python ルール資料を1ファイルにまとめる（命名規則・SOLID・DRY・DDD・拡張設計・テスト方針） | - `plugins/py-kit/references/python-standards.md` |
+| 済 | スキル分割: `py-script`（簡易スクリプト作成） | - `plugins/py-kit/skills/py-script/SKILL.md`<br>- `plugins/py-kit/skills/py-script/SKILL.jp.md` |
+| 済 | スキル分割: `py-new-project`（新規プロジェクト作成） | - `plugins/py-kit/skills/py-new-project/SKILL.md`<br>- `plugins/py-kit/skills/py-new-project/SKILL.jp.md` |
+| 済 | スキル分割: `py-project`（既存プロジェクト確認・修正） | - `plugins/py-kit/skills/py-project/SKILL.md`<br>- `plugins/py-kit/skills/py-project/SKILL.jp.md` |
+| 済 | ルールテンプレート作成: クラス構造連携 | - `plugins/py-kit/rules/class-structure.md` |
+| 済 | ルールテンプレート作成: 設定ファイル ↔ ソースコード連携 | - `plugins/py-kit/rules/config-source-link.md` |
+| 済 | ルールテンプレート作成: ソースコード ↔ テスト連携 | - `plugins/py-kit/rules/source-test-link.md` |
+| 済 | 旧 `py` プラグインフォルダを削除 | - `plugins/py/` （削除済み） |
+| 済 | plugin.json のバージョン更新、marketplace.json 更新 | - `plugins/py-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
