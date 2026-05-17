@@ -296,3 +296,10 @@ prs:
   summary: dev-kit に ui-dev スキルを新設 — 開発系画面にフロートデバッグボタンを設置する規約
   task: 20260517_add-ui-dev-skill
   completed: true
+- id: 51
+  title: PR51 — summarize-official-plugins
+  type: docs
+  tags: []
+  summary: claude-plugins-official マーケットプレイスの各プラグイン解説を tmp/ に作成
+  task: 20260518_summarize-official-plugins
+  completed: true
