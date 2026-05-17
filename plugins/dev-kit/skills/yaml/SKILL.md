@@ -1,0 +1,161 @@
+---
+name: dev-kit:yaml
+description: >
+  YAML file management conventions for project assets and configuration. Trigger when creating
+  or editing index.yaml, settings.yaml, or settings.yaml.sample; setting up asset or media file
+  management in a project; asking about the difference between index.yaml and settings.yaml; or
+  designing any project structure that references files via YAML.
+  Examples: "create index.yaml", "set up settings.yaml", "manage assets with YAML".
+---
+
+# dev-kit:yaml — YAML File Management
+
+Creates and manages `index.yaml`, `settings.yaml`, and `settings.yaml.sample` for asset catalogs
+and project configuration, following the conventions in `{plugin_root}/references/yaml.md`.
+
+---
+
+## Tasks
+
+### Step 1: Load conventions
+
+Read the shared YAML conventions:
+
+```
+{plugin_root}/references/yaml.md
+```
+
+The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/yaml` → plugin root is `.../{plugin-name}/`).
+
+→ Proceed to Step 2
+
+---
+
+### Step 2: Identify the YAML operation
+
+#### Process
+
+Determine what the user needs:
+
+| User request | Go to |
+|---|---|
+| Register new assets or list what exists | Step 3 (index.yaml) |
+| Create or update environment-specific config | Step 4 (settings.yaml.sample) |
+| Handle gitignore for settings.yaml | Step 5 (gitignore) |
+| Runtime-editable YAML in a worktree project | Step 6 (worktree safety) |
+| Document YAML conventions for this domain | Step 7 (rules file) |
+
+→ Proceed to the appropriate step
+
+---
+
+### Step 3: Create or update index.yaml
+
+#### Condition
+
+User wants to register assets or catalog files for a feature.
+
+#### Process
+
+1. Add entries to `{feature}/index.yaml` following the rules in `references/yaml.md` (section: index.yaml).
+2. When a new asset is added → add an entry to `index.yaml` AND add the corresponding key to `settings.yaml.sample`.
+3. When an asset is removed → mark inactive or remove the entry from `index.yaml` AND remove the key from `settings.yaml.sample`.
+
+→ Proceed to Step 4 to update settings.yaml.sample if new keys were added
+
+---
+
+### Step 4: Create or update settings.yaml.sample
+
+#### Condition
+
+New keys were added to `index.yaml`, or a new config option is introduced.
+
+#### Process
+
+1. Add the new keys to `{feature}/settings.yaml.sample` with placeholder values and short inline comments.
+2. `settings.yaml.sample` is the **committed template** — each developer copies it to `settings.yaml` and fills in their own values.
+3. `settings.yaml` itself is **never committed** — it is gitignored (see Step 5).
+
+→ Proceed to Step 5 if gitignore is not yet configured, otherwise done
+
+---
+
+### Step 5: Configure gitignore
+
+#### Condition
+
+`settings.yaml` is not yet listed in `.gitignore`.
+
+#### Process
+
+1. Add `settings.yaml` to `.gitignore`.
+2. Verify that `settings.yaml.sample` is **not** in `.gitignore` — it must be committed.
+
+→ Done
+
+---
+
+### Step 6: Handle runtime-editable YAML for worktrees
+
+#### Condition
+
+The project uses git worktrees AND a YAML file is written at runtime by the UI or API
+(e.g., `settings.yaml`, `runtime_state.yaml`).
+
+#### Process
+
+1. Confirm the file is in scope per the table in `references/yaml.md` (section: Runtime-editable YAML in worktrees).
+2. Choose one of the two valid implementations from `references/yaml.md`:
+   - **A. Filesystem level**: symlink / junction in the worktree setup script.
+   - **B. App level**: runtime path resolution via `git rev-parse --git-common-dir`.
+3. Document the choice in the matching `.claude/rules/<name>.md` (see Step 7):
+   - Which resolution method (A or B)
+   - Where the canonical file lives
+   - Whether the file is gitignored
+
+→ Done
+
+#### Notes
+
+Without this rule, the user works in worktree A and saves settings via the UI → the worktree's YAML
+is updated but the main repository's YAML is unchanged → when the worktree is deleted, the saved
+configuration is **lost**.
+
+---
+
+### Step 7: Document conventions in a rules file
+
+#### Condition
+
+A new feature introduces YAML files with domain-specific management conventions.
+
+#### Process
+
+1. Create `.claude/rules/<feature-name>.md` with `paths:` frontmatter targeting the relevant YAML files.
+2. Include in the rules file (per `references/yaml.md`, section: Rules file):
+   - What each field means
+   - Update procedure (when to update index.yaml vs settings.yaml.sample)
+   - Runtime resolution method if applicable (from Step 6)
+   - What NOT to do
+
+→ Done
+
+#### Notes
+
+##### Prohibitions
+
+- Do not duplicate the rules content inside the YAML file itself
+- A short pointer comment at the top of the YAML (one line) is fine — but never the full rule body
+
+---
+
+## References
+
+See `{plugin_root}/references/yaml.md`:
+- Three-file pattern
+- index.yaml conventions
+- settings.yaml.sample conventions
+- Runtime-editable YAML in worktrees
+- Rules file (.claude/rules/)
+- Update timing table
