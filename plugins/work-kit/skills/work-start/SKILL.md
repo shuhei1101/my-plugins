@@ -134,8 +134,8 @@ All files must be created **inside the worktree (`../repo-wt-PR{N}/`)**, not the
 
 1. Create `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/`
 2. Create `../repo-wt-PR{N}/.work/tasks/{YYYYMMDD}_{title}/PR{N}/`
-3. Create `TODO.md` using the template at `.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md`
-4. Create `QA.md` using the template at `.work/tasks/yyyymmdd_xxx/PRXXX/QA.md`
+3. Create `TODO.md` using the template at `${CLAUDE_PLUGIN_ROOT}/templates/TODO.md`
+4. Create `QA.md` using the template at `${CLAUDE_PLUGIN_ROOT}/templates/QA.md`
 
 → Proceed to Step 6
 
@@ -156,7 +156,7 @@ All files must be created **inside the worktree (`../repo-wt-PR{N}/`)**, not the
 
 1. Check `.work/specs/` inside the worktree for a related spec
 2. If found → update the relevant sections for this PR
-3. If not found → create a new spec using the template at `.work/specs/xxx.md`
+3. If not found → create a new spec using the template at `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`
 4. Add a link to the spec in TODO.md's `## 仕様参照` section
 
 → Proceed to Step 7
