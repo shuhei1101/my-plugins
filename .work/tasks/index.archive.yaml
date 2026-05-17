@@ -1,0 +1,210 @@
+prs:
+- id: 1
+  title: PR1 — fix-plugin-work-rule
+  type: docs
+  tags: []
+  summary: plugin-work.md のステップ形式を廃止し rule-creator 規約スタイルに書き直す
+  task: 20260516_fix-plugin-work-rule
+  completed: true
+- id: 2
+  title: PR2 — fix-skill-frontmatter-guidance
+  type: docs
+  tags: []
+  summary: disable-model-invocation と allowed-tools を基本不使用に変更、work-kit スキルから allowed-tools
+    削除
+  task: 20260516_fix-skill-frontmatter-guidance
+  completed: true
+- id: 3
+  title: PR3 — add-hook-creator-skill
+  type: feat
+  tags: []
+  summary: claude-kit プラグインに prompt-injection フック作成スキル hook-creator を追加
+  task: 20260516_add-hook-creator-skill
+  completed: true
+- id: 4
+  title: PR4 — update-todo-template
+  type: feat
+  tags: []
+  summary: TODO.md テンプレートを概要・作業内容（テーブル）・参考ドキュメント構成に刷新
+  task: 20260516_update-todo-template
+  completed: true
+- id: 5
+  title: PR5 — add-update-skill
+  type: feat
+  tags: []
+  summary: テンプレートを共有配置に移動し、work-kit に update スキルを追加する
+  task: 20260516_add-update-skill
+  completed: true
+- id: 6
+  title: PR6 — remove-vscode-workspace-step
+  type: docs
+  tags: []
+  summary: work-start・merge スキルから VS Code ワークスペース管理ステップを削除する
+  task: 20260516_remove-vscode-workspace-step
+  completed: true
+- id: 7
+  title: PR7 — git-guard-hook
+  type: feat
+  tags: []
+  summary: git push / git merge 実行前に毎回無条件でユーザー確認を求める PreToolUse フックを追加
+  task: 20260516_git-guard-hook
+  completed: true
+- id: 8
+  title: PR8 — fix-git-guard-loop
+  type: fix
+  tags: []
+  summary: git-guard フックの無限ループを一時トークン方式で修正
+  task: 20260516_fix-git-guard-loop
+  completed: true
+- id: 9
+  title: PR9 — hook-creator-loop-prevention
+  type: docs
+  tags: []
+  summary: hook-creator に PreToolUse のループ防止（ワンタイムトークン方式）の説明と例を追加
+  task: 20260516_hook-creator-loop-prevention
+  completed: true
+- id: 10
+  title: PR10 — git-guard-session-isolation
+  type: fix
+  tags: []
+  summary: git-guard トークンを session_id でセッション分離し複数セッション干渉を防止
+  task: 20260516_git-guard-session-isolation
+  completed: true
+- id: 11
+  title: PR11 — sync-no-branch
+  type: feat
+  tags: []
+  summary: sync コマンドをブランチ省略可能にし、削除プラグインの自動アンインストールを追加
+  task: 20260516_sync-no-branch
+  completed: true
+- id: 12
+  title: PR12 — hook-creator-stop-note
+  type: fix
+  tags: []
+  summary: hook-creator に Stop フックプロンプトは短くする旨を追記; work-kit UserPromptSubmit フックを decision:block
+    パターンに変更
+  task: 20260516_hook-creator-stop-note
+  completed: true
+- id: 13
+  title: PR13 — add-guard-kit-plugin
+  type: feat
+  tags: []
+  summary: work-kit の git-guard フックを新プラグイン guard-kit へ切り出す
+  task: 20260516_add-guard-kit-plugin
+  completed: true
+- id: 14
+  title: PR14 — fix-work-start-skill
+  type: fix
+  tags: []
+  summary: work-start スキルのステップ2確認文削除・ステップ8にコミット→報告順追加・禁止事項にワークツリー外コミット禁止を追加
+  task: 20260516_fix-work-start-skill
+  completed: true
+- id: 15
+  title: PR15 — bump-version-2.6.4
+  type: chore
+  tags: []
+  summary: 'PR14 のバージョン bump 漏れ分: work-kit を 2.6.3 → 2.6.4 に上げる'
+  task: 20260516_bump-version-2.6.4
+  completed: true
+- id: 16
+  title: PR16 — add-upgrade-command
+  type: feat
+  tags: []
+  summary: marketplace.py に upgrade コマンドを追加し、インストール済みプラグインのみ全バージョン更新できるようにする
+  task: 20260516_add-upgrade-command
+  completed: true
+- id: 17
+  title: PR17 — add-master-commit-guard-hook
+  type: feat
+  tags: []
+  summary: guard-kit に master/main への直接 git commit を防ぐ PreToolUse フックを追加
+  task: 20260516_add-master-commit-guard-hook
+  completed: true
+- id: 18
+  title: PR18 — move-commit-guard-to-work-kit
+  type: refactor
+  tags: []
+  summary: master-commit-guard フックを guard-kit から work-kit へ移動し、.work/tasks/.gitignore
+    で index.yaml を除外
+  task: 20260516_move-commit-guard-to-work-kit
+  completed: true
+- id: 19
+  title: PR19 — add-gitignore-to-template
+  type: fix
+  tags: []
+  summary: setup/update で .work/tasks/.gitignore が生成されるようテンプレートと update スキルを修正
+  task: 20260516_add-gitignore-to-template
+  completed: true
+- id: 20
+  title: PR20 — fix-work-start-step8
+  type: fix
+  tags: []
+  summary: work-start ステップ8の禁止事項削除・QA有無による分岐追加・コミット粒度の補足を追加
+  task: 20260516_fix-work-start-step8
+  completed: true
+- id: 21
+  title: PR21 — fix-master-commit-guard-token
+  type: fix
+  tags: []
+  summary: master-commit-guard フックのトークンロジックを修正 — cd/worktree 対応追加、ユーザー許可フローに変更
+  task: 20260516_fix-master-commit-guard-token
+  completed: true
+- id: 22
+  title: PR22 — sync-master-commit-guard-with-guard-kit
+  type: fix
+  tags: []
+  summary: master-commit-guard を guard-kit パターンに合わせる — 1回目ブロック+トークン作成、2回目ALLOW、cd/worktree
+    対応維持
+  task: 20260516_sync-master-commit-guard-with-guard-kit
+  completed: true
+- id: 23
+  title: PR23 — fix-stop-hook-json-error
+  type: fix
+  tags: []
+  summary: Stop フックの JSON パースエラーに try/except を追加して堅牢化し、動作テストを実施
+  task: 20260516_fix-stop-hook-json-error
+  completed: true
+- id: 24
+  title: PR24 — add-todo-append-step
+  type: feat
+  tags: []
+  summary: UserPromptSubmit フックのステップ2にワークツリー確認と依頼内容のTODO自動追記ステップを追加
+  task: 20260516_add-todo-append-step
+  completed: true
+- id: 25
+  title: PR25 — allow-merge-commit
+  type: fix
+  tags: []
+  summary: master-commit-guard フックでマージ中（MERGE_HEAD 存在時）は git commit -m を許可する
+  task: 20260517_allow-merge-commit
+  completed: true
+- id: 26
+  title: PR26 — add-index-yaml-gitignore-note
+  type: docs
+  tags: []
+  summary: work-start SKILL.jp.md ステップ3に index.yaml は gitignore 済みでコミット不要という注記を追加
+  task: 20260517_add-index-yaml-gitignore-note
+  completed: true
+- id: 27
+  title: PR27 — index-yaml-archive
+  type: feat
+  tags: []
+  summary: last_id フィールド追加・trim スクリプト作成で index.yaml の肥大化を防ぐ
+  task: 20260517_index-yaml-archive
+  completed: true
+- id: 29
+  title: PR29 — add-rename-reference-check-rule
+  type: docs
+  tags:
+  - plugin-work
+  - rules
+  summary: スキル・ファイル名変更時に同プラグイン内の参照箇所を確認するルールをplugin-work.mdに追加
+  task: 20260517_add-rename-reference-check-rule
+  completed: true
+- id: 30
+  title: PR30 — index-yaml-script-ops
+  type: refactor
+  tags: []
+  summary: index.yaml の読み書きを Python スクリプトに委譲し Claude のコンテキスト消費を削減
+  task: 20260517_index-yaml-script-ops
+  completed: true
