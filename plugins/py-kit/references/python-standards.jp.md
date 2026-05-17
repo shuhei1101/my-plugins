@@ -138,54 +138,80 @@ class ReportService:
 
 ---
 
-## ドメイン駆動設計（DDD）
+## レイヤー構造
 
-非自明なビジネスロジックを持つプロジェクトに適用する。4レイヤーアーキテクチャを使う：
+コードをレイヤーに分割する。フォルダ名は指定しない — プロジェクトに合った形で自由に構成する。制約は**依存の方向**だけ：高レベルレイヤーは抽象に依存し、低レベルレイヤーが実装を提供する。
 
-```
-interface/       ← CLI / FastAPI / GUI / bat ランチャー
-application/     ← ユースケース・オーケストレーション（ここにドメインロジックを書かない）
-domain/          ← エンティティ・値オブジェクト・集約・ドメインサービス・リポジトリ（Protocol）
-infrastructure/  ← 具象リポジトリ実装・外部 API アダプター・DB クライアント
-```
+### 各レイヤーの役割
 
-### 構成要素
+| レイヤー | 責務 |
+|---|---|
+| エントリーポイント / インターフェース | CLI 引数パース・HTTP ルーティング・GUI イベント・bat ランチャー。ビジネスロジックは書かない。 |
+| ビジネスロジック | コアルールとユースケースのオーケストレーション。外部サービスへは Protocol インターフェース経由でのみ呼び出す。 |
+| 外部境界 | そのインターフェースの具象実装：DB クライアント・外部 API アダプター・ファイル I/O・メッセージキュー。 |
 
-**エンティティ** — ID あり・ミュータブル・ID で等値判定。
+### 外部境界の分離
 
-```python
-@dataclass
-class User:
-    id: UserId
-    name: str
-    email: Email  # 値オブジェクト
-```
-
-**値オブジェクト** — ID なし・イミュータブル・値で等値判定。`@dataclass(frozen=True)` を使う。
+外部サービス（HTTP API・データベース・ファイルシステム・メッセージキュー）に触れるコードは必ず外部境界レイヤーに置き、ビジネスロジックレイヤーで定義した `Protocol` 経由でのみアクセスする。
 
 ```python
-@dataclass(frozen=True)
-class Email:
-    value: str
-    def __post_init__(self) -> None:
-        if "@" not in self.value:
-            raise ValueError(f"Invalid email: {self.value}")
+# ビジネスロジック層に定義 — 外部ライブラリのインポートなし
+class OrderRepository(Protocol):
+    def find_by_id(self, order_id: str) -> Optional[Order]: ...
+    def save(self, order: Order) -> None: ...
+
+# 外部境界層で実装
+class PostgresOrderRepository:
+    def __init__(self, conn: Connection) -> None:
+        self._conn = conn
+    def find_by_id(self, order_id: str) -> Optional[Order]: ...
+    def save(self, order: Order) -> None: ...
 ```
 
-**集約** — 不変条件を持つエンティティの集まり。集約ルート経由でのみアクセスする。ルートが全不変条件を強制する。
+これにより：
+- ビジネスロジック層はどの外部サービスを使っているかを知らない
+- ビジネスロジックを変更せずに外部サービスを差し替えられる
+- テストではフェイク実装をインジェクトして実インフラにアクセスしない
 
-**リポジトリ** — `domain/` で `Protocol` として定義し、`infrastructure/` で実装する。
+### アーキテクチャ品質チェックリスト
+
+- [ ] ビジネスロジック層は stdlib・内部モジュール・Protocol のみインポートしている
+- [ ] 全外部サービス呼び出しは Protocol インターフェース経由
+- [ ] 外部ライブラリの具象クラスをビジネスロジック層内でインスタンス化していない
+- [ ] 依存性注入を全箇所で使用している — コンストラクタは Protocol を受け取り、具象クラスは受け取らない
+
+---
+
+## ハードコード禁止
+
+設定値をソースコードに直接埋め込まない。
+
+**ハードコード（悪い例）：**
 
 ```python
-# domain/repositories/user_repository.py
-class UserRepository(Protocol):
-    def find_by_id(self, user_id: UserId) -> Optional[User]: ...
-    def save(self, user: User) -> None: ...
+BASE_URL = "https://api.example.com"  # ビジネスロジック内
+TIMEOUT = 30
+MAX_RETRY = 3
+OUTPUT_DIR = "/tmp/output"
 ```
 
-**ドメインサービス** — 単一のエンティティに属さないステートレスなロジック。
+**外部化（良い例）：**
 
-**アプリケーションサービス** — ユースケースを満たすためにドメインオブジェクトをオーケストレートする。ドメインロジックは書かない — 調整のみ。
+```python
+# constants.py — __file__ から導出するプロジェクト全体のパスのみ
+PROJECT_ROOT = Path(__file__).parent.parent
+LOG_DIR = PROJECT_ROOT / "log"
+
+# config.py — 起動時に環境変数 / 設定ファイルから読み込む
+BASE_URL: str = os.environ["API_BASE_URL"]
+TIMEOUT: int = int(os.environ.get("API_TIMEOUT", "30"))
+```
+
+**ルール：**
+- URL・ポート・ファイルパス・認証情報・しきい値・フィーチャーフラグはすべて `.env` / 設定ファイルに書く
+- 必要な全環境変数を `.env.sample` に記載する
+- `constants.py` は `__file__` から導出するパスのみ — マジックナンバーや文字列は書かない
+- コミット前にビジネスロジック内のベタ書き文字列リテラルとマジックナンバーを検索して確認する
 
 ---
 
@@ -396,6 +422,9 @@ if __name__ == "__main__":
 
 ## bat ランチャーテンプレート
 
+> **Windows 限定。** bat ファイルとこのセクションのルールは Linux / macOS 環境には適用しない。
+> Linux / macOS では シェルスクリプトや `Makefile` を使う。
+
 ```bat
 @echo off
 chcp 65001 > nul
@@ -439,6 +468,8 @@ long_command.exe 2>&1 | powershell -NoProfile -Command "[Console]::InputEncoding
 ---
 
 ## FastAPI run.bat テンプレート
+
+> **Windows 限定。** 上記「bat ランチャーテンプレート」の注記を参照。
 
 ```bat
 @echo off

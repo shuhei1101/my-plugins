@@ -131,54 +131,80 @@ Never DRY across entirely different domains just because the code looks similar.
 
 ---
 
-## Domain-Driven Design
+## Layered Architecture
 
-Apply to projects with non-trivial business logic. Use the four-layer architecture:
+Structure code in layers. Folder names are not prescribed — organize according to what makes sense for the project. The key constraint is the **dependency direction**: high-level layers depend on abstractions; low-level layers provide implementations.
 
-```
-interface/       ← CLI, FastAPI, GUI, bat launchers
-application/     ← Use cases, orchestration (no domain logic here)
-domain/          ← Entities, value objects, aggregates, domain services, repositories (Protocols)
-infrastructure/  ← Concrete repository implementations, external API adapters, DB clients
-```
+### Layer roles
 
-### Building Blocks
+| Layer | Responsibility |
+|---|---|
+| Entry point / interface | CLI arg parsing, HTTP routing, GUI events, bat launchers. No business logic. |
+| Business logic | Core rules and use-case orchestration. Calls out through Protocol interfaces only. |
+| External boundary | Concrete implementations of those interfaces: DB clients, external API adapters, file I/O, message queues. |
 
-**Entity** — has identity (ID), mutable state, equality by ID.
+### External boundary isolation
 
-```python
-@dataclass
-class User:
-    id: UserId
-    name: str
-    email: Email  # value object
-```
-
-**Value Object** — no identity, immutable, equality by value. Use `@dataclass(frozen=True)`.
+Any code that touches an external service (HTTP API, database, file system, message queue) must be placed in the external boundary layer and accessed only through a `Protocol` defined in the business logic layer.
 
 ```python
-@dataclass(frozen=True)
-class Email:
-    value: str
-    def __post_init__(self) -> None:
-        if "@" not in self.value:
-            raise ValueError(f"Invalid email: {self.value}")
+# Defined in business logic layer — no import from external libraries here
+class OrderRepository(Protocol):
+    def find_by_id(self, order_id: str) -> Optional[Order]: ...
+    def save(self, order: Order) -> None: ...
+
+# Implemented in external boundary layer
+class PostgresOrderRepository:
+    def __init__(self, conn: Connection) -> None:
+        self._conn = conn
+    def find_by_id(self, order_id: str) -> Optional[Order]: ...
+    def save(self, order: Order) -> None: ...
 ```
 
-**Aggregate** — cluster of entities with invariants. Access only through the aggregate root. The root enforces all invariants.
+This ensures:
+- The business logic layer has zero knowledge of which external service is used
+- External services can be swapped without touching business logic
+- Tests can inject a fake implementation without hitting real infrastructure
 
-**Repository** — defined as a `Protocol` in `domain/`, implemented in `infrastructure/`.
+### Architecture quality checklist
+
+- [ ] Business logic layer imports only stdlib, internal modules, and Protocols — no external library imports
+- [ ] All external service calls go through a Protocol interface
+- [ ] No concrete external-library class instantiated inside the business logic layer
+- [ ] Dependency injection used everywhere — constructor receives Protocol, not concrete class
+
+---
+
+## No Hardcoding
+
+Never embed configuration values directly in source code.
+
+**Hardcoded (bad):**
 
 ```python
-# domain/repositories/user_repository.py
-class UserRepository(Protocol):
-    def find_by_id(self, user_id: UserId) -> Optional[User]: ...
-    def save(self, user: User) -> None: ...
+BASE_URL = "https://api.example.com"  # inside business logic
+TIMEOUT = 30
+MAX_RETRY = 3
+OUTPUT_DIR = "/tmp/output"
 ```
 
-**Domain Service** — stateless logic that doesn't belong to a single entity.
+**Externalized (good):**
 
-**Application Service** — orchestrates domain objects to fulfill a use case. No domain logic here — only coordination.
+```python
+# constants.py — project-wide computed paths only
+PROJECT_ROOT = Path(__file__).parent.parent
+LOG_DIR = PROJECT_ROOT / "log"
+
+# config.py — reads from environment / config file at startup
+BASE_URL: str = os.environ["API_BASE_URL"]
+TIMEOUT: int = int(os.environ.get("API_TIMEOUT", "30"))
+```
+
+**Rules:**
+- All URLs, ports, file paths, credentials, thresholds, and feature flags go in `.env` / config files
+- Use `.env.sample` to document every required variable
+- `constants.py` is only for computed paths derived from `__file__` (not for magic numbers or strings)
+- Search for bare string literals and magic numbers in business logic before every commit
 
 ---
 
@@ -389,6 +415,9 @@ No `logger.py`, `config.py`, tests, bat files, setup scripts, or `pyproject.toml
 
 ## Bat Launcher Template
 
+> **Windows only.** Bat files and the rules in this section do not apply to Linux or macOS environments.
+> For Linux/macOS, use shell scripts or `Makefile` targets instead.
+
 ```bat
 @echo off
 chcp 65001 > nul
@@ -432,6 +461,8 @@ long_command.exe 2>&1 | powershell -NoProfile -Command "[Console]::InputEncoding
 ---
 
 ## FastAPI run.bat Template
+
+> **Windows only.** See the Bat Launcher Template note above.
 
 ```bat
 @echo off

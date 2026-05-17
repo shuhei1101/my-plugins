@@ -58,9 +58,18 @@ Read the entire document. This skill uses all sections depending on what the tas
    - SRP: classes with multiple reasons to change?
    - OCP: open/elif chains that should be Strategy pattern?
    - DIP: concrete class instantiation inside high-level classes?
-4. Check DDD boundary violations: domain layer importing infrastructure? Application layer containing domain logic?
-5. Check Pydantic usage at system boundaries.
-6. Report findings. For a review-only request, stop here and present the report.
+4. Check layer separation:
+   - Does business logic import external libraries directly (DB drivers, HTTP clients)?
+   - Are all external service calls behind a `Protocol` interface?
+   - Is the composition root the only place where concrete classes are instantiated?
+5. Check for hardcoded values:
+   - Magic numbers, string literals (URLs, ports, file paths, credentials) embedded in source code?
+   - All config values should come from `.env` / config files via `constants.py` or `config.py`
+6. Check for duplicate logic:
+   - Is similar logic repeated across multiple places?
+   - Can it be consolidated into an abstract class, base class, or shared function?
+7. Check Pydantic usage at system boundaries.
+8. Report findings. For a review-only request, stop here and present the report.
 
 → Proceed to Step 4 if implementation is needed
 
