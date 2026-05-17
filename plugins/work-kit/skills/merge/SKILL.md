@@ -24,15 +24,16 @@ Runs the full merge flow: TODO checklist verification → index archive → `--n
 
 #### Process
 
-1. Run the following command to list active PRs:
+1. If the PR to merge is already identified in the current conversation session, use that PR and proceed to Step 2
+2. Otherwise, run the following command to list active PRs:
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index.yaml
 ```
 
    Each output line is: `id|title|type|task`
-2. If multiple active PRs exist, ask the user which one to merge
-3. Confirm the branch name: `PR{N}/{type}/{title}`
+3. If multiple active PRs exist, ask the user which one to merge
+4. Confirm the branch name: `PR{N}/{type}/{title}`
 
 → Proceed to Step 2
 
@@ -67,14 +68,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Process
 
-1. If `${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py` does not exist, skip this step
-2. Run trim to move completed entries from `index.yaml` to `index.archive.yaml`:
-
-```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
-```
-
-3. If output is "Nothing to archive", skip the commit below
+1. Read `.work/tasks/index.yaml` and identify completed entries (all tasks marked `済`)
+2. Remove completed entries from `index.yaml` and append them to `.work/tasks/index.archive.yaml`
+3. If there are no entries to move, skip this step
 4. If `index.archive.yaml` was created or updated, commit it to the PR branch being merged
 
 → Proceed to Step 4
@@ -82,7 +78,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
 #### Notes
 
 - `index.yaml` remains gitignored — no commit needed for it
-- `index.archive.yaml` is git-tracked — commit it to the **PR branch** (not directly to master); it will be included in the --no-ff merge in Step 4
+- `index.archive.yaml` is git-tracked — commit it to the **PR branch** (not directly to the parent branch); it will be included in the --no-ff merge in Step 4
 
 ---
 
@@ -90,7 +86,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/trim-index.py .work/tasks/index.yaml
 
 #### Process
 
-1. Confirm the current branch is master/main
+1. Confirm the current branch is the parent branch the PR was branched from (e.g., `master` if branched from `master`, `develop` if branched from `develop`)
 2. Merge with `--no-ff`:
 
 ```bash
@@ -152,4 +148,4 @@ git commit -m "docs: post-merge update for PR{N}"
 - [ ] Merge commit exists
 - [ ] Worktree and branch deleted
 - [ ] QA.md reviewed and updated
-- [ ] index.archive.yaml committed (if trim-index.py is present and had entries)
+- [ ] index.archive.yaml committed to the PR branch and included in the merge (if completed entries existed)
