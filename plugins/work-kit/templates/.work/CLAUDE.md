@@ -24,7 +24,7 @@ Managed by the work-kit plugin. Claude reads and writes files here to track task
 One folder per task (`{YYYYMMDD}_{title}/`), containing one or more PR folders (`PR{N}/`).
 Each PR folder holds `TODO.md` (task checklist) and `QA.md` (unresolved questions for this PR).
 
-`TODO.md` is the single source of truth for what a PR does. Create it before starting implementation and keep it current. Mark completed tasks as `- [x]`; confirm all items are checked before merging.
+`TODO.md` is the single source of truth for what a PR does. Create it before starting implementation and keep it current. Mark each completed row's Done column as `済`; confirm all rows are `済` before merging.
 
 `QA.md` records unresolved questions scoped to this PR. When the user decides, reflect the decision in the relevant spec or document.
 
