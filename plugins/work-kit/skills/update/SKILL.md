@@ -98,7 +98,6 @@ Update strategy differs by file type:
 #### Notes
 
 - `index.yaml` is gitignored — no commit needed
-- To archive completed entries and shrink the file, run: `python plugins/work-kit/scripts/trim-index.py`
 
 ---
 

@@ -102,7 +102,6 @@
 #### 注記
 
 - `index.yaml` は gitignore 対象のためコミット不要
-- 完了済みエントリをアーカイブしてファイルを縮小したい場合は `python plugins/work-kit/scripts/trim-index.py` を実行する
 
 ---
 
