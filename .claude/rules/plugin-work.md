@@ -10,6 +10,17 @@ paths:
 
 Rules for creating and updating plugins in this marketplace. Auto-loads whenever a file under `plugins/**` or `.claude-plugin/**` is read or edited.
 
+## Skills to Use When Creating New Content
+
+When creating new files as part of plugin work, use the appropriate skill:
+
+| What to create | Skill to use |
+|---|---|
+| Hook | `/hook-creator` |
+| Rule | `/rule-creator` |
+| Skill | `/skill-creator` |
+| CLAUDE.md | `/claude-creator` |
+
 ## Related Files
 
 | File | Role |
