@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{Screen Type} — Mock ({YYYYMMDD})</title>
+<style>
+  /* ── Foundation ── reset + design tokens ───────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  :root {
+    /* color */
+    --color-bg:        #fafafa;
+    --color-surface:   #ffffff;
+    --color-border:    #e5e5e5;
+    --color-text:      #111111;
+    --color-text-dim:  #666666;
+    --color-primary:   #2e7fff;
+    --color-danger:    #ff6b6b;
+
+    /* spacing (8px grid) */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 16px;
+    --space-4: 24px;
+    --space-5: 32px;
+
+    /* typography */
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    --font-mono: ui-monospace, Menlo, Consolas, monospace;
+    --font-size-sm: 13px;
+    --font-size-md: 14px;
+    --font-size-lg: 18px;
+
+    /* radius / shadow */
+    --radius-md: 8px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+  }
+  body {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text);
+    background: var(--color-bg);
+    min-height: 100vh;
+  }
+
+  /* ── Layout ── l-mockTabs / l-mockBody ─────────────────── */
+  .l-mockTabs {
+    display: flex;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    overflow-x: auto;
+  }
+  .l-mockTabs__tab {
+    flex: 0 0 auto;
+    padding: var(--space-2) var(--space-3);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    font: inherit;
+    color: var(--color-text-dim);
+    cursor: pointer;
+  }
+  .l-mockTabs__tab:hover { background: var(--color-bg); }
+  .l-mockTabs__tab[aria-selected="true"] {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  .l-mockBody {
+    padding: var(--space-4);
+  }
+  .p-variant[hidden] { display: none; }
+
+  /* ── Component / Project starters ──────────────────────── */
+  .c-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ── Responsive ────────────────────────────────────────── */
+  @media (max-width: 640px) {
+    .l-mockBody { padding: var(--space-3); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Tabs at the top: replace with actual variants ─────── -->
+<nav class="l-mockTabs" role="tablist" aria-label="Mock variants">
+  <button class="l-mockTabs__tab" data-variant="a" role="tab" aria-selected="true"
+          aria-controls="variant-a">案 A — {axis summary}</button>
+  <button class="l-mockTabs__tab" data-variant="b" role="tab" aria-selected="false"
+          aria-controls="variant-b">案 B — {axis summary}</button>
+  <button class="l-mockTabs__tab" data-variant="c" role="tab" aria-selected="false"
+          aria-controls="variant-c">案 C — {axis summary}</button>
+</nav>
+
+<!-- ── Mock body: one section per variant ────────────────── -->
+<main class="l-mockBody">
+  <section id="variant-a" data-variant="a" class="p-variant" role="tabpanel">
+    <div class="c-card">案 A の内容(画面タイプに応じて構築)</div>
+  </section>
+
+  <section id="variant-b" data-variant="b" class="p-variant" role="tabpanel" hidden>
+    <div class="c-card">案 B の内容</div>
+  </section>
+
+  <section id="variant-c" data-variant="c" class="p-variant" role="tabpanel" hidden>
+    <div class="c-card">案 C の内容</div>
+  </section>
+</main>
+
+<script>
+// @ts-check
+/** Mock tab switcher */
+(() => {
+  const tabs = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll(".l-mockTabs__tab"));
+  const panels = /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll(".p-variant"));
+
+  /** @param {string} variant */
+  function show(variant) {
+    tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.variant === variant ? "true" : "false"));
+    panels.forEach(p => { p.hidden = (p.dataset.variant !== variant); });
+  }
+  tabs.forEach(t => t.addEventListener("click", () => show(/** @type {string} */ (t.dataset.variant))));
+})();
+</script>
+</body>
+</html>

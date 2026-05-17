@@ -1,9 +1,9 @@
-# ui-dev templates
+# debug-fab templates
 
 > 日本語ミラー: `CLAUDE.jp.md`(参照用、Claude Code は読み込まない)
 > 変更時は JP ミラーを先に更新し、その後 `CLAUDE.md` にも反映する。
 
-`dev-kit:ui-dev` スキルが提供する共通デバッグウィジェットのテンプレート集。
+`ui-kit:debug-fab` スキルが提供する共通デバッグウィジェットのテンプレート集。
 開発をサポートする画面に必ず設置するフロートデバッグボタン + モーダルの本体ファイル。
 
 ---
@@ -37,18 +37,17 @@
 
 ```html
 <body data-debug-files='{
-  "html":    ["pages/user_list.html"],
-  "css":     ["styles/user_list.css"],
-  "js":      ["scripts/user_list.js"],
-  "backend": ["api/users.py"]
+  "html": ["pages/user_list.html"],
+  "css":  ["styles/user_list.css"],
+  "js":   ["scripts/user_list.js"]
 }'>
 ```
 
 複数要素に分けて書いてもよい(マージされる):
 
 ```html
-<form data-debug-files='{"backend":["api/auth.py"]}'>...</form>
-<table data-debug-files='{"backend":["api/users.py"]}'>...</table>
+<form data-debug-files='{"js":["scripts/auth.js"]}'>...</form>
+<table data-debug-files='{"js":["scripts/user_list.js"]}'>...</table>
 ```
 
 **B. `window.__uidevFiles` グローバルで宣言**
@@ -56,10 +55,9 @@
 ```html
 <script>
   window.__uidevFiles = {
-    html:    ["pages/user_list.html"],
-    css:     ["styles/user_list.css"],
-    js:      ["scripts/user_list.js"],
-    backend: ["api/users.py"]
+    html: ["pages/user_list.html"],
+    css:  ["styles/user_list.css"],
+    js:   ["scripts/user_list.js"]
   };
 </script>
 ```
@@ -74,9 +72,43 @@ A と B は併用可能(両方マージ)。動的に追加したいときは B�
 |---|---|
 | 右下(または設定位置)の 🐛 をクリック | デバッグモーダルを開く |
 | ヘッダーの「📋 コピー」ボタン | 関連ファイル + ログを JSON でクリップボードへ |
+| ヘッダーの「🎯 要素選択」ボタン | 要素ピッカーモードに入る — 下記参照 |
 | `Ctrl + Shift + D` | モーダル開閉トグル |
 | モーダル内のレベル/行数セレクタ | 表示・コピー対象を絞り込み(localStorage に保存) |
 | ヘッダーの「ボタン位置」セレクタ | フロートボタンの配置を変更(localStorage に保存) |
+### 要素ピッカーモード(多選択)
+
+1. モーダルヘッダの「🎯 要素選択」をクリック
+2. モーダルが非表示になりヒントバーが出る
+3. **クリックで要素を選択に追加**(シアンの枠 = ホバー、緑の枠 = 選択中)
+4. **選択済み要素を再クリック → 解除**(トグル)
+5. フロートボタンが **📋 N**(N = 選択中の数)に変身
+6. 📋 N をクリック → JSON 形式でクリップボードへコピー
+7. `Esc` でコピーせずにキャンセル
+
+コピーされる JSON 形式 — 通常コピーと同じスキーマに `elements: [...]` を追加:
+
+```json
+{
+  "page": "/path",
+  "url":  "https://.../path?tab=...",
+  "files": { "html": [], "css": [], "js": [] },
+  "logs":  { "limit": 100, "level": "error", "entries": [ ... ] },
+  "elements": [
+    {
+      "xpath":   "//*[@id=\"user-list\"]/li[3]/button",
+      "tag":     "BUTTON",
+      "id":      null,
+      "classes": ["c-button", "c-button--ghost"],
+      "text":    "Edit"
+    }
+  ],
+  "capturedAt": "ISO8601"
+}
+```
+
+通常コピーボタンは同じスキーマで `elements: []`(空配列)を出力する。
+XPath は短縮形式 / 相対(直近の `id` を持つ祖先を起点)で固定。
 
 ---
 
@@ -87,7 +119,7 @@ A と B は併用可能(両方マージ)。動的に追加したいときは B�
   "page": "{location.pathname}",
   "url":  "{location.href}",
   "files": {
-    "html": [], "css": [], "js": [], "backend": [], "other": []
+    "html": [], "css": [], "js": []
   },
   "logs": {
     "limit": 100,
@@ -107,7 +139,7 @@ A と B は併用可能(両方マージ)。動的に追加したいときは B�
 ## 制約
 
 - `uidev.js` は同一ページで複数回読み込まれても 1 回だけ初期化する(`window.__uidevLoaded` でガード)
-- 本番ユーザー向け画面では読み込まないこと(ui-dev は開発用画面専用)
+- 本番ユーザー向け画面では読み込まないこと(debug-fab は開発用画面専用)
 - ログバッファ上限は 2000 行(古いものから捨てる)
 - このフォルダのテンプレートを各画面ごとにインラインで書き換えるのは禁止
   カスタマイズが必要な場合はプロジェクト側でフォークする

@@ -1,22 +1,26 @@
 ---
 created_at: 2026-05-17
 updates:
-  - 2026-05-17 — 初版作成（PR47）
+  - 2026-05-17 — 初版作成(PR47)
+  - 2026-05-18 — UI 関連を ui-kit に分離。dev-kit は開発規約のみ(PR50)
 related_specs:
   - py-kit-design.md
+  - ui-kit-design.md
 related_prs:
   - PR47
+  - PR50
 ---
 
 # dev-kit — 実装支援プラグイン設計仕様
 
 ## 概要
 
-`dev-kit` は実装作業全般を支援する Claude Code プラグイン。
-旧 `py-kit` と `yaml-rule` を統合し、`references/` というフラットな資料群と、
-各種実装スキル（言語別・用途別）で構成される。
+`dev-kit` は実装作業の**開発規約**を提供する Claude Code プラグイン。
+言語別の規約資料(Python・YAML 等)と、各種実装スキル(言語別・用途別)で構成される。
 
-将来的に TypeScript / Java / Node.js / フロントエンド系の規約やスキルも
+UI 関連(フロントエンド規約・UI コンポーネント・ロギング)は PR50 で `ui-kit` プラグインに分離した。
+
+将来的に TypeScript / Java / Node.js などのバックエンド系規約・スキルも
 このプラグインに追加していくことを想定する。
 
 ## プラグイン構造
@@ -25,16 +29,12 @@ related_prs:
 plugins/dev-kit/
 ├── .claude-plugin/
 │   └── plugin.json
-├── references/                    # フラット構造の資料群
-│   ├── common.md                  # 全体共通（Markdown 等）
-│   ├── frontend.md                # フロントエンド共通（HTML/CSS/JS）
-│   ├── backend.md                 # バックエンド共通
+├── references/                    # フラット構造の資料群(言語別規約)
 │   ├── python.md                  # Python 共通規約
-│   ├── yaml.md                    # YAML 規約
-│   └── vscode-extension.md        # VS Code 拡張の作り方
+│   └── yaml.md                    # YAML 規約
 └── skills/
     ├── py-script/                 # Python 簡易スクリプト作成
-    ├── py-project/                # Python プロジェクト全般（新規作成 + 既存対応を統合）
+    ├── py-project/                # Python プロジェクト全般(新規作成 + 既存対応を統合)
     └── yaml/                      # YAML ファイル管理規約
 ```
 
@@ -71,6 +71,21 @@ plugins/dev-kit/
 | `plugins/py-kit/skills/py-new-project/` + `py-project/` | `plugins/dev-kit/skills/py-project/`（統合） |
 | `plugins/yaml-rule/skills/yaml-rule/` | `plugins/dev-kit/skills/yaml/`、規約部分は `plugins/dev-kit/references/yaml.md` に分離 |
 
+## ui-kit への分離(PR50)
+
+PR50 で UI 関連を `ui-kit` プラグインに切り出した:
+
+| 移行元 | 移行先 |
+|---|---|
+| `dev-kit/skills/ui-dev/` | `ui-kit/skills/debug-fab/`(改名) |
+| `dev-kit/references/frontend.md`(frontend-design ルール) | `ui-kit/references/principles.md` |
+| `dev-kit/references/common.md`(ログ規約) | `ui-kit/skills/logging/` |
+
+合わせて、雛形のみで実体がなかった以下の references を削除:
+`backend.md` / `vscode-extension.md` / `html.md` / `css.md` / `js.md`
+
+dev-kit のバージョンを 1.1.0 → 2.0.0 に bump(破壊的変更)。
+
 ## 拡張予定
 
 将来追加する想定のあるリファレンス・スキル:
@@ -78,4 +93,3 @@ plugins/dev-kit/
 - `references/typescript.md` — TypeScript の書き方
 - `references/java.md` — Java の書き方
 - `references/nodejs.md` — Node.js の書き方
-- VS Code 拡張機能作成スキル（`vscode-extension.md` をベース）

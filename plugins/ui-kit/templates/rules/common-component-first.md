@@ -1,0 +1,41 @@
+---
+paths:
+  - "**/*.html"
+  - "**/*.css"
+  - "**/*.js"
+---
+
+# Common Component First
+
+Before adding new UI markup, styles, or DOM access code to any screen, **first read the
+project's shared resources**:
+
+1. `static/js/constants.js` (or equivalent) — design tokens, breakpoints, defaults
+2. `static/js/routes.js` (or equivalent) — all URL / route definitions
+3. The component layer of CSS — every `c-*` definition (e.g. `static/css/component.css`)
+4. The component layer of JS — every shared component module (e.g. `static/js/components/`)
+
+## Why
+
+If a screen reimplements a toast, dialog, button, or skeleton that already exists, the
+codebase fragments and the design becomes inconsistent. Reuse is mandatory, not optional.
+
+## What to do
+
+- If a needed component **exists**: import / reference it. Extend it via props/modifiers if a
+  small variant is needed.
+- If a needed component **does not exist** but is general-purpose: add it to the shared layer,
+  not inline. Then use it.
+- If something is genuinely screen-specific: place it under the `p-*` (Project) layer for that
+  screen — and still draw values from `constants.js` / tokens.
+
+## Prohibited
+
+- Inlining a one-off skeleton / toast / dialog / modal directly in a screen module
+- Hardcoding color hexes, pixel values, URLs, or magic strings inside screen code
+- Copying a `c-*` block to a screen and renaming it for "just this screen"
+
+## Rule maintenance
+
+If the project introduces new shared layers (e.g. `feature/` or `widget/`), update this rule
+to include them in the read-first list.

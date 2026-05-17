@@ -1,20 +1,20 @@
-# SKILL.jp.md — dev-kit:ui-dev(日本語ミラー)
+# SKILL.jp.md — ui-kit:debug-fab(日本語ミラー)
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
 
 ---
 
-**スキル名**: dev-kit:ui-dev
+**スキル名**: ui-kit:debug-fab
 **トリガー**: 開発をサポートする画面(管理画面・内部ツール・デバッグ画面など)を作成・編集するとき。
 本番ユーザー向けの画面には適用しない。
 「管理画面作って」「内部ツール用 UI を追加」「開発用デバッグ画面を直して」など。
 
 ---
 
-# dev-kit:ui-dev — 開発系画面の UI 規約
+# ui-kit:debug-fab — フロートデバッグボタン + モーダル
 
-開発をサポートする画面には全てフロートデバッグウィジェットを設置する。
+開発をサポートする画面には全てフロートデバッグウィジェット(FAB + モーダル)を設置する。
 ウィジェットは画面の関連ファイルと直近 JS ログを収集し、「コピー」ボタンで JSON として
 クリップボードへ出力する。そのまま Claude Code に貼ってデバッグできる。
 
@@ -31,15 +31,16 @@
 参照:
 
 ```
-{plugin_root}/references/common.md      # ログ規約(必読)
-{plugin_root}/references/frontend.md    # フロントエンド概観(参考)
-{plugin_root}/references/html.md        # HTML 規約(参考)
-{plugin_root}/references/css.md         # CSS 規約(参考)
-{plugin_root}/references/js.md          # JS 規約(参考)
+{plugin_root}/references/principles.md   # UI 規約(必読 — DRY / CSS / JS / frontend-design)
+```
+
+加えてログスキルの規約も:
+
+```
+{plugin_root}/skills/logging/SKILL.md    # ログ規約
 ```
 
 プラグインルートはこのスキルファイルの2階層上。
-特に `common.md` の「ログ規約」セクションを重点的に読む:JSON Lines 形式・ロガー必須・操作ログ重視・1 行ログ短く。
 
 → ステップ2へ
 
@@ -60,7 +61,7 @@
 
 #### 処理内容
 
-1. `{plugin_root}/skills/ui-dev/templates/uidev.css` と `uidev.js` をプロジェクトの静的アセットディレクトリ
+1. `{plugin_root}/skills/debug-fab/templates/uidev.css` と `uidev.js` をプロジェクトの静的アセットディレクトリ
    (`static/`、`public/`、`assets/` 等)にコピーする。
 2. 既に存在する場合は上書きせず、パスを確認するのみ。
 3. ブラウザから読み込むときの URL を確認する。
@@ -102,10 +103,9 @@
 
 ```html
 <body data-debug-files='{
-  "html":    ["pages/user_list.html"],
-  "css":     ["styles/user_list.css"],
-  "js":      ["scripts/user_list.js"],
-  "backend": ["api/users.py"]
+  "html": ["pages/user_list.html"],
+  "css":  ["styles/user_list.css"],
+  "js":   ["scripts/user_list.js"]
 }'>
 ```
 
@@ -116,8 +116,8 @@
 ```html
 <script>
   window.__uidevFiles = {
-    html:    ["pages/user_list.html"],
-    backend: ["api/users.py"]
+    html: ["pages/user_list.html"],
+    js:   ["scripts/user_list.js"]
   };
 </script>
 ```
@@ -128,13 +128,14 @@
 
 ##### 何を登録するか
 
-- `html`:    この画面を描画するページテンプレート / 部分テンプレート
-- `css`:     この画面固有のスタイルシート(global reset 等は除く)
-- `js`:      この画面固有のスクリプト(フレームワークランタイムは除く)
-- `backend`: この画面が呼ぶ API ハンドラ / ルート関数
-- `other`:   その他関連するもの(設定ファイル・データソース)
+- `html`: この画面を描画するページテンプレート / 部分テンプレート
+- `css`:  この画面固有のスタイルシート(global reset 等は除く)
+- `js`:   この画面固有のスクリプト(フレームワークランタイムは除く)
 
-フレームワーク/ライブラリのファイルは登録しない。「この画面をデバッグするために Claude が読む必要があるファイル」だけを入れる。
+フレームワーク / ライブラリのファイルは登録しない。
+「この画面をデバッグするために Claude が読む必要があるファイル」だけ入れる。
+バックエンド / API 先は **意図的に登録しない** — JS ファイル内の `fetch` 呼び出しから辿れるため。
+設定ファイル・データソース等も同様。
 
 ---
 
@@ -142,10 +143,13 @@
 
 #### 処理内容
 
-1. プロジェクトがロガーを使用している(生 `console.log` 直書きしていない)ことを `references/common.md` に照らして確認する。
-2. ロガーがない場合は導入する。出力形式は JSON Lines。
-3. 主要なユーザー操作・状態遷移箇所に操作ログを追加する。
-4. 1 つのログ行は短くまとめる — 大きなオブジェクトを複数行に展開しない。
+プロジェクトが `ui-kit:logging` の規約に従っていることを確認する:
+- ロガーオブジェクト(ハンドラ内で生 `console.log` を使わない)
+- JSON Lines 出力形式
+- 主要なユーザー操作・状態遷移にログを出す
+- 1 行ログは短く(オブジェクトを複数行に展開しない)
+
+プロジェクトにロガーがまだない場合は、先に `/ui-kit:logging` を実行する。
 
 → 完了
 
@@ -165,11 +169,20 @@
 4. 📋 コピー → JSON がクリップボードへ
 5. Claude Code に貼り付けて「これでデバッグして」 → Claude が関連ファイルとログを合わせて読んで原因を特定
 
+### 要素ピッカー(多選択)
+
+モーダルヘッダの 🎯「要素選択」ボタンで要素ピッカーモードに入る。画面上の要素を**複数クリックで選択**(再クリックで解除のトグル)。
+フロートボタンが **📋 N** に変身し、それをクリックすると通常コピーと**同じスキーマ**に `elements: [...]` を追加した JSON が
+クリップボードへコピーされる。
+
+XPath は短縮形式 / 相対で固定。`Esc` でキャンセル。
+
+「これらの要素を見て直して」と Claude に伝えたいときに、依頼文と合わせて貼り付けると便利。
+
 ---
 
 ## 参考資料
 
-- `{plugin_root}/references/common.md` — ログ規約(必読セクション)
-- `{plugin_root}/references/frontend.md` — フロントエンド概観
-- `{plugin_root}/references/html.md` / `css.md` / `js.md` — 言語別リファレンス
-- `{plugin_root}/skills/ui-dev/templates/CLAUDE.md` — ウィジェット使い方詳細(フォルダ作業時に自動読み込み)
+- `{plugin_root}/references/principles.md` — UI 規約(必読)
+- `{plugin_root}/skills/logging/SKILL.md` — ログ規約
+- `{plugin_root}/skills/debug-fab/templates/CLAUDE.md` — ウィジェット使い方詳細(フォルダ作業時に自動読み込み)

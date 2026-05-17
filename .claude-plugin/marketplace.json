@@ -10,8 +10,14 @@
     {
       "name": "dev-kit",
       "source": "./plugins/dev-kit",
-      "description": "Implementation toolkit — language standards, YAML conventions, project/script generation, and UI dev conventions",
-      "version": "1.1.0"
+      "description": "Development conventions toolkit — language standards (Python, YAML) and project/script generation skills",
+      "version": "2.0.0"
+    },
+    {
+      "name": "ui-kit",
+      "source": "./plugins/ui-kit",
+      "description": "Development UI components and conventions — floating debug widget, logging conventions, FLOCSS + design tokens application",
+      "version": "1.0.0"
     },
     {
       "name": "claude-kit",

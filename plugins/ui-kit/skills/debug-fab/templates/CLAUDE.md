@@ -1,9 +1,9 @@
-# ui-dev templates
+# debug-fab templates
 
 > Japanese mirror: `CLAUDE.jp.md` (human reference only — not auto-loaded by Claude Code).
 > When editing: update the JP mirror first, then apply the same change here.
 
-Shared debug widget templates provided by the `dev-kit:ui-dev` skill.
+Shared debug widget templates provided by the `ui-kit:debug-fab` skill.
 Source files for the floating debug button + modal that every development-support screen must embed.
 
 ---
@@ -37,18 +37,17 @@ From the moment `uidev.js` loads, it captures all `console.log/info/warn/error/d
 
 ```html
 <body data-debug-files='{
-  "html":    ["pages/user_list.html"],
-  "css":     ["styles/user_list.css"],
-  "js":      ["scripts/user_list.js"],
-  "backend": ["api/users.py"]
+  "html": ["pages/user_list.html"],
+  "css":  ["styles/user_list.css"],
+  "js":   ["scripts/user_list.js"]
 }'>
 ```
 
 Multiple elements can each declare a subset; entries are merged:
 
 ```html
-<form data-debug-files='{"backend":["api/auth.py"]}'>...</form>
-<table data-debug-files='{"backend":["api/users.py"]}'>...</table>
+<form data-debug-files='{"js":["scripts/auth.js"]}'>...</form>
+<table data-debug-files='{"js":["scripts/user_list.js"]}'>...</table>
 ```
 
 **B. `window.__uidevFiles` global**
@@ -56,10 +55,9 @@ Multiple elements can each declare a subset; entries are merged:
 ```html
 <script>
   window.__uidevFiles = {
-    html:    ["pages/user_list.html"],
-    css:     ["styles/user_list.css"],
-    js:      ["scripts/user_list.js"],
-    backend: ["api/users.py"]
+    html: ["pages/user_list.html"],
+    css:  ["styles/user_list.css"],
+    js:   ["scripts/user_list.js"]
   };
 </script>
 ```
@@ -74,9 +72,42 @@ A and B can coexist (both are merged). Use B for dynamic additions; A is simpler
 |---|---|
 | Click the 🐛 (default bottom-right, or configured position) | Opens the debug modal |
 | Click the "📋 Copy" button in the header | Copies related files + logs as JSON to clipboard |
+| Click the "🎯 要素選択" button in the header | Enters element picker mode — see below |
 | `Ctrl + Shift + D` | Toggle modal open/close |
 | Level / line-count selectors in the modal | Filter display + copy (saved to localStorage) |
 | "Button position" selector in the header | Move the floating button (saved to localStorage) |
+### Element picker mode (multi-select)
+
+1. Click "🎯 要素選択" in the modal header
+2. The modal hides and a hint bar appears
+3. **Click elements to add to the selection** (cyan outline = hover, green outline = selected)
+4. **Click an already-selected element to deselect** it (toggle)
+5. The floating button transforms into **📋 N** (N = current selection count)
+6. Click 📋 N to copy a JSON snippet to the clipboard
+7. `Esc` cancels the mode without copying
+
+Copied JSON shape — same as the regular Copy button, with `elements: [...]` added:
+
+```json
+{
+  "page": "/path",
+  "url":  "https://.../path?tab=...",
+  "files": { "html": [], "css": [], "js": [] },
+  "logs":  { "limit": 100, "level": "error", "entries": [ ... ] },
+  "elements": [
+    {
+      "xpath":   "//*[@id=\"user-list\"]/li[3]/button",
+      "tag":     "BUTTON",
+      "id":      null,
+      "classes": ["c-button", "c-button--ghost"],
+      "text":    "Edit"
+    }
+  ],
+  "capturedAt": "ISO8601"
+}
+```
+
+The regular Copy button emits the same shape with `elements: []` (empty). XPath is fixed to the short / relative form (anchored at the nearest ancestor with an `id`).
 
 ---
 
@@ -87,7 +118,7 @@ A and B can coexist (both are merged). Use B for dynamic additions; A is simpler
   "page": "{location.pathname}",
   "url":  "{location.href}",
   "files": {
-    "html": [], "css": [], "js": [], "backend": [], "other": []
+    "html": [], "css": [], "js": []
   },
   "logs": {
     "limit": 100,
@@ -107,6 +138,6 @@ Paste directly into Claude Code with "debug this for me" and Claude will read th
 ## Constraints
 
 - `uidev.js` initializes only once per page even if loaded multiple times (`window.__uidevLoaded` guard).
-- Never load this on production user-facing screens — `ui-dev` is for development-support screens only.
+- Never load this on production user-facing screens — `debug-fab` is for development-support screens only.
 - Log buffer is capped at 2000 entries (oldest discarded).
 - Do not modify these templates inline per screen. If a project needs customization, fork the files inside the project (not here).
