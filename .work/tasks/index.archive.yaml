@@ -320,3 +320,10 @@ prs:
     に統一する。
   task: 20260518_split-hook-inline-python
   completed: true
+- id: 53
+  title: PR53 — ui-kit-remove-mobile
+  type: refactor
+  tags: []
+  summary: ui-kit スキルからモバイル対応・レスポンシブ関連の記述を全て削除。SSH/HTTP 環境での clipboard エラーも修正。
+  task: 20260518_ui-kit-remove-mobile
+  completed: true
