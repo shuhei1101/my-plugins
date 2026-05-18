@@ -38,7 +38,7 @@ Read:
 
 Before writing any code, read the project's shared resources:
 
-1. **Constants file** — e.g. `static/js/constants.js`. Note: design tokens, breakpoints, API endpoints, default values.
+1. **Constants file** — e.g. `static/js/constants.js`. Note: design tokens, API endpoints, default values.
 2. **Routes file** — e.g. `static/js/routes.js`. Note: existing route names, URL patterns, current route table shape.
 3. **Component layer (CSS)** — e.g. `static/css/component.css` (or the project's `c-*` definitions). List every existing component.
 4. **Component layer (JS)** — e.g. `static/js/components/`. List every shared component module.

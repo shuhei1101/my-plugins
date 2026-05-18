@@ -23,7 +23,7 @@ This makes a pasted URL fully describe the user's context to Claude when they as
 | Structure | When to use |
 |---|---|
 | **Sidebar + main**           | Default for tool-like screens (top page, settings, list/detail) |
-| **2-pane (list + detail)**   | Browsing a list and seeing details simultaneously (PC). On mobile, falls back to list-then-detail navigation |
+| **2-pane (list + detail)**   | Browsing a list and seeing details simultaneously (PC) |
 | **3-pane (nav + list + detail)** | Heavy multi-resource browsing (rare in dev tools, e.g. inbox-style) |
 | **Top tabs**                 | Switching between siblings under the same parent (e.g. user "Profile / Settings / Activity") |
 
@@ -35,12 +35,12 @@ Avoid bare top-only navigation without a sidebar in a tool app — sidebars disc
 - Left: app / page title
 - Right: user menu / global actions (search, notifications)
 - **Do not** put "Home" link in the header title. "Home" lives in the sidebar (see Sidebar)
-- Height: 56–64px (PC), 48–56px (mobile)
+- Height: 56–64px
 
 ### Sidebar (PC)
 
 - Fixed left, full height
-- Always visible on PC (≥ 1024px); collapse to drawer on mobile
+- Always visible (fixed)
 - Items to include:
   - **Home** (first item, dashboard / top page)
   - **Section headers** for grouping (e.g. "Tools", "Settings", "Admin")
@@ -49,46 +49,14 @@ Avoid bare top-only navigation without a sidebar in a tool app — sidebars disc
 - Active item: visually distinct (background, left bar accent)
 - Width: 240–280px
 
-### Drawer (Mobile)
-
-- Slide-in from left, overlay with backdrop
-- Open via "hamburger" icon in header (top-left)
-- Closes on backdrop tap or item selection
-- Same items as PC sidebar
-
 ### Action buttons (Save / Delete / etc.)
 
 - **Primary action** position is fixed per screen type:
   - **Form screens (settings, edit)**: bottom-right, sticky footer with the action bar
-  - **List screens**: top-right of the list (or floating button on mobile)
+  - **List screens**: top-right of the list
   - **Detail screens**: top-right of the detail pane
 - **Destructive actions** (Delete): always confirm via modal; visually red but secondary in placement
 - Never place primary actions in the header (reserved for navigation)
-
----
-
-## Responsive
-
-### Breakpoints
-
-| Width      | Tier     |
-|---|---|
-| < 640px    | Mobile   |
-| 640–1024px | Tablet   |
-| ≥ 1024px   | PC       |
-
-Define as CSS Custom Properties or media query aliases in Foundation.
-
-### Tier-specific behavior
-
-| Pattern              | PC                          | Mobile |
-|---|---|---|
-| Sidebar              | Always visible (fixed)      | Drawer (hamburger) |
-| 2-pane list + detail | Side-by-side                | Single column; list → detail navigation |
-| 3-pane               | Three columns               | Single column; tabs or back-nav |
-| Top tabs             | Horizontal row              | Horizontal scroll if overflow |
-| Action button bar    | Sticky footer or top-right  | Fixed bottom (full-width) |
-| Touch targets        | Min 32px                    | Min **44px** (Apple HIG) |
 
 ---
 
@@ -115,7 +83,6 @@ Define as CSS Custom Properties or media query aliases in Foundation.
   - Per-item: title + 1-2 lines of metadata
   - Selected item: highlighted
 - Right pane: detail of selected item
-- Mobile: shows the list; tapping an item navigates to the detail; back button returns
 - Toolbar above the list: search, filter, sort, "New" button
 
 ---
@@ -178,7 +145,7 @@ Document any custom shortcuts in a Help modal accessible via `?`.
 
 ### Toast notifications
 
-- Position: bottom-right (PC), top-center (mobile)
+- Position: bottom-right
 - Auto-dismiss: 4–6s for success/info, **manual dismiss** for errors
 - Max visible: 3 stacked, oldest pushed out
 - Severity colors: success (green), info (blue), warning (amber), error (red)
@@ -238,7 +205,7 @@ two or more screens goes here.
 
 | Group | Items |
 |---|---|
-| Navigation     | **Header**, **Sidebar**, **Drawer** (mobile), Top tab bar |
+| Navigation     | **Header**, **Sidebar**, Top tab bar |
 | Buttons        | **Buttons** (primary / secondary / ghost / danger variants), Icon button, **FAB** (Floating Action Button) |
 | Overlays       | **Modal**, **Confirmation dialog**, **Toast** notifications, Keyboard-shortcut help modal |
 | Form           | **Form field** (label + input + helper + error), Form group, Inline error, Form summary |
