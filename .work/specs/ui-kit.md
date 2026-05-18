@@ -42,9 +42,20 @@
 
 ---
 
+## debug-fab — clipboard コピー仕様
+
+SSH 経由 HTTP(非セキュアコンテキスト)では `navigator.clipboard` が undefined になる。
+`uidev.js` の `copyJSON` は以下の順でコピーを試みる:
+
+1. `navigator.clipboard.writeText()` — HTTPS またはセキュアコンテキストで動作
+2. `legacyCopyText()` — `textarea` + `document.execCommand('copy')` フォールバック(HTTP でも動作)
+
+---
+
 ## バージョン履歴
 
 | バージョン | 変更内容 |
 |---|---|
 | 1.0.0 | 初版 |
 | 1.1.0 | モバイル・レスポンシブ対応を全廃 — PC 専用に変更(PR53) |
+| 1.1.1 | debug-fab: SSH/HTTP 環境での clipboard エラーを修正 — textarea フォールバック追加(PR53) |
