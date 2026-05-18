@@ -15,7 +15,7 @@ The single biggest rule: **never duplicate the same concept in two places**.
 - Repeated DOM structure → a small component, not copy-pasted markup
 - **Routing**: all path / route definitions in one file (e.g. `static/js/routes.js`). UI / API
   modules import from it. Hardcoding URLs in screens is forbidden.
-- **Constants**: all constants (breakpoints in px, color token names, API endpoints, default values)
+- **Constants**: all constants (color token names, API endpoints, default values)
   centralized in one file (e.g. `static/js/constants.js`). Optional follow-up: a tiny in-app
   "design settings" screen that lets the user tweak token values at runtime.
 
@@ -274,6 +274,6 @@ Do not write UI by ad-hoc taste. Route every visual decision through this skill.
 ## 5. See also: `ui-design.md`
 
 Layout patterns (sidebar / 2-pane / tabs), screen-type templates (top / settings / list+detail),
-responsive behavior, form / dialog / shortcut conventions, state-feedback patterns,
+form / dialog / shortcut conventions, state-feedback patterns,
 accessibility, dark mode, and motion details live in `ui-design.md` alongside this file.
 Read both together when designing any UI.

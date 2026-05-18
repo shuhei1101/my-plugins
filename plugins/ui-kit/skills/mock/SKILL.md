@@ -4,7 +4,7 @@ description: >
   Generate a multi-variant mock for a single screen type as a single HTML file.
   Variants ("案 A / B / C / ...") are switched via tabs at the top of the page; the mock body
   renders below the tabs. Each variant should explore a meaningful design axis (layout, density,
-  navigation pattern) — not just color changes. Mobile-responsive by default.
+  navigation pattern) — not just color changes.
   Trigger when the user asks for a UI mock, design proposals, or wants to compare layout options
   before committing to one. Examples: "設定画面のモック作って", "トップ画面の案出して", "一覧詳細のモック数パターン欲しい".
 ---
@@ -32,7 +32,7 @@ top tabs. Each variant follows `principles.md` (FLOCSS + Design Tokens, JS rules
 
 2. **Inventory shared resources in the project** (mandatory — applies to mocks too, so
    variants reuse existing components instead of inventing parallel ones):
-   - `static/js/constants.js` (or equivalent) — design tokens, breakpoints
+   - `static/js/constants.js` (or equivalent) — design tokens
    - `static/js/routes.js` (or equivalent) — route names / URL patterns
    - The component layer of CSS — every `c-*` definition
    - The component layer of JS — every shared component module
@@ -56,7 +56,7 @@ Confirm with the user which **single** screen type the mock should explore:
 |---|---|
 | **Top screen**        | Sidebar lists categories; main area shows a card grid of items per category |
 | **Settings**          | Section-grouped form rows; sticky action bar; danger zone at bottom |
-| **List + Detail**     | PC: 2-pane; mobile: list → detail navigation |
+| **List + Detail**     | PC: 2-pane |
 
 One screen type per mock — do not mix multiple types into one HTML file.
 
@@ -148,7 +148,6 @@ Implementation rules:
 - Design tokens defined in `:root` Foundation
 - Each variant section: full screen layout including sidebar / header / main as per the chosen screen type
 - Variants switchable via top tabs (one variant visible at a time via `hidden` attribute)
-- **Mobile responsive**: use media queries per `ui-design.md` breakpoints (640 / 1024)
 
 → Proceed to Step 6
 
@@ -170,12 +169,11 @@ Implementation rules:
 
 - `tmp/mocks/{screen-type}-{date}.html` with N variants behind top tabs
 - All variants follow `principles.md` + `ui-design.md`
-- Mobile-responsive
 
 ---
 
 ## References
 
 - `{plugin_root}/references/principles.md` — FLOCSS, design tokens, JS rules
-- `{plugin_root}/references/ui-design.md` — UX patterns by screen type, responsive rules
+- `{plugin_root}/references/ui-design.md` — UX patterns by screen type
 - `{plugin_root}/skills/mock/templates/mock-skeleton.html` — starter HTML skeleton
