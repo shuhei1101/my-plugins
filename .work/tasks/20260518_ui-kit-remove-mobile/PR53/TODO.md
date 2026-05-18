@@ -21,6 +21,7 @@ PC 版のみをターゲットとし、スマホでも PC 表示で使う方針�
 | 済 | mock-skeleton.html からレスポンシブ CSS を削除 | - `plugins/ui-kit/skills/mock/templates/mock-skeleton.html` |
 | 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/ui-kit/.claude-plugin/plugin.json` |
 | 済 | `.work/specs/` の仕様書を更新する | - `.work/specs/ui-kit.md` |
+| - | debug-fab: clipboard コピーに textarea フォールバックを追加(SSH/HTTP 対応) | - `plugins/ui-kit/skills/debug-fab/templates/uidev.js` |
 
 ## 参考ドキュメント
 
