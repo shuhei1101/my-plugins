@@ -249,11 +249,31 @@
     };
   }
 
+  /** @param {string} text  非セキュアコンテキスト(HTTP)でも動く execCommand フォールバック */
+  function legacyCopyText(text) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      return document.execCommand("copy");
+    } finally {
+      ta.remove();
+    }
+  }
+
   /** @param {Element} target  クリップボードにコピーしフィードバック表示 */
   async function copyJSON(payload, btn) {
     const text = JSON.stringify(payload, null, 2);
     try {
-      await navigator.clipboard.writeText(text);
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const ok = legacyCopyText(text);
+        if (!ok) throw new Error("execCommand('copy') failed");
+      }
       if (btn) {
         const original = btn.innerHTML;
         btn.classList.add("copied");
