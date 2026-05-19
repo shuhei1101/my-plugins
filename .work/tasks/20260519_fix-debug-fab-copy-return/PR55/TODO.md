@@ -8,10 +8,10 @@ debug-fab スキルで、要素選択モード中にコピーボタンを押し�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | QA.md に未決定事項を記録する | - `.work/tasks/.../PR55/QA.md` |
-| x | `.work/specs/` の仕様書を更新する | - `.work/specs/ui-kit.md` |
-| x | SKILL.md の要素選択コピー後の遷移を「モーダルへ戻る」→「トップ画面へ戻る」に修正 | - `plugins/ui-kit/skills/debug-fab/SKILL.md` |
-| x | SKILL.jp.md も同様に修正 | - `plugins/ui-kit/skills/debug-fab/SKILL.jp.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR55/QA.md` |
+| 済 | `.work/specs/` の仕様書を更新する | - `.work/specs/ui-kit.md` |
+| 済 | SKILL.md の要素選択コピー後の遷移を「モーダルへ戻る」→「トップ画面へ戻る」に修正 | - `plugins/ui-kit/skills/debug-fab/SKILL.md` |
+| 済 | SKILL.jp.md も同様に修正 | - `plugins/ui-kit/skills/debug-fab/SKILL.jp.md` |
 
 ## 参考ドキュメント
 
