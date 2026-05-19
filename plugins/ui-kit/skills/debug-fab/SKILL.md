@@ -172,7 +172,8 @@ If the project does not yet have a logger, run `/ui-kit:logging` first.
 Use the 🎯 "要素選択" button in the modal header to enter the element picker mode. Click any
 elements on the page to select them (toggle with re-click). The floating button transforms into
 📋 N — click it to copy a JSON snippet to the clipboard with the same shape as the regular
-Copy button **plus** an `elements: [...]` array describing each selected element.
+Copy button **plus** an `elements: [...]` array describing each selected element. After copying,
+the picker exits and the modal stays closed (returns to the top screen), not back to the modal.
 
 XPath is fixed to the short / relative form. `Esc` cancels the mode.
 

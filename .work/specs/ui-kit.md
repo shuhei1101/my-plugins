@@ -59,3 +59,4 @@ SSH 経由 HTTP(非セキュアコンテキスト)では `navigator.clipboard` �
 | 1.0.0 | 初版 |
 | 1.1.0 | モバイル・レスポンシブ対応を全廃 — PC 専用に変更(PR53) |
 | 1.1.1 | debug-fab: SSH/HTTP 環境での clipboard エラーを修正 — textarea フォールバック追加(PR53) |
+| 1.1.2 | debug-fab: 要素ピッカーでコピー後、モーダルに戻らずトップ画面へ直接遷移するよう修正(PR55) |

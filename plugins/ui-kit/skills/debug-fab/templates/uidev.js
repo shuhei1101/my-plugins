@@ -383,7 +383,6 @@
           setTimeout(() => toast.remove(), 1800);
         }
         stop();
-        if (wasOpen) backdrop.setAttribute("data-open", "true");
         return;
       }
 
