@@ -1,0 +1,238 @@
+---
+name: env-sync
+description: |
+  Sync Claude Code configuration files between WSL and Windows environments.
+  Scans both sides, shows a diff, and copies selected files after user confirmation.
+  Trigger when the user says "WSL と Windows の設定を同期して", "env-sync して",
+  "Claude Code の設定をコピーしたい", "設定ファイルを移行したい",
+  or invoked explicitly as `/claude-kit:env-sync`.
+---
+
+# env-sync — WSL ↔ Windows Claude Code Config Sync
+
+Compares `~/.claude/` between WSL and Windows, analyzes the diff, and proposes files to copy.
+
+---
+
+## Overview
+
+| Environment | Counterpart path |
+|---|---|
+| WSL | `/mnt/c/Users/<WindowsUser>/.claude/` |
+| Windows (Git Bash, etc.) | `\\wsl$\<distro>\home\<user>\.claude\` |
+
+Sync candidates:
+
+| File / Directory | Contents |
+|---|---|
+| `settings.json` | Hooks, permissions, status line config |
+| `CLAUDE.md` / `CLAUDE.jp.md` | Global AI instructions |
+| `skills/` | User skills |
+| `keybindings.json` | Keybinding config |
+| `rules/` | Path-scoped rules |
+
+Plugin cache (`plugins/cache/`) is always excluded.
+
+---
+
+## Tasks
+
+### Step 1: Detect the current environment
+
+#### Condition
+
+- Always — run first
+
+#### Process
+
+Run the following and note the result:
+
+```bash
+if grep -qi microsoft /proc/version 2>/dev/null; then
+  echo "WSL"
+else
+  echo "Windows"
+fi
+```
+
+→ Proceed to Step 2
+
+#### Output
+
+- Current environment (WSL or Windows) is confirmed
+
+---
+
+### Step 2: Auto-detect the counterpart path
+
+#### Condition
+
+- Step 1 complete
+
+#### Process
+
+**If WSL:**
+
+```bash
+WIN_USER=$(cmd.exe /c "echo %USERNAME%" 2>/dev/null | tr -d '\r\n')
+WIN_CLAUDE="/mnt/c/Users/${WIN_USER}/.claude"
+echo "Windows side: ${WIN_CLAUDE}"
+ls "${WIN_CLAUDE}" 2>/dev/null || echo "NOT FOUND"
+```
+
+**If Windows (Git Bash, etc.):**
+
+```bash
+DISTRO=$(wsl.exe -l --quiet 2>/dev/null | head -1 | tr -d '\r\n')
+WSL_USER=$(wsl.exe -- whoami 2>/dev/null | tr -d '\r\n')
+WSL_CLAUDE="//wsl$/${DISTRO}/home/${WSL_USER}/.claude"
+echo "WSL side: ${WSL_CLAUDE}"
+ls "${WSL_CLAUDE}" 2>/dev/null || echo "NOT FOUND"
+```
+
+→ Proceed to Step 3
+
+#### Output
+
+- Counterpart path is confirmed
+
+#### Notes
+
+##### Branching
+
+- Counterpart path not found → ask the user to enter the path manually, then proceed to Step 3
+
+---
+
+### Step 3: Scan both sides and detect differences
+
+#### Condition
+
+- Step 2 complete
+
+#### Process
+
+1. List files under local `~/.claude/` (excluding plugin cache):
+
+```bash
+find ~/.claude -maxdepth 3 \
+  -not -path "*/plugins/cache/*" \
+  -not -path "*/.git/*" \
+  | sort
+```
+
+2. List files on the counterpart side in the same way (`ls -la` or equivalent)
+
+3. Categorize the diff:
+   - **Local only** — exists on this side, missing on the other
+   - **Counterpart only** — exists on the other side, missing here
+   - **Both exist, different timestamps** — note which side is newer
+   - **Both exist, appear identical** — skip candidate
+
+→ Proceed to Step 4
+
+#### Output
+
+- Per-file diff status is understood
+
+---
+
+### Step 4: Propose what to copy
+
+#### Condition
+
+- Step 3 complete
+
+#### Process
+
+Based on the scan, present a proposal to the user in the following format:
+
+```
+## Sync Proposal
+
+### Recommended: copy local → counterpart
+- settings.json — local is 3 days newer (may contain updated hooks/permissions)
+- skills/my-skill/ — not present on counterpart
+
+### Recommended: copy counterpart → local
+- CLAUDE.md — counterpart is 1 week newer
+
+### Needs review
+- keybindings.json — exists on both sides, timestamps close (recommend checking content)
+
+### Skip
+- plugins/cache/ — excluded (plugin cache)
+```
+
+Include a reason for each recommendation, then ask the user to confirm.
+
+→ Proceed to Step 5
+
+#### Output
+
+- User has reviewed and confirmed the proposal
+
+---
+
+### Step 5: Copy selected files with user approval
+
+#### Condition
+
+- Step 4 complete
+- User has approved the copy
+
+#### Process
+
+1. Copy the files and directories selected by the user:
+
+```bash
+# Example: local → counterpart
+cp -r ~/.claude/settings.json "${WIN_CLAUDE}/settings.json"
+
+# Directory:
+cp -rp ~/.claude/skills/ "${WIN_CLAUDE}/skills/"
+```
+
+2. After copying, verify the counterpart directory contents
+
+→ Proceed to Step 6
+
+#### Output
+
+- Selected files are copied to the counterpart
+
+#### Notes
+
+##### Prohibitions
+
+- Never copy without explicit user confirmation
+- Never overwrite a counterpart file without confirmation (especially when it exists on both sides)
+
+---
+
+### Step 6: Report the result
+
+#### Condition
+
+- Step 5 complete
+
+#### Process
+
+Report the outcome file by file:
+
+```
+## env-sync complete
+
+### Copied
+- settings.json → /mnt/c/Users/xxx/.claude/settings.json ✓
+- skills/my-skill/ → /mnt/c/Users/xxx/.claude/skills/my-skill/ ✓
+
+### Skipped
+- CLAUDE.md — skipped by user
+
+Restart Claude Code for the changes to take effect.
+```
+
+#### Output
+
+- User understands the sync result

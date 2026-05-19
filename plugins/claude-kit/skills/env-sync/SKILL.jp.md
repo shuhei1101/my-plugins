@@ -1,0 +1,238 @@
+---
+name: env-sync
+description: |
+  WSL と Windows 間で Claude Code の設定ファイルを同期するスキル。
+  両環境をスキャンして差分を表示し、ユーザーの確認後にファイルをコピーする。
+  ユーザーが「WSL と Windows の設定を同期して」「env-sync して」
+  「Claude Code の設定をコピーしたい」「設定ファイルを移行したい」と言ったとき、
+  または `/claude-kit:env-sync` で明示的に呼ばれたときに起動する。
+---
+
+# env-sync — WSL ↔ Windows Claude Code 設定同期
+
+WSL と Windows の `~/.claude/` を比較し、差分を AI が分析してコピー対象を提案する。
+
+---
+
+## 概要
+
+| 実行環境 | 対向パス |
+|---|---|
+| WSL | `/mnt/c/Users/<WindowsUser>/.claude/` |
+| Windows (Git Bash 等) | `\\wsl$\<distro>\home\<user>\.claude\` |
+
+同期対象候補:
+
+| ファイル / フォルダ | 内容 |
+|---|---|
+| `settings.json` | フック・権限・ステータスライン設定 |
+| `CLAUDE.md` / `CLAUDE.jp.md` | グローバル AI 指示 |
+| `skills/` | ユーザースキル |
+| `keybindings.json` | キーバインド |
+| `rules/` | パススコープルール |
+
+プラグインキャッシュ（`plugins/cache/`）はコピー対象外。
+
+---
+
+## 作業内容
+
+### ステップ 1: 実行環境を判定する
+
+#### 条件
+
+- 常に — 最初に実行する
+
+#### 処理内容
+
+以下を実行して結果を記録する:
+
+```bash
+if grep -qi microsoft /proc/version 2>/dev/null; then
+  echo "WSL"
+else
+  echo "Windows"
+fi
+```
+
+→ ステップ 2 へ進む
+
+#### 出力
+
+- 実行環境（WSL / Windows）が確定している
+
+---
+
+### ステップ 2: 対向パスを自動検出する
+
+#### 条件
+
+- ステップ 1 完了
+
+#### 処理内容
+
+**WSL の場合:**
+
+```bash
+WIN_USER=$(cmd.exe /c "echo %USERNAME%" 2>/dev/null | tr -d '\r\n')
+WIN_CLAUDE="/mnt/c/Users/${WIN_USER}/.claude"
+echo "Windows side: ${WIN_CLAUDE}"
+ls "${WIN_CLAUDE}" 2>/dev/null || echo "NOT FOUND"
+```
+
+**Windows (Git Bash 等) の場合:**
+
+```bash
+DISTRO=$(wsl.exe -l --quiet 2>/dev/null | head -1 | tr -d '\r\n')
+WSL_USER=$(wsl.exe -- whoami 2>/dev/null | tr -d '\r\n')
+WSL_CLAUDE="//wsl$/${DISTRO}/home/${WSL_USER}/.claude"
+echo "WSL side: ${WSL_CLAUDE}"
+ls "${WSL_CLAUDE}" 2>/dev/null || echo "NOT FOUND"
+```
+
+→ ステップ 3 へ進む
+
+#### 出力
+
+- 対向パスが確定している
+
+#### 補足
+
+##### 条件分岐
+
+- 対向パスが見つからない → ユーザーにパスを手動入力してもらい、確認後ステップ 3 へ
+
+---
+
+### ステップ 3: 両環境のファイルをスキャンして差分を検出する
+
+#### 条件
+
+- ステップ 2 完了
+
+#### 処理内容
+
+1. ローカルの `~/.claude/` を以下で列挙する（プラグインキャッシュを除く）:
+
+```bash
+find ~/.claude -maxdepth 3 \
+  -not -path "*/plugins/cache/*" \
+  -not -path "*/.git/*" \
+  | sort
+```
+
+2. 対向側も同様に列挙する（`ls -la` または同等のコマンド）
+
+3. 差分を以下の観点で整理する:
+   - **ローカルのみ存在** するファイル
+   - **対向のみ存在** するファイル
+   - **両方存在するが更新日時が異なる** ファイル（どちらが新しいか）
+   - **両方存在して同一** とみられるファイル（スキップ候補）
+
+→ ステップ 4 へ進む
+
+#### 出力
+
+- ファイルごとの差分状況が把握されている
+
+---
+
+### ステップ 4: AI がコピー推奨内容を提案する
+
+#### 条件
+
+- ステップ 3 完了
+
+#### 処理内容
+
+スキャン結果を踏まえて、以下の形式でユーザーに提案する:
+
+```
+## 同期提案
+
+### コピー推奨（ローカル → 対向）
+- settings.json — ローカルが3日新しい（フックや権限設定が含まれる可能性）
+- skills/my-skill/ — 対向に存在しない
+
+### コピー推奨（対向 → ローカル）
+- CLAUDE.md — 対向が1週間新しい
+
+### 確認が必要
+- keybindings.json — 両方に存在、日時が近い（内容確認を推奨）
+
+### スキップ推奨
+- plugins/cache/ — プラグインキャッシュのため除外
+```
+
+提案理由を添えて、ユーザーに確認を求める。
+
+→ ステップ 5 へ進む
+
+#### 出力
+
+- 提案内容をユーザーが確認している
+
+---
+
+### ステップ 5: ユーザーの確認を得てコピーを実行する
+
+#### 条件
+
+- ステップ 4 完了
+- ユーザーが実行を承認している
+
+#### 処理内容
+
+1. ユーザーが選択したファイル/フォルダをコピーする
+
+```bash
+# 例: ローカル → 対向
+cp -r ~/.claude/settings.json "${WIN_CLAUDE}/settings.json"
+
+# フォルダの場合
+cp -rp ~/.claude/skills/ "${WIN_CLAUDE}/skills/"
+```
+
+2. コピー後に対向側のファイル一覧を確認する
+
+→ ステップ 6 へ進む
+
+#### 出力
+
+- 選択されたファイルがコピーされている
+
+#### 補足
+
+##### 禁止事項
+
+- ユーザーの確認なしにコピーを実行しない
+- 対向のファイルを確認なしに上書きしない（特に両方に存在する場合）
+
+---
+
+### ステップ 6: 結果をレポートする
+
+#### 条件
+
+- ステップ 5 完了
+
+#### 処理内容
+
+コピー結果をファイルごとに報告する:
+
+```
+## env-sync 完了
+
+### コピー済み
+- settings.json → /mnt/c/Users/xxx/.claude/settings.json ✓
+- skills/my-skill/ → /mnt/c/Users/xxx/.claude/skills/my-skill/ ✓
+
+### スキップ
+- CLAUDE.md — ユーザーがスキップを選択
+
+Claude Code を再起動すると設定が反映されます。
+```
+
+#### 出力
+
+- 同期結果をユーザーが把握している
