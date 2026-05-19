@@ -327,3 +327,10 @@ prs:
   summary: ui-kit スキルからモバイル対応・レスポンシブ関連の記述を全て削除。SSH/HTTP 環境での clipboard エラーも修正。
   task: 20260518_ui-kit-remove-mobile
   completed: true
+- id: 55
+  title: PR55 — fix-debug-fab-copy-return
+  type: fix
+  tags: []
+  summary: コピーボタン押下後、モーダルに戻らずトップ画面へ直接遷移するよう修正
+  task: 20260519_fix-debug-fab-copy-return
+  completed: true
