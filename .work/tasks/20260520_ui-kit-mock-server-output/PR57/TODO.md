@@ -10,10 +10,10 @@ FastAPI などのサーバープロジェクトではサーバーが配信でき
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| ✅ | SKILL.jp.md を更新（Step 5・6 を改訂） | `plugins/ui-kit/skills/mock/SKILL.jp.md` |
-| ✅ | SKILL.md を更新（Step 5・6 を改訂） | `plugins/ui-kit/skills/mock/SKILL.md` |
-| - | plugin.json と marketplace.json のバージョンを bump する | `plugins/ui-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | コミットする | - |
+| 済 | SKILL.jp.md を更新（Step 5・6 を改訂） | `plugins/ui-kit/skills/mock/SKILL.jp.md` |
+| 済 | SKILL.md を更新（Step 5・6 を改訂） | `plugins/ui-kit/skills/mock/SKILL.md` |
+| 済 | plugin.json と marketplace.json のバージョンを bump する | `plugins/ui-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | コミットする | - |
 
 ## 参考ドキュメント
 
