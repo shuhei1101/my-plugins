@@ -101,7 +101,21 @@
 
 #### 処理内容
 
-`tmp/mocks/{画面タイプ}-{YYYYMMDD}.html` を作成(例: `tmp/mocks/settings-20260518.html`)。
+**出力先をプロジェクト種別で分ける:**
+
+| プロジェクト種別 | 出力先 | 理由 |
+|---|---|---|
+| FastAPI / Flask / Django など Web サーバーあり | サーバーが配信できる場所(後述) | 起動中のサーバー経由で即アクセスできるため |
+| サーバーなし / 静的プロジェクト | `tmp/mocks/` | ローカルサーバーで配信する |
+
+**FastAPI などのサーバープロジェクトの場合:**
+
+1. モック画面を一覧できるページがすでにあるか確認する(例: `/dev/mocks`、`/debug/mocks` などの開発用ルート)
+2. あればそのルートが読み込むテンプレートディレクトリに HTML を配置する(例: `templates/mocks/`, `app/templates/dev/`)
+3. なければ開発用モックルートを新規作成し、テンプレートディレクトリを決めて HTML を配置する
+4. ルーティング設定(例: `router.py`, `urls.py`)にモック一覧へのエントリを追加する
+
+ファイル名は `{画面タイプ}-{YYYYMMDD}.html`(例: `settings-20260518.html`)。
 
 ファイル構造:
 
@@ -154,21 +168,46 @@
 
 ---
 
-### ステップ6: 検証とユーザー提示
+### ステップ6: サーバーを起動してURLをユーザーに伝える
 
 #### 処理内容
 
-1. `tmp/mocks/...` にファイルが生成されており、ブラウザで開けることを確認
-2. パスと各案の軸をユーザーに伝える
-3. ブラウザで開いてレビューしてもらい、フィードバックを反復する
-4. モック確定後は実装フェーズへ — `/ui-kit:implement` を推奨
-   (実装時に共通リソース再利用を強制するため)
+**FastAPI などのサーバープロジェクトの場合:**
+
+1. すでにサーバーが起動しているか確認する(`ps aux | grep uvicorn` など)
+2. 起動済みであればそのポートをそのまま使う
+3. 起動していなければ空きポートを探して起動する:
+   ```bash
+   # 空きポートを探す
+   python -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()"
+   # サーバー起動(例: FastAPI)
+   uvicorn app.main:app --port {空きポート} --reload &
+   ```
+4. モック一覧ページのURL(例: `http://localhost:{port}/dev/mocks`)をユーザーに伝える
+
+**サーバーなし / 静的プロジェクトの場合:**
+
+1. 空きポートを探して `python -m http.server` でローカルサーバーを起動する:
+   ```bash
+   PORT=$(python -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()")
+   python -m http.server $PORT --directory tmp/mocks &
+   echo "http://localhost:$PORT/{ファイル名}.html"
+   ```
+2. 起動したURLをユーザーに伝える
+
+**共通:**
+
+- ユーザーに渡すのは**クリックすれば即開くURL**。ファイルパスだけを伝えない
+- 各案の軸とURLをセットで伝える
+- モック確定後は実装フェーズへ — `/ui-kit:implement` を推奨
+  (実装時に共通リソース再利用を強制するため)
 
 → 完了
 
 #### 出力
 
-- `tmp/mocks/{画面タイプ}-{日付}.html` に N 案が上部タブで並ぶ
+- モック HTML(サーバープロジェクトなら配信用テンプレートに、それ以外は `tmp/mocks/` に)
+- ブラウザで即開けるURL
 - 全案が `principles.md` + `ui-design.md` に準拠
 
 ---
