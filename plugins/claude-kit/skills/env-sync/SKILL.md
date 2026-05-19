@@ -8,36 +8,36 @@ description: |
   or invoked explicitly as `/claude-kit:env-sync`.
 ---
 
-# env-sync — WSL ↔ Windows Claude Code 設定同期
+# env-sync — WSL ↔ Windows Claude Code Config Sync
 
-WSL と Windows の `~/.claude/` を比較し、差分を AI が分析してコピー対象を提案する。
+Compares `~/.claude/` between WSL and Windows, analyzes the diff, and proposes files to copy.
 
 ---
 
 ## Overview
 
-| 実行環境 | 対向パス |
+| Environment | Counterpart path |
 |---|---|
 | WSL | `/mnt/c/Users/<WindowsUser>/.claude/` |
-| Windows (Git Bash 等) | `\\wsl$\<distro>\home\<user>\.claude\` |
+| Windows (Git Bash, etc.) | `\\wsl$\<distro>\home\<user>\.claude\` |
 
-同期対象候補:
+Sync candidates:
 
-| ファイル / フォルダ | 内容 |
+| File / Directory | Contents |
 |---|---|
-| `settings.json` | フック・権限・ステータスライン設定 |
-| `CLAUDE.md` / `CLAUDE.jp.md` | グローバル AI 指示 |
-| `skills/` | ユーザースキル |
-| `keybindings.json` | キーバインド |
-| `rules/` | パススコープルール |
+| `settings.json` | Hooks, permissions, status line config |
+| `CLAUDE.md` / `CLAUDE.jp.md` | Global AI instructions |
+| `skills/` | User skills |
+| `keybindings.json` | Keybinding config |
+| `rules/` | Path-scoped rules |
 
-プラグインキャッシュ（`plugins/cache/`）はコピー対象外。
+Plugin cache (`plugins/cache/`) is always excluded.
 
 ---
 
 ## Tasks
 
-### Step 1: 実行環境を判定する
+### Step 1: Detect the current environment
 
 #### Condition
 
@@ -59,11 +59,11 @@ fi
 
 #### Output
 
-- 実行環境（WSL / Windows）が確定している
+- Current environment (WSL or Windows) is confirmed
 
 ---
 
-### Step 2: 対向パスを自動検出する
+### Step 2: Auto-detect the counterpart path
 
 #### Condition
 
@@ -71,7 +71,7 @@ fi
 
 #### Process
 
-**WSL の場合:**
+**If WSL:**
 
 ```bash
 WIN_USER=$(cmd.exe /c "echo %USERNAME%" 2>/dev/null | tr -d '\r\n')
@@ -80,7 +80,7 @@ echo "Windows side: ${WIN_CLAUDE}"
 ls "${WIN_CLAUDE}" 2>/dev/null || echo "NOT FOUND"
 ```
 
-**Windows (Git Bash 等) の場合:**
+**If Windows (Git Bash, etc.):**
 
 ```bash
 DISTRO=$(wsl.exe -l --quiet 2>/dev/null | head -1 | tr -d '\r\n')
@@ -94,17 +94,17 @@ ls "${WSL_CLAUDE}" 2>/dev/null || echo "NOT FOUND"
 
 #### Output
 
-- 対向パスが確定している
+- Counterpart path is confirmed
 
 #### Notes
 
 ##### Branching
 
-- 対向パスが見つからない → ユーザーにパスを手動入力してもらい、確認後 Step 3 へ
+- Counterpart path not found → ask the user to enter the path manually, then proceed to Step 3
 
 ---
 
-### Step 3: 両環境のファイルをスキャンして差分を検出する
+### Step 3: Scan both sides and detect differences
 
 #### Condition
 
@@ -112,7 +112,7 @@ ls "${WSL_CLAUDE}" 2>/dev/null || echo "NOT FOUND"
 
 #### Process
 
-1. ローカルの `~/.claude/` を以下で列挙する（プラグインキャッシュを除く）:
+1. List files under local `~/.claude/` (excluding plugin cache):
 
 ```bash
 find ~/.claude -maxdepth 3 \
@@ -121,23 +121,23 @@ find ~/.claude -maxdepth 3 \
   | sort
 ```
 
-2. 対向側も同様に列挙する（`ls -la` または同等のコマンド）
+2. List files on the counterpart side in the same way (`ls -la` or equivalent)
 
-3. 差分を以下の観点で整理する:
-   - **ローカルのみ存在** するファイル
-   - **対向のみ存在** するファイル
-   - **両方存在するが更新日時が異なる** ファイル（どちらが新しいか）
-   - **両方存在して同一** とみられるファイル（スキップ候補）
+3. Categorize the diff:
+   - **Local only** — exists on this side, missing on the other
+   - **Counterpart only** — exists on the other side, missing here
+   - **Both exist, different timestamps** — note which side is newer
+   - **Both exist, appear identical** — skip candidate
 
 → Proceed to Step 4
 
 #### Output
 
-- ファイルごとの差分状況が把握されている
+- Per-file diff status is understood
 
 ---
 
-### Step 4: AI がコピー推奨内容を提案する
+### Step 4: Propose what to copy
 
 #### Condition
 
@@ -145,72 +145,72 @@ find ~/.claude -maxdepth 3 \
 
 #### Process
 
-スキャン結果を踏まえて、以下の形式でユーザーに提案する:
+Based on the scan, present a proposal to the user in the following format:
 
 ```
-## 同期提案
+## Sync Proposal
 
-### コピー推奨（ローカル → 対向）
-- settings.json — ローカルが3日新しい（フックや権限設定が含まれる可能性）
-- skills/my-skill/ — 対向に存在しない
+### Recommended: copy local → counterpart
+- settings.json — local is 3 days newer (may contain updated hooks/permissions)
+- skills/my-skill/ — not present on counterpart
 
-### コピー推奨（対向 → ローカル）
-- CLAUDE.md — 対向が1週間新しい
+### Recommended: copy counterpart → local
+- CLAUDE.md — counterpart is 1 week newer
 
-### 確認が必要
-- keybindings.json — 両方に存在、日時が近い（内容確認を推奨）
+### Needs review
+- keybindings.json — exists on both sides, timestamps close (recommend checking content)
 
-### スキップ推奨
-- plugins/cache/ — プラグインキャッシュのため除外
+### Skip
+- plugins/cache/ — excluded (plugin cache)
 ```
 
-提案理由を添えて、ユーザーに確認を求める。
+Include a reason for each recommendation, then ask the user to confirm.
 
 → Proceed to Step 5
 
 #### Output
 
-- 提案内容をユーザーが確認している
+- User has reviewed and confirmed the proposal
 
 ---
 
-### Step 5: ユーザーの確認を得てコピーを実行する
+### Step 5: Copy selected files with user approval
 
 #### Condition
 
 - Step 4 complete
-- ユーザーが実行を承認している
+- User has approved the copy
 
 #### Process
 
-1. ユーザーが選択したファイル/フォルダをコピーする
+1. Copy the files and directories selected by the user:
 
 ```bash
-# 例: ローカル → 対向
+# Example: local → counterpart
 cp -r ~/.claude/settings.json "${WIN_CLAUDE}/settings.json"
 
-# フォルダの場合
+# Directory:
 cp -rp ~/.claude/skills/ "${WIN_CLAUDE}/skills/"
 ```
 
-2. コピー後に対向側のファイル一覧を確認する
+2. After copying, verify the counterpart directory contents
 
 → Proceed to Step 6
 
 #### Output
 
-- 選択されたファイルがコピーされている
+- Selected files are copied to the counterpart
 
 #### Notes
 
 ##### Prohibitions
 
-- ユーザーの確認なしにコピーを実行しない
-- 対向のファイルを確認なしに上書きしない（特に両方に存在する場合）
+- Never copy without explicit user confirmation
+- Never overwrite a counterpart file without confirmation (especially when it exists on both sides)
 
 ---
 
-### Step 6: 結果をレポートする
+### Step 6: Report the result
 
 #### Condition
 
@@ -218,21 +218,21 @@ cp -rp ~/.claude/skills/ "${WIN_CLAUDE}/skills/"
 
 #### Process
 
-コピー結果をファイルごとに報告する:
+Report the outcome file by file:
 
 ```
-## env-sync 完了
+## env-sync complete
 
-### コピー済み
+### Copied
 - settings.json → /mnt/c/Users/xxx/.claude/settings.json ✓
 - skills/my-skill/ → /mnt/c/Users/xxx/.claude/skills/my-skill/ ✓
 
-### スキップ
-- CLAUDE.md — ユーザーがスキップを選択
+### Skipped
+- CLAUDE.md — skipped by user
 
-Claude Code を再起動すると設定が反映されます。
+Restart Claude Code for the changes to take effect.
 ```
 
 #### Output
 
-- 同期結果をユーザーが把握している
+- User understands the sync result
