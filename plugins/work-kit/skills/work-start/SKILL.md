@@ -93,7 +93,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### Step 4: Create the worktree and branch
+### Step 4: Create the worktree and branch (via worktree-kit)
 
 #### Condition
 
@@ -101,18 +101,22 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Process
 
-1. Create the worktree:
+1. **If `worktree-kit` is installed**: invoke `/worktree-kit:work-add` with the PR number and branch:
 
-```bash
-git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
-```
+   > `/worktree-kit:work-add PR{N} {type}/{title}`
+
+2. **If `worktree-kit` is NOT installed**: skip worktree creation and notify the user:
+
+   > ⚠️ worktree-kit がインストールされていないため、ワークツリーの作成をスキップします。  
+   > `.work/` フォルダ管理のみで作業を続けます。  
+   > ワークツリーを使用したい場合は `worktree-kit` プラグインをインストールしてください。
 
 → Proceed to Step 5
 
 #### Output
 
-- Worktree created at `../repo-wt-PR{N}`
-- Branch `PR{N}/{type}/{title}` exists
+- (worktree-kit present) Worktree created at `../repo-wt-PR{N}`, branch `PR{N}/{type}/{title}` exists
+- (worktree-kit absent) No worktree; proceed with `.work/` folder management only
 
 #### Notes
 
