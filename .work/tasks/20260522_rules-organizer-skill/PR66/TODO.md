@@ -9,12 +9,12 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260522_rules-organizer-skill/PR66/QA.md` |
-| - | `.work/specs/` の仕様書を作成する | `.work/specs/rules-organizer.md` |
-| - | SKILL.jp.md を作成する | `plugins/claude-kit/skills/rules-organizer/SKILL.jp.md` |
-| - | SKILL.md を作成する（JP mirror から翻訳） | `plugins/claude-kit/skills/rules-organizer/SKILL.md` |
-| - | plugin.json にスキルを追加する | `plugins/claude-kit/.claude-plugin/plugin.json` |
-| - | glossary にスキルを追記する | `.claude/rules/glossary.md` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/20260522_rules-organizer-skill/PR66/QA.md` |
+| 済 | `.work/specs/` の仕様書を作成する | `.work/specs/rules-organizer.md` |
+| 済 | SKILL.jp.md を作成する | `plugins/claude-kit/skills/rules-organizer/SKILL.jp.md` |
+| 済 | SKILL.md を作成する（JP mirror から翻訳） | `plugins/claude-kit/skills/rules-organizer/SKILL.md` |
+| 済 | plugin.json への追加は不要（スキルは auto-discovery） | — |
+| 済 | glossary にスキルを追記する | `.claude/rules/glossary.md` |
 
 ## 参考ドキュメント
 
