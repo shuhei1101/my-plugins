@@ -22,8 +22,8 @@ debug-fab スキルの UI を簡素化する。モーダルを廃止し、FAB �
 | 済 | 選択0件のとき上部ボタンを「キャンセル」表示に変更 | `uidev.js` |
 | 済 | ボタン文言改善・FAB/上部ボタンのコピー処理を共通化 | `uidev.js` |
 
-| - | 案A: debug-fab テンプレート連動更新ルールを作成 | `.claude/rules/debug-fab-template-sync.md` |
-| - | 案B: debug-fab ウィジェット UI 変更スキルを作成 | `plugins/ui-kit/skills/debug-fab-modify/SKILL.md` |
+| 済 | 案A: debug-fab テンプレート連動更新ルールを作成 | `.claude/rules/debug-fab-template-sync.md` |
+| 済 | 案B: debug-fab ウィジェット UI 変更スキルを作成 | `plugins/ui-kit/skills/debug-fab-modify/SKILL.md` |
 
 ## 参考ドキュメント
 
