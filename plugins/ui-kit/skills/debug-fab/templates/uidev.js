@@ -197,6 +197,10 @@
         : "要素を 1 つ以上選択してください";
     }
 
+    function refreshTopBtn() {
+      topCopyBtn.innerHTML = currentSelected.size > 0 ? "📋 コピー" : "✕ キャンセル";
+    }
+
     let hovered = /** @type {Element|null} */ (null);
 
     function clearHover() {
@@ -245,6 +249,7 @@
         el.classList.add("uidev-picker-selected");
       }
       refreshFab();
+      refreshTopBtn();
     }
 
     function onKey(e) {
@@ -278,6 +283,7 @@
 
     topCopyBtn.addEventListener("click", onTopCopy);
     refreshFab();
+    refreshTopBtn();
     document.addEventListener("mousemove", onMove, true);
     document.addEventListener("click", onClick, true);
     document.addEventListener("keydown", onKey, true);
