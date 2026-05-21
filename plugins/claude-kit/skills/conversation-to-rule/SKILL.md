@@ -150,15 +150,21 @@ Two types of output are generated:
 
 #### Process
 
-1. Read the project root `CLAUDE.md`
-2. Check whether a `## Repository Structure` section exists:
+1. Read the following files and look for any section that documents folder/project structure:
+   - The project root `CLAUDE.md`
+   - Rules under `.claude/rules/` that have no `paths:` frontmatter (always-loaded rules)
 
-   **Section exists:**
+2. Identify a section that describes folder structure:
+   - Do not assume a fixed section name — it may be `Repository Structure`, `フォルダ構成`,
+     `Architecture`, `Project Structure`, or anything similar
+   - Look for path listings or "X lives here" descriptions
+
+   **A folder-structure section is found:**
    - Compare existing content against the new knowledge
-   - Append only what is missing (path roles not yet documented)
+   - Append only what is missing (path roles not yet documented) to that existing section
    - If the same content is already there, make no changes
 
-   **Section does not exist:**
+   **No folder-structure section is found anywhere:**
    - Append a new section to the end of `CLAUDE.md`:
      ```markdown
      ## Repository Structure
