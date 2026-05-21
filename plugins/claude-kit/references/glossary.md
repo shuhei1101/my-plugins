@@ -54,12 +54,12 @@ glossary.md is **always loaded** as a system prompt — every line costs context
 
 ---
 
-## When Claude auto-adds terms
+## When Claude adds terms
 
-The `conversation-to-claude` skill detects new terms in Step 2 and silently appends
-them. Claude will:
+The `conversation-to-claude` skill detects new terms in Step 1 and proposes them to
+the user in the glossary block of the proposal. After the user approves, Claude:
 
-1. Read the existing glossary to avoid duplicates
-2. Infer a definition from conversation context
-3. Place the term under the most appropriate existing category (or create one)
-4. Write conservatively — if unsure whether a term qualifies, skip it
+1. Reads the existing glossary to avoid duplicates
+2. Uses the inferred definition from conversation context
+3. Places the term under the most appropriate existing category (or creates one)
+4. Writes conservatively — if unsure whether a term qualifies, skip it
