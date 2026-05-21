@@ -341,3 +341,10 @@ prs:
   summary: WSL↔Windows間でClaude Code設定ファイルを同期するenv-syncスキルをclaude-kitに追加。
   task: 20260519_add-env-sync-plugin
   completed: true
+- id: 59
+  title: PR59 — conversation-history-skills
+  type: feat
+  tags: []
+  summary: 会話履歴からルールを作成するスキルとスキルを作成するスキルをclaude-kitに追加
+  task: 20260521_conversation-history-skills
+  completed: true
