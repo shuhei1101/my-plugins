@@ -189,16 +189,11 @@
     fab.setAttribute("data-picker-active", "true");
     currentSelected = new Set();
 
-    function refreshFab() {
+    function refresh() {
       const n = currentSelected.size;
       fab.innerHTML = n > 0 ? `📋 ${n}` : "📋";
-      fab.title = n > 0
-        ? `選択中 ${n} 件 — クリックで JSON コピー`
-        : "要素を 1 つ以上選択してください";
-    }
-
-    function refreshTopBtn() {
-      topCopyBtn.innerHTML = currentSelected.size > 0 ? "📋 コピー" : "✕ キャンセル";
+      fab.title = n > 0 ? `選択中 ${n} 件 — クリックでコピー` : "キャンセル";
+      topCopyBtn.innerHTML = n > 0 ? `📋 コピー (${n}件)` : "要素を選択してください";
     }
 
     let hovered = /** @type {Element|null} */ (null);
@@ -225,14 +220,11 @@
       // 上部コピーボタンは通常のイベントに任せる
       if (el === topCopyBtn || topCopyBtn.contains(el)) return;
 
-      // FAB クリック → コピーして終了
+      // FAB クリック → コピーまたはキャンセルして終了
       if (el === fab || fab.contains(el)) {
         e.preventDefault();
         e.stopPropagation();
-        if (currentSelected.size === 0) return;
-        const ok = await copyJSON(buildPayload(Array.from(currentSelected)));
-        if (ok) showToast(`✓ ${currentSelected.size} 件の要素 + files + logs を JSON でコピーしました`);
-        stop();
+        await copyAndStop();
         return;
       }
 
@@ -248,8 +240,7 @@
         el.classList.remove("uidev-picker-highlight");
         el.classList.add("uidev-picker-selected");
       }
-      refreshFab();
-      refreshTopBtn();
+      refresh();
     }
 
     function onKey(e) {
@@ -267,23 +258,23 @@
       fab.removeAttribute("data-picker-active");
       fab.innerHTML = "🐛";
       fab.title = "要素選択モードに入る";
-      topCopyBtn.removeEventListener("click", onTopCopy);
+      topCopyBtn.removeEventListener("click", copyAndStop);
       document.removeEventListener("mousemove", onMove, true);
       document.removeEventListener("click", onClick, true);
       document.removeEventListener("keydown", onKey, true);
     }
 
-    async function onTopCopy() {
-      const ok = await copyJSON(buildPayload(Array.from(currentSelected)), topCopyBtn);
-      if (ok && currentSelected.size > 0) {
-        showToast(`✓ ${currentSelected.size} 件の要素 + files + logs を JSON でコピーしました`);
+    async function copyAndStop() {
+      const n = currentSelected.size;
+      if (n > 0) {
+        const ok = await copyJSON(buildPayload(Array.from(currentSelected)), topCopyBtn);
+        if (ok) showToast(`✓ ${n} 件の要素 + files + logs を JSON でコピーしました`);
       }
       stop();
     }
 
-    topCopyBtn.addEventListener("click", onTopCopy);
-    refreshFab();
-    refreshTopBtn();
+    topCopyBtn.addEventListener("click", copyAndStop);
+    refresh();
     document.addEventListener("mousemove", onMove, true);
     document.addEventListener("click", onClick, true);
     document.addEventListener("keydown", onKey, true);
