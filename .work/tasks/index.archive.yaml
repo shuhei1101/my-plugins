@@ -368,3 +368,10 @@ prs:
   summary: conversation-to-skill/ruleを統合し、hook/CLAUDE.md提案も含む新スキルconversation-to-claudeを作成
   task: 20260521_merge-conversation-skills
   completed: true
+- id: 62
+  title: PR62 — debug-fab-simplify
+  type: refactor
+  tags: []
+  summary: 'debug-fab スキルの UI を簡素化: モーダル削除・FAB直接ピッカー起動・上部中央コピーボタン追加'
+  task: 20260521_debug-fab-simplify
+  completed: true
