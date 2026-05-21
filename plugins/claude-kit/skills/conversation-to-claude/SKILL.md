@@ -1,15 +1,15 @@
 ---
-name: conversation-capture
+name: conversation-to-claude
 description: |
   Analyze the current session's conversation history and propose the best artifact type
   (skill, rule, hook, or CLAUDE.md) for persisting the knowledge or workflow discovered.
   Trigger when the user says "会話をキャプチャして", "今の作業を保存して", "この手順を残したい",
   "会話からスキル作って", "会話からルール作って",
-  or invoked explicitly as `/claude-kit:conversation-capture`.
+  or invoked explicitly as `/claude-kit:conversation-to-claude`.
   Replaces the former `conversation-to-skill` and `conversation-to-rule` skills.
 ---
 
-# conversation-capture — Generate Artifacts from Conversation History
+# conversation-to-claude — Generate Artifacts from Conversation History
 
 Analyzes the session's conversation history, proposes the best Claude Code artifact type
 (skill / rule / hook / CLAUDE.md), lets the user choose, and delegates to the

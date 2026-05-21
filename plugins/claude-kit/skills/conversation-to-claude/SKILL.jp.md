@@ -1,10 +1,10 @@
 ---
-name: conversation-capture
+name: conversation-to-claude
 description: |
   現在のセッションの会話履歴を分析し、最適なアーティファクト種別（スキル・ルール・フック・CLAUDE.md）を
   提案してユーザーに選択させ、対応するクリエイタースキルで実装する統合スキル。
   「会話をキャプチャして」「今の作業を保存して」「この手順を残したい」と言われたとき、
-  または明示的に `/claude-kit:conversation-capture` で起動。
+  または明示的に `/claude-kit:conversation-to-claude` で起動。
   旧スキル `conversation-to-skill` と `conversation-to-rule` を統合・置き換え。
 ---
 
