@@ -52,6 +52,11 @@ description: |
    - 禁止事項・命名規則・設計方針など全ファイルに適用するルール
    - 「これは CLAUDE.md に書いておくべき」という知識
 
+   **E. 再発防止の教訓**（`incidents` ルール向け）
+   - コマンドや操作を試みたが失敗し、原因・正解が判明したもの
+   - 思い込みで進めたが実際は違った、という認識の誤り
+   - 「同じミスを繰り返さないために記録したい」と感じる気づき
+
 → ステップ 2 へ
 
 #### 出力
@@ -80,14 +85,21 @@ description: |
 
    【提案 B】ルール — {ルール名候補}
    理由: {なぜルールが適切か}
+   適用パス: {このルールを適用するファイル/ディレクトリのパターン (例: src/**, *.ts, plugins/**)}
    生成物: .claude/rules/{name}.md
 
    【提案 C】フック — {フック名候補}
    理由: {なぜフックが適切か}
    生成物: settings.json への hooks エントリ
 
+   【再発防止】incidents に追記
+   概要: {今回の教訓を1〜2行で}
+   生成物: .claude/rules/incidents.md（インデックス）＋ .claude/references/incidents/{slug}.md（詳細）
+
    どれを作成しますか？（複数選択可）
    ```
+
+   > **注意**: 上記 A〜D の提案が優先。E（再発防止）はそれらに当てはまらない教訓のみを対象とする。
 
 2. 抽出できるものがない場合:
    - 「今回の会話から永続化できる知識・手順は見つかりませんでした」と報告して終了
@@ -106,6 +118,7 @@ description: |
 | ルール | ファイル依存関係の発見、パス構成・役割の知識 |
 | フック | 特定イベントへの自動反応（ツール使用前後・セッション開始等） |
 | CLAUDE.md | プロジェクト全体に適用する規約・禁止事項・設計方針 |
+| incidents | 失敗・誤解・思い込みの修正など再発防止が目的の教訓 |
 
 ---
 
@@ -125,6 +138,7 @@ description: |
 | ルール | `claude-kit:rule-creator` | ドメイン名・ファイルリスト・依存関係の説明 |
 | フック | `claude-kit:hook-creator` | フック名・対象イベント・実行したい処理の説明 |
 | CLAUDE.md | `claude-kit:claude-creator` | 追記・作成したいガイドライン内容 |
+| incidents | （スキルを起動しない） | `.claude/rules/incidents.md` のインデックスに概要を1行追記し、`.claude/references/incidents/{slug}.md`（+ `.jp.md`）に詳細を記録する |
 
 複数選択された場合は、選択された順に1つずつ処理する。
 
@@ -161,6 +175,7 @@ description: |
 | ルール | `.claude/rules/<name>.md` | ファイル間の依存関係・パス構成の永続化 |
 | フック | `settings.json` hooks | ツール使用前後の自動チェック・通知 |
 | CLAUDE.md | `CLAUDE.md` への追記 | プロジェクト規約・ガイドラインの文書化 |
+| incidents | `.claude/rules/incidents.md`（インデックス・常時読み込み）<br>`.claude/references/incidents/{slug}.md`（詳細 en）<br>`.claude/references/incidents/{slug}.jp.md`（詳細 jp） | 失敗・誤解・思い込みの再発防止 |
 
 ### 公式ドキュメント
 

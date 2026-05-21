@@ -54,6 +54,11 @@ generates it through the right creator skill.
    - Prohibitions, naming rules, design principles that apply to all files
    - "This belongs in CLAUDE.md"
 
+   **E. Lessons learned / recurrence prevention** (→ `incidents` rule)
+   - Commands or operations that were tried and failed, where the cause and fix are now known
+   - Wrong assumptions that turned out to be incorrect
+   - "I don't want to make this mistake again"
+
 → Proceed to Step 2
 
 #### Output
@@ -81,14 +86,21 @@ generates it through the right creator skill.
 
    【案 B】ルール — {名前の候補}
    理由: {なぜルールが適切か}
+   適用パス: {このルールを適用するファイル/ディレクトリのパターン (例: src/**, *.ts, plugins/**)}
    生成物: .claude/rules/{name}.md
 
    【案 C】フック — {名前の候補}
    理由: {なぜフックが適切か}
    生成物: settings.json への hooks エントリ
 
+   【再発防止】incidents に追記
+   概要: {今回の教訓を1〜2行で}
+   生成物: .claude/rules/incidents.md（インデックス）＋ .claude/references/incidents/{slug}.md（詳細）
+
    どれを作成しますか？（複数選択可）
    ```
+
+   > **Note**: Proposals A–D take priority. E (incidents) is only for insights that don't fit A–D.
 
 2. If nothing extractable is found:
    - Report "今回の会話から永続化できる知識・手順は見つかりませんでした" and stop.
@@ -107,6 +119,7 @@ generates it through the right creator skill.
 | Rule | File dependency discovery, path role knowledge |
 | Hook | Automatic reaction to tool events (pre/post tool use, session start) |
 | CLAUDE.md | Project-wide conventions, prohibitions, design principles |
+| incidents | Failures, wrong assumptions, or misconceptions worth preventing from recurring |
 
 ---
 
@@ -126,6 +139,7 @@ For each selected type, launch the corresponding creator skill and delegate:
 | Rule | `claude-kit:rule-creator` | Domain name, file list, dependency description |
 | Hook | `claude-kit:hook-creator` | Hook name, target event, description of what to run |
 | CLAUDE.md | `claude-kit:claude-creator` | Guideline content to add or create |
+| incidents | (no creator skill) | Append a one-line summary to `.claude/rules/incidents.md` (index); write full details to `.claude/references/incidents/{slug}.md` (+ `.jp.md`) |
 
 If multiple types were selected, process them one at a time in the order the user listed.
 
@@ -162,6 +176,7 @@ If multiple types were selected, process them one at a time in the order the use
 | Rule | `.claude/rules/<name>.md` | Persisting file dependencies and path structure |
 | Hook | `settings.json` hooks | Automatic pre/post-tool checks and notifications |
 | CLAUDE.md | Append to `CLAUDE.md` | Documenting project conventions and guidelines |
+| incidents | `.claude/rules/incidents.md` (index — always loaded)<br>`.claude/references/incidents/{slug}.md` (detail en)<br>`.claude/references/incidents/{slug}.jp.md` (detail jp) | Preventing recurrence of failures and wrong assumptions |
 
 ### Official docs
 
