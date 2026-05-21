@@ -3,32 +3,278 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ui-dev — 組み込み例</title>
+<title>ui-kit:debug-fab — 動作確認</title>
 
 <!-- ① CSS / JS を 1 回読み込み(各画面で共通) -->
 <link rel="stylesheet" href="./uidev.css" />
 <script src="./uidev.js" defer></script>
 
 <style>
-  body { font-family: system-ui, sans-serif; padding: 24px; background: #fafafa; }
-  .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px; max-width: 720px; }
-  button.act { margin-top: 12px; padding: 8px 12px; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 13px; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    margin: 0;
+    background: #f2f2f5;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    background: #fff;
+    border-bottom: 1px solid #e5e5ea;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .page-header h1 { margin: 0; font-size: 18px; font-weight: 700; }
+  .page-header .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: #e8f0fe;
+    color: #2e7fff;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .main { padding: 24px; max-width: 960px; margin: 0 auto; display: grid; gap: 20px; }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e5e5ea;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .card h2 { margin: 0 0 12px; font-size: 14px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: .05em; }
+
+  /* 説明カード */
+  .how-to { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .how-to .step {
+    background: #f8f8fa;
+    border: 1px solid #e5e5ea;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .how-to .step .num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #2e7fff;
+    margin-bottom: 4px;
+  }
+  .how-to .step p { margin: 0; font-size: 13px; line-height: 1.6; }
+
+  /* ダミーリスト */
+  .user-list { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .user-list th, .user-list td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f3;
+  }
+  .user-list th { color: #888; font-weight: 600; font-size: 11px; text-transform: uppercase; }
+  .user-list tr:last-child td { border-bottom: none; }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+    margin-right: 8px; vertical-align: middle;
+  }
+  .status-badge {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600;
+  }
+  .status-badge.active  { background: #e6f9ed; color: #1a7f4b; }
+  .status-badge.pending { background: #fff4e0; color: #c07a00; }
+  .status-badge.inactive { background: #f2f2f5; color: #888; }
+  .action-btn {
+    padding: 5px 12px;
+    border: 1px solid #e5e5ea;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    color: #333;
+    margin-right: 4px;
+  }
+  .action-btn:hover { background: #f5f5f8; }
+
+  /* ログ出力ボタン */
+  .log-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .log-btn {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+  }
+  .log-btn:hover { filter: brightness(1.1); }
+
+  /* フォーム */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
+  .field input, .field select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #e5e5ea;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .submit-row { margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px; }
+  .btn-primary {
+    padding: 9px 20px;
+    background: #2e7fff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-secondary {
+    padding: 9px 20px;
+    background: #fff;
+    color: #333;
+    border: 1px solid #e5e5ea;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  @media (max-width: 600px) {
+    .how-to { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 
 <!-- ② この画面に関連するファイルを data-debug-files で宣言 -->
-<body data-debug-files='{"html":["pages/example.html"],"css":["styles/example.css"],"js":["scripts/example.js"]}'>
+<body data-debug-files='{"html":["pages/users.html"],"css":["styles/users.css"],"js":["scripts/users.js","scripts/api.js"]}'>
 
-<h1>ui-kit:debug-fab 組み込み例</h1>
-<p>このサンプルは <code>plugins/ui-kit/skills/debug-fab/templates/</code> の <code>uidev.css</code> + <code>uidev.js</code> を読み込み、<code>data-debug-files</code> 属性で関連ファイルを宣言するだけの最小実装です。</p>
+<div class="page-header">
+  <h1>ユーザー管理</h1>
+  <span class="badge">dev screen</span>
+</div>
 
-<div class="card">
-  <strong>右下の 🐛 を押すとデバッグパネルが開きます。</strong>
-  <p>動作確認用にログを出してみてください。</p>
-  <button class="act" style="background:#2e7fff;" onclick="console.info('[example] info 出力')">info</button>
-  <button class="act" style="background:#ffb547; color:#111;" onclick="console.warn('[example] warn 出力')">warn</button>
-  <button class="act" style="background:#ff6b6b;" onclick="console.error('[example] error 出力')">error</button>
-  <button class="act" style="background:#666;" onclick="console.debug('[example] debug 出力', { state: { count: 1 } })">debug</button>
+<div class="main">
+
+  <!-- 使い方説明 -->
+  <div class="card">
+    <h2>🐛 debug-fab の使い方</h2>
+    <div class="how-to">
+      <div class="step">
+        <div class="num">STEP 1</div>
+        <p>右下の <strong>🐛</strong> をクリック → 要素選択モードに入ります</p>
+      </div>
+      <div class="step">
+        <div class="num">STEP 2</div>
+        <p>デバッグしたい要素をクリックして選択（緑枠 = 選択済み）</p>
+      </div>
+      <div class="step">
+        <div class="num">STEP 3</div>
+        <p>右下の <strong>📋 N</strong> または上部中央の <strong>📋 コピー</strong> ボタンでコピー</p>
+      </div>
+      <div class="step">
+        <div class="num">STEP 4</div>
+        <p>コピーした JSON を Claude Code に貼り付けて「これでデバッグして」</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ユーザーリスト -->
+  <div class="card" id="user-list-section">
+    <h2>ユーザー一覧</h2>
+    <table class="user-list">
+      <thead>
+        <tr>
+          <th>名前</th>
+          <th>メール</th>
+          <th>ロール</th>
+          <th>ステータス</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="avatar" style="background:#6c63ff">田</span>田中 一郎</td>
+          <td>tanaka@example.com</td>
+          <td>管理者</td>
+          <td><span class="status-badge active">有効</span></td>
+          <td>
+            <button class="action-btn" onclick="console.info('[users] 編集: tanaka')">編集</button>
+            <button class="action-btn" onclick="console.warn('[users] 削除試行: tanaka')">削除</button>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="avatar" style="background:#ff6b6b">鈴</span>鈴木 花子</td>
+          <td>suzuki@example.com</td>
+          <td>編集者</td>
+          <td><span class="status-badge pending">審査中</span></td>
+          <td>
+            <button class="action-btn" onclick="console.info('[users] 編集: suzuki')">編集</button>
+            <button class="action-btn" onclick="console.warn('[users] 削除試行: suzuki')">削除</button>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="avatar" style="background:#20c997">佐</span>佐藤 次郎</td>
+          <td>sato@example.com</td>
+          <td>閲覧者</td>
+          <td><span class="status-badge inactive">無効</span></td>
+          <td>
+            <button class="action-btn" onclick="console.info('[users] 編集: sato')">編集</button>
+            <button class="action-btn" onclick="console.warn('[users] 削除試行: sato')">削除</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- フォーム -->
+  <div class="card" id="user-form-section">
+    <h2>ユーザー招待</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label>名前</label>
+        <input type="text" placeholder="山田 太郎" />
+      </div>
+      <div class="field">
+        <label>メールアドレス</label>
+        <input type="email" placeholder="yamada@example.com" />
+      </div>
+      <div class="field">
+        <label>ロール</label>
+        <select>
+          <option>閲覧者</option>
+          <option>編集者</option>
+          <option>管理者</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>部署</label>
+        <input type="text" placeholder="開発部" />
+      </div>
+    </div>
+    <div class="submit-row">
+      <button class="btn-secondary" onclick="console.info('[form] キャンセル')">キャンセル</button>
+      <button class="btn-primary" onclick="console.info('[form] 招待送信', {email:'yamada@example.com',role:'閲覧者'})">招待を送る</button>
+    </div>
+  </div>
+
+  <!-- ログ出力パネル -->
+  <div class="card">
+    <h2>ログ出力テスト</h2>
+    <p style="font-size:13px;color:#666;margin:0 0 12px;">ボタンを押してログを出してからコピーすると、logs にエントリが含まれます。</p>
+    <div class="log-btns">
+      <button class="log-btn" style="background:#2e7fff;" onclick="console.info('[test] ページ読み込み完了', {users:3,page:1})">info</button>
+      <button class="log-btn" style="background:#ffb547;color:#111;" onclick="console.warn('[test] API レスポンス遅延', {ms:1240})">warn</button>
+      <button class="log-btn" style="background:#ff6b6b;" onclick="console.error('[test] 権限エラー', {code:403,path:'/api/admin'})">error</button>
+      <button class="log-btn" style="background:#888;" onclick="console.debug('[test] state snapshot', {filter:'all',sort:'name',page:1})">debug</button>
+    </div>
+  </div>
+
 </div>
 
 </body>

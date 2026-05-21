@@ -1,13 +1,13 @@
 /*
-  uidev.js — dev-kit:ui-dev フロートデバッグウィジェット
-  See: plugins/dev-kit/skills/ui-dev/SKILL.md
+  uidev.js — ui-kit:debug-fab フロートデバッグウィジェット
+  See: plugins/ui-kit/skills/debug-fab/SKILL.md
 
   使い方:
     1. このファイルと uidev.css を 1 回だけ読み込む
     2. 各画面で <body data-debug-files='{...}'> または window.__uidevFiles = {...} で
        関連ファイルを宣言
-    3. 自動でフロートボタン + モーダルが画面に挿入される
-    4. Ctrl+Shift+D でも開閉可能
+    3. 右下の FAB (🐛) をクリックすると要素選択モードに入る
+    4. 要素を選択して FAB (📋 N) または上部中央の「コピー」ボタンでコピー
 
   単一画面に複数回ロードしないこと(自動的にスキップする)。
 */
@@ -18,21 +18,17 @@
   if (window.__uidevLoaded) return;
   window.__uidevLoaded = true;
 
-  // ── ストレージキー ───────────────────────────────────────
-  const LS = { lines: "uidev.lines", level: "uidev.level", pos: "uidev.pos" };
-  const DEFAULTS = { lines: 100, level: "error", pos: "bottom-right" };
-  const getS = (k) => localStorage.getItem(LS[k]) ?? DEFAULTS[k];
-  const setS = (k, v) => localStorage.setItem(LS[k], v);
-
   // ── ログリングバッファ ───────────────────────────────────
   const LEVEL_ORDER = { debug: 10, info: 20, warn: 30, error: 40, log: 20 };
   const MAX_BUFFER = 2000;
+  const DEFAULT_LINES = 100;
+  const DEFAULT_LEVEL = "error";
   const buffer = [];
 
   function push(level, args) {
     buffer.push({
       ts: new Date().toISOString(),
-      level: level,
+      level,
       args: args.map((a) => {
         if (typeof a === "string") return a;
         try { return JSON.stringify(a); } catch { return String(a); }
@@ -41,7 +37,6 @@
     if (buffer.length > MAX_BUFFER) buffer.shift();
   }
 
-  // console フック(uidev.js 読み込み後の console 呼び出しを全て収集)
   ["log", "info", "warn", "error", "debug"].forEach((lv) => {
     const orig = console[lv].bind(console);
     console[lv] = (...args) => { push(lv, args); orig(...args); };
@@ -72,184 +67,37 @@
     return out;
   }
 
-  // ── DOM 構築 ────────────────────────────────────────────
-  function buildDOM() {
-    const root = document.createElement("div");
-    root.className = "uidev-root";
-    root.innerHTML = `
-      <div class="uidev-fab" data-pos="${getS("pos")}" title="開発デバッグパネルを開く">🐛</div>
-      <div class="uidev-modal-backdrop" data-open="false">
-        <div class="uidev-modal" role="dialog" aria-modal="true">
-          <header>
-            <div class="title">
-              <span>ui-dev デバッグパネル</span>
-              <span class="badge">dev-kit:ui-dev</span>
-            </div>
-            <div class="pos-field">
-              <span>ボタン位置</span>
-              <select data-uidev="pos">
-                <option value="bottom-right">右下</option>
-                <option value="bottom-left">左下</option>
-                <option value="top-right">右上</option>
-                <option value="top-left">左上</option>
-              </select>
-            </div>
-            <button class="pick" data-uidev="pick" title="要素ピッカーモードに入る(クリックで XPath + URL を JSON コピー)">🎯 要素選択</button>
-            <button class="copy" data-uidev="copy" title="関連ファイル情報 + 直近 N 行ログを JSON でコピー">📋 コピー</button>
-            <button class="close" data-uidev="close" aria-label="閉じる">×</button>
-          </header>
-          <div class="uidev-body">
-            <section>
-              <div class="section-head"><h3>概要</h3></div>
-              <div class="uidev-info-card">
-                <div class="row"><div class="key">page</div><div class="val" data-uidev="page"></div></div>
-                <div class="row"><div class="key">url</div><div class="val" data-uidev="url"></div></div>
-              </div>
-            </section>
-            <section>
-              <div class="section-head"><h3>関連ファイル</h3></div>
-              <div class="uidev-files" data-uidev="files"></div>
-              <div class="uidev-setting-hint">画面側で <code>data-debug-files</code> 属性または <code>window.__uidevFiles</code> で明示登録します。</div>
-            </section>
-            <section>
-              <div class="section-head">
-                <h3>直近ログ</h3>
-                <span class="count" data-uidev="log-count"></span>
-                <div class="controls">
-                  <div class="inline-field">
-                    <span>レベル</span>
-                    <select data-uidev="level">
-                      <option value="error">エラー以上</option>
-                      <option value="warn">警告以上</option>
-                      <option value="info">情報以上</option>
-                      <option value="debug">デバッグ以上</option>
-                    </select>
-                  </div>
-                  <div class="inline-field">
-                    <span>行数</span>
-                    <input type="number" data-uidev="lines" min="10" max="2000" step="10" value="100" />
-                  </div>
-                </div>
-              </div>
-              <div class="uidev-logs" data-uidev="logs"></div>
-              <div class="uidev-setting-hint">バッファは全レベル収集、表示・コピーはこのフィルタで絞り込みます。</div>
-            </section>
-            <section>
-              <div class="section-head">
-                <h3>要素ピッカー</h3>
-              </div>
-              <div class="uidev-setting-hint">
-                ヘッダの「🎯 要素選択」を押すと、モーダルが一時非表示になり要素ピッカーモードに入る。
-                <strong>クリックで複数選択(再クリックで解除)</strong>、画面右下の <strong>🐛 → 📋 N</strong> ボタンを押すと
-                通常の JSON コピー(files + logs)に <code>elements: [...]</code> を加えてクリップボードへ。
-                <kbd>Esc</kbd> でキャンセル。XPath は短縮形式(相対)で固定。
-              </div>
-            </section>
-          </div>
-          <div class="uidev-footer-hint">
-            <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd> でも開閉できます。コピーした JSON はそのまま Claude Code に貼り付けてデバッグ可能です。
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(root);
-    return root;
-  }
-
-  // ── レンダリング ───────────────────────────────────────
-  function getFilteredLogs() {
-    const lines = parseInt(getS("lines"), 10) || DEFAULTS.lines;
-    const minLevel = LEVEL_ORDER[getS("level")] ?? LEVEL_ORDER[DEFAULTS.level];
-    return buffer.filter((e) => (LEVEL_ORDER[e.level] ?? 20) >= minLevel).slice(-lines);
-  }
-
-  function renderOverview(root) {
-    root.querySelector('[data-uidev="page"]').textContent = location.pathname || "/";
-    root.querySelector('[data-uidev="url"]').textContent  = location.href;
-
-    const files = collectFiles();
-    const wrap = root.querySelector('[data-uidev="files"]');
-    wrap.innerHTML = "";
-    const groups = [["html","HTML"],["css","CSS"],["js","JS"]];
-    let hasAny = false;
-    groups.forEach(([k, lbl]) => {
-      if (!files[k].length) return;
-      hasAny = true;
-      const g = document.createElement("div");
-      g.className = "group";
-      g.innerHTML = `<div class="label">${lbl} <span class="tag">${files[k].length}</span></div>
-        <ul>${files[k].map((f) => `<li>${escapeHTML(f)}</li>`).join("")}</ul>`;
-      wrap.appendChild(g);
-    });
-    if (!hasAny) {
-      wrap.innerHTML = '';
-      const empty = document.createElement("div");
-      empty.className = "uidev-files-empty";
-      empty.innerHTML = '登録されたファイルがありません。<code>data-debug-files</code> 属性または <code>window.__uidevFiles</code> で登録してください。';
-      wrap.appendChild(empty);
-    }
-  }
-
-  function renderLogs(root) {
-    const logs = getFilteredLogs();
-    const wrap = root.querySelector('[data-uidev="logs"]');
-    root.querySelector('[data-uidev="log-count"]').textContent = `(${logs.length} / バッファ ${buffer.length})`;
-    if (!logs.length) {
-      wrap.innerHTML = '<div class="empty">該当ログなし(現在の出力レベルでは表示対象なし)</div>';
-      return;
-    }
-    wrap.innerHTML = logs.map((e) => {
-      const t = e.ts.slice(11, 23);
-      return `<div class="row" data-level="${e.level}">
-        <div class="ts">${t}</div>
-        <div class="level">${e.level}</div>
-        <div class="msg">${escapeHTML(e.args.join(" "))}</div>
-      </div>`;
-    }).join("");
-    wrap.scrollTop = wrap.scrollHeight;
-  }
-
-  function escapeHTML(s) {
-    return String(s).replace(/[&<>"']/g, (c) => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    })[c]);
-  }
-
-  // ── ペイロード組立(共通) ─────────────────────────────
-  /**
-   * @param {Element[]} [elements] 要素ピッカーで選択された要素配列(なければ空)
-   */
+  // ── ペイロード組立 ────────────────────────────────────────
   function buildPayload(elements) {
     const els = Array.isArray(elements) ? elements : [];
-    const lines = parseInt(getS("lines"), 10) || DEFAULTS.lines;
-    const minLevel = LEVEL_ORDER[getS("level")] ?? LEVEL_ORDER[DEFAULTS.level];
-    const entries = buffer.filter((e) => (LEVEL_ORDER[e.level] ?? 20) >= minLevel).slice(-lines);
-
+    const minLevel = LEVEL_ORDER[DEFAULT_LEVEL];
+    const entries = buffer
+      .filter((e) => (LEVEL_ORDER[e.level] ?? 20) >= minLevel)
+      .slice(-DEFAULT_LINES);
     return {
       page: location.pathname || "/",
-      url:  location.href,
+      url: location.href,
       files: collectFiles(),
-      logs: { limit: lines, level: getS("level"), entries: entries },
+      logs: { limit: DEFAULT_LINES, level: DEFAULT_LEVEL, entries },
       elements: els.map(describeElement),
       capturedAt: new Date().toISOString(),
     };
   }
 
-  /** @param {Element} el */
   function describeElement(el) {
     const cls = el.className && typeof el.className === "string"
       ? el.className.split(/\s+/).filter(Boolean)
       : [];
     return {
-      xpath:   shortXPath(el),
-      tag:     el.tagName,
-      id:      el.id || null,
+      xpath: shortXPath(el),
+      tag: el.tagName,
+      id: el.id || null,
       classes: cls,
-      text:    (el.textContent || "").trim().slice(0, 120),
+      text: (el.textContent || "").trim().slice(0, 120),
     };
   }
 
-  /** @param {string} text  非セキュアコンテキスト(HTTP)でも動く execCommand フォールバック */
+  // ── クリップボードコピー ──────────────────────────────────
   function legacyCopyText(text) {
     const ta = document.createElement("textarea");
     ta.value = text;
@@ -257,14 +105,9 @@
     document.body.appendChild(ta);
     ta.focus();
     ta.select();
-    try {
-      return document.execCommand("copy");
-    } finally {
-      ta.remove();
-    }
+    try { return document.execCommand("copy"); } finally { ta.remove(); }
   }
 
-  /** @param {Element} target  クリップボードにコピーしフィードバック表示 */
   async function copyJSON(payload, btn) {
     const text = JSON.stringify(payload, null, 2);
     try {
@@ -287,13 +130,7 @@
     }
   }
 
-  async function copyDebugJSON(root) {
-    const btn = root.querySelector('[data-uidev="copy"]');
-    await copyJSON(buildPayload([]), btn);
-  }
-
   // ── XPath 生成(短縮形式・相対) ──────────────────────────
-  /** @param {Element} el  short XPath: 直近の id を起点に */
   function shortXPath(el) {
     if (!el || el.nodeType !== 1) return "";
     const segments = [];
@@ -319,120 +156,125 @@
     return "/" + segments.join("/");
   }
 
-  // ── 要素ピッカー(多選択 + FAB コピー) ─────────────────
-  /** @param {ReturnType<typeof buildDOM>} root */
+  // ── トースト通知 ─────────────────────────────────────────
+  function showToast(msg) {
+    const toast = document.createElement("div");
+    toast.className = "uidev-picker-toast";
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 1800);
+  }
+
+  // ── DOM 構築 ────────────────────────────────────────────
+  function buildDOM() {
+    const root = document.createElement("div");
+    root.className = "uidev-root";
+    root.innerHTML = `
+      <div class="uidev-fab" data-pos="bottom-right" title="要素選択モードに入る">🐛</div>
+      <div class="uidev-top-bar">
+        <button class="uidev-copy-btn" data-uidev="top-copy">📋 コピー</button>
+      </div>
+    `;
+    document.body.appendChild(root);
+    return root;
+  }
+
+  // ── 要素ピッカー ─────────────────────────────────────────
+  let currentSelected = /** @type {Set<Element>} */ (new Set());
+
   function startPicker(root) {
-    const backdrop = root.querySelector(".uidev-modal-backdrop");
-    const fab      = /** @type {HTMLElement} */ (root.querySelector(".uidev-fab"));
-    const originalFabHTML  = fab.innerHTML;
-    const originalFabTitle = fab.title;
-    const wasOpen = backdrop.getAttribute("data-open") === "true";
-    backdrop.setAttribute("data-open", "false");
+    const fab = /** @type {HTMLElement} */ (root.querySelector(".uidev-fab"));
+    const topCopyBtn = /** @type {HTMLButtonElement} */ (root.querySelector('[data-uidev="top-copy"]'));
     document.body.classList.add("uidev-picker-active");
     fab.setAttribute("data-picker-active", "true");
+    currentSelected = new Set();
 
-    const hint = document.createElement("div");
-    hint.className = "uidev-picker-hint";
-    hint.innerHTML = `要素ピッカーモード — クリックで複数選択(再クリックで解除) / 右下のボタンでコピー / <kbd>Esc</kbd> でキャンセル`;
-    document.body.appendChild(hint);
+    function refresh() {
+      const n = currentSelected.size;
+      fab.innerHTML = n > 0 ? `📋 ${n}` : "📋";
+      fab.title = n > 0 ? `選択中 ${n} 件 — クリックでコピー` : "キャンセル";
+      topCopyBtn.innerHTML = n > 0 ? `📋 コピー (${n}件)` : "要素を選択してください";
+    }
 
-    const selected = /** @type {Set<Element>} */ (new Set());
     let hovered = /** @type {Element|null} */ (null);
 
     function clearHover() {
-      if (hovered && !selected.has(hovered)) hovered.classList.remove("uidev-picker-highlight");
+      if (hovered && !currentSelected.has(hovered)) hovered.classList.remove("uidev-picker-highlight");
       hovered = null;
     }
 
-    function refreshFab() {
-      const n = selected.size;
-      fab.innerHTML = n > 0 ? `📋 ${n}` : "📋";
-      fab.title = n > 0 ? `選択中 ${n} 件 — クリックで JSON コピー` : "要素を 1 つ以上選択してください";
-    }
-
-    /** @param {MouseEvent} e */
     function onMove(e) {
       const el = /** @type {Element} */ (e.target);
-      if (!el || el === hint || hint.contains(el) || el === fab || fab.contains(el)) return;
+      if (!el || el === fab || fab.contains(el) || el === topCopyBtn || topCopyBtn.contains(el)) return;
       if (hovered !== el) {
         clearHover();
         hovered = el;
-        if (!selected.has(el)) el.classList.add("uidev-picker-highlight");
+        if (!currentSelected.has(el)) el.classList.add("uidev-picker-highlight");
       }
     }
 
-    /** @param {MouseEvent} e */
     async function onClick(e) {
       const el = /** @type {Element} */ (e.target);
       if (!el) return;
 
-      // FAB クリック → コピーして終了
+      // 上部コピーボタンは通常のイベントに任せる
+      if (el === topCopyBtn || topCopyBtn.contains(el)) return;
+
+      // FAB クリック → コピーまたはキャンセルして終了
       if (el === fab || fab.contains(el)) {
         e.preventDefault();
         e.stopPropagation();
-        if (selected.size === 0) {
-          flashHint("要素を 1 つ以上選択してください");
-          return;
-        }
-        const ok = await copyJSON(buildPayload(Array.from(selected)));
-        if (ok) {
-          const toast = document.createElement("div");
-          toast.className = "uidev-picker-toast";
-          toast.textContent = `✓ ${selected.size} 件の要素 + files + logs を JSON でコピーしました`;
-          document.body.appendChild(toast);
-          setTimeout(() => toast.remove(), 1800);
-        }
-        stop();
+        await copyAndStop();
         return;
       }
-
-      // hint をクリックされた場合は無視
-      if (el === hint || hint.contains(el)) return;
 
       e.preventDefault();
       e.stopPropagation();
 
       // トグル選択
-      if (selected.has(el)) {
-        selected.delete(el);
+      if (currentSelected.has(el)) {
+        currentSelected.delete(el);
         el.classList.remove("uidev-picker-selected");
       } else {
-        selected.add(el);
+        currentSelected.add(el);
         el.classList.remove("uidev-picker-highlight");
         el.classList.add("uidev-picker-selected");
       }
-      refreshFab();
-    }
-
-    function flashHint(msg) {
-      const original = hint.innerHTML;
-      hint.innerHTML = msg;
-      setTimeout(() => { hint.innerHTML = original; }, 1200);
+      refresh();
     }
 
     function onKey(e) {
       if (e.key === "Escape") {
         e.preventDefault();
         stop();
-        if (wasOpen) backdrop.setAttribute("data-open", "true");
       }
     }
 
     function stop() {
       clearHover();
-      selected.forEach((el) => el.classList.remove("uidev-picker-selected"));
-      selected.clear();
+      currentSelected.forEach((el) => el.classList.remove("uidev-picker-selected"));
+      currentSelected.clear();
       document.body.classList.remove("uidev-picker-active");
       fab.removeAttribute("data-picker-active");
-      fab.innerHTML = originalFabHTML;
-      fab.title = originalFabTitle;
-      hint.remove();
+      fab.innerHTML = "🐛";
+      fab.title = "要素選択モードに入る";
+      topCopyBtn.removeEventListener("click", copyAndStop);
       document.removeEventListener("mousemove", onMove, true);
       document.removeEventListener("click", onClick, true);
       document.removeEventListener("keydown", onKey, true);
     }
 
-    refreshFab();
+    async function copyAndStop() {
+      const n = currentSelected.size;
+      if (n > 0) {
+        const ok = await copyJSON(buildPayload(Array.from(currentSelected)), topCopyBtn);
+        if (ok) showToast(`✓ ${n} 件の要素 + files + logs を JSON でコピーしました`);
+      }
+      stop();
+    }
+
+    topCopyBtn.addEventListener("click", copyAndStop);
+    refresh();
     document.addEventListener("mousemove", onMove, true);
     document.addEventListener("click", onClick, true);
     document.addEventListener("keydown", onKey, true);
@@ -441,37 +283,15 @@
   // ── 起動 ───────────────────────────────────────────────
   function init() {
     const root = buildDOM();
-    const fab       = root.querySelector(".uidev-fab");
-    const backdrop  = root.querySelector(".uidev-modal-backdrop");
-    const closeBtn  = root.querySelector('[data-uidev="close"]');
-    const copyBtn   = root.querySelector('[data-uidev="copy"]');
-    const pickBtn   = root.querySelector('[data-uidev="pick"]');
-    const linesEl   = root.querySelector('[data-uidev="lines"]');
-    const levelEl   = root.querySelector('[data-uidev="level"]');
-    const posEl     = root.querySelector('[data-uidev="pos"]');
+    const fab = /** @type {HTMLElement} */ (root.querySelector(".uidev-fab"));
+    const topCopyBtn = /** @type {HTMLButtonElement} */ (root.querySelector('[data-uidev="top-copy"]'));
 
-    linesEl.value = getS("lines");
-    levelEl.value = getS("level");
-    posEl.value   = getS("pos");
-
-    function openModal()  { backdrop.setAttribute("data-open", "true");  renderOverview(root); renderLogs(root); }
-    function closeModal() { backdrop.setAttribute("data-open", "false"); }
-
-    fab.addEventListener("click", openModal);
-    closeBtn.addEventListener("click", closeModal);
-    backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
-    copyBtn.addEventListener("click", () => copyDebugJSON(root));
-    pickBtn.addEventListener("click", () => startPicker(root));
-    linesEl.addEventListener("change", () => { setS("lines", linesEl.value); renderLogs(root); });
-    levelEl.addEventListener("change", () => { setS("level", levelEl.value); renderLogs(root); });
-    posEl.addEventListener("change",   () => { setS("pos",   posEl.value);   fab.setAttribute("data-pos", posEl.value); });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "d") {
-        e.preventDefault();
-        if (backdrop.getAttribute("data-open") === "true") closeModal(); else openModal();
+    fab.addEventListener("click", () => {
+      if (!fab.hasAttribute("data-picker-active")) {
+        startPicker(root);
       }
     });
+
   }
 
   if (document.readyState === "loading") {

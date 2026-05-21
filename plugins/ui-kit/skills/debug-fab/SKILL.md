@@ -1,19 +1,13 @@
 ---
 name: ui-kit:debug-fab
-description: >
-  Embed a floating debug button (FAB) + modal on every development-support screen.
-  The FAB opens a modal that shows related files and recent JS logs, with a "Copy as JSON"
-  button so the developer can paste the snapshot directly into Claude Code for debugging.
-  Trigger when creating or editing development-only UI screens (admin panels, internal tools,
-  debug pages) — not production user-facing screens.
-  Examples: "管理画面作って", "内部ツール用 UI を追加", "開発用デバッグ画面を直して".
+description: Embed a floating debug button (FAB) on every development-support screen. Clicking the FAB directly enters element picker mode — select elements, then click the FAB (📋 N) or the top-center Copy button to paste a JSON snapshot into Claude Code for debugging. Trigger when creating or editing development-only UI screens (admin panels, internal tools, debug pages) — not production user-facing screens. Examples: "管理画面作って", "内部ツール用 UI を追加", "開発用デバッグ画面を直して".
 ---
 
-# ui-kit:debug-fab — Floating Debug Button + Modal
+# ui-kit:debug-fab — Floating Debug Button
 
-Adds a shared floating debug widget (FAB + modal) to every development-support screen.
-The widget collects related files and recent JS logs and exposes a one-click "Copy as JSON"
-so the developer can paste the snapshot into Claude Code for debugging assistance.
+Adds a shared floating debug widget (FAB + top copy bar) to every development-support screen.
+Click the FAB to enter element picker mode. Select elements on the page, then copy a JSON
+snapshot (selected elements + related files + recent error logs) directly to the clipboard.
 
 This skill ships a **shared module** (`templates/uidev.css` + `templates/uidev.js`) — each screen
 imports it once and declares only the screen-specific related files. Never copy the widget code
@@ -162,22 +156,14 @@ If the project does not yet have a logger, run `/ui-kit:logging` first.
 ## Operation flow (for the developer)
 
 1. Open the dev screen in the browser
-2. Click the 🐛 button (bottom-right by default, or Ctrl+Shift+D)
-3. Adjust log level / line count if needed (default: error and above, 100 lines)
-4. Click 📋 Copy — JSON payload is now on the clipboard
-5. Paste into Claude Code with "これでデバッグして" → Claude reads related files and logs together
+2. Click the 🐛 button (bottom-right, fixed) — element picker mode starts immediately
+3. Click elements to select (cyan = hover, green = selected; re-click to deselect)
+4. Copy in one of two ways:
+   - Click the **📋 N** FAB (bottom-right) → copies JSON and exits picker
+   - Click the **📋 コピー** button (top center, always visible) → copies JSON
+5. Paste into Claude Code with "これでデバッグして" → Claude reads related files, logs, and selected elements together
 
-### Element picker (multi-select)
-
-Use the 🎯 "要素選択" button in the modal header to enter the element picker mode. Click any
-elements on the page to select them (toggle with re-click). The floating button transforms into
-📋 N — click it to copy a JSON snippet to the clipboard with the same shape as the regular
-Copy button **plus** an `elements: [...]` array describing each selected element. After copying,
-the picker exits and the modal stays closed (returns to the top screen), not back to the modal.
-
-XPath is fixed to the short / relative form. `Esc` cancels the mode.
-
-Useful when asking Claude "look at these specific elements" — paste the snippet alongside your request.
+`Esc` cancels picker mode without copying.
 
 ---
 
