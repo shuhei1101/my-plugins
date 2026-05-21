@@ -8,12 +8,12 @@ claude-kit プラグインに、会話履歴を活用して自動的にルール
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR59/QA.md` |
-| - | conversation-to-rule スキルの SKILL.jp.md を作成 | - `plugins/claude-kit/skills/conversation-to-rule/SKILL.jp.md` |
-| - | conversation-to-rule スキルの SKILL.md を作成 | - `plugins/claude-kit/skills/conversation-to-rule/SKILL.md` |
-| - | conversation-to-skill スキルの SKILL.jp.md を作成 | - `plugins/claude-kit/skills/conversation-to-skill/SKILL.jp.md` |
-| - | conversation-to-skill スキルの SKILL.md を作成 | - `plugins/claude-kit/skills/conversation-to-skill/SKILL.md` |
-| - | plugin.json の skills リストを更新 | - `plugins/claude-kit/.claude-plugin/plugin.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR59/QA.md` |
+| 済 | conversation-to-rule スキルの SKILL.jp.md を作成 | - `plugins/claude-kit/skills/conversation-to-rule/SKILL.jp.md` |
+| 済 | conversation-to-rule スキルの SKILL.md を作成 | - `plugins/claude-kit/skills/conversation-to-rule/SKILL.md` |
+| 済 | conversation-to-skill スキルの SKILL.jp.md を作成 | - `plugins/claude-kit/skills/conversation-to-skill/SKILL.jp.md` |
+| 済 | conversation-to-skill スキルの SKILL.md を作成 | - `plugins/claude-kit/skills/conversation-to-skill/SKILL.md` |
+| 済 | plugin.json の skills リストを更新 | - `plugins/claude-kit/.claude-plugin/plugin.json` |
 
 ## 参考ドキュメント
 
