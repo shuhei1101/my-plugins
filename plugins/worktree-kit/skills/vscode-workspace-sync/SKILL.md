@@ -6,10 +6,10 @@ description: |
   .claude/settings.json: one adds a worktree path to `folders` on `git worktree add`,
   the other removes it on `git worktree remove`.
   Trigger when the user says "ワークスペース同期を設定して", "VS Codeのワークツリーを自動追加したい",
-  "worktreeをワークスペースに自動登録したい", or invokes explicitly as `/work-kit:vscode-workspace-sync`.
+  "worktreeをワークスペースに自動登録したい", or invokes explicitly as `/worktree-kit:vscode-workspace-sync`.
 ---
 
-# work-kit:vscode-workspace-sync — VS Code Workspace ↔ Worktree Sync
+# worktree-kit:vscode-workspace-sync — VS Code Workspace ↔ Worktree Sync
 
 Writes two `PostToolUse` hooks to `.claude/settings.json` so VS Code's `.code-workspace` file
 stays in sync whenever Claude Code creates or removes a git worktree.

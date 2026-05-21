@@ -97,7 +97,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### ステップ4: ワークツリーとブランチを作成する
+### ステップ4: ワークツリーとブランチを作成する（worktree-kit に委譲）
 
 #### 条件
 
@@ -105,18 +105,22 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### 処理内容
 
-1. ワークツリーを作成する:
+1. **`worktree-kit` がインストール済みの場合**: `/worktree-kit:work-add` を呼び出す:
 
-```bash
-git worktree add -b PR{N}/{type}/{title} ../$(basename $(pwd))-wt-PR{N}
-```
+   > `/worktree-kit:work-add PR{N} {type}/{title}`
+
+2. **`worktree-kit` がインストールされていない場合**: ワークツリー作成をスキップし、ユーザーに通知する:
+
+   > ⚠️ worktree-kit がインストールされていないため、ワークツリーの作成をスキップします。  
+   > `.work/` フォルダ管理のみで作業を続けます。  
+   > ワークツリーを使用したい場合は `worktree-kit` プラグインをインストールしてください。
 
 → ステップ5へ進む
 
 #### 出力
 
-- ワークツリーが `../repo-wt-PR{N}` に作成済み
-- ブランチ `PR{N}/{type}/{title}` が存在する
+- (worktree-kit あり) ワークツリーが `../repo-wt-PR{N}` に作成済み、ブランチ `PR{N}/{type}/{title}` が存在する
+- (worktree-kit なし) ワークツリーなし。`.work/` フォルダ管理のみで継続する
 
 #### 補足
 

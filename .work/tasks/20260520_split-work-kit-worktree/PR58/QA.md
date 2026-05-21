@@ -9,10 +9,15 @@
 
 ## QA-001: 分割境界線 — work-start内のworktree操作をどこまで分離するか
 
-**状況**: 未決定
+**状況**: 決定済み ✅
 
-**背景**:
-- 狭い解釈: `vscode-workspace-sync` スキルのみを worktree-kit へ移動
-- 広い解釈: `work-start` 内の `git worktree add` ロジックも worktree-kit へ切り出し、work-kit は worktree-kit に委譲する形にする
+**決定内容**: 広い解釈（B）を採用
+- `work-start` 内の `git worktree add` ロジックも worktree-kit へ切り出す
+- work-kit は worktree-kit に委譲する形にする
+- `vscode-workspace-sync` スキルも worktree-kit へ移動
 
-**ユーザー回答待ち**
+**理由**: worktree を使わないプロジェクトでは work-kit だけインストールして使えるようにしたい。worktree-kit は必要なプロジェクトにのみインストールする。
+
+**影響**:
+- `work-start` は worktree 操作部分を worktree-kit に依存する形にリファクタリング
+- worktree-kit も work-kit と同様のフック・作業時確認フローを持つ
