@@ -355,3 +355,10 @@ prs:
   summary: upgradeコマンドでプロジェクトスコープのプラグインも正しく更新できるよう修正
   task: 20260521_fix-upgrade-scope-handling
   completed: true
+- id: 61
+  title: PR61 — merge-conversation-skills
+  type: refactor
+  tags: []
+  summary: conversation-to-skill/ruleを統合し、hook/CLAUDE.md提案も含む新スキルconversation-to-claudeを作成
+  task: 20260521_merge-conversation-skills
+  completed: true
