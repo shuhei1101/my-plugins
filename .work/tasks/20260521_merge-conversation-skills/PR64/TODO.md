@@ -15,6 +15,8 @@ conversation-to-claude スキルに用語集（glossary）の自動検出・追�
 | 済 | glossary リファレンスファイル（en/jp）を新規作成 | `plugins/claude-kit/references/glossary.md`, `glossary.jp.md` |
 | 済 | plugin.json / marketplace.json バージョン bump | `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
+| - | glossary をサイレントではなく提案フェーズに統合（用語一覧を提示して確認）に変更 | `SKILL.jp.md`, `SKILL.md` |
+
 ## 参考ドキュメント
 
 - なし
