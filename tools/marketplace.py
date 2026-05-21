@@ -178,6 +178,34 @@ def get_available_plugins(marketplace_key: str) -> list[str]:
     return sorted(d.name for d in cache_plugins_dir.iterdir() if d.is_dir())
 
 
+def get_plugin_scopes() -> dict[str, str]:
+    """インストール済みプラグインのスコープを返す。
+
+    :return: "plugin@marketplace" をキー、"user" or "local" を値とする辞書
+
+    ユーザースコープは ~/.claude/plugins/installed_plugins.json、
+    プロジェクトスコープは ./.claude/plugins/installed_plugins.json から読み込む。
+    両方に存在する場合はプロジェクトスコープを優先する。
+    """
+    scopes: dict[str, str] = {}
+    paths: list[tuple[Path, str]] = [
+        (Path.home() / ".claude" / "plugins" / "installed_plugins.json", "user"),
+        (Path(".claude") / "plugins" / "installed_plugins.json", "local"),
+    ]
+    for path, default_scope in paths:
+        if not path.is_file():
+            continue
+        try:
+            data: dict = json.loads(path.read_text(encoding="utf-8"))
+            for plugin_full, entries in data.get("plugins", {}).items():
+                if isinstance(entries, list) and entries:
+                    scope: str = entries[0].get("scope", default_scope)
+                    scopes[plugin_full] = scope
+        except (json.JSONDecodeError, OSError):
+            pass
+    return scopes
+
+
 def get_all_installed_plugins() -> dict[str, list[str]]:
     """インストール済みの全プラグインを取得する。
 
@@ -582,9 +610,15 @@ def cmd_upgrade() -> None:
         print("更新対象のプラグインがありません。")
         return
 
+    scopes: dict[str, str] = get_plugin_scopes()
+
     print(f"プラグインを更新中 ({len(to_update)} 個)...")
     for name in to_update:
-        run_claude_cmd(["plugin", "update", f"{name}@{KEY_PREFIX}"])
+        plugin_full: str = f"{name}@{KEY_PREFIX}"
+        scope: str = scopes.get(plugin_full, "user")
+        print(f" {plugin_full} (scope: {scope})")
+        run_claude_cmd(["plugin", "uninstall", plugin_full], allow_fail=True)
+        run_claude_cmd(["plugin", "install", plugin_full, "--scope", scope])
 
     print()
     print("更新完了:")
