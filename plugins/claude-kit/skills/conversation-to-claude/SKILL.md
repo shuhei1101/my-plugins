@@ -59,6 +59,11 @@ generates it through the right creator skill.
    - Wrong assumptions that turned out to be incorrect
    - "I don't want to make this mistake again"
 
+   **F. Project-specific terminology** (→ `glossary` rule — auto-written, not proposed)
+   - Project-specific nouns, abbreviations, or concepts the user mentioned in conversation
+   - Terms not yet in `glossary.md`, or whose meaning was ambiguous
+   - Words a reader would misunderstand without a definition
+
 → Proceed to Step 2
 
 #### Output
@@ -67,11 +72,46 @@ generates it through the right creator skill.
 
 ---
 
-### Step 2: Propose artifact types
+### Step 2: Auto-update the glossary
 
 #### Condition
 
 - Step 1 complete
+- Only runs when F (terminology) has extracted candidates
+
+#### Process
+
+1. Read `.claude/rules/glossary.md` (create it if it doesn't exist)
+2. Classify each term under the appropriate category (H2 section)
+3. Skip terms already documented; append only new ones
+4. Append format:
+
+   ```markdown
+   ## {Category}
+
+   | Term | Definition |
+   |---|---|
+   | {term} | {1–2 sentence definition inferred from conversation context} |
+   ```
+
+5. Do not report this to the user — execute silently
+
+> **Note**: glossary is always loaded as a rule. Keep entries brief.
+> Definitions must be 1–2 sentences. Be conservative about what you add.
+
+→ Proceed to Step 3
+
+#### Output
+
+- `.claude/rules/glossary.md` updated (or unchanged)
+
+---
+
+### Step 3: Propose artifact types
+
+#### Condition
+
+- Step 2 complete
 
 #### Process
 
@@ -101,11 +141,12 @@ generates it through the right creator skill.
    ```
 
    > **Note**: Proposals A–D take priority. E (incidents) is only for insights that don't fit A–D.
+   > F (glossary) was already handled silently in Step 2 — do not propose it here.
 
 2. If nothing extractable is found:
    - Report "今回の会話から永続化できる知識・手順は見つかりませんでした" and stop.
 
-→ After user selection, proceed to Step 3
+→ After user selection, proceed to Step 4
 
 #### Output
 
@@ -123,11 +164,11 @@ generates it through the right creator skill.
 
 ---
 
-### Step 3: Implement selected artifacts
+### Step 4: Implement selected artifacts
 
 #### Condition
 
-- User selected artifact type(s) in Step 2
+- User selected artifact type(s) in Step 3
 
 #### Process
 
@@ -143,7 +184,7 @@ For each selected type, launch the corresponding creator skill and delegate:
 
 If multiple types were selected, process them one at a time in the order the user listed.
 
-→ After all selections are handled, proceed to Step 4
+→ After all selections are handled, proceed to Step 5
 
 #### Notes
 
@@ -152,11 +193,11 @@ If multiple types were selected, process them one at a time in the order the use
 
 ---
 
-### Step 4: Report completion
+### Step 5: Report completion
 
 #### Condition
 
-- Step 3 complete
+- Step 4 complete
 
 #### Process
 
@@ -177,6 +218,7 @@ If multiple types were selected, process them one at a time in the order the use
 | Hook | `settings.json` hooks | Automatic pre/post-tool checks and notifications |
 | CLAUDE.md | Append to `CLAUDE.md` | Documenting project conventions and guidelines |
 | incidents | `.claude/rules/incidents.md` (index — always loaded)<br>`.claude/references/incidents/{slug}.md` (detail en)<br>`.claude/references/incidents/{slug}.jp.md` (detail jp) | Preventing recurrence of failures and wrong assumptions |
+| glossary | `.claude/rules/glossary.md` (always loaded) | Project-specific term definitions (auto-written) |
 
 ### Official docs
 
