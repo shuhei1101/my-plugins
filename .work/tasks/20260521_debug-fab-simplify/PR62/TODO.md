@@ -17,6 +17,8 @@ debug-fab スキルの UI を簡素化する。モーダルを廃止し、FAB �
 
 | 済 | example.html を新 UI に合わせて更新する | `plugins/ui-kit/skills/debug-fab/templates/example.html` |
 
+| - | 上部コピーボタンをピッカーモード中のみ表示に変更 | `uidev.css`, `uidev.js` |
+
 ## 参考ドキュメント
 
 - なし

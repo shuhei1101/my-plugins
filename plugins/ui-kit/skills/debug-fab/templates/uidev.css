@@ -52,13 +52,17 @@
   border-radius: 24px;
 }
 
-/* ── 上部中央コピーバー ─────────────────────────────────── */
+/* ── 上部中央コピーバー（ピッカーモード中のみ表示） ──────── */
 .uidev-top-bar {
   position: fixed;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
+  display: none;
+}
+body.uidev-picker-active .uidev-top-bar {
+  display: block;
 }
 
 .uidev-copy-btn {

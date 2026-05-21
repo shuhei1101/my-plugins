@@ -184,6 +184,7 @@
 
   function startPicker(root) {
     const fab = /** @type {HTMLElement} */ (root.querySelector(".uidev-fab"));
+    const topCopyBtn = /** @type {HTMLButtonElement} */ (root.querySelector('[data-uidev="top-copy"]'));
     document.body.classList.add("uidev-picker-active");
     fab.setAttribute("data-picker-active", "true");
     currentSelected = new Set();
@@ -205,7 +206,7 @@
 
     function onMove(e) {
       const el = /** @type {Element} */ (e.target);
-      if (!el || el === fab || fab.contains(el)) return;
+      if (!el || el === fab || fab.contains(el) || el === topCopyBtn || topCopyBtn.contains(el)) return;
       if (hovered !== el) {
         clearHover();
         hovered = el;
@@ -216,6 +217,9 @@
     async function onClick(e) {
       const el = /** @type {Element} */ (e.target);
       if (!el) return;
+
+      // 上部コピーボタンは通常のイベントに任せる
+      if (el === topCopyBtn || topCopyBtn.contains(el)) return;
 
       // FAB クリック → コピーして終了
       if (el === fab || fab.contains(el)) {
