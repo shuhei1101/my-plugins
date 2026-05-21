@@ -262,11 +262,21 @@
       fab.removeAttribute("data-picker-active");
       fab.innerHTML = "🐛";
       fab.title = "要素選択モードに入る";
+      topCopyBtn.removeEventListener("click", onTopCopy);
       document.removeEventListener("mousemove", onMove, true);
       document.removeEventListener("click", onClick, true);
       document.removeEventListener("keydown", onKey, true);
     }
 
+    async function onTopCopy() {
+      const ok = await copyJSON(buildPayload(Array.from(currentSelected)), topCopyBtn);
+      if (ok && currentSelected.size > 0) {
+        showToast(`✓ ${currentSelected.size} 件の要素 + files + logs を JSON でコピーしました`);
+      }
+      stop();
+    }
+
+    topCopyBtn.addEventListener("click", onTopCopy);
     refreshFab();
     document.addEventListener("mousemove", onMove, true);
     document.addEventListener("click", onClick, true);
@@ -285,12 +295,6 @@
       }
     });
 
-    topCopyBtn.addEventListener("click", async () => {
-      const ok = await copyJSON(buildPayload(Array.from(currentSelected)), topCopyBtn);
-      if (ok && currentSelected.size > 0) {
-        showToast(`✓ ${currentSelected.size} 件の要素 + files + logs を JSON でコピーしました`);
-      }
-    });
   }
 
   if (document.readyState === "loading") {
