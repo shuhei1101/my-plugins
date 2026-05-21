@@ -100,7 +100,21 @@ compared on layout / pattern differences, not aesthetic).
 
 #### Process
 
-Create `tmp/mocks/{screen-type}-{YYYYMMDD}.html` (e.g. `tmp/mocks/settings-20260518.html`).
+**Determine output location by project type:**
+
+| Project type | Output location | Reason |
+|---|---|---|
+| FastAPI / Flask / Django or any web server | Directory served by the running server (see below) | Mock is accessible via the live server immediately |
+| No server / static project | `tmp/mocks/` | Served by a local HTTP server |
+
+**For FastAPI and similar server projects:**
+
+1. Check whether a mock/dev listing page already exists (e.g. `/dev/mocks`, `/debug/mocks`)
+2. If it exists, place the HTML in the template directory that route reads (e.g. `templates/mocks/`, `app/templates/dev/`)
+3. If it does not exist, create a new dev mock route and decide on a template directory, then place the HTML there
+4. Add an entry for the mock listing to the routing config (e.g. `router.py`, `urls.py`)
+
+File name: `{screen-type}-{YYYYMMDD}.html` (e.g. `settings-20260518.html`).
 
 The file structure:
 
@@ -153,21 +167,46 @@ Implementation rules:
 
 ---
 
-### Step 6: Verify and present
+### Step 6: Start a server and give the user a URL
 
 #### Process
 
-1. Confirm the file exists at `tmp/mocks/...` and opens in a browser
-2. Tell the user the path and the variants' axes
-3. Suggest opening it for review; iterate based on feedback
-4. When the mock is approved, recommend `/ui-kit:implement` for the implementation phase
-   (it enforces shared-resource reuse during real implementation)
+**For FastAPI and similar server projects:**
+
+1. Check whether the server is already running (e.g. `ps aux | grep uvicorn`)
+2. If already running, use that port
+3. If not running, find a free port and start the server:
+   ```bash
+   # Find a free port
+   python -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()"
+   # Start the server (example: FastAPI)
+   uvicorn app.main:app --port {free_port} --reload &
+   ```
+4. Tell the user the mock listing URL (e.g. `http://localhost:{port}/dev/mocks`)
+
+**For no-server / static projects:**
+
+1. Find a free port and start `python -m http.server`:
+   ```bash
+   PORT=$(python -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()")
+   python -m http.server $PORT --directory tmp/mocks &
+   echo "http://localhost:$PORT/{filename}.html"
+   ```
+2. Tell the user the URL that was started
+
+**Both cases:**
+
+- Always give the user a **URL they can click to open immediately** — never just a file path
+- Report each variant's design axis alongside the URL
+- When the mock is approved, recommend `/ui-kit:implement` for the implementation phase
+  (it enforces shared-resource reuse during real implementation)
 
 → Done
 
 #### Output
 
-- `tmp/mocks/{screen-type}-{date}.html` with N variants behind top tabs
+- Mock HTML (in the server's template directory for server projects, or `tmp/mocks/` otherwise)
+- A browser-ready URL
 - All variants follow `principles.md` + `ui-design.md`
 
 ---
