@@ -348,3 +348,10 @@ prs:
   summary: 会話履歴からルールを作成するスキルとスキルを作成するスキルをclaude-kitに追加
   task: 20260521_conversation-history-skills
   completed: true
+- id: 60
+  title: PR60 — fix-upgrade-scope-handling
+  type: fix
+  tags: []
+  summary: upgradeコマンドでプロジェクトスコープのプラグインも正しく更新できるよう修正
+  task: 20260521_fix-upgrade-scope-handling
+  completed: true
