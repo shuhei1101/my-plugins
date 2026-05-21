@@ -4,7 +4,7 @@
 > When editing: update the JP mirror first, then apply the same change here.
 
 Shared debug widget templates provided by the `ui-kit:debug-fab` skill.
-Source files for the floating debug button + modal that every development-support screen must embed.
+Source files for the floating debug button that every development-support screen must embed.
 
 ---
 
@@ -12,8 +12,8 @@ Source files for the floating debug button + modal that every development-suppor
 
 | File | Role |
 |---|---|
-| `uidev.css` | Styles for the floating button + debug modal |
-| `uidev.js`  | Logger hook + modal control + copy handler |
+| `uidev.css` | Styles for the floating button + top copy bar + picker |
+| `uidev.js`  | Logger hook + element picker + copy handler |
 | `example.html` | Minimal embedding example (reference when integrating into a screen) |
 | `CLAUDE.md` / `CLAUDE.jp.md` | This usage guide (auto-loaded) |
 
@@ -70,23 +70,22 @@ A and B can coexist (both are merged). Use B for dynamic additions; A is simpler
 
 | Action | Result |
 |---|---|
-| Click the 🐛 (default bottom-right, or configured position) | Opens the debug modal |
-| Click the "📋 Copy" button in the header | Copies related files + logs as JSON to clipboard |
-| Click the "🎯 要素選択" button in the header | Enters element picker mode — see below |
-| `Ctrl + Shift + D` | Toggle modal open/close |
-| Level / line-count selectors in the modal | Filter display + copy (saved to localStorage) |
-| "Button position" selector in the header | Move the floating button (saved to localStorage) |
+| Click 🐛 (bottom-right, fixed) | Enters element picker mode immediately |
+| Click an element in picker mode | Selects it (cyan = hover, green = selected; re-click to deselect) |
+| Click 📋 N (FAB in picker mode) | Copies JSON with selected elements + files + logs; exits picker |
+| Click **📋 コピー** (top center, always visible) | Copies JSON with current selection + files + logs |
+| `Esc` in picker mode | Cancels picker without copying |
+
 ### Element picker mode (multi-select)
 
-1. Click "🎯 要素選択" in the modal header
-2. The modal hides and a hint bar appears
-3. **Click elements to add to the selection** (cyan outline = hover, green outline = selected)
-4. **Click an already-selected element to deselect** it (toggle)
-5. The floating button transforms into **📋 N** (N = current selection count)
-6. Click 📋 N to copy a JSON snippet to the clipboard
-7. `Esc` cancels the mode without copying
+1. Click 🐛 (bottom-right)
+2. **Click elements to add to the selection** (cyan outline = hover, green outline = selected)
+3. **Click an already-selected element to deselect** it (toggle)
+4. The FAB transforms into **📋 N** (N = current selection count)
+5. Click 📋 N **or** the top-center **📋 コピー** button to copy JSON to clipboard
+6. `Esc` cancels without copying
 
-Copied JSON shape — same as the regular Copy button, with `elements: [...]` added:
+Copied JSON shape:
 
 ```json
 {
@@ -107,7 +106,8 @@ Copied JSON shape — same as the regular Copy button, with `elements: [...]` ad
 }
 ```
 
-The regular Copy button emits the same shape with `elements: []` (empty). XPath is fixed to the short / relative form (anchored at the nearest ancestor with an `id`).
+`elements` is empty `[]` when copying via the top button with no selection. XPath is fixed to the
+short / relative form (anchored at the nearest ancestor with an `id`).
 
 ---
 
@@ -127,11 +127,13 @@ The regular Copy button emits the same shape with `elements: []` (empty). XPath 
       { "ts": "ISO8601", "level": "log|info|warn|error|debug", "args": ["..."] }
     ]
   },
+  "elements": [],
   "capturedAt": "ISO8601"
 }
 ```
 
-Paste directly into Claude Code with "debug this for me" and Claude will read the related files and logs together.
+Paste directly into Claude Code with "debug this for me" and Claude will read the related files,
+logs, and selected elements together.
 
 ---
 
@@ -139,5 +141,5 @@ Paste directly into Claude Code with "debug this for me" and Claude will read th
 
 - `uidev.js` initializes only once per page even if loaded multiple times (`window.__uidevLoaded` guard).
 - Never load this on production user-facing screens — `debug-fab` is for development-support screens only.
-- Log buffer is capped at 2000 entries (oldest discarded).
+- Log buffer is capped at 2000 entries (oldest discarded). Logs are included in the copied payload but not displayed visually.
 - Do not modify these templates inline per screen. If a project needs customization, fork the files inside the project (not here).
