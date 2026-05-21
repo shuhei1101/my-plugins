@@ -81,6 +81,7 @@ generates it through the right creator skill.
 
    【案 B】ルール — {名前の候補}
    理由: {なぜルールが適切か}
+   適用パス: {このルールを適用するファイル/ディレクトリのパターン (例: src/**, *.ts, plugins/**)}
    生成物: .claude/rules/{name}.md
 
    【案 C】フック — {名前の候補}
