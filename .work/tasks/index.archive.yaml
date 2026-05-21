@@ -375,3 +375,10 @@ prs:
   summary: conversation-to-claudeスキルにルール適用パス表示とincidents（再発防止）カテゴリを追加
   task: 20260521_merge-conversation-skills
   completed: true
+- id: 64
+  title: PR64 — add-glossary-to-conversation-skill
+  type: feat
+  tags: []
+  summary: conversation-to-claudeスキルにglossary用語集の提案・追記機能を追加
+  task: 20260521_merge-conversation-skills
+  completed: true

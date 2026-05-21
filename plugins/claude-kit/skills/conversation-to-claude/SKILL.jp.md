@@ -57,6 +57,11 @@ description: |
    - 思い込みで進めたが実際は違った、という認識の誤り
    - 「同じミスを繰り返さないために記録したい」と感じる気づき
 
+   **F. プロジェクト固有の用語**（`glossary` ルール向け）
+   - ユーザーが会話中に使ったプロジェクト固有の名詞・略語・概念
+   - 既存の `glossary.md` に載っていない、または定義があいまいなもの
+   - 一般的でないため、知らないと誤解しやすい言葉
+
 → ステップ 2 へ
 
 #### 出力
@@ -96,10 +101,16 @@ description: |
    概要: {今回の教訓を1〜2行で}
    生成物: .claude/rules/incidents.md（インデックス）＋ .claude/references/incidents/{slug}.md（詳細）
 
+   【用語集】glossary に以下の用語を追加してよいですか？
+   - {term1}: {定義}
+   - {term2}: {定義}
+   生成物: .claude/rules/glossary.md
+
    どれを作成しますか？（複数選択可）
    ```
 
    > **注意**: 上記 A〜D の提案が優先。E（再発防止）はそれらに当てはまらない教訓のみを対象とする。
+   > F（用語集）の提案は、用語候補がある場合のみ表示する。
 
 2. 抽出できるものがない場合:
    - 「今回の会話から永続化できる知識・手順は見つかりませんでした」と報告して終了
@@ -119,6 +130,7 @@ description: |
 | フック | 特定イベントへの自動反応（ツール使用前後・セッション開始等） |
 | CLAUDE.md | プロジェクト全体に適用する規約・禁止事項・設計方針 |
 | incidents | 失敗・誤解・思い込みの修正など再発防止が目的の教訓 |
+| glossary | プロジェクト固有の用語・略語・概念 |
 
 ---
 
@@ -139,6 +151,7 @@ description: |
 | フック | `claude-kit:hook-creator` | フック名・対象イベント・実行したい処理の説明 |
 | CLAUDE.md | `claude-kit:claude-creator` | 追記・作成したいガイドライン内容 |
 | incidents | （スキルを起動しない） | `.claude/rules/incidents.md` のインデックスに概要を1行追記し、`.claude/references/incidents/{slug}.md`（+ `.jp.md`）に詳細を記録する |
+| glossary | （スキルを起動しない） | `.claude/rules/glossary.md` を読み込み、ユーザーが承認した用語を適切なカテゴリ（H2）の用語テーブルに追記する。ファイルが存在しない場合は新規作成する |
 
 複数選択された場合は、選択された順に1つずつ処理する。
 
@@ -148,6 +161,7 @@ description: |
 
 - 各クリエイタースキルの手順に従って進める
 - クリエイタースキルが完了したら次の選択肢の処理に移る
+- glossary は常時読み込まれるルールのため、用語の説明は1〜2文以内に収める
 
 ---
 
@@ -176,6 +190,7 @@ description: |
 | フック | `settings.json` hooks | ツール使用前後の自動チェック・通知 |
 | CLAUDE.md | `CLAUDE.md` への追記 | プロジェクト規約・ガイドラインの文書化 |
 | incidents | `.claude/rules/incidents.md`（インデックス・常時読み込み）<br>`.claude/references/incidents/{slug}.md`（詳細 en）<br>`.claude/references/incidents/{slug}.jp.md`（詳細 jp） | 失敗・誤解・思い込みの再発防止 |
+| glossary | `.claude/rules/glossary.md`（常時読み込み） | プロジェクト固有の用語定義 |
 
 ### 公式ドキュメント
 
