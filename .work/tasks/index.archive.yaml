@@ -341,3 +341,10 @@ prs:
   summary: WSL↔Windows間でClaude Code設定ファイルを同期するenv-syncスキルをclaude-kitに追加。
   task: 20260519_add-env-sync-plugin
   completed: true
+- id: 57
+  title: PR57 — ui-kit-mock-server-output
+  type: feat
+  tags: []
+  summary: ui-kit:mock スキルの出力先をサーバープロジェクト対応に変更し、起動後URLを通知するルールを追加
+  task: 20260520_ui-kit-mock-server-output
+  completed: true
