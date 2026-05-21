@@ -73,25 +73,25 @@ generates it through the right creator skill.
 1. Based on the extracted candidates, propose **multiple artifact types (usually 2–3)**:
 
    ```
-   From today's conversation, the following artifacts can be created:
+   今回の会話から以下のアーティファクトを作成できます:
 
-   [Option A] Skill — {name candidate}
-   Reason: {why a skill fits}
-   Output: .claude/skills/{name}/SKILL.md
+   【案 A】スキル — {名前の候補}
+   理由: {なぜスキルが適切か}
+   生成物: .claude/skills/{name}/SKILL.md
 
-   [Option B] Rule — {name candidate}
-   Reason: {why a rule fits}
-   Output: .claude/rules/{name}.md
+   【案 B】ルール — {名前の候補}
+   理由: {なぜルールが適切か}
+   生成物: .claude/rules/{name}.md
 
-   [Option C] Hook — {name candidate}
-   Reason: {why a hook fits}
-   Output: hooks entry in settings.json
+   【案 C】フック — {名前の候補}
+   理由: {なぜフックが適切か}
+   生成物: settings.json への hooks エントリ
 
-   Which would you like to create? (multiple selections allowed)
+   どれを作成しますか？（複数選択可）
    ```
 
 2. If nothing extractable is found:
-   - Report "No reusable knowledge or workflows were found in this session" and stop.
+   - Report "今回の会話から永続化できる知識・手順は見つかりませんでした" and stop.
 
 → After user selection, proceed to Step 3
 
