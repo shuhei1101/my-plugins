@@ -18,7 +18,7 @@ work-kit を2つのプラグインに分割する。
 | 済 | work-start からworktree操作を分離する | `skills/work-start/SKILL.md`, `SKILL.jp.md` |
 | 済 | `plugin.json` を新規・更新する | `plugins/worktree-kit/.claude-plugin/plugin.json` |
 | 済 | `marketplace.json` を更新する | `.claude-plugin/marketplace.json` |
-| - | ルール・CLAUDE.md を整備する | — |
+| 済 | ルール・CLAUDE.md を整備する | `.claude/rules/worktree-kit-dependency.md` |
 
 ## 参考ドキュメント
 
