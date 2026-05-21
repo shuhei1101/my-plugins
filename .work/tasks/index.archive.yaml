@@ -382,3 +382,10 @@ prs:
   summary: conversation-to-claudeスキルにglossary用語集の提案・追記機能を追加
   task: 20260521_merge-conversation-skills
   completed: true
+- id: 65
+  title: PR65 — add-incidents-and-glossary-entries
+  type: docs
+  tags: []
+  summary: incidents（master直接編集禁止）とglossary（3用語）を新規作成
+  task: 20260522_add-incidents-and-glossary-entries
+  completed: true
