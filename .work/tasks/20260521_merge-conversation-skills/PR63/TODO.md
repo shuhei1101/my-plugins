@@ -8,9 +8,9 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | SKILL.jp.md のルール提案フォーマットに「適用パス」を追加 | `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
-| x | SKILL.md のルール提案フォーマットに「適用パス」を追加 | `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
-| - | plugin.json / marketplace.json のバージョンを bump する | - |
+| 済 | SKILL.jp.md のルール提案フォーマットに「適用パス」を追加 | `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
+| 済 | SKILL.md のルール提案フォーマットに「適用パス」を追加 | `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
+| 済 | plugin.json / marketplace.json のバージョンを bump する | `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
