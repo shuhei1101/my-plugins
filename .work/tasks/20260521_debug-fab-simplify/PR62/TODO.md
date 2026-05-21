@@ -15,6 +15,8 @@ debug-fab スキルの UI を簡素化する。モーダルを廃止し、FAB �
 | 済 | templates/CLAUDE.md の使い方説明を更新する | `plugins/ui-kit/skills/debug-fab/templates/CLAUDE.md` |
 | 済 | plugin.json / marketplace.json バージョンバンプ | `plugins/ui-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
+| 済 | example.html を新 UI に合わせて更新する | `plugins/ui-kit/skills/debug-fab/templates/example.html` |
+
 ## 参考ドキュメント
 
 - なし
