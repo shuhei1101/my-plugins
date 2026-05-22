@@ -32,9 +32,9 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 1. Read the official Claude Code documentation on path-scoped rules:
    **https://code.claude.com/docs/en/memory**
 
-2. Read the file-type usage reference (`references/file-types.md` in this plugin).
-   Contains: when rules load, two rule types (link / context), use-case-driven `paths:` design,
-   consolidation/separation criteria, and all file-type decision criteria.
+2. Read the common guide (`references/common.md`) and the rules design guide (`references/rules.md`) in this plugin.
+   `common.md` contains: file type decision criteria and JP/EN mirror rules.
+   `rules.md` contains: when rules load, two rule types, use-case-driven `paths:` design, consolidation/separation criteria, structure template.
 
 → Proceed to Step 1
 
@@ -108,7 +108,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 #### Input
 
 - Domain file list collected in Step 2
-- File-type guide (`references/file-types.md` in this plugin)
+- File-type guide (`references/common.md` in this plugin)
 
 #### Process
 

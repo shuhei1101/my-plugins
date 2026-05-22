@@ -44,9 +44,9 @@ without loading that context at every session start.
 1. Read the official Claude Code documentation on CLAUDE.md:
    **https://code.claude.com/docs/en/memory**
 
-2. Read the file-type usage reference (`references/file-types.md` in this plugin).
-   Contains: CLAUDE.md thinning principles, when to use rules vs skills vs hooks vs references,
-   file type decision criteria, and JP/EN mirror rules.
+2. Read the common guide (`references/common.md`) and the CLAUDE.md design guide (`references/claude-md.md`) in this plugin.
+   `common.md` contains: file type decision criteria and JP/EN mirror rules.
+   `claude-md.md` contains: thinning principles, extraction destination guide, references/ usage, structure template.
 
 → Proceed to Step 1
 

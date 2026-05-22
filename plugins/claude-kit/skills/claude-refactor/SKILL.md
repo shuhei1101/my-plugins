@@ -40,8 +40,12 @@ Always targets all scopes.
 
 #### Process
 
-1. Read the file type usage guide (this plugin's `references/file-types.md`)
-   — Contains all canonical definitions: file type criteria, two rule types, use-case-driven design, hook migration triggers, and JP/EN mirror rules.
+1. Read all of the following reference files (this plugin's `references/`):
+   - `common.md` — file type decision criteria and JP/EN mirror rules
+   - `rules.md` — two rule types, use-case-driven design, consolidation/separation, folder structure
+   - `skills.md` — when to use skills, step structure
+   - `hooks.md` — hook events, when to use hooks, loop prevention
+   - `claude-md.md` — CLAUDE.md thinning principles, extraction destinations
 
 2. Collect all of the following:
 
@@ -71,7 +75,7 @@ Always targets all scopes.
 
 #### Process
 
-Analyze each rule using the criteria from `references/file-types.md` (already read in Step 1):
+Analyze each rule using the criteria from `references/common.md` (already read in Step 1):
 rule types, use-case-driven `paths:` design, consolidation/separation criteria, and file type appropriateness.
 
 ##### 2-A: Folder structure cleanup
@@ -388,14 +392,14 @@ Creator skills contain the creation criteria, templates, and mirror sync procedu
 
 ## References
 
-### File type usage guide
+### Reference files
 
-See this plugin's `references/file-types.md` (read in Step 1).
-Contains all canonical definitions used across multiple steps:
+Use the files read in Step 1 as the criteria during analysis:
 
-- File type decision criteria (summary table)
-- Two types of rules (link rule / context rule)
-- Use-case-driven `paths:` design
-- Consolidation and separation criteria
-- Hook migration triggers
-- JP/EN mirror rules
+| File | Contents |
+|---|---|
+| `references/common.md` | File type decision criteria and JP/EN mirror rules |
+| `references/rules.md` | Two rule types, use-case-driven design, consolidation/separation, folder structure |
+| `references/skills.md` | When to use skills, step structure |
+| `references/hooks.md` | Hook events, when to use hooks, loop prevention |
+| `references/claude-md.md` | CLAUDE.md thinning principles, extraction destinations |

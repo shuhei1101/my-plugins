@@ -34,9 +34,9 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 1. Read the official Claude Code documentation on skills:
    **https://code.claude.com/docs/en/skills**
 
-2. Read the file-type usage reference (`references/file-types.md` in this plugin).
-   Contains: when to use skills vs rules vs CLAUDE.md vs hooks, file type decision criteria,
-   and JP/EN mirror rules.
+2. Read the common guide (`references/common.md`) and the skills design guide (`references/skills.md`) in this plugin.
+   `common.md` contains: file type decision criteria and JP/EN mirror rules.
+   `skills.md` contains: when to use skills, `description` frontmatter, step structure, reference placement.
 
 → Proceed to Step 1
 

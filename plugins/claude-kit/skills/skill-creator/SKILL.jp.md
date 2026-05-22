@@ -33,8 +33,9 @@
 1. スキルに関する公式ドキュメントを読む:
    **https://code.claude.com/docs/en/skills**
 
-2. ファイルタイプ使い分けガイドを読む（このプラグインの `references/file-types.md`）。
-   内容: スキル vs rules vs CLAUDE.md vs hooks の使い分け、ファイルタイプ判断基準、JP/EN ミラールール。
+2. 共通ガイド（`references/common.md`）とスキル設計ガイド（`references/skills.md`）を読む（このプラグイン）。
+   `common.md`: ファイルタイプ判断基準・JP/EN ミラールール。
+   `skills.md`: スキルを使うべきケース・`description` フロントマター・ステップ構造・参考資料配置。
 
 → ステップ1へ進む
 
