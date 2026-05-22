@@ -21,6 +21,8 @@ conversation-to-claude スキルの提案品質を改善する。
 | 済 | Step 2 の「適用パス」という表現を修正: paths: が「読んだ時に発動」する仕組みを正確に説明 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
 | 済 | SKILL.jp.md を同期更新 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
 
+| - | カテゴリ D（CLAUDE.md向け）にフォルダ構成・ファイル格納場所の発見も追加 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md`, `SKILL.jp.md` |
+
 ## 参考ドキュメント
 
 - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md`: 改修対象スキル
