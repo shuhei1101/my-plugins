@@ -3,6 +3,7 @@ created_at: 2026-05-22
 updates:
   - 2026-05-22 — 初版作成（rules-organizer）
   - 2026-05-23 — PR71: claude-refactor にリネーム・スコープ拡張
+  - 2026-05-23 — PR71: file-types.md を共通リファレンスに集約、creator スキル群の二重管理を解消
 related_specs: []
 related_prs:
   - PR66
