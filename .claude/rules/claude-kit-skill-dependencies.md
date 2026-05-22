@@ -5,6 +5,8 @@ paths:
   - "plugins/claude-kit/skills/rule-creator/**"
   - "plugins/claude-kit/skills/hook-creator/**"
   - "plugins/claude-kit/skills/claude-creator/**"
+  - "plugins/claude-kit/skills/claude-refactor/**"
+  - "plugins/claude-kit/references/**"
 ---
 
 # claude-kit Skill Dependencies
@@ -12,7 +14,8 @@ paths:
 ## Overview
 
 `conversation-to-claude` delegates to four creator skills in Step 3.
-When editing any of these files, check that the delegation interface stays consistent.
+All creator skills and `claude-refactor` share common reference files in `plugins/claude-kit/references/`.
+When editing any of these files, check that the delegation interface and reference file links stay consistent.
 
 ## Related Files
 
@@ -23,14 +26,23 @@ When editing any of these files, check that the delegation interface stays consi
 | `plugins/claude-kit/skills/rule-creator/SKILL.md` | Delegate for rule creation |
 | `plugins/claude-kit/skills/hook-creator/SKILL.md` | Delegate for hook creation |
 | `plugins/claude-kit/skills/claude-creator/SKILL.md` | Delegate for CLAUDE.md authoring |
+| `plugins/claude-kit/skills/claude-refactor/SKILL.md` | Audits and reorganizes all Claude config types |
+| `plugins/claude-kit/references/common.md` | Shared: file type decision criteria and JP/EN mirror rules |
+| `plugins/claude-kit/references/rules.md` | Rules design guide (two types, use-case-oriented, folder structure) |
+| `plugins/claude-kit/references/skills.md` | Skills design guide |
+| `plugins/claude-kit/references/hooks.md` | Hooks design guide |
+| `plugins/claude-kit/references/claude-md.md` | CLAUDE.md design guide |
 
 ## When Editing
 
 - Changed `conversation-to-claude` Step 3 delegation table → verify the target creator skill still accepts the same context
 - Changed a creator skill's expected inputs → update `conversation-to-claude`'s "Context to pass" column
 - Added a new artifact type to `conversation-to-claude` → add the corresponding creator skill row
+- Changed content in `references/*.md` → verify that all skills referencing that file still work correctly
+- Added a new creator skill → add it to `paths:`, Related Files table, and the skill's Step 0 reference list
 
 ## Rule Maintenance
 
 - Added a new creator skill → add it to `paths:` and the Related Files table
 - Renamed or removed a creator skill → update `paths:` and Related Files accordingly
+- Added or renamed a `references/` file → update `paths:` and Related Files, and update all skills that reference it
