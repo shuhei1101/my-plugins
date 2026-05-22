@@ -18,6 +18,7 @@
 | 済 | 参照元を更新する（glossary.md） | `.claude/rules/glossary.md` |
 | 済 | plugin.json / marketplace.json のバージョンをバンプする | `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 | 済 | レビュー反映（分離候補・JPミラー・クリエータースキル明示） | `plugins/claude-kit/skills/claude-refactor/SKILL.jp.md`, `SKILL.md` |
+| 済 | ユースケース思考・ルール2種類の定義を追記 | `plugins/claude-kit/skills/claude-refactor/SKILL.jp.md`, `SKILL.md` |
 | 済 | ルール・CLAUDE.md を整備する（変更不要と確認） | — |
 
 ## 参考ドキュメント
