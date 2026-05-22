@@ -77,7 +77,7 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 #### Input
 
 - Skill description and workflow collected in Step 1
-- File-type guide (`references/file-types.md` in this plugin)
+- Common guide (`references/common.md` in this plugin)
 
 #### Process
 
@@ -159,91 +159,85 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 
 #### Process
 
-1. Create `.claude/skills/<name>/SKILL.jp.md`:
+1. Create `.claude/skills/<name>/SKILL.jp.md` using this structure:
 
-```markdown
----
-name: <スキル名>
-description: |
-  このスキルが自動起動する条件を具体的に書く。
-  例: ユーザーが「〜したい」「〜して」と言ったとき。
-  または `/skill-name` で明示的に呼ばれたとき。
----
+   ```markdown
+   ---
+   name: <スキル名>
+   description: |
+     このスキルが自動起動する条件を具体的に書く。
+     例: ユーザーが「〜したい」「〜して」と言ったとき。
+   ---
 
-# <スキル名> — 概要一行
+   # <スキル名> — 概要一行
 
-<このスキルが何をするかを1〜2文で>
+   <このスキルが何をするかを1〜2文で>
 
----
+   ---
 
-## 概要
+   ## 概要
 
-<背景・目的・このスキルが存在する理由>
+   <背景・目的・このスキルが存在する理由>
 
----
+   ---
 
-## 作業内容
+   ## 作業内容
 
-### ステップ1: <最初にやること>
+   ### ステップN: <アクション名>
 
-#### 条件
+   #### 条件
+   （前提条件）
 
-- このステップに進む条件
+   #### 入力
+   （データ・ファイル・ユーザー入力）
 
-#### 入力
+   #### 処理内容
+   1. 具体的にやること
+   → ステップN+1へ進む
 
-- このステップで使うデータ・ファイル・ユーザー入力
+   #### 出力
+   （このステップが完了した状態）
 
-#### 処理内容
+   #### 補足
+   （必要なサブセクションだけ使う）
 
-1. 具体的にやること
-2. コマンドがあれば記載
-   ```bash
-   command here
+   ##### チェックリスト / 条件分岐 / 参照ドキュメント
+
+   ---
+
+   ## 参考資料
+   （複数ステップから参照される共通の表・定義・リンク集のみ。
+     単一ステップのみで使う内容はそのステップに書く。）
    ```
 
-→ ステップ2へ進む（または <条件> の場合はステップNへ）
+   `description` frontmatter format:
+   ```yaml
+   ---
+   name: {skill-name}
+   description: |
+     Precise trigger conditions.
+     "When the user says X", "when editing Y".
+   ---
+   ```
+   Only `name` and `description` are needed. Do not add `allowed-tools`.
+   Do not use `disable-model-invocation: true` by default — only for skills that must never be AI-invoked (merge, deploy, destructive ops).
 
-#### 出力
+2. Write `description` frontmatter with precise trigger conditions
+3. Put shared content in `## 参考資料` **only if used by multiple steps** — content used by a single step belongs inside that step
 
-- このステップの結果として何が存在するか
-
-#### 補足
-
-##### 禁止事項
-
-- やってはいけないこと（あれば）
-
-##### 条件分岐
-
-- もし〜なら → ステップNへ
-
-##### 参照ドキュメント
-
-- 関連ファイルへのリンク（あれば）
-
-##### チェックリスト
-
-- [ ] 確認項目（あれば）
-
----
-
-### ステップ2: <次にやること>
-
-(同じ構造で続ける)
-
----
-
-## 参考資料
-
-### <共通資料の見出し>
-
-複数ステップから参照される表・定義など
-```
+→ Proceed to Step 5
 
 #### Output
 
 - `SKILL.jp.md` created
+
+#### Notes
+
+##### Prohibitions
+
+- Do not write vague `description` — auto-trigger accuracy depends on it
+- Do not write in English (this is the human-readable Japanese reference)
+- Do not put single-step-only content in `## 参考資料` — keep it inside the step
 
 ---
 
@@ -259,94 +253,62 @@ description: |
 
 #### Process
 
-1. Translate to English, keeping the same structure:
+1. Translate to English, keeping the same structure as SKILL.jp.md:
 
-```markdown
----
-name: <skill-name>
-description: |
-  Precise trigger conditions in English.
-  "When the user says X", "when editing Y", "when Z".
----
+   ```markdown
+   ---
+   name: <skill-name>
+   description: |
+     Precise trigger conditions in English.
+     "When the user says X", "when editing Y", "when Z".
+   ---
 
-# <Skill Name> — One-line summary
+   # <Skill Name> — One-line summary
 
-<What this skill does in 1-2 sentences>
+   <What this skill does in 1-2 sentences>
 
----
+   ---
 
-## Overview
+   ## Overview
 
-<Background, purpose, why this skill exists>
+   <Background, purpose, why this skill exists>
 
----
+   ---
 
-## Tasks
+   ## Tasks
 
-### Step 1: <First action>
+   ### Step N: <Action name>
 
-#### Condition
+   #### Condition
+   (Preconditions)
 
-- When to enter this step
+   #### Input
+   (Data, files, user input)
 
-#### Input
+   #### Process
+   1. Concrete action
+   → Proceed to Step N+1
 
-- Data, files, or user input used in this step
+   #### Output
+   (What exists as a result of this step)
 
-#### Process
+   #### Notes
+   (Use only the subsections you need)
 
-1. Concrete action
-2. Include commands if applicable
-   ```bash
-   command here
+   ##### Checklist / Branching / References
+
+   ---
+
+   ## References
+   (Shared tables, definitions, or links used across multiple steps only.
+    Content used by a single step belongs inside that step.)
    ```
 
-→ Proceed to Step 2 (or Step N if <condition>)
-
-#### Output
-
-- What exists as a result of this step
-
-#### Notes
-
-##### Prohibitions
-
-- What not to do (if any)
-
-##### Branching
-
-- If X → go to Step N
-- If Y → stop and ask the user
-
-##### References
-
-- Links to related files (if any)
-
-##### Checklist
-
-- [ ] Verification item (if any)
-
----
-
-### Step 2: <Next action>
-
-(same structure continues)
-
----
-
-## References
-
-### <Shared resource heading>
-
-Tables or definitions referenced by multiple steps
-```
+→ Proceed to Step 6
 
 #### Output
 
 - `SKILL.md` created
-
-#### Notes
-
 
 ---
 
@@ -374,85 +336,3 @@ Tables or definitions referenced by multiple steps
 - [ ] Both files have matching heading structure
 - [ ] `description` frontmatter has precise trigger conditions
 
----
-
-## References
-
-### Step-based structure for skill files
-
-Each section follows this pattern:
-
-```markdown
----
-name: <skill-name>
-description: |
-  Precise trigger conditions in English.
-  "When the user says X", "when editing Y", "when Z".
----
-
-# Skill Name — One-line summary
-
-What this skill does in 1-2 sentences.
-
----
-
-## Overview
-
-Background, purpose, why this skill exists.
-
----
-
-## Tasks
-
-### Step N: (Action name)
-
-#### Condition
-(Preconditions to enter this step. Stop or branch if not met.)
-
-#### Input
-(Data, files, prior step output, or user input used in this step)
-
-#### Process
-(Numbered list of concrete actions. Include commands if applicable.)
-1. Do X
-→ Proceed to Step N+1 (or → Step N if <condition>)
-
-#### Output
-(What exists as a result of completing this step)
-
-#### Notes
-(Use only the subsections you need)
-
-##### Checklist
-- [ ] Item is done
-
-##### Branching
-("If X → go to Step N", "If Y → stop and ask the user")
-
-##### References
-(Files, URLs, or §References entries used in this step)
-
----
-
-## References
-(Shared tables, definitions, or reference material used across multiple steps)
-```
-
-### Frontmatter basics
-
-```yaml
----
-name: {skill-name}
-description: |
-  Precise trigger conditions in English.
-  "When the user says X", "when editing Y", "when Z".
----
-```
-
-Only `name` and `description` are needed. Do not add `allowed-tools`.
-
-Do not use `disable-model-invocation: true` by default. **Exception**: add it for skills that must only be run by a human explicitly — merge, deploy, destructive operations — where AI self-invocation is unacceptable.
-
-### Official docs
-
-- Skills: **https://code.claude.com/docs/en/skills**
