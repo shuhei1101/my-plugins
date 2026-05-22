@@ -36,23 +36,68 @@ generates it through the right creator skill.
 
 #### Process
 
-1. Review the entire session conversation and extract:
+1. Review the **entire** session conversation and extract **every possible candidate** without omitting any.
+   Cast a wide net — it is better to propose too many than to miss something valuable.
 
    **A. Repeatable workflow candidates** (→ skill)
+
+   Use when: a multi-step workflow (3+ steps) involving user decisions, branching, or interaction. The value is reusability — someone would run this same procedure again.
+
    - 3+ step procedures involving user interaction or branching
    - Patterns worth reusing in other projects
+   - Multi-step investigative or setup flows the user might repeat
+
+   Not a skill: a single action, a one-time fix, or information that belongs in a rule or CLAUDE.md.
+
+   ---
 
    **B. File dependency / path structure knowledge** (→ rule)
+
+   Use when: you discovered that two or more files must stay in sync. A rule loads automatically when Claude *reads* a file matching `paths:`, surfacing the linked files every time.
+
+   How `paths:` works:
+   - Triggers when Claude **reads** a matching file — NOT on shell commands (mv, rm, cp)
+   - Set `paths:` to files Claude will actually *open* when working in this domain
+   - Example: `paths: ["src/models/**/*.py"]` loads when opening any model file
+
+   What to put in a rule: links to related files, "when editing X also check Y". Keep it short — rules are injected on every matching read.
+   What NOT to put: detailed docs, step-by-step workflows.
+
    - "Whenever I edit file X, I also need to edit file Y"
    - "Config lives here", "routing is here" — path role discoveries
+   - Any "always check together" or "must stay in sync" pattern discovered during the session
+
+   ---
 
    **C. Event-triggered automation** (→ hook)
+
+   Use when: you want something to happen automatically at a specific event — no user prompt needed.
+
+   Available events: `PreToolUse` (before tool call, can block) / `PostToolUse` / `Stop` (response done) / `SubagentStop` / `SessionStart` / `SessionEnd` / `UserPromptSubmit` / `PreCompact` / `Notification`
+
+   Hook types: prompt injection (injects text into Claude's context) or shell command (runs a script).
+
+   Not a hook: if the user should consciously trigger it — use a skill instead.
+
    - Actions to run automatically before/after specific tool use or at session start
    - "I want to check this every time before running that command"
+   - Validations or notifications that should fire on every relevant event
+
+   ---
 
    **D. Project-wide conventions and guidelines** (→ CLAUDE.md)
+
+   Use when: conventions, prohibitions, or structural knowledge that every session should know — regardless of which files are open. CLAUDE.md loads always; rules load only on file read.
+
+   Good CLAUDE.md content: prohibitions, naming conventions, folder/directory structure ("specs go in `.work/specs/`"), design principles, onboarding info.
+
+   Not CLAUDE.md: file-specific sync rules (use rule), procedures (use skill), event automation (use hook).
+
    - Prohibitions, naming rules, design principles that apply to all files
-   - "This belongs in CLAUDE.md"
+   - Folder / directory structure discoveries: "specs live here", "generated files go there", "this folder is the canonical place for X"
+   - Anything a new contributor would need to know to avoid mistakes or find the right place to put things
+
+   ---
 
    **E. Lessons learned / recurrence prevention** (→ `incidents` rule)
    - Commands or operations that were tried and failed, where the cause and fix are now known
@@ -68,7 +113,7 @@ generates it through the right creator skill.
 
 #### Output
 
-- Internal list of candidates per category
+- Exhaustive internal list of candidates per category — err on the side of including more
 
 ---
 
@@ -80,7 +125,9 @@ generates it through the right creator skill.
 
 #### Process
 
-1. Based on the extracted candidates, propose **multiple artifact types (usually 2–3)**:
+1. Based on the extracted candidates, propose **all identified artifacts** — list every candidate found, not just 2–3.
+   Do not filter down. The user will decide what to keep.
+   If a category yields multiple distinct candidates (e.g., two different rules), list each as a separate numbered proposal.
 
    ```
    今回の会話から以下のアーティファクトを作成できます:
@@ -91,7 +138,8 @@ generates it through the right creator skill.
 
    【案 B】ルール — {名前の候補}
    理由: {なぜルールが適切か}
-   適用パス: {このルールを適用するファイル/ディレクトリのパターン (例: src/**, *.ts, plugins/**)}
+   リンクするファイル: {編集時にセットで確認すべきファイル群}
+   paths（読んだ時に発動）: {このルールを自動ロードしたいファイル/ディレクトリのパターン (例: src/**, *.ts, plugins/**)}
    生成物: .claude/rules/{name}.md
 
    【案 C】フック — {名前の候補}
@@ -110,7 +158,7 @@ generates it through the right creator skill.
    どれを作成しますか？（複数選択可）
    ```
 
-   > **Note**: Proposals A–D take priority. E (incidents) is only for insights that don't fit A–D.
+   > **Note**: E (incidents) is shown for insights that don't fit A–D.
    > F (glossary) is shown only when term candidates exist.
 
 2. If nothing extractable is found:
@@ -121,17 +169,6 @@ generates it through the right creator skill.
 #### Output
 
 - Artifact type(s) selected by the user (one or more)
-
-#### Reference: artifact selection criteria
-
-| Type | Best fit |
-|---|---|
-| Skill | 3+ step repeatable workflow with user interaction or branching |
-| Rule | File dependency discovery, path role knowledge |
-| Hook | Automatic reaction to tool events (pre/post tool use, session start) |
-| CLAUDE.md | Project-wide conventions, prohibitions, design principles |
-| incidents | Failures, wrong assumptions, or misconceptions worth preventing from recurring |
-| glossary | Project-specific terms, abbreviations, or concepts |
 
 ---
 
