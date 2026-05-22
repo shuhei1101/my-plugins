@@ -431,3 +431,10 @@ prs:
   summary: '会話キャプチャから生成したアーティファクト群: ルール・CLAUDE.md追記・incidents・glossary'
   task: 20260523_conversation-to-claude-artifacts
   completed: true
+- id: 70
+  title: PR70 — conversation-to-claude-existing-check
+  type: feat
+  tags: []
+  summary: 提案前に既存アーティファクトを確認するステップを追加し、新規/既存編集を提案フォーマットに明示
+  task: 20260523_conversation-to-claude-existing-check
+  completed: true
