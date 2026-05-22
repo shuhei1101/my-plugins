@@ -37,7 +37,7 @@ Automatically loads relevant knowledge, specs, or guidelines when working in a s
 
 ---
 
-## Use-case-driven `paths:` design
+## Use-case-oriented `paths:` design
 
 **Start from "when should this be read?"**
 

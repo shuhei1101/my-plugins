@@ -34,7 +34,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 2. Read the common guide (`references/common.md`) and the rules design guide (`references/rules.md`) in this plugin.
    `common.md` contains: file type decision criteria and JP/EN mirror rules.
-   `rules.md` contains: when rules load, two rule types, use-case-driven `paths:` design, consolidation/separation criteria, structure template.
+   `rules.md` contains: when rules load, two rule types, use-case-oriented `paths:` design, consolidation/separation criteria, structure template.
 
 → Proceed to Step 1
 

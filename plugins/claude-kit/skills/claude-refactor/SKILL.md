@@ -42,7 +42,7 @@ Always targets all scopes.
 
 1. Read all of the following reference files (this plugin's `references/`):
    - `common.md` — file type decision criteria and JP/EN mirror rules
-   - `rules.md` — two rule types, use-case-driven design, consolidation/separation, folder structure
+   - `rules.md` — two rule types, use-case-oriented design, consolidation/separation, folder structure
    - `skills.md` — when to use skills, step structure
    - `hooks.md` — hook events, when to use hooks, loop prevention
    - `claude-md.md` — CLAUDE.md thinning principles, extraction destinations
@@ -76,7 +76,7 @@ Always targets all scopes.
 #### Process
 
 Analyze each rule using the criteria from `references/common.md` (already read in Step 1):
-rule types, use-case-driven `paths:` design, consolidation/separation criteria, and file type appropriateness.
+rule types, use-case-oriented `paths:` design, consolidation/separation criteria, and file type appropriateness.
 
 ##### 2-A: Folder structure cleanup
 
@@ -399,7 +399,7 @@ Use the files read in Step 1 as the criteria during analysis:
 | File | Contents |
 |---|---|
 | `references/common.md` | File type decision criteria and JP/EN mirror rules |
-| `references/rules.md` | Two rule types, use-case-driven design, consolidation/separation, folder structure |
+| `references/rules.md` | Two rule types, use-case-oriented design, consolidation/separation, folder structure |
 | `references/skills.md` | When to use skills, step structure |
 | `references/hooks.md` | Hook events, when to use hooks, loop prevention |
 | `references/claude-md.md` | CLAUDE.md thinning principles, extraction destinations |
