@@ -20,6 +20,9 @@
 | 済 | レビュー反映（分離候補・JPミラー・クリエータースキル明示） | `plugins/claude-kit/skills/claude-refactor/SKILL.jp.md`, `SKILL.md` |
 | 済 | ユースケース思考・ルール2種類の定義を追記 | `plugins/claude-kit/skills/claude-refactor/SKILL.jp.md`, `SKILL.md` |
 | 済 | ルール・CLAUDE.md を整備する（変更不要と確認） | — |
+| 済 | file-types.md/jp.md を拡充（hooks・ルール2種類・ユースケース思考） | `plugins/claude-kit/references/file-types.md`, `file-types.jp.md` |
+| 済 | claude-refactor の inline 判断基準を file-types.md 参照に置き換え | `plugins/claude-kit/skills/claude-refactor/SKILL.jp.md`, `SKILL.md` |
+| 済 | creator スキルの inline 重複内容を削除し file-types.md に一本化 | `skill-creator`, `rule-creator`, `hook-creator`, `claude-creator` |
 
 ## 参考ドキュメント
 
