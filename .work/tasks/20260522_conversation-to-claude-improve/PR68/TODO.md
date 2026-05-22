@@ -17,6 +17,10 @@ conversation-to-claude スキルの提案品質を改善する。
 | 済 | SKILL.jp.md を同期更新 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
 | 済 | plugin.json / marketplace.json のバージョンを上げる | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
+| - | Step 2 提案フォーマットのルール説明を強化: ファイルリンク用ルールを明示的に提案する | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
+| - | Step 2 の「適用パス」という表現を修正: paths: が「読んだ時に発動」する仕組みを正確に説明 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
+| - | SKILL.jp.md を同期更新 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
+
 ## 参考ドキュメント
 
 - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md`: 改修対象スキル
