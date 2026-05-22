@@ -424,3 +424,10 @@ prs:
   summary: TODO.md に次PR候補セクションを追加してセッション内PRの予約を記録する
   task: 20260522_todo-next-pr-section
   completed: true
+- id: 69
+  title: PR69 — conversation-to-claude-artifacts
+  type: docs
+  tags: []
+  summary: '会話キャプチャから生成したアーティファクト群: ルール・CLAUDE.md追記・incidents・glossary'
+  task: 20260523_conversation-to-claude-artifacts
+  completed: true

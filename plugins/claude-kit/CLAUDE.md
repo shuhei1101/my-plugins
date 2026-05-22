@@ -1,0 +1,9 @@
+# claude-kit Plugin Developer Guide
+
+## Skill Design: Token Efficiency
+
+When designing skills in this plugin:
+
+- **Do not load other skills in a Step 0.** Reading multiple skills at startup consumes 2500 × N tokens per invocation and bloats the context.
+- **Embed judgment criteria directly in the skill** — put selection logic, type distinctions, and decision rules in a `## References` section inside the skill itself. The skill should be self-contained.
+- This pattern was established in `conversation-to-claude` (PR68): creator skill knowledge was moved from a Step 0 read into inline References.
