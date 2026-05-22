@@ -45,6 +45,9 @@ How prompt injection works:
 1. Fetch the official documentation:
    **https://code.claude.com/docs/en/hooks**
 
+2. Read the file-type usage reference (`references/file-types.md` in this plugin).
+   Contains: hooks section (events, when to use hooks, what NOT to put in hooks), and JP/EN mirror rules.
+
 → Proceed to Step 2
 
 #### Output

@@ -45,18 +45,8 @@ without loading that context at every session start.
    **https://code.claude.com/docs/en/memory**
 
 2. Read the file-type usage reference (`references/file-types.md` in this plugin).
-   Key points:
-
-   **CLAUDE.md vs Rules vs Skills:**
-   - `CLAUDE.md` (root): loaded every session — project workflow, global conventions
-   - `CLAUDE.md` (subfolder): loaded when Claude accesses that folder — folder description, local conventions
-   - `.claude/rules/`: loaded when Claude reads a matching file — links to related files that must stay in sync
-   - `.claude/skills/`: invoked on demand — multi-step workflows and procedures
-
-   **What goes in CLAUDE.md (not rules):**
-   - General descriptions of what files in a folder do
-   - Conventions that apply whenever Claude works in this folder
-   - Rules that should be visible regardless of which specific file is being edited
+   Contains: CLAUDE.md thinning principles, when to use rules vs skills vs hooks vs references,
+   file type decision criteria, and JP/EN mirror rules.
 
 → Proceed to Step 1
 

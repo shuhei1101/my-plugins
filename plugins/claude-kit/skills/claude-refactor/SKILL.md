@@ -40,7 +40,10 @@ Always targets all scopes.
 
 #### Process
 
-Collect all of the following:
+1. Read the file type usage guide (this plugin's `references/file-types.md`)
+   — Contains all canonical definitions: file type criteria, two rule types, use-case-driven design, hook migration triggers, and JP/EN mirror rules.
+
+2. Collect all of the following:
 
 | Scope | Collection target |
 |---|---|
@@ -68,50 +71,8 @@ Collect all of the following:
 
 #### Process
 
-Analyze each rule from the perspectives below. Before starting, internalize the following rule design principles — use them as the basis for evaluating whether existing rules are correctly designed:
-
-##### Two types of rules
-
-Rules serve two distinct purposes. Identify which type each rule is and whether it is designed correctly:
-
-**① Link rule (file-coupling type)**
-
-Bundles related files so that editing one forces the author to check the others.
-
-- List all related files in `paths:`
-- Example: abstract class + interface + child class + parent class in one rule
-- Example: config file + spec doc + test cases + implementation code bundled together
-- **Effect**: When any one file is edited, Claude has full context of the entire relationship
-
-**② Context rule (trigger-load type)**
-
-Automatically loads relevant knowledge, specs, or guidelines when working in a specific area.
-
-- Set `paths:` to the files that, when touched, should trigger loading this rule
-- Example: touching `config/` → config spec rule is loaded
-- Example: touching `src/` → coding convention rule is loaded
-
-##### Use-case-driven `paths:` design
-
-**Start from "when should this be read?"**
-
-When evaluating `paths:` patterns, first decide when the rule should fire, then work backwards to determine which paths trigger it:
-
-1. **Identify the use case** — in what kind of work is this rule useful?
-2. **Identify the trigger file/folder** — what file is always touched during that work?
-3. **Set that file in `paths:`** — the rule loads every time it is touched
-
-**Example 1 — context rule for a spec folder**:
-- Use case: when editing a config file, load the corresponding spec
-- Trigger: editing something in `config/`
-- Set `config/**` in `paths:` → spec rule loads every time a config file is touched
-
-**Example 2 — always-on rule**:
-- Use case: a rule that must be followed during any work (e.g. coding conventions)
-- Trigger: touching any source code
-- Set a broad pattern like `src/**` or `**/*.ts` in `paths:`
-
-**Evaluating existing rules**: Check whether the `paths:` pattern matches the intended use-case trigger. If there is a mismatch, propose a correction.
+Analyze each rule using the criteria from `references/file-types.md` (already read in Step 1):
+rule types, use-case-driven `paths:` design, consolidation/separation criteria, and file type appropriateness.
 
 ##### 2-A: Folder structure cleanup
 
@@ -427,16 +388,14 @@ Creator skills contain the creation criteria, templates, and mirror sync procedu
 
 ## References
 
-### File type decision criteria
+### File type usage guide
 
-Shared across multiple steps.
+See this plugin's `references/file-types.md` (read in Step 1).
+Contains all canonical definitions used across multiple steps:
 
-| Content nature | Best file type | Reason |
-|---|---|---|
-| Cross-path file sync link spanning multiple different folders | **rule** | Path-matched auto-load only when target files are edited |
-| Single-folder file listing or local conventions | rule or subfolder CLAUDE.md | rule for visibility, CLAUDE.md for co-location |
-| Short workflow or constraints needed project-wide at all times | **CLAUDE.md (root)** | Always loaded at session start |
-| Multi-step workflow with user confirmation and branching | **skill** | On-demand invocation; does not pollute context |
-| Repeated auto-check or notification triggered by events | **hook** | Auto-fires on event; injects into Claude's context |
-| 1–2 line simple instruction or caution | CLAUDE.md or rule | Not complex enough to warrant a skill |
-| Reference material or detailed explanation needed only sometimes | `.claude/references/` | CLAUDE.md lists path only; loaded on demand |
+- File type decision criteria (summary table)
+- Two types of rules (link rule / context rule)
+- Use-case-driven `paths:` design
+- Consolidation and separation criteria
+- Hook migration triggers
+- JP/EN mirror rules

@@ -44,6 +44,9 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 1. 公式ドキュメントを取得:
    **https://code.claude.com/docs/ja/hooks**
 
+2. ファイルタイプ使い分けガイドを読む（このプラグインの `references/file-types.md`）。
+   内容: hooks セクション（イベント一覧・使うべきケース・NG パターン）、JP/EN ミラールール。
+
 → ステップ 2 へ
 
 #### 出力
