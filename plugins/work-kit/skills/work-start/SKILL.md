@@ -215,6 +215,10 @@ The following rows are mandatory and must not be removed or skipped:
 | - | (Implementation tasks: replace with PR-specific work) |
 | - | Update rules / CLAUDE.md |
 
+Also fill in the `## 次PR候補` section at the bottom of TODO.md:
+- If the user mentioned follow-up work or future PRs during this session, list them here
+- If nothing was mentioned, leave the placeholder row as-is (do not delete the section)
+
 → Proceed to Step 8
 
 ---

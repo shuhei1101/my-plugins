@@ -417,3 +417,10 @@ prs:
   summary: conversation-to-claude スキルを改善 — 提案を網羅的に出す・提案前にクリエータースキルを読む
   task: 20260522_conversation-to-claude-improve
   completed: true
+- id: 67
+  title: PR67 — todo-next-pr-section
+  type: feat
+  tags: []
+  summary: TODO.md に次PR候補セクションを追加してセッション内PRの予約を記録する
+  task: 20260522_todo-next-pr-section
+  completed: true
