@@ -67,9 +67,10 @@ generates it through the right creator skill.
    - Multi-step investigative or setup flows the user might repeat
 
    **B. File dependency / path structure knowledge** (→ rule)
-   - "Whenever I edit file X, I also need to edit file Y"
-   - "Config lives here", "routing is here" — path role discoveries
-   - Any "always check together" pattern discovered during the session
+   - **Primary use case**: "When I read/edit file X, I must also check file Y" — the rule loads automatically when Claude reads any file matching `paths:`, so the linked files are always surfaced together
+   - "Config lives here", "routing is here" — path role discoveries worth anchoring so Claude knows the layout
+   - Any "always check together" or "must stay in sync" pattern discovered during the session
+   - Note: `paths:` triggers on *file read*, not on shell commands (mv, rm) — choose patterns that match files Claude will actually open when working in this domain
 
    **C. Event-triggered automation** (→ hook)
    - Actions to run automatically before/after specific tool use or at session start
@@ -120,7 +121,8 @@ generates it through the right creator skill.
 
    【案 B】ルール — {名前の候補}
    理由: {なぜルールが適切か}
-   適用パス: {このルールを適用するファイル/ディレクトリのパターン (例: src/**, *.ts, plugins/**)}
+   リンクするファイル: {編集時にセットで確認すべきファイル群}
+   paths（読んだ時に発動）: {このルールを自動ロードしたいファイル/ディレクトリのパターン (例: src/**, *.ts, plugins/**)}
    生成物: .claude/rules/{name}.md
 
    【案 C】フック — {名前の候補}
@@ -156,7 +158,7 @@ generates it through the right creator skill.
 | Type | Best fit |
 |---|---|
 | Skill | 3+ step repeatable workflow with user interaction or branching |
-| Rule | File dependency discovery, path role knowledge |
+| Rule | "When reading file X, also check Y" — file link rules that load automatically when Claude reads a matching file (`paths:` trigger) |
 | Hook | Automatic reaction to tool events (pre/post tool use, session start) |
 | CLAUDE.md | Project-wide conventions, prohibitions, design principles |
 | incidents | Failures, wrong assumptions, or misconceptions worth preventing from recurring |
