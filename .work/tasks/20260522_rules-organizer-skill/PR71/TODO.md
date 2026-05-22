@@ -23,8 +23,8 @@
 | 済 | file-types.md/jp.md を拡充（hooks・ルール2種類・ユースケース思考） | `plugins/claude-kit/references/file-types.md`, `file-types.jp.md` |
 | 済 | claude-refactor の inline 判断基準を file-types.md 参照に置き換え | `plugins/claude-kit/skills/claude-refactor/SKILL.jp.md`, `SKILL.md` |
 | 済 | creator スキルの inline 重複内容を削除し file-types.md に一本化 | `skill-creator`, `rule-creator`, `hook-creator`, `claude-creator` |
-| - | references/ を common/rules/skills/hooks/claude-md に分割、file-types.md 削除 | `plugins/claude-kit/references/` |
-| - | creator スキルの参照先を新ファイル名に更新 | 全 creator スキル + claude-refactor |
+| 済 | references/ を common/rules/skills/hooks/claude-md に分割、file-types.md 削除 | `plugins/claude-kit/references/` |
+| 済 | creator スキルの参照先を新ファイル名に更新 | 全 creator スキル + claude-refactor |
 
 ## 参考ドキュメント
 
