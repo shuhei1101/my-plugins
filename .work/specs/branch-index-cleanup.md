@@ -28,6 +28,16 @@
 | B | 完了済み・記録したい | index.archive.yaml に追記 → ブランチ削除 |
 | C | 作業中・継続 | index.yaml に追記（completed: false） |
 
+### Step 2b: B分類のメタデータ入力
+
+ブランチ名（例: `PR42/feat/some-feature`）から以下を自動推定してユーザーに確認する:
+- `id` — ブランチ名の PR番号部分
+- `title` — ブランチ名のタイプ/タイトル部分をそのまま使用
+- `type` — ブランチ名のタイプ部分（feat/fix/refactor 等）
+- `summary` — 空欄のまま（ユーザーが任意で追記）
+
+確認後、ユーザーが修正できるインタラクティブフローを採用する。
+
 ### Step 3: 処置の実行
 
 - **A**: `git branch -d {branch}` で削除（マージ済みでなければ `-D`）
