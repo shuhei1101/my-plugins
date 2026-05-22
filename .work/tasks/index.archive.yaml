@@ -438,3 +438,10 @@ prs:
   summary: 提案前に既存アーティファクトを確認するステップを追加し、新規/既存編集を提案フォーマットに明示
   task: 20260523_conversation-to-claude-existing-check
   completed: true
+- id: 72
+  title: PR72 — add-work-kit-todo-template-sync-rule
+  type: docs
+  tags: []
+  summary: work-kit TODOテンプレートとwork-start SKILL.mdの同期を促すパススコープルールを追加
+  task: 20260523_add-work-kit-todo-template-sync-rule
+  completed: true
