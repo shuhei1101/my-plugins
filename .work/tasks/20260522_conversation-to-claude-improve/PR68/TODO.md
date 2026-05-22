@@ -25,6 +25,8 @@ conversation-to-claude スキルの提案品質を改善する。
 
 | 済 | Step 0 を削除し、判定知識（paths:の意味・各タイプの使い分け）を References セクションに移植 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md`, `SKILL.jp.md` |
 
+| - | 「外部スキルを読み込む必要なし」の文言を削除・判定知識をStep1直下に移動 | - `SKILL.md`, `SKILL.jp.md` |
+
 ## 参考ドキュメント
 
 - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md`: 改修対象スキル
