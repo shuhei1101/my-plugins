@@ -459,3 +459,10 @@ prs:
   task: 20260523_skill-creator-references-cleanup
   title: PR73 — skill-creator-references-cleanup
   type: refactor
+- id: 76
+  title: PR76 — rules-folder-restructure
+  type: refactor
+  tags: []
+  summary: rules/ を core/ feature/ に整理し JP ミラー5本を追加
+  task: 20260523_rules-folder-restructure
+  completed: true
