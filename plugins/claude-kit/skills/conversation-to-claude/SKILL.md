@@ -79,8 +79,9 @@ generates it through the right creator skill.
 
    **D. Project-wide conventions and guidelines** (→ CLAUDE.md)
    - Prohibitions, naming rules, design principles that apply to all files
+   - Folder / directory structure discoveries: "specs live here", "generated files go there", "this folder is the canonical place for X"
    - "This belongs in CLAUDE.md"
-   - Anything a new contributor would need to know to avoid mistakes
+   - Anything a new contributor would need to know to avoid mistakes or find the right place to put things
 
    **E. Lessons learned / recurrence prevention** (→ `incidents` rule)
    - Commands or operations that were tried and failed, where the cause and fix are now known
