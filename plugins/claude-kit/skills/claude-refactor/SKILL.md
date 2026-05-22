@@ -10,28 +10,29 @@ description: |
 # claude-refactor — Audit and Reorganize Claude Configuration
 
 Audits rules / skills / CLAUDE.md / hooks under `.claude/` and proposes
-folder restructuring, deduplication, consolidation, and file-type migration.
+folder restructuring, over-coupling / duplicate detection, file-type migration,
+and JP/EN mirror integrity checks.
 
 ---
 
 ## Overview
 
 Claude configuration tends to grow organically and become bloated.
-This skill diagnoses the following and presents a reorganization plan to the user:
+This skill diagnoses the following and presents a reorganization plan:
 
-1. **rules** — folder structure cleanup, duplicate/consolidation detection, migration to CLAUDE.md or hooks
-2. **skills** — duplicate/consolidation/split detection
-3. **CLAUDE.md** — bloat detection and extraction to rules/skills
+1. **rules** — folder structure cleanup, consolidation/separation detection, file-type migration
+2. **skills** — similar skill identification
+3. **CLAUDE.md** — bloat detection and extraction to `.claude/references/`
 4. **hooks** — identify content in rules/CLAUDE.md that should become hooks
+5. **JP/EN mirrors** — detect missing mirror files across all scopes
 
-The user selects which scopes to process.
-All scopes can be run at once, or individual scopes can be targeted.
+Always targets all scopes.
 
 ---
 
 ## Tasks
 
-### Step 1: Confirm the scope
+### Step 1: Collect target files
 
 #### Condition
 
@@ -39,41 +40,19 @@ All scopes can be run at once, or individual scopes can be targeted.
 
 #### Process
 
-1. Ask the user which scopes to organize:
-   - All scopes (rules + skills + CLAUDE.md + hooks)
-   - rules only
-   - skills only
-   - CLAUDE.md only
-   - Any combination
-
-2. If the user does not specify, propose "all scopes"
-
-→ Proceed to Step 2
-
-#### Output
-
-- List of scopes to reorganize
-
----
-
-### Step 2: Collect target files
-
-#### Condition
-
-- Step 1 complete
-
-#### Process
-
-Collect files for each selected scope:
+Collect all of the following:
 
 | Scope | Collection target |
 |---|---|
-| rules | Glob `.claude/rules/**/*.md` and read the first 30 lines of each file |
-| skills | Glob `.claude/skills/**/SKILL.md` and read `name` / `description` frontmatter and overview |
+| rules | Glob `.claude/rules/**/*.md`; read the first 30 lines (`paths:` and summary) of each |
+| rules JP | Glob `.claude/rules-jp/**/*.md`; verify pairing with corresponding English rules |
+| skills | Glob `.claude/skills/**/SKILL.md`; read `name` / `description` frontmatter and overview |
+| skills JP | Check existence of `.claude/skills/**/SKILL.jp.md` |
 | CLAUDE.md | List all `CLAUDE.md` files in project root and subfolders; check line counts |
+| CLAUDE.md JP | Check existence of `CLAUDE.jp.md` alongside each `CLAUDE.md` |
 | hooks | Read the hooks section of `.claude/settings.json` / `.claude/settings.local.json` / `hooks/hooks.json` |
 
-→ Proceed to Step 3
+→ Proceed to Step 2
 
 #### Output
 
@@ -81,68 +60,83 @@ Collect files for each selected scope:
 
 ---
 
-### Step 3: Analyze rules (when rules scope is selected)
+### Step 2: Analyze rules
 
 #### Condition
 
-- Step 2 complete and rules scope is selected
+- Step 1 complete
 
 #### Process
 
-Analyze each rule from the following perspectives:
-
-##### 3-A: Folder structure cleanup
+##### 2-A: Folder structure cleanup
 
 1. If many flat `.md` files exist directly under `.claude/rules/`, propose organizing into subfolders
-2. Determine folder candidates using §References / Folder structure criteria
+2. Determine folders using the following criteria:
 
-##### 3-B: Duplicate and consolidation detection
+   **Required folders**
 
-1. Identify rules that share the same `paths:` pattern or same domain
-2. Mark rules with heavily overlapping content as "consolidation candidates"
-3. Mark rules covering the same domain with different content as "merge consideration"
+   | Folder | Role | What goes here |
+   |---|---|---|
+   | `core/` | Project-wide foundational rules | Coding conventions, workflow, environment setup, general dev process |
+   | `feature/` | Feature-specific domain knowledge | Rules per feature, specs, design decisions (1 feature = 1 file) |
 
-##### 3-C: File type appropriateness check
+   **Optional folders (codebase-dependent)**
 
-Check each rule against §References / File type decision criteria:
+   | Folder | When to add |
+   |---|---|
+   | `ui/` | Frontend exists: `components/`, `pages/`, `views/`, etc. |
+   | `api/` | Many backend API rules / `routes/` or `handlers/` directories |
+   | `infra/` | Many Docker / CI/CD / deployment rules |
 
-- **Should move to CLAUDE.md**: 1–2 line instruction needed on every session
-- **Should become a hook**: "run automatically when X happens", "check every time Claude stops"
-- **Should become a skill**: contains a multi-step workflow
-- **Appropriate as rule**: cross-path file sync link spanning multiple different folders
+3. Inform the user that `_overview.md` will be generated in each folder (template in Step 9)
 
-→ Proceed to Step 4 (or next scope)
+##### 2-B: Consolidation and separation detection
+
+Detect both over-consolidation (tight coupling) and insufficient consolidation (duplication):
+
+**Consolidation candidates (duplicate detection)**:
+- Identify rules sharing the same `paths:` pattern or same domain
+- Mark rules with heavily overlapping content as "consolidation candidates"
+
+**Separation candidates (tight coupling detection)**:
+- Identify rules whose `paths:` covers multiple unrelated domains in a single file
+  - Example: `src/models/` and `src/payments/` are in the same rule
+  - Editing models would load the payments rule too, wasting context unnecessarily
+- Mark as "separation candidates" and propose splitting by domain into separate files
+
+**Decision criteria**:
+- `paths:` patterns span unrelated directories → separate
+- `paths:` patterns duplicate coverage of the same domain → consolidate
+
+##### 2-C: File type appropriateness check
+
+Check each rule against §References / File type decision criteria
+
+→ Proceed to Step 3
 
 #### Output
 
 - Proposed folder structure
-- Consolidation candidates
+- Consolidation and separation candidates
 - File type migration candidates
 
 ---
 
-### Step 4: Analyze skills (when skills scope is selected)
+### Step 3: Analyze skills
 
 #### Condition
 
-- Step 2 complete and skills scope is selected
+- Step 2 complete
 
 #### Process
 
-Analyze each skill from the following perspectives:
+##### 3-A: Similar skill identification
 
-##### 4-A: Duplicate and consolidation detection
+1. Identify pairs of skills whose `description` trigger conditions are similar
+2. Do not prescribe consolidation — present as "similar skills exist" for the user to decide
+3. Explain the degree of similarity and the differences (trigger conditions, step structure)
 
-1. Identify skills whose `description` trigger conditions are similar
-2. Mark skills with similar step structures as "consolidation candidates"
-3. When proposing consolidation, also suggest which skill to use as the base
-
-##### 4-B: Split consideration
-
-1. Mark skills over 200 lines as "split consideration"
-2. Propose splitting when a single skill covers multiple unrelated use cases
-
-##### 4-C: File type appropriateness check
+##### 3-B: File type appropriateness check
 
 Check each skill against §References / File type decision criteria:
 
@@ -150,58 +144,65 @@ Check each skill against §References / File type decision criteria:
 - **Should move to CLAUDE.md**: can be expressed in 1–2 simple lines
 - **Appropriate as skill**: has multiple steps, user confirmation points, and branching
 
-→ Proceed to Step 5 (or next scope)
+→ Proceed to Step 4
 
 #### Output
 
-- Consolidation candidates (including which skill to use as base)
-- Split candidates
+- Similar skill pairs (with difference explanations)
 - File type migration candidates
 
 ---
 
-### Step 5: Analyze CLAUDE.md (when CLAUDE.md scope is selected)
+### Step 4: Analyze CLAUDE.md
 
 #### Condition
 
-- Step 2 complete and CLAUDE.md scope is selected
+- Step 3 complete
 
 #### Process
 
-Analyze each CLAUDE.md from the following perspectives:
+CLAUDE.md is loaded on every session — keep it as thin as possible.
 
-##### 5-A: Bloat detection
+##### 4-A: Bloat detection
 
 1. Mark CLAUDE.md files over 200 lines as "bloated"
-2. For bloated files, propose where to extract content (rules / skills / subfolder CLAUDE.md)
+2. Even below 200 lines, propose extraction if detailed explanations, workflows, or reference material are present
 
-##### 5-B: Content appropriateness check
+##### 4-B: Extraction destination proposals
 
-Check each section against §References / File type decision criteria:
+For each section, propose the following extraction destinations in priority order:
 
-- **Should move to rules**: cross-path link that only needs to load when specific files are edited
-- **Should become a skill**: multi-step workflow or procedure
-- **Should move to subfolder CLAUDE.md**: content relevant only to a specific directory
-- **Should remain in root CLAUDE.md**: workflow or constraints needed project-wide at all times
+| Content nature | Proposed destination |
+|---|---|
+| Cross-path link needed only when specific files are edited | `.claude/rules/` — path-matched, loads only when needed |
+| Multi-step workflow or procedure | `.claude/skills/` — on-demand invocation |
+| Content relevant only to a specific directory | `CLAUDE.md` in that subfolder |
+| Reference material or detailed explanation needed only sometimes | `.claude/references/{topic}.md` — CLAUDE.md lists only the file path |
+| Spec or doc already existing in the project | List only the file path in CLAUDE.md; do not duplicate content |
 
-→ Proceed to Step 6 (or next scope)
+**About `.claude/references/`**:
+A place for content that belongs in CLAUDE.md conceptually but does not need to be loaded every session
+(detailed specs, supplementary explanations, reference material).
+Write only the file path in CLAUDE.md — Claude reads the file when it actually needs it.
+
+→ Proceed to Step 5
 
 #### Output
 
 - List of bloated CLAUDE.md files with line counts
-- Per-section migration proposals
+- Per-section extraction proposals (with destination)
 
 ---
 
-### Step 6: Analyze hooks (when hooks scope is selected)
+### Step 5: Analyze hooks
 
 #### Condition
 
-- Step 2 complete and hooks scope is selected
+- Step 4 complete
 
 #### Process
 
-##### 6-A: Discover hook migration candidates
+##### 5-A: Hook migration candidates
 
 Scan rules / CLAUDE.md content and mark items with the following properties as "hook migration candidates":
 
@@ -212,12 +213,12 @@ Scan rules / CLAUDE.md content and mark items with the following properties as "
 | "Confirm before running a tool" | `PreToolUse` |
 | "Notify after editing a file" | `PostToolUse` |
 
-##### 6-B: Redundancy check for existing hooks
+##### 5-B: Existing hooks redundancy check
 
 1. If multiple hooks are registered for the same event, propose consolidation
 2. If unused hook definitions exist, propose deletion
 
-→ Proceed to Step 7
+→ Proceed to Step 6
 
 #### Output
 
@@ -226,45 +227,78 @@ Scan rules / CLAUDE.md content and mark items with the following properties as "
 
 ---
 
+### Step 6: Check JP/EN mirrors
+
+#### Condition
+
+- Step 5 complete
+
+#### Process
+
+Using the collection from Step 1, report missing mirror files:
+
+| English file | Required JP mirror |
+|---|---|
+| `.claude/rules/{name}.md` | `.claude/rules-jp/{name}.md` |
+| `.claude/skills/{name}/SKILL.md` | `.claude/skills/{name}/SKILL.jp.md` |
+| `CLAUDE.md` (including subfolders) | `CLAUDE.jp.md` in the same folder |
+
+List any missing JP mirrors as "needs creation".
+
+→ Proceed to Step 7
+
+#### Output
+
+- List of files missing their JP mirror
+
+---
+
 ### Step 7: Compile proposals and present to user
 
 #### Condition
 
-- All selected scopes have been analyzed
+- Step 6 complete
 
 #### Process
 
 1. Organize proposals by category:
 
-   **Folder structure changes** (rules only)
+   **rules: Folder structure changes**
    | File (current) | Destination | Reason |
    |---|---|---|
-   | ... | ... | ... |
 
-   **Consolidation / deprecation proposals**
-   | Target | Type | Proposal | Reason |
-   |---|---|---|---|
-   | ... | rule/skill | Merge into: `{name}` | ... |
+   **rules: Consolidation candidates**
+   | Target file | Merge into | Reason |
+   |---|---|---|
+
+   **rules: Separation candidates**
+   | Target file | Split plan | Reason (context savings) |
+   |---|---|---|
 
    **File type migration proposals**
    | Target (current) | Destination type | Reason |
    |---|---|---|
-   | ... | rule/skill/CLAUDE.md/hook | ... |
 
-   **Split proposals** (skills only)
-   | Target skill | Split plan | Reason |
+   **CLAUDE.md extraction proposals**
+   | Target section | Destination | Reason |
    |---|---|---|
-   | ... | `{name-a}` + `{name-b}` | ... |
 
-2. Report "no issues found" for scopes with zero proposals
+   **Hook migration candidates**
+   | Target (current) | Hook event | Reason |
+   |---|---|---|
+
+   **Similar skills**
+   | Skill A | Skill B | Similarities | Differences |
+   |---|---|---|---|
+
+   **Missing JP mirrors**
+   | English file | JP mirror to create |
+   |---|---|
+
+2. Report "no issues found" for categories with zero proposals
 3. Ask the user: "run all", "select individually", or "cancel"
 
 → Wait for user confirmation
-
-#### Output
-
-- Full proposal list
-- User's execution instructions
 
 ---
 
@@ -278,7 +312,7 @@ Scan rules / CLAUDE.md content and mark items with the following properties as "
 
 1. If user selects "run all": execute all proposals
 2. If user selects individually: execute only selected proposals
-3. If user modifies any proposal: reflect the modifications
+3. Reflect any modifications the user makes to individual proposals
 
 → Proceed to Step 9
 
@@ -292,17 +326,33 @@ Scan rules / CLAUDE.md content and mark items with the following properties as "
 
 #### Process
 
-Execute confirmed work:
+**Always invoke the corresponding creator skill for each category before doing any file work.**
+Creator skills contain the creation criteria, templates, and mirror sync procedures — do not write files directly.
 
-| Work type | How to execute |
+| Category | Invoke first | Then |
+|---|---|---|
+| rule creation / conversion / consolidation / separation | `/claude-kit:rule-creator` | Follow skill instructions to create, move, merge, or split |
+| rule folder restructure | (no skill needed) | Move with `git mv`; generate `_overview.md` in each folder |
+| skill creation / conversion | `/claude-kit:skill-creator` | Follow skill instructions to create or convert |
+| CLAUDE.md creation / post-extraction update | `/claude-kit:claude-creator` | Follow skill instructions to create or update |
+| hook creation | `/claude-kit:hook-creator` | Follow skill instructions to create hook; remove source content from rules/CLAUDE.md |
+| JP mirror creation | Corresponding creator skill (above) | Each creator skill includes JP mirror creation steps |
+
+**`_overview.md` template** (used when restructuring rules folders):
+
+```markdown
+# {folder-name} — {one-line category description}
+
+## About this folder
+
+{1–3 sentences on the policy for rules in this category}
+
+## File list
+
+| File | Content |
 |---|---|
-| rules folder restructure | Move files with `git mv`; generate `_overview.md` in each folder |
-| rules consolidation | Merge content into base file; `git rm` the old file |
-| skills consolidation | Merge content into base skill; `git rm` the old folder |
-| skills split | Create new skill folders; split content accordingly |
-| CLAUDE.md extraction | Move sections to new rules/skill file; remove from CLAUDE.md |
-| hooks migration | Call `hook-creator` to create the hook; remove content from source rules/CLAUDE.md |
-| File type conversion | Call the appropriate creator skill to create the new artifact |
+| `{file}.md` | {one-line description} |
+```
 
 → Proceed to Step 10
 
@@ -311,6 +361,7 @@ Execute confirmed work:
 ##### Prohibitions
 
 - Use `git mv` not `cp` (to preserve git history)
+- Never write files directly without invoking the creator skill first
 - Always update references in other skills/rules that mention renamed/moved files
 
 ---
@@ -331,26 +382,9 @@ Execute confirmed work:
 
 ## References
 
-### Folder structure criteria
-
-#### Required folders
-
-| Folder | Role | What goes here |
-|---|---|---|
-| `core/` | Project-wide foundational rules | Coding conventions, workflow, environment setup, general dev process |
-| `feature/` | Feature-specific domain knowledge | Implementation rules per feature, specs, design decisions (1 feature = 1 file) |
-
-#### Optional folder criteria
-
-| Folder | When to add |
-|---|---|
-| `ui/` | Frontend exists: `components/`, `pages/`, `views/`, etc. |
-| `api/` | Many backend API rules / `routes/` or `handlers/` directories exist |
-| `infra/` | Many Docker / CI/CD / deployment rules |
-
----
-
 ### File type decision criteria
+
+Shared across multiple steps.
 
 | Content nature | Best file type | Reason |
 |---|---|---|
@@ -360,32 +394,4 @@ Execute confirmed work:
 | Multi-step workflow with user confirmation and branching | **skill** | On-demand invocation; does not pollute context |
 | Repeated auto-check or notification triggered by events | **hook** | Auto-fires on event; injects into Claude's context |
 | 1–2 line simple instruction or caution | CLAUDE.md or rule | Not complex enough to warrant a skill |
-
----
-
-### Skills analysis criteria
-
-| Condition | Proposal |
-|---|---|
-| `description` trigger heavily overlaps with another skill | Consolidation candidate — confirm which skill encompasses the other |
-| 2 or fewer steps with no branching | Migration candidate to rule or CLAUDE.md |
-| Over 200 lines and covers multiple unrelated use cases | Split candidate — one skill per use case |
-| Already called as Step N of another skill | Clarify delegate relationship; remove or restrict standalone `description` |
-
----
-
-### `_overview.md` template (for rules folders)
-
-```markdown
-# {folder-name} — {one-line category description}
-
-## About this folder
-
-{1–3 sentences on the policy for rules in this category}
-
-## File list
-
-| File | Content |
-|---|---|
-| `{file}.md` | {one-line description} |
-```
+| Reference material or detailed explanation needed only sometimes | `.claude/references/` | CLAUDE.md lists path only; loaded on demand |
