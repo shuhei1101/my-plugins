@@ -6,6 +6,7 @@ updates:
   - 2026-05-23 — PR71: file-types.md を共通リファレンスに集約、creator スキル群の二重管理を解消
   - 2026-05-23 — PR71: references を common/rules/skills/hooks/claude-md の5ファイルに分割（トークン効率改善）
   - 2026-05-23 — PR76: my-plugins/.claude/rules/ を core/ feature/ に整理し JP ミラー5本を追加
+  - 2026-05-23 — PR77: worktree-kit-dependency.md に paths: frontmatter を追加して自動ロードを有効化
 related_specs: []
 related_prs:
   - PR66

@@ -1,3 +1,10 @@
+---
+paths:
+  - "plugins/work-kit/skills/work-start/SKILL.md"
+  - "plugins/worktree-kit/skills/work-add/SKILL.md"
+  - "plugins/worktree-kit/skills/vscode-workspace-sync/SKILL.md"
+---
+
 # worktree-kit Dependency Rules
 
 ## プラグイン構成

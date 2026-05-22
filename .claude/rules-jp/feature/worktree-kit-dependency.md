@@ -1,3 +1,10 @@
+---
+paths:
+  - "plugins/work-kit/skills/work-start/SKILL.md"
+  - "plugins/worktree-kit/skills/work-add/SKILL.md"
+  - "plugins/worktree-kit/skills/vscode-workspace-sync/SKILL.md"
+---
+
 > ⚠️ **日本語ミラー** — Claude には自動ロードされません。このファイルを更新する際は、必ず英語本体 `.claude/rules/feature/worktree-kit-dependency.md` も同時に更新してください。
 
 # worktree-kit 依存関係ルール

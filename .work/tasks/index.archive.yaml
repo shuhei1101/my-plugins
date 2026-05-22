@@ -466,3 +466,10 @@ prs:
   summary: rules/ を core/ feature/ に整理し JP ミラー5本を追加
   task: 20260523_rules-folder-restructure
   completed: true
+- id: 77
+  title: PR77 — fix-worktree-kit-dependency-paths
+  type: fix
+  tags: []
+  summary: worktree-kit-dependency.md に paths: frontmatter を追加して自動ロードを有効化
+  task: 20260523_rules-folder-restructure
+  completed: true
