@@ -44,6 +44,10 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 1. 公式ドキュメントを取得:
    **https://code.claude.com/docs/ja/hooks**
 
+2. 共通ガイド（`references/common.md`）とフック設計ガイド（`references/hooks.md`）を読む（このプラグイン）。
+   `common.md`: ファイルタイプ判断基準・JP/EN ミラールール。
+   `hooks.md`: イベント一覧・プロンプト注入の仕組み・使うべきケース・NG・ループ防止・配置とパス変数。
+
 → ステップ 2 へ
 
 #### 出力

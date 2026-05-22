@@ -445,3 +445,10 @@ prs:
   summary: work-kit TODOテンプレートとwork-start SKILL.mdの同期を促すパススコープルールを追加
   task: 20260523_add-work-kit-todo-template-sync-rule
   completed: true
+- id: 71
+  title: PR71 — claude-organizer
+  type: refactor
+  tags: []
+  summary: rules-organizer を拡張し Claude 設定全体（rules/skills/CLAUDE.md/hooks）を監査・整理するスキルに変更
+  task: 20260523_claude-organizer
+  completed: false

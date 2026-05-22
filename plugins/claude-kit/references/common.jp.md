@@ -1,0 +1,56 @@
+# common.jp.md — Claude 設定 共通ガイド（日本語ミラー）
+
+> このファイルは `references/common.md` の日本語ミラーです。
+> 変更する場合は JP ミラーを先に更新し、その後英語版にも反映してください。
+
+---
+
+# Claude 設定 共通ガイド
+
+タイプ別の詳細は各参照ファイルを読むこと:
+- ルール: `references/rules.md`
+- スキル: `references/skills.md`
+- フック: `references/hooks.md`
+- CLAUDE.md: `references/claude-md.md`
+
+---
+
+## ファイルタイプ一覧表
+
+| ファイルタイプ | いつ読まれるか | 何を書くか |
+|---|---|---|
+| `CLAUDE.md`（ルート） | セッション開始時・必ず | プロジェクト全体の規約・ワークフロー。**極力薄く保つ** |
+| `CLAUDE.md`（サブフォルダ） | そのフォルダにアクセスしたとき | フォルダの説明・ローカル規約（co-location 重視） |
+| `.claude/rules/<name>.md` | `paths:` に一致するファイルを読んだとき | クロスパスリンク・更新漏れ防止 |
+| `.claude/skills/<name>/SKILL.md` | 呼び出されたとき | 複数ステップのワークフロー・手順 |
+| `.claude/hooks/` + `settings.json` | 特定イベント発火時（自動） | 自動チェック・通知・プロンプト注入 |
+| `.claude/references/<name>.md` | 必要なときに手動で読む | CLAUDE.md に書きたいが毎回読む必要のない詳細説明・参考資料 |
+
+---
+
+## ファイルタイプ判断基準
+
+| 内容の性質 | 最適なファイルタイプ | 理由 |
+|---|---|---|
+| 複数の異なるフォルダをまたぐファイル同期リンク | **rule** | パスマッチで対象ファイル編集時にのみ自動ロード |
+| 単一フォルダ内のファイル一覧・ローカル規約 | rule または サブフォルダ CLAUDE.md | 一覧性重視なら rule、co-location 重視なら CLAUDE.md |
+| プロジェクト全体で常に必要な短いワークフロー・禁止事項 | **CLAUDE.md（ルート）** | セッション開始時に必ず読み込まれる |
+| 複数ステップ・ユーザー確認・分岐があるワークフロー | **skill** | オンデマンド呼び出し、コンテキストを汚染しない |
+| 「〜のたびに自動チェック/通知」という繰り返し処理 | **hook** | イベント発火で自動実行、Claude のコンテキストに注入 |
+| 1〜2行のシンプルな指示・注意事項 | CLAUDE.md または rule | スキルにするほど複雑でない |
+| 状況によって読み込みたい詳細説明・参考資料 | `.claude/references/` | CLAUDE.md にはパスだけ書き、必要時に読み込む |
+
+---
+
+## JP/EN ミラーのルール
+
+すべてのファイルには対応する JP ミラーが必要:
+
+| 英語ファイル（Claude が読む） | JP ミラー（人間向け参照用） |
+|---|---|
+| `.claude/rules/<name>.md` | `.claude/rules-jp/<name>.md` |
+| `.claude/skills/<name>/SKILL.md` | `.claude/skills/<name>/SKILL.jp.md` |
+| `CLAUDE.md`（任意のフォルダ） | 同フォルダの `CLAUDE.jp.md` |
+| `.claude/references/<name>.md` | `.claude/references/<name>.jp.md` |
+
+**変更手順**: JP ミラーを先に更新し、その後英語版に反映する。

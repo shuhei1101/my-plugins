@@ -34,20 +34,9 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 1. Read the official Claude Code documentation on skills:
    **https://code.claude.com/docs/en/skills**
 
-2. Read the file-type usage reference (`references/file-types.md` in this plugin).
-   Key points:
-
-   **Skills are for**: Multi-step workflows and procedures that involve user interaction
-   or complex decision-making across multiple steps.
-
-   **Skills vs other file types**:
-   - Use a skill when the task has 3+ steps, involves user confirmation points, or needs
-     branching logic — not for simple 1-2 line rules
-   - Simple rules → CLAUDE.md or `.claude/rules/`
-   - File-edit-triggered sync reminders → `.claude/rules/`
-
-   **`description` frontmatter**: This is the auto-trigger. Write it precisely —
-   "when the user says X", "when editing Y file". Vague descriptions cause false positives.
+2. Read the common guide (`references/common.md`) and the skills design guide (`references/skills.md`) in this plugin.
+   `common.md` contains: file type decision criteria and JP/EN mirror rules.
+   `skills.md` contains: when to use skills, `description` frontmatter, step structure, reference placement.
 
 → Proceed to Step 1
 

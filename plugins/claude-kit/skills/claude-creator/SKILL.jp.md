@@ -36,12 +36,9 @@ CLAUDE.md は2種類の使い方がある:
 1. CLAUDE.md に関する公式ドキュメントを読む:
    **https://code.claude.com/docs/en/memory**
 
-2. ファイルタイプ使い分けガイドを読む（このプラグインの `references/file-types.md`）。
-   要点:
-   - `CLAUDE.md`（ルート）: セッション常時ロード — プロジェクト全体のワークフロー・規約
-   - `CLAUDE.md`（サブフォルダ）: アクセス時に遅延ロード — フォルダの説明・ローカル規約
-   - `.claude/rules/`: 対象ファイル読み込み時にロード — 複数フォルダをまたぐ関連ファイルのリンク
-   - `.claude/skills/`: 呼び出し時のみ — 複数ステップのワークフロー
+2. 共通ガイド（`references/common.md`）と CLAUDE.md 設計ガイド（`references/claude-md.md`）を読む（このプラグイン）。
+   `common.md`: ファイルタイプ判断基準・JP/EN ミラールール。
+   `claude-md.md`: CLAUDE.md を薄くする原則・外出し先の判断・references/ の使い方・構造テンプレート。
 
 → ステップ1へ進む
 
