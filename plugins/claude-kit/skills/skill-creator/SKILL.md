@@ -77,7 +77,7 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 #### Input
 
 - Skill description and workflow collected in Step 1
-- File-type guide (`references/file-types.md` in this plugin)
+- Common guide (`references/common.md` in this plugin)
 
 #### Process
 
