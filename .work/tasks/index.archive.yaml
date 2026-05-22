@@ -438,3 +438,10 @@ prs:
   summary: 提案前に既存アーティファクトを確認するステップを追加し、新規/既存編集を提案フォーマットに明示
   task: 20260523_conversation-to-claude-existing-check
   completed: true
+- id: 71
+  title: PR71 — claude-organizer
+  type: refactor
+  tags: []
+  summary: rules-organizer を拡張し Claude 設定全体（rules/skills/CLAUDE.md/hooks）を監査・整理するスキルに変更
+  task: 20260523_claude-organizer
+  completed: false
