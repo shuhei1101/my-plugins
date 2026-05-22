@@ -347,6 +347,13 @@ prs:
   tags: []
   summary: ui-kit:mock スキルの出力先をサーバープロジェクト対応に変更し、起動後URLを通知するルールを追加
   task: 20260520_ui-kit-mock-server-output
+- id: 58
+  title: PR58 — split-work-kit-worktree
+  type: refactor
+  tags: []
+  summary: work-kitを2プラグインに分割 — work-kit（.work管理）とworktree-kit（git worktree管理）
+  task: 20260520_split-work-kit-worktree
+  completed: true
 - id: 59
   title: PR59 — conversation-history-skills
   type: feat
@@ -402,4 +409,11 @@ prs:
   tags: []
   summary: rules フォルダをフォルダ構成で整理するスキル（claude-kit:rules-organizer）を新規作成
   task: 20260522_rules-organizer-skill
+  completed: true
+- id: 68
+  title: PR68 — conversation-to-claude-improve
+  type: feat
+  tags: []
+  summary: conversation-to-claude スキルを改善 — 提案を網羅的に出す・提案前にクリエータースキルを読む
+  task: 20260522_conversation-to-claude-improve
   completed: true
