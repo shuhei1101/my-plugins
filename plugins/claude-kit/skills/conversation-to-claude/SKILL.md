@@ -24,9 +24,6 @@ to capture what was learned: a repeatable workflow, a file dependency, a hook tr
 or a project convention. This skill figures out the best form for that knowledge and
 generates it through the right creator skill.
 
-Refer to the **§ Artifact type knowledge** section in References before proposing —
-it contains all the judgment criteria you need without reading external skills.
-
 ---
 
 ## Tasks
@@ -41,29 +38,66 @@ it contains all the judgment criteria you need without reading external skills.
 
 1. Review the **entire** session conversation and extract **every possible candidate** without omitting any.
    Cast a wide net — it is better to propose too many than to miss something valuable.
-   Use the **§ Artifact type knowledge** section in References to judge each candidate.
 
    **A. Repeatable workflow candidates** (→ skill)
+
+   Use when: a multi-step workflow (3+ steps) involving user decisions, branching, or interaction. The value is reusability — someone would run this same procedure again.
+
    - 3+ step procedures involving user interaction or branching
    - Patterns worth reusing in other projects
    - Multi-step investigative or setup flows the user might repeat
 
+   Not a skill: a single action, a one-time fix, or information that belongs in a rule or CLAUDE.md.
+
+   ---
+
    **B. File dependency / path structure knowledge** (→ rule)
-   - **Primary use case**: "When I read/edit file X, I must also check file Y" — the rule loads automatically when Claude reads any file matching `paths:`, so the linked files are always surfaced together
-   - "Config lives here", "routing is here" — path role discoveries worth anchoring so Claude knows the layout
+
+   Use when: you discovered that two or more files must stay in sync. A rule loads automatically when Claude *reads* a file matching `paths:`, surfacing the linked files every time.
+
+   How `paths:` works:
+   - Triggers when Claude **reads** a matching file — NOT on shell commands (mv, rm, cp)
+   - Set `paths:` to files Claude will actually *open* when working in this domain
+   - Example: `paths: ["src/models/**/*.py"]` loads when opening any model file
+
+   What to put in a rule: links to related files, "when editing X also check Y". Keep it short — rules are injected on every matching read.
+   What NOT to put: detailed docs, step-by-step workflows.
+
+   - "Whenever I edit file X, I also need to edit file Y"
+   - "Config lives here", "routing is here" — path role discoveries
    - Any "always check together" or "must stay in sync" pattern discovered during the session
-   - Note: `paths:` triggers on *file read*, not on shell commands (mv, rm) — choose patterns that match files Claude will actually open when working in this domain
+
+   ---
 
    **C. Event-triggered automation** (→ hook)
+
+   Use when: you want something to happen automatically at a specific event — no user prompt needed.
+
+   Available events: `PreToolUse` (before tool call, can block) / `PostToolUse` / `Stop` (response done) / `SubagentStop` / `SessionStart` / `SessionEnd` / `UserPromptSubmit` / `PreCompact` / `Notification`
+
+   Hook types: prompt injection (injects text into Claude's context) or shell command (runs a script).
+
+   Not a hook: if the user should consciously trigger it — use a skill instead.
+
    - Actions to run automatically before/after specific tool use or at session start
    - "I want to check this every time before running that command"
    - Validations or notifications that should fire on every relevant event
 
+   ---
+
    **D. Project-wide conventions and guidelines** (→ CLAUDE.md)
+
+   Use when: conventions, prohibitions, or structural knowledge that every session should know — regardless of which files are open. CLAUDE.md loads always; rules load only on file read.
+
+   Good CLAUDE.md content: prohibitions, naming conventions, folder/directory structure ("specs go in `.work/specs/`"), design principles, onboarding info.
+
+   Not CLAUDE.md: file-specific sync rules (use rule), procedures (use skill), event automation (use hook).
+
    - Prohibitions, naming rules, design principles that apply to all files
    - Folder / directory structure discoveries: "specs live here", "generated files go there", "this folder is the canonical place for X"
-   - "This belongs in CLAUDE.md"
    - Anything a new contributor would need to know to avoid mistakes or find the right place to put things
+
+   ---
 
    **E. Lessons learned / recurrence prevention** (→ `incidents` rule)
    - Commands or operations that were tried and failed, where the cause and fix are now known
@@ -195,90 +229,6 @@ If multiple types were selected, process them one at a time in the order the use
 | CLAUDE.md | Append to `CLAUDE.md` | Documenting project conventions and guidelines |
 | incidents | `.claude/rules/incidents.md` (index — always loaded)<br>`.claude/references/incidents/{slug}.md` (detail en)<br>`.claude/references/incidents/{slug}.jp.md` (detail jp) | Preventing recurrence of failures and wrong assumptions |
 | glossary | `.claude/rules/glossary.md` (always loaded) | Project-specific term definitions |
-
----
-
-### Artifact type knowledge
-
-All the judgment criteria needed to propose accurately — no external skill reads required.
-
-#### Skill
-
-**When to use**: a multi-step workflow (3+ steps) that involves user decisions, branching, or interaction. The value is reusability — someone would run this same procedure again in another project or session.
-
-**When NOT to use**: a single action, a one-time fix, or information that belongs in a rule or CLAUDE.md.
-
-**Key fields in a good skill proposal**:
-- Name: kebab-case, verb-noun (e.g., `setup-db`, `deploy-preview`)
-- Trigger phrases: what the user would say to invoke it
-- Steps: numbered, each with a clear condition and output
-
----
-
-#### Rule (path-scoped)
-
-**When to use**: you discovered that two or more files must stay in sync, or that certain files have a specific role in the project. A rule surfaces this knowledge automatically when Claude reads a relevant file.
-
-**How `paths:` works**:
-- Claude loads the rule when it **reads** a file whose path matches the glob pattern
-- It does **not** trigger on shell-only commands like `mv`, `rm`, `cp`
-- Set `paths:` to files Claude will actually *open* when working in this domain
-- Example: `paths: ["src/models/**/*.py", "tests/test_models.py"]` — loads when opening any model file or its tests
-
-**What to put in a rule**:
-- Links to related files that must be checked together
-- "When editing X, also verify Y and Z"
-- Keep it short — rules are injected into every matching read, so brevity matters
-
-**What NOT to put**:
-- Detailed documentation or descriptions of what a file does
-- Step-by-step workflows (use a skill instead)
-
-**When NOT to use**: if all files are in one folder, a subfolder CLAUDE.md may be more appropriate (co-location). Rules shine for cross-path dependencies.
-
----
-
-#### Hook
-
-**When to use**: you want something to happen automatically at a specific event — no user prompt needed.
-
-**Available events**:
-| Event | When it fires |
-|---|---|
-| `PreToolUse` | Before any tool call — can inspect and block |
-| `PostToolUse` | After any tool call completes |
-| `Stop` | When Claude finishes a response |
-| `SubagentStop` | When a subagent finishes |
-| `SessionStart` | At the start of a new session |
-| `SessionEnd` | When the session ends |
-| `UserPromptSubmit` | When the user submits a message |
-| `PreCompact` | Before context compaction |
-| `Notification` | When Claude sends a notification |
-
-**Hook types**:
-- **Prompt injection**: injects a text prompt into Claude's context at the event (no shell command)
-- **Shell command**: runs a shell script at the event
-
-**When NOT to use**: if it's something the user should consciously trigger, use a skill instead.
-
----
-
-#### CLAUDE.md
-
-**When to use**: project-wide conventions, prohibitions, or structural knowledge that every session should know — regardless of which files are open.
-
-**vs Rule**: Rules load only when a matching file is read. CLAUDE.md loads always. Use CLAUDE.md for things that apply everywhere; use rules for file-specific sync requirements.
-
-**Good CLAUDE.md content**:
-- "Never do X" prohibitions
-- Naming conventions that apply across all files
-- Folder/directory structure: "specs go in `.work/specs/`", "scripts go in `scripts/`"
-- Design principles or architectural decisions
-- Onboarding information a new contributor needs immediately
-
-**When NOT to use**: file-specific sync rules (use rule), repeatable procedures (use skill), event automation (use hook).
-
----
 
 ### Official docs
 
