@@ -28,31 +28,58 @@ generates it through the right creator skill.
 
 ## Tasks
 
+### Step 0: Read creator skill references
+
+#### Condition
+
+- Always — run before anything else
+
+#### Process
+
+1. Read the following creator skills so you understand their structure and requirements **before** proposing anything:
+   - `claude-kit:skill-creator` — how skills are designed (triggers, step structure)
+   - `claude-kit:rule-creator` — what makes a good rule (paths, file dependency links)
+   - `claude-kit:claude-creator` — when CLAUDE.md is appropriate vs rules
+   - `claude-kit:hook-creator` — which hook events exist and what they can do
+
+→ Proceed to Step 1
+
+#### Output
+
+- Creator skill content loaded into context
+
+---
+
 ### Step 1: Analyze the conversation history
 
 #### Condition
 
-- Always — run first
+- Step 0 complete
 
 #### Process
 
-1. Review the entire session conversation and extract:
+1. Review the **entire** session conversation and extract **every possible candidate** without omitting any.
+   Cast a wide net — it is better to propose too many than to miss something valuable.
 
    **A. Repeatable workflow candidates** (→ skill)
    - 3+ step procedures involving user interaction or branching
    - Patterns worth reusing in other projects
+   - Multi-step investigative or setup flows the user might repeat
 
    **B. File dependency / path structure knowledge** (→ rule)
    - "Whenever I edit file X, I also need to edit file Y"
    - "Config lives here", "routing is here" — path role discoveries
+   - Any "always check together" pattern discovered during the session
 
    **C. Event-triggered automation** (→ hook)
    - Actions to run automatically before/after specific tool use or at session start
    - "I want to check this every time before running that command"
+   - Validations or notifications that should fire on every relevant event
 
    **D. Project-wide conventions and guidelines** (→ CLAUDE.md)
    - Prohibitions, naming rules, design principles that apply to all files
    - "This belongs in CLAUDE.md"
+   - Anything a new contributor would need to know to avoid mistakes
 
    **E. Lessons learned / recurrence prevention** (→ `incidents` rule)
    - Commands or operations that were tried and failed, where the cause and fix are now known
@@ -68,7 +95,7 @@ generates it through the right creator skill.
 
 #### Output
 
-- Internal list of candidates per category
+- Exhaustive internal list of candidates per category — err on the side of including more
 
 ---
 
@@ -80,7 +107,9 @@ generates it through the right creator skill.
 
 #### Process
 
-1. Based on the extracted candidates, propose **multiple artifact types (usually 2–3)**:
+1. Based on the extracted candidates, propose **all identified artifacts** — list every candidate found, not just 2–3.
+   Do not filter down. The user will decide what to keep.
+   If a category yields multiple distinct candidates (e.g., two different rules), list each as a separate numbered proposal.
 
    ```
    今回の会話から以下のアーティファクトを作成できます:
@@ -110,7 +139,7 @@ generates it through the right creator skill.
    どれを作成しますか？（複数選択可）
    ```
 
-   > **Note**: Proposals A–D take priority. E (incidents) is only for insights that don't fit A–D.
+   > **Note**: E (incidents) is shown for insights that don't fit A–D.
    > F (glossary) is shown only when term candidates exist.
 
 2. If nothing extractable is found:
