@@ -68,6 +68,51 @@ Collect all of the following:
 
 #### Process
 
+Analyze each rule from the perspectives below. Before starting, internalize the following rule design principles — use them as the basis for evaluating whether existing rules are correctly designed:
+
+##### Two types of rules
+
+Rules serve two distinct purposes. Identify which type each rule is and whether it is designed correctly:
+
+**① Link rule (file-coupling type)**
+
+Bundles related files so that editing one forces the author to check the others.
+
+- List all related files in `paths:`
+- Example: abstract class + interface + child class + parent class in one rule
+- Example: config file + spec doc + test cases + implementation code bundled together
+- **Effect**: When any one file is edited, Claude has full context of the entire relationship
+
+**② Context rule (trigger-load type)**
+
+Automatically loads relevant knowledge, specs, or guidelines when working in a specific area.
+
+- Set `paths:` to the files that, when touched, should trigger loading this rule
+- Example: touching `config/` → config spec rule is loaded
+- Example: touching `src/` → coding convention rule is loaded
+
+##### Use-case-driven `paths:` design
+
+**Start from "when should this be read?"**
+
+When evaluating `paths:` patterns, first decide when the rule should fire, then work backwards to determine which paths trigger it:
+
+1. **Identify the use case** — in what kind of work is this rule useful?
+2. **Identify the trigger file/folder** — what file is always touched during that work?
+3. **Set that file in `paths:`** — the rule loads every time it is touched
+
+**Example 1 — context rule for a spec folder**:
+- Use case: when editing a config file, load the corresponding spec
+- Trigger: editing something in `config/`
+- Set `config/**` in `paths:` → spec rule loads every time a config file is touched
+
+**Example 2 — always-on rule**:
+- Use case: a rule that must be followed during any work (e.g. coding conventions)
+- Trigger: touching any source code
+- Set a broad pattern like `src/**` or `**/*.ts` in `paths:`
+
+**Evaluating existing rules**: Check whether the `paths:` pattern matches the intended use-case trigger. If there is a mismatch, propose a correction.
+
 ##### 2-A: Folder structure cleanup
 
 1. If many flat `.md` files exist directly under `.claude/rules/`, propose organizing into subfolders
