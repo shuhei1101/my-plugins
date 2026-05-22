@@ -9,10 +9,10 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260523_rules-folder-restructure/PR77/QA.md` |
-| - | `worktree-kit-dependency.md` に `paths:` frontmatter を追加 | `.claude/rules/feature/worktree-kit-dependency.md` |
-| - | JP ミラーにも同じ `paths:` frontmatter を追加 | `.claude/rules-jp/feature/worktree-kit-dependency.md` |
-| - | `.work/specs/rules-organizer.md` に PR77 を記録 | `.work/specs/rules-organizer.md` |
+| x | QA.md に未決定事項を記録する | `.work/tasks/20260523_rules-folder-restructure/PR77/QA.md` |
+| x | `worktree-kit-dependency.md` に `paths:` frontmatter を追加 | `.claude/rules/feature/worktree-kit-dependency.md` |
+| x | JP ミラーにも同じ `paths:` frontmatter を追加 | `.claude/rules-jp/feature/worktree-kit-dependency.md` |
+| x | `.work/specs/rules-organizer.md` に PR77 を記録 | `.work/specs/rules-organizer.md` |
 
 ## 参考ドキュメント
 
