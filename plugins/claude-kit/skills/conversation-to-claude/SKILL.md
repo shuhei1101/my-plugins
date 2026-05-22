@@ -117,11 +117,44 @@ generates it through the right creator skill.
 
 ---
 
-### Step 2: Propose artifact types
+### Step 2: Check existing artifacts
 
 #### Condition
 
 - Step 1 complete
+
+#### Process
+
+1. For each candidate identified in Step 1, scan the project for existing artifacts that overlap or could absorb the new content:
+
+   | Candidate type | Where to look |
+   |---|---|
+   | Skill | `.claude/skills/`, `plugins/*/skills/` — scan SKILL.md filenames and descriptions |
+   | Rule | `.claude/rules/` — scan filenames and heading lines |
+   | Hook | `~/.claude/settings.json`, `.claude/settings.json` — check existing hook entries |
+   | CLAUDE.md content | `CLAUDE.md`, `plugins/*/CLAUDE.md` — check relevant sections |
+   | incidents | `.claude/rules/incidents.md` — check for existing entries on the same topic |
+   | glossary | `.claude/rules/glossary.md` — check for existing term entries |
+
+2. For each candidate, decide:
+   - **Merge into existing**: existing artifact covers the same domain → extend it
+   - **Create new**: no closely related artifact exists
+
+3. Record the decision (create new / edit existing at `{path}`) for use in Step 3.
+
+→ Proceed to Step 3
+
+#### Output
+
+- For each candidate: decision (new / edit existing) and target path (if editing)
+
+---
+
+### Step 3: Propose artifact types
+
+#### Condition
+
+- Step 2 complete
 
 #### Process
 
@@ -134,25 +167,30 @@ generates it through the right creator skill.
 
    【案 A】スキル — {名前の候補}
    理由: {なぜスキルが適切か}
+   操作: 新規作成  /  既存を編集 — {path}（どちらか一方）
    生成物: .claude/skills/{name}/SKILL.md
 
    【案 B】ルール — {名前の候補}
    理由: {なぜルールが適切か}
+   操作: 新規作成  /  既存を編集 — {path}（どちらか一方）
    リンクするファイル: {編集時にセットで確認すべきファイル群}
    paths（読んだ時に発動）: {このルールを自動ロードしたいファイル/ディレクトリのパターン (例: src/**, *.ts, plugins/**)}
    生成物: .claude/rules/{name}.md
 
    【案 C】フック — {名前の候補}
    理由: {なぜフックが適切か}
+   操作: 新規作成  /  既存を編集 — {path}（どちらか一方）
    生成物: settings.json への hooks エントリ
 
    【再発防止】incidents に追記
    概要: {今回の教訓を1〜2行で}
+   操作: 既存を編集 — .claude/rules/incidents.md  /  新規（同一トピックなし）
    生成物: .claude/rules/incidents.md（インデックス）＋ .claude/references/incidents/{slug}.md（詳細）
 
    【用語集】glossary に以下の用語を追加してよいですか？
    - {term1}: {定義}
    - {term2}: {定義}
+   操作: 既存を編集 — .claude/rules/glossary.md
    生成物: .claude/rules/glossary.md
 
    どれを作成しますか？（複数選択可）
@@ -164,7 +202,7 @@ generates it through the right creator skill.
 2. If nothing extractable is found:
    - Report "今回の会話から永続化できる知識・手順は見つかりませんでした" and stop.
 
-→ After user selection, proceed to Step 3
+→ After user selection, proceed to Step 4
 
 #### Output
 
@@ -172,11 +210,11 @@ generates it through the right creator skill.
 
 ---
 
-### Step 3: Implement selected artifacts
+### Step 4: Implement selected artifacts
 
 #### Condition
 
-- User selected artifact type(s) in Step 2
+- User selected artifact type(s) in Step 3
 
 #### Process
 
@@ -193,7 +231,7 @@ For each selected type, launch the corresponding creator skill and delegate:
 
 If multiple types were selected, process them one at a time in the order the user listed.
 
-→ After all selections are handled, proceed to Step 4
+→ After all selections are handled, proceed to Step 5
 
 #### Notes
 
@@ -203,11 +241,11 @@ If multiple types were selected, process them one at a time in the order the use
 
 ---
 
-### Step 4: Report completion
+### Step 5: Report completion
 
 #### Condition
 
-- Step 3 complete
+- Step 4 complete
 
 #### Process
 
