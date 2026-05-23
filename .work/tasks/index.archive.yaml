@@ -83,3 +83,10 @@ prs:
   summary: 'work-kit:merge SKILL.md に Step 4 を追加（index.yaml completed: true 設定の欠落修正）'
   task: 20260523_merge-skill-add-step4
   completed: true
+- id: 87
+  title: PR87 — merge-skill-no-auto-merge
+  type: fix
+  tags: []
+  summary: merge SKILL.md にマージ禁止文を強化追記
+  task: 20260524_merge-skill-no-auto-merge
+  completed: true

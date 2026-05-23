@@ -11,4 +11,6 @@
 | `claude-kit-skill-dependencies.md` | claude-kit の creator スキル群と共有 references の依存関係 |
 | `debug-fab-template-sync.md` | `uidev.js` / `uidev.css` 変更時の SKILL.md・CLAUDE.md・バージョン同期ルール |
 | `work-kit-todo-template-sync.md` | TODO.md テンプレートと work-start SKILL.md Step 7 の同期ルール |
+| `creator-skill-dispatch.md` | プラグインコンポーネント編集時に対応するクリエイタースキルを先に呼び出す強制ルール |
+| `skill-jp-mirror-sync.md` | `SKILL.md` 編集時に `SKILL.jp.md` も同コミットで更新する同期ルール |
 | `worktree-kit-dependency.md` | work-kit と worktree-kit の責務分離・インターフェース整合ルール |
