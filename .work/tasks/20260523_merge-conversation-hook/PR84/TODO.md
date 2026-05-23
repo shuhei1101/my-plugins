@@ -13,6 +13,7 @@ work-kit:merge スキルにおいて、マージ実行前に claude-kit プラ�
 | 済 | merge SKILL.md に Step 3 を追加（claude-kit 検出 → conversation-to-claude 実行） | `plugins/work-kit/skills/merge/SKILL.md` |
 | 済 | plugin.json と marketplace.json のバージョンをバンプする | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 | 済 | SKILL.jp.md を SKILL.md に同期する | `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| 済 | claude-kit 検出方法をbashからスキル一覧チェックに変更する | `plugins/work-kit/skills/merge/SKILL.md`, `SKILL.jp.md` |
 
 ## 参考ドキュメント
 
