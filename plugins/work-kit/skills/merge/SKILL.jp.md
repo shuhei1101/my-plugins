@@ -89,40 +89,74 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### ステップ4: 完了済みエントリをアーカイブする
+### ステップ4: index.yaml で PR を完了済みにする
+
+#### 条件
+
+- ステップ3が完了していること
 
 #### 処理内容
 
-1. 以下を実行して完了済みエントリをアーカイブに移動する:
+1. メインリポジトリの `index.yaml` で対象 PR を `completed: true` にする:
 
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" archive \
-  .work/tasks/index.yaml \
-  .work/tasks/index.archive.yaml
+python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
+  .work/tasks/index.yaml --id {N}
 ```
-
-コマンドは移動件数を出力する。`0` と表示された場合はこのステップの残り処理をスキップする。
-
-2. エントリが移動された場合は `index.archive.yaml` をマージ対象の PR ブランチにコミットする
 
 → ステップ5へ進む
 
 #### 補足
 
-- `index.yaml` は gitignore 対象のためコミット不要
-- `index.archive.yaml` は git 追跡対象 — 派生元ブランチに直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ5のマージに含まれる）
+- **メインリポジトリのディレクトリで実行する**（ワークツリーではない）— `index.yaml` は gitignore 対象のためワークツリーには存在しない
+- `index.yaml` 自体のコミットは不要
 
 ---
 
-### ステップ5: マージを実行する
+### ステップ5: 完了済みエントリをアーカイブする
 
 #### 条件
 
 - ステップ4が完了していること
 
+#### 処理内容
+
+1. 以下を実行して完了済みエントリを**ワークツリーの** `index.archive.yaml` に移動する:
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" archive \
+  .work/tasks/index.yaml \
+  ../$(basename $(pwd))-wt-PR{N}/.work/tasks/index.archive.yaml
+```
+
+コマンドは移動件数を出力する。`0` と表示された場合はこのステップの残り処理をスキップする。
+
+2. エントリが移動された場合は、ワークツリー内で `index.archive.yaml` をコミットする:
+
+```bash
+git -C ../$(basename $(pwd))-wt-PR{N} add .work/tasks/index.archive.yaml
+git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.archive.yaml #PR{N}"
+```
+
+→ ステップ6へ進む
+
+#### 補足
+
+- `index.yaml` は gitignore 対象のためコミット不要
+- `index.archive.yaml` は git 追跡対象 — 派生元ブランチに直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ6のマージに含まれる）
+- archive コマンドはメインリポジトリの `index.yaml` を読み、ワークツリーの `index.archive.yaml` に書き込む
+
+---
+
+### ステップ6: マージを実行する
+
+#### 条件
+
+- ステップ5が完了していること
+
 > ⚠️ **マージ前の必須確認**
-> ステップ4で `index.archive.yaml` をコミットし忘れたままマージを実行すると、アーカイブ変更がマージコミットに含まれない。
-> **マージコマンドを実行する前に、必ずステップ4の `git commit` が完了していることを確認すること。**
+> ステップ5でワークツリー内の `index.archive.yaml` をコミットし忘れたままマージを実行すると、アーカイブ変更がマージコミットに含まれない。
+> **マージコマンドを実行する前に、必ずステップ5のワークツリー内 `git commit` が完了していることを確認すること。**
 > （アーカイブ件数が 0 だったためコミット不要だった場合はこの確認をスキップしてよい）
 
 #### 処理内容
@@ -134,11 +168,11 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" archive \
 git merge --no-ff -m "{type}: {title} #PR{N}" PR{N}/{type}/{title}
 ```
 
-→ ステップ6へ進む
+→ ステップ7へ進む
 
 ---
 
-### ステップ6: ワークツリーとブランチを削除する
+### ステップ7: ワークツリーとブランチを削除する
 
 #### 処理内容
 
@@ -149,7 +183,7 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
-→ ステップ7へ進む
+→ ステップ8へ進む
 
 #### 補足
 
@@ -160,7 +194,7 @@ git branch -d PR{N}/{type}/{title}
 
 ---
 
-### ステップ7: ドキュメントを更新する
+### ステップ8: ドキュメントを更新する
 
 #### 処理内容
 
@@ -172,11 +206,11 @@ git add .work/
 git commit -m "docs: PR{N} マージ後ドキュメント更新"
 ```
 
-→ ステップ8へ進む
+→ ステップ9へ進む
 
 ---
 
-### ステップ8: 完了報告
+### ステップ9: 完了報告
 
 #### 処理内容
 

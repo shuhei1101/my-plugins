@@ -1,5 +1,5 @@
 {
   "name": "work-kit",
   "description": "Hook-based project lifecycle management — injects PR task context on every prompt and reminds task updates on stop",
-  "version": "2.19.1"
+  "version": "2.20.0"
 }

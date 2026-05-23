@@ -1,0 +1,27 @@
+# merge-archive-step-zero-bug（日本語ミラー）
+
+> このファイルは `merge-archive-step-zero-bug.md` の日本語ミラーです。
+
+## 何が起きたか
+
+`work-kit:merge` スキルの archive ステップが常に 0 件を返し、`index.archive.yaml` が PR ブランチに含まれずマージ後に master 直接コミットになっていた。
+
+## 根本原因
+
+### 原因 1: archive 実行前に `completed: true` が設定されていない
+
+archive コマンドは `completed: true` のエントリのみ移動する。merge フロー内に `completed: true` を設定するステップがなかったため常に 0 件。
+
+### 原因 2: `index.yaml` は gitignored のためワークツリーに存在しない
+
+git worktree は git 追跡済みファイルのみコピーする。gitignored の `index.yaml` はワークツリーに存在しない。メインリポジトリのみに存在するローカルファイルである。
+
+## 修正内容（PR86）
+
+1. `index-tool.py` に `set-completed --id N` を追加
+2. merge SKILL.md に Step 4 を追加（メインリポジトリで set-completed 実行）
+3. Step 5 の archive 先をワークツリーの `index.archive.yaml` に変更し、ワークツリー内でコミット
+
+## 一般原則
+
+**git worktree に gitignore ファイルは存在しない。** ワークツリー内で何かが「ない」と感じたら、まず gitignore 対象かどうかを確認すること。

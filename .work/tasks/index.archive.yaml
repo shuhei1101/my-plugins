@@ -76,3 +76,10 @@ prs:
   summary: merge スキルのステップ5に index.archive.yaml コミット確認の警告を追加
   task: 20260523_merge-skill-archive-warning
   completed: true
+- id: 86
+  title: PR86 — merge-skill-add-step4
+  type: fix
+  tags: []
+  summary: 'work-kit:merge SKILL.md に Step 4 を追加（index.yaml completed: true 設定の欠落修正）'
+  task: 20260523_merge-skill-add-step4
+  completed: true
