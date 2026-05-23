@@ -27,6 +27,16 @@ my-plugins/
 
 ---
 
+## Plugin Creation & Update Rules
+
+When creating a new plugin or updating an existing one in this repository, **always invoke `/claude-kit:plugin-creator` first**.
+
+- The skill guides you through directory structure, `plugin.json`, `changelogs/`, and `marketplace.json` in one flow
+- Always create `changelogs/v{X.Y.Z}.md` and bump the version by following the skill's steps
+- Do not create or edit plugin files directly without going through the skill
+
+---
+
 ## Reference Links
 
 | Topic | URL |

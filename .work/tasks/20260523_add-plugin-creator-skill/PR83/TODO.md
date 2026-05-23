@@ -21,8 +21,8 @@ plugin-kit プラグインに `plugin-creator` スキルを新規追加する。
 | 済 | claude-kit の plugin.json バージョンをバンプする | `plugins/claude-kit/.claude-plugin/plugin.json` |
 | 済 | ルール・CLAUDE.md を整備する | 必要に応じて（今回不要と判断） |
 | 済 | SKILL.jp.md（日本語ミラー）を作成する | `plugins/claude-kit/skills/plugin-creator/SKILL.jp.md` |
-| - | スキルを「更新」にも対応させる（バージョンバンプ・changelog追記フロー追加） | `SKILL.md` / `SKILL.jp.md` |
-| - | CLAUDE.md にプラグイン作成・更新時は plugin-creator を必ず使うルールを追記する | `CLAUDE.md` / `CLAUDE.jp.md` |
+| 済 | スキルを「更新」にも対応させる（バージョンバンプ・changelog追記フロー追加） | `SKILL.md` / `SKILL.jp.md` |
+| 済 | CLAUDE.md にプラグイン作成・更新時は plugin-creator を必ず使うルールを追記する | `CLAUDE.md` / `CLAUDE.jp.md` |
 
 ## 参考ドキュメント
 

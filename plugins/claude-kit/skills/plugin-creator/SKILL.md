@@ -1,13 +1,14 @@
 ---
 name: plugin-creator
 description: |
-  Create a new Claude Code plugin with proper versioning (changelogs/ folder).
-  Trigger when the user says "新しいプラグインを作りたい", "プラグインを作って", "create a plugin", "make a new plugin", or "plugin-creator して".
+  Create or update a Claude Code plugin with versioning (changelogs/ folder).
+  Trigger when the user says "新しいプラグインを作りたい", "プラグインを作って", "プラグインを更新したい", "create a plugin", "update a plugin", "make a new plugin", or "plugin-creator して".
 ---
 
-# plugin-creator — New Plugin Scaffold
+# plugin-creator — Plugin Scaffold & Update
 
-Creates a plugin with the standard directory structure, including the `changelogs/` versioning folder.
+Creates or updates a plugin with the standard directory structure.
+Always maintains `changelogs/` versioning and bumps `plugin.json` version on every change.
 
 ---
 
@@ -20,7 +21,7 @@ Creates a plugin with the standard directory structure, including the `changelog
 
 ## Tasks
 
-### Step 1: Gather plugin information
+### Step 1: Determine mode — create or update
 
 #### Condition
 
@@ -28,20 +29,22 @@ Creates a plugin with the standard directory structure, including the `changelog
 
 #### Process
 
-Ask the user for:
+Ask the user:
 
-1. **Plugin name** — kebab-case (e.g. `code-reviewer`, `my-tool`)
-2. **Description** — one-line summary of what the plugin does
-3. **Skills to include** — name and purpose of each skill (at least one)
-4. **Other components** — agents, hooks, MCP servers? (optional)
+1. **Mode**: creating a new plugin, or updating an existing one?
+2. **Plugin name** — kebab-case (e.g. `code-reviewer`, `claude-kit`)
+
+If **updating**: read the existing `plugins/<plugin-name>/.claude-plugin/plugin.json` to get the current version.
 
 #### Output
 
-- Plugin name, description, skill list, component list confirmed
+- Mode confirmed: `create` or `update`
+- Plugin name confirmed
+- (update only) Current version confirmed
 
 ---
 
-### Step 2: Generate directory structure
+### Step 2: Gather change details
 
 #### Condition
 
@@ -49,29 +52,32 @@ Ask the user for:
 
 #### Process
 
-1. Read `references/plugin-structure.md` in this plugin for the canonical layout
-2. Create the following (adjust for components chosen in Step 1):
+**If creating:**
 
-```
-plugins/<plugin-name>/
-├── .claude-plugin/
-│   └── plugin.json
-├── skills/
-│   └── <skill-name>/
-│       └── SKILL.md
-└── changelogs/
-    └── v1.0.0.md
-```
+Ask for:
+- **Description** — one-line summary
+- **Skills to include** — name and purpose of each (at least one)
+- **Other components** — agents, hooks, MCP servers? (optional)
 
-3. If agents / hooks / MCP were requested, create those dirs and stub files too
+**If updating:**
+
+Ask for:
+- **What changed** — which skills were added/modified/removed, structural changes, bug fixes
+- **Change type** — to determine version bump:
+
+| Change type | Bump |
+|---|---|
+| Bug fix / minor correction | PATCH (`1.x.y` → `1.x.y+1`) |
+| New skill or behavior change | MINOR (`1.x.0` → `1.x+1.0`) |
+| Complete redesign | MAJOR (`1.0.0` → `2.0.0`) |
 
 #### Output
 
-- Directory structure created under `plugins/<plugin-name>/`
+- Change details and new version number confirmed
 
 ---
 
-### Step 3: Write plugin.json
+### Step 3: Apply changes to plugin files
 
 #### Condition
 
@@ -79,7 +85,42 @@ plugins/<plugin-name>/
 
 #### Process
 
-Create `plugins/<plugin-name>/.claude-plugin/plugin.json`:
+**If creating** — generate the full directory structure:
+
+```
+plugins/<plugin-name>/
+├── .claude-plugin/
+│   └── plugin.json
+├── skills/
+│   └── <skill-name>/
+│       ├── SKILL.md
+│       └── SKILL.jp.md
+└── changelogs/
+    └── v1.0.0.md
+```
+
+Read `references/plugin-structure.md` for the canonical layout.
+Add agents / hooks / MCP dirs if requested.
+
+**If updating** — edit only the changed files:
+- Add / modify / delete skill files as needed
+- Do not touch unrelated files
+
+#### Output
+
+- Plugin files created or updated
+
+---
+
+### Step 4: Write or update plugin.json
+
+#### Condition
+
+- Step 3 complete
+
+#### Process
+
+**If creating:**
 
 ```json
 {
@@ -89,35 +130,21 @@ Create `plugins/<plugin-name>/.claude-plugin/plugin.json`:
 }
 ```
 
-#### Output
+**If updating:**
 
-- `plugin.json` written
+Bump the version according to the change type determined in Step 2.
+Example: `"version": "2.3.1"` → `"version": "2.3.2"` for a PATCH fix.
 
----
-
-### Step 4: Write SKILL.md for each skill
-
-#### Condition
-
-- Step 3 complete
-
-#### Process
-
-For each skill from Step 1, create `plugins/<plugin-name>/skills/<skill-name>/SKILL.md`.
-
-Use the step-based structure:
-- Frontmatter: `name`, `description` (auto-trigger conditions)
-- Sections: Overview → Tasks (each task: Condition / Process / Output)
-
-Keep it concise — each step should be actionable without reading other files.
+Also update `marketplace.json` to match the new version.
 
 #### Output
 
-- `SKILL.md` created for each skill
+- `plugin.json` version updated
+- `.claude-plugin/marketplace.json` version updated
 
 ---
 
-### Step 5: Write initial changelog
+### Step 5: Write changelog entry
 
 #### Condition
 
@@ -125,49 +152,40 @@ Keep it concise — each step should be actionable without reading other files.
 
 #### Process
 
-Create `plugins/<plugin-name>/changelogs/v1.0.0.md`:
+Create `plugins/<plugin-name>/changelogs/v{NEW_VERSION}.md`:
 
 ```markdown
-# v1.0.0 — {YYYY-MM-DD}
+# v{NEW_VERSION} — {YYYY-MM-DD}
 
 ## 変更内容
 
-- 初回リリース
-- {追加したスキル名} スキルを追加
+- {変更点を箇条書き}
 
 ## 構造の変更
 
-初回リリースのため、ディレクトリ構造全体が新規作成。
-
-```
-plugins/<plugin-name>/
-├── .claude-plugin/plugin.json
-├── skills/<skill-name>/SKILL.md
-└── changelogs/v1.0.0.md
-```
+{ディレクトリ構造・設定ファイルの変更があれば記載。なければ「なし」と書く。}
 ```
 
 #### Notes
 
-The "構造の変更" section is the most important part of the changelog.
-When this plugin's structure changes in the future, other projects that depend on it can read this section to understand what they need to update on their end.
+The "構造の変更" section is critical.
+When the plugin structure changes, other projects that depend on this plugin read this section to know what they need to update on their end.
 
 #### Output
 
-- `changelogs/v1.0.0.md` written
+- `changelogs/v{NEW_VERSION}.md` written
 
 ---
 
-### Step 6: Register in marketplace.json
+### Step 6: Update marketplace.json
 
 #### Condition
 
-- Step 5 complete
+- Step 5 complete (create mode only — update mode handled in Step 4)
 
 #### Process
 
-1. Read `.claude-plugin/marketplace.json` in the repository root
-2. Add a new entry to the `plugins` array:
+**If creating only** — add a new entry to `.claude-plugin/marketplace.json`:
 
 ```json
 {
@@ -178,11 +196,9 @@ When this plugin's structure changes in the future, other projects that depend o
 }
 ```
 
-3. Save the file
-
 #### Output
 
-- `.claude-plugin/marketplace.json` updated
+- `.claude-plugin/marketplace.json` updated (create mode only)
 
 ---
 
@@ -190,16 +206,14 @@ When this plugin's structure changes in the future, other projects that depend o
 
 #### Process
 
-Report what was created:
+Report what was created or changed:
 
-- Directory structure summary
-- File list with paths
+- Mode (created / updated)
+- New version number
+- Files changed
 - How to test locally:
 
 ```bash
-# ローカルテスト
 claude --plugin-dir ./plugins/<plugin-name>
 /<skill-name>
 ```
-
-- Remind the user to bump `plugin.json` and add a new `changelogs/v{X.Y.Z}.md` whenever the plugin is updated in the future
