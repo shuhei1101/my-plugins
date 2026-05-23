@@ -5,14 +5,18 @@ Usage:
   python index-tool.py next-id [index_yaml]
   python index-tool.py add [index_yaml] --id N --title T --type T --summary S --task T
   python index-tool.py list-active [index_yaml]
+  python index-tool.py archive [index_yaml] [archive_yaml]
 
-  index_yaml  Path to index.yaml (default: .work/tasks/index.yaml)
+  index_yaml   Path to index.yaml (default: .work/tasks/index.yaml)
+  archive_yaml Path to index.archive.yaml (default: .work/tasks/index.archive.yaml)
 
 Subcommands:
   next-id      Print the next available PR number (last_id + 1, or 1 if absent)
   add          Append a new PR entry and update last_id
   list-active  Print active (completed: false) PR entries as lines:
                  id|title|type|task
+  archive      Move completed entries from index.yaml to index.archive.yaml.
+               Prints the number of entries moved.
 
 By routing index.yaml operations through this script, Claude Code avoids
 loading the full YAML file into its context window.
@@ -34,6 +38,7 @@ except ImportError:
 
 # ── constants ───────────────────────────────────────────────
 DEFAULT_INDEX = Path(".work/tasks/index.yaml")
+DEFAULT_ARCHIVE = Path(".work/tasks/index.archive.yaml")
 
 
 # ── private helpers ─────────────────────────────────────────
@@ -102,6 +107,38 @@ def cmd_completed_count(args: argparse.Namespace) -> None:
     print(count)
 
 
+def cmd_archive(args: argparse.Namespace) -> None:
+    """Move completed entries from index.yaml to index.archive.yaml."""
+    index_path = Path(args.index_yaml)
+    archive_path = Path(args.archive_yaml)
+
+    original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
+    data = yaml.safe_load(original) or {} if original else {}
+
+    prs: list[dict] = data.get("prs", [])
+    completed = [p for p in prs if p.get("completed", False)]
+    remaining = [p for p in prs if not p.get("completed", False)]
+
+    if not completed:
+        print(0)
+        return
+
+    # Append to archive
+    archive_original = archive_path.read_text(encoding="utf-8") if archive_path.exists() else ""
+    archive_data = yaml.safe_load(archive_original) or {} if archive_original else {}
+    archive_prs: list[dict] = archive_data.get("prs", [])
+    archive_prs.extend(completed)
+    archive_data["prs"] = archive_prs
+    archive_path.parent.mkdir(parents=True, exist_ok=True)
+    _save(archive_path, archive_data, archive_original)
+
+    # Remove from index
+    data["prs"] = remaining
+    _save(index_path, data, original)
+
+    print(len(completed))
+
+
 # ── main ────────────────────────────────────────────────────
 def main(args: argparse.Namespace) -> None:
     handlers = {
@@ -109,6 +146,7 @@ def main(args: argparse.Namespace) -> None:
         "add": cmd_add,
         "list-active": cmd_list_active,
         "completed-count": cmd_completed_count,
+        "archive": cmd_archive,
     }
     handlers[args.subcommand](args)
 
@@ -140,6 +178,11 @@ def parse_args() -> argparse.Namespace:
     # completed-count
     p_count = sub.add_parser("completed-count", help="Print count of completed PRs")
     p_count.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+
+    # archive
+    p_archive = sub.add_parser("archive", help="Move completed entries to archive file")
+    p_archive.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+    p_archive.add_argument("archive_yaml", nargs="?", default=str(DEFAULT_ARCHIVE))
 
     return parser.parse_args()
 
