@@ -55,6 +55,13 @@ prs:
   summary: Step3でサブエージェントを使い各アーティファクトを並列実装する
   task: 20260523_conversation-to-claude-step3-subagent
   completed: true
+- id: 83
+  title: PR83 — add-plugin-creator-skill
+  type: feat
+  tags: []
+  summary: plugin-kitプラグインにplugin-creatorスキルを追加。プラグイン作成・更新時のバージョン管理を強制する。
+  task: 20260523_add-plugin-creator-skill
+  completed: true
 - id: 84
   title: PR84 — merge-conversation-hook
   type: feat
