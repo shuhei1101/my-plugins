@@ -159,9 +159,11 @@ If the project does not yet have a logger, run `/ui-kit:logging` first.
 2. Click the 🐛 button (bottom-right, fixed) — element picker mode starts immediately
 3. Click elements to select (cyan = hover, green = selected; re-click to deselect)
 4. Copy in one of two ways:
-   - Click the **📋 N** FAB (bottom-right) → copies JSON and exits picker
-   - Click the **📋 コピー** button (top center, always visible) → copies JSON
+   - Click the **📋 N** FAB (bottom-right) → copies JSON and exits picker; FAB shows "✓ コピーしました" on success
+   - Click the **📋 コピー (N件)** button (top center) → copies JSON and exits picker; button shows "✓ コピーしました" on success
 5. Paste into Claude Code with "これでデバッグして" → Claude reads related files, logs, and selected elements together
+
+If the clipboard copy fails (e.g. non-HTTPS context), an alert is shown and picker mode stays active so you can retry.
 
 `Esc` cancels picker mode without copying.
 

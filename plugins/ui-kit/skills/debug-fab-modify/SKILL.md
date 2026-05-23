@@ -24,7 +24,8 @@ SKILL.md          ← skill definition (operation flow, references)
 Key design constraints:
 - **FAB is fixed bottom-right** — no position toggle
 - **Top copy bar** visible only during picker mode (`body.uidev-picker-active`)
-- **`copyAndStop()`** is the single shared handler for both FAB and top button
+- **`copyAndStop(feedbackBtn)`** is the single shared handler for both FAB and top button; `feedbackBtn` receives the "✓" feedback — `fab` when triggered from FAB, `topCopyBtn` when triggered from the top button
+- **On copy failure**, `stop()` is NOT called — picker stays active so the user can retry
 - **`refresh()`** updates both FAB label and top button label simultaneously
 - Log buffer is always captured but never displayed visually
 
@@ -55,7 +56,8 @@ Key design constraints:
 | `buildDOM()` | Creates FAB + top bar HTML |
 | `startPicker(root)` | Enters picker mode; attaches all picker event listeners |
 | `refresh()` | Updates FAB label + top button label based on `currentSelected.size` |
-| `copyAndStop()` | Shared copy handler — copies if selection > 0, always calls `stop()` |
+| `copyAndStop(feedbackBtn)` | Shared copy handler — copies if selection > 0, shows feedback on `feedbackBtn`; calls `stop()` only on success |
+| `onTopCopyClick()` | Named wrapper that calls `copyAndStop(topCopyBtn)` — used so `removeEventListener` works correctly |
 | `stop()` | Exits picker mode; removes all listeners, resets FAB and top button |
 | `buildPayload(elements)` | Builds JSON with page, files, logs, elements |
 
@@ -111,8 +113,8 @@ Open `templates/example.html` in a browser and confirm:
 - [ ] Top bar appears; shows "要素を選択してください"
 - [ ] Click element → selected (green outline); top button → "📋 コピー (N件)"
 - [ ] FAB click (0 selected) → picker exits (cancel)
-- [ ] FAB click (N selected) → copies JSON + exits picker
-- [ ] Top button click (N selected) → copies JSON + exits picker
+- [ ] FAB click (N selected) → copies JSON + FAB shows "✓ コピーしました" + exits picker
+- [ ] Top button click (N selected) → copies JSON + button shows "✓ コピーしました" + exits picker
 - [ ] Top button click (0 selected) → exits picker (cancel)
 - [ ] `Esc` → picker exits without copying
 

@@ -72,9 +72,10 @@ A and B can coexist (both are merged). Use B for dynamic additions; A is simpler
 |---|---|
 | Click 🐛 (bottom-right, fixed) | Enters element picker mode immediately |
 | Click an element in picker mode | Selects it (cyan = hover, green = selected; re-click to deselect) |
-| Click 📋 N (FAB in picker mode) | Copies JSON with selected elements + files + logs; exits picker |
-| Click **📋 コピー** (top center, always visible) | Copies JSON with current selection + files + logs |
+| Click 📋 N (FAB in picker mode) | Copies JSON with selected elements + files + logs; exits picker; FAB shows "✓ コピーしました" |
+| Click **📋 コピー (N件)** (top center) | Copies JSON with current selection + files + logs; exits picker; button shows "✓ コピーしました" |
 | `Esc` in picker mode | Cancels picker without copying |
+| Copy fails (non-HTTPS etc.) | Alert shown; picker stays active for retry |
 
 ### Element picker mode (multi-select)
 
@@ -82,8 +83,9 @@ A and B can coexist (both are merged). Use B for dynamic additions; A is simpler
 2. **Click elements to add to the selection** (cyan outline = hover, green outline = selected)
 3. **Click an already-selected element to deselect** it (toggle)
 4. The FAB transforms into **📋 N** (N = current selection count)
-5. Click 📋 N **or** the top-center **📋 コピー** button to copy JSON to clipboard
+5. Click 📋 N **or** the top-center **📋 コピー (N件)** button to copy JSON to clipboard
 6. `Esc` cancels without copying
+7. If copy fails, picker stays active — retry without losing the selection
 
 Copied JSON shape:
 

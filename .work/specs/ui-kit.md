@@ -50,6 +50,14 @@ SSH 経由 HTTP(非セキュアコンテキスト)では `navigator.clipboard` �
 1. `navigator.clipboard.writeText()` — HTTPS またはセキュアコンテキストで動作
 2. `legacyCopyText()` — `textarea` + `document.execCommand('copy')` フォールバック(HTTP でも動作)
 
+コピー失敗時の動作:
+- `alert` でエラーメッセージを表示
+- `stop()` を呼ばずピッカーモードを維持 → 選択状態を保ったままリトライ可能
+
+フィードバック表示の仕様:
+- FAB 経由のコピー → FAB ボタン自体に "✓ コピーしました" を表示
+- トップボタン経由のコピー → トップボタンに "✓ コピーしました" を表示
+
 ---
 
 ## mock スキル — 出力先とサーバー起動ルール(PR57)
@@ -73,3 +81,5 @@ SSH 経由 HTTP(非セキュアコンテキスト)では `navigator.clipboard` �
 | 1.1.1 | debug-fab: SSH/HTTP 環境での clipboard エラーを修正 — textarea フォールバック追加(PR53) |
 | 1.1.2 | debug-fab: 要素ピッカーでコピー後、モーダルに戻らずトップ画面へ直接遷移するよう修正(PR55) |
 | 1.2.0 | mock: 出力先をプロジェクト種別で分岐、生成後にサーバー起動してURLを通知するルールを追加(PR57) |
+| 1.3.0 | debug-fab: SKILL.jp.md 追加(debug-fab-modify)、debug-fab-modify スキル記述を整備(PR62) |
+| 1.3.1 | debug-fab: コピー失敗時にピッカー維持でリトライ可能に修正、FAB/トップボタンのフィードバック表示先を修正(PR81) |
