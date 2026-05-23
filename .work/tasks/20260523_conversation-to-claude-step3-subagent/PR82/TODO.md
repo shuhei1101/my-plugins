@@ -11,12 +11,12 @@ incidents/glossary はメインエージェントが直接処理する。
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR82/QA.md` |
-| - | SKILL.md (EN) の Step 3 をサブエージェント方式に書き換える | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
-| - | SKILL.jp.md (JP) の Step 3 をサブエージェント方式に書き換える | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
-| - | 各サブエージェントへの入力テンプレートを定型文化して記述する | - 上記2ファイル |
-| - | Step 4: 検証セクションを追加する | - 上記2ファイル |
-| - | コミットする | - |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR82/QA.md` |
+| 済 | SKILL.md (EN) の Step 3 をサブエージェント方式に書き換える | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
+| 済 | SKILL.jp.md (JP) の Step 3 をサブエージェント方式に書き換える | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
+| 済 | 各サブエージェントへの入力テンプレートを定型文化して記述する | - 上記2ファイル |
+| 済 | Step 4: 検証セクションを追加する | - 上記2ファイル |
+| 済 | コミットする | - |
 
 ## 参考ドキュメント
 
