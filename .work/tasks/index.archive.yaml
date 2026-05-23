@@ -69,3 +69,10 @@ prs:
   summary: マージ前にclaude-kit:conversation-to-claudeを実行するフローをwork-kit:mergeに追加
   task: 20260523_merge-conversation-hook
   completed: true
+- id: 85
+  title: PR85 — merge-skill-archive-warning
+  type: fix
+  tags: []
+  summary: merge スキルのステップ5に index.archive.yaml コミット確認の警告を追加
+  task: 20260523_merge-skill-archive-warning
+  completed: true
