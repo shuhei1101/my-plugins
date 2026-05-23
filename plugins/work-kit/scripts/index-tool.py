@@ -5,18 +5,20 @@ Usage:
   python index-tool.py next-id [index_yaml]
   python index-tool.py add [index_yaml] --id N --title T --type T --summary S --task T
   python index-tool.py list-active [index_yaml]
+  python index-tool.py set-completed [index_yaml] --id N
   python index-tool.py archive [index_yaml] [archive_yaml]
 
   index_yaml   Path to index.yaml (default: .work/tasks/index.yaml)
   archive_yaml Path to index.archive.yaml (default: .work/tasks/index.archive.yaml)
 
 Subcommands:
-  next-id      Print the next available PR number (last_id + 1, or 1 if absent)
-  add          Append a new PR entry and update last_id
-  list-active  Print active (completed: false) PR entries as lines:
-                 id|title|type|task
-  archive      Move completed entries from index.yaml to index.archive.yaml.
-               Prints the number of entries moved.
+  next-id        Print the next available PR number (last_id + 1, or 1 if absent)
+  add            Append a new PR entry and update last_id
+  list-active    Print active (completed: false) PR entries as lines:
+                   id|title|type|task
+  set-completed  Mark a PR entry as completed: true
+  archive        Move completed entries from index.yaml to index.archive.yaml.
+                 Prints the number of entries moved.
 
 By routing index.yaml operations through this script, Claude Code avoids
 loading the full YAML file into its context window.
@@ -107,6 +109,24 @@ def cmd_completed_count(args: argparse.Namespace) -> None:
     print(count)
 
 
+def cmd_set_completed(args: argparse.Namespace) -> None:
+    """Mark a specific PR as completed: true in index.yaml."""
+    index_path = Path(args.index_yaml)
+    original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
+    data = yaml.safe_load(original) or {} if original else {}
+
+    prs: list[dict] = data.get("prs", [])
+    target = next((p for p in prs if p["id"] == args.id), None)
+    if target is None:
+        print(f"Error: PR{args.id} not found in {index_path}", file=sys.stderr)
+        sys.exit(1)
+
+    target["completed"] = True
+    data["prs"] = prs
+    _save(index_path, data, original)
+    print(f"PR{args.id} marked as completed in {index_path}")
+
+
 def cmd_archive(args: argparse.Namespace) -> None:
     """Move completed entries from index.yaml to index.archive.yaml."""
     index_path = Path(args.index_yaml)
@@ -146,6 +166,7 @@ def main(args: argparse.Namespace) -> None:
         "add": cmd_add,
         "list-active": cmd_list_active,
         "completed-count": cmd_completed_count,
+        "set-completed": cmd_set_completed,
         "archive": cmd_archive,
     }
     handlers[args.subcommand](args)
@@ -178,6 +199,11 @@ def parse_args() -> argparse.Namespace:
     # completed-count
     p_count = sub.add_parser("completed-count", help="Print count of completed PRs")
     p_count.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+
+    # set-completed
+    p_set = sub.add_parser("set-completed", help="Mark a PR entry as completed")
+    p_set.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+    p_set.add_argument("--id", type=int, required=True)
 
     # archive
     p_archive = sub.add_parser("archive", help="Move completed entries to archive file")

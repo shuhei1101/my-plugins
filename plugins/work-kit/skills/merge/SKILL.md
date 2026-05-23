@@ -84,21 +84,54 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 5: Archive completed index entries
+### Step 4: Mark the PR as completed in index.yaml
+
+#### Condition
+
+- Step 3 complete
 
 #### Process
 
-1. Run the following command to move completed entries to the archive:
+1. Run the following command to mark the PR as `completed: true` in the main repository's `index.yaml`:
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
+  .work/tasks/index.yaml --id {N}
+```
+
+→ Proceed to Step 5
+
+#### Notes
+
+- Run from the **main repository** directory (not the worktree) — `index.yaml` is gitignored and exists only in the main repo
+- No commit is needed for `index.yaml` itself — it remains gitignored
+
+---
+
+### Step 5: Archive completed index entries
+
+#### Condition
+
+- Step 4 complete
+
+#### Process
+
+1. Run the following command to move completed entries to the **worktree's** `index.archive.yaml`:
 
 ```bash
 python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" archive \
   .work/tasks/index.yaml \
-  .work/tasks/index.archive.yaml
+  ../$(basename $(pwd))-wt-PR{N}/.work/tasks/index.archive.yaml
 ```
 
 The command prints the number of entries moved. If it prints `0`, skip the rest of this step.
 
-2. If entries were moved, commit `index.archive.yaml` to the PR branch being merged
+2. If entries were moved, commit `index.archive.yaml` inside the worktree:
+
+```bash
+git -C ../$(basename $(pwd))-wt-PR{N} add .work/tasks/index.archive.yaml
+git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.archive.yaml #PR{N}"
+```
 
 → Proceed to Step 6
 
@@ -106,6 +139,7 @@ The command prints the number of entries moved. If it prints `0`, skip the rest 
 
 - `index.yaml` remains gitignored — no commit needed for it
 - `index.archive.yaml` is git-tracked — commit it to the **PR branch** (not directly to the parent branch); it will be included in the --no-ff merge in Step 6
+- The archive command reads from the main repo's `index.yaml` and writes to the worktree's `index.archive.yaml`
 
 ---
 
@@ -116,8 +150,8 @@ The command prints the number of entries moved. If it prints `0`, skip the rest 
 - Step 5 complete
 
 > ⚠️ **Pre-merge check required**
-> If `index.archive.yaml` was not committed in Step 5 before running the merge, the archive changes will be missing from the merge commit.
-> **Confirm that the `git commit` in Step 5 has completed before running the merge command.**
+> If `index.archive.yaml` was not committed in the worktree in Step 5, the archive changes will be missing from the merge commit.
+> **Confirm that the `git commit` inside the worktree in Step 5 has completed before running the merge command.**
 > (Skip this check only if Step 5 reported 0 entries moved — no commit was needed.)
 
 #### Process
