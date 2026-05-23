@@ -13,6 +13,7 @@ merge SKILL.md に「絶対に勝手にマージしない」強化禁止文を�
 | 済 | merge SKILL.md に絶対マージ禁止の強化文を追記する | `plugins/work-kit/skills/merge/SKILL.md` |
 | 済 | バージョンを bump する | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 | 済 | incidents.md に事故記録を追記する | `.claude/rules/core/incidents.md` |
+| 済 | stop.md のマージ提案文に PR 番号を含める | `plugins/work-kit/hooks/prompts/stop.md` |
 
 ## 参考ドキュメント
 
