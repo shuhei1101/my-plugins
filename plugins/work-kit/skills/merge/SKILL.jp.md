@@ -14,7 +14,7 @@
 ## 概要
 
 PR のマージフローを実行するスキル。
-TODO 確認 → index アーカイブ → `--no-ff` マージ → ワークツリークリーンアップ → ドキュメント更新を行う。
+TODO 確認 → conversation-to-claude 実行（claude-kit インストール済みの場合） → index アーカイブ → `--no-ff` マージ → ワークツリークリーンアップ → ドキュメント更新を行う。
 
 ---
 
@@ -68,25 +68,58 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### ステップ3: 完了済みエントリをアーカイブする
+### ステップ3: conversation-to-claude を実行する（claude-kit インストール済みの場合）
+
+#### 条件
+
+- ステップ2が完了していること
 
 #### 処理内容
 
-1. `.work/tasks/index.yaml` を読み込み、完了済み（すべての作業が `済` の）エントリを特定する
-2. 完了済みエントリを `index.yaml` から削除し、`.work/tasks/index.archive.yaml` に追記する
-3. 移動するエントリがない場合はこのステップをスキップする
-4. `index.archive.yaml` が作成・更新された場合は、マージ対象の PR ブランチにコミットする
+1. claude-kit プラグインがインストールされているか確認する:
+
+```bash
+find ~/.claude/plugins/cache -maxdepth 3 -name "claude-kit" -type d 2>/dev/null | head -1
+```
+
+2. ディレクトリが見つかった場合 → `/claude-kit:conversation-to-claude` を実行し、完了を待つ
+3. 見つからない場合 → このステップをスキップする
 
 → ステップ4へ進む
 
 #### 補足
 
-- `index.yaml` は gitignore 対象のためコミット不要
-- `index.archive.yaml` は git 追跡対象 — 派生元ブランチに直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ4のマージに含まれる）
+- このステップはブランチが削除される前にセッションの知識を永続化するために実行する
+- 会話が短くても省略しない — スキル側に判断させる
 
 ---
 
-### ステップ4: マージを実行する
+### ステップ4: 完了済みエントリをアーカイブする
+
+#### 処理内容
+
+1. 以下を実行して完了済みエントリをアーカイブに移動する:
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" archive \
+  .work/tasks/index.yaml \
+  .work/tasks/index.archive.yaml
+```
+
+コマンドは移動件数を出力する。`0` と表示された場合はこのステップの残り処理をスキップする。
+
+2. エントリが移動された場合は `index.archive.yaml` をマージ対象の PR ブランチにコミットする
+
+→ ステップ5へ進む
+
+#### 補足
+
+- `index.yaml` は gitignore 対象のためコミット不要
+- `index.archive.yaml` は git 追跡対象 — 派生元ブランチに直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ5のマージに含まれる）
+
+---
+
+### ステップ5: マージを実行する
 
 #### 処理内容
 
@@ -97,11 +130,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 git merge --no-ff -m "{type}: {title} #PR{N}" PR{N}/{type}/{title}
 ```
 
-→ ステップ5へ進む
+→ ステップ6へ進む
 
 ---
 
-### ステップ5: ワークツリーとブランチを削除する
+### ステップ6: ワークツリーとブランチを削除する
 
 #### 処理内容
 
@@ -112,7 +145,7 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
-→ ステップ6へ進む
+→ ステップ7へ進む
 
 #### 補足
 
@@ -123,7 +156,7 @@ git branch -d PR{N}/{type}/{title}
 
 ---
 
-### ステップ6: ドキュメントを更新する
+### ステップ7: ドキュメントを更新する
 
 #### 処理内容
 
@@ -135,11 +168,11 @@ git add .work/
 git commit -m "docs: PR{N} マージ後ドキュメント更新"
 ```
 
-→ ステップ7へ進む
+→ ステップ8へ進む
 
 ---
 
-### ステップ7: 完了報告
+### ステップ8: 完了報告
 
 #### 処理内容
 
