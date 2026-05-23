@@ -142,10 +142,15 @@ plugins/<plugin-name>/
 
 `marketplace.json` のバージョンも同じ値に更新する。
 
+#### 注意事項
+
+**`plugin.json`・`marketplace.json`・changelog のファイル名（`changelogs/v{X.Y.Z}.md`）のバージョンは必ず同じ値にすること。**
+この3つがずれることは絶対に許可しない。
+
 #### 出力
 
 - `plugin.json` のバージョンを更新
-- `.claude-plugin/marketplace.json` のバージョンを更新
+- `.claude-plugin/marketplace.json` のバージョンを更新（同じ値）
 
 ---
 
@@ -157,7 +162,7 @@ plugins/<plugin-name>/
 
 #### 実行内容
 
-`plugins/<plugin-name>/changelogs/v{NEW_VERSION}.md` を作成する:
+`plugins/<plugin-name>/changelogs/v{NEW_VERSION}.md` を作成する — **`plugin.json` と完全に同じバージョン番号を使うこと**:
 
 ```markdown
 # v{NEW_VERSION} — {YYYY-MM-DD}

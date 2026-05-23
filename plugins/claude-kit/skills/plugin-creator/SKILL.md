@@ -137,10 +137,15 @@ Example: `"version": "2.3.1"` → `"version": "2.3.2"` for a PATCH fix.
 
 Also update `marketplace.json` to match the new version.
 
+#### Notes
+
+**The version in `plugin.json`, `marketplace.json`, and the changelog filename (`changelogs/v{X.Y.Z}.md`) must always be identical.**
+Never let these three fall out of sync.
+
 #### Output
 
 - `plugin.json` version updated
-- `.claude-plugin/marketplace.json` version updated
+- `.claude-plugin/marketplace.json` version updated (same value)
 
 ---
 
@@ -152,7 +157,7 @@ Also update `marketplace.json` to match the new version.
 
 #### Process
 
-Create `plugins/<plugin-name>/changelogs/v{NEW_VERSION}.md`:
+Create `plugins/<plugin-name>/changelogs/v{NEW_VERSION}.md` — **using the exact same version as `plugin.json`**:
 
 ```markdown
 # v{NEW_VERSION} — {YYYY-MM-DD}
