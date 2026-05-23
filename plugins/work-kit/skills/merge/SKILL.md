@@ -4,12 +4,30 @@ description: |
   Merge a PR: verify TODO checklist, archive index, merge with --no-ff, remove worktree and branch,
   and sync QA.md. Trigger when the user says "マージして", "merge して", or "PR をマージしたい".
   Never invoke automatically — only when the user explicitly requests a merge.
+  ABSOLUTE RULE: Never execute git merge on your own initiative. Even if the user
+  previously approved a merge in this session, you MUST receive a new explicit
+  merge instruction for each PR. Past permission does not carry over.
 disable-model-invocation: true
 ---
 
 # work-kit:merge — Merge a PR
 
 Runs the full merge flow: TODO checklist verification → conversation-to-claude (if claude-kit installed) → index archive → `--no-ff` merge → worktree cleanup → QA doc sync.
+
+---
+
+## Critical Prohibition
+
+> 🚫 **NEVER execute `git merge` without an explicit instruction from the user in the current message.**
+>
+> - Do NOT merge because a previous step completed successfully
+> - Do NOT merge because the user approved a merge earlier in this session
+> - Do NOT merge as part of "finishing up" or cleanup
+> - Do NOT merge to "help" the user — wait to be asked
+>
+> **If the user did not say "マージして", "merge して", or an equivalent in their most recent message, STOP and ask before proceeding to Step 6.**
+>
+> Past permission does not carry over. Each merge requires a fresh, explicit instruction.
 
 ---
 
@@ -153,6 +171,17 @@ git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.a
 > If `index.archive.yaml` was not committed in the worktree in Step 5, the archive changes will be missing from the merge commit.
 > **Confirm that the `git commit` inside the worktree in Step 5 has completed before running the merge command.**
 > (Skip this check only if Step 5 reported 0 entries moved — no commit was needed.)
+
+#### Notes
+
+##### Prohibitions
+
+> 🚫 **ABSOLUTE PROHIBITION — read before executing**
+>
+> - NEVER run `git merge` unless the user explicitly said "マージして" or equivalent **in the message that triggered this skill invocation**.
+> - Even if all previous steps completed without issue, you MUST stop here and confirm with the user before merging.
+> - A user approval given earlier in the same session does NOT authorize this merge. Request confirmation again.
+> - If in doubt, ask: "Step 1–5 が完了しました。マージを実行してよいですか？"
 
 #### Process
 
