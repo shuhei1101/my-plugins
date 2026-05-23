@@ -1,15 +1,15 @@
-# plugin-kit — 仕様書
+# plugin-creator スキル — 仕様書
 
 ## 概要
 
-プラグインの作成・更新を支援するスキル群をまとめたプラグイン。
-プラグイン構造の標準化と、バージョン管理の徹底を目的とする。
+`claude-kit` プラグイン内のスキル（`/claude-kit:plugin-creator`）。
+新規プラグイン作成を対話式にガイドし、`changelogs/` によるバージョン管理を標準化する。
 
 ## スキル一覧
 
-| スキル名 | 説明 |
-|---|---|
-| `plugin-creator` | 新規プラグインを作成する。バージョン管理フォルダ（`changelogs/`）も必ず生成する。 |
+| スキル名 | 呼び出し方 | 説明 |
+|---|---|---|
+| `plugin-creator` | `/claude-kit:plugin-creator` | 新規プラグインを作成する。バージョン管理フォルダ（`changelogs/`）も必ず生成する。 |
 
 ## plugin-creator スキル
 
