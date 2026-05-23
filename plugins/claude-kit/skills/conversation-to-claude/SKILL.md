@@ -154,7 +154,7 @@ generates all identified artifacts automatically.
 
 ---
 
-### Step 3: Implement all artifacts
+### Step 3: Implement all artifacts via subagents
 
 #### Condition
 
@@ -165,36 +165,76 @@ generates all identified artifacts automatically.
 1. If nothing extractable is found:
    - Report "今回の会話から永続化できる知識・手順は見つかりませんでした" and stop.
 
-2. Otherwise, implement **all identified artifacts** automatically without asking for confirmation.
-   If a category yields multiple distinct candidates (e.g., two different rules), implement each one.
+2. **incidents / glossary** — handle directly without a creator skill:
+   - **incidents**: Append a one-line summary to `.claude/rules/incidents.md` (index); write full details to `.claude/references/incidents/{slug}.md` (+ `.jp.md`)
+   - **glossary**: Read `.claude/rules/glossary.md` (create if missing); append terms to the appropriate H2 category table. Keep definitions to 1–2 sentences.
 
-   For each artifact type, delegate to the corresponding creator skill:
+3. **Skill / Rule / Hook / CLAUDE.md** — spawn one subagent per artifact category that has candidates.
+   Launch all applicable subagents **in a single message** (parallel) using the Agent tool with `isolation: "worktree"`.
+   Wait for all subagents to complete before proceeding to Step 4.
 
-   | Type | Creator skill | Context to pass |
+   | Category | Creator skill path | What to implement |
    |---|---|---|
-   | Skill | `claude-kit:skill-creator` | Skill name candidate, trigger conditions, extracted workflow |
-   | Rule | `claude-kit:rule-creator` | Domain name, file list, dependency description |
-   | Hook | `claude-kit:hook-creator` | Hook name, target event, description of what to run |
-   | CLAUDE.md | `claude-kit:claude-creator` | Guideline content to add or create |
-   | incidents | (no creator skill) | Append a one-line summary to `.claude/rules/incidents.md` (index); write full details to `.claude/references/incidents/{slug}.md` (+ `.jp.md`) |
-   | glossary | (no creator skill) | Read `.claude/rules/glossary.md` (create if missing); append terms to the appropriate H2 category table |
+   | Skill | `plugins/claude-kit/skills/skill-creator/SKILL.md` | All skill candidates |
+   | Rule | `plugins/claude-kit/skills/rule-creator/SKILL.md` | All rule candidates |
+   | Hook | `plugins/claude-kit/skills/hook-creator/SKILL.md` | All hook candidates |
+   | CLAUDE.md | `plugins/claude-kit/skills/claude-creator/SKILL.md` | All CLAUDE.md additions |
 
-   Process multiple artifacts one at a time in order A → B → C → D → E → F.
+   **Subagent prompt template** (fill in `{…}` for each category before sending):
+
+   ```
+   You are a subagent responsible for creating [{Category}] artifacts.
+
+   ## Steps
+   1. Read the creator skill at: {creator skill path}
+   2. Follow the creator skill's steps to implement all targets below.
+      Skip any confirmation prompts — implement automatically.
+
+   ## Targets
+   {For each candidate in this category:}
+   ### {artifact name or description}
+   - Trigger / Domain / Event: {extracted trigger, domain, or event}
+   - Context: {workflow steps / file list / hook behavior / guideline text}
+   - Step 2 decision: {new | merge into {path} | discard}
+
+   ## Notes
+   - If multiple targets exist, implement them one at a time in listed order
+   - Follow the proliferation guard decision from Step 2 for each target
+   ```
 
 → Proceed to Step 4
 
 #### Notes
 
-- Follow each creator skill's own steps — but skip any confirmation prompts within them
+- Skip any confirmation prompts inside creator skills
 - glossary is always loaded as a rule — keep definitions to 1–2 sentences
 
 ---
 
-### Step 4: Commit and report
+### Step 4: Verify subagent output
 
 #### Condition
 
 - Step 3 complete
+
+#### Process
+
+1. For each subagent that ran, verify:
+   - The expected files were created or updated at the correct paths
+   - File contents match the intended artifact (spot-check headings and key fields)
+   - No unintended files were created outside the expected directories
+
+2. If any issue is found, fix it directly (do not re-spawn the subagent).
+
+→ Proceed to Step 5
+
+---
+
+### Step 5: Commit and report
+
+#### Condition
+
+- Step 4 complete
 
 #### Process
 
