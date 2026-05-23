@@ -42,6 +42,12 @@
       "source": "./plugins/guard-kit",
       "description": "Safety guards for dangerous operations — hooks that intercept git push/merge and other risky commands to enforce user confirmation",
       "version": "1.2.1"
+    },
+    {
+      "name": "plugin-kit",
+      "source": "./plugins/plugin-kit",
+      "description": "Toolkit for creating and updating Claude Code plugins — scaffolding, versioning, and changelog management",
+      "version": "1.0.0"
     }
   ]
 }

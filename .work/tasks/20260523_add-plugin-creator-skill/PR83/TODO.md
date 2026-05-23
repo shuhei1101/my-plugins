@@ -10,12 +10,12 @@ plugin-kit プラグインに `plugin-creator` スキルを新規追加する。
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/.../PR83/QA.md` |
-| - | `.work/specs/` の仕様書を更新する | `.work/specs/plugin-kit.md` |
-| - | plugin-kit プラグインディレクトリを作成する | `plugins/plugin-kit/` |
-| - | plugin.json を作成する | `plugins/plugin-kit/.claude-plugin/plugin.json` |
-| - | plugin-creator スキル（SKILL.md）を作成する | `plugins/plugin-kit/skills/plugin-creator/SKILL.md` |
-| - | marketplace.json にエントリを追加する | `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/.../PR83/QA.md` |
+| 済 | `.work/specs/` の仕様書を更新する | `.work/specs/plugin-kit.md` |
+| 済 | plugin-kit プラグインディレクトリを作成する | `plugins/plugin-kit/` |
+| 済 | plugin.json を作成する | `plugins/plugin-kit/.claude-plugin/plugin.json` |
+| 済 | plugin-creator スキル（SKILL.md）を作成する | `plugins/plugin-kit/skills/plugin-creator/SKILL.md` |
+| 済 | marketplace.json にエントリを追加する | `.claude-plugin/marketplace.json` |
 | - | ルール・CLAUDE.md を整備する | 必要に応じて |
 
 ## 参考ドキュメント
