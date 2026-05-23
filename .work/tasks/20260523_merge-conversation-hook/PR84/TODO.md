@@ -8,10 +8,10 @@ work-kit:merge スキルにおいて、マージ実行前に claude-kit プラ�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260523_merge-conversation-hook/PR84/QA.md` |
-| - | `.work/specs/` の仕様書を確認・更新する | `.work/specs/` |
-| - | merge SKILL.md に Step 1.5 を追加（claude-kit 検出 → conversation-to-claude 実行） | `plugins/work-kit/skills/merge/SKILL.md` |
-| - | plugin.json と marketplace.json のバージョンをバンプする | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/20260523_merge-conversation-hook/PR84/QA.md` |
+| 済 | `.work/specs/` の仕様書を確認・更新する | `.work/specs/` |
+| 済 | merge SKILL.md に Step 3 を追加（claude-kit 検出 → conversation-to-claude 実行） | `plugins/work-kit/skills/merge/SKILL.md` |
+| 済 | plugin.json と marketplace.json のバージョンをバンプする | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 

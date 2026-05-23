@@ -9,8 +9,7 @@ disable-model-invocation: true
 
 # work-kit:merge — Merge a PR
 
-Runs the full merge flow: TODO checklist verification → index archive → `--no-ff` merge
-→ worktree cleanup → QA doc sync.
+Runs the full merge flow: TODO checklist verification → conversation-to-claude (if claude-kit installed) → index archive → `--no-ff` merge → worktree cleanup → QA doc sync.
 
 ---
 
@@ -64,7 +63,33 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 3: Archive completed index entries
+### Step 3: Run conversation-to-claude (if claude-kit is installed)
+
+#### Condition
+
+- Step 2 complete
+
+#### Process
+
+1. Check whether the `claude-kit` plugin is installed:
+
+```bash
+find ~/.claude/plugins/cache -maxdepth 3 -name "claude-kit" -type d 2>/dev/null | head -1
+```
+
+2. If a directory is found → invoke `/claude-kit:conversation-to-claude` and wait for it to complete
+3. If not found → skip this step silently
+
+→ Proceed to Step 4
+
+#### Notes
+
+- This step captures session knowledge before the branch is deleted
+- Do not skip even if the conversation seems short — let the skill decide what to persist
+
+---
+
+### Step 5: Archive completed index entries
 
 #### Process
 
@@ -80,16 +105,16 @@ The command prints the number of entries moved. If it prints `0`, skip the rest 
 
 2. If entries were moved, commit `index.archive.yaml` to the PR branch being merged
 
-→ Proceed to Step 4
+→ Proceed to Step 6
 
 #### Notes
 
 - `index.yaml` remains gitignored — no commit needed for it
-- `index.archive.yaml` is git-tracked — commit it to the **PR branch** (not directly to the parent branch); it will be included in the --no-ff merge in Step 4
+- `index.archive.yaml` is git-tracked — commit it to the **PR branch** (not directly to the parent branch); it will be included in the --no-ff merge in Step 6
 
 ---
 
-### Step 4: Execute the merge
+### Step 6: Execute the merge
 
 #### Process
 
@@ -100,11 +125,11 @@ The command prints the number of entries moved. If it prints `0`, skip the rest 
 git merge --no-ff -m "{type}: {title} #PR{N}" PR{N}/{type}/{title}
 ```
 
-→ Proceed to Step 5
+→ Proceed to Step 7
 
 ---
 
-### Step 5: Remove the worktree and branch
+### Step 7: Remove the worktree and branch
 
 #### Process
 
@@ -115,7 +140,7 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
-→ Proceed to Step 6
+→ Proceed to Step 8
 
 #### Notes
 
@@ -125,7 +150,7 @@ git branch -d PR{N}/{type}/{title}
 
 ---
 
-### Step 6: Update QA.md
+### Step 8: Update QA.md
 
 #### Process
 
@@ -137,11 +162,11 @@ git add .work/
 git commit -m "docs: post-merge update for PR{N}"
 ```
 
-→ Proceed to Step 7
+→ Proceed to Step 9
 
 ---
 
-### Step 7: Report completion
+### Step 9: Report completion
 
 #### Process
 
