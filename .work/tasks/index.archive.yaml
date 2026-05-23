@@ -41,3 +41,10 @@ prs:
   summary: conversation-to-claude スキルの確認ステップを削除し完全自動化、アーティファクト増殖ガードを common.md に追加
   task: 20260523_conversation-to-claude-auto
   completed: true
+- id: 83
+  title: PR83 — add-plugin-creator-skill
+  type: feat
+  tags: []
+  summary: plugin-kitプラグインにplugin-creatorスキルを追加。プラグイン作成・更新時のバージョン管理を強制する。
+  task: 20260523_add-plugin-creator-skill
+  completed: true
