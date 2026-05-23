@@ -139,7 +139,8 @@ git commit -m "docs: post-merge update for PR{N}"
 #### Process
 
 1. Report merge complete to the user
-2. List any remaining in-progress PRs under `.work/tasks/`
+2. Read the merged PR's `TODO.md` and present the contents of the `## 次PR候補` section as recommended next PRs
+3. List any remaining in-progress PRs under `.work/tasks/`
 
 #### Notes
 
