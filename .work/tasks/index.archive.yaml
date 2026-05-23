@@ -55,3 +55,10 @@ prs:
   summary: Step3でサブエージェントを使い各アーティファクトを並列実装する
   task: 20260523_conversation-to-claude-step3-subagent
   completed: true
+- id: 84
+  title: PR84 — merge-conversation-hook
+  type: feat
+  tags: []
+  summary: マージ前にclaude-kit:conversation-to-claudeを実行するフローをwork-kit:mergeに追加
+  task: 20260523_merge-conversation-hook
+  completed: true
