@@ -41,3 +41,10 @@ prs:
   summary: conversation-to-claude スキルの確認ステップを削除し完全自動化、アーティファクト増殖ガードを common.md に追加
   task: 20260523_conversation-to-claude-auto
   completed: true
+- id: 82
+  title: PR82 — conversation-to-claude step3 subagent
+  type: refactor
+  tags: []
+  summary: Step3でサブエージェントを使い各アーティファクトを並列実装する
+  task: 20260523_conversation-to-claude-step3-subagent
+  completed: true
