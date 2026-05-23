@@ -8,10 +8,10 @@ merge スキルが `index-tool.py archive` を呼んでいるが、そのサブ�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR80/QA.md` |
-| - | `index-tool.py` に `archive` サブコマンドを追加する | - `plugins/work-kit/scripts/index-tool.py` |
-| - | SKILL.md の `archive` コマンド記述を確認・修正する | - `plugins/work-kit/skills/merge/SKILL.md` |
-| - | バージョンバンプ | - `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR80/QA.md` |
+| 済 | `index-tool.py` に `archive` サブコマンドを追加する | - `plugins/work-kit/scripts/index-tool.py` |
+| 済 | SKILL.md の `archive` コマンド記述を確認・修正する | - `plugins/work-kit/skills/merge/SKILL.md` |
+| 済 | バージョンバンプ | - `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
