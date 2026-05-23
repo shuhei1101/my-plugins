@@ -1,5 +1,12 @@
 prs:
 - completed: true
+  id: 81
+  title: PR81 — debug-fab-copy-fix
+  type: fix
+  tags: []
+  summary: debug-fab の要素コピーが特定条件で動作しないバグを修正
+  task: 20260523_debug-fab-copy-fix
+- completed: true
   id: 74
   summary: 未登録ブランチを精査して index.yaml/index.archive.yaml に整理するワークフロースキル。pr-pick が一覧表示までしか行わないのに対し、本スキルは
     A/B/C 分類 → 削除判断 → archive登録 → index 反映までの整理実行を行う。aituber PR360 で手動実施したワークフローを切り出し。
