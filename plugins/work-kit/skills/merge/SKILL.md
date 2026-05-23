@@ -111,6 +111,15 @@ The command prints the number of entries moved. If it prints `0`, skip the rest 
 
 ### Step 6: Execute the merge
 
+#### Condition
+
+- Step 5 complete
+
+> ⚠️ **Pre-merge check required**
+> If `index.archive.yaml` was not committed in Step 5 before running the merge, the archive changes will be missing from the merge commit.
+> **Confirm that the `git commit` in Step 5 has completed before running the merge command.**
+> (Skip this check only if Step 5 reported 0 entries moved — no commit was needed.)
+
 #### Process
 
 1. Confirm the current branch is the parent branch the PR was branched from (e.g., `master` if branched from `master`, `develop` if branched from `develop`)
