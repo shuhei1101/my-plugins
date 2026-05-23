@@ -68,10 +68,17 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Process
 
-1. Read `.work/tasks/index.yaml` and identify completed entries (all tasks marked `済`)
-2. Remove completed entries from `index.yaml` and append them to `.work/tasks/index.archive.yaml`
-3. If there are no entries to move, skip this step
-4. If `index.archive.yaml` was created or updated, commit it to the PR branch being merged
+1. Run the following command to move completed entries to the archive:
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" archive \
+  .work/tasks/index.yaml \
+  .work/tasks/index.archive.yaml
+```
+
+The command prints the number of entries moved. If it prints `0`, skip the rest of this step.
+
+2. If entries were moved, commit `index.archive.yaml` to the PR branch being merged
 
 → Proceed to Step 4
 
