@@ -1,8 +1,9 @@
 ---
 name: conversation-to-claude
 description: |
-  Analyze the current session's conversation history and propose the best artifact type
-  (skill, rule, hook, or CLAUDE.md) for persisting the knowledge or workflow discovered.
+  Analyze the current session's conversation history and automatically create all
+  appropriate artifacts (skill, rule, hook, CLAUDE.md, incidents, glossary) for
+  persisting the knowledge or workflow discovered. No user confirmation required.
   Trigger when the user says "会話をキャプチャして", "今の作業を保存して", "この手順を残したい",
   "会話からスキル作って", "会話からルール作って",
   or invoked explicitly as `/claude-kit:conversation-to-claude`.
@@ -11,9 +12,9 @@ description: |
 
 # conversation-to-claude — Generate Artifacts from Conversation History
 
-Analyzes the session's conversation history, proposes the best Claude Code artifact type
-(skill / rule / hook / CLAUDE.md), lets the user choose, and delegates to the
-appropriate creator skill to implement it.
+Analyzes the session's conversation history, identifies all appropriate Claude Code
+artifact types (skill / rule / hook / CLAUDE.md / incidents / glossary), and
+implements them all automatically without asking for confirmation.
 
 ---
 
@@ -22,7 +23,7 @@ appropriate creator skill to implement it.
 After completing an implementation, investigation, or configuration task, you often want
 to capture what was learned: a repeatable workflow, a file dependency, a hook trigger,
 or a project convention. This skill figures out the best form for that knowledge and
-generates it through the right creator skill.
+generates all identified artifacts automatically.
 
 ---
 
@@ -37,7 +38,7 @@ generates it through the right creator skill.
 #### Process
 
 1. Review the **entire** session conversation and extract **every possible candidate** without omitting any.
-   Cast a wide net — it is better to propose too many than to miss something valuable.
+   Cast a wide net — it is better to create too many than to miss something valuable.
 
    **A. Repeatable workflow candidates** (→ skill)
 
@@ -150,7 +151,7 @@ generates it through the right creator skill.
 
 ---
 
-### Step 3: Propose artifact types
+### Step 3: Implement all artifacts
 
 #### Condition
 
@@ -158,100 +159,44 @@ generates it through the right creator skill.
 
 #### Process
 
-1. Based on the extracted candidates, propose **all identified artifacts** — list every candidate found, not just 2–3.
-   Do not filter down. The user will decide what to keep.
-   If a category yields multiple distinct candidates (e.g., two different rules), list each as a separate numbered proposal.
-
-   ```
-   今回の会話から以下のアーティファクトを作成できます:
-
-   【案 A】スキル — {名前の候補}
-   理由: {なぜスキルが適切か}
-   操作: 新規作成  /  既存を編集 — {path}（どちらか一方）
-   生成物: .claude/skills/{name}/SKILL.md
-
-   【案 B】ルール — {名前の候補}
-   理由: {なぜルールが適切か}
-   操作: 新規作成  /  既存を編集 — {path}（どちらか一方）
-   リンクするファイル: {編集時にセットで確認すべきファイル群}
-   paths（読んだ時に発動）: {このルールを自動ロードしたいファイル/ディレクトリのパターン (例: src/**, *.ts, plugins/**)}
-   生成物: .claude/rules/{name}.md
-
-   【案 C】フック — {名前の候補}
-   理由: {なぜフックが適切か}
-   操作: 新規作成  /  既存を編集 — {path}（どちらか一方）
-   生成物: settings.json への hooks エントリ
-
-   【再発防止】incidents に追記
-   概要: {今回の教訓を1〜2行で}
-   操作: 既存を編集 — .claude/rules/incidents.md  /  新規（同一トピックなし）
-   生成物: .claude/rules/incidents.md（インデックス）＋ .claude/references/incidents/{slug}.md（詳細）
-
-   【用語集】glossary に以下の用語を追加してよいですか？
-   - {term1}: {定義}
-   - {term2}: {定義}
-   操作: 既存を編集 — .claude/rules/glossary.md
-   生成物: .claude/rules/glossary.md
-
-   どれを作成しますか？（複数選択可）
-   ```
-
-   > **Note**: E (incidents) is shown for insights that don't fit A–D.
-   > F (glossary) is shown only when term candidates exist.
-
-2. If nothing extractable is found:
+1. If nothing extractable is found:
    - Report "今回の会話から永続化できる知識・手順は見つかりませんでした" and stop.
 
-→ After user selection, proceed to Step 4
+2. Otherwise, implement **all identified artifacts** automatically without asking for confirmation.
+   If a category yields multiple distinct candidates (e.g., two different rules), implement each one.
 
-#### Output
+   For each artifact type, delegate to the corresponding creator skill:
 
-- Artifact type(s) selected by the user (one or more)
+   | Type | Creator skill | Context to pass |
+   |---|---|---|
+   | Skill | `claude-kit:skill-creator` | Skill name candidate, trigger conditions, extracted workflow |
+   | Rule | `claude-kit:rule-creator` | Domain name, file list, dependency description |
+   | Hook | `claude-kit:hook-creator` | Hook name, target event, description of what to run |
+   | CLAUDE.md | `claude-kit:claude-creator` | Guideline content to add or create |
+   | incidents | (no creator skill) | Append a one-line summary to `.claude/rules/incidents.md` (index); write full details to `.claude/references/incidents/{slug}.md` (+ `.jp.md`) |
+   | glossary | (no creator skill) | Read `.claude/rules/glossary.md` (create if missing); append terms to the appropriate H2 category table |
 
----
+   Process multiple artifacts one at a time in order A → B → C → D → E → F.
 
-### Step 4: Implement selected artifacts
-
-#### Condition
-
-- User selected artifact type(s) in Step 3
-
-#### Process
-
-For each selected type, launch the corresponding creator skill and delegate:
-
-| Selected type | Creator skill | Context to pass |
-|---|---|---|
-| Skill | `claude-kit:skill-creator` | Skill name candidate, trigger conditions, extracted workflow |
-| Rule | `claude-kit:rule-creator` | Domain name, file list, dependency description |
-| Hook | `claude-kit:hook-creator` | Hook name, target event, description of what to run |
-| CLAUDE.md | `claude-kit:claude-creator` | Guideline content to add or create |
-| incidents | (no creator skill) | Append a one-line summary to `.claude/rules/incidents.md` (index); write full details to `.claude/references/incidents/{slug}.md` (+ `.jp.md`) |
-| glossary | (no creator skill) | Read `.claude/rules/glossary.md` (create if missing); append user-approved terms to the appropriate H2 category table |
-
-If multiple types were selected, process them one at a time in the order the user listed.
-
-→ After all selections are handled, proceed to Step 5
+→ Proceed to Step 4
 
 #### Notes
 
-- Follow each creator skill's own steps
-- After one creator skill completes, move to the next selected type
+- Follow each creator skill's own steps — but skip any confirmation prompts within them
 - glossary is always loaded as a rule — keep definitions to 1–2 sentences
 
 ---
 
-### Step 5: Report completion
+### Step 4: Commit and report
 
 #### Condition
 
-- Step 4 complete
+- Step 3 complete
 
 #### Process
 
-1. List all created and updated files
-2. Ask the user whether to commit
-3. If the user agrees, commit the changes
+1. Commit all created and updated files with a descriptive message
+2. List all created and updated files to the user
 
 ---
 
