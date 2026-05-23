@@ -18,11 +18,11 @@
 
 - なし（既存スキル改修）
 
-| - | references/common.md にアーティファクト増殖ガードセクション追加 | - `plugins/claude-kit/references/common.md` |
-| - | references/common.jp.md も同期更新 | - `plugins/claude-kit/references/common.jp.md` |
-| - | conversation-to-claude Step 2 で common.md を読み込み増殖ガードを適用 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
-| - | conversation-to-claude SKILL.jp.md も同期更新 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
-| - | plugin.json / marketplace.json バージョンバンプ | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | references/common.md にアーティファクト増殖ガードセクション追加 | - `plugins/claude-kit/references/common.md` |
+| 済 | references/common.jp.md も同期更新 | - `plugins/claude-kit/references/common.jp.md` |
+| 済 | conversation-to-claude Step 2 で common.md を読み込み増殖ガードを適用 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
+| 済 | conversation-to-claude SKILL.jp.md も同期更新 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
+| 済 | plugin.json / marketplace.json バージョンバンプ | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 次PR候補
 
