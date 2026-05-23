@@ -118,7 +118,7 @@ generates all identified artifacts automatically.
 
 ---
 
-### Step 2: Check existing artifacts
+### Step 2: Check existing artifacts and apply proliferation guard
 
 #### Condition
 
@@ -126,7 +126,9 @@ generates all identified artifacts automatically.
 
 #### Process
 
-1. For each candidate identified in Step 1, scan the project for existing artifacts that overlap or could absorb the new content:
+1. Read `${CLAUDE_PLUGIN_ROOT}/references/common.md` — apply the **Artifact proliferation guard** section throughout this step.
+
+2. For each candidate identified in Step 1, scan the project for existing artifacts that overlap or could absorb the new content:
 
    | Candidate type | Where to look |
    |---|---|
@@ -137,17 +139,18 @@ generates all identified artifacts automatically.
    | incidents | `.claude/rules/incidents.md` — check for existing entries on the same topic |
    | glossary | `.claude/rules/glossary.md` — check for existing term entries |
 
-2. For each candidate, decide:
-   - **Merge into existing**: existing artifact covers the same domain → extend it
-   - **Create new**: no closely related artifact exists
+3. For each candidate, apply the proliferation guard decision criteria:
+   - **Merge into existing**: an existing artifact covers the same domain → extend it, do NOT create a new file
+   - **Discard**: content is one-time, temporary, or would only be needed occasionally — place in `.claude/references/` or skip
+   - **Create new**: no closely related artifact exists AND the content justifies a permanent, regularly-loaded artifact
 
-3. Record the decision (create new / edit existing at `{path}`) for use in Step 3.
+4. Record the decision (create new / merge into `{path}` / discard) for use in Step 3.
 
 → Proceed to Step 3
 
 #### Output
 
-- For each candidate: decision (new / edit existing) and target path (if editing)
+- For each candidate: decision (new / merge / discard) and target path
 
 ---
 
