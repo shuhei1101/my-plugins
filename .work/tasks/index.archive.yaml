@@ -7,3 +7,30 @@ prs:
   task: 20260522_branch-index-cleanup-skill
   title: 'PR74 — work-kit: branch-index-cleanup スキル追加'
   type: feat
+- id: 73
+  title: PR73 — skill-creator-references-cleanup
+  type: refactor
+  tags: []
+  task: 20260523_skill-creator-references-cleanup
+  completed: true
+- id: 76
+  title: PR76 — rules-folder-restructure
+  type: refactor
+  tags: []
+  summary: rules/ を core/ feature/ に整理し JP ミラー5本を追加
+  task: 20260523_rules-folder-restructure
+  completed: true
+- id: 77
+  title: PR77 — fix-worktree-kit-dependency-paths
+  type: fix
+  tags: []
+  summary: worktree-kit-dependency.md に paths: frontmatter を追加して自動ロードを有効化
+  task: 20260523_rules-folder-restructure
+  completed: true
+- id: 78
+  title: PR78 — merge-step7-next-pr-suggestion
+  type: docs
+  tags: []
+  summary: merge Step 7 完了報告で次PR候補を提示するよう更新
+  task: 20260523_merge-step7-next-pr-suggestion
+  completed: true
