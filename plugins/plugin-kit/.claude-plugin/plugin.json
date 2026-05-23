@@ -1,5 +1,0 @@
-{
-  "name": "plugin-kit",
-  "description": "Toolkit for creating and updating Claude Code plugins — scaffolding, versioning, and changelog management",
-  "version": "1.0.0"
-}

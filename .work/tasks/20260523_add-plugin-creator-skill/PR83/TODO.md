@@ -16,9 +16,9 @@ plugin-kit プラグインに `plugin-creator` スキルを新規追加する。
 | 済 | plugin.json を作成する | `plugins/plugin-kit/.claude-plugin/plugin.json` |
 | 済 | plugin-creator スキル（SKILL.md）を作成する | `plugins/plugin-kit/skills/plugin-creator/SKILL.md` |
 | 済 | marketplace.json にエントリを追加する | `.claude-plugin/marketplace.json` |
-| - | plugin-kit を削除し claude-kit に移動する | `plugins/plugin-kit/` → `plugins/claude-kit/skills/plugin-creator/` |
-| - | marketplace.json から plugin-kit エントリを削除する | `.claude-plugin/marketplace.json` |
-| - | claude-kit の plugin.json バージョンをバンプする | `plugins/claude-kit/.claude-plugin/plugin.json` |
+| 済 | plugin-kit を削除し claude-kit に移動する | `plugins/plugin-kit/` → `plugins/claude-kit/skills/plugin-creator/` |
+| 済 | marketplace.json から plugin-kit エントリを削除する | `.claude-plugin/marketplace.json` |
+| 済 | claude-kit の plugin.json バージョンをバンプする | `plugins/claude-kit/.claude-plugin/plugin.json` |
 | - | ルール・CLAUDE.md を整備する | 必要に応じて |
 
 ## 参考ドキュメント
