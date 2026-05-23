@@ -20,6 +20,7 @@ plugin-kit プラグインに `plugin-creator` スキルを新規追加する。
 | 済 | marketplace.json から plugin-kit エントリを削除する | `.claude-plugin/marketplace.json` |
 | 済 | claude-kit の plugin.json バージョンをバンプする | `plugins/claude-kit/.claude-plugin/plugin.json` |
 | 済 | ルール・CLAUDE.md を整備する | 必要に応じて（今回不要と判断） |
+| 済 | SKILL.jp.md（日本語ミラー）を作成する | `plugins/claude-kit/skills/plugin-creator/SKILL.jp.md` |
 
 ## 参考ドキュメント
 
