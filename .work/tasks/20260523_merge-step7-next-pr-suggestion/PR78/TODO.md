@@ -8,9 +8,9 @@ merge スキルの Step 7（完了報告）で、マージした PR の TODO.md 
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | SKILL.md Step 7 を更新（次PR候補を提示する処理を追加） | - `plugins/work-kit/skills/merge/SKILL.md` |
-| - | SKILL.jp.md Step 7 を更新（日本語版） | - `plugins/work-kit/skills/merge/SKILL.jp.md` |
-| - | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | SKILL.md Step 7 を更新（次PR候補を提示する処理を追加） | - `plugins/work-kit/skills/merge/SKILL.md` |
+| 済 | SKILL.jp.md Step 7 を更新（日本語版） | - `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| 済 | plugin.json と marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
