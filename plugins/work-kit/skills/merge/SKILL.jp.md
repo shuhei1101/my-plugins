@@ -76,14 +76,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 処理内容
 
-1. claude-kit プラグインがインストールされているか確認する:
-
-```bash
-find ~/.claude/plugins/cache -maxdepth 3 -name "claude-kit" -type d 2>/dev/null | head -1
-```
-
-2. ディレクトリが見つかった場合 → `/claude-kit:conversation-to-claude` を実行し、完了を待つ
-3. 見つからない場合 → このステップをスキップする
+1. 現在のセッションの利用可能なスキル一覧に `/claude-kit:conversation-to-claude` があるか確認する
+2. ある場合 → `/claude-kit:conversation-to-claude` を実行し、完了を待つ
+3. ない場合 → このステップをスキップする
 
 → ステップ4へ進む
 

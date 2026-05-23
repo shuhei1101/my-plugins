@@ -71,14 +71,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Process
 
-1. Check whether the `claude-kit` plugin is installed:
-
-```bash
-find ~/.claude/plugins/cache -maxdepth 3 -name "claude-kit" -type d 2>/dev/null | head -1
-```
-
-2. If a directory is found → invoke `/claude-kit:conversation-to-claude` and wait for it to complete
-3. If not found → skip this step silently
+1. Check whether `/claude-kit:conversation-to-claude` appears in the current session's available skill list
+2. If available → invoke `/claude-kit:conversation-to-claude` and wait for it to complete
+3. If not available → skip this step silently
 
 → Proceed to Step 4
 
