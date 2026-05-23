@@ -16,7 +16,7 @@ merge SKILL.md に「絶対に勝手にマージしない」強化禁止文を�
 | 済 | stop.md のマージ提案文に PR 番号を含める | `plugins/work-kit/hooks/prompts/stop.md` |
 | 済 | SKILL.jp.md を SKILL.md の変更内容に合わせて更新する | `plugins/work-kit/skills/merge/SKILL.jp.md` |
 | 済 | JP ミラー更新漏れを防ぐルールを追加する | `.claude/rules/feature/skill-jp-mirror-sync.md` |
-| - | 編集対象に応じてクリエイタースキルを先に読む強制ルールを追加する | `.claude/rules/feature/creator-skill-dispatch.md` |
+| 済 | 編集対象に応じてクリエイタースキルを先に読む強制ルールを追加する | `.claude/rules/feature/creator-skill-dispatch.md` |
 
 ## 参考ドキュメント
 
