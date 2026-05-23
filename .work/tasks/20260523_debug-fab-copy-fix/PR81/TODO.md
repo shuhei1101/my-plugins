@@ -16,8 +16,8 @@ debug-fab ウィジェットで要素を選択してコピーボタンを押し�
 | 済 | templates/CLAUDE.md のオペレーション表を更新する | `plugins/ui-kit/skills/debug-fab/templates/CLAUDE.md` |
 | 済 | debug-fab-modify に SKILL.jp.md を追加する | `plugins/ui-kit/skills/debug-fab-modify/SKILL.jp.md` |
 | 済 | バージョンを PATCH バンプする | `plugins/ui-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | ルール・CLAUDE.md を整備する（incidents 追記 × 2） | `.claude/rules/core/incidents.md`, `.claude/references/incidents/` |
-| - | debug-fab-modify スキルを削除する | `plugins/ui-kit/skills/debug-fab-modify/` |
+| 済 | ルール・CLAUDE.md を整備する（incidents 追記 × 2） | `.claude/rules/core/incidents.md`, `.claude/references/incidents/` |
+| 済 | debug-fab-modify スキルを削除する | `plugins/ui-kit/skills/debug-fab-modify/` |
 
 ## 参考ドキュメント
 
