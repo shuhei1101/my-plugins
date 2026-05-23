@@ -38,6 +38,33 @@ For type-specific details, read the dedicated reference:
 
 ---
 
+## Artifact proliferation guard
+
+**Always-loaded context consumes the context window on every session or file read.**
+
+- `CLAUDE.md` (root) is loaded **every** session start
+- Rules with broad `paths:` patterns auto-load **every time** a matching file is opened
+
+Adding more of these costs tokens on all work, not just the relevant task. Before creating any new artifact, apply the following checks:
+
+### New artifact vs merge into existing — decision criteria
+
+| Question | If YES → |
+|---|---|
+| Does an existing rule or skill already cover this domain? | Merge into it — do not create a new file |
+| Is the content needed every session, or only during specific tasks? | If only sometimes → use `.claude/references/` not CLAUDE.md |
+| Would the rule's `paths:` match nearly all files in the project? | Narrow the pattern, or move to CLAUDE.md |
+| Is this a one-time observation or temporary note? | Do not persist it |
+
+### Anti-proliferation checklist
+
+- [ ] Checked whether an existing artifact can absorb this content first?
+- [ ] For CLAUDE.md additions: is this truly needed every session?
+- [ ] For rules: is `paths:` as narrow as possible?
+- [ ] Not writing detail-only content to CLAUDE.md that belongs in `.claude/references/`?
+
+---
+
 ## JP/EN mirror rules
 
 Every file requires a corresponding JP mirror:

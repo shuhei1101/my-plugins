@@ -34,3 +34,10 @@ prs:
   summary: merge Step 7 完了報告で次PR候補を提示するよう更新
   task: 20260523_merge-step7-next-pr-suggestion
   completed: true
+- id: 79
+  title: PR79 — conversation-to-claude-auto
+  type: refactor
+  tags: []
+  summary: conversation-to-claude スキルの確認ステップを削除し完全自動化、アーティファクト増殖ガードを common.md に追加
+  task: 20260523_conversation-to-claude-auto
+  completed: true
