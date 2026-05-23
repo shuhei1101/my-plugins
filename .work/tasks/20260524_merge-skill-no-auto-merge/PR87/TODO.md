@@ -14,8 +14,8 @@ merge SKILL.md に「絶対に勝手にマージしない」強化禁止文を�
 | 済 | バージョンを bump する | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 | 済 | incidents.md に事故記録を追記する | `.claude/rules/core/incidents.md` |
 | 済 | stop.md のマージ提案文に PR 番号を含める | `plugins/work-kit/hooks/prompts/stop.md` |
-| - | SKILL.jp.md を SKILL.md の変更内容に合わせて更新する | `plugins/work-kit/skills/merge/SKILL.jp.md` |
-| - | JP ミラー更新漏れを防ぐルールを追加する | `.claude/rules/feature/` |
+| 済 | SKILL.jp.md を SKILL.md の変更内容に合わせて更新する | `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| 済 | JP ミラー更新漏れを防ぐルールを追加する | `.claude/rules/feature/skill-jp-mirror-sync.md` |
 
 ## 参考ドキュメント
 
