@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # Python — dev-kit 共通リファレンス（日本語ミラー）
 
 > このファイルは `python.md` の日本語ミラーです。Claude Code には読み込まれません。

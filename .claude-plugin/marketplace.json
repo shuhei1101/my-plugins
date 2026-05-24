@@ -11,25 +11,25 @@
       "name": "dev-kit",
       "source": "./plugins/dev-kit",
       "description": "Development conventions toolkit — language standards (Python, YAML) and project/script generation skills",
-      "version": "2.0.0"
+      "version": "2.0.1"
     },
     {
       "name": "ui-kit",
       "source": "./plugins/ui-kit",
       "description": "Development UI components and conventions — floating debug widget, logging conventions, FLOCSS + design tokens application",
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "name": "claude-kit",
       "source": "./plugins/claude-kit",
       "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
-      "version": "3.19.0"
+      "version": "3.19.1"
     },
     {
       "name": "work-kit",
       "source": "./plugins/work-kit",
       "description": "Hook-based project lifecycle management — injects PR task context on every prompt and reminds task updates on stop",
-      "version": "2.26.0"
+      "version": "2.26.1"
     },
     {
       "name": "worktree-kit",

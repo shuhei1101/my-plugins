@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # hooks.jp.md — フック設計ガイド（日本語ミラー）
 
 > このファイルは `references/hooks.md` の日本語ミラーです。
