@@ -8,7 +8,7 @@
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(('Read and follow: '+str(q)+'\\n').encode()) if q.exists() and any(k in p for k in ['skill.md', 'skill.jp.md', '/skills/']) else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(q.read_text('utf-8').encode()) if q.exists() and any(k in p for k in ['skill.md', 'skill.jp.md', '/skills/']) else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/skill-creator-dispatch.md"
             ]
           }
@@ -21,7 +21,7 @@
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(('Read and follow: '+str(q)+'\\n').encode()) if q.exists() and any(k in p for k in ['.claude/rules/', 'rules/', 'rules-jp/']) else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(q.read_text('utf-8').encode()) if q.exists() and any(k in p for k in ['.claude/rules/', 'rules/', 'rules-jp/']) else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/rule-creator-dispatch.md"
             ]
           }
@@ -34,7 +34,7 @@
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(('Read and follow: '+str(q)+'\\n').encode()) if q.exists() and any(k in p for k in ['/hooks/', 'hooks.json', 'settings.json', 'settings.local.json']) else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(q.read_text('utf-8').encode()) if q.exists() and any(k in p for k in ['/hooks/', 'hooks.json', 'settings.json', 'settings.local.json']) else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/hook-creator-dispatch.md"
             ]
           }
@@ -47,7 +47,7 @@
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(('Read and follow: '+str(q)+'\\n').encode()) if q.exists() and any(k in p for k in ['claude.md', 'claude.jp.md', 'claude.local.md', 'claude.local.jp.md']) else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(q.read_text('utf-8').encode()) if q.exists() and any(k in p for k in ['claude.md', 'claude.jp.md', 'claude.local.md', 'claude.local.jp.md']) else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/claude-creator-dispatch.md"
             ]
           }
@@ -60,7 +60,7 @@
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(('Read and follow: '+str(q)+'\\n').encode()) if q.exists() and 'plugins/' in p else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(q.read_text('utf-8').encode()) if q.exists() and 'plugins/' in p else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/plugin-creator-dispatch.md"
             ]
           }
@@ -76,7 +76,7 @@
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib,re; d=json.loads(sys.stdin.read()); fp=d.get('tool_input',{}).get('file_path',''); sys.exit(0) if not fp.endswith('.md') or fp.endswith('.jp.md') else None; pats=[r'/skills/[^/]+/SKILL\\.md$',r'\\.claude/rules/[^/]+\\.md$',r'/hooks/prompts/[^/]+\\.md$',r'(?:^|/)CLAUDE(?:\\.local)?\\.md$']; sys.exit(0) if not any(re.search(p,fp) for p in pats) else None; sys.exit(0) if pathlib.Path(fp[:-3]+'.jp.md').exists() else sys.stdout.buffer.write(('Read and follow: '+sys.argv[1]+'\\n').encode())",
+              "import sys,json,pathlib,re; d=json.loads(sys.stdin.read()); fp=d.get('tool_input',{}).get('file_path',''); sys.exit(0) if not fp.endswith('.md') or fp.endswith('.jp.md') else None; pats=[r'/skills/[^/]+/SKILL\\.md$',r'\\.claude/rules/[^/]+\\.md$',r'/hooks/prompts/[^/]+\\.md$',r'(?:^|/)CLAUDE(?:\\.local)?\\.md$']; sys.exit(0) if not any(re.search(p,fp) for p in pats) else None; sys.exit(0) if pathlib.Path(fp[:-3]+'.jp.md').exists() else sys.stdout.buffer.write(pathlib.Path(sys.argv[1]).read_text('utf-8').encode())",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/jp-mirror-check.md"
             ]
           }

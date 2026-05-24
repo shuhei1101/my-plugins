@@ -277,3 +277,17 @@ prs:
   summary: 'pr-show スキルに disable-model-invocation: true を追加して誤起動を防ぐ'
   task: 20260524_pr-show-disable-model-invocation
   completed: true
+- id: 114
+  title: PR114 — incident-glossary-content-cleanup
+  type: refactor
+  tags: []
+  summary: 既存インシデント・用語集の内容精査（PRの作業内容が混入しているエントリの削除・修正）
+  task: 20260524_incident-glossary-content-cleanup
+  completed: true
+- id: 119
+  title: PR119 — hook-read-follow-remove
+  type: fix
+  tags: []
+  summary: claude-kit/hooks.json の Read and follow パターンを直接コンテンツ埋め込みに変更
+  task: 20260524_hook-revert-direct-reason
+  completed: true
