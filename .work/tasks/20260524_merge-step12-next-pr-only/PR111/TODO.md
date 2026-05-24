@@ -20,9 +20,9 @@ merge スキルの Step 12 が `git branch --list 'PR*'` で全ブランチを�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260524_merge-step12-next-pr-only/PR111/QA.md` |
-| - | SKILL.md の Step 12 を修正（次PR候補のみ表示） | - `plugins/work-kit/skills/merge/SKILL.md` |
-| - | SKILL.jp.md を同期更新 | - `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260524_merge-step12-next-pr-only/PR111/QA.md` |
+| 済 | SKILL.md の Step 12 を修正（次PR候補のみ表示） | - `plugins/work-kit/skills/merge/SKILL.md` |
+| 済 | SKILL.jp.md を同期更新 | - `plugins/work-kit/skills/merge/SKILL.jp.md` |
 
 ## 参考ドキュメント
 
