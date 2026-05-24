@@ -176,6 +176,20 @@ prs:
   summary: work-start スキルの Step 10 にコミットメッセージは日本語で記述するルールを追記する
   task: 20260524_ja-commit-message-rule
   completed: true
+- id: 103
+  title: PR103 — claude-kit-creator-skill-hook
+  type: feat
+  tags: []
+  summary: CLAUDE.md・スキル・ルール・フック編集時にクリエイタースキル呼び出しを促すUserPromptSubmitフックをclaude-kitに追加
+  task: 20260524_claude-kit-creator-skill-hook
+  completed: true
+- id: 104
+  title: PR104 — dev-kit-python-yaml-hooks
+  type: feat
+  tags: []
+  summary: dev-kit の Python・YAML ファイル編集時に対応スキルを自動読み込みするフックを追加
+  task: 20260524_dev-kit-python-yaml-hooks
+  completed: true
 - id: 105
   title: PR105 — ui-kit-skill-reminder-hook
   type: feat
@@ -198,4 +212,26 @@ prs:
   tags: []
   summary: merge スキル Step 12 の次PR一覧出力をテーブル形式（分類・PR番号・概要の3列）に変更
   task: 20260524_merge-step12-table-format
+  completed: true
+- id: 110
+  title: PR110 — remove-redundant-creator-rules
+  type: refactor
+  tags: []
+  summary: PR103のcreator-dispatchフックに移行したため、plugin-work.mdのクリエイタースキル表とCLAUDE.mdのPlugin
+    Creation規則を削除する
+  task: 20260524_remove-redundant-creator-rules
+  completed: true
+- id: 111
+  title: PR111 — merge-step12-next-pr-only
+  type: fix
+  tags: []
+  summary: merge スキル Step 12 が全 PR ブランチを列挙していたのを、直前マージの次PR候補のみ表示する方式に修正
+  task: 20260524_merge-step12-next-pr-only
+  completed: true
+- id: 109
+  title: PR109 — pr-show-skill
+  type: feat
+  tags: []
+  summary: merge スキルの Step 12（予約済みPR状況表示）を独立スキル pr-show として切り出す
+  task: 20260524_pr-show-skill
   completed: true
