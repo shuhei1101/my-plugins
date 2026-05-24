@@ -19,12 +19,12 @@ pr-show スキルの frontmatter に `disable-model-invocation: true` が設定�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/.../PR120/QA.md` |
-| - | `.work/notes/` のノートを更新する | `.work/notes/pr-show.md` |
-| - | SKILL.md から `disable-model-invocation: true` を削除する | `plugins/work-kit/skills/pr-show/SKILL.md` |
-| - | SKILL.jp.md から `disable-model-invocation: true` を削除する | `plugins/work-kit/skills/pr-show/SKILL.jp.md` |
-| - | バージョンをバンプする（2.31.3 → 2.31.4） | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | glossary の `disable-model-invocation` 説明を更新する | `.claude/rules/core/glossary.md` |
+| 済 | QA.md に未決定事項を記録する（なし） | `.work/tasks/.../PR120/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | `.work/notes/pr-show.md` |
+| 済 | SKILL.md から `disable-model-invocation: true` を削除する | `plugins/work-kit/skills/pr-show/SKILL.md` |
+| 済 | SKILL.jp.md から `disable-model-invocation: true` を削除する | `plugins/work-kit/skills/pr-show/SKILL.jp.md` |
+| 済 | バージョンをバンプする（2.31.3 → 2.31.4） | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | glossary 更新は不要（フラグの一般説明のため変更なし） | — |
 
 ## 参考ドキュメント
 
