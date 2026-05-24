@@ -26,10 +26,12 @@ There are two broad categories:
 | Action hook | Run external processes — notifications, tests, etc. |
 | **Prompt-injection hook** | Output text to stdout → injected into Claude's context (this skill's focus) |
 
-How prompt injection works:
-- `UserPromptSubmit` hook: stdout text → injected as `<system-reminder>` before Claude processes
-- `Stop` hook: JSON `{"decision":"block","reason":"<prompt>"}` to stdout → Claude continues with that instruction
-- `PreToolUse` hook: JSON `{"decision":"block","reason":"<prompt>"}` to stdout → block tool and inject instruction
+How prompt injection works — all hooks use the **"Read and follow"** pattern:
+- `UserPromptSubmit`: output `"Read and follow: /path/to/prompt.md"` as plain text → injected as `<system-reminder>`; Claude reads the file itself
+- `Stop`: output `{"decision":"block","reason":"Read and follow: /path/to/prompt.md"}` as JSON → Claude continues and reads the file
+- `PreToolUse`: output `{"decision":"block","reason":"Read and follow: /path/to/prompt.md"}` as JSON → blocks tool and Claude reads the file
+
+Keep the `reason` / stdout to exactly 1 line — multi-line text floods the conversation session and is visible to the user.
 
 ---
 
@@ -145,11 +147,9 @@ How prompt injection works:
 
 ##### Important
 
-- **`Stop` hook prompts must be exactly 1 line — use the file-reference pattern**
-  - The `reason` text is injected into the conversation session and visible to the user; multi-line content is noisy and intrusive
-  - Recommended: make the script output only `"Read and follow: /path/to/stop.md"` — Claude reads the actual instructions from that file itself
-  - Keep the full instruction text in the prompt file; the script outputs only the file path reference
-- `UserPromptSubmit` hook prompts are treated as `<system-reminder>` — best for injecting context or standing instructions
+All hooks output only `"Read and follow: /path/to/prompt.md"` — never embed the full instruction text in the hook output.
+Keep the full instruction text in the prompt file; the hook outputs only the file path reference.
+Claude reads the file itself, so the injected line stays exactly 1 line and does not flood the session.
 
 ---
 
@@ -237,9 +237,12 @@ How prompt injection works:
 
 ### Hook patterns
 
-#### [Plugin] UserPromptSubmit
+> All hooks output only `"Read and follow: /path"` — never embed multi-line instructions in the hook output.
+> **Path variable:** use `${CLAUDE_PLUGIN_ROOT}` in plugin `hooks/hooks.json`, `${CLAUDE_PROJECT_DIR}` in project `settings.json`.
 
-Place in the plugin's `hooks/hooks.json`. `${CLAUDE_PLUGIN_ROOT}` is available.
+#### UserPromptSubmit
+
+Outputs plain text to stdout — injected as `<system-reminder>` before Claude processes the prompt.
 
 ```json
 {
@@ -252,7 +255,7 @@ Place in the plugin's `hooks/hooks.json`. `${CLAUDE_PLUGIN_ROOT}` is available.
             "command": "python",
             "args": [
               "-c",
-              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else sys.exit(0)",
+              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(('Read and follow: '+str(p)+'\\n').encode()) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/user-prompt-submit.md"
             ]
           }
@@ -263,38 +266,17 @@ Place in the plugin's `hooks/hooks.json`. `${CLAUDE_PLUGIN_ROOT}` is available.
 }
 ```
 
-#### [Project] UserPromptSubmit
+**Editing: add keyword filtering** (fire only when the prompt matches a condition):
 
-Place in `.claude/settings.json` or `.claude/settings.local.json`.
-Prompt file lives at `.claude/hooks/{name}.md`.
+Replace the `-c` string with the following to inject only when keywords are detected:
 
-```json
-{
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "-c",
-              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else sys.exit(0)",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/user-prompt-submit.md"
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
+```
+"import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(('Read and follow: '+str(q)+'\\n').encode()) if q.exists() and any(k in p for k in ['html','css','js']) else None"
 ```
 
-#### [Plugin] Stop — inject a prompt and make Claude continue working
+#### Stop — inject a prompt and make Claude continue working
 
 The `stop_hook_active` guard prevents infinite loops.
-Returns JSON `{"decision":"block","reason":"Read and follow: /path/to/stop.md"}` — Claude reads the instruction file itself.
-This keeps the `reason` to exactly 1 line so it does not flood the conversation session.
 
 ```json
 {
@@ -318,31 +300,7 @@ This keeps the `reason` to exactly 1 line so it does not flood the conversation 
 }
 ```
 
-#### [Project] Stop
-
-```json
-{
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.md"
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-#### [Project] PreToolUse — unconditional block
+#### PreToolUse — unconditional block
 
 Use `matcher` to target specific tools. Blocks **every** matching tool call.
 
@@ -358,8 +316,8 @@ Use `matcher` to target specific tools. Blocks **every** matching tool call.
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.md"
+              "import sys,json,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/pre-tool-use.md"
             ]
           }
         ]
@@ -369,7 +327,7 @@ Use `matcher` to target specific tools. Blocks **every** matching tool call.
 }
 ```
 
-#### [Project] PreToolUse — conditional block with one-time token (loop-safe)
+#### PreToolUse — conditional block with one-time token (loop-safe)
 
 **"Require confirmation each time, but let through once after confirming"** pattern.
 Without a loop guard, Claude's retry after user approval hits the hook again — infinite loop.
@@ -393,8 +351,8 @@ How it works:
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/f'my-guard-token-{d.get(\"session_id\",\"default\")}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.md"
+              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/f'my-guard-token-{d.get(\"session_id\",\"default\")}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/pre-tool-use.md"
             ]
           }
         ]

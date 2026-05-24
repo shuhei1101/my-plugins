@@ -184,3 +184,11 @@ prs:
     mock スキルも案内する
   task: 20260524_ui-kit-skill-reminder-hook
   completed: true
+- id: 106
+  title: PR106 — hook-creator-skill-improvement
+  type: refactor
+  tags: []
+  summary: 'hook-creator SKILL.md: UserPromptSubmit を Read-and-follow 形式に統一、Plugin/Project
+    パターン統合、編集例追加'
+  task: 20260524_hook-creator-skill-improvement
+  completed: true

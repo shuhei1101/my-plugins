@@ -26,10 +26,12 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 | アクション型 | 通知送信・テスト実行など外部処理 |
 | **プロンプト注入型** | stdout にプロンプトを出力して Claude のコンテキストへ注入（このスキルの対象） |
 
-プロンプト注入の仕組み:
-- `UserPromptSubmit` フック: stdout テキスト → `<system-reminder>` として Claude に注入
-- `Stop` フック: JSON `{"decision":"block","reason":"<プロンプト>"}` を stdout → Claude が作業を継続する
-- `PreToolUse` フック: JSON `{"decision":"block","reason":"<プロンプト>"}` を stdout → ツール実行をブロックして指示注入
+プロンプト注入の仕組み — すべてのフックは **"Read and follow"** パターンを使う:
+- `UserPromptSubmit`: `"Read and follow: /path/to/prompt.md"` をプレーンテキストで stdout に出力 → `<system-reminder>` として注入。Claude がファイルを読む
+- `Stop`: `{"decision":"block","reason":"Read and follow: /path/to/prompt.md"}` を JSON で出力 → Claude が作業を継続してファイルを読む
+- `PreToolUse`: `{"decision":"block","reason":"Read and follow: /path/to/prompt.md"}` を JSON で出力 → ツールをブロックして Claude がファイルを読む
+
+`reason` / stdout は必ず1行に収める — 複数行を注入するとセッションが汚染されユーザーにも見えてしまう。
 
 ---
 
@@ -146,11 +148,9 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 
 ##### 注意
 
-- **`Stop` フックのプロンプトは必ず1行 — ファイル参照パターンを使うこと**
-  - `reason` の内容は会話セッションに注入されユーザーに見えるため、複数行は見づらく邪魔になる
-  - 推奨: スクリプトは `"Read and follow: /path/to/stop.md"` の1行だけを出力し、Claude が実際の指示をファイルから読む方式にする
-  - 指示の全文はプロンプトファイルに記述し、スクリプトはそのファイルパス参照だけを出力する
-- `UserPromptSubmit` フックのプロンプトは `<system-reminder>` として扱われるため、コンテキスト情報の差し込みに向いている
+すべてのフックは `"Read and follow: /path/to/prompt.md"` のみを出力する — 指示の全文をフック出力に埋め込まない。
+指示の全文はプロンプトファイルに記述し、フックはそのファイルパス参照だけを出力する。
+Claude がファイルを読むため、注入される文は1行に保たれセッションが汚染されない。
 
 ---
 
@@ -238,9 +238,12 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 
 ### フックパターン一覧
 
-#### [プラグイン用] UserPromptSubmit
+> すべてのフックは `"Read and follow: /path"` のみを出力する — 指示の全文をフック出力に埋め込まない。
+> **パス変数:** プラグイン `hooks/hooks.json` では `${CLAUDE_PLUGIN_ROOT}`、プロジェクト `settings.json` では `${CLAUDE_PROJECT_DIR}` を使う。
 
-プラグインの `hooks/hooks.json` に記述。`${CLAUDE_PLUGIN_ROOT}` が使える。
+#### UserPromptSubmit
+
+プレーンテキストを stdout に出力 → プロンプト処理前に `<system-reminder>` として注入される。
 
 ```json
 {
@@ -253,7 +256,7 @@ Claude Code のフックは、セッション中の特定タイミングで自�
             "command": "python",
             "args": [
               "-c",
-              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else sys.exit(0)",
+              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(('Read and follow: '+str(p)+'\\n').encode()) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/user-prompt-submit.md"
             ]
           }
@@ -264,38 +267,17 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 }
 ```
 
-#### [プロジェクト用] UserPromptSubmit
+**編集例: キーワードフィルタを追加する**（プロンプトが条件に一致するときだけ発火させる場合）:
 
-`.claude/settings.json` または `.claude/settings.local.json` の `hooks` セクションに記述。
-プロンプトファイルは `.claude/hooks/{name}.md` に置く。
+`-c` 文字列を以下に差し替える:
 
-```json
-{
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "-c",
-              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else sys.exit(0)",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/user-prompt-submit.md"
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
+```
+"import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(('Read and follow: '+str(q)+'\\n').encode()) if q.exists() and any(k in p for k in ['html','css','js']) else None"
 ```
 
-#### [プラグイン用] Stop
+#### Stop — プロンプトを注入して Claude に作業を継続させる
 
 `stop_hook_active` チェックで無限ループを防止する。
-stdout に JSON `{"decision":"block","reason":"Read and follow: /path/to/stop.md"}` を返す。
-Claude がそのファイルを読んで指示に従う方式で、`reason` を1行に保てる。
 
 ```json
 {
@@ -319,31 +301,7 @@ Claude がそのファイルを読んで指示に従う方式で、`reason` を1
 }
 ```
 
-#### [プロジェクト用] Stop
-
-```json
-{
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.md"
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-#### [プロジェクト用] PreToolUse — ツール実行前にブロック（無条件）
+#### PreToolUse — ツール実行前にブロック（無条件）
 
 `matcher` でツールを絞り込める。**すべての実行をブロック**したい場合はこのパターン。
 
@@ -359,8 +317,8 @@ Claude がそのファイルを読んで指示に従う方式で、`reason` を1
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.md"
+              "import sys,json,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/pre-tool-use.md"
             ]
           }
         ]
@@ -370,10 +328,10 @@ Claude がそのファイルを読んで指示に従う方式で、`reason` を1
 }
 ```
 
-#### [プロジェクト用] PreToolUse — 条件付きブロック＋ループ防止（ワンタイムトークン）
+#### PreToolUse — 条件付きブロック＋ループ防止（ワンタイムトークン）
 
 **「毎回確認を求めるが、確認後は1回だけ通す」** パターン。
-無条件ブロックのままだとClaude が再試行するたびにブロックされ続ける（無限ループ）ため、ワンタイムトークンで防止する。
+無条件ブロックのままだと Claude が再試行するたびにブロックされ続ける（無限ループ）ため、ワンタイムトークンで防止する。
 
 仕組み:
 1. フックが条件に一致 → トークンなし → **ブロック** + トークンファイルを作成
@@ -393,8 +351,8 @@ Claude がそのファイルを読んで指示に従う方式で、`reason` を1
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/f'my-guard-token-{d.get(\"session_id\",\"default\")}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.md"
+              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/f'my-guard-token-{d.get(\"session_id\",\"default\")}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/pre-tool-use.md"
             ]
           }
         ]
