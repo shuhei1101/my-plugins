@@ -15,7 +15,11 @@
 | notes/ | work-kit が管理する `.work/notes/` フォルダ。PR に関連する一時的な設計メモ・検討ノートを置く場所。AI に自動読み込みされないため公式仕様書ではなく「作業中のメモ」として扱う。旧称 `specs/`（PR88 で改名）。 |
 | notes-to-claude | `.work/notes/` の一時メモをルール・CLAUDE.md・references に昇格させる work-kit スキル（`/work-kit:notes-to-claude`）。確認フェーズなしで完全自動実行。claude-kit プラグインの creator スキルを内部で使用（PR90 で追加）。 |
 | 1行参照パターン | Stop フックの `reason` にファイルの全文を埋め込む代わりに `"Read and follow: /path/to/file.md"` の1行だけを出力するパターン。Claude 自身がファイルを読む方式のため会話セッションへの長文注入を防げる（PR89 で導入）。 |
-| pr-handoff | 現在のPRのTODO.mdに記録された「次PR候補」を元に、次のPRをwork-startと同じ流れで予約するスキル（`/work-kit:pr-handoff`）。各PRの背景情報をTODO.mdに記録して引き継ぎ品質を高める（PR91で追加）。 |
+| pr-handoff | 現在のPRのTODO.mdに記録された「次PR候補」を元に、次のPRをwork-startと同じ流れで予約するスキル（`/work-kit:pr-handoff`）。各PRの背景情報をTODO.mdに記録して引き継ぎ品質を高める（PR91で追加）。直列依存対応は PR95 で導入。 |
+| 実施条件 | TODO.md の `## 次PR候補` テーブルの3カラム目。各候補の依存関係を表す。空欄/`即時実施可` なら即時予約、`「{他候補}」が完了したら` のように同テーブル内候補に依存する場合は直列依存として扱う（PR95で追加）。 |
+| 直列依存 | 後続PRが先行PRのマージ完了後にしか実装できない依存関係。pr-handoff は直列依存の候補を一度に予約せず、先行PRの `## 次PR候補` に転記して連鎖的に引き継ぐ（PR95で導入）。 |
+| 即時予約対象 | pr-handoff Step 1 の分類。実施条件が空欄/即時実施可、または既マージ済みPRへの依存のみの候補。今回の pr-handoff 実行で `/work-kit:work-start` により実際に予約される（PR95で導入）。 |
+| 依存後続候補 | pr-handoff Step 1 の分類。実施条件が同じテーブル内の他候補に依存する候補。即時予約せず、依存先（即時予約対象）の新しいTODO.mdの `## 次PR候補` に転記される（PR95で導入）。 |
 | master 適合確認 | merge スキルの Step3。master がブランチ分岐後に進んでいた場合、直接・間接の関連変更を確認しタイブレーク順位に従って自律判断で適合させるステップ（PR92 で追加）。 |
 | 間接依存 | merge Step3 での検出対象。この PR が変更したファイルを呼び出している・インポートしている側が master で変更された場合の関係。`git diff --name-only` のファイル直接一致では検出できないため文脈判断が必要。 |
 | タイブレーク順位 | merge Step3 で判断が拮抗した場合の優先順位。新しさ → 影響範囲（blast radius）→ PR の目的 → 安全側（master 取り込み）の順（PR92 で定義）。 |
