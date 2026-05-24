@@ -8,7 +8,8 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/python-skill-dispatch.py",
+              "-c",
+              "import sys,json,pathlib,tempfile; d=json.loads(sys.stdin.read()); f=d.get('tool_input',{}).get('file_path','') or ''; sys.exit(0) if not f.endswith('.py') else None; sid=d.get('session_id','default'); flag=pathlib.Path(tempfile.gettempdir())/f'dev-kit-py-skill-{sid}'; sys.exit(0) if flag.exists() else None; flag.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/python-skill-dispatch.md"
             ]
           },
@@ -16,7 +17,8 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/yaml-skill-dispatch.py",
+              "-c",
+              "import sys,json,pathlib,tempfile; d=json.loads(sys.stdin.read()); f=d.get('tool_input',{}).get('file_path','') or ''; sys.exit(0) if not (f.endswith('.yaml') or f.endswith('.yml')) else None; sid=d.get('session_id','default'); flag=pathlib.Path(tempfile.gettempdir())/f'dev-kit-yaml-skill-{sid}'; sys.exit(0) if flag.exists() else None; flag.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/yaml-skill-dispatch.md"
             ]
           }
@@ -29,7 +31,8 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/python-skill-dispatch.py",
+              "-c",
+              "import sys,json,pathlib,tempfile; d=json.loads(sys.stdin.read()); f=d.get('tool_input',{}).get('file_path','') or ''; sys.exit(0) if not f.endswith('.py') else None; sid=d.get('session_id','default'); flag=pathlib.Path(tempfile.gettempdir())/f'dev-kit-py-skill-{sid}'; sys.exit(0) if flag.exists() else None; flag.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/python-skill-dispatch.md"
             ]
           },
@@ -37,7 +40,8 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/yaml-skill-dispatch.py",
+              "-c",
+              "import sys,json,pathlib,tempfile; d=json.loads(sys.stdin.read()); f=d.get('tool_input',{}).get('file_path','') or ''; sys.exit(0) if not (f.endswith('.yaml') or f.endswith('.yml')) else None; sid=d.get('session_id','default'); flag=pathlib.Path(tempfile.gettempdir())/f'dev-kit-yaml-skill-{sid}'; sys.exit(0) if flag.exists() else None; flag.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/yaml-skill-dispatch.md"
             ]
           }
