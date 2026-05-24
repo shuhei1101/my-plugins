@@ -216,9 +216,16 @@ The following rows are mandatory and must not be removed or skipped:
 | - | (Implementation tasks: replace with PR-specific work) |
 | - | Update rules / CLAUDE.md |
 
-Also fill in the `## 実施条件` section (between `## 概要` and `## 作業内容`):
+Also fill in the subsections under `## 概要` (between `## 概要` and `## 作業内容`):
+
+**`### 実施条件`**:
 - Write when this PR can be started: `即時実施可` or `「{other PR name}」が完了してから`
 - This mirrors the `実施条件` column from the `## 次PR候補` table of the triggering PR
+
+**`### 関連PR`**:
+- List PRs that are directly related to this one (predecessors, split siblings, follow-ups)
+- Use the table format: `| PR番号 | 概要 |` — one row per related PR
+- Leave the placeholder row if there are no related PRs
 
 Also fill in the `## 次PR候補` section at the bottom of TODO.md (columns: title / summary / 実施条件):
 - If the user mentioned follow-up work or future PRs during this session, list them here
