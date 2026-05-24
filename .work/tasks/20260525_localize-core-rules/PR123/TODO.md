@@ -19,11 +19,11 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | QA.md に未決定事項を記録する | - `.work/tasks/20260525_localize-core-rules/PR123/QA.md` |
-| x | `incidents.md` を全文英語化する | - `.claude/rules/core/incidents.md` |
-| x | `glossary.md` の説明列を英語化する | - `.claude/rules/core/glossary.md` |
-| x | JP ミラー `incidents.md` を更新し mark-generated を適用する | - `.claude/rules-jp/core/incidents.md` |
-| x | JP ミラー `glossary.md` を更新し mark-generated を適用する | - `.claude/rules-jp/core/glossary.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260525_localize-core-rules/PR123/QA.md` |
+| 済 | `incidents.md` を全文英語化する | - `.claude/rules/core/incidents.md` |
+| 済 | `glossary.md` の説明列を英語化する | - `.claude/rules/core/glossary.md` |
+| 済 | JP ミラー `incidents.md` を更新し mark-generated を適用する | - `.claude/rules-jp/core/incidents.md` |
+| 済 | JP ミラー `glossary.md` を更新し mark-generated を適用する | - `.claude/rules-jp/core/glossary.md` |
 
 ## 参考ドキュメント
 
