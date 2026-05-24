@@ -23,7 +23,7 @@ PR112 でインシデント判定基準を「PR作業内容 ≠ インシデン�
 |---|---|---|
 | 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260524_incident-criteria-and-jp-mirror-sync/PR114/QA.md` |
 | 済 | incidents.md の全エントリを精査し、PR作業内容のものを削除・修正 | - `.claude/rules/core/incidents.md`, `.claude/references/incidents/` |
-| - | 「PR作業内容そのもの」に該当する10エントリを削除（ユーザー確認済み） | - `.claude/rules/core/incidents.md`, `.claude/rules-jp/core/incidents.md`, `.claude/references/incidents/*.md` |
+| 済 | 「PR作業内容そのもの」に該当する10エントリを削除（ユーザー確認済み） | - `.claude/rules/core/incidents.md`, `.claude/rules-jp/core/incidents.md`, `.claude/references/incidents/*.md` |
 | 済 | glossary.md の全エントリを精査し、PR作業内容のものを削除・修正 | - `.claude/rules/core/glossary.md` |
 | 済 | rules-jp/core/incidents.md を英語版に同期 | - `.claude/rules-jp/core/incidents.md` |
 | 済 | rules-jp/core/glossary.md を英語版に同期 | - `.claude/rules-jp/core/glossary.md` |
