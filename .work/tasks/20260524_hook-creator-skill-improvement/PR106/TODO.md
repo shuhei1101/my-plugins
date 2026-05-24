@@ -22,12 +22,12 @@ hook-creator SKILL.md の 3 点を改善する:
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | UserPromptSubmit パターンを "Read and follow" 形式に変更 | `plugins/claude-kit/skills/hook-creator/SKILL.md` |
-| - | Plugin/Project パターンを統合（パス変数の差分のみ注記） | `plugins/claude-kit/skills/hook-creator/SKILL.md` |
-| - | 編集例（既存フックへの条件追加）を References に追加 | `plugins/claude-kit/skills/hook-creator/SKILL.md` |
-| - | SKILL.jp.md を同内容で更新 | `plugins/claude-kit/skills/hook-creator/SKILL.jp.md` |
-| - | claude-kit バージョンバンプ + changelog 追加 | `plugins/claude-kit/.claude-plugin/plugin.json` / `changelogs/` |
-| - | marketplace.json 更新 | `.claude-plugin/marketplace.json` |
+| 済 | UserPromptSubmit パターンを "Read and follow" 形式に変更 | `plugins/claude-kit/skills/hook-creator/SKILL.md` |
+| 済 | Plugin/Project パターンを統合（パス変数の差分のみ注記） | `plugins/claude-kit/skills/hook-creator/SKILL.md` |
+| 済 | 編集例（既存フックへの条件追加）を References に追加 | `plugins/claude-kit/skills/hook-creator/SKILL.md` |
+| 済 | SKILL.jp.md を同内容で更新 | `plugins/claude-kit/skills/hook-creator/SKILL.jp.md` |
+| 済 | claude-kit バージョンバンプ + changelog 追加 | `plugins/claude-kit/.claude-plugin/plugin.json` / `changelogs/` |
+| 済 | marketplace.json 更新 | `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
