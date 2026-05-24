@@ -357,12 +357,12 @@ git commit -m "docs: post-merge update for PR{N}"
 
 ---
 
-### Step 12: Present remaining reserved PRs in 3 categories
+### Step 12: Present next PR candidates in 3 categories
 
 #### Process
 
-Invoke `/work-kit:pr-show` to present the status table.
+Invoke `/work-kit:pr-show` passing the merged PR's `TODO.md` path as the data source.
 
 #### Notes
 
-Full logic (branch listing, commit counting, classification, Has conditions extraction) is defined in the `pr-show` skill.
+Full logic (reading `## 次PR候補` table, classifying each candidate, branch lookup by title) is defined in the `pr-show` skill.

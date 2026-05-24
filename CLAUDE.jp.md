@@ -35,23 +35,6 @@ my-plugins/
 
 ---
 
-## プラグイン作成・更新のルール
-
-プラグインのファイルを新規作成・編集するときは、**何を編集するかに応じて対応するクリエイタースキルを先に起動すること**。
-スキルを経由せずにファイルを直接作成・編集してはならない。
-
-| 作業内容 | 先に起動するスキル |
-|---|---|
-| プラグイン全体の作成・更新（`plugin.json`・`marketplace.json`・バージョン） | `/claude-kit:plugin-creator` |
-| スキルの作成・更新（`SKILL.md`・`SKILL.jp.md`） | `/claude-kit:skill-creator` |
-| フックの作成・更新（`hooks/` 以下） | `/claude-kit:hook-creator` |
-| `CLAUDE.md` の作成・更新 | `/claude-kit:claude-creator` |
-| ルールの作成・更新（`.claude/rules/` 以下） | `/claude-kit:rule-creator` |
-
-対象ファイルを開いたとき、対応するスキルが自動ロードされる（`.claude/rules/feature/creator-skill-dispatch.md` が管理）。
-
----
-
 ## 参考リンク
 
 | トピック | URL |
