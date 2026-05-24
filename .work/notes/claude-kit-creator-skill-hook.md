@@ -5,11 +5,13 @@ updates:
   - 2026-05-24 — 実装完了・未決事項を解決済みに更新
   - 2026-05-24 — PR110: 冗長ルール・CLAUDE.mdセクション削除
   - 2026-05-24 — PR121: UserPromptSubmit の限界を補う PreToolUse ブロック追加
+  - 2026-05-25 — PR124: dev-kit/ui-kit/work-kit から skill-creator-dispatch 重複削除
 related_specs: []
 related_prs:
   - PR103
   - PR110
   - PR121
+  - PR124
 ---
 
 # claude-kit creator-skill-hook — UserPromptSubmit フック設計メモ
@@ -63,3 +65,25 @@ Before editing this file, invoke the matching creator skill:
 | hook-creator-dispatch | `/hooks/`, `hooks.json` |
 | claude-creator-dispatch | `claude.md` |
 | plugin-creator-dispatch | `plugin.json`, `marketplace.json` |
+
+## 現行設計の限界と今後の改善計画
+
+### UserPromptSubmit の限界（PR121 で判明）
+
+- UserPromptSubmit はユーザーのプロンプト文字列のみを検査するため、Claude が内部的に
+  ツールを呼び出してファイルを編集する場面（スキル実行中など）では発火しない。
+- PreToolUse ブロック型（skill-creator-dispatch）は Claude のツール呼び出し前に発火するため、
+  この問題を回避できる。
+
+### PR121 の問題（PR124 で修正）
+
+- skill-creator-dispatch の PreToolUse フックを claude-kit/dev-kit/ui-kit/work-kit の
+  4プラグインに重複追加した。
+- claude-kit がインストール済みなら他プラグインにフックを持つ必要はない。
+- PR124 で dev-kit/ui-kit/work-kit から重複エントリ + prompts ファイルを削除し、claude-kit に集約。
+
+### 残課題（後続PR）
+
+- claude-kit の PreToolUse パターンが `/skills/[^/]+/SKILL\.md$` のみ → `SKILL.jp.md`、
+  `.claude/rules/*.md`、`CLAUDE.md` をカバーしていない。
+- PreToolUse でファイル編集を検知する仕組みの設計調査も必要。
