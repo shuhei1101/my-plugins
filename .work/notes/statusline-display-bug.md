@@ -48,6 +48,13 @@ myproject/ | [33mClaude Sonnet 4.6[0m | [32mctx 30%[0m (50k/200k)
 1. **settings.json から statusLine が消えていた**: 何らかの原因（autoUpdate 失敗など）で statusLine キーが削除された
 2. **別のセッションで apply-statusline.py が壊れたバージョンで実行された**: 可能性は低い（コマンドは正常動作確認済み）
 
-## 未解決事項
+## 結論
 
-QA-001・QA-002 参照。ユーザーによる確認が必要。
+**原因**: Claude Code の再起動忘れ。settings.json を更新後に再起動しないと反映されない。
+
+**対応**:
+1. 旧バージョン（3.21.1キャッシュ）で settings.json を一時復元 → 再起動で表示確認
+2. 新バージョン（リポジトリの apply-statusline.py）で settings.json を再適用
+3. 再起動後に緑色表示が確認できる想定
+
+**学習**: statusLine コマンド更新後は必ず Claude Code を再起動すること。
