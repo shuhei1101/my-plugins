@@ -51,14 +51,14 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
    - **Title**: short kebab-case label used in the folder name
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **TODO list**: what will be done this PR (becomes the checklist)
-   - **Spec**: does a related spec exist in `.work/specs/`? Or does one need to be created?
+   - **Note**: does a related note exist in `.work/notes/`? Or does one need to be created?
    - **Open questions**: anything unclear or undecided
 
 → Proceed to Step 3
 
 #### Output
 
-- Title, type, TODO list, spec info, and open questions confirmed
+- Title, type, TODO list, note info, and open questions confirmed
 
 ---
 
@@ -211,7 +211,7 @@ The following rows are mandatory and must not be removed or skipped:
 | Done | Task |
 |---|---|
 | - | Record open questions in QA.md |
-| - | Update the spec document in `.work/specs/` |
+| - | Update the note document in `.work/notes/` |
 | - | (Implementation tasks: replace with PR-specific work) |
 | - | Update rules / CLAUDE.md |
 
@@ -223,7 +223,7 @@ Also fill in the `## 次PR候補` section at the bottom of TODO.md:
 
 ---
 
-### Step 8: Maintain the spec document (inside worktree)
+### Step 8: Maintain the note document (inside worktree)
 
 #### Condition
 
@@ -231,10 +231,10 @@ Also fill in the `## 次PR候補` section at the bottom of TODO.md:
 
 #### Process
 
-1. Check `.work/specs/` inside the worktree for a related spec
+1. Check `.work/notes/` inside the worktree for a related note
 2. If found → update the relevant sections for this PR
-3. If not found → create a new spec using the template at `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`
-4. Add a link to the spec in TODO.md's `## 参考ドキュメント` section
+3. If not found → create a new note using the template at `${CLAUDE_PLUGIN_ROOT}/templates/note.md`
+4. Add a link to the note in TODO.md's `## 参考ドキュメント` section
 
 → Proceed to Step 9
 
@@ -260,7 +260,7 @@ Also fill in the `## 次PR候補` section at the bottom of TODO.md:
 #### Process
 
 1. Commit all created files inside the worktree (branch: `PR{N}/{type}/{title}`)
-2. Report what was created: branch name, worktree path, TODO.md path, spec path
+2. Report what was created: branch name, worktree path, TODO.md path, note path
 3. Start implementation:
    - **If QA entries exist** → ask the user for confirmation before starting
    - **If no QA entries** → proceed with implementation immediately
@@ -275,4 +275,4 @@ Also fill in the `## 次PR候補` section at the bottom of TODO.md:
 
 - Commit in meaningful units that are easy for the user to understand
 - Do not split commits too finely
-- Do not mix planning documents (TODO, specs, etc.) and implementation code in the same commit
+- Do not mix planning documents (TODO, notes, etc.) and implementation code in the same commit

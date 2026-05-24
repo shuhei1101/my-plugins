@@ -2,7 +2,7 @@
 name: setup
 description: |
   Initialize the work-kit document structure (.work/) in the current project by running the setup script.
-  Creates .work/tasks/, .work/specs/, and .work/QA.md from templates.
+  Creates .work/tasks/, .work/notes/, and .work/QA.md from templates.
   Manual invocation only — use /work-kit:setup.
 ---
 
@@ -15,7 +15,7 @@ Expanded structure:
 ```
 .work/
 ├── tasks/      # Task / PR folders (created dynamically by work-start)
-├── specs/      # Specification documents (empty initially)
+├── notes/      # Design notes and memos (empty initially)
 └── QA.md       # Open questions
 ```
 
@@ -57,5 +57,5 @@ python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/setup.py"
 ##### Checklist
 
 - [ ] `.work/tasks/` — exists
-- [ ] `.work/specs/` — exists
+- [ ] `.work/notes/` — exists
 - [ ] `.work/QA.md` — exists

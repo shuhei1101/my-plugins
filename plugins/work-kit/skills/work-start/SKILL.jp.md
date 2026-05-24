@@ -55,14 +55,14 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
    - **タイトル**: タスクフォルダ名に使う短い説明（kebab-case）
    - **タイプ**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **TODO リスト**: 今回やることのチェックリスト
-   - **関連仕様**: 対応する仕様書が `.work/specs/` にあるか、新規作成か
+   - **関連ノート**: 対応するノートが `.work/notes/` にあるか、新規作成か
    - **不明点**: 決まっていないことがあれば
 
 → ステップ3へ進む
 
 #### 出力
 
-- タイトル・タイプ・TODO・仕様情報・不明点が確定している
+- タイトル・タイプ・TODO・ノート情報・不明点が確定している
 
 ---
 
@@ -216,7 +216,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 | 完了 | 作業内容 |
 |---|---|
 | - | QA.md に未決定事項を記録する |
-| - | `.work/specs/` の仕様書を更新する |
+| - | `.work/notes/` のノートを更新する |
 | - | （実装タスク: PR 固有の作業内容に書き換える） |
 | - | ルール・CLAUDE.md を整備する |
 
@@ -224,7 +224,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 ---
 
-### ステップ8: 仕様書を整備する（ワークツリー内）
+### ステップ8: ノートを整備する（ワークツリー内）
 
 #### 条件
 
@@ -232,10 +232,10 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### 処理内容
 
-1. ワークツリー内の `.work/specs/` を確認する
-2. 関連する仕様書が存在する場合 → 今回の変更に関わる箇所を更新する
-3. 存在しない場合 → テンプレート（`${CLAUDE_PLUGIN_ROOT}/templates/spec.md` 参照）を元に新規作成する
-4. TODO.md の「参考ドキュメント」セクションに仕様書へのリンクを追記する
+1. ワークツリー内の `.work/notes/` を確認する
+2. 関連するノートが存在する場合 → 今回の変更に関わる箇所を更新する
+3. 存在しない場合 → テンプレート（`${CLAUDE_PLUGIN_ROOT}/templates/note.md` 参照）を元に新規作成する
+4. TODO.md の「参考ドキュメント」セクションにノートへのリンクを追記する
 
 → ステップ9へ進む
 
@@ -262,7 +262,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 1. ワークツリー内の作成ファイルをすべてコミットする（ブランチ: `PR{N}/{type}/{title}`）
 2. 作成した内容を報告する:
-   - ブランチ名・ワークツリーパス・TODO.md パス・仕様書パス
+   - ブランチ名・ワークツリーパス・TODO.md パス・ノートパス
 3. 実装を開始する:
    - **QA がある場合** → ユーザーに確認を求めてから実装を開始する
    - **QA がない場合** → そのまま実装を開始する

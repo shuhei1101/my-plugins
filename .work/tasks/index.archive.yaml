@@ -90,3 +90,10 @@ prs:
   summary: merge SKILL.md にマージ禁止文を強化追記
   task: 20260524_merge-skill-no-auto-merge
   completed: true
+- id: 88
+  title: PR88 — rename specs to notes
+  type: refactor
+  tags: []
+  summary: .work/specs/ フォルダを notes/ にリネームし、全参照箇所を更新する
+  task: 20260524_rename-specs-to-notes
+  completed: true
