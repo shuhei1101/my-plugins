@@ -40,6 +40,30 @@ HTML コメント形式で埋め込む。これにより:
 - **他プラグインから参照可能**: `claude-kit:` namespace で呼べるため work-kit / worktree-kit などからも利用可能
 - **references/ にしない理由**: references/ はバージョン別キャッシュフォルダに配置されるため、他プラグインからの絶対パス参照が壊れやすい
 
+### 適用対象スキル（creator 以外も含む）
+
+「**固定の構造を持つ生成物**を作るスキル全般」が対象。動的な実装コードや一回限りのモック生成は対象外。
+
+| プラグイン | スキル | 生成物 | 対象 |
+|---|---|---|---|
+| claude-kit | skill-creator | SKILL.md / SKILL.jp.md | ◯ |
+| claude-kit | hook-creator | hooks/*.py / hooks.json | ◯ (py のみ) |
+| claude-kit | rule-creator | .claude/rules/**/*.md | ◯ |
+| claude-kit | claude-creator | CLAUDE.md / CLAUDE.jp.md | ◯ |
+| claude-kit | plugin-creator | changelogs/*.md | ◯ |
+| work-kit | work-start | TODO.md / QA.md / spec / notes | ◯ |
+| work-kit | pr-handoff | 次PR の TODO.md / QA.md | ◯ |
+| work-kit | conversation-to-claude | rule / skill / CLAUDE.md / incident | △ (creator 経由なら不要) |
+| work-kit | setup | テンプレ全般 | ◯ |
+| ui-kit | mock | モック HTML | × (動的生成のため対象外) |
+| ui-kit | implement | 実装コード | × (同上) |
+
+**判断基準**:
+- テンプレートから派生する固定構造の生成物 → 対象
+- ユーザーごとに動的に作られる実装物 → 対象外
+
+二重適用回避: creator スキル経由で生成しているスキル（例: conversation-to-claude が rule-creator を呼ぶ場合）は、上位スキル側ではメタデータ付与をスキップし、creator 側に一任する。
+
 ### `mark-generated` スキルの責務
 
 1. ファイル種別（拡張子・パス）を引数で受け取る

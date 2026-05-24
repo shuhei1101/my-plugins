@@ -27,8 +27,12 @@ JP ミラーには加えて「これは日本語ミラーです。SKILL.md を�
 | - | claude-kit/rule-creator に同上ステップ追加 | - `plugins/claude-kit/skills/rule-creator/SKILL.md` |
 | - | claude-kit/claude-creator に同上ステップ追加 | - `plugins/claude-kit/skills/claude-creator/SKILL.md` |
 | - | claude-kit/plugin-creator に同上ステップ追加（changelogs/ への適用） | - `plugins/claude-kit/skills/plugin-creator/SKILL.md` |
-| - | work-kit/work-start に同上ステップ追加（TODO.md / QA.md などテンプレ生成時） | - `plugins/work-kit/skills/work-start/SKILL.md` |
-| - | 他プラグインで生成系スキルを洗い出し、必要なら mark-generated 呼び出しを追加 | - `plugins/{worktree-kit,dev-kit,guard-kit,ui-kit}/**/SKILL.md` |
+| - | 全プラグインの固定生成物を作るスキルを洗い出し（creator 系以外も対象: work-start / pr-handoff / conversation-to-claude / setup スクリプト等） | - 全プラグイン横断調査 |
+| - | work-kit/work-start に mark-generated 呼び出しステップ追加（TODO.md / QA.md / spec / notes 生成時） | - `plugins/work-kit/skills/work-start/SKILL.md` |
+| - | work-kit/pr-handoff に同上ステップ追加（次PR テンプレ生成時） | - `plugins/work-kit/skills/pr-handoff/SKILL.md` |
+| - | conversation-to-claude に同上ステップ追加（rule/skill/claude.md 生成時。creator 呼び出し済みなら二重適用しない） | - `plugins/work-kit/skills/conversation-to-claude/SKILL.md` |
+| - | work-kit:setup などスクリプト系の生成物にもメタデータが入るよう手当て | - `plugins/work-kit/skills/setup/**` |
+| - | 他プラグインで該当スキルが見つかった場合 mark-generated 呼び出しを追加 | - `plugins/{worktree-kit,dev-kit,guard-kit,ui-kit}/**/SKILL.md` |
 | - | claude-kit に version-sync スキルを新規追加（完全自動: 生成物検出→差分反映→コミット） | - `plugins/claude-kit/skills/version-sync/SKILL.md` |
 | - | 既存生成物（全プラグイン）に遡及的にメタデータを書く | - `plugins/{claude-kit,work-kit,worktree-kit,dev-kit,guard-kit,ui-kit}/**` |
 | - | claude-kit のバージョンを bump（MINOR: 機能追加） | - `plugins/claude-kit/.claude-plugin/plugin.json` |
