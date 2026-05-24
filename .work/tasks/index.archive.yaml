@@ -154,3 +154,11 @@ prs:
   summary: mark-generated に HTML/JS/CSS 記法を追加し、ui-kit テンプレ全体を遡及スタンプ対象に含める
   task: 20260524_mark-generated-html-js-css
   completed: true
+- id: 98
+  title: PR98 — mark-generated に英語版ミラー警告を追加
+  type: feat
+  tags: []
+  summary: mark-generated が英語版（SKILL.md/CLAUDE.md/ルール等）にも JP ミラーとの相互参照コメントを返すよう拡張し、既存
+    JP/EN ペアにも遡及適用。skill-jp-mirror-sync.md との役割重複を整理する
+  task: 20260524_mark-generated-en-mirror-warning
+  completed: true
