@@ -8,3 +8,18 @@ When designing skills in this plugin:
 - **Do not load other skills in a Step 0.** Reading multiple skills at startup consumes 2500 × N tokens per invocation and bloats the context.
 - **Embed judgment criteria directly in the skill** — put selection logic, type distinctions, and decision rules in a `## References` section inside the skill itself. The skill should be self-contained.
 - This pattern was established in `conversation-to-claude` (PR68): creator skill knowledge was moved from a Step 0 read into inline References.
+
+## Hook Design: File-Type Guards
+
+When a hook should enforce "use creator skill X before editing file type Y":
+
+- **Use `PreToolUse` (Edit + Write), NOT `UserPromptSubmit`.**
+  `UserPromptSubmit` only scans the user's input text. If the user sends a vague prompt and Claude autonomously decides to edit the file, the hook never fires.
+  `PreToolUse` fires unconditionally whenever Claude attempts an Edit or Write — regardless of what the user typed.
+
+- **Use a session flag** (`/tmp/{hook-name}-{session_id}`) so the block fires only once per session.
+  After the user has acknowledged the block and gone through the creator skill, subsequent edits in the same session are allowed (the flag exists → `sys.exit(0)`).
+
+- `UserPromptSubmit` dispatch is still useful as an **early warning** ("heads up, you mentioned a skill file") but must not be the sole enforcement.
+
+This pattern is used by `skill-creator-dispatch` (claude-kit/dev-kit/ui-kit/work-kit) and by `python-skill-dispatch` / `yaml-skill-dispatch` (dev-kit).
