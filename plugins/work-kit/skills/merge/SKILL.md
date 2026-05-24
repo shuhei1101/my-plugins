@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 # work-kit:merge — Merge a PR
 
-Runs the full merge flow: TODO checklist verification → master compatibility check → conversation-to-claude (if claude-kit installed) → index archive → `--no-ff` merge → worktree cleanup → QA doc sync.
+Runs the full merge flow: TODO checklist verification → master compatibility check → conversation-to-claude inside the worktree (if claude-kit installed) → index archive → `--no-ff` merge → worktree cleanup → QA doc sync → auto-invoke pr-handoff for any next PR candidates.
 
 ---
 
@@ -150,7 +150,7 @@ git merge master
 
 ---
 
-### Step 4: Run conversation-to-claude (if claude-kit is installed)
+### Step 4: Run conversation-to-claude **inside the worktree** (if claude-kit is installed)
 
 #### Condition
 
@@ -159,8 +159,28 @@ git merge master
 #### Process
 
 1. Check whether `/claude-kit:conversation-to-claude` appears in the current session's available skill list
-2. If available → invoke `/claude-kit:conversation-to-claude` and wait for it to complete
-3. If not available → skip this step silently
+2. If not available → skip this step silently → proceed to Step 5
+3. If available → **change to the worktree directory first**, then invoke the skill:
+
+```bash
+cd ../$(basename $(pwd))-wt-PR{N}
+```
+
+   Then invoke `/claude-kit:conversation-to-claude` and wait for it to complete.
+
+4. After completion, ensure that any `.claude/` files generated (rules / references / glossary) are
+   committed to the PR branch. If they were not already committed by the skill, commit them now inside the worktree:
+
+```bash
+git -C ../$(basename $(pwd))-wt-PR{N} add .claude/
+git -C ../$(basename $(pwd))-wt-PR{N} commit -m "docs: conversation-to-claude artifacts #PR{N}"
+```
+
+5. Return to the main repository directory:
+
+```bash
+cd -
+```
 
 → Proceed to Step 5
 
@@ -168,6 +188,17 @@ git merge master
 
 - This step captures session knowledge before the branch is deleted
 - Do not skip even if the conversation seems short — let the skill decide what to persist
+
+##### Why run inside the worktree
+
+Running `conversation-to-claude` from the main repo (master) cwd writes `.claude/` files directly to master.
+Those changes are then committed straight to master, separate from the PR's `--no-ff` merge.
+The result is that "PR work" and "session knowledge" become scattered across separate commits.
+Running inside the worktree includes them in the PR branch so the merge commit captures everything together.
+
+##### Prohibitions
+
+- Do not run `conversation-to-claude` from the master cwd (causes direct master commits)
 
 ---
 
@@ -302,15 +333,24 @@ git commit -m "docs: post-merge update for PR{N}"
 
 ---
 
-### Step 10: Report completion
+### Step 10: Report completion and reserve next PRs
 
 #### Process
 
 1. Report merge complete to the user
-2. Read the merged PR's `TODO.md` and present the contents of the `## 次PR候補` section as recommended next PRs
-3. List any remaining in-progress PRs under `.work/tasks/`
+2. Read the merged PR's `TODO.md` and inspect the `## 次PR候補` section
+3. **If next PR candidates exist**: automatically invoke `/work-kit:pr-handoff` to reserve all candidates (no user confirmation needed)
+4. **If next PR candidates are empty** (placeholder rows like `{次にやること}` only): skip pr-handoff
+5. List any remaining in-progress PRs under `.work/tasks/`
 
 #### Notes
+
+##### How to detect "no candidates"
+
+Skip pr-handoff if any of the following holds:
+- The `## 次PR候補` section is missing
+- The table has only placeholder rows containing `{...}` (e.g. `{次にやること}`)
+- The table has only header and separator rows, no data rows
 
 ##### Checklist
 
@@ -318,3 +358,4 @@ git commit -m "docs: post-merge update for PR{N}"
 - [ ] Worktree and branch deleted
 - [ ] QA.md reviewed and updated
 - [ ] index.archive.yaml committed to the PR branch and included in the merge (if completed entries existed)
+- [ ] Next PR candidates reserved via pr-handoff (if any existed)
