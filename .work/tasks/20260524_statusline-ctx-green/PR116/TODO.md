@@ -19,12 +19,12 @@ ctx 使用率が 50% 未満のときにも緑色でステータスラインに�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260524_statusline-ctx-green/PR116/QA.md` |
-| - | `apply-statusline.py` の ctx_color ロジックに緑色条件を追加 | - `plugins/claude-kit/scripts/apply-statusline.py` |
-| - | SKILL.md の ctx 色分け説明を更新 | - `plugins/claude-kit/skills/statusline-setup/SKILL.md` |
-| - | SKILL.jp.md の対応箇所を更新 | - `plugins/claude-kit/skills/statusline-setup/SKILL.jp.md` |
-| - | キャッシュ済みスクリプトにも同じ変更を適用 | - キャッシュパス |
-| - | 設定を `settings.json` に適用（スクリプト実行） | - `~/.claude/settings.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260524_statusline-ctx-green/PR116/QA.md` |
+| 済 | `apply-statusline.py` の ctx_color ロジックに緑色条件を追加 | - `plugins/claude-kit/scripts/apply-statusline.py` |
+| 済 | SKILL.md の ctx 色分け説明を更新 | - `plugins/claude-kit/skills/statusline-setup/SKILL.md` |
+| 済 | SKILL.jp.md の対応箇所を更新 | - `plugins/claude-kit/skills/statusline-setup/SKILL.jp.md` |
+| 済 | キャッシュ済みスクリプトにも同じ変更を適用 | - キャッシュパス |
+| 済 | 設定を `settings.json` に適用（スクリプト実行） | - `~/.claude/settings.json` |
 
 ## 参考ドキュメント
 
