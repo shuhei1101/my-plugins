@@ -338,27 +338,7 @@ git commit -m "docs: post-merge update for PR{N}"
 #### Process
 
 1. Report merge complete to the user
-2. Read the merged PR's `TODO.md` and inspect the `## 次PR候補` section (columns: title / summary / 実施条件)
-3. **If next PR candidates exist**: automatically invoke `/work-kit:pr-handoff` (no user confirmation needed). pr-handoff classifies each candidate by its `実施条件` column and:
-   - Reserves only **immediately reservable** candidates (実施条件 is empty / `-` / `即時実施可`, or depends on an already-merged PR)
-   - Transcribes **dependent successor** candidates (those depending on another candidate in the same table, e.g. `「{other candidate}」が完了したら`) into the reserved preceding PR's `## 次PR候補`, so the chain is carried forward
-4. **If next PR candidates are empty** (placeholder rows like `{次にやること}` only): skip pr-handoff
+2. Read the merged PR's `TODO.md` and inspect the `## 次PR候補` section
+3. **If next PR candidates exist**: invoke `/work-kit:pr-handoff` (no user confirmation needed). Delegate all classification and reservation logic to that skill
+4. **If next PR candidates are empty**: skip pr-handoff
 5. List any remaining in-progress PRs under `.work/tasks/`
-
-#### Notes
-
-##### How to detect "no candidates"
-
-Skip pr-handoff if any of the following holds:
-- The `## 次PR候補` section is missing
-- The table has only placeholder rows containing `{...}` (e.g. `{次にやること}`)
-- The table has only header and separator rows, no data rows
-
-##### Checklist
-
-- [ ] Merge commit exists
-- [ ] Worktree and branch deleted
-- [ ] QA.md reviewed and updated
-- [ ] index.archive.yaml committed to the PR branch and included in the merge (if completed entries existed)
-- [ ] Immediately reservable next PR candidates reserved via pr-handoff (if any existed)
-- [ ] Dependent successor candidates transcribed into the reserved preceding PR's `## 次PR候補` (if any existed)
