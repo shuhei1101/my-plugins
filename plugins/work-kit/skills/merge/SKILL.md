@@ -375,43 +375,42 @@ git branch --list 'PR*' --format='%(refname:short)'
 git log master..{branch} --oneline | wc -l
 ```
 
-3. Classify each branch by commit count into 🟢 or 🟡:
+3. Classify each branch by commit count:
 
    | Category | Criterion | Meaning |
    |---|---|---|
-   | 🟢 **Ready to start** | commits ≤ 1 | Just reserved, no implementation work yet |
-   | 🟡 **In progress elsewhere** | commits ≥ 2 | Another session is working on this — do not touch from this session |
+   | Ready to start | commits ≤ 1 | Just reserved, no implementation work yet |
+   | In progress elsewhere | commits ≥ 2 | Another session is working on this — do not touch from this session |
 
-4. Extract 🔴 **Has conditions / cannot start yet**:
+4. Extract **Has conditions / cannot start yet**:
    - Re-read the merged PR's `## 次PR候補` table
    - Find rows where column 3 (実施条件) is neither blank nor `即時実施可` — i.e. it references another candidate in the same table, such as `「{other-candidate}」が完了したら`
    - These are 依存後続候補 — candidates that pr-handoff intentionally did not reserve yet
 
-5. Present all three categories using this format:
+5. Present all three categories using this table format:
 
    ```markdown
    ## Next PRs you can pick up
 
-   ### 🟢 Ready to start (reserved, not yet implemented)
-   - PR{N} — {title} (branch: {branch})
-
-   ### 🟡 In progress in another session
-   - PR{N} — {title} ({commit_count} commits ahead)
-
-   ### 🔴 Has conditions / cannot start yet
-   - {title} — condition: depends on `{other-candidate}` being completed
+   | Category | PR | Summary |
+   |---|---|---|
+   | Ready to start | PR{N} | {title} (branch: {branch}) |
+   |  | PR{M} | {title} (branch: {branch}) |
+   | In progress elsewhere | PR{N} | {title} ({commit_count} commits ahead) |
+   | Has conditions | PR{N} | {title} — condition: depends on `{other-candidate}` being completed |
    ```
 
-   - Omit any section heading whose list is empty
+   - When multiple PRs share the same category, write the category name only in the first row; leave the cell empty for subsequent rows
+   - Omit rows for categories with no items
    - If all three categories are empty, show a single line: "No other reserved PRs remain."
 
 #### Notes
 
 ##### Classification knowledge
 
-- **🟢 Ready to start**: state immediately after pr-handoff reservation. The branch has just the TODO.md creation commit (1 commit) ahead of master.
-- **🟡 In progress elsewhere**: another Claude Code session has implementation commits on this branch. Two or more commits is a strong signal the user is working there.
-- **🔴 Has conditions**: a candidate that pr-handoff classified as [[glossary#依存後続候補]] and chose not to reserve. It becomes eligible once its predecessor PR merges.
+- **Ready to start**: state immediately after pr-handoff reservation. The branch has just the TODO.md creation commit (1 commit) ahead of master.
+- **In progress elsewhere**: another Claude Code session has implementation commits on this branch. Two or more commits is a strong signal the user is working there.
+- **Has conditions**: a candidate that pr-handoff classified as [[glossary#依存後続候補]] and chose not to reserve. It becomes eligible once its predecessor PR merges.
 
 ##### Why keep "in progress" visible
 

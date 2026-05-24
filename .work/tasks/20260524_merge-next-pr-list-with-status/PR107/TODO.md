@@ -19,11 +19,11 @@ merge スキル Step 12 の次PR一覧出力を、箇条書き形式から3列�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260524_merge-next-pr-list-with-status/PR107/QA.md` |
-| - | `.work/notes/` のノートを更新する | - `.work/notes/merge-next-pr-list.md` |
-| - | merge SKILL.md Step 12 の出力フォーマットをテーブル形式に変更 | - `plugins/work-kit/skills/merge/SKILL.md` |
-| - | SKILL.jp.md も同内容に更新 | - `plugins/work-kit/skills/merge/SKILL.jp.md` |
-| - | plugin.json / marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260524_merge-next-pr-list-with-status/PR107/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/merge-next-pr-list.md` |
+| 済 | merge SKILL.md Step 12 の出力フォーマットをテーブル形式に変更 | - `plugins/work-kit/skills/merge/SKILL.md` |
+| 済 | SKILL.jp.md も同内容に更新 | - `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| 済 | plugin.json / marketplace.json のバージョンを bump | - `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
