@@ -327,3 +327,11 @@ prs:
   summary: incidents.md・glossary.md の英語本体を全文英語化し、JP ミラーに mark-generated 記法を適用
   task: 20260525_localize-core-rules
   completed: true
+- id: 124
+  title: PR124 — fix-skill-creator-dispatch-dedup
+  type: fix
+  tags: []
+  summary: dev-kit/ui-kit/work-kit から skill-creator-dispatch の重複 PreToolUse エントリを削除し
+    claude-kit に集約
+  task: 20260525_fix-skill-creator-dispatch-dedup
+  completed: true
