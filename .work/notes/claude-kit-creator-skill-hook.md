@@ -2,6 +2,7 @@
 created_at: 2026-05-24
 updates:
   - 2026-05-24 — 初版作成
+  - 2026-05-24 — 実装完了・未決事項を解決済みに更新
 related_specs: []
 related_prs:
   - PR103
@@ -42,7 +43,19 @@ Before editing this file, invoke the matching creator skill:
 - plugin.json / marketplace.json → /claude-kit:plugin-creator
 ```
 
-## 未決事項
+## 実装結果
 
-- フックのトリガー精度: 誤検知を避けるにはどこまでパターンを絞るか
-- 既存ルール `creator-skill-dispatch.md` の扱い: フック追加後に削除or残存させるか
+- **フック形式**: インライン `-c` 形式（Pythonスクリプトファイル不要）
+- **トリガー精度**: ファイルパス・ファイル名キーワードマッチング
+- **既存ルール**: `.claude/rules/feature/creator-skill-dispatch.md` を削除（フックで完全代替）
+- **バージョン**: claude-kit 3.19.1 → 3.20.0（MINOR バンプ）
+
+## キーワードマッチング仕様
+
+| フック | 検知キーワード |
+|---|---|
+| skill-creator-dispatch | `skill.md`, `skill.jp.md`, `/skills/` |
+| rule-creator-dispatch | `.claude/rules/`, `rules/` |
+| hook-creator-dispatch | `/hooks/`, `hooks.json` |
+| claude-creator-dispatch | `claude.md` |
+| plugin-creator-dispatch | `plugin.json`, `marketplace.json` |
