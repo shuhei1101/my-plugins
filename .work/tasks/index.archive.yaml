@@ -256,3 +256,10 @@ prs:
   summary: merge SKILL.md の冗長な禁止事項を削除し、最新メッセージ起動条件のみ残す
   task: 20260524_merge-skill-cleanup
   completed: true
+- id: 115
+  title: PR115 — hook-revert-direct-reason
+  type: fix
+  tags: []
+  summary: '"Read and follow:" パターンを廃止し、フック reason/stdout に直接コンテンツを埋め込む方式に戻す'
+  task: 20260524_hook-revert-direct-reason
+  completed: true
