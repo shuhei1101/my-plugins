@@ -20,22 +20,22 @@ claude-kit の skill-creator-dispatch フックが UserPromptSubmit のみで実
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260524_skill-creator-dispatch-pretooluse/PR121/QA.md` |
-| - | `.work/notes/` のノートを更新する | `.work/notes/hook-design.md` |
-| - | claude-kit: PreToolUse SKILL.md ブロックフックを hooks.json に追加 | `plugins/claude-kit/hooks/hooks.json` |
-| - | claude-kit: skill-creator-dispatch.md を PreToolUse 向けに更新 | `plugins/claude-kit/hooks/prompts/skill-creator-dispatch.md` |
-| - | claude-kit: skill-creator-dispatch.jp.md を更新 | `plugins/claude-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
-| - | dev-kit: hooks.json の PreToolUse に SKILL.md ブロックを追加 | `plugins/dev-kit/hooks/hooks.json` |
-| - | dev-kit: skill-creator-dispatch.md を新規作成 | `plugins/dev-kit/hooks/prompts/skill-creator-dispatch.md` |
-| - | dev-kit: skill-creator-dispatch.jp.md を新規作成 | `plugins/dev-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
-| - | ui-kit: hooks.json に PreToolUse セクションを新規追加 | `plugins/ui-kit/hooks/hooks.json` |
-| - | ui-kit: skill-creator-dispatch.md を新規作成 | `plugins/ui-kit/hooks/prompts/skill-creator-dispatch.md` |
-| - | ui-kit: skill-creator-dispatch.jp.md を新規作成 | `plugins/ui-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
-| - | work-kit: hooks.json に Edit/Write PreToolUse を追加 | `plugins/work-kit/hooks/hooks.json` |
-| - | work-kit: skill-creator-dispatch.md を新規作成 | `plugins/work-kit/hooks/prompts/skill-creator-dispatch.md` |
-| - | work-kit: skill-creator-dispatch.jp.md を新規作成 | `plugins/work-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
-| - | 各プラグイン plugin.json / marketplace.json バージョンバンプ | `plugins/*/. claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | incidents に今回修正した問題を記録する | `.claude/rules/core/incidents.md` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/20260524_skill-creator-dispatch-pretooluse/PR121/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | `.work/notes/claude-kit-creator-skill-hook.md` |
+| 済 | claude-kit: PreToolUse SKILL.md ブロックフックを hooks.json に追加 | `plugins/claude-kit/hooks/hooks.json` |
+| 済 | claude-kit: skill-creator-dispatch.md を PreToolUse 向けに更新 | `plugins/claude-kit/hooks/prompts/skill-creator-dispatch.md` |
+| 済 | claude-kit: skill-creator-dispatch.jp.md を更新 | `plugins/claude-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
+| 済 | dev-kit: hooks.json の PreToolUse に SKILL.md ブロックを追加 | `plugins/dev-kit/hooks/hooks.json` |
+| 済 | dev-kit: skill-creator-dispatch.md を新規作成 | `plugins/dev-kit/hooks/prompts/skill-creator-dispatch.md` |
+| 済 | dev-kit: skill-creator-dispatch.jp.md を新規作成 | `plugins/dev-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
+| 済 | ui-kit: hooks.json に PreToolUse セクションを新規追加 | `plugins/ui-kit/hooks/hooks.json` |
+| 済 | ui-kit: skill-creator-dispatch.md を新規作成 | `plugins/ui-kit/hooks/prompts/skill-creator-dispatch.md` |
+| 済 | ui-kit: skill-creator-dispatch.jp.md を新規作成 | `plugins/ui-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
+| 済 | work-kit: hooks.json に Edit/Write PreToolUse を追加 | `plugins/work-kit/hooks/hooks.json` |
+| 済 | work-kit: skill-creator-dispatch.md を新規作成 | `plugins/work-kit/hooks/prompts/skill-creator-dispatch.md` |
+| 済 | work-kit: skill-creator-dispatch.jp.md を新規作成 | `plugins/work-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
+| 済 | 各プラグイン plugin.json / marketplace.json バージョンバンプ | `plugins/*/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | incidents に今回修正した問題を記録する | `.claude/rules/core/incidents.md` |
 
 ## 参考ドキュメント
 
