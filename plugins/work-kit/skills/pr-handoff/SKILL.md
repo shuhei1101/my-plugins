@@ -1,30 +1,32 @@
 ---
 name: pr-handoff
 description: |
-  Generate a handoff brief for the next session and output it inside the conversation.
-  Trigger when the user says "引き継ぎ書を作って", "次のPRの指示書を作って", "ハンドオフして",
+  Reserve the next PR using the same flow as work-start, after the current PR is complete.
+  Reads the "Next PR candidates" section from the current TODO.md to determine what to work on,
+  then records relevant background context in the new TODO.md.
+  Trigger when the user says "引き継ぎ書を作って", "次のPRをセットアップして", "ハンドオフして",
   "handoff して", "pr-handoff して", or calls `/work-kit:pr-handoff` explicitly.
 ---
 
-# work-kit:pr-handoff — Generate Handoff Brief
+# work-kit:pr-handoff — Reserve the Next PR with Context
 
-Analyzes the current session's work and outputs a handoff brief as a code block
-so the user can paste it into the next fresh-context session.
+Reads the "Next PR candidates" from the current PR's TODO.md and runs the same flow
+as `work-start` to create the branch and work folder. Records relevant background
+context in the new TODO.md to improve handoff quality.
 
 ---
 
 ## Overview
 
-After finishing a PR, any remaining work exists — but the next session's Claude
-has zero context about what was done. This skill generates a brief that covers
-"what happened" and "what to do next", output as a markdown code block
-for easy copy-paste into the next session.
+After a PR is complete, the next session's Claude has zero context about what was done.
+This skill runs the work-start reservation flow while writing background information
+(why this PR is needed, decisions made in the previous PR) into the new TODO.md.
 
 ---
 
 ## Tasks
 
-### Step 1: Confirm the target PR
+### Step 1: Confirm the next PR candidate
 
 #### Condition
 
@@ -32,25 +34,25 @@ for easy copy-paste into the next session.
 
 #### Process
 
-1. If the user has already specified the next PR number and title, use those values
-2. Otherwise:
-   - Read `index.yaml` and list entries with `completed: false`
-   - Ask the user: "Which PR should I hand off to?"
-
-3. If a TODO.md exists for the target PR, read it to understand the work:
+1. Read the current PR's TODO.md:
    ```
    .work/tasks/{task_folder}/PR{N}/TODO.md
    ```
+
+2. Check the `## 次PR候補` section:
+   - One candidate → use that title and summary
+   - Multiple candidates → ask the user: "Which PR do you want to start?"
+   - No candidates (placeholder text) → ask the user for the next PR details
 
 → Proceed to Step 2
 
 #### Output
 
-- Target PR number, title, and TODO content (if any) confirmed
+- Next PR title and summary confirmed
 
 ---
 
-### Step 2: Summarize current session work
+### Step 2: Extract relevant background context
 
 #### Condition
 
@@ -58,25 +60,30 @@ for easy copy-paste into the next session.
 
 #### Process
 
-1. Review the current conversation and summarize the main work done in this session:
-   - PR number and title worked on
-   - Key changes made (what changed and how)
-   - Important design decisions or conclusions
+1. Review the current conversation and select only the work **directly related** to the next PR:
+   - Why this next PR is needed
+   - Design decisions or constraints decided in the current PR
+   - Implementation notes that affect the next PR
 
-2. If a TODO.md exists for the current PR, read it to check which rows are marked done:
-   ```
-   .work/tasks/{task_folder}/PR{N}/TODO.md
-   ```
+2. Skip anything unrelated to the next PR (other PRs, unrelated feature changes, etc.)
 
 → Proceed to Step 3
 
 #### Output
 
-- Summary of current session work is ready
+- Background context relevant to the next PR (short bullet list)
+
+#### Notes
+
+##### What to focus on
+
+- Do not summarize the entire session — only extract what matters for the next PR
+- The "why" and "we decided X in the last PR" relationships are what count
+- If there is no relevant context, skip this step
 
 ---
 
-### Step 3: Output handoff brief as a code block
+### Step 3: Call work-start to reserve the next PR
 
 #### Condition
 
@@ -84,68 +91,23 @@ for easy copy-paste into the next session.
 
 #### Process
 
-1. Compose a markdown handoff brief using the structure below
-2. Output it inside the conversation as a code block (` ```markdown `) — do not write to a file
+1. Invoke `/work-kit:work-start` with the title and type confirmed in Step 1
 
-**Handoff brief structure:**
-
-```
-# Handoff Brief — PR{N}: {Title}
-
-## Background
-
-In this session, the following work was done on {repository name}:
-
-### Completed work
-- {PR number}: {Title} — {Summary of main changes}
-
-### Key decisions
-- {Design decisions or context worth carrying forward, if any}
-
----
-
-## What to do next
-
-**PR{N}: {Title}**
-
-### Request
-
-{TODO.md task list or description of the work}
-
-### Suggested steps
-
-1. Run `/work-kit:work-start` to start work on PR{N}
-2. {Specific implementation steps, if any}
-
-### Reference files
-
-- `.work/tasks/{task_folder}/PR{N}/TODO.md`: task checklist
-- {Other relevant files}
-
----
-
-## Notes
-
-- {Any repo-specific constraints or rules worth flagging}
-- Read `CLAUDE.md` first — it contains project-wide rules
-```
+2. During work-start's TODO.md fill-in step (Step 7), append the following to `## 概要`:
+   - Background context from Step 2
+   - "Why this PR is needed" and "relationship to the previous PR"
 
 → Done
 
 #### Output
 
-- Handoff brief output as a code block in the conversation
+- Next PR branch and work folder created
+- TODO.md contains background context
 
 #### Notes
 
-##### Output format
+##### Difference from work-start
 
-- Do not write to a file — output inline in the conversation only
-- Code block format lets the user copy it with Claude Code's copy command
-- The user opens a new session and pastes the copied content as the first message
-
-##### Output quality
-
-- Make "what to do next" concrete and actionable
-- Include the "why" (background context) to improve handoff quality
-- Go beyond the TODO.md — include key constraints and context surfaced during this session
+The only difference from a plain `work-start` is this:  
+**The `## 概要` section of TODO.md is pre-filled with background context.**  
+Everything else (branch creation, folder creation, QA.md) follows work-start's standard flow.
