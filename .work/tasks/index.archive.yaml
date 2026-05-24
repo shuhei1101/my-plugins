@@ -97,3 +97,10 @@ prs:
   summary: .work/specs/ フォルダを notes/ にリネームし、全参照箇所を更新する
   task: 20260524_rename-specs-to-notes
   completed: true
+- id: 90
+  title: PR90 — add notes-to-claude skill
+  type: feat
+  tags: []
+  summary: notes/ の立ち位置説明を CLAUDE.md に追記し、notes → rule/CLAUDE.md 昇格スキルを新規作成する
+  task: 20260524_add-notes-to-claude-skill
+  completed: true
