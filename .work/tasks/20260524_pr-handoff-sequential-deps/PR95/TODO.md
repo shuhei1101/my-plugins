@@ -21,12 +21,11 @@ pr-handoff スキルを直列依存対応に改修する。
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR95/QA.md` |
-| - | TODO.md テンプレに `実施条件` カラムを追加 | - `plugins/work-kit/templates/TODO.md`<br>- `plugins/work-kit/templates/.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` |
-| - | pr-handoff SKILL.md を直列依存対応に改修 | - `plugins/work-kit/skills/pr-handoff/SKILL.md`<br>- `plugins/work-kit/skills/pr-handoff/SKILL.jp.md` |
-| - | work-start SKILL.md Step 7 のテンプレート言及を更新 | - `plugins/work-kit/skills/work-start/SKILL.md`<br>- `plugins/work-kit/skills/work-start/SKILL.jp.md` |
-| - | work-kit プラグインのバージョン bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | changelog 追加 | - `plugins/work-kit/changelogs/` |
-| - | ルール `work-kit-todo-template-sync.md` のチェックリストに実施条件カラムを反映 | - `.claude/rules/feature/work-kit-todo-template-sync.md` |
+| 済 | TODO.md テンプレに `実施条件` カラムを追加 | - `plugins/work-kit/templates/TODO.md`<br>- `plugins/work-kit/templates/.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` |
+| 済 | pr-handoff SKILL.md を直列依存対応に改修 | - `plugins/work-kit/skills/pr-handoff/SKILL.md`<br>- `plugins/work-kit/skills/pr-handoff/SKILL.jp.md` |
+| 済 | work-start SKILL.md Step 7 のテンプレート言及を更新 | - `plugins/work-kit/skills/work-start/SKILL.md`<br>- `plugins/work-kit/skills/work-start/SKILL.jp.md` |
+| 済 | work-kit プラグインのバージョン bump | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | ルール `work-kit-todo-template-sync.md` のチェックリストに実施条件カラムを反映 | - `.claude/rules/feature/work-kit-todo-template-sync.md` |
 
 ## 参考ドキュメント
 
