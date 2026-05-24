@@ -21,7 +21,7 @@ merge SKILL.md の Step 12 は `pr-show` への委譲（呼び出し）に書き
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260524_pr-show-skill/PR109/QA.md` |
+| x | QA.md に未決定事項を記録する（未決定事項なし） | `.work/tasks/20260524_pr-show-skill/PR109/QA.md` |
 | x | merge SKILL.md の Step 12 内容を確認する（英語版） | `plugins/work-kit/skills/merge/SKILL.md` |
 | x | `pr-show` スキルの SKILL.jp.md を作成する | `plugins/work-kit/skills/pr-show/SKILL.jp.md` |
 | x | `pr-show` スキルの SKILL.md を作成する | `plugins/work-kit/skills/pr-show/SKILL.md` |
