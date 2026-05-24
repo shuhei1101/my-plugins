@@ -222,7 +222,7 @@ Also fill in the subsections under `## 概要` (between `## 概要` and `## 作�
 - Write when this PR can be started: `即時実施可` or `「{other PR name}」が完了してから`
 - This mirrors the `実施条件` column from the `## 次PR候補` table of the triggering PR
 
-**`### 関連プルリクエスト`**:
+**`### 関連PR`**:
 - List PRs that are directly related to this one (predecessors, split siblings, follow-ups)
 - Use the table format: `| PR番号 | 概要 |` — one row per related PR
 - Leave the placeholder row if there are no related PRs
