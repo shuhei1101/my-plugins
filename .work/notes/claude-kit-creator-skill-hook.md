@@ -6,12 +6,14 @@ updates:
   - 2026-05-24 — PR110: 冗長ルール・CLAUDE.mdセクション削除
   - 2026-05-24 — PR121: UserPromptSubmit の限界を補う PreToolUse ブロック追加
   - 2026-05-25 — PR124: dev-kit/ui-kit/work-kit から skill-creator-dispatch 重複削除
+  - 2026-05-25 — PR125: PreToolUse パターンを SKILL.jp.md / rules/*.md / CLAUDE.md に拡張
 related_specs: []
 related_prs:
   - PR103
   - PR110
   - PR121
   - PR124
+  - PR125
 ---
 
 # claude-kit creator-skill-hook — UserPromptSubmit フック設計メモ
@@ -82,8 +84,15 @@ Before editing this file, invoke the matching creator skill:
 - claude-kit がインストール済みなら他プラグインにフックを持つ必要はない。
 - PR124 で dev-kit/ui-kit/work-kit から重複エントリ + prompts ファイルを削除し、claude-kit に集約。
 
+### PR125 の実装（パターン拡張）
+
+- `SKILL\.md$` → `SKILL(?:\.jp)?\.md$` に変更し、SKILL.jp.md もブロック対象に追加。
+- `.claude/rules/.*\.md$`（ただし `.jp.md` 除外）→ rule-creator-dispatch に接続。
+- `(?:^|/)CLAUDE(?:\.local)?\.md$`（ただし `.jp.md` 除外）→ claude-creator-dispatch に接続。
+- JP mirror ファイルはブロック対象外（translation sync の直接編集を許可するため）。
+- セッションフラグ名: `rule-creator-dispatch-{sid}` / `claude-creator-dispatch-{sid}`（新規追加）。
+- バージョン: 3.23.0 → 3.24.0（MINOR バンプ）
+
 ### 残課題（後続PR）
 
-- claude-kit の PreToolUse パターンが `/skills/[^/]+/SKILL\.md$` のみ → `SKILL.jp.md`、
-  `.claude/rules/*.md`、`CLAUDE.md` をカバーしていない。
-- PreToolUse でファイル編集を検知する仕組みの設計調査も必要。
+- PreToolUse でファイル編集を検知する仕組みの設計調査も必要（PR126）。
