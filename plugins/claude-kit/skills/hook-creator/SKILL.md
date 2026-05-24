@@ -144,8 +144,10 @@ How prompt injection works:
 
 ##### Important
 
-- `Stop` hook prompts should be imperative commands: "Do X", "Verify Y before finishing"
-- **Keep `Stop` hook prompts short** — the `reason` text is printed to stdout and shown directly on the user's screen; a long prompt floods the terminal
+- **`Stop` hook prompts must be exactly 1 line — use the file-reference pattern**
+  - The `reason` text is injected into the conversation session and visible to the user; multi-line content is noisy and intrusive
+  - Recommended: make the script output only `"Read and follow: /path/to/stop.md"` — Claude reads the actual instructions from that file itself
+  - Keep the full instruction text in the prompt file; the script outputs only the file path reference
 - `UserPromptSubmit` hook prompts are treated as `<system-reminder>` — best for injecting context or standing instructions
 
 ---
@@ -290,7 +292,8 @@ Prompt file lives at `.claude/hooks/{name}.md`.
 #### [Plugin] Stop — inject a prompt and make Claude continue working
 
 The `stop_hook_active` guard prevents infinite loops.
-Returns JSON `{"decision":"block","reason":"<prompt>"}` to stdout to make Claude continue working.
+Returns JSON `{"decision":"block","reason":"Read and follow: /path/to/stop.md"}` — Claude reads the instruction file itself.
+This keeps the `reason` to exactly 1 line so it does not flood the conversation session.
 
 ```json
 {
@@ -303,7 +306,7 @@ Returns JSON `{"decision":"block","reason":"<prompt>"}` to stdout to make Claude
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
             ]
           }
@@ -327,7 +330,7 @@ Returns JSON `{"decision":"block","reason":"<prompt>"}` to stdout to make Claude
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.md"
             ]
           }

@@ -144,8 +144,10 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 
 ##### 注意
 
-- `Stop` フックのプロンプトは「〜せよ」「〜を確認せよ」形式の命令文にする
-- **`Stop` フックのプロンプトは極力短くする** — `reason` の内容は stdout 経由でユーザーの画面にそのまま表示されるため、長文を書くと画面が埋め尽くされてしまう
+- **`Stop` フックのプロンプトは必ず1行 — ファイル参照パターンを使うこと**
+  - `reason` の内容は会話セッションに注入されユーザーに見えるため、複数行は見づらく邪魔になる
+  - 推奨: スクリプトは `"Read and follow: /path/to/stop.md"` の1行だけを出力し、Claude が実際の指示をファイルから読む方式にする
+  - 指示の全文はプロンプトファイルに記述し、スクリプトはそのファイルパス参照だけを出力する
 - `UserPromptSubmit` フックのプロンプトは `<system-reminder>` として扱われるため、コンテキスト情報の差し込みに向いている
 
 ---
@@ -290,7 +292,8 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 #### [プラグイン用] Stop
 
 `stop_hook_active` チェックで無限ループを防止する。
-stdout に JSON `{"decision":"block","reason":"<プロンプト>"}` を返すことで Claude に作業を継続させる。
+stdout に JSON `{"decision":"block","reason":"Read and follow: /path/to/stop.md"}` を返す。
+Claude がそのファイルを読んで指示に従う方式で、`reason` を1行に保てる。
 
 ```json
 {
@@ -303,7 +306,7 @@ stdout に JSON `{"decision":"block","reason":"<プロンプト>"}` を返すこ
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
             ]
           }
@@ -327,7 +330,7 @@ stdout に JSON `{"decision":"block","reason":"<プロンプト>"}` を返すこ
             "command": "python",
             "args": [
               "-c",
-              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':'Read and follow: '+str(p)},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.md"
             ]
           }
