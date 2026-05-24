@@ -298,3 +298,10 @@ prs:
   summary: commit 4144128 後にステータスラインが表示されなくなる問題の調査・修正
   task: 20260524_statusline-display-not-working
   completed: true
+- id: 120
+  title: PR120 — remove pr-show disable-model-invocation
+  type: fix
+  tags: []
+  summary: pr-show スキルの disable-model-invocation フラグを削除してモデルから呼び出せるようにする
+  task: 20260525_remove-pr-show-disable-model-invocation
+  completed: true
