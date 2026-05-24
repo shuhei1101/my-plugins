@@ -270,3 +270,10 @@ prs:
   summary: ctx 50%未満の時に緑色表示を追加
   task: 20260524_statusline-ctx-green
   completed: true
+- id: 117
+  title: PR117 — pr-show-disable-model-invocation
+  type: fix
+  tags: []
+  summary: 'pr-show スキルに disable-model-invocation: true を追加して誤起動を防ぐ'
+  task: 20260524_pr-show-disable-model-invocation
+  completed: true
