@@ -312,3 +312,11 @@ prs:
   summary: skill-creator-dispatch を PreToolUse ブロック型に移行し4プラグインで直接SKILL.md編集をブロック
   task: 20260524_skill-creator-dispatch-pretooluse
   completed: true
+- id: 122
+  title: PR122 — ui-kit-skill-reminder-jp-mirror
+  type: fix
+  tags: []
+  summary: ui-kit の ui-skill-reminder.md に .jp.md ミラーが存在しない hook-prompts-jp-mirror-sync
+    ルール違反を修正
+  task: 20260524_skill-creator-dispatch-pretooluse
+  completed: true
