@@ -23,3 +23,4 @@
 | 2026-05-24 | スキルのステップを独立スキルに切り出した際、master に同じステップを変更する PR が既に存在し、実装後に2回の master 取り込みが必要になった。対象ステップの切り出し前に `git log --oneline master -- {ファイル}` で直近の変更を確認すること | [detail](../../references/incidents/extract-step-check-master-first.md) |
 | 2026-05-24 | `CLAUDE.md` を編集した際に `CLAUDE.jp.md` の JP ミラー更新を忘れた。`skill-jp-mirror-sync.md` も `hook-prompts-jp-mirror-sync.md` も CLAUDE.md はカバーしていなかった。修正: `claude-md-jp-mirror-sync.md` ルールを追加 | [detail](../../references/incidents/claude-md-jp-mirror-missing.md) |
 | 2026-05-24 | merge スキル Step 12 が `git branch --list 'PR*'` で全 PR ブランチを列挙し、今マージした PR と無関係なブランチも表示していた。Step 12 のデータソースは全ブランチではなくマージ PR の `## 次PR候補` テーブルに限定すること | [detail](../../references/incidents/merge-step12-listed-all-branches.md) |
+| 2026-05-24 | `incidents.md` / `glossary.md` を編集しても `rules-jp/` の JP ミラーが更新されず、英語版との乖離が長期間放置された。修正: `incidents-glossary-jp-mirror-sync.md` ルールを追加して同コミット更新を強制する | [detail](../../references/incidents/incidents-glossary-jp-mirror-missing.md) |
