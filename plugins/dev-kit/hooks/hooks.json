@@ -1,0 +1,48 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/python-skill-dispatch.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/python-skill-dispatch.md"
+            ]
+          },
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/yaml-skill-dispatch.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/yaml-skill-dispatch.md"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/python-skill-dispatch.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/python-skill-dispatch.md"
+            ]
+          },
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/yaml-skill-dispatch.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/yaml-skill-dispatch.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
