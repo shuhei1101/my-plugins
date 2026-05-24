@@ -213,3 +213,11 @@ prs:
   summary: merge スキル Step 12 の次PR一覧出力をテーブル形式（分類・PR番号・概要の3列）に変更
   task: 20260524_merge-step12-table-format
   completed: true
+- id: 110
+  title: PR110 — remove-redundant-creator-rules
+  type: refactor
+  tags: []
+  summary: PR103のcreator-dispatchフックに移行したため、plugin-work.mdのクリエイタースキル表とCLAUDE.mdのPlugin
+    Creation規則を削除する
+  task: 20260524_remove-redundant-creator-rules
+  completed: true
