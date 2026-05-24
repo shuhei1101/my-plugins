@@ -281,6 +281,13 @@ Also fill in the `## 次PR候補` section at the bottom of TODO.md (columns: tit
 - Do not split commits too finely
 - Do not mix planning documents (TODO, notes, etc.) and implementation code in the same commit
 
+##### Commit message language
+
+- All commit messages produced by this skill MUST be written in **Japanese**
+- Both subject and body are in Japanese (metadata lines like `Co-Authored-By:` may remain in English)
+- Conventional commit prefixes (`feat:` `fix:` `chore:` etc.) may stay in English
+- Example: `chore: PR{N} のタスクドキュメントを作成 #PR{N}`
+
 
 ---
 
