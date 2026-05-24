@@ -11,3 +11,4 @@
 | 2026-05-24 | merge スキルがユーザーの明示的指示なしに `git merge` を自動実行した。セッション内で過去に許可を得ていても次のマージは別指示が必要。修正: SKILL.md に Critical Prohibition セクション追加・Step 6 に絶対禁止ルール追記 | [detail](../../references/incidents/merge-auto-execution-without-permission.md) |
 | 2026-05-24 | `.work/specs/` フォルダ名が「仕様書」を連想させるため、AI に自動読み込みされないにもかかわらず重要ドキュメント扱いになり古くなりやすかった。AI 非読み込みのフォルダは `notes/` など非公式な名前にすること | [detail](../../references/incidents/work-folder-name-implies-official-docs.md) |
 | 2026-05-24 | Stop フックの `reason` に全文を埋め込むと Claude のレスポンスごとに長文が会話セッションへ注入されユーザーに見えて鬱陶しい。`reason` は「このファイルを読んで従え」の1行参照のみにし、Claude 自身がファイルを読む方式にすること | [detail](../../references/incidents/stop-hook-reason-floods-session.md) |
+| 2026-05-24 | merge スキルが master cwd で conversation-to-claude を呼んでいたため、生成された glossary/incidents が master 直接コミットになり PR ブランチに同梱されなかった。修正: ワークツリーに cd してから呼び出す。教訓: git commit を含むスキルへの委譲は呼び出し側で cwd を明示的に制御すること | [detail](../../references/incidents/conversation-to-claude-master-direct-commit.md) |
