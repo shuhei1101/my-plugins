@@ -29,7 +29,7 @@
       "name": "work-kit",
       "source": "./plugins/work-kit",
       "description": "Hook-based project lifecycle management — injects PR task context on every prompt and reminds task updates on stop",
-      "version": "2.27.1"
+      "version": "2.28.0"
     },
     {
       "name": "worktree-kit",

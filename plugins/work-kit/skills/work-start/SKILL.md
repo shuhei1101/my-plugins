@@ -216,6 +216,10 @@ The following rows are mandatory and must not be removed or skipped:
 | - | (Implementation tasks: replace with PR-specific work) |
 | - | Update rules / CLAUDE.md |
 
+Also fill in the `## 実施条件` section (between `## 概要` and `## 作業内容`):
+- Write when this PR can be started: `即時実施可` or `「{other PR name}」が完了してから`
+- This mirrors the `実施条件` column from the `## 次PR候補` table of the triggering PR
+
 Also fill in the `## 次PR候補` section at the bottom of TODO.md (columns: title / summary / 実施条件):
 - If the user mentioned follow-up work or future PRs during this session, list them here
 - Fill in `実施条件` for each candidate:
