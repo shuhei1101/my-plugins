@@ -11,10 +11,9 @@ PR95 で `pr-handoff` スキルが「直列依存対応」になり、候補を�
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR96/QA.md` |
-| - | merge SKILL.md Step10 を pr-handoff 直列依存対応に追従 | - `plugins/work-kit/skills/merge/SKILL.md` |
-| - | merge SKILL.jp.md Step10 を pr-handoff 直列依存対応に追従 | - `plugins/work-kit/skills/merge/SKILL.jp.md` |
-| - | plugin.json / marketplace.json のバージョン bump（PATCH） | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | changelogs に PR96 エントリを追加 | - `plugins/work-kit/changelogs/` |
+| ✓ | merge SKILL.md Step10 を pr-handoff 直列依存対応に追従 | - `plugins/work-kit/skills/merge/SKILL.md` |
+| ✓ | merge SKILL.jp.md Step10 を pr-handoff 直列依存対応に追従 | - `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| ✓ | plugin.json / marketplace.json のバージョン bump（PATCH） | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
