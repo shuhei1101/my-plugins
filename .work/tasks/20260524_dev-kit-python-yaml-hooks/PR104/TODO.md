@@ -11,10 +11,10 @@ YAML ファイル編集時は yaml スキルを読み込ませる。
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260524_dev-kit-python-yaml-hooks/PR104/QA.md` |
-| - | `/claude-kit:hook-creator` を呼び出しPythonフック作成 | - `plugins/dev-kit/hooks/python-skill-dispatch.py` |
-| - | `/claude-kit:hook-creator` を呼び出しYAMLフック作成 | - `plugins/dev-kit/hooks/yaml-skill-dispatch.py` |
-| - | `plugin.json` / `marketplace.json` バージョンバンプ | - `plugins/dev-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260524_dev-kit-python-yaml-hooks/PR104/QA.md` |
+| 済 | `/claude-kit:hook-creator` を呼び出しPythonフック作成 | - `plugins/dev-kit/hooks/scripts/python-skill-dispatch.py` |
+| 済 | `/claude-kit:hook-creator` を呼び出しYAMLフック作成 | - `plugins/dev-kit/hooks/scripts/yaml-skill-dispatch.py` |
+| 済 | `plugin.json` / `marketplace.json` バージョンバンプ | - `plugins/dev-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
