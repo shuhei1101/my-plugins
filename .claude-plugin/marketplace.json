@@ -17,13 +17,13 @@
       "name": "ui-kit",
       "source": "./plugins/ui-kit",
       "description": "Development UI components and conventions — floating debug widget, logging conventions, FLOCSS + design tokens application",
-      "version": "1.3.2"
+      "version": "1.3.3"
     },
     {
       "name": "claude-kit",
       "source": "./plugins/claude-kit",
       "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
-      "version": "3.18.0"
+      "version": "3.19.0"
     },
     {
       "name": "work-kit",

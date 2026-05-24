@@ -147,3 +147,10 @@ prs:
   summary: creator スキルの生成物に出自メタデータ(プラグイン名・スキル名・バージョン)を HTML コメント形式で埋め込む。既存生成物にも遡及適用。バージョン同期スキルを新規追加。
   task: 20260524_generator-metadata
   completed: true
+- id: 97
+  title: PR97 — mark-generated-html-js-css
+  type: feat
+  tags: []
+  summary: mark-generated に HTML/JS/CSS 記法を追加し、ui-kit テンプレ全体を遡及スタンプ対象に含める
+  task: 20260524_mark-generated-html-js-css
+  completed: true
