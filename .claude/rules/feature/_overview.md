@@ -17,3 +17,4 @@
 | `claude-md-jp-mirror-sync.md` | `CLAUDE.md` 編集時に `CLAUDE.jp.md` も同コミットで更新する同期ルール |
 | `worktree-kit-dependency.md` | work-kit と worktree-kit の責務分離・インターフェース整合ルール |
 | `work-kit-merge-skill-spec-sync.md` | merge SKILL.md のステップ番号変更時に `work-kit-merge-flow.md` 仕様書の参照番号も更新する同期ルール |
+| `incidents-glossary-jp-mirror-sync.md` | `incidents.md` / `glossary.md` 編集時に `rules-jp/` の JP ミラーも同コミットで更新する同期ルール |
