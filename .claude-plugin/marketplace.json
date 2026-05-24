@@ -23,13 +23,13 @@
       "name": "claude-kit",
       "source": "./plugins/claude-kit",
       "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
-      "version": "3.17.0"
+      "version": "3.17.1"
     },
     {
       "name": "work-kit",
       "source": "./plugins/work-kit",
       "description": "Hook-based project lifecycle management — injects PR task context on every prompt and reminds task updates on stop",
-      "version": "2.20.3"
+      "version": "2.20.4"
     },
     {
       "name": "worktree-kit",

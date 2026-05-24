@@ -1,14 +1,17 @@
 """work-kit / stop — Stop hook.
 
 Claude Code がレスポンスを完了する直前に発火し、進行中の PR について
-TODO / QA / spec の更新が漏れていないかを確認させるプロンプトを注入する。
+TODO / QA の更新が漏れていないかを確認させるプロンプトを注入する。
+
+reason にはファイルパスの参照1行だけを出力する。
+全文埋め込みは会話セッションを汚染するため、Claude 自身がファイルを読む方式にしている。
 
 ループ防止:
 - `stop_hook_active` が True で呼ばれた場合（= フック自身が連鎖発火した状態）は
   何もせず終了。これがないと Stop hook → block → 再開 → Stop hook ... を繰り返す。
 
 Args:
-    sys.argv[1]: 注入する Markdown ファイルパス
+    sys.argv[1]: 指示ファイルのパス
                  （hooks.json から `${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md` を渡す）
 """
 
@@ -32,7 +35,8 @@ def main() -> None:
     if not prompt_path.exists():
         return
 
-    response = {"decision": "block", "reason": prompt_path.read_text("utf-8")}
+    reason = f"Read and follow: {prompt_path}"
+    response = {"decision": "block", "reason": reason}
     sys.stdout.buffer.write(json.dumps(response, ensure_ascii=False).encode("utf-8"))
 
 
