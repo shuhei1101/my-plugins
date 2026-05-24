@@ -104,3 +104,10 @@ prs:
   summary: Stop フックの reason に全文を埋め込む代わりに、ファイルパス参照の1行メッセージを出力する方式に変更
   task: 20260524_stop-hook-prompt-by-ref
   completed: true
+- id: 92
+  title: PR92 — merge-skill-master-reconcile
+  type: feat
+  tags: []
+  summary: merge スキルに Step2〜3 の間に master 適合確認ステップを追加する
+  task: 20260523_merge-skill-master-reconcile
+  completed: true

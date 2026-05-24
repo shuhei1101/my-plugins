@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 # work-kit:merge — Merge a PR
 
-Runs the full merge flow: TODO checklist verification → conversation-to-claude (if claude-kit installed) → index archive → `--no-ff` merge → worktree cleanup → QA doc sync.
+Runs the full merge flow: TODO checklist verification → master compatibility check → conversation-to-claude (if claude-kit installed) → index archive → `--no-ff` merge → worktree cleanup → QA doc sync.
 
 ---
 
@@ -81,7 +81,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 3: Run conversation-to-claude (if claude-kit is installed)
+### Step 3: Confirm compatibility with master
 
 #### Condition
 
@@ -89,11 +89,80 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Process
 
+1. Check whether master has new commits since this PR branch diverged:
+
+```bash
+git log HEAD..master --oneline
+```
+
+If no output → master has not moved; skip to Step 4.
+
+2. Check for relevant relationships between this PR's changes and master's changes. Use git commands as a starting point, then apply contextual judgment:
+
+```bash
+# Get a picture of what this PR changed
+git diff master...HEAD --name-only
+
+# Scan master's commits for what changed and where
+git log HEAD..master --oneline --stat
+```
+
+   Do not rely on file-name matches alone — also consider indirect relationships:
+   - Did master change a **caller or importer** of a file this PR modifies?
+   - Did master change an **interface, type, schema, or config** that this PR depends on?
+   - Did master introduce **naming or structural changes** that this PR's code assumes haven't happened yet?
+
+3. Read the relevant master-side commit content and background:
+
+```bash
+git log -p HEAD..master -- {relevant file}
+```
+
+4. For each relevant change, judge priority autonomously using these dimensions:
+   - **Recency**: which commit is newer?
+   - **Blast radius**: is master's change central (many dependents) or local? Central changes take higher priority.
+   - **Interface changes**: if master changed a function signature, type, or schema, this PR may be using the old interface → update the PR side
+   - **Directional alignment**: are master and this PR heading toward the same goal, or opposite directions? Opposite directions often means one side has an error.
+   - **PR purpose**: if this PR exists specifically to correct or supersede master's change, the PR takes priority.
+
+5. Based on the judgment, take one of the following actions autonomously (no user confirmation needed):
+   - **No action needed**: changes are independent → proceed to Step 4
+   - **Incorporate master**: master has a related change that this PR should reflect → merge master into the PR branch:
+
+```bash
+git merge master
+```
+
+   Resolve conflicts and update the PR's implementation to be compatible.
+   - **PR takes priority**: this PR is specifically correcting master, or the PR approach is clearly the newer correct one → proceed without merging
+   - **Tie**: when the judgment is evenly balanced, choose the safe side — incorporate master (`git merge master`), then re-apply the PR's intent on top
+
+→ Proceed to Step 4
+
+#### Notes
+
+##### Autonomous tiebreaker order (when judgment is unclear)
+
+1. Recency — prefer the newer commit
+2. Blast radius — prefer the change that more things depend on
+3. PR purpose — if the PR corrects this change, prefer the PR
+4. Safe default — incorporate master, then adapt the PR
+
+---
+
+### Step 4: Run conversation-to-claude (if claude-kit is installed)
+
+#### Condition
+
+- Step 3 complete
+
+#### Process
+
 1. Check whether `/claude-kit:conversation-to-claude` appears in the current session's available skill list
 2. If available → invoke `/claude-kit:conversation-to-claude` and wait for it to complete
 3. If not available → skip this step silently
 
-→ Proceed to Step 4
+→ Proceed to Step 5
 
 #### Notes
 
@@ -102,11 +171,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 4: Mark the PR as completed in index.yaml
+### Step 5: Mark the PR as completed in index.yaml
 
 #### Condition
 
-- Step 3 complete
+- Step 4 complete
 
 #### Process
 
@@ -117,7 +186,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
   .work/tasks/index.yaml --id {N}
 ```
 
-→ Proceed to Step 5
+→ Proceed to Step 6
 
 #### Notes
 
@@ -126,11 +195,11 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
 
 ---
 
-### Step 5: Archive completed index entries
+### Step 6: Archive completed index entries
 
 #### Condition
 
-- Step 4 complete
+- Step 5 complete
 
 #### Process
 
@@ -151,26 +220,26 @@ git -C ../$(basename $(pwd))-wt-PR{N} add .work/tasks/index.archive.yaml
 git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.archive.yaml #PR{N}"
 ```
 
-→ Proceed to Step 6
+→ Proceed to Step 7
 
 #### Notes
 
 - `index.yaml` remains gitignored — no commit needed for it
-- `index.archive.yaml` is git-tracked — commit it to the **PR branch** (not directly to the parent branch); it will be included in the --no-ff merge in Step 6
+- `index.archive.yaml` is git-tracked — commit it to the **PR branch** (not directly to the parent branch); it will be included in the --no-ff merge in Step 7
 - The archive command reads from the main repo's `index.yaml` and writes to the worktree's `index.archive.yaml`
 
 ---
 
-### Step 6: Execute the merge
+### Step 7: Execute the merge
 
 #### Condition
 
-- Step 5 complete
+- Step 6 complete
 
 > ⚠️ **Pre-merge check required**
-> If `index.archive.yaml` was not committed in the worktree in Step 5, the archive changes will be missing from the merge commit.
-> **Confirm that the `git commit` inside the worktree in Step 5 has completed before running the merge command.**
-> (Skip this check only if Step 5 reported 0 entries moved — no commit was needed.)
+> If `index.archive.yaml` was not committed in the worktree in Step 6, the archive changes will be missing from the merge commit.
+> **Confirm that the `git commit` inside the worktree in Step 6 has completed before running the merge command.**
+> (Skip this check only if Step 6 reported 0 entries moved — no commit was needed.)
 
 #### Notes
 
@@ -181,7 +250,7 @@ git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.a
 > - NEVER run `git merge` unless the user explicitly said "マージして" or equivalent **in the message that triggered this skill invocation**.
 > - Even if all previous steps completed without issue, you MUST stop here and confirm with the user before merging.
 > - A user approval given earlier in the same session does NOT authorize this merge. Request confirmation again.
-> - If in doubt, ask: "Step 1–5 が完了しました。マージを実行してよいですか？"
+> - If in doubt, ask: "Step 1–6 が完了しました。マージを実行してよいですか？"
 
 #### Process
 
@@ -192,11 +261,11 @@ git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.a
 git merge --no-ff -m "{type}: {title} #PR{N}" PR{N}/{type}/{title}
 ```
 
-→ Proceed to Step 7
+→ Proceed to Step 8
 
 ---
 
-### Step 7: Remove the worktree and branch
+### Step 8: Remove the worktree and branch
 
 #### Process
 
@@ -207,7 +276,7 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
-→ Proceed to Step 8
+→ Proceed to Step 9
 
 #### Notes
 
@@ -217,7 +286,7 @@ git branch -d PR{N}/{type}/{title}
 
 ---
 
-### Step 8: Update QA.md
+### Step 9: Update QA.md
 
 #### Process
 
@@ -229,11 +298,11 @@ git add .work/
 git commit -m "docs: post-merge update for PR{N}"
 ```
 
-→ Proceed to Step 9
+→ Proceed to Step 10
 
 ---
 
-### Step 9: Report completion
+### Step 10: Report completion
 
 #### Process
 
