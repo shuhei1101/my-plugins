@@ -25,12 +25,12 @@ ui-kit のテンプレ群（`uidev.js` / `uidev.css` / `example.html` / `mock-sk
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録 | - `.work/tasks/.../PR97/QA.md` |
-| - | `mark-generated` SKILL.md / SKILL.jp.md の Step3 テーブルに html / js / css 記法を追加 | - `plugins/claude-kit/skills/mark-generated/SKILL.md` `SKILL.jp.md` |
-| - | ui-kit テンプレ群（uidev.js / uidev.css / example.html / mock-skeleton.html）に出自メタデータを遡及スタンプ | - `plugins/ui-kit/skills/{debug-fab,mock}/templates/**` |
-| - | claude-kit のバージョン bump (3.18.0 → 3.19.0) + changelogs エントリ | - `plugins/claude-kit/.claude-plugin/plugin.json` `changelogs/` |
-| - | ui-kit のバージョン bump (1.3.2 → 1.3.3) + changelogs エントリ | - `plugins/ui-kit/.claude-plugin/plugin.json` `changelogs/` |
-| - | marketplace.json のバージョン同期 | - `.claude-plugin/marketplace.json` |
+| ✓ | QA.md に未決定事項を記録 | - `.work/tasks/.../PR97/QA.md` |
+| ✓ | `mark-generated` SKILL.md / SKILL.jp.md の Step3 テーブルに html / js / css 記法を追加 | - `plugins/claude-kit/skills/mark-generated/SKILL.md` `SKILL.jp.md` |
+| ✓ | ui-kit テンプレ群（uidev.js / uidev.css / example.html / mock-skeleton.html）に出自メタデータを遡及スタンプ | - `plugins/ui-kit/skills/{debug-fab,mock}/templates/**` |
+| ✓ | claude-kit のバージョン bump (3.18.0 → 3.19.0) + changelogs エントリ | - `plugins/claude-kit/.claude-plugin/plugin.json` `changelogs/` |
+| ✓ | ui-kit のバージョン bump (1.3.2 → 1.3.3) + changelogs エントリ | - `plugins/ui-kit/.claude-plugin/plugin.json` `changelogs/` |
+| ✓ | marketplace.json のバージョン同期 | - `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
