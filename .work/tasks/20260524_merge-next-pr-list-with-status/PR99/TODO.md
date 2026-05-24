@@ -16,12 +16,12 @@ merge スキル Step 10 の「次PR提示」を 3 カテゴリに分けて表示
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260524_merge-next-pr-list-with-status/PR99/QA.md` |
-| - | merge SKILL.md / SKILL.jp.md の Step 10 を 3 カテゴリ表示仕様に書き換え | - `plugins/work-kit/skills/merge/SKILL.md`<br>- `plugins/work-kit/skills/merge/SKILL.jp.md` |
-| - | `plugins/work-kit/.claude-plugin/plugin.json` のバージョン bump | - `plugins/work-kit/.claude-plugin/plugin.json` |
-| - | `.claude-plugin/marketplace.json` のバージョン bump | - `.claude-plugin/marketplace.json` |
-| - | `plugins/work-kit/changelogs/` に変更ログ追加 | - `plugins/work-kit/changelogs/{version}.md` |
-| - | glossary に「着手可能 / 進行中 / 条件あり」用語を追加 | - `.claude/rules/core/glossary.md` |
+| 済 | QA.md は記録なし（未決定事項なし） | - `.work/tasks/20260524_merge-next-pr-list-with-status/PR99/QA.md` |
+| 済 | merge SKILL.md / SKILL.jp.md の Step 10 を Step 10/11/12 に分割し 3 カテゴリ表示仕様に書き換え | - `plugins/work-kit/skills/merge/SKILL.md`<br>- `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| 済 | `plugins/work-kit/.claude-plugin/plugin.json` を 2.27.0 に bump | - `plugins/work-kit/.claude-plugin/plugin.json` |
+| 済 | `.claude-plugin/marketplace.json` の work-kit を 2.27.0 に bump | - `.claude-plugin/marketplace.json` |
+| 済 | `plugins/work-kit/changelogs/v2.27.0.md` を追加 | - `plugins/work-kit/changelogs/v2.27.0.md` |
+| 済 | glossary に「着手可能 (🟢) / 進行中 (🟡) / 条件あり (🔴)」を追加 | - `.claude/rules/core/glossary.md` |
 
 ## 参考ドキュメント
 
