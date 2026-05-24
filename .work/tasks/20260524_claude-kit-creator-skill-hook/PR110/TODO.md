@@ -19,10 +19,10 @@ PR103 で claude-kit に UserPromptSubmit creator-dispatch フックを追加し
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR110/QA.md` |
-| - | `.work/notes/` のノートを更新する | - `.work/notes/claude-kit-creator-skill-hook.md` |
-| - | `plugin-work.md` の "Skills to Use When Creating New Content" セクションを削除 | - `.claude/rules/core/plugin-work.md` |
-| - | `CLAUDE.md` の "Plugin Creation & Update Rules" セクションを削除 | - `CLAUDE.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR110/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/claude-kit-creator-skill-hook.md` |
+| 済 | `plugin-work.md` の "Skills to Use When Creating New Content" セクションを削除 | - `.claude/rules/core/plugin-work.md` |
+| 済 | `CLAUDE.md` の "Plugin Creation & Update Rules" セクションを削除 | - `CLAUDE.md` |
 
 ## 参考ドキュメント
 

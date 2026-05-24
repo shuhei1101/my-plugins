@@ -28,23 +28,6 @@ my-plugins/
 
 ---
 
-## Plugin Creation & Update Rules
-
-When creating or editing plugin files, **always invoke the matching creator skill first** — based on what you are editing.
-Never create or edit plugin files directly without going through the skill.
-
-| What you are editing | Invoke first |
-|---|---|
-| Whole plugin (new or `plugin.json` / `marketplace.json` / version) | `/claude-kit:plugin-creator` |
-| A skill (`SKILL.md` / `SKILL.jp.md`) | `/claude-kit:skill-creator` |
-| A hook (`hooks/` directory) | `/claude-kit:hook-creator` |
-| A `CLAUDE.md` file | `/claude-kit:claude-creator` |
-| A rule (`.claude/rules/` directory) | `/claude-kit:rule-creator` |
-
-The creator skill auto-loads when you open a matching file (managed by `.claude/rules/feature/creator-skill-dispatch.md`).
-
----
-
 ## Reference Links
 
 | Topic | URL |
