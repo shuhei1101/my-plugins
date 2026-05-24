@@ -184,6 +184,19 @@ HTML コメントを frontmatter の `---` より前に置くと、Markdown レ�
 - `.claude/rules/**/*.md` → `claude-kit/rule-creator`
 - `CLAUDE.md` → `claude-kit/claude-creator`
 - `changelogs/*.md` → `claude-kit/plugin-creator`
+- `.claude/references/incidents/*.md` → `claude-kit/conversation-to-claude`
+
+### PR98 — JP 警告 backfill 第二弾
+
+PR94 の一括 backfill では JP 警告コメントが付与されなかった `.jp.md` が 25 件残っていた。
+PR98 で全件を遡及適用済み。内訳:
+
+- `.claude/references/incidents/*.jp.md` × 13: `claude-kit/conversation-to-claude` スタンプ + JP 警告
+- `plugins/{claude-kit,dev-kit,ui-kit}/references/*.jp.md` × 11: JP 警告のみ（明確な creator がないため）
+- `plugins/work-kit/templates/.work/CLAUDE.jp.md` × 1: `claude-kit/claude-creator` スタンプ + JP 警告
+
+教訓: PR94 の backfill 検証は `head -5` で行ったため frontmatter 持ちファイルを「警告なし」と誤検出していた可能性がある。
+今後 backfill チェックする際は frontmatter を skip した上で本体先頭を見るべき。
 
 ## version-sync スキル仕様
 
