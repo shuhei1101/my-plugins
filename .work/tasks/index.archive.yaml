@@ -221,3 +221,10 @@ prs:
     Creation規則を削除する
   task: 20260524_remove-redundant-creator-rules
   completed: true
+- id: 111
+  title: PR111 — merge-step12-next-pr-only
+  type: fix
+  tags: []
+  summary: merge スキル Step 12 が全 PR ブランチを列挙していたのを、直前マージの次PR候補のみ表示する方式に修正
+  task: 20260524_merge-step12-next-pr-only
+  completed: true

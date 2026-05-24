@@ -357,37 +357,38 @@ git commit -m "docs: post-merge update for PR{N}"
 
 ---
 
-### Step 12: Present remaining reserved PRs in 3 categories
+### Step 12: Present next PR candidates in 3 categories
 
 #### Process
 
-1. List all remaining PR branches:
+1. Re-read the merged PR's `## 次PR候補` table from its `TODO.md`
+   (the same file used in Step 11).
 
-```bash
-git branch --list 'PR*' --format='%(refname:short)'
-```
+2. If the table contains only a placeholder row (e.g., `{次にやること}` or a lone `-`)
+   → output "次PR候補はありません" and finish.
 
-   (The branch merged in Step 8 has already been deleted, so it will not appear.)
+3. For each candidate row, determine its category:
 
-2. For each branch, count commits ahead of master:
+   **a. Has conditions (条件あり)**:
+   - Column 3 (実施条件) references another candidate — e.g. `「{other}」が完了したら`
+   - pr-handoff intentionally did not reserve a branch for these
+   - List them from the table directly (no branch lookup needed)
 
-```bash
-git log master..{branch} --oneline | wc -l
-```
+   **b. Ready to start (着手可能) or In progress elsewhere (他セッション進行中)**:
+   - Column 3 is blank or `即時実施可` — pr-handoff should have reserved a branch
+   - Find the branch by searching for the candidate title in branch names:
+     ```bash
+     git branch --list "*{candidate-title}*"
+     ```
+   - Count commits ahead of master:
+     ```bash
+     git log master..{branch} --oneline | wc -l
+     ```
+   - commits ≤ 1 → **Ready to start**
+   - commits ≥ 2 → **In progress elsewhere**
+   - Branch not found → pr-handoff was skipped; note as "未予約 (pr-handoff not run)"
 
-3. Classify each branch by commit count:
-
-   | Category | Criterion | Meaning |
-   |---|---|---|
-   | Ready to start | commits ≤ 1 | Just reserved, no implementation work yet |
-   | In progress elsewhere | commits ≥ 2 | Another session is working on this — do not touch from this session |
-
-4. Extract **Has conditions / cannot start yet**:
-   - Re-read the merged PR's `## 次PR候補` table
-   - Find rows where column 3 (実施条件) is neither blank nor `即時実施可` — i.e. it references another candidate in the same table, such as `「{other-candidate}」が完了したら`
-   - These are 依存後続候補 — candidates that pr-handoff intentionally did not reserve yet
-
-5. Present all three categories using this table format:
+4. Present all three categories using this table format:
 
    ```markdown
    ## Next PRs you can pick up
@@ -397,14 +398,19 @@ git log master..{branch} --oneline | wc -l
    | Ready to start | PR{N} | {title} (branch: {branch}) |
    |  | PR{M} | {title} (branch: {branch}) |
    | In progress elsewhere | PR{N} | {title} ({commit_count} commits ahead) |
-   | Has conditions | PR{N} | {title} — condition: depends on `{other-candidate}` being completed |
+   | Has conditions | — | {title} — condition: depends on `{other-candidate}` being completed |
    ```
 
    - When multiple PRs share the same category, write the category name only in the first row; leave the cell empty for subsequent rows
    - Omit rows for categories with no items
-   - If all three categories are empty, show a single line: "No other reserved PRs remain."
+   - If all categories are empty (placeholder table only), show: "No next PR candidates."
 
 #### Notes
+
+##### Data source
+
+Use only the merged PR's `## 次PR候補` table as the data source — never `git branch --list 'PR*'`.
+Unrelated reserved branches from other sessions are intentionally excluded.
 
 ##### Classification knowledge
 
