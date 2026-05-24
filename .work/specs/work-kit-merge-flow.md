@@ -2,10 +2,12 @@
 created_at: 2026-05-23
 updates:
   - 2026-05-23 — 初版作成（PR86: archive フロー修正）
+  - 2026-05-23 — ステップ番号を更新（PR92: master 適合確認 Step3 挿入により繰り下げ）
 related_specs: []
 related_prs:
   - PR85
   - PR86
+  - PR92
 ---
 
 # work-kit:merge フロー — index archive の設計
@@ -25,13 +27,15 @@ work-kit:merge スキルが `index.yaml` の完了エントリを `index.archive
 worktree を作成しても `index.yaml` はコピーされない。
 archive コマンドはメインリポジトリの `index.yaml` を読み、worktree の `index.archive.yaml` に書き込む。
 
-## 正しい merge フロー（Step 4〜6）
+## 正しい merge フロー（Step 5〜7）
+
+> PR92 で Step3（master 適合確認）が追加されたため、以下のステップ番号が繰り下がった。
 
 ```
-Step 4: completed: true をセット（メインリポジトリで実行）
+Step 5: completed: true をセット（メインリポジトリで実行）
   python index-tool.py set-completed .work/tasks/index.yaml --id {N}
 
-Step 5: archive をメインリポジトリで実行、書き込み先は worktree
+Step 6: archive をメインリポジトリで実行、書き込み先は worktree
   python index-tool.py archive \
     .work/tasks/index.yaml \
     ../$(basename $(pwd))-wt-PR{N}/.work/tasks/index.archive.yaml
@@ -41,15 +45,15 @@ Step 5: archive をメインリポジトリで実行、書き込み先は worktr
     git -C ../$(basename $(pwd))-wt-PR{N} add .work/tasks/index.archive.yaml
     git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} #PR{N}"
 
-Step 6: --no-ff マージ（index.archive.yaml が PR ブランチ経由で master に入る）
+Step 7: --no-ff マージ（index.archive.yaml が PR ブランチ経由で master に入る）
   git merge --no-ff -m "{type}: {title} #PR{N}" PR{N}/{type}/{title}
 ```
 
-## なぜ Step 4 が必要か
+## なぜ Step 5 が必要か
 
 archive コマンドは `completed: true` のエントリのみを移動する。
 merge 前の時点では `completed` は `false` のままなので、archive を実行しても 0 件になる。
-Step 4 で明示的に `completed: true` にセットすることで archive が機能する。
+Step 5 で明示的に `completed: true` にセットすることで archive が機能する。
 
 ## index-tool.py の set-completed コマンド仕様
 
