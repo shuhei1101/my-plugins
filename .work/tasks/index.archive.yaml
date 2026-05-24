@@ -242,3 +242,10 @@ prs:
   summary: .md ファイル作成時に JP ミラー作成を促す PostToolUse フックを追加
   task: 20260524_md-jp-mirror-hook
   completed: true
+- id: 113
+  title: PR113 — merge-skill-remove-redundant-prohibitions
+  type: fix
+  tags: []
+  summary: merge SKILL.md の冗長な禁止事項を削除し、最新メッセージ起動条件のみ残す
+  task: 20260524_merge-skill-cleanup
+  completed: true
