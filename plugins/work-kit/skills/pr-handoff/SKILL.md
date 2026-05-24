@@ -1,0 +1,115 @@
+---
+name: pr-handoff
+description: |
+  Reserve the next PR using the same flow as work-start, after the current PR is complete.
+  Reads the "Next PR candidates" section from the current TODO.md to determine what to work on,
+  then records relevant background context in the new TODO.md.
+  Trigger when the user says "引き継ぎ書を作って", "次のPRをセットアップして", "ハンドオフして",
+  "handoff して", "pr-handoff して", or calls `/work-kit:pr-handoff` explicitly.
+---
+
+# work-kit:pr-handoff — Reserve the Next PR with Context
+
+Reads the "Next PR candidates" from the current PR's TODO.md and runs the same flow
+as `work-start` to create the branch and work folder. Records relevant background
+context in the new TODO.md to improve handoff quality.
+
+---
+
+## Overview
+
+After a PR is complete, the next session's Claude has zero context about what was done.
+This skill runs the work-start reservation flow while writing background information
+(why this PR is needed, decisions made in the previous PR) into the new TODO.md.
+
+---
+
+## Tasks
+
+### Step 1: Confirm the next PR candidate
+
+#### Condition
+
+- Always — run first
+
+#### Process
+
+1. Read the current PR's TODO.md:
+   ```
+   .work/tasks/{task_folder}/PR{N}/TODO.md
+   ```
+
+2. Check the `## 次PR候補` section:
+   - One or more candidates → use all of them (reserve every candidate, regardless of count)
+   - No candidates (placeholder text) → ask the user for the next PR details
+
+→ Proceed to Step 2
+
+#### Output
+
+- Next PR title and summary confirmed
+
+---
+
+### Step 2: Extract relevant background context
+
+#### Condition
+
+- Step 1 complete
+
+#### Process
+
+1. Review the current conversation and select only the work **directly related** to the next PR:
+   - Why this next PR is needed
+   - Design decisions or constraints decided in the current PR
+   - Implementation notes that affect the next PR
+
+2. Skip anything unrelated to the next PR (other PRs, unrelated feature changes, etc.)
+
+→ Proceed to Step 3
+
+#### Output
+
+- Background context relevant to the next PR (short bullet list)
+
+#### Notes
+
+##### What to focus on
+
+- Do not summarize the entire session — only extract what matters for the next PR
+- The "why" and "we decided X in the last PR" relationships are what count
+- If there is no relevant context, skip this step
+
+---
+
+### Step 3: Call work-start to reserve the next PR
+
+#### Condition
+
+- Step 2 complete
+
+#### Process
+
+1. Reserve **each candidate one by one** using `/work-kit:work-start`:
+
+   > Call `/work-kit:work-start` for each candidate with its title and type.  
+   > Repeat until all candidates are reserved.
+
+2. During each work-start's TODO.md fill-in step (Step 7), append the following to `## 概要`:
+   - Background context from Step 2
+   - "Why this PR is needed" and "relationship to the previous PR"
+
+→ Done
+
+#### Output
+
+- All next PR candidates have their branch and work folder created
+- Each TODO.md contains background context
+
+#### Notes
+
+##### Difference from work-start
+
+The only difference from a plain `work-start` is this:  
+**The `## 概要` section of TODO.md is pre-filled with background context.**  
+Everything else (branch creation, folder creation, QA.md) follows work-start's standard flow.

@@ -3,6 +3,7 @@ paths:
   - "plugins/work-kit/templates/TODO.md"
   - "plugins/work-kit/templates/.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md"
   - "plugins/work-kit/skills/work-start/SKILL.md"
+  - "plugins/work-kit/skills/pr-handoff/SKILL.md"
 ---
 
 # work-kit TODO Template Sync Rule
@@ -22,6 +23,7 @@ Whenever either side changes, update the other.
 | `plugins/work-kit/templates/TODO.md` | Reference template shipped with the work-kit plugin |
 | `plugins/work-kit/templates/.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` | Example template inside the `.work/` folder |
 | `plugins/work-kit/skills/work-start/SKILL.md` | Skill that defines how to fill in TODO.md (Step 7) |
+| `plugins/work-kit/skills/pr-handoff/SKILL.md` | Skill that reads `## 次PR候補` in TODO.md (Step 1) to determine which PRs to reserve |
 
 ## When Editing
 
@@ -31,6 +33,7 @@ Whenever any file in this domain changes, verify the others:
 - [ ] The example template (`templates/.work/.../TODO.md`) has the same sections as `templates/TODO.md`
 - [ ] A newly added section has a corresponding fill-in instruction in `SKILL.md` Step 7
 - [ ] A removed or renamed section has its corresponding `SKILL.md` Step 7 entry removed or updated
+- [ ] If **`## 次PR候補` section is renamed or removed**, update `pr-handoff` SKILL.md Step 1 to match
 - [ ] If **a new template file was added**, have you updated `paths:` and the Related Files list in this rule?
 
 ## Rule Maintenance
