@@ -20,6 +20,6 @@ When a hook should enforce "use creator skill X before editing file type Y":
 - **Use a session flag** (`/tmp/{hook-name}-{session_id}`) so the block fires only once per session.
   After the user has acknowledged the block and gone through the creator skill, subsequent edits in the same session are allowed (the flag exists → `sys.exit(0)`).
 
-- `UserPromptSubmit` dispatch is still useful as an **early warning** ("heads up, you mentioned a skill file") but must not be the sole enforcement.
+- **Do NOT add `UserPromptSubmit` dispatch hooks for creator routing.** They fire on every user prompt and add unnecessary overhead — `PreToolUse` is sufficient as the sole enforcement.
 
 This pattern is used by `skill-creator-dispatch` (claude-kit/dev-kit/ui-kit/work-kit) and by `python-skill-dispatch` / `yaml-skill-dispatch` (dev-kit).
