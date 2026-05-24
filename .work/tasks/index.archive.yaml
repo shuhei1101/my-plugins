@@ -320,3 +320,10 @@ prs:
     ルール違反を修正
   task: 20260524_skill-creator-dispatch-pretooluse
   completed: true
+- id: 123
+  title: PR123 — localize-core-rules
+  type: fix
+  tags: []
+  summary: incidents.md・glossary.md の英語本体を全文英語化し、JP ミラーに mark-generated 記法を適用
+  task: 20260525_localize-core-rules
+  completed: true
