@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # incidents — 再発防止フォーマット
 
 失敗・誤解・思い込みを記録して同じミスを繰り返さないための `incidents` ルールの

@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # rules.jp.md — ルール設計ガイド（日本語ミラー）
 
 > このファイルは `references/rules.md` の日本語ミラーです。

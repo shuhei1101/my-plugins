@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # claude-md.jp.md — CLAUDE.md 設計ガイド（日本語ミラー）
 
 > このファイルは `references/claude-md.md` の日本語ミラーです。

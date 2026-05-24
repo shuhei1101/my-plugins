@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # common.jp.md — Claude 設定 共通ガイド（日本語ミラー）
 
 > このファイルは `references/common.md` の日本語ミラーです。

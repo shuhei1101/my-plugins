@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # glossary — プロジェクト用語集フォーマット
 
 `.claude/rules/glossary.md` の構造と使い方を定義する。
