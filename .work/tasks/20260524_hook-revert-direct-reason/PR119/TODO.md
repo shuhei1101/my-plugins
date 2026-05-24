@@ -20,11 +20,11 @@ PR115 で修正した "Read and follow:" パターン廃止の残作業。
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR119/QA.md` |
-| - | `.work/notes/hook-revert-direct-reason.md` を更新する | - `.work/notes/hook-revert-direct-reason.md` |
-| - | UserPromptSubmit フック × 5 の Read and follow を直接埋め込みに変更 | - `plugins/claude-kit/hooks/hooks.json` |
-| - | PostToolUse フック × 1 の Read and follow を直接埋め込みに変更 | - `plugins/claude-kit/hooks/hooks.json` |
-| - | plugin.json と marketplace.json のバージョンをバンプ | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR119/QA.md` |
+| 済 | `.work/notes/hook-revert-direct-reason.md` を更新する | - `.work/notes/hook-revert-direct-reason.md` |
+| 済 | UserPromptSubmit フック × 5 の Read and follow を直接埋め込みに変更 | - `plugins/claude-kit/hooks/hooks.json` |
+| 済 | PostToolUse フック × 1 の Read and follow を直接埋め込みに変更 | - `plugins/claude-kit/hooks/hooks.json` |
+| 済 | plugin.json と marketplace.json のバージョンをバンプ | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
