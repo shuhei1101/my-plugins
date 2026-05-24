@@ -66,6 +66,22 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib,re; d=json.loads(sys.stdin.read()); fp=d.get('tool_input',{}).get('file_path',''); sys.exit(0) if not fp.endswith('.md') or fp.endswith('.jp.md') else None; pats=[r'/skills/[^/]+/SKILL\\.md$',r'\\.claude/rules/[^/]+\\.md$',r'/hooks/prompts/[^/]+\\.md$',r'(?:^|/)CLAUDE(?:\\.local)?\\.md$']; sys.exit(0) if not any(re.search(p,fp) for p in pats) else None; sys.exit(0) if pathlib.Path(fp[:-3]+'.jp.md').exists() else sys.stdout.buffer.write(('Read and follow: '+sys.argv[1]+'\\n').encode())",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/jp-mirror-check.md"
+            ]
+          }
+        ]
+      }
     ]
   }
 }
