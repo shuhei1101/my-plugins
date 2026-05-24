@@ -20,15 +20,15 @@ PR89 で導入した "Read and follow: /path" パターンを廃止し、フッ�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR115/QA.md` |
-| - | `.work/notes/` のノートを更新する | - `.work/notes/hook-revert-direct-reason.md` |
-| - | work-kit Stop フックを直接コンテンツ埋め込みに戻す | - `plugins/work-kit/hooks/hooks.json` |
-| - | ui-kit UserPromptSubmit フックを直接コンテンツ出力に戻す | - `plugins/ui-kit/hooks/hooks.json` |
-| - | dev-kit PreToolUse フックを直接コンテンツ埋め込みに戻す | - `plugins/dev-kit/hooks/hooks.json` |
-| - | hook-creator SKILL.md の全フックパターンを更新 | - `plugins/claude-kit/skills/hook-creator/SKILL.md` |
-| - | hook-creator SKILL.jp.md を更新 | - `plugins/claude-kit/skills/hook-creator/SKILL.jp.md` |
-| - | 各プラグイン plugin.json / marketplace.json のバージョンバンプ | - `plugins/*/. claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | incidents.md にリバート理由を追記 | - `.claude/rules/core/incidents.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR115/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/hook-revert-direct-reason.md` |
+| 済 | work-kit Stop フックを直接コンテンツ埋め込みに戻す | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | ui-kit UserPromptSubmit フックを直接コンテンツ出力に戻す | - `plugins/ui-kit/hooks/hooks.json` |
+| 済 | dev-kit PreToolUse フックを直接コンテンツ埋め込みに戻す | - `plugins/dev-kit/hooks/hooks.json` |
+| 済 | hook-creator SKILL.md の全フックパターンを更新 | - `plugins/claude-kit/skills/hook-creator/SKILL.md` |
+| 済 | hook-creator SKILL.jp.md を更新 | - `plugins/claude-kit/skills/hook-creator/SKILL.jp.md` |
+| 済 | 各プラグイン plugin.json / marketplace.json のバージョンバンプ | - `plugins/*/. claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | incidents.md にリバート理由を追記 | - `.claude/rules/core/incidents.md` |
 | - | ルール・CLAUDE.md を整備する | - 対象なし |
 
 ## 参考ドキュメント
