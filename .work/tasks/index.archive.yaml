@@ -140,3 +140,10 @@ prs:
     の文言を追従させる
   task: 20260524_merge-step10-handoff-sync
   completed: true
+- id: 94
+  title: PR94 — generator-metadata
+  type: feat
+  tags: []
+  summary: creator スキルの生成物に出自メタデータ(プラグイン名・スキル名・バージョン)を HTML コメント形式で埋め込む。既存生成物にも遡及適用。バージョン同期スキルを新規追加。
+  task: 20260524_generator-metadata
+  completed: true
