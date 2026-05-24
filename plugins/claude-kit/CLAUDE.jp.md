@@ -21,6 +21,6 @@
 - **セッションフラグ**（`/tmp/{hook-name}-{session_id}`）を使い、1セッションで1回だけブロックすること。
   ユーザーがブロックを認識してクリエイタースキルを経由した後は、同セッション内での続く編集は通過させる（フラグが存在する → `sys.exit(0)`）。
 
-- `UserPromptSubmit` ディスパッチは「早期警告」として引き続き有効（「スキルファイルに言及しましたね」という注意喚起）だが、単独のガードとして使ってはならない。
+- **クリエイタールーティング用の `UserPromptSubmit` ディスパッチフックを追加しないこと。** ユーザーのプロンプトごとに発火して不要なオーバーヘッドになる — `PreToolUse` だけで十分な強制力がある。
 
 このパターンは `skill-creator-dispatch`（claude-kit/dev-kit/ui-kit/work-kit）および `python-skill-dispatch` / `yaml-skill-dispatch`（dev-kit）で採用されている。
