@@ -18,22 +18,26 @@ JP ミラーには加えて「これは日本語ミラーです。SKILL.md を�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR94/QA.md` |
-| - | 仕様メモを作成（メタデータ記法、警告文言、対象範囲、同期スキルの仕様） | - `.work/notes/generator-metadata.md` |
-| - | claude-kit/skill-creator を更新（生成 SKILL.md / SKILL.jp.md に出自メタデータ＋JPミラー警告） | - `plugins/claude-kit/skills/skill-creator/SKILL.md` |
-| - | claude-kit/hook-creator を更新（生成 hook にメタデータ） | - `plugins/claude-kit/skills/hook-creator/SKILL.md` |
-| - | claude-kit/rule-creator を更新（生成ルールにメタデータ） | - `plugins/claude-kit/skills/rule-creator/SKILL.md` |
-| - | claude-kit/claude-creator を更新（生成 CLAUDE.md にメタデータ） | - `plugins/claude-kit/skills/claude-creator/SKILL.md` |
-| - | claude-kit/plugin-creator を更新（生成テンプレートにメタデータ） | - `plugins/claude-kit/skills/plugin-creator/SKILL.md` |
-| - | 共有 references の判定知識を更新（メタデータ書式ガイド追加） | - `plugins/claude-kit/references/` |
-| - | claude-kit に version-sync スキルを新規追加（完全自動: 生成物検出→差分提示→更新→コミット） | - `plugins/claude-kit/skills/version-sync/SKILL.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR94/QA.md` |
+| 済 | 仕様メモを作成（メタデータ記法、警告文言、対象範囲、同期スキルの仕様） | - `.work/notes/generator-metadata.md` |
+| 済 | 仕様メモを `mark-generated` スキル切り出し方針に更新 | - `.work/notes/generator-metadata.md` |
+| - | `mark-generated` スキルを新規作成（ファイル種別ごとのメタデータ書式・JPミラー警告文言を提供） | - `plugins/claude-kit/skills/mark-generated/SKILL.md` `SKILL.jp.md` |
+| - | claude-kit/skill-creator に「生成前に /claude-kit:mark-generated を起動して書式取得→埋め込み」ステップ追加 | - `plugins/claude-kit/skills/skill-creator/SKILL.md` |
+| - | claude-kit/hook-creator に同上ステップ追加 | - `plugins/claude-kit/skills/hook-creator/SKILL.md` |
+| - | claude-kit/rule-creator に同上ステップ追加 | - `plugins/claude-kit/skills/rule-creator/SKILL.md` |
+| - | claude-kit/claude-creator に同上ステップ追加 | - `plugins/claude-kit/skills/claude-creator/SKILL.md` |
+| - | claude-kit/plugin-creator に同上ステップ追加（changelogs/ への適用） | - `plugins/claude-kit/skills/plugin-creator/SKILL.md` |
+| - | work-kit/work-start に同上ステップ追加（TODO.md / QA.md などテンプレ生成時） | - `plugins/work-kit/skills/work-start/SKILL.md` |
+| - | 他プラグインで生成系スキルを洗い出し、必要なら mark-generated 呼び出しを追加 | - `plugins/{worktree-kit,dev-kit,guard-kit,ui-kit}/**/SKILL.md` |
+| - | claude-kit に version-sync スキルを新規追加（完全自動: 生成物検出→差分反映→コミット） | - `plugins/claude-kit/skills/version-sync/SKILL.md` |
 | - | 既存生成物（全プラグイン）に遡及的にメタデータを書く | - `plugins/{claude-kit,work-kit,worktree-kit,dev-kit,guard-kit,ui-kit}/**` |
 | - | claude-kit のバージョンを bump（MINOR: 機能追加） | - `plugins/claude-kit/.claude-plugin/plugin.json` |
 | - | claude-kit の changelogs に PR94 エントリを追加 | - `plugins/claude-kit/changelogs/` |
+| - | work-kit のバージョンを bump（mark-generated 呼び出し追加分） | - `plugins/work-kit/.claude-plugin/plugin.json` |
 | - | marketplace.json のバージョン同期 | - `.claude-plugin/marketplace.json` |
-| - | ルール更新: creator-skill-dispatch.md（出自メタデータ強制ルール追記） | - `.claude/rules/feature/creator-skill-dispatch.md` |
+| - | ルール更新: creator-skill-dispatch.md（mark-generated 必須呼び出しを明記） | - `.claude/rules/feature/creator-skill-dispatch.md` |
 | - | ルール更新: skill-jp-mirror-sync.md（JPミラー警告コメント必須化） | - `.claude/rules/feature/skill-jp-mirror-sync.md` |
-| - | glossary に新用語追加（出自メタデータ / version-sync スキル） | - `.claude/rules/core/glossary.md` |
+| - | glossary に新用語追加（mark-generated / 出自メタデータ / version-sync スキル） | - `.claude/rules/core/glossary.md` |
 | - | SKILL.jp.md ミラーを同期 | - 各 `SKILL.jp.md` |
 
 ## 参考ドキュメント
