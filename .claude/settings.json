@@ -1,0 +1,20 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3",
+            "args": [
+              "-c",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); fp=d.get('tool_input',{}).get('file_path',''); jp=fp[:-3]+'.jp.md' if fp.endswith('.md') and not fp.endswith('.jp.md') else ''; excludes=['.work/','changelogs/','node_modules/']; sys.exit(0) if not jp or any(e in fp for e in excludes) or pathlib.Path(jp).exists() else sys.stdout.buffer.write(('Read and follow: '+sys.argv[1]+'\\n').encode())",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/post-tool-use-jp-mirror.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
