@@ -90,3 +90,10 @@ prs:
   summary: merge SKILL.md にマージ禁止文を強化追記
   task: 20260524_merge-skill-no-auto-merge
   completed: true
+- id: 89
+  title: PR89 — stop-hook-prompt-by-ref
+  type: fix
+  tags: []
+  summary: Stop フックの reason に全文を埋め込む代わりに、ファイルパス参照の1行メッセージを出力する方式に変更
+  task: 20260524_stop-hook-prompt-by-ref
+  completed: true
