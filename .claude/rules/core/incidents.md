@@ -9,3 +9,4 @@
 | 2026-05-23 | removeEventListener に匿名関数（アロー関数）を渡しても解除できない。イベントリスナーは名前付き関数で登録・解除すること | [detail](../../references/incidents/removeeventlistener-anonymous-function.md) |
 | 2026-05-23 | merge スキルの archive ステップが常に 0 件を返していた。原因: (1) `completed: true` 設定ステップの欠落 (2) `index.yaml` は gitignored でワークツリーに存在しない。修正: set-completed コマンド追加 + Step 4 追加 + archive 先をワークツリーに変更 | [detail](../../references/incidents/merge-archive-step-zero-bug.md) |
 | 2026-05-24 | merge スキルがユーザーの明示的指示なしに `git merge` を自動実行した。セッション内で過去に許可を得ていても次のマージは別指示が必要。修正: SKILL.md に Critical Prohibition セクション追加・Step 6 に絶対禁止ルール追記 | [detail](../../references/incidents/merge-auto-execution-without-permission.md) |
+| 2026-05-24 | `.work/specs/` フォルダ名が「仕様書」を連想させるため、AI に自動読み込みされないにもかかわらず重要ドキュメント扱いになり古くなりやすかった。AI 非読み込みのフォルダは `notes/` など非公式な名前にすること | [detail](../../references/incidents/work-folder-name-implies-official-docs.md) |
