@@ -15,6 +15,9 @@ PR ブランチが長期間続いた場合などに master 側で変更が入っ
 | 済 | 概要セクション（冒頭サマリ行）を更新する | `plugins/work-kit/skills/merge/SKILL.md`, `SKILL.jp.md` |
 | 済 | plugin.json・marketplace.json のバージョンを bump する | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 | 済 | ルール・CLAUDE.md を整備する | — |
+| - | Step3: 「停止してユーザーに確認」を廃止し、Claude が自律判断で完結するよう変更 | `SKILL.md`, `SKILL.jp.md` |
+| - | Step3: 重複検出を「ファイル直接一致のみ」から「間接依存（呼び出し元・import 元も含む）」の文脈判断に変更 | `SKILL.md`, `SKILL.jp.md` |
+| - | Step3: 判断軸に影響範囲・インターフェース変更・意図の方向性を追加 | `SKILL.md`, `SKILL.jp.md` |
 
 ## 参考ドキュメント
 
