@@ -176,3 +176,10 @@ prs:
   summary: work-start スキルの Step 10 にコミットメッセージは日本語で記述するルールを追記する
   task: 20260524_ja-commit-message-rule
   completed: true
+- id: 104
+  title: PR104 — dev-kit-python-yaml-hooks
+  type: feat
+  tags: []
+  summary: dev-kit の Python・YAML ファイル編集時に対応スキルを自動読み込みするフックを追加
+  task: 20260524_dev-kit-python-yaml-hooks
+  completed: true
