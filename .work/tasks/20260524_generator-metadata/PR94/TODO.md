@@ -34,3 +34,4 @@ JP ミラーには警告コメントも付与。既存の全生成物にも遡�
 | タイトル | 概要 |
 |---|---|
 | mark-generated HTML/JS/CSS 対応 | uidev.js / uidev.css / example.html / mock-skeleton.html などのテンプレに対応する記法を mark-generated に追加し、ui-kit のテンプレ全体を遡及スタンプ対象に含める |
+| mark-generated に英語版ミラー警告を追加 | 現状は `*.jp.md` に「これは日本語ミラー」コメントを返すのみ。英語版（SKILL.md / CLAUDE.md / `.claude/rules/**/*.md` など、AI が読むプロンプト系ファイル）にも「日本語ミラー (`*.jp.md`) と同時管理されている。英語側を更新したら JP も更新する」旨のコメントを返すよう mark-generated を拡張する。対象は SKILL / CLAUDE.md / rule / hook prompt のうち JP/EN ペアが存在するもの。既存ペアにも遡及適用する。`skill-jp-mirror-sync.md` のような既存リンクルールと役割が重複しないよう設計を整理する。 |
