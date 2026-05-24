@@ -176,3 +176,10 @@ prs:
   summary: work-start スキルの Step 10 にコミットメッセージは日本語で記述するルールを追記する
   task: 20260524_ja-commit-message-rule
   completed: true
+- id: 103
+  title: PR103 — claude-kit-creator-skill-hook
+  type: feat
+  tags: []
+  summary: CLAUDE.md・スキル・ルール・フック編集時にクリエイタースキル呼び出しを促すUserPromptSubmitフックをclaude-kitに追加
+  task: 20260524_claude-kit-creator-skill-hook
+  completed: true
