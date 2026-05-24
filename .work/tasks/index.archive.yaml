@@ -242,3 +242,10 @@ prs:
   summary: .md ファイル作成時に JP ミラー作成を促す PostToolUse フックを追加
   task: 20260524_md-jp-mirror-hook
   completed: true
+- id: 112
+  title: PR112 — incident-criteria-and-jp-mirror-sync
+  type: refactor
+  tags: []
+  summary: インシデント判定基準の修正と incidents/glossary JP ミラー同期ルールの追加
+  task: 20260524_incident-criteria-and-jp-mirror-sync
+  completed: true

@@ -102,9 +102,8 @@ generates all identified artifacts automatically.
    ---
 
    **E. Lessons learned / recurrence prevention** (→ `incidents` rule)
-   - Commands or operations that were tried and failed, where the cause and fix are now known
-   - Wrong assumptions that turned out to be incorrect
-   - "I don't want to make this mistake again"
+   Record when: a command/operation failed and the correct approach is now known; a file was accidentally deleted or overwritten; something that was planned in the original TODO was missed by AI and the user had to re-request it; AI acted on a wrong assumption and the user corrected it.
+   Do NOT record: PR work content itself (what code was changed); tasks the user newly added as scope expansion; general best-practices already documented elsewhere.
 
    **F. Project-specific terminology** (→ `glossary` rule)
    - Project-specific nouns, abbreviations, or concepts the user mentioned in conversation
