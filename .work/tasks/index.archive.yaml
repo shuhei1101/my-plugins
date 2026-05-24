@@ -118,3 +118,10 @@ prs:
   summary: notes/ の立ち位置説明を CLAUDE.md に追記し、notes → rule/CLAUDE.md 昇格スキルを新規作成する
   task: 20260524_add-notes-to-claude-skill
   completed: true
+- id: 93
+  title: PR93 — merge step improvements
+  type: feat
+  tags: []
+  summary: merge Step 10 に pr-handoff 自動呼び出しを追加、Step 3 で conversation-to-claude をワークツリーで実行
+  task: 20260524_merge-step-improvements
+  completed: true
