@@ -28,7 +28,7 @@ merge SKILL.md の Step 12 は `pr-show` への委譲（呼び出し）に書き
 | x | merge SKILL.md の Step 12 を pr-show への委譲に書き換える | `plugins/work-kit/skills/merge/SKILL.md` |
 | x | merge SKILL.jp.md の Step 12 を同様に書き換える | `plugins/work-kit/skills/merge/SKILL.jp.md` |
 | x | work-kit plugin.json / marketplace.json のバージョンをバンプする | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | ルール・CLAUDE.md を整備する | - |
+| x | ルール・CLAUDE.md を整備する（glossary に pr-show エントリ追加） | `.claude/rules/core/glossary.md` |
 
 ## 参考ドキュメント
 
