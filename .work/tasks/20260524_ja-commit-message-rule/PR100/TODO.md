@@ -10,11 +10,11 @@ work-kit:work-start スキルの Step 10（コミット実行）に「コミッ�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `/claude-kit:skill-creator` 経由で SKILL.md の Step 10 に日本語化ルールを追記 | - `plugins/work-kit/skills/work-start/SKILL.md` |
-| - | SKILL.jp.md にも同じ追記を反映 | - `plugins/work-kit/skills/work-start/SKILL.jp.md` |
-| - | `plugin.json` と `marketplace.json` のバージョン bump（PATCH） | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | `changelogs/` にエントリ追加 | - `plugins/work-kit/changelogs/{version}.md` |
-| - | ルール・CLAUDE.md の更新要否を確認 | - `.claude/rules/**` |
+| ✅ | `/claude-kit:skill-creator` 経由で SKILL.md の Step 10 に日本語化ルールを追記 | - `plugins/work-kit/skills/work-start/SKILL.md` |
+| ✅ | SKILL.jp.md にも同じ追記を反映 | - `plugins/work-kit/skills/work-start/SKILL.jp.md` |
+| ✅ | `plugin.json` と `marketplace.json` のバージョン bump（PATCH 2.27.0 → 2.27.1） | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| ✅ | `changelogs/` にエントリ追加 | - `plugins/work-kit/changelogs/v2.27.1.md` |
+| ✅ | ルール・CLAUDE.md の更新は不要と確認（既存ルールに該当なし） | - `.claude/rules/**` |
 
 ## 参考ドキュメント
 
