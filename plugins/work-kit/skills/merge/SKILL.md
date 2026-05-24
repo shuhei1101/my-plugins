@@ -97,53 +97,56 @@ git log HEAD..master --oneline
 
 If no output → master has not moved; skip to Step 4.
 
-2. Identify files that were changed both in master and in this PR branch:
+2. Check for relevant relationships between this PR's changes and master's changes. Use git commands as a starting point, then apply contextual judgment:
 
 ```bash
-# Files changed in this PR (compared to master)
+# Get a picture of what this PR changed
 git diff master...HEAD --name-only
 
-# For each overlapping file, check master's commits on it
-git log HEAD..master --oneline -- {file}
+# Scan master's commits for what changed and where
+git log HEAD..master --oneline --stat
 ```
 
-3. For each overlapping file, read the commit context from master:
+   Do not rely on file-name matches alone — also consider indirect relationships:
+   - Did master change a **caller or importer** of a file this PR modifies?
+   - Did master change an **interface, type, schema, or config** that this PR depends on?
+   - Did master introduce **naming or structural changes** that this PR's code assumes haven't happened yet?
+
+3. Read the relevant master-side commit content and background:
 
 ```bash
-git log -p HEAD..master -- {file}
+git log -p HEAD..master -- {relevant file}
 ```
 
-4. Judge priority for each overlapping change — consider both:
+4. For each relevant change, judge priority autonomously using these dimensions:
    - **Recency**: which commit is newer?
-   - **Background**: what was the purpose of master's change? Does it supersede or conflict with this PR?
+   - **Blast radius**: is master's change central (many dependents) or local? Central changes take higher priority.
+   - **Interface changes**: if master changed a function signature, type, or schema, this PR may be using the old interface → update the PR side
+   - **Directional alignment**: are master and this PR heading toward the same goal, or opposite directions? Opposite directions often means one side has an error.
+   - **PR purpose**: if this PR exists specifically to correct or supersede master's change, the PR takes priority.
 
-5. Based on the judgment, take one of the following actions:
-   - **No action needed**: changes are independent (different lines/sections, no logical conflict) → proceed to Step 4
-   - **Incorporate master**: master has a related, newer change that should be reflected in this PR → merge master into the PR branch and adapt as needed:
+5. Based on the judgment, take one of the following actions autonomously (no user confirmation needed):
+   - **No action needed**: changes are independent → proceed to Step 4
+   - **Incorporate master**: master has a related change that this PR should reflect → merge master into the PR branch:
 
 ```bash
 git merge master
 ```
 
-   Resolve any conflicts and update the PR's implementation to be compatible.
-   - **Manual resolution required**: both sides have valid but contradictory intentions → report to user and stop; do not proceed until the user decides
+   Resolve conflicts and update the PR's implementation to be compatible.
+   - **PR takes priority**: this PR is specifically correcting master, or the PR approach is clearly the newer correct one → proceed without merging
+   - **Tie**: when the judgment is evenly balanced, choose the safe side — incorporate master (`git merge master`), then re-apply the PR's intent on top
 
 → Proceed to Step 4
 
 #### Notes
 
-##### Judgment guidelines
+##### Autonomous tiebreaker order (when judgment is unclear)
 
-| Situation | Action |
-|---|---|
-| Master changed unrelated files only | No action — proceed |
-| Master changed the same file but different sections | Merge master to stay current |
-| Master changed the same logic this PR corrects | PR takes priority — proceed without merging |
-| Master and PR changes are logically contradictory | Stop and ask the user |
-
-##### When to stop and ask the user
-
-Stop when the overlap involves core logic where the correct direction is unclear, or when merging master produces conflicts that cannot be resolved without user input.
+1. Recency — prefer the newer commit
+2. Blast radius — prefer the change that more things depend on
+3. PR purpose — if the PR corrects this change, prefer the PR
+4. Safe default — incorporate master, then adapt the PR
 
 ---
 
