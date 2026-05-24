@@ -12,11 +12,11 @@ PR101で追加した `## 実施条件` セクションをH3（`### 実施条件`
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `templates/TODO.md` の `## 実施条件` を `### 実施条件` に変更し `### 関連プルリクエスト` セクションを追加 | - `plugins/work-kit/templates/TODO.md` |
-| - | `templates/.work/.../TODO.md` にも同様の変更 | - `plugins/work-kit/templates/.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` |
-| - | `work-start` SKILL.md Step 7 の記入指示を更新 | - `plugins/work-kit/skills/work-start/SKILL.md` |
-| - | `work-start` SKILL.jp.md も同期更新 | - `plugins/work-kit/skills/work-start/SKILL.jp.md` |
-| - | バージョンバンプ | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | `templates/TODO.md` の `## 実施条件` を `### 実施条件` に変更し `### 関連プルリクエスト` セクションを追加 | - `plugins/work-kit/templates/TODO.md` |
+| 済 | `templates/.work/.../TODO.md` にも同様の変更 | - `plugins/work-kit/templates/.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` |
+| 済 | `work-start` SKILL.md Step 7 の記入指示を更新 | - `plugins/work-kit/skills/work-start/SKILL.md` |
+| 済 | `work-start` SKILL.jp.md も同期更新 | - `plugins/work-kit/skills/work-start/SKILL.jp.md` |
+| 済 | バージョンバンプ | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
