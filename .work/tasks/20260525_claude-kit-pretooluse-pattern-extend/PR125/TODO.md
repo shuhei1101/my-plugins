@@ -26,15 +26,15 @@ claude-kit の `skill-creator-dispatch` PreToolUse フックが現在 `/skills/[
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260525_claude-kit-pretooluse-pattern-extend/PR125/QA.md` |
-| - | `.work/notes/` のノートを更新する | `.work/notes/claude-kit-creator-skill-hook.md` |
-| - | claude-kit PreToolUse パターンを拡張（SKILL.jp.md 対応） | `plugins/claude-kit/hooks/hooks.json` |
-| - | claude-kit PreToolUse パターンを拡張（rules/*.md 対応） | `plugins/claude-kit/hooks/hooks.json` |
-| - | claude-kit PreToolUse パターンを拡張（CLAUDE.md 対応） | `plugins/claude-kit/hooks/hooks.json` |
-| - | rule-creator-dispatch / claude-creator-dispatch の PreToolUse エントリを追加または統合 | `plugins/claude-kit/hooks/hooks.json` |
-| - | 対応するプロンプトファイルを確認・必要に応じて更新 | `plugins/claude-kit/hooks/prompts/` |
-| - | claude-kit の plugin.json バージョンバンプ | `plugins/claude-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json バージョンバンプ | `.claude-plugin/marketplace.json` |
+| x | QA.md に未決定事項を記録する | `.work/tasks/20260525_claude-kit-pretooluse-pattern-extend/PR125/QA.md` |
+| x | `.work/notes/` のノートを更新する | `.work/notes/claude-kit-creator-skill-hook.md` |
+| x | claude-kit PreToolUse パターンを拡張（SKILL.jp.md 対応） | `plugins/claude-kit/hooks/hooks.json` |
+| x | claude-kit PreToolUse パターンを拡張（rules/*.md 対応） | `plugins/claude-kit/hooks/hooks.json` |
+| x | claude-kit PreToolUse パターンを拡張（CLAUDE.md 対応） | `plugins/claude-kit/hooks/hooks.json` |
+| x | rule-creator-dispatch / claude-creator-dispatch の PreToolUse エントリを追加または統合 | `plugins/claude-kit/hooks/hooks.json` |
+| x | 対応するプロンプトファイルを確認・必要に応じて更新 | `plugins/claude-kit/hooks/prompts/` |
+| x | claude-kit の plugin.json バージョンバンプ | `plugins/claude-kit/.claude-plugin/plugin.json` |
+| x | marketplace.json バージョンバンプ | `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
