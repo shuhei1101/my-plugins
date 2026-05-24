@@ -9,12 +9,12 @@ PR ブランチが長期間続いた場合などに master 側で変更が入っ
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260523_merge-skill-master-reconcile/PR92/QA.md` |
-| - | SKILL.md に新 Step3（master 適合確認）を追加し、既存ステップ番号を繰り下げる | `plugins/work-kit/skills/merge/SKILL.md` |
-| - | SKILL.jp.md に同内容を反映する（JP ミラー） | `plugins/work-kit/skills/merge/SKILL.jp.md` |
-| - | 概要セクション（冒頭サマリ行）を更新する | `plugins/work-kit/skills/merge/SKILL.md`, `SKILL.jp.md` |
-| - | plugin.json・marketplace.json のバージョンを bump する | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | ルール・CLAUDE.md を整備する | — |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/20260523_merge-skill-master-reconcile/PR92/QA.md` |
+| 済 | SKILL.md に新 Step3（master 適合確認）を追加し、既存ステップ番号を繰り下げる | `plugins/work-kit/skills/merge/SKILL.md` |
+| 済 | SKILL.jp.md に同内容を反映する（JP ミラー） | `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| 済 | 概要セクション（冒頭サマリ行）を更新する | `plugins/work-kit/skills/merge/SKILL.md`, `SKILL.jp.md` |
+| 済 | plugin.json・marketplace.json のバージョンを bump する | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | ルール・CLAUDE.md を整備する | — |
 
 ## 参考ドキュメント
 
