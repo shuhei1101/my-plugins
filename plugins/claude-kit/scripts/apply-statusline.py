@@ -23,7 +23,7 @@ STATUS_LINE = {
         "tt=lambda e,f: datetime.datetime.fromtimestamp(e).strftime(f) if e else '';"
         "fmtn=lambda n: '?' if n is None else (str(round(n/1000000,1)).rstrip('0').rstrip('.')+'M' if n>=1000000 else str(round(n/1000))+'k' if n>=1000 else str(round(n)));"
         "up=cw.get('used_percentage');cu=cw.get('total_input_tokens');cm=cw.get('context_window_size');"
-        "ctx_color='\\033[31m' if up is not None and up>=70 else ('\\033[33m' if up is not None and up>=50 else '');"
+        "ctx_color='\\033[31m' if up is not None and up>=70 else ('\\033[33m' if up is not None and up>=50 else ('\\033[32m' if up is not None else ''));"
         "ctx_reset='\\033[0m' if ctx_color else '';"
         "ctx_str=ctx_color+'ctx '+str(round(up))+'%'+ctx_reset+((' ('+fmtn(cu)+'/'+fmtn(cm)+')') if cu is not None or cm is not None else '') if up is not None else '';"
         "p5=r5.get('used_percentage');p7=r7.get('used_percentage');"
