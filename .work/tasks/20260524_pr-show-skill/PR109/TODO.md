@@ -22,12 +22,12 @@ merge SKILL.md の Step 12 は `pr-show` への委譲（呼び出し）に書き
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | - | QA.md に未決定事項を記録する | `.work/tasks/20260524_pr-show-skill/PR109/QA.md` |
-| - | merge SKILL.md の Step 12 内容を確認する（英語版） | `plugins/work-kit/skills/merge/SKILL.md` |
-| - | `pr-show` スキルの SKILL.jp.md を作成する | `plugins/work-kit/skills/pr-show/SKILL.jp.md` |
-| - | `pr-show` スキルの SKILL.md を作成する | `plugins/work-kit/skills/pr-show/SKILL.md` |
-| - | merge SKILL.md の Step 12 を pr-show への委譲に書き換える | `plugins/work-kit/skills/merge/SKILL.md` |
-| - | merge SKILL.jp.md の Step 12 を同様に書き換える | `plugins/work-kit/skills/merge/SKILL.jp.md` |
-| - | work-kit plugin.json / marketplace.json のバージョンをバンプする | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| x | merge SKILL.md の Step 12 内容を確認する（英語版） | `plugins/work-kit/skills/merge/SKILL.md` |
+| x | `pr-show` スキルの SKILL.jp.md を作成する | `plugins/work-kit/skills/pr-show/SKILL.jp.md` |
+| x | `pr-show` スキルの SKILL.md を作成する | `plugins/work-kit/skills/pr-show/SKILL.md` |
+| x | merge SKILL.md の Step 12 を pr-show への委譲に書き換える | `plugins/work-kit/skills/merge/SKILL.md` |
+| x | merge SKILL.jp.md の Step 12 を同様に書き換える | `plugins/work-kit/skills/merge/SKILL.jp.md` |
+| x | work-kit plugin.json / marketplace.json のバージョンをバンプする | `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 | - | ルール・CLAUDE.md を整備する | - |
 
 ## 参考ドキュメント
