@@ -154,3 +154,10 @@ prs:
   summary: mark-generated に HTML/JS/CSS 記法を追加し、ui-kit テンプレ全体を遡及スタンプ対象に含める
   task: 20260524_mark-generated-html-js-css
   completed: true
+- id: 99
+  title: PR99 — merge-next-pr-list-with-status
+  type: feat
+  tags: []
+  summary: merge スキル Step 10 の次PR提示を 着手可能/進行中/条件あり の3カテゴリに分けて表示
+  task: 20260524_merge-next-pr-list-with-status
+  completed: true
