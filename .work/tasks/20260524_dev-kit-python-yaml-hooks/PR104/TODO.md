@@ -21,6 +21,7 @@ YAML ファイル編集時は yaml スキルを読み込ませる。
 
 - `plugins/dev-kit/skills/py-project/SKILL.md`: py-project スキル定義
 - `plugins/dev-kit/skills/py-script/SKILL.md`: py-script スキル定義
+- `.work/notes/dev-kit-hooks.md`: フック設計メモ
 - `plugins/dev-kit/skills/yaml/SKILL.md`: yaml スキル定義
 
 ## 次PR候補
