@@ -20,16 +20,16 @@ PR121 で dev-kit/ui-kit/work-kit に追加した `skill-creator-dispatch` の P
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260525_fix-skill-creator-dispatch-dedup/PR124/QA.md` |
-| - | `.work/notes/` のノートを更新する | `.work/notes/hook-creator-dispatch.md` |
-| - | dev-kit/hooks.json から skill-creator-dispatch PreToolUse エントリを削除 | `plugins/dev-kit/hooks/hooks.json` |
-| - | ui-kit/hooks.json から skill-creator-dispatch PreToolUse エントリを削除 | `plugins/ui-kit/hooks/hooks.json` |
-| - | work-kit/hooks.json から skill-creator-dispatch PreToolUse エントリを削除 | `plugins/work-kit/hooks/hooks.json` |
-| - | dev-kit の skill-creator-dispatch プロンプトファイルを削除 | `plugins/dev-kit/hooks/prompts/skill-creator-dispatch.md` `plugins/dev-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
-| - | ui-kit の skill-creator-dispatch プロンプトファイルを削除 | `plugins/ui-kit/hooks/prompts/skill-creator-dispatch.md` `plugins/ui-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
-| - | work-kit の skill-creator-dispatch プロンプトファイルを削除 | `plugins/work-kit/hooks/prompts/skill-creator-dispatch.md` `plugins/work-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
-| - | 各プラグインの plugin.json バージョンバンプ | `plugins/dev-kit/.claude-plugin/plugin.json` `plugins/ui-kit/.claude-plugin/plugin.json` `plugins/work-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json バージョンバンプ | `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/20260525_fix-skill-creator-dispatch-dedup/PR124/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | `.work/notes/hook-creator-dispatch.md` |
+| 済 | dev-kit/hooks.json から skill-creator-dispatch PreToolUse エントリを削除 | `plugins/dev-kit/hooks/hooks.json` |
+| 済 | ui-kit/hooks.json から skill-creator-dispatch PreToolUse エントリを削除 | `plugins/ui-kit/hooks/hooks.json` |
+| 済 | work-kit/hooks.json から skill-creator-dispatch PreToolUse エントリを削除 | `plugins/work-kit/hooks/hooks.json` |
+| 済 | dev-kit の skill-creator-dispatch プロンプトファイルを削除 | `plugins/dev-kit/hooks/prompts/skill-creator-dispatch.md` `plugins/dev-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
+| 済 | ui-kit の skill-creator-dispatch プロンプトファイルを削除 | `plugins/ui-kit/hooks/prompts/skill-creator-dispatch.md` `plugins/ui-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
+| 済 | work-kit の skill-creator-dispatch プロンプトファイルを削除 | `plugins/work-kit/hooks/prompts/skill-creator-dispatch.md` `plugins/work-kit/hooks/prompts/skill-creator-dispatch.jp.md` |
+| 済 | 各プラグインの plugin.json バージョンバンプ | `plugins/dev-kit/.claude-plugin/plugin.json` `plugins/ui-kit/.claude-plugin/plugin.json` `plugins/work-kit/.claude-plugin/plugin.json` |
+| 済 | marketplace.json バージョンバンプ | `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
