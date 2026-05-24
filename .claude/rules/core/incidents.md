@@ -20,3 +20,4 @@
 | 2026-05-24 | UserPromptSubmit フックが生のファイル内容を stdout に直接出力していた。Stop フックと同様、すべてのプロンプト注入フックは `"Read and follow: /path"` の1行出力に統一し、Claude 自身がファイルを読む方式にすること | [detail](../../references/incidents/userpromptsubmit-hook-raw-stdout.md) |
 | 2026-05-24 | 単純な UserPromptSubmit フックに Python スクリプトファイルと複数のプロンプトファイルを作成した。単純な処理はインライン Python + 単一 MD で十分。Python スクリプトファイルは複雑なロジックが必要な場合のみ | [detail](../../references/incidents/hook-script-file-overengineering.md) |
 | 2026-05-24 | hook-creator で `hooks/prompts/*.md` を作成した際に `*.jp.md` の JP ミラーを作成しなかった。`skill-jp-mirror-sync.md` ルールは SKILL.md のみ対象のため hook prompts はカバーされていなかった。修正: `hook-prompts-jp-mirror-sync.md` ルールを追加 | [detail](../../references/incidents/hook-prompts-jp-mirror-missing.md) |
+| 2026-05-24 | merge スキル Step 12 が `git branch --list 'PR*'` で全 PR ブランチを列挙し、今マージした PR と無関係なブランチも表示していた。Step 12 のデータソースは全ブランチではなくマージ PR の `## 次PR候補` テーブルに限定すること | [detail](../../references/incidents/merge-step12-listed-all-branches.md) |
