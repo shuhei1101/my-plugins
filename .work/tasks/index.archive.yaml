@@ -228,3 +228,10 @@ prs:
   summary: merge スキル Step 12 が全 PR ブランチを列挙していたのを、直前マージの次PR候補のみ表示する方式に修正
   task: 20260524_merge-step12-next-pr-only
   completed: true
+- id: 112
+  title: PR112 — incident-criteria-and-jp-mirror-sync
+  type: refactor
+  tags: []
+  summary: インシデント判定基準の修正と incidents/glossary JP ミラー同期ルールの追加
+  task: 20260524_incident-criteria-and-jp-mirror-sync
+  completed: true
