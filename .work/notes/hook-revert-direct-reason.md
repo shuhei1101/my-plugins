@@ -25,3 +25,18 @@ PR89 / PR104 で「Stop フックの reason に全文を埋め込むとユーザ
 ## 影響
 
 `Stop hook error: {full content}` が UI に表示されるようになるが、機能的には正しく動作する。
+
+## PR115 残作業 (PR119)
+
+PR115 では `claude-kit/hooks/hooks.json` の修正が漏れていた。
+以下が未修正：
+- UserPromptSubmit × 5（skill-creator-dispatch, rule-creator-dispatch, hook-creator-dispatch, claude-creator-dispatch, plugin-creator-dispatch）
+- PostToolUse × 1（jp-mirror-check）
+
+UserPromptSubmit フックの変更パターン：
+- Before: `sys.stdout.buffer.write(('Read and follow: '+str(q)+'\\n').encode())`
+- After: `sys.stdout.buffer.write(q.read_text('utf-8').encode())`
+
+PostToolUse フックの変更パターン：
+- Before: `sys.stdout.buffer.write(('Read and follow: '+sys.argv[1]+'\\n').encode())`
+- After: `sys.stdout.buffer.write(pathlib.Path(sys.argv[1]).read_text('utf-8').encode())`
