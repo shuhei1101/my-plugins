@@ -4,10 +4,12 @@ updates:
   - 2026-05-24 — 初版作成
   - 2026-05-24 — 実装完了・未決事項を解決済みに更新
   - 2026-05-24 — PR110: 冗長ルール・CLAUDE.mdセクション削除
+  - 2026-05-24 — PR121: UserPromptSubmit の限界を補う PreToolUse ブロック追加
 related_specs: []
 related_prs:
   - PR103
   - PR110
+  - PR121
 ---
 
 # claude-kit creator-skill-hook — UserPromptSubmit フック設計メモ

@@ -34,3 +34,4 @@
 | 進行中 (🟡) | pr-show スキルが提示する PR ステータスの一つ。予約済みブランチで master からのコミット数が 2 以上のもの。他の Claude Code セッションで作業中とみなし、現在のセッションでは触らない方が良い（PR99 で導入）。 |
 | 条件あり (🔴) | pr-show スキルが提示する PR ステータスの一つ。TODO.md の `## 次PR候補` で実施条件が他候補依存になっている [[依存後続候補]]。pr-handoff で予約されておらず先行 PR のマージ後に初めて予約対象になる（PR99 で導入）。 |
 | pr-show | 予約済みPRの状況を3カテゴリ（着手可能・他セッション進行中・条件あり）で一覧表示するスキル（`/work-kit:pr-show`）。merge の Step 12 から切り出した独立スキル（PR109 で追加）。merge 以外のタイミングでも直接呼び出し可能。 |
+| セッションフラグ型ブロック | PreToolUse フックがセッション単位のフラグファイル（`/tmp/{hook-name}-{session_id}`）を使い、初回のみ `decision:block` を返す設計パターン。ユーザーがクリエイタースキルを経由した後は同セッション内での続く編集を素通りさせる。dev-kit の `python-skill-dispatch` / `yaml-skill-dispatch` 由来（PR104）、PR121 で全プラグインの `skill-creator-dispatch` にも適用。 |
