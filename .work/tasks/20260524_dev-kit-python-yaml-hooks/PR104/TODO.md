@@ -15,6 +15,7 @@ YAML ファイル編集時は yaml スキルを読み込ませる。
 | 済 | `/claude-kit:hook-creator` を呼び出しPythonフック作成 | - `plugins/dev-kit/hooks/scripts/python-skill-dispatch.py` |
 | 済 | `/claude-kit:hook-creator` を呼び出しYAMLフック作成 | - `plugins/dev-kit/hooks/scripts/yaml-skill-dispatch.py` |
 | 済 | `plugin.json` / `marketplace.json` バージョンバンプ | - `plugins/dev-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| - | hook-creator v3.20.0 の "Read and follow" パターンに両スクリプトを更新 | - `plugins/dev-kit/hooks/scripts/python-skill-dispatch.py`, `yaml-skill-dispatch.py` |
 
 ## 参考ドキュメント
 
