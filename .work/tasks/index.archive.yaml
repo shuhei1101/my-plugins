@@ -291,3 +291,10 @@ prs:
   summary: claude-kit/hooks.json の Read and follow パターンを直接コンテンツ埋め込みに変更
   task: 20260524_hook-revert-direct-reason
   completed: true
+- id: 118
+  title: PR118 — statusline-display-not-working
+  type: fix
+  tags: []
+  summary: commit 4144128 後にステータスラインが表示されなくなる問題の調査・修正
+  task: 20260524_statusline-display-not-working
+  completed: true

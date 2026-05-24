@@ -55,6 +55,21 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/apply-statusline.py"
 
 #### 補足
 
+##### 実行環境の注意（重要）
+
+スクリプトは `Path.home() / ".claude" / "settings.json"` に書き込む。実際のパスは呼び出す Python によって変わる:
+
+| 実行環境 | 書き込み先 settings.json |
+|---|---|
+| WSL の Python | `/home/{ユーザー}/.claude/settings.json` |
+| Windows ネイティブの Python | `C:\Users\{ユーザー}\.claude\settings.json` |
+
+Claude Code は自身の実行環境に対応するパスから設定を読み込む。**Claude Code と同じ Python 環境からスクリプトを実行すること** — そうしないと Claude Code が読まない settings.json を書き換えてしまい、変更が反映されない（しかもエラーは出ない）。
+
+実行前に環境を確認する:
+- Claude Code の `Platform` が `linux`（WSL）→ WSL の `python` で実行
+- Claude Code が Windows ネイティブ → Windows の `python`（PowerShell / cmd）で実行
+
 ##### 条件分岐
 
 - スクリプトがエラーを返した場合 → エラーメッセージをユーザーに報告して終了
