@@ -21,7 +21,7 @@ JP ミラーには加えて「これは日本語ミラーです。SKILL.md を�
 | 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR94/QA.md` |
 | 済 | 仕様メモを作成（メタデータ記法、警告文言、対象範囲、同期スキルの仕様） | - `.work/notes/generator-metadata.md` |
 | 済 | 仕様メモを `mark-generated` スキル切り出し方針に更新 | - `.work/notes/generator-metadata.md` |
-| - | `mark-generated` スキルを新規作成（ファイル種別ごとのメタデータ書式・JPミラー警告文言を提供） | - `plugins/claude-kit/skills/mark-generated/SKILL.md` `SKILL.jp.md` |
+| 済 | `mark-generated` スキルを新規作成（ファイル種別ごとのメタデータ書式・JPミラー警告文言を提供） | - `plugins/claude-kit/skills/mark-generated/SKILL.md` `SKILL.jp.md` |
 | - | claude-kit/skill-creator に「生成前に /claude-kit:mark-generated を起動して書式取得→埋め込み」ステップ追加 | - `plugins/claude-kit/skills/skill-creator/SKILL.md` |
 | - | claude-kit/hook-creator に同上ステップ追加 | - `plugins/claude-kit/skills/hook-creator/SKILL.md` |
 | - | claude-kit/rule-creator に同上ステップ追加 | - `plugins/claude-kit/skills/rule-creator/SKILL.md` |
