@@ -20,14 +20,14 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260524_incident-criteria-and-jp-mirror-sync/PR112/QA.md` |
-| - | conversation-to-claude SKILL.md のインシデント判定基準を修正 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
-| - | conversation-to-claude SKILL.jp.md も同様に修正 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
-| - | incidents / glossary の JP ミラー同期ルールを追加 | - `.claude/rules/feature/incidents-glossary-jp-mirror-sync.md` |
-| - | JP ミラー同期ルール（rules-jp にも配置） | - `.claude/rules-jp/feature/incidents-glossary-jp-mirror-sync.md` |
-| - | rules-jp/core/incidents.md を英語版に同期（不足エントリ追加） | - `.claude/rules-jp/core/incidents.md` |
-| - | rules-jp/core/glossary.md を英語版に同期（不足エントリ追加） | - `.claude/rules-jp/core/glossary.md` |
-| - | plugin.json / marketplace.json バージョンバンプ | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260524_incident-criteria-and-jp-mirror-sync/PR112/QA.md` |
+| 済 | conversation-to-claude SKILL.md のインシデント判定基準を修正 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.md` |
+| 済 | conversation-to-claude SKILL.jp.md も同様に修正 | - `plugins/claude-kit/skills/conversation-to-claude/SKILL.jp.md` |
+| 済 | incidents / glossary の JP ミラー同期ルールを追加 | - `.claude/rules/feature/incidents-glossary-jp-mirror-sync.md` |
+| 済 | JP ミラー同期ルール（rules-jp にも配置） | - `.claude/rules-jp/feature/incidents-glossary-jp-mirror-sync.md` |
+| 済 | rules-jp/core/incidents.md を英語版に同期（不足エントリ追加） | - `.claude/rules-jp/core/incidents.md` |
+| 済 | rules-jp/core/glossary.md を英語版に同期（不足エントリ追加） | - `.claude/rules-jp/core/glossary.md` |
+| 済 | plugin.json / marketplace.json バージョンバンプ | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
