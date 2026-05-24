@@ -20,9 +20,9 @@ commit 4144128（feat: statusline-ctx-green #PR116）マージ後、ステータ
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260524_statusline-display-not-working/PR118/QA.md` |
-| - | バグの原因を特定する（apply-statusline.py の動作・settings.json の状態確認） | - `plugins/claude-kit/scripts/apply-statusline.py` |
+| 済 | バグの原因を特定する（apply-statusline.py の動作・settings.json の状態確認） | - `plugins/claude-kit/scripts/apply-statusline.py` |
 | - | 修正を実施する | - `plugins/claude-kit/scripts/apply-statusline.py` |
-| - | テストして statusline が表示されることを確認する | - `/home/shuhei2441/.claude/settings.json` |
+| 済 | テストして statusline が表示されることを確認する | - `/home/shuhei2441/.claude/settings.json` |
 | - | ルール・CLAUDE.md を整備する | - 不要であれば削除 |
 
 ## 参考ドキュメント
