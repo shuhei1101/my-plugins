@@ -18,6 +18,7 @@
 | 1行参照パターン | Stop フックの `reason` にファイルの全文を埋め込む代わりに `"Read and follow: /path/to/file.md"` の1行だけを出力するパターン。Claude 自身がファイルを読む方式のため会話セッションへの長文注入を防げる（PR89 で導入）。 |
 | pr-handoff | 現在のPRのTODO.mdに記録された「次PR候補」を元に、次のPRをwork-startと同じ流れで予約するスキル（`/work-kit:pr-handoff`）。各PRの背景情報をTODO.mdに記録して引き継ぎ品質を高める（PR91で追加）。直列依存対応は PR95 で導入。 |
 | 実施条件 | 2つの用途を持つ概念。① TODO.md の `## 次PR候補` テーブルの3カラム目（各候補の依存関係: `即時実施可` / `「{他候補}」が完了したら`）（PR95）。② TODO.md の `### 実施条件` サブセクション（`## 概要` 直下）—このPR自体の着手条件を記録する（PR101/102）。 |
+| creator-dispatch フック | UserPromptSubmit フックのひとつ。ユーザープロンプト内のファイルパスキーワード（`SKILL.md`, `.claude/rules/`, `hooks/`, `CLAUDE.md`, `plugins/` など）を検知し、対応するクリエイタースキル（skill-creator / rule-creator / hook-creator / claude-creator / plugin-creator）を使うよう Claude に指示を注入する。`plugins/claude-kit/hooks/hooks.json` に定義（PR103 で追加）。 |
 | 関連PR | TODO.md の `### 関連PR` サブセクション（`## 概要` 直下）。このPRと直接関連するPR（前提PR・分割兄弟PR・後続PRなど）をPR番号と概要の表で記録する（PR102で追加）。 |
 | 直列依存 | 後続PRが先行PRのマージ完了後にしか実装できない依存関係。pr-handoff は直列依存の候補を一度に予約せず、先行PRの `## 次PR候補` に転記して連鎖的に引き継ぐ（PR95で導入）。 |
 | 即時予約対象 | pr-handoff Step 1 の分類。実施条件が空欄/即時実施可、または既マージ済みPRへの依存のみの候補。今回の pr-handoff 実行で `/work-kit:work-start` により実際に予約される（PR95で導入）。 |
