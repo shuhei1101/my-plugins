@@ -192,3 +192,10 @@ prs:
     パターン統合、編集例追加'
   task: 20260524_hook-creator-skill-improvement
   completed: true
+- id: 107
+  title: PR107 — merge-step12-table-format
+  type: feat
+  tags: []
+  summary: merge スキル Step 12 の次PR一覧出力をテーブル形式（分類・PR番号・概要の3列）に変更
+  task: 20260524_merge-step12-table-format
+  completed: true
