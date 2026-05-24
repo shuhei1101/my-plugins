@@ -21,9 +21,9 @@ claude-kit の UserPromptSubmit creator-dispatch フック（skill/rule/hook/cla
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | QA.md に未決定事項を記録する | - `.work/tasks/.../PR127/QA.md` |
-| x | hooks.json の UserPromptSubmit セクションを削除 | - `plugins/claude-kit/hooks/hooks.json` |
-| x | plugin.json / marketplace.json のバージョンバンプ | - `plugins/claude-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR127/QA.md` |
+| 済 | hooks.json の UserPromptSubmit セクションを削除 | - `plugins/claude-kit/hooks/hooks.json` |
+| 済 | plugin.json / marketplace.json のバージョンバンプ | - `plugins/claude-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
