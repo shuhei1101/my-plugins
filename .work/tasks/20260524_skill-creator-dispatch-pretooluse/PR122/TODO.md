@@ -19,10 +19,10 @@ PR121 の作業中に ui-kit の `hooks/prompts/ui-skill-reminder.md` に `.jp.m
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260524_skill-creator-dispatch-pretooluse/PR122/QA.md` |
-| - | `.work/notes/` のノートを更新する | `.work/notes/dev-kit-hooks.md` |
-| - | ui-kit: ui-skill-reminder.jp.md を新規作成 | `plugins/ui-kit/hooks/prompts/ui-skill-reminder.jp.md` |
-| - | ui-kit plugin.json / marketplace.json バージョンバンプ | `plugins/ui-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| ✅ | QA.md に未決定事項を記録する | `.work/tasks/20260524_skill-creator-dispatch-pretooluse/PR122/QA.md` |
+| ✅ | `.work/notes/` のノートを更新する | `.work/notes/dev-kit-hooks.md` |
+| ✅ | ui-kit: ui-skill-reminder.jp.md を新規作成 | `plugins/ui-kit/hooks/prompts/ui-skill-reminder.jp.md` |
+| ✅ | ui-kit plugin.json / marketplace.json バージョンバンプ | `plugins/ui-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 

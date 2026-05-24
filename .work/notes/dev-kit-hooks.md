@@ -17,7 +17,7 @@ dev-kit プラグインに PreToolUse フックを追加し、Python/YAML ファ
 - **スキル判定**: フックは判断せず、両スキルの概要を提示して AI が選択
 - **注入頻度**: セッション単位フラグ（`/tmp/dev-kit-{py|yaml}-skill-{session_id}`）で初回のみ
 - **実装方式**: hooks.json インライン (`-c`) — 外部スクリプトファイルなし
-- **出力パターン**: hook-creator v3.20.0 の "Read and follow" 1行参照パターン
+- **出力パターン**: 直接コンテンツ埋め込み方式（PR115/PR119 で "Read and follow" 1行参照パターンから変更）
 
 ## フックロジック（概要）
 
