@@ -335,3 +335,10 @@ prs:
     claude-kit に集約
   task: 20260525_fix-skill-creator-dispatch-dedup
   completed: true
+- id: 125
+  title: PR125 — claude-kit-pretooluse-pattern-extend
+  type: fix
+  tags: []
+  summary: claude-kit の PreToolUse パターンを SKILL.jp.md / rules/*.md / CLAUDE.md にも拡張
+  task: 20260525_claude-kit-pretooluse-pattern-extend
+  completed: true
