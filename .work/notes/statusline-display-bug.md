@@ -50,11 +50,28 @@ myproject/ | [33mClaude Sonnet 4.6[0m | [32mctx 30%[0m (50k/200k)
 
 ## 結論
 
-**原因**: Claude Code の再起動忘れ。settings.json を更新後に再起動しないと反映されない。
+### 真因（PR116 とは無関係の古いバグ）
 
-**対応**:
-1. 旧バージョン（3.21.1キャッシュ）で settings.json を一時復元 → 再起動で表示確認
-2. 新バージョン（リポジトリの apply-statusline.py）で settings.json を再適用
-3. 再起動後に緑色表示が確認できる想定
+`apply-statusline.py` の statusLine コマンドに以下のコードが含まれていた:
 
-**学習**: statusLine コマンド更新後は必ず Claude Code を再起動すること。
+```python
+"...parts2.append(...+(' (~'+tt(r5[\"resets_at\"],'%H:%M')+')' if r5.get('resets_at') else ''))..."
+```
+
+このコマンドは `python -c "..."` の中で実行されるが、内側の `r5["resets_at"]` のダブルクォートが外側ダブルクォートを切ってしまい、シェル解釈時に `resets_at` がベア単語（未定義変数）になる。結果として Python が `NameError: name 'resets_at' is not defined` を出して落ちる。
+
+`rate_limits.resets_at` が存在する瞬間（トークン消費でレート情報が確定したとき）にのみ発症するため、セッション開始直後は問題なく、しばらく経つと突然消える現象になっていた。
+
+### 修正
+
+- `r5["resets_at"]` → `r5.get('resets_at')` （シングルクォートのみで完結）
+- `r7["resets_at"]` も同様
+- PR116 の緑機能はそのまま維持
+
+### 二次的な学習
+
+- `Path.home() / ".claude" / "settings.json"` は実行環境で変わる
+  - WSL Python: `/home/{user}/.claude/settings.json`
+  - Windows native Python: `C:\Users\{user}\.claude\settings.json`
+- Claude Code が読む settings.json と、`apply-statusline.py` が書き込む settings.json が違うと、変更が見えない（エラーも出ない）
+- 必ず Claude Code と同じ Python 環境からスクリプトを実行する

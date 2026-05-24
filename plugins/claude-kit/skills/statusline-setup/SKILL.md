@@ -55,6 +55,21 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/apply-statusline.py"
 
 #### Notes
 
+##### Environment matters (CRITICAL)
+
+The script writes to `Path.home() / ".claude" / "settings.json"`. The actual path depends on which Python is invoked:
+
+| Environment | Target settings.json |
+|---|---|
+| WSL Python | `/home/{user}/.claude/settings.json` |
+| Windows native Python | `C:\Users\{user}\.claude\settings.json` |
+
+Claude Code reads settings from the path matching the environment it runs in. **Always run this script with the same Python environment as Claude Code itself** — otherwise the script will edit a settings.json that Claude Code never reads, and changes will silently have no effect.
+
+Verify the environment before running:
+- If Claude Code's `Platform` is `linux` (WSL) → run the script via WSL's `python`
+- If Claude Code runs natively on Windows → run via Windows `python` (PowerShell / cmd)
+
 ##### Branching
 
 - If the script returns an error → report the error message to the user and stop

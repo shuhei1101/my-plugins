@@ -32,8 +32,8 @@ STATUS_LINE = {
         "p7_color='\\033[31m' if p7 is not None and p7>=70 else ('\\033[33m' if p7 is not None and p7>=50 else '');"
         "p7_reset='\\033[0m' if p7_color else '';"
         'parts2=[];'
-        "p5 is not None and parts2.append(p5_color+'5h '+str(round(p5))+'%'+p5_reset+(' (~'+tt(r5[\"resets_at\"],'%H:%M')+')' if r5.get('resets_at') else ''));"
-        "p7 is not None and parts2.append(p7_color+'7d '+str(round(p7))+'%'+p7_reset+(' (~'+tt(r7[\"resets_at\"],'%m/%d')+')' if r7.get('resets_at') else ''));"
+        "p5 is not None and parts2.append(p5_color+'5h '+str(round(p5))+'%'+p5_reset+(' (~'+tt(r5.get('resets_at'),'%H:%M')+')' if r5.get('resets_at') else ''));"
+        "p7 is not None and parts2.append(p7_color+'7d '+str(round(p7))+'%'+p7_reset+(' (~'+tt(r7.get('resets_at'),'%m/%d')+')' if r7.get('resets_at') else ''));"
         "print(ws+' | '+mr_str+(' | '+ctx_str if ctx_str else ''));print(' | '.join(parts2))"
         '"'
     ),
