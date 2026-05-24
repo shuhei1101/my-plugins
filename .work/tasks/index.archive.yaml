@@ -228,3 +228,10 @@ prs:
   summary: merge スキル Step 12 が全 PR ブランチを列挙していたのを、直前マージの次PR候補のみ表示する方式に修正
   task: 20260524_merge-step12-next-pr-only
   completed: true
+- id: 109
+  title: PR109 — pr-show-skill
+  type: feat
+  tags: []
+  summary: merge スキルの Step 12（予約済みPR状況表示）を独立スキル pr-show として切り出す
+  task: 20260524_pr-show-skill
+  completed: true

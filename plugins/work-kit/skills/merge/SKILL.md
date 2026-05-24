@@ -361,67 +361,8 @@ git commit -m "docs: post-merge update for PR{N}"
 
 #### Process
 
-1. Re-read the merged PR's `## 次PR候補` table from its `TODO.md`
-   (the same file used in Step 11).
-
-2. If the table contains only a placeholder row (e.g., `{次にやること}` or a lone `-`)
-   → output "次PR候補はありません" and finish.
-
-3. For each candidate row, determine its category:
-
-   **a. Has conditions (条件あり)**:
-   - Column 3 (実施条件) references another candidate — e.g. `「{other}」が完了したら`
-   - pr-handoff intentionally did not reserve a branch for these
-   - List them from the table directly (no branch lookup needed)
-
-   **b. Ready to start (着手可能) or In progress elsewhere (他セッション進行中)**:
-   - Column 3 is blank or `即時実施可` — pr-handoff should have reserved a branch
-   - Find the branch by searching for the candidate title in branch names:
-     ```bash
-     git branch --list "*{candidate-title}*"
-     ```
-   - Count commits ahead of master:
-     ```bash
-     git log master..{branch} --oneline | wc -l
-     ```
-   - commits ≤ 1 → **Ready to start**
-   - commits ≥ 2 → **In progress elsewhere**
-   - Branch not found → pr-handoff was skipped; note as "未予約 (pr-handoff not run)"
-
-4. Present all three categories using this table format:
-
-   ```markdown
-   ## Next PRs you can pick up
-
-   | Category | PR | Summary |
-   |---|---|---|
-   | Ready to start | PR{N} | {title} (branch: {branch}) |
-   |  | PR{M} | {title} (branch: {branch}) |
-   | In progress elsewhere | PR{N} | {title} ({commit_count} commits ahead) |
-   | Has conditions | — | {title} — condition: depends on `{other-candidate}` being completed |
-   ```
-
-   - When multiple PRs share the same category, write the category name only in the first row; leave the cell empty for subsequent rows
-   - Omit rows for categories with no items
-   - If all categories are empty (placeholder table only), show: "No next PR candidates."
+Invoke `/work-kit:pr-show` passing the merged PR's `TODO.md` path as the data source.
 
 #### Notes
 
-##### Data source
-
-Use only the merged PR's `## 次PR候補` table as the data source — never `git branch --list 'PR*'`.
-Unrelated reserved branches from other sessions are intentionally excluded.
-
-##### Classification knowledge
-
-- **Ready to start**: state immediately after pr-handoff reservation. The branch has just the TODO.md creation commit (1 commit) ahead of master.
-- **In progress elsewhere**: another Claude Code session has implementation commits on this branch. Two or more commits is a strong signal the user is working there.
-- **Has conditions**: a candidate that pr-handoff classified as [[glossary#依存後続候補]] and chose not to reserve. It becomes eligible once its predecessor PR merges.
-
-##### Why keep "in progress" visible
-
-Hiding them entirely would create the impression "nothing is left." Surfacing them as "N items in another session" prevents the user from losing track of overall state.
-
-##### Why surface "has conditions"
-
-They do not appear as reserved branches, but they live in the merged PR's `## 次PR候補` as "next-next" items. Listing them alongside ready-to-start ensures the user does not overlook them.
+Full logic (reading `## 次PR候補` table, classifying each candidate, branch lookup by title) is defined in the `pr-show` skill.

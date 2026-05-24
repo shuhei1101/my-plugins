@@ -2,8 +2,10 @@
 created_at: 2026-05-23
 updates:
   - 2026-05-23 — PR91: pr-handoff スキルの追加
+  - 2026-05-24 — PR109: pr-show スキルを merge Step 12 から切り出し
 related_prs:
   - PR91
+  - PR109
 ---
 
 # work-kit スキル群 — 設計メモ
@@ -22,6 +24,7 @@ work-kit プラグインに含まれるスキルの設計・目的・相互関�
 | `setup` | `.work/` ディレクトリを初期化する（プロジェクトに初回導入） |
 | `branch-index-cleanup` | 古いブランチとindex.yamlエントリをクリーンアップ |
 | `pr-handoff` | 次のセッション向け引き継ぎ指示書を会話内に出力（PR91で追加） |
+| `pr-show` | 予約済みPRの状況を3カテゴリ（着手可能・進行中・条件あり）で一覧表示（PR109で追加） |
 
 ## pr-handoff スキルの設計
 
