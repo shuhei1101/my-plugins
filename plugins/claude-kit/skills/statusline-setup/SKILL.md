@@ -25,7 +25,7 @@ my-plugins/ | Claude Sonnet 4.6 | ctx 23% (47k/200k)
 ```
 
 **What gets applied**:
-- Line 1: `workspace/ | model name (colored) | ctx XX% (color at ≥50% yellow, ≥70% red)`
+- Line 1: `workspace/ | model name (colored) | ctx XX% (color: <50% green, ≥50% yellow, ≥70% red)`
 - Line 2: `5h XX% (five-hour rate) | 7d XX% (seven-day rate)` (color changes with usage)
 - Model colors: opus → red, sonnet → yellow
 
