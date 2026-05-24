@@ -40,8 +40,7 @@ This skill runs the work-start reservation flow while writing background informa
    ```
 
 2. Check the `## 次PR候補` section:
-   - One candidate → use that title and summary
-   - Multiple candidates → ask the user: "Which PR do you want to start?"
+   - One or more candidates → use all of them (reserve every candidate, regardless of count)
    - No candidates (placeholder text) → ask the user for the next PR details
 
 → Proceed to Step 2
@@ -91,9 +90,12 @@ This skill runs the work-start reservation flow while writing background informa
 
 #### Process
 
-1. Invoke `/work-kit:work-start` with the title and type confirmed in Step 1
+1. Reserve **each candidate one by one** using `/work-kit:work-start`:
 
-2. During work-start's TODO.md fill-in step (Step 7), append the following to `## 概要`:
+   > Call `/work-kit:work-start` for each candidate with its title and type.  
+   > Repeat until all candidates are reserved.
+
+2. During each work-start's TODO.md fill-in step (Step 7), append the following to `## 概要`:
    - Background context from Step 2
    - "Why this PR is needed" and "relationship to the previous PR"
 
@@ -101,8 +103,8 @@ This skill runs the work-start reservation flow while writing background informa
 
 #### Output
 
-- Next PR branch and work folder created
-- TODO.md contains background context
+- All next PR candidates have their branch and work folder created
+- Each TODO.md contains background context
 
 #### Notes
 
