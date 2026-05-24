@@ -19,7 +19,7 @@
 ```
 .work/
 ├── tasks/      # タスク・PR フォルダ（動的生成）
-├── specs/      # 仕様書（空フォルダ）
+├── notes/      # 設計メモ・検討ノート（空フォルダ）
 └── QA.md       # 未解決事項
 ```
 
@@ -61,5 +61,5 @@ python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/setup.py"
 ##### チェックリスト
 
 - [ ] `.work/tasks/` — 存在する
-- [ ] `.work/specs/` — 存在する
+- [ ] `.work/notes/` — 存在する
 - [ ] `.work/QA.md` — 存在する

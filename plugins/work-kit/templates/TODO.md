@@ -9,7 +9,7 @@
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR{N}/QA.md` |
-| - | `.work/specs/` の仕様書を更新する | - `.work/specs/{spec}.md` |
+| - | `.work/notes/` のノートを更新する | - `.work/notes/{note}.md` |
 | - | {実装タスクをここに記述する} | - `{file/path}` |
 | - | ルール・CLAUDE.md を整備する | - `{rules/path}` |
 
