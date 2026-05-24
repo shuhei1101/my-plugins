@@ -305,3 +305,10 @@ prs:
   summary: pr-show スキルの disable-model-invocation フラグを削除してモデルから呼び出せるようにする
   task: 20260525_remove-pr-show-disable-model-invocation
   completed: true
+- id: 121
+  title: PR121 — skill-creator-dispatch-pretooluse
+  type: fix
+  tags: []
+  summary: skill-creator-dispatch を PreToolUse ブロック型に移行し4プラグインで直接SKILL.md編集をブロック
+  task: 20260524_skill-creator-dispatch-pretooluse
+  completed: true
