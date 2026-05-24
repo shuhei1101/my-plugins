@@ -176,3 +176,11 @@ prs:
   summary: work-start スキルの Step 10 にコミットメッセージは日本語で記述するルールを追記する
   task: 20260524_ja-commit-message-rule
   completed: true
+- id: 105
+  title: PR105 — ui-kit-skill-reminder-hook
+  type: feat
+  tags: []
+  summary: ui-kit に UserPromptSubmit フックを追加。HTML/CSS/JS 実装時に implement・logging スキルを自動リマインド、モック作成時は
+    mock スキルも案内する
+  task: 20260524_ui-kit-skill-reminder-hook
+  completed: true
