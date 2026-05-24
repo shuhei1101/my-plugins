@@ -15,7 +15,7 @@
 | ユースケース指向 | `paths:` 設計の原則。「このルールはいつ読まれたいか」を起点に逆算してトリガーとなるファイルを特定し、そこを `paths:` に設定する考え方。 |
 | notes/ | work-kit が管理する `.work/notes/` フォルダ。PR に関連する一時的な設計メモ・検討ノートを置く場所。AI に自動読み込みされないため公式仕様書ではなく「作業中のメモ」として扱う。旧称 `specs/`（PR88 で改名）。 |
 | notes-to-claude | `.work/notes/` の一時メモをルール・CLAUDE.md・references に昇格させる work-kit スキル（`/work-kit:notes-to-claude`）。確認フェーズなしで完全自動実行。claude-kit プラグインの creator スキルを内部で使用（PR90 で追加）。 |
-| 1行参照パターン | Stop フックの `reason` にファイルの全文を埋め込む代わりに `"Read and follow: /path/to/file.md"` の1行だけを出力するパターン。Claude 自身がファイルを読む方式のため会話セッションへの長文注入を防げる（PR89 で導入）。 |
+| 1行参照パターン | フックの `reason` / stdout にファイルの全文を埋め込む代わりに `"Read and follow: /path/to/file.md"` の1行だけを出力するパターン。Claude 自身がファイルを読む方式のため会話セッションへの長文注入を防げる。Stop フックで導入（PR89）、hook-creator v3.20.0 で全フックに統一（PR104）。 |
 | pr-handoff | 現在のPRのTODO.mdに記録された「次PR候補」を元に、次のPRをwork-startと同じ流れで予約するスキル（`/work-kit:pr-handoff`）。各PRの背景情報をTODO.mdに記録して引き継ぎ品質を高める（PR91で追加）。直列依存対応は PR95 で導入。 |
 | 実施条件 | 2つの用途を持つ概念。① TODO.md の `## 次PR候補` テーブルの3カラム目（各候補の依存関係: `即時実施可` / `「{他候補}」が完了したら`）（PR95）。② TODO.md の `### 実施条件` サブセクション（`## 概要` 直下）—このPR自体の着手条件を記録する（PR101/102）。 |
 | creator-dispatch フック | UserPromptSubmit フックのひとつ。ユーザープロンプト内のファイルパスキーワード（`SKILL.md`, `.claude/rules/`, `hooks/`, `CLAUDE.md`, `plugins/` など）を検知し、対応するクリエイタースキル（skill-creator / rule-creator / hook-creator / claude-creator / plugin-creator）を使うよう Claude に指示を注入する。`plugins/claude-kit/hooks/hooks.json` に定義（PR103 で追加）。 |

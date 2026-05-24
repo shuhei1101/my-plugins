@@ -183,6 +183,13 @@ prs:
   summary: CLAUDE.md・スキル・ルール・フック編集時にクリエイタースキル呼び出しを促すUserPromptSubmitフックをclaude-kitに追加
   task: 20260524_claude-kit-creator-skill-hook
   completed: true
+- id: 104
+  title: PR104 — dev-kit-python-yaml-hooks
+  type: feat
+  tags: []
+  summary: dev-kit の Python・YAML ファイル編集時に対応スキルを自動読み込みするフックを追加
+  task: 20260524_dev-kit-python-yaml-hooks
+  completed: true
 - id: 105
   title: PR105 — ui-kit-skill-reminder-hook
   type: feat
