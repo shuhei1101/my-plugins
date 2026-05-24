@@ -17,7 +17,7 @@
 ## 概要
 
 PR のマージフローを実行するスキル。
-TODO 確認 → master 適合確認 → conversation-to-claude 実行（claude-kit インストール済みの場合） → index アーカイブ → `--no-ff` マージ → ワークツリークリーンアップ → ドキュメント更新を行う。
+TODO 確認 → master 適合確認 → conversation-to-claude 実行（ワークツリー内、claude-kit インストール済みの場合） → index アーカイブ → `--no-ff` マージ → ワークツリークリーンアップ → ドキュメント更新 → 次PR候補があれば pr-handoff で予約、を行う。
 
 ---
 
@@ -155,7 +155,7 @@ git merge master
 
 ---
 
-### ステップ4: conversation-to-claude を実行する（claude-kit インストール済みの場合）
+### ステップ4: conversation-to-claude を**ワークツリーで**実行する（claude-kit インストール済みの場合）
 
 #### 条件
 
@@ -164,8 +164,28 @@ git merge master
 #### 処理内容
 
 1. 現在のセッションの利用可能なスキル一覧に `/claude-kit:conversation-to-claude` があるか確認する
-2. ある場合 → `/claude-kit:conversation-to-claude` を実行し、完了を待つ
-3. ない場合 → このステップをスキップする
+2. ない場合 → このステップをスキップ → ステップ5へ進む
+3. ある場合 → **ワークツリーディレクトリに移動してから** `/claude-kit:conversation-to-claude` を実行する:
+
+```bash
+cd ../$(basename $(pwd))-wt-PR{N}
+```
+
+   その後 `/claude-kit:conversation-to-claude` を実行し、完了を待つ。
+
+4. スキル完了後、ワークツリーに生成された `.claude/` 配下のファイル（rules / references / glossary など）が
+   PR ブランチにコミット済みであることを確認する。コミットされていなければワークツリー内でコミットする:
+
+```bash
+git -C ../$(basename $(pwd))-wt-PR{N} add .claude/
+git -C ../$(basename $(pwd))-wt-PR{N} commit -m "docs: conversation-to-claude artifacts #PR{N}"
+```
+
+5. メインリポジトリのディレクトリに戻る:
+
+```bash
+cd -
+```
 
 → ステップ5へ進む
 
@@ -173,6 +193,17 @@ git merge master
 
 - このステップはブランチが削除される前にセッションの知識を永続化するために実行する
 - 会話が短くても省略しない — スキル側に判断させる
+
+##### なぜワークツリーで実行するか
+
+メインリポジトリ（master）の cwd で `conversation-to-claude` を実行すると、
+生成された `.claude/` ファイルが master 直接コミットとなり、PR の `--no-ff` マージに同梱されない。
+結果として「PR の作業内容」と「セッション知識」が別コミットで散らばってしまう。
+ワークツリーで実行することで、PR ブランチに同梱され、マージコミット単位での一貫性が保たれる。
+
+##### 禁止事項
+
+- master の cwd で `conversation-to-claude` を実行しない（master 直接コミットの原因）
 
 ---
 
@@ -308,19 +339,12 @@ git commit -m "docs: PR{N} マージ後ドキュメント更新"
 
 ---
 
-### ステップ10: 完了報告
+### ステップ10: 完了報告と次PR予約
 
 #### 処理内容
 
 1. マージ完了をユーザーに報告する
-2. マージした PR の `TODO.md` を読み、`## 次PR候補` セクションの内容を次の PR 候補としてユーザーに提示する
-3. `.work/tasks/` に残っている進行中 PR があれば提示する
-
-#### 補足
-
-##### チェックリスト
-
-- [ ] マージコミットが存在する
-- [ ] ワークツリーとブランチが削除済み
-- [ ] QA.md が更新済み
-- [ ] index.archive.yaml がマージ対象の PR ブランチに同梱されてコミットされていること（完了済みエントリが存在した場合）
+2. マージした PR の `TODO.md` を読み、`## 次PR候補` セクションの内容を確認する
+3. **次PR候補がある場合**: `/work-kit:pr-handoff` を呼び出す（ユーザー確認不要）。分類・予約のロジックはすべて pr-handoff に委譲する
+4. **次PR候補が空の場合**: pr-handoff はスキップ
+5. `.work/tasks/` に残っている進行中 PR があれば提示する

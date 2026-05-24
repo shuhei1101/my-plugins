@@ -216,8 +216,11 @@ The following rows are mandatory and must not be removed or skipped:
 | - | (Implementation tasks: replace with PR-specific work) |
 | - | Update rules / CLAUDE.md |
 
-Also fill in the `## 次PR候補` section at the bottom of TODO.md:
+Also fill in the `## 次PR候補` section at the bottom of TODO.md (columns: title / summary / 実施条件):
 - If the user mentioned follow-up work or future PRs during this session, list them here
+- Fill in `実施条件` for each candidate:
+  - `即時実施可` (or leave a `-`) when the candidate has no dependency
+  - `「{other candidate title}」が完了したら` when the candidate depends on another candidate in the same table (serial dependency)
 - If nothing was mentioned, leave the placeholder row as-is (do not delete the section)
 
 → Proceed to Step 8

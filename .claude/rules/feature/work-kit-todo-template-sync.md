@@ -35,6 +35,7 @@ Whenever any file in this domain changes, verify the others:
 - [ ] A newly added section has a corresponding fill-in instruction in `SKILL.md` Step 7
 - [ ] A removed or renamed section has its corresponding `SKILL.md` Step 7 entry removed or updated
 - [ ] If **`## 次PR候補` section is renamed or removed**, update `pr-handoff` SKILL.md Step 1 to match
+- [ ] If **the columns of `## 次PR候補` change** (e.g. adding/removing `実施条件`), update `pr-handoff` SKILL.md Step 1 classification logic AND `work-start` SKILL.md Step 7 fill-in instructions
 - [ ] If **a new template file was added**, have you updated `paths:` and the Related Files list in this rule?
 
 ## Rule Maintenance
