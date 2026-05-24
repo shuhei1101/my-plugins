@@ -20,7 +20,7 @@ pr-handoff スキルを直列依存対応に改修する。
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR95/QA.md` |
+| 済 | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR95/QA.md` |
 | 済 | TODO.md テンプレに `実施条件` カラムを追加 | - `plugins/work-kit/templates/TODO.md`<br>- `plugins/work-kit/templates/.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` |
 | 済 | pr-handoff SKILL.md を直列依存対応に改修 | - `plugins/work-kit/skills/pr-handoff/SKILL.md`<br>- `plugins/work-kit/skills/pr-handoff/SKILL.jp.md` |
 | 済 | work-start SKILL.md Step 7 のテンプレート言及を更新 | - `plugins/work-kit/skills/work-start/SKILL.md`<br>- `plugins/work-kit/skills/work-start/SKILL.jp.md` |
@@ -37,5 +37,3 @@ pr-handoff スキルを直列依存対応に改修する。
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
 | {次にやること} | {背景・目的} | {例: PR{N} がマージされたら / 即時実施可} |
-</content>
-</invoke>
