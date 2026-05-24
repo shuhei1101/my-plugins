@@ -10,13 +10,13 @@ HTML/CSS/JS の実装・編集が要求されたとき `implement` と `logging`
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | hooks/hooks.json を作成 | `plugins/ui-kit/hooks/hooks.json` |
-| - | hooks/scripts/user-prompt-submit.py を作成 | `plugins/ui-kit/hooks/scripts/user-prompt-submit.py` |
-| - | hooks/prompts/base.md を作成（implement + logging リマインダー） | `plugins/ui-kit/hooks/prompts/base.md` |
-| - | hooks/prompts/with-mock.md を作成（implement + logging + mock リマインダー） | `plugins/ui-kit/hooks/prompts/with-mock.md` |
-| - | plugin.json バージョンを 1.3.4 → 1.4.0 にバンプ | `plugins/ui-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json の ui-kit バージョンを更新 | `.claude-plugin/marketplace.json` |
-| - | changelogs/v1.4.0.md を作成 | `plugins/ui-kit/changelogs/v1.4.0.md` |
+| x | hooks/hooks.json を作成 | `plugins/ui-kit/hooks/hooks.json` |
+| x | hooks/scripts/user-prompt-submit.py を作成 | `plugins/ui-kit/hooks/scripts/user-prompt-submit.py` |
+| x | hooks/prompts/base.md を作成（implement + logging リマインダー） | `plugins/ui-kit/hooks/prompts/base.md` |
+| x | hooks/prompts/with-mock.md を作成（implement + logging + mock リマインダー） | `plugins/ui-kit/hooks/prompts/with-mock.md` |
+| x | plugin.json バージョンを 1.3.4 → 1.4.0 にバンプ | `plugins/ui-kit/.claude-plugin/plugin.json` |
+| x | marketplace.json の ui-kit バージョンを更新 | `.claude-plugin/marketplace.json` |
+| x | changelogs/v1.4.0.md を作成 | `plugins/ui-kit/changelogs/v1.4.0.md` |
 
 ## 参考ドキュメント
 

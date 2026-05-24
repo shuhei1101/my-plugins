@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/user-prompt-submit.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
