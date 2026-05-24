@@ -21,9 +21,9 @@ pr-show スキルが "PRやって" や "PR対応して" などの汎用的な発
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | SKILL.md に `disable-model-invocation: true` を追加、description を最小化 | - `plugins/work-kit/skills/pr-show/SKILL.md` |
-| - | SKILL.jp.md を同期 | - `plugins/work-kit/skills/pr-show/SKILL.jp.md` |
-| - | plugin.json と marketplace.json のバージョンを更新 | - `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | SKILL.md に `disable-model-invocation: true` を追加、description を最小化 | - `plugins/work-kit/skills/pr-show/SKILL.md` |
+| 済 | SKILL.jp.md を同期 | - `plugins/work-kit/skills/pr-show/SKILL.jp.md` |
+| 済 | plugin.json と marketplace.json のバージョンを更新 | - `plugins/work-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
