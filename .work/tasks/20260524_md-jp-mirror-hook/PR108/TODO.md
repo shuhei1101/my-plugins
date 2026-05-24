@@ -21,7 +21,7 @@
 |---|---|---|
 | x | QA.md に未決定事項を記録する | - `.work/tasks/20260524_md-jp-mirror-hook/PR108/QA.md` |
 | x | `.work/notes/` のノートを更新する | - `.work/notes/jp-mirror-policy.md` （PR108 開始時に作成済み） |
-| x | `/claude-kit:hook-creator` で JP ミラー確認フックを実装 | - `.claude/settings.json`, `.claude/hooks/post-tool-use-jp-mirror.md` |
+| x | `/claude-kit:hook-creator` で JP ミラー確認フックを実装 | - `plugins/claude-kit/hooks/hooks.json`, `plugins/claude-kit/hooks/prompts/jp-mirror-check.md` |
 | x | ルール・CLAUDE.md を整備する | - 追加不要（既存ルールでカバー済み） |
 
 ## 参考ドキュメント
