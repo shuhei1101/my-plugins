@@ -342,3 +342,10 @@ prs:
   summary: claude-kit の PreToolUse パターンを SKILL.jp.md / rules/*.md / CLAUDE.md にも拡張
   task: 20260525_claude-kit-pretooluse-pattern-extend
   completed: true
+- id: 127
+  title: PR127 — remove-userpromptsubmit-creator-dispatch
+  type: fix
+  tags: []
+  summary: claude-kit の UserPromptSubmit creator-dispatch 5エントリを削除（毎プロンプト実行の負荷軽減）
+  task: 20260525_remove-userpromptsubmit-creator-dispatch
+  completed: true
