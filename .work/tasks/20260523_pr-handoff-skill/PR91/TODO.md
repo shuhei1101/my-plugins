@@ -12,10 +12,10 @@ work-kit に新しいスキル `pr-handoff` を追加する。
 |---|---|---|
 | - | QA.md に未決定事項を記録する | - `.work/tasks/20260523_pr-handoff-skill/PR91/QA.md` |
 | - | `.work/notes/` のノートを更新する | - `.work/notes/work-kit-skills.md` |
-| - | `SKILL.jp.md` を作成する | - `plugins/work-kit/skills/pr-handoff/SKILL.jp.md` |
-| - | `SKILL.md` を作成する | - `plugins/work-kit/skills/pr-handoff/SKILL.md` |
-| - | `plugin.json` のバージョンを更新する | - `plugins/work-kit/.claude-plugin/plugin.json` |
-| - | `marketplace.json` のバージョンを更新する | - `.claude-plugin/marketplace.json` |
+| 済 | `SKILL.jp.md` を作成する | - `plugins/work-kit/skills/pr-handoff/SKILL.jp.md` |
+| 済 | `SKILL.md` を作成する | - `plugins/work-kit/skills/pr-handoff/SKILL.md` |
+| 済 | `plugin.json` のバージョンを更新する | - `plugins/work-kit/.claude-plugin/plugin.json` |
+| 済 | `marketplace.json` のバージョンを更新する | - `.claude-plugin/marketplace.json` |
 | - | ルール・CLAUDE.md を整備する | - 必要に応じて |
 
 ## 参考ドキュメント
