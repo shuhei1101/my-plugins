@@ -18,10 +18,11 @@ CLAUDE.md・スキル（SKILL.md）・ルール・フックのいずれかを編
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR103/QA.md` |
-| - | `.work/notes/` のノートを更新する | - `.work/notes/claude-kit-creator-skill-hook.md` |
-| - | `/claude-kit:hook-creator` を使って UserPromptSubmit フックを作成 | - `plugins/claude-kit/hooks/creator-skill-dispatch/` |
-| - | plugin.json / marketplace.json のバージョンバンプ | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR103/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/claude-kit-creator-skill-hook.md` |
+| 済 | UserPromptSubmit フックを作成（5種クリエイター別・インライン形式） | - `plugins/claude-kit/hooks/hooks.json`<br>- `plugins/claude-kit/hooks/prompts/*.md` |
+| 済 | 既存ルール `creator-skill-dispatch.md` を削除 | - `.claude/rules/feature/creator-skill-dispatch.md` |
+| 済 | plugin.json / marketplace.json のバージョンバンプ（3.19.1→3.20.0） | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
