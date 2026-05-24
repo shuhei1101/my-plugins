@@ -125,3 +125,10 @@ prs:
   summary: merge Step 10 に pr-handoff 自動呼び出しを追加、Step 3 で conversation-to-claude をワークツリーで実行
   task: 20260524_merge-step-improvements
   completed: true
+- id: 95
+  title: PR95 — pr-handoff sequential dependencies
+  type: feat
+  tags: []
+  summary: pr-handoff スキルを直列依存対応に改修。次PR候補が複数あるとき直列依存なら1件のみ予約し残りは次PR候補に埋め込む。TODO テンプレに『実施条件』カラム追加
+  task: 20260524_pr-handoff-sequential-deps
+  completed: true
