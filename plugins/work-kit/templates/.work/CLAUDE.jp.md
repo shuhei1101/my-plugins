@@ -55,3 +55,4 @@ Claude はここのファイルを読み書きして作業状態を追跡する�
 | `/work-kit:setup` | `.work/` を初期化する（初回のみ） |
 | `/work-kit:work-start` | 新規タスク・PR・TODO.md・QA.md・index.yaml エントリを作成する |
 | `/work-kit:merge` | TODO 確認・マージ・index.yaml 更新・クリーンアップを実行する |
+| `/work-kit:pr-handoff` | TODO.md の「次PR候補」を元に次のPRをwork-startと同じ流れで予約し、背景情報をTODO.mdに記録する |
