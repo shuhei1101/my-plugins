@@ -2,72 +2,142 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # Next.js App Router — 状態管理
 
-## 状態の種別と使い分け
+## 状態の分類
 
-| 状態の種別 | ツール | 配置先 |
-|---|---|---|
-| サーバーデータ（APIから取得） | TanStack Query（`useQuery`, `useMutation`） | `_hooks/` |
-| グローバルUI状態（コンポーネント横断） | React Context | `app/(core)/_components/` |
-| ローカルUI状態（単一コンポーネント） | `useState` | コンポーネントまたはフック内 |
-| フォーム状態 | `useState` + Zod バリデーション | `_hooks/` |
+| 状態の種類 | 使うツール | どこに保持 | 画面遷移をまたいで保持されるか |
+|---|---|---|---|
+| サーバーデータ | TanStack Query | Query キャッシュ | はい（キャッシュされる） |
+| URL 画面状態 | URL クエリ文字列 | `searchParams` | はい（URL） |
+| グローバル UI 状態（ルートをまたぐ） | React Context | Provider | はい（React ツリー） |
+| 真にアプリ全体の状態 | Zustand | Store | はい（マウント／アンマウントをまたいで） |
+| ローカル UI 状態 | `useState` | コンポーネント | いいえ |
+| フォーム状態 | react-hook-form | フックスコープ | いいえ |
+
+最も軽いツールを選ぶ。デフォルトは `useState` とし、必要になったときだけ段階的に強化する。
+
+---
+
+## 判定ツリー
+
+```
+Is the data from the server?
+  → Yes → TanStack Query (useQuery / useMutation)
+  → No → continue
+
+Is it user-visible state that should be shareable / bookmarkable?
+  → Yes → URL query string (see url-state.md)
+  → No → continue
+
+Does it need to survive across multiple unrelated routes?
+  → Yes → does Context suffice (no perf concern, single provider boundary)?
+    → Yes → React Context (prefer this)
+    → No  → Zustand store
+  → No → continue
+
+Does it cross 3+ component levels via props?
+  → Yes → React Context (local provider) or lift to a custom hook
+  → No → useState (local)
+```
 
 ---
 
 ## サーバーデータ — TanStack Query
 
-全サーバーサイドデータは TanStack Query（`@tanstack/react-query`）で管理する。
+### Provider のセットアップ
 
-### プロバイダーのセットアップ
+```tsx
+// app/(core)/_components/providers.tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
-`QueryClientProvider` は `app/(core)/_components/providers.tsx` に設定済み。
-機能ごとに新しいプロバイダーインスタンスを作ってはいけない。
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    },
+  },
+})
 
-### キャッシュの無効化
-
-ミューテーション成功後は影響するクエリキーを無効化する。
-
-```ts
-const queryClient = useQueryClient()
-
-onSuccess: () => {
-  queryClient.invalidateQueries({ queryKey: ["families"] })
-}
+<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 ```
 
-### staleTime と refetch
+> フォーム読み込み用のフックは `staleTime: 0, refetchOnMount: "always"` で上書きし、フォームが最新のサーバー状態を反映するようにする。
 
-- デフォルト: `staleTime: 0, refetchOnMount: "always"` — マウント毎に再取得
-- 変化が少ないデータは `staleTime` を増やす（例: 5分 = `1000 * 60 * 5`）
+### キャッシュ無効化
+
+mutation のあと、リソース名のプレフィックスで invalidate する:
+
+```ts
+queryClient.invalidateQueries({ queryKey: ["familyQuests"] })
+```
+
+`["familyQuests", ...]` で始まるすべてのキーが refetch される。必要以上に広いプレフィックスで invalidate しないこと。
+
+### Query 命名
+
+| 読み取り | queryKey |
+|---|---|
+| フィルタ／ソート／ページ付き一覧 | `["resource", filter, sort, page, pageSize]` |
+| 単一レコード | `["resource", id]` |
+| フォームのデータ読み込み | `["resourceForm", id]` |
 
 ---
 
-## グローバルUI状態 — React Context
+## URL 状態
 
-異なる階層のコンポーネント間で共有が必要なUI状態には React Context を使う。
-
-### 既存のコンテキスト（重複を作らない）
-
-| コンテキスト | ファイル | 用途 |
-|---|---|---|
-| `FABContext` | `app/(core)/_components/FABContext.tsx` | 画面ごとの FAB カスタマイズ |
-| `LoadingContext` | `app/(core)/_components/LoadingContext.tsx` | グローバルローディングインジケーター |
-| `ThemeContext` | `app/(core)/_theme/themeContext.tsx` | ダーク/ライトテーマ切り替え |
-
-### 新しいコンテキストを作る場合
-
-props で渡せない、TanStack Query で管理できない場合のみ新しい Context を作る。
+`frontend/url-state.md` を参照。「ユーザーが今何を見ているか」に影響するものはすべて URL に置く。
 
 ```ts
-// 1. デフォルト値でコンテキストを作成
-const MyContext = createContext<MyContextType | null>(null)
+const { filter, sort, page, setFilter, setSort, setPage } = useFamilyQuestListUrlState()
+```
 
-// 2. プロバイダーコンポーネント
-export const MyProvider = ({ children }) => {
-  const [state, setState] = useState(initialState)
-  return <MyContext.Provider value={{ state, setState }}>{children}</MyContext.Provider>
+---
+
+## React Context — グローバル UI 状態
+
+### 既存の Context（重複させない）
+
+| Context | ファイル | 目的 |
+|---|---|---|
+| `FABContext` | `app/(core)/_components/FABContext.tsx` | 画面ごとの FAB カスタマイズ |
+| `LoadingContext` | `app/(core)/_components/LoadingContext.tsx` | グローバルローディングインジケータ |
+| `ThemeContext` | `app/(core)/_theme/themeContext.tsx` | テーマ（ライト／ダーク／Mantine オーバーライド） |
+| `BackgroundContext` | `app/(app)/_components/BackgroundContext.tsx` | 画面ごとの背景画像／色 |
+
+### 新しい Context を追加するとき
+
+以下に該当する場合のみ:
+- 状態が関連のない複数ルートをまたぐ
+- サーバーデータでも URL 状態でもモデル化できない
+- そうしなければ 3 階層以上の props バケツリレーが必要
+
+### 新しい Context のパターン
+
+```ts
+"use client"
+
+import { createContext, useContext, useState, type ReactNode } from "react"
+
+type MyContextValue = {
+  count: number
+  increment: () => void
 }
 
-// 3. 消費するためのカスタムフック
+const MyContext = createContext<MyContextValue | null>(null)
+
+export const MyProvider = ({ children }: { children: ReactNode }) => {
+  const [count, setCount] = useState(0)
+  const increment = () => setCount((c) => c + 1)
+  return (
+    <MyContext.Provider value={{ count, increment }}>
+      {children}
+    </MyContext.Provider>
+  )
+}
+
 export const useMyContext = () => {
   const ctx = useContext(MyContext)
   if (!ctx) throw new Error("useMyContext must be used within MyProvider")
@@ -75,23 +145,163 @@ export const useMyContext = () => {
 }
 ```
 
+### Context vs Zustand
+
+Context を使うとき:
+- Provider 境界が 1 つで十分（通常は `app/(core)/_components/providers.tsx`）
+- 状態はほぼ読み取り中心、更新は稀
+- Provider の再レンダリングが許容できる
+
+Zustand に切り替えるとき:
+- 頻繁な更新が consumer 全体で再レンダリング嵐を引き起こす
+- セレクタベースの購読が必要（consumer は自分の slice が変わったときだけ再レンダリング）
+- 状態が React ツリー外でも生き残る必要がある（非 React モジュールから使われる）
+
 ---
 
-## ローカルUI状態 — useState
+## Zustand — アプリ全体のストア
 
-単一コンポーネントまたは小さなコンポーネントツリーにのみ影響する状態には
-`useState` をコンポーネントまたはローカルフック内で直接使う。
+控えめに使うこと。既存プロジェクトでは、Context にきれいに収まらないルート横断 UI 状態のために Zustand を使っている。
+
+### Store のパターン
+
+```ts
+// app/(core)/_stores/useAppStore.ts
+"use client"
+
+import { create } from "zustand"
+
+type AppStore = {
+  unreadCount: number
+  setUnreadCount: (n: number) => void
+  reset: () => void
+}
+
+export const useAppStore = create<AppStore>((set) => ({
+  unreadCount: 0,
+  setUnreadCount: (n) => set({ unreadCount: n }),
+  reset: () => set({ unreadCount: 0 }),
+}))
+```
+
+### セレクタの使い方
+
+```ts
+// Subscribes only to unreadCount changes
+const unreadCount = useAppStore((s) => s.unreadCount)
+```
+
+### Zustand を使うべきでないとき
+
+- サーバーデータ — TanStack Query を使う
+- URL 状態 — URL を使う
+- フォーム状態 — react-hook-form を使う
+- 単一コンポーネントの状態 — `useState` を使う
+
+---
+
+## フォーム状態 — react-hook-form
+
+`frontend/patterns/form.md` を参照。要約:
+
+```ts
+const { register, handleSubmit, formState: { errors }, setValue, watch, reset } =
+  useForm<FormType>({ resolver: zodResolver(FormSchema), defaultValues })
+```
+
+フォーム値は **絶対に** Context、Zustand、URL に置かない。
+
+---
+
+## ローカル状態 — useState
+
+1 つのコンポーネント（または props で制御された小さなサブツリー）にしか影響しない状態にはこれを使う:
 
 ```ts
 const [isOpen, setIsOpen] = useState(false)
-const [activeTab, setActiveTab] = useState<"list" | "done">("list")
+const [tab, setTab] = useState<"list" | "archive">("list")
 ```
+
+`tab` を共有可能にしたい場合は、代わりに URL 状態に移す。
+
+---
+
+## ローディング状態の統合
+
+各 `useMutation` は `isPending` を返す。複数 mutation を覆う単一のローディング表示を出すには:
+
+```ts
+const { handleDelete, isLoading: deleteLoading } = useDeleteFamilyQuest()
+const { handleRegister, isLoading: registerLoading } = useRegisterFamilyQuest({ setId })
+const { handleUpdate, isLoading: updateLoading } = useUpdateFamilyQuest()
+
+const [submitLoading, setSubmitLoading] = useState(false)
+useEffect(() => {
+  setSubmitLoading(deleteLoading || registerLoading || updateLoading)
+}, [deleteLoading, registerLoading, updateLoading])
+```
+
+そして `formLoading || submitLoading` を 1 つの `<LoadingOverlay>` に渡す。
+
+---
+
+## エラー状態の統合
+
+`useQuery` と `useMutation` のエラーはローカル state に保持しない。`handleAppError(error, router)` を通して UX を統一する:
+
+```ts
+// useQuery
+if (error) handleAppError(error, router)
+
+// useMutation
+onError: (error) => handleAppError(error, router),
+```
+
+`handleAppError`:
+- `ClientAuthError` → 未認証ページへリダイレクト
+- `ClientValueError` → `toast.error(error.message)`
+- `VersionConflictError` → `toast.error("他のユーザーによって更新されています")`
+- その他の `AppError` → `toast.error(error.message)`
+- 未知 → ログ出力 + 汎用トースト
+
+フォームレベルのエラー（項目別）は react-hook-form の `formState.errors` 内で管理される — `handleAppError` には届かない。
+
+---
+
+## 成功通知
+
+mutation のあとに:
+
+```ts
+onSuccess: () => {
+  queryClient.invalidateQueries({ queryKey: ["family"] })
+  toast.success("家族を登録しました", { duration: 1500 })
+}
+```
+
+`toast.success` と `toast.error` は `react-hot-toast` のもの。`<Toaster />` は `providers.tsx` で一度だけマウントしている。
+
+---
+
+## 楽観的更新
+
+quest-pay では楽観的更新を **使わない**。標準パターンは:
+
+1. `mutation.mutate(args)` → mutation 進行中 → `isPending: true`
+2. `<LoadingOverlay>` が UI を覆う
+3. 成功時 → query を invalidate → 次の refetch で新しい状態が表示される
+4. 常にサーバーが Single Source of Truth
+
+楽観的更新は、複雑さに見合うほどの UX 改善が計測できた場合（データ往復の体感が 500ms 超）にのみ導入する。
 
 ---
 
 ## 制約
 
-- Zustand・Redux・その他状態管理ライブラリは使わない — TanStack Query + Context を使う
-- サーバーデータを `useState` に格納しない — TanStack Query を使う
-- 明示的な議論なしに `queryClient.setQueryData()` で楽観的更新をしない
-- プロップスドリリングが2階層を超える場合は Context に切り出すかフックに持ち上げる
+- サーバーデータ → TanStack Query を使う（`useState` を使ってはいけない）
+- 共有可能な UI 状態 → URL を使う（タブ／フィルタを `useState` にしてはいけない）
+- フォーム値 → react-hook-form を使う（Context／Zustand／URL を使ってはいけない）
+- エラー → `handleAppError` を通す（JSX に生のエラーメッセージを出してはいけない）
+- 楽観的更新は明示的な正当化が必要 — デフォルトは invalidate + refetch
+- mutation のローディング状態は 1 つの `<LoadingOverlay>` にまとめる
+- 必要以上に広い query プレフィックスで invalidate しないこと

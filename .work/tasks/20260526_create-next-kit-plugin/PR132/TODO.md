@@ -35,6 +35,26 @@ html-kit の後継として位置付け、Next.js 固有のパターンを対象
 | 済 | marketplace.json を更新 | `.claude-plugin/marketplace.json` |
 | 済 | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
 | 済 | references/*.md の日本語ミラーを作成する | `plugins/next-kit/references/**/*.jp.md` |
+| 済 | references をサブフォルダ分類に再構成（conventions/ ・ patterns/） | `plugins/next-kit/references/frontend/` |
+| 済 | 編集/閲覧画面の命名規則を追加 | `plugins/next-kit/references/frontend/conventions/naming.md` |
+| 済 | コメントの書き方ドキュメント追加 | `plugins/next-kit/references/frontend/conventions/comments.md` |
+| 済 | 型定義パターンドキュメント追加 | `plugins/next-kit/references/frontend/conventions/types.md` |
+| 済 | 使用ライブラリ一覧ドキュメント追加（Mantine / TanStack Query / Zod / react-hook-form / zustand / 他） | `plugins/next-kit/references/frontend/conventions/libraries.md` |
+| 済 | 一覧画面パターン（フィルタ・ソート・QS） | `plugins/next-kit/references/frontend/patterns/list-screen.md` |
+| 済 | 詳細・閲覧画面パターン | `plugins/next-kit/references/frontend/patterns/view-screen.md` |
+| 済 | 編集画面パターン | `plugins/next-kit/references/frontend/patterns/edit-screen.md` |
+| 済 | フォーム実装パターン（form.ts + Zod + react-hook-form + Mantine） | `plugins/next-kit/references/frontend/patterns/form.md` |
+| 済 | ダイアログ・モーダルパターン | `plugins/next-kit/references/frontend/patterns/dialog.md` |
+| 済 | URL ベースの画面状態管理（タブ・フィルタを QS に反映） | `plugins/next-kit/references/frontend/url-state.md` |
+| 済 | components.md をカタログ形式に書き直し | `plugins/next-kit/references/frontend/components.md` |
+| 済 | hooks.md を拡張（useQuery / useMutation / useXxxForm / フックの種類別パターン） | `plugins/next-kit/references/frontend/hooks.md` |
+| 済 | state-management.md を拡張（zustand含む、エラー状態・ローディング統合の詳細） | `plugins/next-kit/references/frontend/state-management.md` |
+| 済 | endpoints.md を見直し（オブジェクト形式の記述を実態確認） | `plugins/next-kit/references/frontend/endpoints.md` |
+| 済 | environment.md を整理（YAML設定パターン追記、定数 vs 環境変数の判断基準） | `plugins/next-kit/references/shared/environment.md` |
+| 済 | logger.md を JSON-L 形式に書き直し（aituberに合わせる） | `plugins/next-kit/references/shared/logger.md` |
+| 済 | CLAUDE.md インデックスを新構成に合わせて更新 | `plugins/next-kit/references/CLAUDE.md` |
+| 済 | 全 references の JP ミラー更新 | `plugins/next-kit/references/**/*.jp.md` |
+| 済 | plugin.json / marketplace.json のバージョンを 1.1.0 にバンプ | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
@@ -44,4 +64,5 @@ html-kit の後継として位置付け、Next.js 固有のパターンを対象
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| {次にやること} | {背景・目的} | {即時実施可} |
+| AIチューバー HTML→Next.js コンポーネント候補洗い出し | `/home/shuhei2441/repo/aituber` の各HTML画面を読み、共通化できそうな UI 部品を AI が洗い出して `next-kit/references/frontend/components.md` に追記する。ユーザーが採否を判断する流れ。 | PR132 完了後（next-kit の components.md が整備済みであること） |
+| next-kit プラグイン自体のレビュー・改善提案 | Claude Code 一般のベストプラクティス知識で next-kit プラグインを評価し、改善提案を質問形式で QA.md に大量に書き出す。「このライブラリは別の方がいい」「この分割の方が保守性が高い」「この観点も書いた方がいい」等。ユーザーが一個ずつ判断して採用したものを実装。 | PR132 完了後（next-kit が一通り整備されていること） |

@@ -4,35 +4,83 @@
 
 ## 概要
 
-このディレクトリには Next.js App Router の実装規約が格納されています。
-現在のタスクに関連するファイルを選んで読んでください。
+このディレクトリには Next.js App Router の実装規約が格納されている。
+現在のタスクに関連するファイルを選んで読むこと。
 
 ## フォルダ構成
 
-| ファイル | 概要 |
+| パス | 概要 |
 |---|---|
-| `frontend/folder-structure.md` | フォルダ構成・命名規則 |
-| `frontend/components.md` | コンポーネント設計パターン |
-| `frontend/hooks.md` | カスタムフックパターン |
-| `frontend/state-management.md` | 状態管理（TanStack Query / Context） |
+| `frontend/conventions/` | コード規約 — 命名・コメント・型・ライブラリ・フォルダ構成 |
+| `frontend/patterns/` | 画面・機能パターン — 一覧・閲覧・編集・フォーム・ダイアログ |
+| `frontend/components.md` | 共通コンポーネントのカタログ（新規作成前に必ず確認） |
+| `frontend/hooks.md` | カスタムフックパターン（読み取り・ミューテーション・フォーム・URL状態） |
+| `frontend/state-management.md` | 状態管理の意思決定ツリー（サーバー / URL / コンテキスト / ローカル） |
 | `frontend/endpoints.md` | URL定数管理 |
-| `backend/api-routes.md` | APIルート設計 |
+| `frontend/url-state.md` | URLベースの画面状態（タブ・フィルタ・ページネーションをクエリストリングで管理） |
+| `backend/api-routes.md` | APIルート設計（route.ts / client.ts / service.ts / db.ts / query.ts） |
 | `backend/database.md` | DB設計（Drizzle ORM） |
-| `shared/environment.md` | 環境変数管理 |
-| `shared/error.md` | エラーハンドリング |
-| `shared/logger.md` | ロガー |
+| `shared/environment.md` | 環境変数 + 設定（シークレットは env、構造化設定は YAML） |
+| `shared/error.md` | エラークラス階層 + ハンドラー |
+| `shared/logger.md` | JSON Lines ロガー（AITuber プロジェクトと統一） |
 
 ## いつ何を読むか
 
+### 規約（常に適用するルール）
+
 | タスク | 読むファイル |
 |---|---|
-| 新しいページ・ルートを追加する | `frontend/folder-structure.md` |
-| Screen またはレイアウトコンポーネントを作る・編集する | `frontend/components.md` |
-| カスタムフックを書く・TanStack Query を使う | `frontend/hooks.md` |
-| サーバーデータ管理・グローバル状態・ローカル状態 | `frontend/state-management.md` |
+| フォルダ・ファイルの配置を決める | `frontend/conventions/folder-structure.md` |
+| コンポーネント・フック・ファイル・スキーマの命名 | `frontend/conventions/naming.md` |
+| コメントを書く（JSDoc・インライン・JSX セクションマーカー） | `frontend/conventions/comments.md` |
+| 型を定義する（Zod 推論・Drizzle・ジェネリクス） | `frontend/conventions/types.md` |
+| ライブラリを選択する（Mantine か自作か、何が許可されているか） | `frontend/conventions/libraries.md` |
+
+### パターン（画面種別ごとのレシピ）
+
+| タスク | 読むファイル |
+|---|---|
+| 一覧・インデックスページを作る（フィルタ・ソート・ページネーション） | `frontend/patterns/list-screen.md` |
+| 閲覧専用ページ（編集ルートと対になる） | `frontend/patterns/view-screen.md` |
+| 編集可能なフォーム画面を作る | `frontend/patterns/edit-screen.md` |
+| フォームを実装する（Zod + react-hook-form + Mantine） | `frontend/patterns/form.md` |
+| モーダル・ポップアップ・確認ダイアログを作る | `frontend/patterns/dialog.md` |
+
+### 横断的なフロントエンド
+
+| タスク | 読むファイル |
+|---|---|
+| 既存の共通コンポーネントを探す | `frontend/components.md` |
+| カスタムフックを書く | `frontend/hooks.md` |
+| 状態の置き場所を決める | `frontend/state-management.md` |
 | URL定数を追加・参照する | `frontend/endpoints.md` |
-| API route を追加する（route.ts / client.ts 等） | `backend/api-routes.md` |
+| タブ・フィルタ状態をURLに反映する | `frontend/url-state.md` |
+
+### バックエンド
+
+| タスク | 読むファイル |
+|---|---|
+| API ルートを追加する | `backend/api-routes.md` |
 | DB スキーマを設計・変更する | `backend/database.md` |
-| 環境変数を追加する・NEXT_PUBLIC_ の使い分け | `shared/environment.md` |
-| エラークラス・エラーハンドリングを実装する | `shared/error.md` |
-| ログ出力を追加する | `shared/logger.md` |
+
+### 共通
+
+| タスク | 読むファイル |
+|---|---|
+| 環境変数・設定値を追加する | `shared/environment.md` |
+| エラークラスの設計・エラーハンドリング | `shared/error.md` |
+| ログ出力を追加する（JSON Lines） | `shared/logger.md` |
+
+## クイックリファレンス：「〇〇を作るとき」
+
+| 作るもの | 読むファイル |
+|---|---|
+| 新規の一覧画面 | `patterns/list-screen.md`, `hooks.md`, `url-state.md`, `endpoints.md` |
+| 新規の閲覧画面（read-only） | `patterns/view-screen.md`, `components.md` |
+| 新規の編集画面 | `patterns/edit-screen.md`, `patterns/form.md`, `conventions/types.md` |
+| 新規のフォーム | `patterns/form.md`, `conventions/types.md`, `conventions/libraries.md` (Zod/RHF/Mantine) |
+| 新規のダイアログ・モーダル | `patterns/dialog.md`, `components.md` |
+| 新規の API ルート | `backend/api-routes.md`, `shared/error.md`, `shared/logger.md` |
+| スキーマ変更 | `backend/database.md`, `conventions/types.md` |
+| ログ追加 | `shared/logger.md` |
+| 設定値追加 | `shared/environment.md` |

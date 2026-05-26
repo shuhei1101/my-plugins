@@ -8,30 +8,78 @@ Select the file(s) relevant to your current task.
 
 ## Folder Structure
 
-| File | Summary |
+| Path | Summary |
 |---|---|
-| `frontend/folder-structure.md` | Folder structure and naming conventions |
-| `frontend/components.md` | Component design patterns |
-| `frontend/hooks.md` | Custom hook patterns |
-| `frontend/state-management.md` | State management (TanStack Query / Context) |
+| `frontend/conventions/` | Code conventions — naming, comments, types, libraries, folder structure |
+| `frontend/patterns/` | Screen and feature patterns — list, view, edit, form, dialog |
+| `frontend/components.md` | Catalog of shared components (browse first before building new) |
+| `frontend/hooks.md` | Custom hook patterns (read, mutation, form, URL state) |
+| `frontend/state-management.md` | State management decision tree (server / URL / context / local) |
 | `frontend/endpoints.md` | URL constant management |
-| `backend/api-routes.md` | API route design |
+| `frontend/url-state.md` | URL-based screen state (tabs / filters / pagination via query string) |
+| `backend/api-routes.md` | API route design (route.ts / client.ts / service.ts / db.ts / query.ts) |
 | `backend/database.md` | DB design (Drizzle ORM) |
-| `shared/environment.md` | Environment variable management |
-| `shared/error.md` | Error handling |
-| `shared/logger.md` | Logger |
+| `shared/environment.md` | Environment + config (env vars for secrets, YAML for structured config) |
+| `shared/error.md` | Error class hierarchy + handlers |
+| `shared/logger.md` | JSON Lines logger (aligned with AITuber project) |
 
 ## When to Read What
 
+### Conventions (always-applicable rules)
+
 | Task | Read |
 |---|---|
-| Adding a new page or route | `frontend/folder-structure.md` |
-| Creating or editing a Screen or layout component | `frontend/components.md` |
-| Writing a custom hook or using TanStack Query | `frontend/hooks.md` |
-| Managing server data, global state, or local state | `frontend/state-management.md` |
-| Adding or referencing URL constants | `frontend/endpoints.md` |
-| Adding an API route (route.ts / client.ts / etc.) | `backend/api-routes.md` |
-| Designing or changing DB schema | `backend/database.md` |
-| Adding env vars or deciding NEXT_PUBLIC_ prefix | `shared/environment.md` |
-| Implementing error classes or error handling | `shared/error.md` |
-| Adding log output | `shared/logger.md` |
+| Deciding folder/file placement | `frontend/conventions/folder-structure.md` |
+| Naming a component, hook, file, or schema | `frontend/conventions/naming.md` |
+| Writing comments (JSDoc, inline, JSX section markers) | `frontend/conventions/comments.md` |
+| Defining types (Zod inference, Drizzle, generics) | `frontend/conventions/types.md` |
+| Choosing a library (Mantine vs ad-hoc, what's allowed) | `frontend/conventions/libraries.md` |
+
+### Patterns (per-screen-type recipes)
+
+| Task | Read |
+|---|---|
+| Building a list / index page (filter / sort / pagination) | `frontend/patterns/list-screen.md` |
+| Building a read-only view (with edit-route counterpart) | `frontend/patterns/view-screen.md` |
+| Building an editable form screen | `frontend/patterns/edit-screen.md` |
+| Implementing a form (Zod + react-hook-form + Mantine) | `frontend/patterns/form.md` |
+| Building a modal, popup, or confirmation dialog | `frontend/patterns/dialog.md` |
+
+### Cross-cutting frontend
+
+| Task | Read |
+|---|---|
+| Looking for an existing shared component | `frontend/components.md` |
+| Writing a custom hook | `frontend/hooks.md` |
+| Choosing where state lives | `frontend/state-management.md` |
+| Adding / referencing URL constants | `frontend/endpoints.md` |
+| Putting tab/filter state in the URL | `frontend/url-state.md` |
+
+### Backend
+
+| Task | Read |
+|---|---|
+| Adding an API route | `backend/api-routes.md` |
+| Designing or modifying DB schema | `backend/database.md` |
+
+### Shared
+
+| Task | Read |
+|---|---|
+| Adding env vars or config values | `shared/environment.md` |
+| Error class design or error handling | `shared/error.md` |
+| Adding log output (JSON Lines) | `shared/logger.md` |
+
+## Quick "I'm building..." map
+
+| Building... | Read these files |
+|---|---|
+| A new list screen | `patterns/list-screen.md`, `hooks.md`, `url-state.md`, `endpoints.md` |
+| A new view (read-only) screen | `patterns/view-screen.md`, `components.md` |
+| A new edit screen | `patterns/edit-screen.md`, `patterns/form.md`, `conventions/types.md` |
+| A new form | `patterns/form.md`, `conventions/types.md`, `conventions/libraries.md` (Zod/RHF/Mantine) |
+| A new dialog / modal | `patterns/dialog.md`, `components.md` |
+| A new API route | `backend/api-routes.md`, `shared/error.md`, `shared/logger.md` |
+| A schema change | `backend/database.md`, `conventions/types.md` |
+| Adding logging | `shared/logger.md` |
+| Adding a config value | `shared/environment.md` |
