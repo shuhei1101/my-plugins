@@ -10,7 +10,7 @@ description: |
 # work-kit:issue-create — Create Issues from User Description
 
 Interprets a user's description of problems, splits it into discrete actionable issues,
-and saves each as an issue file in `.work/issues/` via `/work-kit:issue-log`.
+and saves each as an issue file in `.work/issues/` via `/work-kit:issue-save`.
 
 Example: "The chat history is hard to read, and settings reset on restart"
 → ISSUE-006: Improve chat history UI readability
@@ -92,11 +92,11 @@ Example: "The chat history is hard to read, and settings reset on restart"
 
 1. For each confirmed issue, invoke:
    ```
-   /work-kit:issue-log --title "{title}" --type {type} --priority {priority} --tags {tags} --problem "{problem summary}" --user-words "{user's original input}" --fix "{suggested fix if known}"
+   /work-kit:issue-save --title "{title}" --type {type} --priority {priority} --tags {tags} --problem "{problem summary}" --user-words "{user's original input}" --fix "{suggested fix if known}"
    ```
    - Omit `--user-words` if the user's exact wording was not captured
    - Omit `--fix` if no fix direction is clear
-   - Wait for `issue-log` to return the created ISSUE ID before proceeding to the next issue
+   - Wait for `issue-save` to return the created ISSUE ID before proceeding to the next issue
 2. Collect all returned ISSUE IDs
 
 → Proceed to Step 4
@@ -118,4 +118,4 @@ Example: "The chat history is hard to read, and settings reset on restart"
 #### Notes
 
 - Do NOT run `git commit` in this skill — the user reviews before committing
-- Step 1 (`issue-log`) handles all file creation and index updates — do not duplicate that logic here
+- Step 1 (`issue-save`) handles all file creation and index updates — do not duplicate that logic here

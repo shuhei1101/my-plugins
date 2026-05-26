@@ -155,9 +155,9 @@ description: |
 
 1. 発見した各問題について以下を呼び出す:
    ```
-   /work-kit:issue-log --title "{タイトル}" --type {タイプ} --priority {優先度} --tags {タグ} --scope "{スコープ}" --problem "{問題の説明}" --fix "{修正案}"
+   /work-kit:issue-save --title "{タイトル}" --type {タイプ} --priority {優先度} --tags {タグ} --scope "{スコープ}" --problem "{問題の説明}" --fix "{修正案}"
    ```
-   - 次のイシューに進む前に `issue-log` がイシュー ID を返すまで待つ
+   - 次のイシューに進む前に `issue-save` がイシュー ID を返すまで待つ
    - 返ってきた ISSUE ID をすべて収集する
 2. `_index.archive.yaml` にスキャン記録を追記する:
    ```yaml

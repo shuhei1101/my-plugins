@@ -16,7 +16,7 @@ description: |
 # work-kit:issue-create — ユーザー入力からイシューを登録
 
 ユーザーが入力した困りごとを AI が解釈し、独立した問題に分割して
-`/work-kit:issue-log` 経由で `.work/issues/` にイシューとして保存するスキル。
+`/work-kit:issue-save` 経由で `.work/issues/` にイシューとして保存するスキル。
 
 例: 「チャット画面の履歴が見づらいし、設定が次回起動でリセットされる」
 → ISSUE-006: チャット履歴 UI の視認性改善
@@ -98,11 +98,11 @@ description: |
 
 1. 確定したイシューごとに以下を呼び出す:
    ```
-   /work-kit:issue-log --title "{タイトル}" --type {タイプ} --priority {優先度} --tags {タグ} --problem "{問題の概要}" --user-words "{ユーザーの入力からの引用}" --fix "{修正案（わかれば）}"
+   /work-kit:issue-save --title "{タイトル}" --type {タイプ} --priority {優先度} --tags {タグ} --problem "{問題の概要}" --user-words "{ユーザーの入力からの引用}" --fix "{修正案（わかれば）}"
    ```
    - `--user-words` はユーザーの入力が明確に引用できる場合のみ使用する
    - 修正案が不明な場合は `--fix` を省略する
-   - 次のイシューに進む前に `issue-log` が ISSUE ID を返すまで待つ
+   - 次のイシューに進む前に `issue-save` が ISSUE ID を返すまで待つ
 2. 返ってきた ISSUE ID をすべて収集する
 
 → ステップ4へ進む

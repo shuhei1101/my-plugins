@@ -11,7 +11,7 @@ description: |
 # work-kit:issue-scan — Scan Codebase for Issues
 
 Scans the project code against applicable plugin references (py-kit, html-kit, etc.)
-and records newly discovered problems as issues in `.work/issues/` via `/work-kit:issue-log`.
+and records newly discovered problems as issues in `.work/issues/` via `/work-kit:issue-save`.
 
 Scope options: a specific frontend HTML file, a backend layer, or a custom scope.
 
@@ -149,9 +149,9 @@ Scope options: a specific frontend HTML file, a backend layer, or a custom scope
 
 1. For each newly found problem, invoke:
    ```
-   /work-kit:issue-log --title "{title}" --type {type} --priority {priority} --tags {tags} --scope "{scope}" --problem "{problem description}" --fix "{suggested fix}"
+   /work-kit:issue-save --title "{title}" --type {type} --priority {priority} --tags {tags} --scope "{scope}" --problem "{problem description}" --fix "{suggested fix}"
    ```
-   - Wait for `issue-log` to return the ISSUE ID before calling it for the next issue
+   - Wait for `issue-save` to return the ISSUE ID before calling it for the next issue
    - Collect all returned ISSUE IDs
 2. Append a scan record to `_index.archive.yaml`:
    ```yaml

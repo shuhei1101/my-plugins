@@ -61,6 +61,14 @@ def main() -> None:
     (TARGET_DIR / "tasks").mkdir(exist_ok=True)
     print(f"  created:       tasks/")
 
+    # _index.yaml は issues/.gitignore で git 管理外のため、テンプレートに置けない → ここで生成する
+    index_yaml = TARGET_DIR / "issues" / "_index.yaml"
+    if not index_yaml.exists():
+        index_yaml.write_text("# Managed by issue-scan / issue-create. Git-ignored (do not commit).\nlast_id: 0\nissues: []\n")
+        print(f"  created:       issues/_index.yaml")
+    else:
+        print(f"  skip (exists): issues/_index.yaml")
+
     print(f"\nSetup complete: {TARGET_DIR}")
 
 
