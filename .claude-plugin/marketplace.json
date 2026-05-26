@@ -42,6 +42,12 @@
       "source": "./plugins/guard-kit",
       "description": "Safety guards for dangerous operations — hooks that intercept git push/merge and other risky commands to enforce user confirmation",
       "version": "1.2.1"
+    },
+    {
+      "name": "next-kit",
+      "source": "./plugins/next-kit",
+      "description": "Next.js App Router implementation conventions — folder structure, component patterns, API routes, and scaffolding skills",
+      "version": "1.0.0"
     }
   ]
 }

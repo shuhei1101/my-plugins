@@ -28,12 +28,12 @@ html-kit の後継として位置付け、Next.js 固有のパターンを対象
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260526_create-next-kit-plugin/PR132/QA.md` |
-| - | plugins/next-kit/ を新規作成（plugin.json） | `plugins/next-kit/.claude-plugin/plugin.json` |
-| - | Next.js 実装規約 references を作成 | `plugins/next-kit/references/` |
-| - | 基本スキルを作成（implement / scaffold 等） | `plugins/next-kit/skills/` |
-| - | marketplace.json を更新 | `.claude-plugin/marketplace.json` |
-| - | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/20260526_create-next-kit-plugin/PR132/QA.md` |
+| 済 | plugins/next-kit/ を新規作成（plugin.json） | `plugins/next-kit/.claude-plugin/plugin.json` |
+| 済 | Next.js 実装規約 references を作成 | `plugins/next-kit/references/` |
+| 済 | 基本スキルを作成（implement） | `plugins/next-kit/skills/` |
+| 済 | marketplace.json を更新 | `.claude-plugin/marketplace.json` |
+| 済 | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
 
 ## 参考ドキュメント
 
