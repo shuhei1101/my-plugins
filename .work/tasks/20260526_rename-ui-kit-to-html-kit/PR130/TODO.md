@@ -27,12 +27,12 @@ ui-kit という名前は対象言語が曖昧だったため、HTML/CSS/JS を�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260526_rename-ui-kit-to-html-kit/PR130/QA.md` |
-| - | plugins/ui-kit/ → plugins/html-kit/ にリネーム | `plugins/html-kit/` |
-| - | plugin.json の name を html-kit に変更 | `plugins/html-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json を更新（html-kit エントリに差し替え） | `.claude-plugin/marketplace.json` |
-| - | hooks / references 内の ui-kit 参照を html-kit に更新 | 各ファイル内の参照 |
-| - | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
+| x | QA.md に未決定事項を記録する | `.work/tasks/20260526_rename-ui-kit-to-html-kit/PR130/QA.md` |
+| x | plugins/ui-kit/ → plugins/html-kit/ にリネーム | `plugins/html-kit/` |
+| x | plugin.json の name を html-kit に変更 | `plugins/html-kit/.claude-plugin/plugin.json` |
+| x | marketplace.json を更新（html-kit エントリに差し替え） | `.claude-plugin/marketplace.json` |
+| x | hooks / references 内の ui-kit 参照を html-kit に更新 | 各ファイル内の参照 |
+| x | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
 
 ## 参考ドキュメント
 
