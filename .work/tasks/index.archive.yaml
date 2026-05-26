@@ -377,3 +377,11 @@ prs:
   summary: work-kit プラグインに JP ミラー ↔ 英語版の翻訳エージェントを追加
   task: 20260527_jp-mirror-translator-agent
   completed: true
+- id: 129
+  title: PR129 — create-py-kit-plugin
+  type: feat
+  tags: []
+  summary: dev-kit から Python を分離し py-kit プラグインを新規作成する（references/python/ 構成・py-script/py-project
+    スキル移動）
+  task: 20260526_create-py-kit-plugin
+  completed: true

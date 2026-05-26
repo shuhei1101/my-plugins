@@ -10,8 +10,14 @@
     {
       "name": "dev-kit",
       "source": "./plugins/dev-kit",
-      "description": "Development conventions toolkit — language standards (Python, YAML) and project/script generation skills",
-      "version": "2.2.1"
+      "description": "Development conventions toolkit — YAML standards and YAML skill",
+      "version": "3.0.0"
+    },
+    {
+      "name": "py-kit",
+      "source": "./plugins/py-kit",
+      "description": "Python coding conventions and scaffolding — standards references, script generation, and project creation skills",
+      "version": "1.0.0"
     },
     {
       "name": "html-kit",
