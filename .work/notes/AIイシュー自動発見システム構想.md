@@ -45,9 +45,9 @@ AI がコードベース・画面を調査（呼び出し時に実行）
 
 | PR | 内容 | 実施条件 |
 |---|---|---|
-| PR-A | py-kit プラグイン新規作成（dev-kit から Python を分離） | 即時実施可 |
-| PR-B | ui-kit → html-kit リネーム | 即時実施可 |
-| PR-C | work-kit に issue-scan・issue-create スキルを追加 | 即時実施可 |
+| PR-A | py-kit プラグイン新規作成（dev-kit から Python を分離） | 即時実施可 → PR129 完了 |
+| PR-B | ui-kit → html-kit リネーム | 即時実施可 → PR130 完了 |
+| PR-C | work-kit に issue-scan・issue-create スキルを追加 | 即時実施可 → PR131 完了 |
 | PR-D | work-kit merge スキルにイシュークローズ処理を統合 | PR-C 完了後 |
 | PR-E | next-kit プラグイン新規作成 | 将来（予約済み） |
 

@@ -61,6 +61,16 @@ def main() -> None:
     (TARGET_DIR / "tasks").mkdir(exist_ok=True)
     print(f"  created:       tasks/")
 
+    # issues/ は _index.yaml を git 管理外にするため .gitignore が必要
+    issues_dir = TARGET_DIR / "issues"
+    issues_dir.mkdir(exist_ok=True)
+    gitignore = issues_dir / ".gitignore"
+    if not gitignore.exists():
+        gitignore.write_text("_index.yaml\n")
+        print(f"  created:       issues/.gitignore")
+    else:
+        print(f"  skip (exists): issues/.gitignore")
+
     print(f"\nSetup complete: {TARGET_DIR}")
 
 
