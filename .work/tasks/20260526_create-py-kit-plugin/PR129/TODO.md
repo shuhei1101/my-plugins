@@ -42,6 +42,9 @@ CLAUDE.md インデックスで AI が状況に応じて参照先を選べるよ
 
 - `.work/notes/AIイシュー自動発見システム構想.md`: py-kit 設計の背景
 
+| - | references/python/ をフラット化（python/ サブフォルダを廃止） | `plugins/py-kit/references/` |
+| - | 各リファレンスファイルの JP ミラーを作成 | `plugins/py-kit/references/*.jp.md` |
+
 ## 次PR候補
 
 | タイトル | 概要 | 実施条件 |
