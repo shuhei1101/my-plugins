@@ -34,6 +34,7 @@ html-kit の後継として位置付け、Next.js 固有のパターンを対象
 | 済 | 基本スキルを作成（implement） | `plugins/next-kit/skills/` |
 | 済 | marketplace.json を更新 | `.claude-plugin/marketplace.json` |
 | 済 | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
+| 済 | references/*.md の日本語ミラーを作成する | `plugins/next-kit/references/**/*.jp.md` |
 
 ## 参考ドキュメント
 
