@@ -8,7 +8,19 @@
 
 ---
 
-## QA-001: py-kit の Python プロジェクトフォルダ構成案
+## QA-001: py-kit の Python プロジェクトフォルダ構成案 ✅解決
+
+**決定（2026-05-27）**:
+- フォルダ構成は **案A（純DDD: domain / application / infrastructure / interface）** を採用
+- Protocol の置き場所は **`domain/repositories/`（ドメイン層に集約）**
+- 具体実装は `infrastructure/` に配置（依存方向: domain ← application ← infrastructure / interface）
+- リファレンスには案A単一案を「標準」として記載（規模での分岐は書かない）
+
+→ `python-architecture.md` のプロジェクトフォルダ構成セクションに反映
+→ `python-fastapi.md` の構成もこの方針に揃える
+
+---
+
 
 ### 背景
 
