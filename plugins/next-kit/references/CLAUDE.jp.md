@@ -48,7 +48,7 @@ next-kit プラグインは Next.js 16 + App Router + shadcn/ui + Tailwind + Dri
 | `devtools/storybook.md` | Storybook |
 | `devtools/mock.md` | MSW |
 | `devtools/lint-and-format.md` | ESLint v9 Flat / Prettier / tsconfig |
-| `devops/deploy.md` | Vercel / セルフホスト / モノレポ |
+| `devops/deploy.md` | Vercel / Self-host / モノレポ |
 
 ---
 

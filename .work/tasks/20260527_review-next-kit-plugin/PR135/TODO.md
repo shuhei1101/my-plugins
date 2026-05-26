@@ -46,12 +46,12 @@ next-kit プラグイン全体を Claude Code の一般的なベストプラク�
 | 済 | ユーザーに採否を確認し、QA に判断を記録する | (ユーザー対話) |
 | 済 | Next.js 16 最新ドキュメント確認（middleware→proxy、Cache Components、async Request API 等） | (調査) |
 | 済 | quest-pay の参考実装（route.ts/service.ts/db.ts/query.ts、drizzle/schema.ts）を確認 | (調査) |
-| - | 既存 references を shadcn/ui + Next.js 16 ベースに全面書き換え | `plugins/next-kit/references/{frontend,backend,shared}/**` |
-| - | 新規 references を追加（server-actions, proxy, auth, caching, security, testing/, devtools/, devops/, streaming, seo, assets, pwa, autosave, route-files, server-vs-client, webhooks, jobs, realtime, rate-limit, idempotency） | `plugins/next-kit/references/**` |
-| - | CLAUDE.md インデックスを新構成で再生成 | `plugins/next-kit/references/CLAUDE.md` |
-| - | SKILL.md（implement）を新構成に合わせて更新 | `plugins/next-kit/skills/implement/SKILL.md` |
-| - | JP ミラーを同期する | `plugins/next-kit/references/**/*.jp.md`, `plugins/next-kit/skills/**/*.jp.md` |
-| - | plugin.json / marketplace.json を MAJOR バンプ（破壊的変更） | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | 既存 references を shadcn/ui + Next.js 16 ベースに全面書き換え | `plugins/next-kit/references/{frontend,backend,shared}/**` |
+| 済 | 新規 references を追加（server-actions, proxy, auth, caching, security, testing/, devtools/, devops/, streaming, seo, assets, pwa, autosave, route-files, server-vs-client, webhooks, jobs, realtime, rate-limit, idempotency） | `plugins/next-kit/references/**` |
+| 済 | CLAUDE.md インデックスを新構成で再生成 | `plugins/next-kit/references/CLAUDE.md` |
+| 済 | SKILL.md（implement）を新構成に合わせて更新 | `plugins/next-kit/skills/implement/SKILL.md` |
+| 済 | JP ミラーを同期する（46 ファイル） | `plugins/next-kit/references/**/*.jp.md`, `plugins/next-kit/skills/**/*.jp.md` |
+| 済 | plugin.json / marketplace.json を MAJOR バンプ（1.2.0 → 2.0.0、破壊的変更） | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
