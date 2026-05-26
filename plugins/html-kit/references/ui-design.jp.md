@@ -1,5 +1,5 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
-# UI Design — ui-kit 共通リファレンス(日本語ミラー)
+# UI Design — html-kit 共通リファレンス(日本語ミラー)
 
 > このファイルは `ui-design.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更時は JP ミラーを先に更新し、その後 `ui-design.md` にも反映する。
@@ -228,13 +228,13 @@ URL を Claude に貼るだけで、ユーザーのコンテキストが完全�
 ### ワークフロー
 
 画面の実装・モック作成時は **必ず最初に既存の共通コンポーネント**(`c-*`、`p-*`)を確認する。
-強制ワークフローは `ui-kit:implement` スキルと `.claude/rules/common-component-first.md` ルールを参照。
+強制ワークフローは `html-kit:implement` スキルと `.claude/rules/common-component-first.md` ルールを参照。
 
 ---
 
 ## モック生成への引き継ぎ
 
-`ui-kit:mock` でモックを生成するときは、本ドキュメントのパターンを適用する。
+`html-kit:mock` でモックを生成するときは、本ドキュメントのパターンを適用する。
 各モック案(「案 A / B / C...」)は**意味のある差分軸**を探る
 (例: サイドバー型 vs トップタブ型、密度の高い vs ゆとりのあるカードグリッド)。
 色違いだけのバリエーションにしない。
