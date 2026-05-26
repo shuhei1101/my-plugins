@@ -20,9 +20,9 @@
       "version": "1.0.0"
     },
     {
-      "name": "ui-kit",
-      "source": "./plugins/ui-kit",
-      "description": "Development UI components and conventions — floating debug widget, logging conventions, FLOCSS + design tokens application",
+      "name": "html-kit",
+      "source": "./plugins/html-kit",
+      "description": "HTML/CSS/JS development toolkit — floating debug widget, logging conventions, FLOCSS + design tokens application",
       "version": "1.5.2"
     },
     {
@@ -35,7 +35,7 @@
       "name": "work-kit",
       "source": "./plugins/work-kit",
       "description": "Hook-based project lifecycle management — injects PR task context on every prompt and reminds task updates on stop",
-      "version": "2.32.1"
+      "version": "2.33.0"
     },
     {
       "name": "worktree-kit",
@@ -48,6 +48,12 @@
       "source": "./plugins/guard-kit",
       "description": "Safety guards for dangerous operations — hooks that intercept git push/merge and other risky commands to enforce user confirmation",
       "version": "1.2.1"
+    },
+    {
+      "name": "next-kit",
+      "source": "./plugins/next-kit",
+      "description": "Next.js App Router implementation conventions — folder structure, component patterns, API routes, and scaffolding skills",
+      "version": "1.2.0"
     }
   ]
 }

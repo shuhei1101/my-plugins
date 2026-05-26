@@ -356,3 +356,24 @@ prs:
   summary: AIイシュー自動発見システム構想.md に設計内容（フォルダ構成・スキルフロー・メタデータ）を反映
   task: 20260526_update-ai-issue-notes
   completed: true
+- id: 130
+  title: PR130 — rename-ui-kit-to-html-kit
+  type: refactor
+  tags: []
+  summary: ui-kit プラグインを html-kit にリネームし、言語スコープ（HTML/CSS/JS）を明確にする
+  task: 20260526_rename-ui-kit-to-html-kit
+  completed: true
+- id: 132
+  title: PR132 — create-next-kit-plugin
+  type: feat
+  tags: []
+  summary: Next.js 対応プラグイン next-kit を新規作成する（フロントエンド移行に向けた準備）
+  task: 20260526_create-next-kit-plugin
+  completed: true
+- id: 133
+  title: PR133 — jp-mirror-translator-agent
+  type: feat
+  tags: []
+  summary: work-kit プラグインに JP ミラー ↔ 英語版の翻訳エージェントを追加
+  task: 20260527_jp-mirror-translator-agent
+  completed: true
