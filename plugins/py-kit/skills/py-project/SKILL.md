@@ -23,7 +23,7 @@ or works on an existing codebase while keeping it aligned with py-kit standards.
 Read the index file to identify which references to load:
 
 ```
-{plugin_root}/references/_index.md
+{plugin_root}/references/CLAUDE.md
 ```
 
 The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-project` → plugin root is `.../{plugin-name}/`).
@@ -297,7 +297,7 @@ git add .claude/rules/ && git commit -m "chore: add py-kit rules"
 
 ## References
 
-See `{plugin_root}/references/_index.md` for the full list. Sections by mode:
+See `{plugin_root}/references/CLAUDE.md` for the full list. Sections by mode:
 
 **New project (Steps 3–8):** `python-core.md`, `python-architecture.md`, `python-testing.md`; add `python-fastapi.md` or `python-llm.md` as needed
 

@@ -30,7 +30,7 @@
 まずインデックスファイルを読み込む：
 
 ```
-{plugin_root}/references/_index.md
+{plugin_root}/references/CLAUDE.md
 ```
 
 スキルファイルの2階層上がプラグインルート（例: `Base directory: .../skills/py-project` → プラグインルートは `.../{plugin-name}/`）。
@@ -206,7 +206,7 @@
 
 ## 参考資料
 
-詳細は `{plugin_root}/references/_index.md` を参照。
+詳細は `{plugin_root}/references/CLAUDE.md` を参照。
 
 **新規プロジェクト（ステップ3〜8）:** `python-core.md`・`python-architecture.md`・`python-testing.md`（必要に応じて `python-fastapi.md` や `python-llm.md` を追加）
 

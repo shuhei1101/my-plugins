@@ -26,7 +26,7 @@ py-kit 規約に従ったクリーンな単一ファイルスクリプトを作�
 まずインデックスファイルを読み込む：
 
 ```
-{plugin_root}/references/_index.md
+{plugin_root}/references/CLAUDE.md
 ```
 
 スキルファイルの2階層上がプラグインルート（例: `Base directory: .../skills/py-script` → プラグインルートは `.../{plugin-name}/`）。

@@ -44,13 +44,14 @@ CLAUDE.md インデックスで AI が状況に応じて参照先を選べるよ
 
 | 済 | references/python/ をフラット化（python/ サブフォルダを廃止） | `plugins/py-kit/references/` |
 | 済 | 各リファレンスファイルの JP ミラーを作成 | `plugins/py-kit/references/*.jp.md` |
-| - | `_index.md` → `CLAUDE.md` にリネーム（references 配下に確実にインデックスが読まれるように） | `plugins/py-kit/references/CLAUDE.md` |
-| - | フォルダ構成案を QA に複数案として記録（AITuber 構成を参考） | QA.md |
-| - | python-architecture に Template Method パターンを追記 | `python-architecture.md` |
-| - | 各リファレンスを next-kit 並みの詳細度に書き直し（コメント必須/推奨表・禁止事項・✅/❌対比例） | `python-core.md` / `python-architecture.md` / `python-scripts.md` / `python-testing.md` / `python-fastapi.md` / `python-llm.md` |
-| - | プロジェクトフォルダ構成セクションは QA 決定まで保留・削除 | `python-architecture.md` |
-| - | 全 JP ミラーも英語の改訂に同期 | `*.jp.md` |
-| - | glossary を `CLAUDE.md` 表記に修正 | `.claude/rules/core/glossary.md` |
+| 済 | `_index.md` → `CLAUDE.md` にリネーム（references 配下に確実にインデックスが読まれるように） | `plugins/py-kit/references/CLAUDE.md` |
+| 済 | フォルダ構成案を QA に複数案として記録（AITuber 構成を参考） — QA-001 で純DDD（案A）に決定 | QA.md |
+| 済 | python-architecture に Template Method パターンを追記 | `python-architecture.md` |
+| 済 | 各リファレンスを next-kit 並みの詳細度に書き直し（コメント必須/推奨表・禁止事項・✅/❌対比例） | `python-core.md` / `python-architecture.md` / `python-scripts.md` / `python-testing.md` / `python-fastapi.md` / `python-llm.md` |
+| 済 | プロジェクトフォルダ構成セクションは QA 決定（純DDD）を反映 | `python-architecture.md` § 8 |
+| 済 | 全 JP ミラーも英語の改訂に同期 | `*.jp.md` |
+| 済 | glossary を `CLAUDE.md` 表記に修正 | `.claude/rules/core/glossary.md` |
+| 済 | SKILL.md / SKILL.jp.md の `references/_index.md` 参照を `references/CLAUDE.md` に更新 | `skills/py-script/SKILL.md` 他 |
 
 ## 参考ドキュメント追加
 

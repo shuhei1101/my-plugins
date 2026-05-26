@@ -76,21 +76,29 @@ plugins/py-kit/
 │   └── prompts/
 │       ├── python-skill-dispatch.md
 │       └── python-skill-dispatch.jp.md
-├── references/
-│   └── python/
-│       ├── _index.md              # 各ファイルの概要一覧（スキルが読むインデックス）
-│       ├── python-core.md         # 命名・型ヒント・コメントルール・言語ルール
-│       ├── python-architecture.md # SOLID・DRY・レイヤード・DI・ハードコード禁止・Pydantic・フォルダ構成
-│       ├── python-fastapi.md      # FastAPI エンドポイント設計・共通化パターン
-│       ├── python-llm.md          # LLM クライアントアーキテクチャ・プロンプト管理
-│       ├── python-testing.md      # ロガー仕様・テストポリシー
-│       └── python-scripts.md      # 簡易スクリプト構成・bat テンプレート
+├── references/                    # フラット配置（python/ サブフォルダ廃止）
+│   ├── CLAUDE.md                  # インデックス（references/ 配下読み込み時に自動ロード）
+│   ├── CLAUDE.jp.md
+│   ├── python-core.md             # 命名15項目・コメント必須/推奨表・型ヒント網羅・エラー処理・言語ルール
+│   ├── python-architecture.md     # SOLID/DRY 詳細・純DDDレイヤー・No Hardcoding・Composition Root・Strategy/Template Method/Factory/Decorator/Observer・Pydantic 境界・プロジェクトフォルダ構成（純DDD）
+│   ├── python-fastapi.md          # 純DDD配置（interface/api/）・build_app・lifespan・ルーター規約・Depends()・Pydantic schemas/・middleware・error_handlers
+│   ├── python-llm.md              # 三層抽象（task-specific / provider / SDK）・Instructor 構造化出力・プロンプト管理・トークン/コスト/キャッシュ・複数ベンダー併用・LLM 例外階層
+│   ├── python-testing.md          # ロガー仕様・テストポリシー表・モック方針・各種テストテンプレ・ソース↔テストリンク
+│   ├── python-scripts.md          # 簡易スクリプト構造・bat ルール表・FastAPI run.bat・tkinter GUI・Linux/macOS 等価
+│   └── *.jp.md                    # 各ファイルの JP ミラー
 └── skills/
-    ├── py-script/
-    └── py-project/
+    ├── py-script/                 # SKILL.md / SKILL.jp.md
+    └── py-project/                # SKILL.md / SKILL.jp.md
 ```
 
-`references/python/_index.md`: スキルが Step 1 で最初に読むインデックス。タスクに応じてどのファイルを読むべきかを示す。フックは CLAUDE.md 名のファイルをブロックするため `_index.md` に変更（PR129）。
+**設計決定事項（QA-001 / 2026-05-27 決定）**:
+- フォルダ構成は**純DDD**（domain / application / infrastructure / interface）
+- Protocol の置き場所は `domain/repositories/`（ドメイン層集約）
+- 具体実装は `infrastructure/`（依存方向：interface・infrastructure → application → domain）
+
+`references/CLAUDE.md`: スキルが Step 1 で読むインデックス。`references/` 配下の任意ファイルが読み込まれるとClaude Code がコンテキストに自動ロードする設計。タスク → 参照ファイルのマッピング表とクイック「○○を作る」マップを掲載。
+
+**詳細度**: PR132 next-kit の書きぶり（コメント必須/推奨表・✅/❌対比例・禁止事項リスト・Definition of Done チェックリスト）を Python 用に展開。各ファイルが本格リファレンス（数百〜千行規模）。
 
 ### html-kit（ui-kit からリネーム）
 

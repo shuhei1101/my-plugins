@@ -21,7 +21,7 @@ Creates a clean, standards-compliant single-file Python script.
 Read the index file to identify which references to load:
 
 ```
-{plugin_root}/references/_index.md
+{plugin_root}/references/CLAUDE.md
 ```
 
 The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-script` → plugin root is `.../{plugin-name}/`).
