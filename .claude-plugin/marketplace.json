@@ -14,9 +14,9 @@
       "version": "2.2.1"
     },
     {
-      "name": "ui-kit",
-      "source": "./plugins/ui-kit",
-      "description": "Development UI components and conventions — floating debug widget, logging conventions, FLOCSS + design tokens application",
+      "name": "html-kit",
+      "source": "./plugins/html-kit",
+      "description": "HTML/CSS/JS development toolkit — floating debug widget, logging conventions, FLOCSS + design tokens application",
       "version": "1.5.2"
     },
     {
