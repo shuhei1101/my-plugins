@@ -44,6 +44,18 @@ CLAUDE.md インデックスで AI が状況に応じて参照先を選べるよ
 
 | 済 | references/python/ をフラット化（python/ サブフォルダを廃止） | `plugins/py-kit/references/` |
 | 済 | 各リファレンスファイルの JP ミラーを作成 | `plugins/py-kit/references/*.jp.md` |
+| - | `_index.md` → `CLAUDE.md` にリネーム（references 配下に確実にインデックスが読まれるように） | `plugins/py-kit/references/CLAUDE.md` |
+| - | フォルダ構成案を QA に複数案として記録（AITuber 構成を参考） | QA.md |
+| - | python-architecture に Template Method パターンを追記 | `python-architecture.md` |
+| - | 各リファレンスを next-kit 並みの詳細度に書き直し（コメント必須/推奨表・禁止事項・✅/❌対比例） | `python-core.md` / `python-architecture.md` / `python-scripts.md` / `python-testing.md` / `python-fastapi.md` / `python-llm.md` |
+| - | プロジェクトフォルダ構成セクションは QA 決定まで保留・削除 | `python-architecture.md` |
+| - | 全 JP ミラーも英語の改訂に同期 | `*.jp.md` |
+| - | glossary を `CLAUDE.md` 表記に修正 | `.claude/rules/core/glossary.md` |
+
+## 参考ドキュメント追加
+
+- PR132 (`/mnt/c/Users/shuhe/repo/my-plugins-wt-PR132/plugins/next-kit/`): 詳細度・書きぶりの参考（コメント必須/推奨表、禁止事項明記、✅/❌対比例、CLAUDE.md インデックス）
+- AITuber プロジェクト (`/mnt/c/Users/shuhe/repo/aituber/src/aituber`): フォルダ構成案の元（modes + integrations + runtime のハイブリッド設計）
 
 ## 次PR候補
 
