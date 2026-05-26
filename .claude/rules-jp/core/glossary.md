@@ -38,7 +38,7 @@
 | セッションフラグ型ブロック | PreToolUse フックがセッション単位のフラグファイル（`/tmp/{hook-name}-{session_id}`）を使い、初回のみ `decision:block` を返す設計パターン。ユーザーがクリエイタースキルを経由した後は同セッション内での続く編集を素通りさせる。dev-kit の `python-skill-dispatch` / `yaml-skill-dispatch` 由来（PR104）、PR121 で全プラグインの `skill-creator-dispatch` にも適用。 |
 | py-kit | dev-kit から Python を分離した新規プラグイン。`references/python/` 配下にコーディング規約を格納し、`CLAUDE.md` インデックスで AI が状況に応じて参照先を選べるようにする（PR128）。 |
 | html-kit | `ui-kit` のリネーム。HTML/CSS/JS の実装規約・ロギング設定・モック生成を担当。言語スコープを明確にするため改名（PR128）。 |
-| next-kit | Next.js 対応プラグイン（将来 PR として予約済み・未作成）。フロントエンドをバニラ HTML から Next.js に移行した後に html-kit の役割を引き継ぐ予定。 |
+| next-kit | Next.js App Router 実装規約プラグイン。References は `frontend/conventions/`（命名・コメント・型・ライブラリ・フォルダ構成）と `frontend/patterns/`（list / view / edit / form / dialog）、加えて `backend/` と `shared/` に分割。スタック: Mantine + react-hook-form + Zod + TanStack Query + Drizzle。レコード単位のルートは `[id]/view/` と `[id]/edit/` が sibling で、`[id]/page.tsx` は権限ベースの redirect。URL 定数は機能ごとのオブジェクト形式（`RESOURCE_URL = { list, new, view, edit }`）。PR132 で作成。 |
 | issue-scan | work-kit のスキル（`/work-kit:issue-scan`）。コードベースをスキャンしてイシューを発見し、`.work/issues/` に ISSUE-{N}.md として記録する。スキャン履歴を `_index.archive.yaml` に保存して同一箇所の再スキャンを防ぐ。 |
 | issue-create | work-kit のスキル（`/work-kit:issue-create`）。ユーザーの口頭説明を解釈し、複数の構造化されたイシューに分割して `.work/issues/` に登録する。 |
 | .work/issues/ | work-kit setup で作成されるプロジェクトローカルのイシュー管理ディレクトリ。オープンイシューファイル（ISSUE-{N}.md）、`closed/` サブフォルダ、git 管理外の `_index.yaml`、git 管理の `_index.archive.yaml` を含む。 |
