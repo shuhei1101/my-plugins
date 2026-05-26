@@ -44,7 +44,7 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 
 # A. フォルダ／ファイル分割粒度（次PRの自動注入フックを見据えた小単位化）
 
-## QA-001: references/ をフラットからフォルダ階層へ移行するか
+## QA-001: references/ をフラットからフォルダ階層へ移行するか ✅決定
 
 **背景**: 現在 `references/python-*.md` の 6 ファイルが直下にフラットに並んでいる。次PR の自動注入フックでは「編集対象ファイルのパスから注入対象 reference を決める」マッピングが必要になるが、フラット構成だとマッピング表が長くなり、新規追加時のスケールが悪い。
 
@@ -54,11 +54,13 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. **レイヤー軸でフォルダ化**（`references/domain/`, `references/application/`, `references/infrastructure/`, `references/interface/`, `references/cross-cutting/`）。注入フックがレイヤー（純DDD のフォルダ名）でマッチングしやすい
 - D. **2 軸ハイブリッド**（`references/topics/{core,architecture,...}/` ＋ `references/layers/{domain,...}/`）
 
-**反映先**: `references/CLAUDE.md` のディレクトリ構成図とマッピング表全面書き換え。各 SKILL.md の Step 1（References 読み込み）パス更新。
+**決定**: **B — フォルダ階層化（トピック軸）**
+
+**反映先**: `references/CLAUDE.md` のディレクトリ構成図とマッピング表全面書き換え。各 SKILL.md の Step 1（References 読み込み）パス更新。`references/{core,architecture,scripts,testing,fastapi,llm}/` のフォルダを作成し、既存ファイルを移動。
 
 ---
 
-## QA-002: python-llm.md を分割するか
+## QA-002: python-llm.md を分割するか ✅決定
 
 **背景**: `python-llm.md` は ① `LlmClient` Protocol、② Provider レイヤー（Claude/OpenAI/Gemini）、③ タスク特化 LLM クライアント（Instructor）、④ プロンプト管理、⑤ トークン／キャッシュ／コスト、⑥ プロバイダ選択／フォールバック、⑦ エラー処理、⑧ テストと、内容が広い（620行）。注入フックで `infrastructure/llm/providers/*.py` を編集した時に、プロンプト管理セクションまで一緒に読まれるのは無駄。
 
@@ -68,11 +70,15 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. **4 分割**（`llm/providers.md` / `llm/instructor.md` / `llm/prompts.md` / `llm/cost-cache.md`）
 - D. **5 分割**（C ＋ `llm/exceptions-retry.md`）
 
-**反映先**: `references/llm/` 配下に分割。`CLAUDE.md` 索引更新。
+**決定**: **D — 5 分割**
+
+**理由**: 「小さくすればするほど特はある」「複数読みはフックで対応できる」「全部共通にすると無駄なプロンプトが発生する」とユーザー意向。トークン効率を最優先し最大粒度で切る。
+
+**反映先**: `references/llm/` 配下に 5 ファイルへ分割（`providers.md` / `instructor.md` / `prompts.md` / `cost-cache.md` / `exceptions-retry.md`）。`CLAUDE.md` 索引更新。注入フックでは `infrastructure/llm/providers/**` → `providers.md` + `exceptions-retry.md`、`infrastructure/llm/instructor_clients/**` → `instructor.md` + `prompts.md` のように複数指定マッピングを組む。
 
 ---
 
-## QA-003: python-architecture.md を分割するか
+## QA-003: python-architecture.md を分割するか ✅決定
 
 **背景**: 800 行近く、SOLID（5 原則）／DRY ／純DDD レイヤード／No Hardcoding／Composition Root + DI／設計パターン（Strategy / Template Method / Factory / Decorator / Observer）／Pydantic 境界／フォルダ構成 と中身が多岐。「DI だけ確認したい」場合に SOLID 全部読まされる。
 
@@ -82,11 +88,21 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. **4 分割**（`architecture/solid.md` / `architecture/patterns.md` / `architecture/ddd-layout.md` / `architecture/di-composition.md`）
 - D. **5 分割**（C ＋ `architecture/pydantic-boundary.md`）
 
-**反映先**: `references/architecture/` 配下に分割。
+**決定**: **D — 5 分割**
+
+**理由**: 「ユースケースから考えて状況に応じて読むファイルが変わるならその単位で分ける」「悩むなら細かく」とユーザー意向。
+読み分けユースケース:
+- 新規プロジェクト作成 → `ddd-layout.md` + `di-composition.md`
+- レビュー / リファクタ → `solid.md` + `patterns.md`
+- main.py / container.py 編集 → `di-composition.md`
+- schemas/ / config.py / LLM 構造化出力編集 → `pydantic-boundary.md`
+- パターン適用判断 → `patterns.md` 単独
+
+**反映先**: `references/architecture/` 配下に `solid.md` / `patterns.md` / `ddd-layout.md` / `di-composition.md` / `pydantic-boundary.md` の 5 ファイルへ分割。`No Hardcoding` セクションは `ddd-layout.md` または `di-composition.md` に同梱（後で判断）。`CLAUDE.md` 索引・各 SKILL.md の Step 1 を更新。
 
 ---
 
-## QA-004: python-fastapi.md と python-llm.md は「レイヤー横断」だが配置はどうするか
+## QA-004: python-fastapi.md と python-llm.md は「レイヤー横断」だが配置はどうするか ✅決定
 
 **背景**: FastAPI と LLM は「特定技術スタック」と見ることも、「interface 層（FastAPI）／ infrastructure 層（LLM）」と見ることもできる。注入フックでは「`interface/api/**/*.py` 編集時に FastAPI ref」「`infrastructure/llm/**/*.py` 編集時に LLM ref」とマッチングしたい。
 
@@ -95,11 +111,19 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. レイヤー軸へ移動（`references/layers/interface/fastapi.md`, `references/layers/infrastructure/llm.md`）
 - C. **両方残す**（トピック原本 ＋ レイヤー軸からシンボリックリンク的に「該当時はこのトピックを読む」記述）
 
-**反映先**: フォルダ構成と注入フックのマッピング表。
+**決定**: **C — トピック原本 ＋ 各 ref 内に関連参照セクション**
+
+**理由**: 「別レイヤーでも一ついじったら関連を見られるよう、関連 md を任意で読めるかたちで渡しておく」とのユーザー方針。
+**重要な前提**: 当 PR および PR139 では **hook + references のみ** で完結させ、`.claude/rules/` は使わない方針。リンクルールは作らず、フックが主 ref を `decision:block` で注入し、関連 ref は各トピック ref 内の `## Related References`（または末尾の「関連で見ると良い references」セクション）で相対パスを案内する。Claude は注入された主 ref を読み、必要に応じて記載された関連 ref を自分で Read する。
+
+- トピック原本: `references/fastapi/`, `references/llm/`（注入フックの主マッピング先）
+- 関連参照案内: 各 ref ファイルの末尾に「Related References」セクション。例: `references/fastapi/streaming.md` の末尾に「LLM ストリーミングを返す場合は `../llm/providers.md` も参照」と相対パスで記載
+
+**反映先**: フォルダ構成は QA-001 のトピック軸で確定。各 ref に「Related References」節を追加する作業を当 PR の実装フェーズで行う。`.claude/rules/` は新規追加しない。
 
 ---
 
-## QA-005: python-scripts.md を Windows と Linux/macOS に分割するか
+## QA-005: python-scripts.md を Windows と Linux/macOS に分割するか ✅決定
 
 **背景**: 現状 `python-scripts.md` は ① 単一ファイルスクリプト構造、② bat ランチャー（Windows 専用）、③ FastAPI run.bat、④ tkinter、⑤ Linux/macOS shell スクリプト等価物 を 1 ファイルに詰めている。スクリプトを Linux で書く時に bat の節を読まされる。
 
@@ -109,11 +133,19 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. **3 分割**（`scripts/python-script.md` / `scripts/launchers-windows.md` / `scripts/launchers-unix.md`）
 - D. tkinter を別ファイルに切り出す（`scripts/tkinter.md`）
 
-**反映先**: `references/scripts/` 配下。
+**決定**: **C + D の組み合わせ — 最大粒度で 4 ファイルに分割**
+
+**理由**: 「悩むなら細かく分割」方針、ユースケース別注入が成立する単位で切る。
+- `scripts/python-script.md` — 単一ファイルスクリプト構造・argparse・logging.basicConfig・exit code（プラットフォーム共通）
+- `scripts/launchers-windows.md` — bat ランチャー・chcp 65001・%~dp0・FastAPI run.bat
+- `scripts/launchers-unix.md` — shell スクリプト（`set -euo pipefail`・`tee`）
+- `scripts/tkinter.md` — tkinter GUI 規約（独立トピック・利用シーン限定）
+
+**反映先**: `references/scripts/` 配下に 4 ファイルへ分割。`CLAUDE.md` 索引・SKILL.md（py-script の Step 1 reference 読み込み）を更新。注入フックは「.py スクリプト → python-script.md、.bat → launchers-windows.md、.sh → launchers-unix.md」のように拡張子別マッピング。
 
 ---
 
-## QA-006: python-testing.md の logger 仕様を別ファイルに切り出すか
+## QA-006: python-testing.md の logger 仕様を別ファイルに切り出すか ✅決定
 
 **背景**: `python-testing.md` § 1 は「Logger Specification」で `logger.py` の正規実装を提示している。これはテストの一部ではなく、プロジェクト共通インフラ。テストファイル編集時に注入されると無駄な情報が混ざる。逆に `logger.py` 編集時には必ず読みたい。
 
@@ -123,11 +155,20 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. **`cross-cutting/logger.md` として切り出し**（logger は層横断の共通インフラ）
 - D. `architecture/logger-config-constants.md` として「共通インフラ三兄弟」（logger.py / config.py / constants.py）でまとめる
 
-**反映先**: `references/{cross-cutting,infrastructure}/logger.md` 新設。`python-testing.md` の § 1 削除＋リンク。注入フックのマッピング追加。
+**決定**: **C — `cross-cutting/logger.md` として切り出し（最大粒度方針）**
+
+**理由**: logger は domain / application / infrastructure / interface のどの層からも `get_logger(__name__)` で呼ばれる層横断の共通インフラで、infrastructure 配下に置くと「インフラ層の実装」と誤解される。D（三兄弟まとめ）は「config だけ確認したい」場面でも logger が一緒に読まれるため、最大粒度方針と矛盾。`cross-cutting/` フォルダ自体は QA-001 のトピック軸（core/architecture/scripts/testing/fastapi/llm）に追加する。
+
+**反映先**: 
+- `references/cross-cutting/logger.md` を新設し、`python-testing.md § 1` の内容を移管
+- `python-testing.md § 1` は削除し、冒頭に「ロガー仕様は `../cross-cutting/logger.md` を参照」のリンクのみ残す
+- `CLAUDE.md` 索引に `cross-cutting/` フォルダを追加
+- 注入フックは `**/logger.py` 編集時 → `cross-cutting/logger.md` を block 注入
+- config.py / constants.py も同じく `cross-cutting/config.md`・`cross-cutting/constants.md` として個別ファイル化（QA-069・QA-070 で扱う）
 
 ---
 
-## QA-007: ファイル名の prefix `python-` は冗長か
+## QA-007: ファイル名の prefix `python-` は冗長か ✅決定
 
 **背景**: 全ファイルが `python-*.md`。Python プラグインの中なのは自明なので prefix が冗長。次PR の自動注入フックでもパスから直感的に「`references/llm.md`」のほうがわかりやすい。
 
@@ -136,11 +177,23 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. **`python-` prefix を削除**（`core.md` / `architecture.md` / `scripts.md` / `testing.md` / `fastapi.md` / `llm.md`）
 - C. フォルダ階層化（QA-001）と組み合わせて prefix 不要（`references/core/conventions.md` 等）
 
-**反映先**: 全ファイル rename / 全リンク更新。
+**決定**: **C — フォルダ階層化と組み合わせて prefix 不要**
+
+**理由**: QA-001 でトピック軸フォルダ化（B）を採用済み。`references/core/` 配下のファイル名に `python-` を付けるのは二重で冗長。トピックフォルダ名がコンテキストを担う。
+
+**反映先**: フォルダ階層化（QA-001）採用と同時に全ファイル rename。例:
+- `python-core.md` → `references/core/naming.md` + `references/core/comments.md` + `references/core/type-hints.md` + `references/core/imports.md` + `references/core/error-handling.md` + `references/core/language-rules.md` + `references/core/style.md`（細分化は別 QA で判断）
+- `python-llm.md` → `references/llm/{providers,instructor,prompts,cost-cache,exceptions-retry}.md`
+- `python-architecture.md` → `references/architecture/{solid,patterns,ddd-layout,di-composition,pydantic-boundary}.md`
+- `python-scripts.md` → `references/scripts/{python-script,launchers-windows,launchers-unix,tkinter}.md`
+- `python-testing.md` → `references/testing/*.md`（細分化は別 QA で判断）
+- `python-fastapi.md` → `references/fastapi/*.md`（細分化は別 QA で判断）
+
+全リンク（`CLAUDE.md` 索引・SKILL.md・JP ミラー）も更新。
 
 ---
 
-## QA-008: 1 ファイルあたりのサイズ上限を規定するか
+## QA-008: 1 ファイルあたりのサイズ上限を規定するか ✅決定
 
 **背景**: 現在 `python-architecture.md`(800行) や `python-llm.md`(620行) はかなり大きい。注入フックで一度に読み込まれるトークン量がブロート要因。「reference 1 ファイル ≤ 300 行 / ≤ 8000 トークン」のような明文化があると分割判断がブレない。
 
@@ -149,13 +202,17 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. **目安として ≤ 400 行 / 約 1 万トークン**を明記。超えたら分割を検討
 - C. ハード上限（≤ 300 行）を強制
 
-**反映先**: `plugins/py-kit/CLAUDE.md`（または `references/CLAUDE.md`）に「リファレンスの最大サイズ」セクション追加。
+**決定**: **B — 目安として ≤ 400 行 / 約 1 万トークンを明文化**
+
+**理由**: 「悩むなら細かく分割」方針との整合性。ハード上限（C）にすると稀にどうしても 1 ファイルでまとめたい説明が分断されるのでガイドラインに留める。
+
+**反映先**: `references/CLAUDE.md`（索引）の冒頭に「1 ファイルあたりの推奨サイズ: ≤ 400 行 / 約 1 万トークン。超えたら分割を検討」と明記。また当 PR で作成するすべての分割ファイルは目安内に収まることを確認する。
 
 ---
 
 # B. 命名規則（注入フックのパスマッチング適合性）
 
-## QA-009: Protocol 命名スタイル 3 つを統一するか
+## QA-009: Protocol 命名スタイル 3 つを統一するか ✅決定
 
 **背景**: `python-core.md § 1.3` で `{Name}able` / `I{Name}` / `Base{Name}` の 3 スタイルから「プロジェクトごとに 1 つ選べ」としている。py-kit の標準推奨は「Protocol = `{Name}able`、ABC = `Base{Name}`」と書かれているが、現状の references の例ではほとんど **prefix なし**（`UserRepository`, `OrderRepository`, `LlmClient`, `LlmProvider`）。例と推奨が齟齬している。
 
@@ -165,11 +222,15 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. **`Base{Name}` 推奨に統一**（Java/C# 出身者に分かりやすい）
 - D. **`I{Name}` 推奨に統一**（Hungarian）
 
-**反映先**: `python-core.md § 1.3`、`python-architecture.md § 3.3` の例、`python-llm.md` の Protocol 名（`LlmClient` → `ILlmClient` または `BaseLlmClient` 等）。
+**決定**: **B — prefix なしを正式推奨**
+
+**理由**: 現状の references 例（`UserRepository`, `OrderRepository`, `LlmClient`, `LlmProvider`）と一致させ、規約と実例の齟齬を解消する。Protocol と実装の区別はフォルダ位置（`domain/repositories/` vs `infrastructure/persistence/`）と技術 prefix（`PostgresUserRepository` 等）で十分。`{Name}able` / `I{Name}` / `Base{Name}` のように Protocol 名にスタイル prefix を付けると、後で ABC に変えた時の rename コストが発生する。
+
+**反映先**: `references/core/naming.md`（旧 `python-core.md § 1.3`）の Protocol 命名スタイル表を「prefix なしを推奨。3 スタイルは『プロジェクトの慣習があればそれに従ってよい』程度のオプション扱い」に書き換え。`references/architecture/ddd-layout.md` § 3.3 の例文も `prefix なし` を主推奨と明示。
 
 ---
 
-## QA-010: 実装クラスのファイル命名規則「技術 prefix」を明文化するか
+## QA-010: 実装クラスのファイル命名規則「技術 prefix」を明文化するか ✅決定
 
 **背景**: `python-core.md § 1.4` で `PostgresUserRepository` のように「実装クラスは技術 prefix」と決まっている。これは注入フックで `**/postgres_*_repository.py` や `**/in_memory_*_repository.py` といったパターンを使えるかどうかにも関わる。
 
@@ -178,7 +239,11 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. **技術 suffix を許容**（`user_repository_postgres.py`）→ ❌ 現状の `python-core.md § 1.4` で明確に suffix を禁じているので不一致になる。やめる
 - C. **prefix を必須化**（注入フックのマッチング前提）
 
-**反映先**: `python-core.md § 1.4` を「必須」表現に強化。
+**決定**: **C — 技術 prefix を必須化**
+
+**理由**: PR139 の注入フックでは「`**/{postgres,in_memory,redis,...}_*_repository.py` 編集 → infrastructure/persistence ref を注入」のようなパターンマッチングを使う。suffix 形式を許容するとフックロジックが複雑化（両形式を OR でマッチ）。当 PR で `必須` に強化しておけば、フックは prefix だけ前提でシンプルに書ける。
+
+**反映先**: `references/core/naming.md` § 1.4（旧 `python-core.md § 1.4`）の「technology prefix」を `Required` 表現に強化。Bad 例として `user_repository_postgres.py` 形式を追加。
 
 ---
 
