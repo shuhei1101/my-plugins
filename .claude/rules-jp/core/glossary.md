@@ -43,3 +43,4 @@
 | issue-create | work-kit のスキル（`/work-kit:issue-create`）。ユーザーの口頭説明を解釈し、複数の構造化されたイシューに分割して `.work/issues/` に登録する。 |
 | .work/issues/ | work-kit setup で作成されるプロジェクトローカルのイシュー管理ディレクトリ。オープンイシューファイル（ISSUE-{N}.md）、`closed/` サブフォルダ、git 管理外の `_index.yaml`、git 管理の `_index.archive.yaml` を含む。 |
 | wontfix | イシューの解決ステータス（`_index.archive.yaml` の `resolution: wontfix`）。「把握しているが意図的に修正しない」という意思決定を記録する。wontfix でクローズされたイシューは次回スキャン結果から除外される。 |
+| jp-mirror-translator | work-kit のサブエージェント（`plugins/work-kit/agents/jp-mirror-translator.md`）。英語オリジナルと JP ミラーの間で翻訳を行う。モデル: haiku。`.md` パスを渡すと `.jp.md` を生成・更新し、`.jp.md` パスを渡すと英語版を更新する（PR133 で追加）。 |
