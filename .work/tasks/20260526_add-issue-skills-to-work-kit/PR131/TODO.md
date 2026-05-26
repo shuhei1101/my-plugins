@@ -30,19 +30,19 @@ work-kit setup スキルにも .work/issues/ ディレクトリ作成を追加�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | QA.md に未決定事項を記録する（未決定事項なし） | `.work/tasks/20260526_add-issue-skills-to-work-kit/PR131/QA.md` |
-| x | issue-scan スキルを作成（SKILL.md / SKILL.jp.md） | `plugins/work-kit/skills/issue-scan/` |
-| x | issue-create スキルを作成（SKILL.md / SKILL.jp.md） | `plugins/work-kit/skills/issue-create/` |
-| x | work-kit setup に .work/issues/ ディレクトリ作成を追加 | `plugins/work-kit/skills/setup/` |
-| x | .work/issues/ 用 .gitignore を setup.py で生成 | `plugins/work-kit/skills/setup/scripts/setup.py` |
-| x | work-kit plugin.json のバージョンを更新（2.32.1→2.33.0） | `plugins/work-kit/.claude-plugin/plugin.json` |
-| x | marketplace.json を更新 | `.claude-plugin/marketplace.json` |
-| x | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
-| x | issue-create の「口頭で話した」→「ユーザーが入力した」に修正 | `plugins/work-kit/skills/issue-create/` |
-| x | issue-log スキルを作成（issue-scan / issue-create 共通の記録ロジック） | `plugins/work-kit/skills/issue-log/` |
-| x | issue-scan / issue-create の記録ステップを issue-log に委譲するよう修正 | `plugins/work-kit/skills/issue-scan/`, `issue-create/` |
-| x | .work/issues/ テンプレートを work-kit templates に追加 | `plugins/work-kit/templates/.work/issues/` |
-| x | setup.py の issues/ 直接生成をテンプレート経由に変更 | `plugins/work-kit/skills/setup/scripts/setup.py` |
+| 済 | QA.md に未決定事項を記録する（未決定事項なし） | `.work/tasks/20260526_add-issue-skills-to-work-kit/PR131/QA.md` |
+| 済 | issue-scan スキルを作成（SKILL.md / SKILL.jp.md） | `plugins/work-kit/skills/issue-scan/` |
+| 済 | issue-create スキルを作成（SKILL.md / SKILL.jp.md） | `plugins/work-kit/skills/issue-create/` |
+| 済 | work-kit setup に .work/issues/ ディレクトリ作成を追加 | `plugins/work-kit/skills/setup/` |
+| 済 | .work/issues/ 用 .gitignore を setup.py で生成 | `plugins/work-kit/skills/setup/scripts/setup.py` |
+| 済 | work-kit plugin.json のバージョンを更新（2.32.1→2.33.0） | `plugins/work-kit/.claude-plugin/plugin.json` |
+| 済 | marketplace.json を更新 | `.claude-plugin/marketplace.json` |
+| 済 | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
+| 済 | issue-create の「口頭で話した」→「ユーザーが入力した」に修正 | `plugins/work-kit/skills/issue-create/` |
+| 済 | issue-log スキルを作成（issue-scan / issue-create 共通の記録ロジック） | `plugins/work-kit/skills/issue-log/` |
+| 済 | issue-scan / issue-create の記録ステップを issue-log に委譲するよう修正 | `plugins/work-kit/skills/issue-scan/`, `issue-create/` |
+| 済 | .work/issues/ テンプレートを work-kit templates に追加 | `plugins/work-kit/templates/.work/issues/` |
+| 済 | setup.py の issues/ 直接生成をテンプレート経由に変更 | `plugins/work-kit/skills/setup/scripts/setup.py` |
 
 ## 参考ドキュメント
 
