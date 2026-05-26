@@ -36,3 +36,10 @@
 | pr-show | 予約済みPRの状況を3カテゴリ（着手可能・他セッション進行中・条件あり）で一覧表示するスキル（`/work-kit:pr-show`）。merge の Step 12 から切り出した独立スキル（PR109 で追加）。merge 以外のタイミングでも直接呼び出し可能。 |
 | disable-model-invocation | Claude Code スキルの frontmatter フラグ。`true` にするとモデルが自律判断でスキルを起動することを禁止し、ユーザーの `/plugin:skill` 直接呼び出し時のみ発動する。このフラグが設定されたスキルには「自動起動禁止」系の禁止事項は不要（冗長）。直近メッセージでの呼び出しチェックのみ残せばよい（PR113 で整理）。 |
 | セッションフラグ型ブロック | PreToolUse フックがセッション単位のフラグファイル（`/tmp/{hook-name}-{session_id}`）を使い、初回のみ `decision:block` を返す設計パターン。ユーザーがクリエイタースキルを経由した後は同セッション内での続く編集を素通りさせる。dev-kit の `python-skill-dispatch` / `yaml-skill-dispatch` 由来（PR104）、PR121 で全プラグインの `skill-creator-dispatch` にも適用。 |
+| py-kit | dev-kit から Python を分離した新規プラグイン。`references/python/` 配下にコーディング規約を格納し、`CLAUDE.md` インデックスで AI が状況に応じて参照先を選べるようにする（PR128）。 |
+| html-kit | `ui-kit` のリネーム。HTML/CSS/JS の実装規約・ロギング設定・モック生成を担当。言語スコープを明確にするため改名（PR128）。 |
+| next-kit | Next.js 対応プラグイン（将来 PR として予約済み・未作成）。フロントエンドをバニラ HTML から Next.js に移行した後に html-kit の役割を引き継ぐ予定。 |
+| issue-scan | work-kit のスキル（`/work-kit:issue-scan`）。コードベースをスキャンしてイシューを発見し、`.work/issues/` に ISSUE-{N}.md として記録する。スキャン履歴を `_index.archive.yaml` に保存して同一箇所の再スキャンを防ぐ。 |
+| issue-create | work-kit のスキル（`/work-kit:issue-create`）。ユーザーの口頭説明を解釈し、複数の構造化されたイシューに分割して `.work/issues/` に登録する。 |
+| .work/issues/ | work-kit setup で作成されるプロジェクトローカルのイシュー管理ディレクトリ。オープンイシューファイル（ISSUE-{N}.md）、`closed/` サブフォルダ、git 管理外の `_index.yaml`、git 管理の `_index.archive.yaml` を含む。 |
+| wontfix | イシューの解決ステータス（`_index.archive.yaml` の `resolution: wontfix`）。「把握しているが意図的に修正しない」という意思決定を記録する。wontfix でクローズされたイシューは次回スキャン結果から除外される。 |

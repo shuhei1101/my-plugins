@@ -349,3 +349,10 @@ prs:
   summary: claude-kit の UserPromptSubmit creator-dispatch 5エントリを削除（毎プロンプト実行の負荷軽減）
   task: 20260525_remove-userpromptsubmit-creator-dispatch
   completed: true
+- id: 128
+  title: PR128 — update-ai-issue-notes
+  type: docs
+  tags: []
+  summary: AIイシュー自動発見システム構想.md に設計内容（フォルダ構成・スキルフロー・メタデータ）を反映
+  task: 20260526_update-ai-issue-notes
+  completed: true
