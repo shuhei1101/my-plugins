@@ -48,6 +48,13 @@ work-kit setup スキルにも .work/issues/ ディレクトリ作成を追加�
 
 - `.work/notes/AIイシュー自動発見システム構想.md`: issue-scan / issue-create のスキルフロー設計
 
+| - | issue-log を issue-save にリネーム（命名改善） | `plugins/work-kit/skills/` |
+| - | issue-save の SKILL.md / SKILL.jp.md から CLI 引数形式を除去し自然言語形式に修正 | `plugins/work-kit/skills/issue-save/` |
+| - | issue-scan / issue-create の issue-log 参照を issue-save に更新 | `plugins/work-kit/skills/issue-scan/`, `issue-create/` |
+| - | `.work/issues/` テンプレートに `_index.yaml` を追加 | `plugins/work-kit/templates/.work/issues/` |
+| - | `.work/issues/` テンプレートに `_index.archive.yaml` を追加 | `plugins/work-kit/templates/.work/issues/` |
+| - | `.work/tasks/` テンプレートに `index.archive.yaml` を追加 | `plugins/work-kit/templates/.work/tasks/` |
+
 ## 次PR候補
 
 | タイトル | 概要 | 実施条件 |
