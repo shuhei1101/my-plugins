@@ -3,83 +3,186 @@
 
 ## Overview
 
-This directory contains Next.js App Router implementation conventions.
-Select the file(s) relevant to your current task.
+next-kit プラグインは Next.js 16 + App Router + shadcn/ui + Tailwind + Drizzle + TanStack Query を前提とした実装規約集。
+作業内容に応じて関連ファイルだけを選んで読む。
 
-## Folder Structure
+> **将来のフック自動読み込み**: ファイル名・フォルダ構成は「特定のフォルダ/ファイル名を編集したら対応する references を自動 inject する」フックトリガーとしても使える設計。
+
+---
+
+## Folder structure
 
 | Path | Summary |
 |---|---|
-| `frontend/conventions/` | Code conventions — naming, comments, types, libraries, folder structure |
-| `frontend/patterns/` | Screen and feature patterns — list, view, edit, form, dialog |
-| `frontend/components.md` | Catalog of shared components (browse first before building new) |
-| `frontend/hooks.md` | Custom hook patterns (read, mutation, form, URL state) |
-| `frontend/state-management.md` | State management decision tree (server / URL / context / local) |
-| `frontend/endpoints.md` | URL constant management |
-| `frontend/url-state.md` | URL-based screen state (tabs / filters / pagination via query string) |
-| `backend/api-routes.md` | API route design (route.ts / client.ts / service.ts / db.ts / query.ts) |
-| `backend/database.md` | DB design (Drizzle ORM) |
-| `shared/environment.md` | Environment + config (env vars for secrets, YAML for structured config) |
-| `shared/error.md` | Error class hierarchy + handlers |
-| `shared/logger.md` | JSON Lines logger (aligned with AITuber project) |
+| `frontend/conventions/` | 命名・配置・コメント・型・ライブラリ・route ファイル・Server vs Client |
+| `frontend/patterns/` | 画面パターン（List / View / Edit / Form / Dialog / Autosave） |
+| `frontend/components.md` | 共通コンポーネントカタログ |
+| `frontend/hooks.md` | カスタム hook 規約 |
+| `frontend/state-management.md` | state の置き場所決定フロー |
+| `frontend/endpoints.md` | URL 定数管理 |
+| `frontend/url-state.md` | URL クエリ string ベースの state |
+| `frontend/streaming.md` | Suspense / PPR / Cache Components |
+| `frontend/seo.md` | Metadata API / sitemap / robots |
+| `frontend/assets.md` | next/image / next/font / 静的アセット |
+| `frontend/pwa.md` | PWA / Service Worker / Push 通知 |
+| `backend/api-routes.md` | route.ts / client.ts / service.ts / db.ts / query.ts の CQRS 分離 |
+| `backend/database.md` | Drizzle スキーマ / 主キー / トランザクション / 楽観ロック / 履歴 |
+| `backend/server-actions.md` | Server Action（mutation の第一選択） |
+| `backend/proxy.md` | Next.js 16 の proxy.ts（旧 middleware.ts） |
+| `backend/auth.md` | 認証プロバイダ抽象化 |
+| `backend/caching.md` | Cache Components / revalidateTag / updateTag |
+| `backend/webhooks.md` | Webhook 受信 |
+| `backend/jobs.md` | バックグラウンドジョブ / Cron |
+| `backend/realtime.md` | SSE / WebSocket |
+| `backend/rate-limit.md` | レート制限 |
+| `backend/idempotency.md` | 冪等性キー |
+| `shared/environment.md` | 環境変数 + YAML 構造化設定 |
+| `shared/error.md` | エラー階層 + handler |
+| `shared/logger.md` | JSON Lines ロガー |
+| `shared/security.md` | セキュリティヘッダ / CSRF / XSS |
+| `testing/strategy.md` | テスト方針全体 |
+| `testing/unit.md` | Vitest + Testing Library |
+| `testing/e2e.md` | Playwright + Page Object |
+| `testing/fixtures.md` | テストデータ Factory |
+| `devtools/storybook.md` | Storybook |
+| `devtools/mock.md` | MSW |
+| `devtools/lint-and-format.md` | ESLint v9 Flat / Prettier / tsconfig |
+| `devops/deploy.md` | Vercel / Self-host / モノレポ |
 
-## When to Read What
+---
 
-### Conventions (always-applicable rules)
+## When to read what
+
+### Conventions（常時適用ルール）
 
 | Task | Read |
 |---|---|
-| Deciding folder/file placement | `frontend/conventions/folder-structure.md` |
-| Naming a component, hook, file, or schema | `frontend/conventions/naming.md` |
-| Writing comments (JSDoc, inline, JSX section markers) | `frontend/conventions/comments.md` |
-| Defining types (Zod inference, Drizzle, generics) | `frontend/conventions/types.md` |
-| Choosing a library (Mantine vs ad-hoc, what's allowed) | `frontend/conventions/libraries.md` |
+| フォルダ・ファイル配置の決定 | `frontend/conventions/folder-structure.md` |
+| 命名（コンポーネント・hook・ファイル・schema） | `frontend/conventions/naming.md` |
+| コメント（JSDoc・インライン・JSX section） | `frontend/conventions/comments.md` |
+| 型定義（Zod 推論・Drizzle・generic） | `frontend/conventions/types.md` |
+| ライブラリ選定（shadcn/ui ベース） | `frontend/conventions/libraries.md` |
+| route ファイル（loading / error / not-found / proxy） | `frontend/conventions/route-files.md` |
+| Server / Client Component の境界 | `frontend/conventions/server-vs-client.md` |
 
-### Patterns (per-screen-type recipes)
+### Patterns（画面パターン）
 
 | Task | Read |
 |---|---|
-| Building a list / index page (filter / sort / pagination) | `frontend/patterns/list-screen.md` |
-| Building a read-only view (with edit-route counterpart) | `frontend/patterns/view-screen.md` |
-| Building an editable form screen | `frontend/patterns/edit-screen.md` |
-| Implementing a form (Zod + react-hook-form + Mantine) | `frontend/patterns/form.md` |
-| Building a modal, popup, or confirmation dialog | `frontend/patterns/dialog.md` |
+| 一覧画面 | `frontend/patterns/list-screen.md` |
+| 詳細画面（読み取り） | `frontend/patterns/view-screen.md` |
+| 編集画面 | `frontend/patterns/edit-screen.md` |
+| フォーム実装（shadcn `<Form>` + RHF + Zod） | `frontend/patterns/form.md` |
+| モーダル / ダイアログ | `frontend/patterns/dialog.md` |
+| フォーム自動保存 | `frontend/patterns/autosave.md` |
 
 ### Cross-cutting frontend
 
 | Task | Read |
 |---|---|
-| Looking for an existing shared component | `frontend/components.md` |
-| Writing a custom hook | `frontend/hooks.md` |
-| Choosing where state lives | `frontend/state-management.md` |
-| Adding / referencing URL constants | `frontend/endpoints.md` |
-| Putting tab/filter state in the URL | `frontend/url-state.md` |
+| 既存共通コンポーネントを探す | `frontend/components.md` |
+| カスタム hook を書く | `frontend/hooks.md` |
+| state の置き場所を決める | `frontend/state-management.md` |
+| URL 定数を追加 | `frontend/endpoints.md` |
+| URL クエリで state を持つ | `frontend/url-state.md` |
+| Suspense / PPR / Streaming | `frontend/streaming.md` |
+| SEO / Metadata / OG image | `frontend/seo.md` |
+| 画像 / フォント | `frontend/assets.md` |
+| PWA 対応 | `frontend/pwa.md` |
 
 ### Backend
 
 | Task | Read |
 |---|---|
-| Adding an API route | `backend/api-routes.md` |
-| Designing or modifying DB schema | `backend/database.md` |
+| HTTP API ルートを書く | `backend/api-routes.md` |
+| DB スキーマ設計・変更 | `backend/database.md` |
+| Server Action で mutation | `backend/server-actions.md` |
+| proxy.ts（認証ガード等） | `backend/proxy.md` |
+| 認証プロバイダ | `backend/auth.md` |
+| キャッシュ戦略 | `backend/caching.md` |
+| Webhook 受信 | `backend/webhooks.md` |
+| バックグラウンドジョブ | `backend/jobs.md` |
+| リアルタイム（SSE / WS） | `backend/realtime.md` |
+| レート制限 | `backend/rate-limit.md` |
+| 冪等性 | `backend/idempotency.md` |
 
 ### Shared
 
 | Task | Read |
 |---|---|
-| Adding env vars or config values | `shared/environment.md` |
-| Error class design or error handling | `shared/error.md` |
-| Adding log output (JSON Lines) | `shared/logger.md` |
+| env / YAML config 追加 | `shared/environment.md` |
+| エラー処理 | `shared/error.md` |
+| ロガー | `shared/logger.md` |
+| セキュリティヘッダ / CSP | `shared/security.md` |
+
+### Testing
+
+| Task | Read |
+|---|---|
+| テスト方針を決める | `testing/strategy.md` |
+| Unit / Component test | `testing/unit.md` |
+| E2E test（Playwright） | `testing/e2e.md` |
+| テストデータ生成 | `testing/fixtures.md` |
+
+### Devtools
+
+| Task | Read |
+|---|---|
+| Storybook 設定 | `devtools/storybook.md` |
+| MSW モック | `devtools/mock.md` |
+| ESLint / Prettier / tsconfig | `devtools/lint-and-format.md` |
+
+### Devops
+
+| Task | Read |
+|---|---|
+| デプロイ | `devops/deploy.md` |
+
+---
 
 ## Quick "I'm building..." map
 
 | Building... | Read these files |
 |---|---|
-| A new list screen | `patterns/list-screen.md`, `hooks.md`, `url-state.md`, `endpoints.md` |
-| A new view (read-only) screen | `patterns/view-screen.md`, `components.md` |
-| A new edit screen | `patterns/edit-screen.md`, `patterns/form.md`, `conventions/types.md` |
-| A new form | `patterns/form.md`, `conventions/types.md`, `conventions/libraries.md` (Zod/RHF/Mantine) |
-| A new dialog / modal | `patterns/dialog.md`, `components.md` |
-| A new API route | `backend/api-routes.md`, `shared/error.md`, `shared/logger.md` |
-| A schema change | `backend/database.md`, `conventions/types.md` |
-| Adding logging | `shared/logger.md` |
-| Adding a config value | `shared/environment.md` |
+| 一覧画面 | `patterns/list-screen.md`, `hooks.md`, `url-state.md`, `endpoints.md`, `conventions/server-vs-client.md` |
+| 詳細画面 | `patterns/view-screen.md`, `components.md`, `seo.md`（Metadata） |
+| 編集画面 | `patterns/edit-screen.md`, `patterns/form.md`, `backend/server-actions.md`, `conventions/types.md` |
+| フォーム | `patterns/form.md`, `conventions/types.md`, `conventions/libraries.md` |
+| モーダル | `patterns/dialog.md`, `components.md` |
+| API ルート | `backend/api-routes.md`, `shared/error.md`, `shared/logger.md` |
+| Server Action | `backend/server-actions.md`, `backend/caching.md`, `shared/error.md` |
+| DB スキーマ変更 | `backend/database.md`, `conventions/types.md` |
+| 認証 | `backend/auth.md`, `backend/proxy.md` |
+| 認証ガード | `backend/proxy.md` |
+| Cron / Job | `backend/jobs.md` |
+| Webhook 受信 | `backend/webhooks.md` |
+| ログ追加 | `shared/logger.md` |
+| 設定値追加 | `shared/environment.md` |
+| Test 書く | `testing/strategy.md`, `testing/unit.md` or `testing/e2e.md` |
+| デプロイ | `devops/deploy.md` |
+| Lint / Format 設定 | `devtools/lint-and-format.md` |
+
+---
+
+## Stack 早見表
+
+| 用途 | 採用ライブラリ |
+|---|---|
+| UI | shadcn/ui + Tailwind |
+| Form | react-hook-form + Zod + shadcn `<Form>` |
+| Server state | TanStack Query + Server Component |
+| Mutation | Server Actions（第一選択） |
+| Toast | sonner |
+| Icons | lucide-react |
+| Date | date-fns |
+| DB | Drizzle ORM |
+| Auth | Better Auth または Auth.js |
+| Theme | next-themes |
+| URL state | nuqs |
+| Test | Vitest + Playwright + Testing Library |
+| Storybook | @storybook/nextjs-vite |
+| Mock | MSW |
+| Logger | 自前 JSON Lines |
+| Deploy | Vercel |
+
+詳細: `frontend/conventions/libraries.md`

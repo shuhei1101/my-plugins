@@ -43,11 +43,15 @@ next-kit プラグイン全体を Claude Code の一般的なベストプラク�
 | 済 | next-kit の全 references を読み、ベストプラクティスと照合する | `plugins/next-kit/references/**` |
 | 済 | 観点抜けがあれば洗い出す（パフォーマンス、a11y、SEO、テスト戦略、CI/CD、画像最適化など） | (調査) |
 | 済 | 改善提案を質問形式で QA.md に大量に書き出す（QA-001〜QA-072、計 72 件） | `.work/tasks/.../PR135/QA.md` |
-| - | ユーザーに採否を確認し、QA に判断を記録する | (ユーザー対話) |
-| - | 採用された変更を実装する | `plugins/next-kit/references/**` |
-| - | JP ミラーを同期する | `plugins/next-kit/references/**/*.jp.md` |
-| - | 採用内容に応じて plugin.json / marketplace.json をバンプ | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
+| 済 | ユーザーに採否を確認し、QA に判断を記録する | (ユーザー対話) |
+| 済 | Next.js 16 最新ドキュメント確認（middleware→proxy、Cache Components、async Request API 等） | (調査) |
+| 済 | quest-pay の参考実装（route.ts/service.ts/db.ts/query.ts、drizzle/schema.ts）を確認 | (調査) |
+| - | 既存 references を shadcn/ui + Next.js 16 ベースに全面書き換え | `plugins/next-kit/references/{frontend,backend,shared}/**` |
+| - | 新規 references を追加（server-actions, proxy, auth, caching, security, testing/, devtools/, devops/, streaming, seo, assets, pwa, autosave, route-files, server-vs-client, webhooks, jobs, realtime, rate-limit, idempotency） | `plugins/next-kit/references/**` |
+| - | CLAUDE.md インデックスを新構成で再生成 | `plugins/next-kit/references/CLAUDE.md` |
+| - | SKILL.md（implement）を新構成に合わせて更新 | `plugins/next-kit/skills/implement/SKILL.md` |
+| - | JP ミラーを同期する | `plugins/next-kit/references/**/*.jp.md`, `plugins/next-kit/skills/**/*.jp.md` |
+| - | plugin.json / marketplace.json を MAJOR バンプ（破壊的変更） | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
@@ -58,4 +62,7 @@ next-kit プラグイン全体を Claude Code の一般的なベストプラク�
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| {次にやること} | {背景・目的} | {即時実施可} |
+| references の自動フック読み込み機構 | 特定フォルダ/ファイル名（例: `*.view.tsx`, `app/api/**/proxy.ts` 等）の編集時に対応する references を Claude に自動読み込みさせる UserPromptSubmit/PreToolUse フックを構築 | PR135 マージ後 |
+| TypeScript リントの自動実行フック | コミット前 / PostToolUse で `tsc --noEmit` を走らせて型崩れを検知（QA-046 の補強） | 即時実施可 |
+| next-kit プラグインのテンプレート生成スキル | `references/**` を読み込んで初期プロジェクトを scaffold するスキル | references が安定後 |
+| AI イシュー自動発見システム構想の更新 | 当 PR の references 改訂を `.work/notes/AIイシュー自動発見システム構想.md` に反映 | PR135 マージ後 |

@@ -1,5 +1,5 @@
 {
   "name": "next-kit",
-  "description": "Next.js App Router implementation conventions — folder structure, component patterns, API routes, and scaffolding skills",
-  "version": "1.2.0"
+  "description": "Next.js 16 App Router implementation conventions — shadcn/ui + Tailwind + Drizzle + TanStack Query + Server Actions, with patterns for screens, forms, API routes, testing, and deployment",
+  "version": "2.0.0"
 }
