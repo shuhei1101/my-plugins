@@ -29,14 +29,14 @@ CLAUDE.md インデックスで AI が状況に応じて参照先を選べるよ
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260526_create-py-kit-plugin/PR129/QA.md` |
-| - | plugins/py-kit/ を新規作成（plugin.json） | `plugins/py-kit/.claude-plugin/plugin.json` |
-| - | references/python/ を作成し規約ファイルを配置 | `plugins/py-kit/references/python/python-core.md` 他 |
-| - | references/python/CLAUDE.md（インデックス）を作成 | `plugins/py-kit/references/python/CLAUDE.md` |
-| - | py-script / py-project スキルを py-kit に移動 | `plugins/py-kit/skills/py-script/` `plugins/py-kit/skills/py-project/` |
-| - | dev-kit から python.md / py-script / py-project を削除 | `plugins/dev-kit/references/python.md` 他 |
-| - | marketplace.json を更新（py-kit エントリを追加） | `.claude-plugin/marketplace.json` |
-| - | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/20260526_create-py-kit-plugin/PR129/QA.md` |
+| 済 | plugins/py-kit/ を新規作成（plugin.json） | `plugins/py-kit/.claude-plugin/plugin.json` |
+| 済 | references/python/ を作成し規約ファイルを配置 | `plugins/py-kit/references/python/python-core.md` 他 |
+| 済 | references/python/_index.md（インデックス）を作成 | `plugins/py-kit/references/python/_index.md` |
+| 済 | py-script / py-project スキルを py-kit に移動 | `plugins/py-kit/skills/py-script/` `plugins/py-kit/skills/py-project/` |
+| 済 | dev-kit から python.md / py-script / py-project を削除 | `plugins/dev-kit/references/python.md` 他 |
+| 済 | marketplace.json を更新（py-kit エントリを追加） | `.claude-plugin/marketplace.json` |
+| 済 | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
 
 ## 参考ドキュメント
 

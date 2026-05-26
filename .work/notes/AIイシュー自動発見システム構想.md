@@ -66,25 +66,31 @@ plugins/dev-kit/
     └── yaml/
 ```
 
-### py-kit（新規）
+### py-kit（新規）※ PR129 で実装済み
 
 ```
 plugins/py-kit/
 ├── .claude-plugin/plugin.json
+├── hooks/
+│   ├── hooks.json
+│   └── prompts/
+│       ├── python-skill-dispatch.md
+│       └── python-skill-dispatch.jp.md
 ├── references/
-│   ├── CLAUDE.md              # references 内の各ファイルの概要一覧（AI がどれを読むか判断するためのインデックス）
-│   ├── python-core.md         # 命名・型・SOLID・DRY
-│   ├── python-architecture.md # レイヤードアーキテクチャ・フォルダ構成
-│   ├── python-fastapi.md      # エンドポイント設計・共通化パターン
-│   ├── python-llm.md          # LLM クライアントアーキテクチャ
-│   ├── python-testing.md      # テストポリシー
-│   └── python-scripts.md      # スクリプト構成・bat テンプレート
+│   └── python/
+│       ├── _index.md              # 各ファイルの概要一覧（スキルが読むインデックス）
+│       ├── python-core.md         # 命名・型ヒント・コメントルール・言語ルール
+│       ├── python-architecture.md # SOLID・DRY・レイヤード・DI・ハードコード禁止・Pydantic・フォルダ構成
+│       ├── python-fastapi.md      # FastAPI エンドポイント設計・共通化パターン
+│       ├── python-llm.md          # LLM クライアントアーキテクチャ・プロンプト管理
+│       ├── python-testing.md      # ロガー仕様・テストポリシー
+│       └── python-scripts.md      # 簡易スクリプト構成・bat テンプレート
 └── skills/
     ├── py-script/
     └── py-project/
 ```
 
-`references/CLAUDE.md`: AI が「今回 LLM 周りを調査したい」と判断したとき、どのファイルを読めばよいかを示すインデックス。ファイル内容を固定化せず、AI が状況に応じて参照先を選べるようにする。
+`references/python/_index.md`: スキルが Step 1 で最初に読むインデックス。タスクに応じてどのファイルを読むべきかを示す。フックは CLAUDE.md 名のファイルをブロックするため `_index.md` に変更（PR129）。
 
 ### html-kit（ui-kit からリネーム）
 
