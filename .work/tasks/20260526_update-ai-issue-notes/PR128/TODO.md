@@ -21,8 +21,8 @@ AIイシュー自動発見システムのプラグイン化設計を会話で議
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260526_update-ai-issue-notes/PR128/QA.md` |
-| - | notes ファイルに設計内容を反映する | `.work/notes/AIイシュー自動発見システム構想.md` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/20260526_update-ai-issue-notes/PR128/QA.md` |
+| 済 | notes ファイルに設計内容を反映する | `.work/notes/AIイシュー自動発見システム構想.md` |
 
 ## 参考ドキュメント
 
