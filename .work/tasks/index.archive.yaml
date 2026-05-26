@@ -356,3 +356,10 @@ prs:
   summary: AIイシュー自動発見システム構想.md に設計内容（フォルダ構成・スキルフロー・メタデータ）を反映
   task: 20260526_update-ai-issue-notes
   completed: true
+- id: 130
+  title: PR130 — rename-ui-kit-to-html-kit
+  type: refactor
+  tags: []
+  summary: ui-kit プラグインを html-kit にリネームし、言語スコープ（HTML/CSS/JS）を明確にする
+  task: 20260526_rename-ui-kit-to-html-kit
+  completed: true
