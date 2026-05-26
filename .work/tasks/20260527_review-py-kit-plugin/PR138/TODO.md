@@ -69,12 +69,12 @@ py-kit プラグイン全体を **Claude Code の一般的なベストプラク�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/.../PR138/QA.md` |
-| - | py-kit の全 references を読み、ベストプラクティスと照合する | `plugins/py-kit/references/**` |
-| - | フォルダ / ファイル分割粒度を評価（自動注入フックを見据えて） | (調査) |
-| - | 抜け観点を洗い出す（async・packaging・依存管理・パフォーマンス・セキュリティ・観測性・CI/CD） | (調査) |
-| - | AITuber 参考実装と py-kit 規約の照合 | `/mnt/c/Users/shuhe/repo/aituber/src/aituber` |
-| - | 改善提案を**質問形式で QA.md に大量に**書き出す（QA-001 から連番） | `.work/tasks/.../PR138/QA.md` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/.../PR138/QA.md` |
+| 済 | py-kit の全 references を読み、ベストプラクティスと照合する | `plugins/py-kit/references/**` |
+| 済 | フォルダ / ファイル分割粒度を評価（自動注入フックを見据えて） | (調査) |
+| 済 | 抜け観点を洗い出す（async・packaging・依存管理・パフォーマンス・セキュリティ・観測性・CI/CD） | (調査) |
+| 済 | AITuber 参考実装と py-kit 規約の照合 | `/mnt/c/Users/shuhe/repo/aituber/src/aituber` |
+| 済 | 改善提案を**質問形式で QA.md に大量に**書き出す（QA-001 から QA-110、計 110 件） | `.work/tasks/.../PR138/QA.md` |
 | - | ユーザーに採否を確認し、QA に判断を記録する | (ユーザー対話) |
 | - | 採用された提案を実装（references の書き直し・分割・追加） | `plugins/py-kit/references/**` |
 | - | SKILL.md / SKILL.jp.md を新構成に合わせて更新（必要なら） | `plugins/py-kit/skills/**` |
