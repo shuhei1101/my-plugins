@@ -8,4 +8,1482 @@
 
 ---
 
-（未決定事項なし）
+## 評価方針
+
+py-kit プラグインの references / skills / hooks を全て読み、Python コミュニティの一般的なベストプラクティスや代替案、AITuber 実プロジェクトの構成と照合した結果、議論したい論点を QA-XXX 形式で列挙する。
+ユーザーに 1 つずつ「採用 / 不採用 / 後回し / 議論」を判断してもらう想定。
+
+**判断の凡例**:
+- 採用 → 当 PR で対応（references を改訂）
+- 不採用 → 現状維持の理由を 1 行で記録（再提案防止）
+- 後回し → 次 PR 候補に転記
+- 議論 → 追加情報を確認してから再判断
+
+---
+
+## 追加方針（PR138 でのコンテキスト）
+
+**最重要コンテキスト**: 次の PR（PR139 候補 `add-py-kit-references-injection-hook`）で、編集対象 Python ファイルのパス／命名に応じて対応 reference を自動注入する PreToolUse フックを実装する予定。
+そのために references は **小単位に分割** され、フォルダ／ファイル名で **パスマッチング可能** な構成が望ましい。当 PR の評価ではこの長期方針を念頭に references の構造的妥当性を必ず点検する。
+
+**現状の references 構成（PR129 で整備）**: `references/` 直下にフラットに 6 ファイル＋ `CLAUDE.md` 索引。
+- `python-core.md` — 命名・コメント・型ヒント・言語ルール（baseline）
+- `python-architecture.md` — SOLID / DRY / レイヤード / 純DDD / DI / 設計パターン
+- `python-scripts.md` — 単一ファイルスクリプト・bat ランチャー（Windows）・tkinter
+- `python-testing.md` — logger 仕様 / pytest / mocks
+- `python-fastapi.md` — FastAPI ルーター・schemas・middleware
+- `python-llm.md` — LLM クライアントの 3 層抽象・Instructor・プロンプト管理
+
+**現状の hooks**: `python-skill-dispatch` のみ（`.py` を編集／作成する全ケースで py-project または py-script を促す。1 セッション 1 回のフラグ型ブロック）。
+
+**参照する実プロジェクト**: AITuber（`/mnt/c/Users/shuhe/repo/aituber/src/aituber`）。
+- 構成: `modes/` (auto_tweet / game_streaming / notify / personal_chat / youtube_live) ＋ `integrations/` (stt / tts / vector_store / notify_orchestrator) ＋ `runtime/` (media_tools / pool) ＋ `llm/` ＋ `server/` (routes / ws) ＋ `core/`, `cycle/`, `history/`, `characters/`, `avatar/`, `video_project/`
+- 純DDD（domain / application / infrastructure / interface）には**全くなっていない**。「モード（ユースケース束）」「インテグレーション（外部統合）」「ランタイム（実行基盤）」のハイブリッド型。
+
+---
+
+# A. フォルダ／ファイル分割粒度（次PRの自動注入フックを見据えた小単位化）
+
+## QA-001: references/ をフラットからフォルダ階層へ移行するか
+
+**背景**: 現在 `references/python-*.md` の 6 ファイルが直下にフラットに並んでいる。次PR の自動注入フックでは「編集対象ファイルのパスから注入対象 reference を決める」マッピングが必要になるが、フラット構成だとマッピング表が長くなり、新規追加時のスケールが悪い。
+
+**案**:
+- A. フラット維持（`references/python-*.md`）
+- B. **フォルダ階層化**（`references/core/`, `references/architecture/`, `references/scripts/`, `references/testing/`, `references/fastapi/`, `references/llm/`）。同一テーマ内でファイルを増やせる構造にする
+- C. **レイヤー軸でフォルダ化**（`references/domain/`, `references/application/`, `references/infrastructure/`, `references/interface/`, `references/cross-cutting/`）。注入フックがレイヤー（純DDD のフォルダ名）でマッチングしやすい
+- D. **2 軸ハイブリッド**（`references/topics/{core,architecture,...}/` ＋ `references/layers/{domain,...}/`）
+
+**反映先**: `references/CLAUDE.md` のディレクトリ構成図とマッピング表全面書き換え。各 SKILL.md の Step 1（References 読み込み）パス更新。
+
+---
+
+## QA-002: python-llm.md を分割するか
+
+**背景**: `python-llm.md` は ① `LlmClient` Protocol、② Provider レイヤー（Claude/OpenAI/Gemini）、③ タスク特化 LLM クライアント（Instructor）、④ プロンプト管理、⑤ トークン／キャッシュ／コスト、⑥ プロバイダ選択／フォールバック、⑦ エラー処理、⑧ テストと、内容が広い（620行）。注入フックで `infrastructure/llm/providers/*.py` を編集した時に、プロンプト管理セクションまで一緒に読まれるのは無駄。
+
+**案**:
+- A. 1 ファイル維持
+- B. **2 分割**（`llm/clients.md`（Protocol + Provider + Instructor）／`llm/prompts.md`（プロンプト管理 + 運用））
+- C. **4 分割**（`llm/providers.md` / `llm/instructor.md` / `llm/prompts.md` / `llm/cost-cache.md`）
+- D. **5 分割**（C ＋ `llm/exceptions-retry.md`）
+
+**反映先**: `references/llm/` 配下に分割。`CLAUDE.md` 索引更新。
+
+---
+
+## QA-003: python-architecture.md を分割するか
+
+**背景**: 800 行近く、SOLID（5 原則）／DRY ／純DDD レイヤード／No Hardcoding／Composition Root + DI／設計パターン（Strategy / Template Method / Factory / Decorator / Observer）／Pydantic 境界／フォルダ構成 と中身が多岐。「DI だけ確認したい」場合に SOLID 全部読まされる。
+
+**案**:
+- A. 1 ファイル維持
+- B. **2 分割**（`architecture/principles.md`（SOLID + DRY + 設計パターン）／`architecture/layout.md`（純DDD + DI + フォルダ構成 + Pydantic 境界 + No Hardcoding））
+- C. **4 分割**（`architecture/solid.md` / `architecture/patterns.md` / `architecture/ddd-layout.md` / `architecture/di-composition.md`）
+- D. **5 分割**（C ＋ `architecture/pydantic-boundary.md`）
+
+**反映先**: `references/architecture/` 配下に分割。
+
+---
+
+## QA-004: python-fastapi.md と python-llm.md は「レイヤー横断」だが配置はどうするか
+
+**背景**: FastAPI と LLM は「特定技術スタック」と見ることも、「interface 層（FastAPI）／ infrastructure 層（LLM）」と見ることもできる。注入フックでは「`interface/api/**/*.py` 編集時に FastAPI ref」「`infrastructure/llm/**/*.py` 編集時に LLM ref」とマッチングしたい。
+
+**案**:
+- A. トピック軸維持（`references/fastapi/`, `references/llm/`）
+- B. レイヤー軸へ移動（`references/layers/interface/fastapi.md`, `references/layers/infrastructure/llm.md`）
+- C. **両方残す**（トピック原本 ＋ レイヤー軸からシンボリックリンク的に「該当時はこのトピックを読む」記述）
+
+**反映先**: フォルダ構成と注入フックのマッピング表。
+
+---
+
+## QA-005: python-scripts.md を Windows と Linux/macOS に分割するか
+
+**背景**: 現状 `python-scripts.md` は ① 単一ファイルスクリプト構造、② bat ランチャー（Windows 専用）、③ FastAPI run.bat、④ tkinter、⑤ Linux/macOS shell スクリプト等価物 を 1 ファイルに詰めている。スクリプトを Linux で書く時に bat の節を読まされる。
+
+**案**:
+- A. 1 ファイル維持（プラットフォームを明記）
+- B. **2 分割**（`scripts/python-script.md`（プラットフォーム共通）／`scripts/launchers.md`（bat + shell 両方））
+- C. **3 分割**（`scripts/python-script.md` / `scripts/launchers-windows.md` / `scripts/launchers-unix.md`）
+- D. tkinter を別ファイルに切り出す（`scripts/tkinter.md`）
+
+**反映先**: `references/scripts/` 配下。
+
+---
+
+## QA-006: python-testing.md の logger 仕様を別ファイルに切り出すか
+
+**背景**: `python-testing.md` § 1 は「Logger Specification」で `logger.py` の正規実装を提示している。これはテストの一部ではなく、プロジェクト共通インフラ。テストファイル編集時に注入されると無駄な情報が混ざる。逆に `logger.py` 編集時には必ず読みたい。
+
+**案**:
+- A. testing.md に残す
+- B. **`infrastructure/logger.md` として切り出し**（`{pkg}/logger.py` 編集時に注入）
+- C. **`cross-cutting/logger.md` として切り出し**（logger は層横断の共通インフラ）
+- D. `architecture/logger-config-constants.md` として「共通インフラ三兄弟」（logger.py / config.py / constants.py）でまとめる
+
+**反映先**: `references/{cross-cutting,infrastructure}/logger.md` 新設。`python-testing.md` の § 1 削除＋リンク。注入フックのマッピング追加。
+
+---
+
+## QA-007: ファイル名の prefix `python-` は冗長か
+
+**背景**: 全ファイルが `python-*.md`。Python プラグインの中なのは自明なので prefix が冗長。次PR の自動注入フックでもパスから直感的に「`references/llm.md`」のほうがわかりやすい。
+
+**案**:
+- A. `python-` prefix 維持（plugin 名と一致して識別しやすい）
+- B. **`python-` prefix を削除**（`core.md` / `architecture.md` / `scripts.md` / `testing.md` / `fastapi.md` / `llm.md`）
+- C. フォルダ階層化（QA-001）と組み合わせて prefix 不要（`references/core/conventions.md` 等）
+
+**反映先**: 全ファイル rename / 全リンク更新。
+
+---
+
+## QA-008: 1 ファイルあたりのサイズ上限を規定するか
+
+**背景**: 現在 `python-architecture.md`(800行) や `python-llm.md`(620行) はかなり大きい。注入フックで一度に読み込まれるトークン量がブロート要因。「reference 1 ファイル ≤ 300 行 / ≤ 8000 トークン」のような明文化があると分割判断がブレない。
+
+**案**:
+- A. サイズ上限は設けない
+- B. **目安として ≤ 400 行 / 約 1 万トークン**を明記。超えたら分割を検討
+- C. ハード上限（≤ 300 行）を強制
+
+**反映先**: `plugins/py-kit/CLAUDE.md`（または `references/CLAUDE.md`）に「リファレンスの最大サイズ」セクション追加。
+
+---
+
+# B. 命名規則（注入フックのパスマッチング適合性）
+
+## QA-009: Protocol 命名スタイル 3 つを統一するか
+
+**背景**: `python-core.md § 1.3` で `{Name}able` / `I{Name}` / `Base{Name}` の 3 スタイルから「プロジェクトごとに 1 つ選べ」としている。py-kit の標準推奨は「Protocol = `{Name}able`、ABC = `Base{Name}`」と書かれているが、現状の references の例ではほとんど **prefix なし**（`UserRepository`, `OrderRepository`, `LlmClient`, `LlmProvider`）。例と推奨が齟齬している。
+
+**案**:
+- A. 現状維持（推奨は推奨であり、prefix なしも許容）
+- B. **prefix なしを正式推奨に変更**（Protocol も ABC も `{Name}`。実装クラスに技術 prefix `Postgres{Name}` / `InMemory{Name}` を付ける運用で、Protocol と実装の区別はフォルダ位置で行う）
+- C. **`Base{Name}` 推奨に統一**（Java/C# 出身者に分かりやすい）
+- D. **`I{Name}` 推奨に統一**（Hungarian）
+
+**反映先**: `python-core.md § 1.3`、`python-architecture.md § 3.3` の例、`python-llm.md` の Protocol 名（`LlmClient` → `ILlmClient` または `BaseLlmClient` 等）。
+
+---
+
+## QA-010: 実装クラスのファイル命名規則「技術 prefix」を明文化するか
+
+**背景**: `python-core.md § 1.4` で `PostgresUserRepository` のように「実装クラスは技術 prefix」と決まっている。これは注入フックで `**/postgres_*_repository.py` や `**/in_memory_*_repository.py` といったパターンを使えるかどうかにも関わる。
+
+**案**:
+- A. 現状維持（技術 prefix 推奨）
+- B. **技術 suffix を許容**（`user_repository_postgres.py`）→ ❌ 現状の `python-core.md § 1.4` で明確に suffix を禁じているので不一致になる。やめる
+- C. **prefix を必須化**（注入フックのマッチング前提）
+
+**反映先**: `python-core.md § 1.4` を「必須」表現に強化。
+
+---
+
+## QA-011: 「Repository」「Service」「UseCase」「Provider」など概念サフィックスのリスト化
+
+**背景**: 純DDD のレイヤーごとに「ファイル名 / クラス名にこのサフィックスが付くと自動的にこの層」というマッピングがあると注入フックが組みやすい。
+- `domain/repositories/*_repository.py` → Repository（Protocol）
+- `domain/services/*_service.py` → Domain Service
+- `application/use_cases/*.py` → UseCase（`*_use_case.py` ではなく動詞ファイル名？）
+- `infrastructure/llm/providers/*_provider.py` → LLM Provider
+- `infrastructure/llm/instructor_clients/*_client.py` → Instructor Client
+
+ただし現状の例では `create_order.py`（動詞ファイル名・class 名は `CreateOrderUseCase`）と「ファイル名は動詞、クラス名は名詞 + サフィックス」が混在。
+
+**案**:
+- A. 動詞ファイル名 + サフィックスありクラス名（現状: `create_order.py` / `CreateOrderUseCase`）
+- B. **サフィックスありファイル名で統一**（`create_order_use_case.py` / `CreateOrderUseCase`）→ パスマッチング容易
+- C. **動詞ファイル名 + サフィックスなしクラス名**（`create_order.py` / `CreateOrder`）→ DDD 純度高
+- D. レイヤーごとに使い分ける（UseCase は動詞、Repository はサフィックスあり）
+
+**反映先**: `python-architecture.md § 8.2`（File-per-Class Rule）と各層の例。
+
+---
+
+## QA-012: tests/ ディレクトリ内のファイル命名は `test_{動詞}_use_case.py` か `test_{動詞}.py` か
+
+**背景**: 現在の例は `tests/application/use_cases/test_create_order.py`。`test_create_order_use_case.py` ではない。一方クラス名は `CreateOrderUseCase`。
+
+**案**:
+- A. 現状維持（ソースのファイル名にミラー）
+- B. テストファイルにはサフィックス付ける（`test_create_order_use_case.py`）
+
+**反映先**: `python-testing.md § 2.3 / 2.4`。
+
+---
+
+## QA-013: ヘルパー関数 / private 関数のファイル配置
+
+**背景**: 「1 ファイル = 1 クラス」だが、軽量なヘルパー関数群（純粋関数のユーティリティ）の置き場が `python-architecture.md § 8.2` で「private helper classes / small dataclasses used in one place may share a file with their consumer」とあるだけで明示されていない。
+
+**案**:
+- A. 「consumer ファイルに同居 OR `_helpers.py`」を明文化
+- B. `domain/utils/` を許容（ただし「ユーティリティのゴミ箱化」リスク）
+- C. **ヘルパーは consumer のローカルにのみ置く**（共有したいなら domain service へ昇格）
+
+**反映先**: `python-architecture.md § 8.2`。
+
+---
+
+# C. コメントルールの過不足
+
+## QA-014: PR 番号付き変更履歴コメント（`# PR{N}: ...`）の運用
+
+**背景**: `python-core.md § 2.4` で「非自明な変更には PR 番号付きコメントを残す」「コードが書き換わったらコメント削除」と規定。`python-llm.md § 5.4` でもプロンプト変更時の PR 番号併記が義務化されている。
+ユーザー意向（用語集の `## 用語集` の `直接変更履歴コメント` 関連）では PR132 由来のルールを Python でも採用したい。
+ただし、リスク：① コメント削除のタイミングを誰も判断できず古いコメントが残る、② PR 番号は GitHub に履歴があるので冗長、③ 「非自明」の境界が曖昧。
+
+**案**:
+- A. 現状維持
+- B. **削除（git blame と PR 履歴があれば十分）**
+- C. **存在意義を限定**（「過渡期の暫定実装」「他の PR とコンフリクトする可能性のある変更」のみ。通常の改修では書かない）
+- D. 期限付き（コメントに `# PR{N} (expires 2026-12-31): ...` を強制し、期限切れは lint で警告）
+
+**反映先**: `python-core.md § 2.4`、`python-llm.md § 5.4`、（必要なら）削除条件を明記したルール `.claude/rules/python-pr-comment-cleanup.md`。
+
+---
+
+## QA-015: 必須／推奨／禁止のコメント表が厳しすぎないか
+
+**背景**: `python-core.md § 2.1` で「クラス docstring：⚠️ Optional（クラスに非自明な不変条件があるときのみ必須）」「関数 docstring：⚠️ Optional」と規定。一方で「Restating what code does：❌ Forbidden」。「コードを再述すること」を禁じるのは妥当だが、エディタ補完で `docstring を一行書いただけで違反」と判定されかねない。
+
+**案**:
+- A. 現状維持
+- B. 文言緩和（「再述」を禁ずるのではなく「再述だけの docstring は避ける」と表現）
+- C. **「docstring は書かないがデフォルト」を明文化**し、書く場合の条件をリスト化
+
+**反映先**: `python-core.md § 2.1 / § 2.3`。
+
+---
+
+## QA-016: 日本語コメントの扱い（§ 6.2 の表との整合）
+
+**背景**: `python-core.md § 6.1` で `print()` / logger は **英語のみ**（CP932 対策）。しかし § 6.2 で「コードコメントは ✅ OK だが共有コードベースでは英語推奨」と曖昧。py-kit を使う層は「日本人ユーザーの個人プロジェクト」が多そうなので「コードコメントは日本語可、ただし出力（print/logger/例外メッセージ）は英語」と強く線引きしたほうが現実的。
+
+**案**:
+- A. 現状維持（曖昧）
+- B. **「コメントは日本語 OK」を明示**
+- C. **すべて英語推奨**（OSS 化を見据える）
+- D. 「個人 / 個人プロジェクト：日本語 OK、業務 / OSS：英語」と分岐
+
+**反映先**: `python-core.md § 6.2` の表と前後の文章。
+
+---
+
+## QA-017: 「TODO / XXX / FIXME」禁止規定の運用
+
+**背景**: `python-core.md § 2.6` で「TODO はオーナーまたは issue リンクなしで書くな」と禁止寄りの規定。実用上、「あとで戻ってくるための一時メモ」として TODO は普通に使う。
+
+**案**:
+- A. 現状維持（オーナー / issue 必須）
+- B. **`# TODO(<name>): ...` または `# TODO(#<issue>): ...` のみ許容**（明文化を緩和して定型化）
+- C. 完全禁止（issue を立てるかその場で直す）
+- D. 「TODO は許容、ただし PR マージ前に必ず issue 化」運用ルール化
+
+**反映先**: `python-core.md § 2.6`、（必要なら）pre-commit hook で `# TODO(` のフォーマット検査。
+
+---
+
+## QA-018: セクションマーカー（`# ── stdlib ─` 等）は scripts 専用か全 Python か
+
+**背景**: `python-core.md § 2.5` は「scripts only」と明示。一方 `python-scripts.md § 1.2` で詳細仕様。プロジェクトの個別モジュール（例：複雑な `infrastructure/` の adapter ファイル）でも見通しを良くしたいケースがある。
+
+**案**:
+- A. scripts 専用維持
+- B. **全 Python ファイル許容**（ただし「過剰使用するな」と注意書き）
+- C. scripts 専用＋「複雑な単一ファイル（200 行超）では使ってよい」例外条項
+
+**反映先**: `python-core.md § 2.5`、`python-scripts.md § 1.2`。
+
+---
+
+# D. 型ヒント網羅性
+
+## QA-019: `@override` デコレータ（PEP 698 / Python 3.12+）の使用ルール
+
+**背景**: 現状 references に `@override` の記述が一切ない。Protocol 実装や ABC 派生クラスでメソッドをオーバーライドする際に `@typing.override` を付けると、シグネチャ不整合を mypy/pyright が検出してくれる。
+
+**案**:
+- A. 規定なし（現状）
+- B. **オーバーライドメソッドには `@override` 必須**（Python 3.12+ プロジェクトのみ）
+- C. 推奨だが任意
+- D. ABC / 親クラスを継承する場合のみ必須、Protocol 構造的実装には不要
+
+**反映先**: `python-core.md § 3` 新サブセクション、または `python-architecture.md § 3` Protocol 章。
+
+---
+
+## QA-020: `Self` 型（PEP 673 / Python 3.11+）
+
+**背景**: ビルダー／チェーン可能なメソッドや `from_xxx` クラスメソッドで `-> "ClassName"` ではなく `-> Self` を使うべき場面が多い。references に記載なし。
+
+**案**:
+- A. 規定なし
+- B. **`Self` の使用箇所と例を `python-core.md § 3` に追加**（クラスメソッド、in-place mutation メソッド等）
+
+**反映先**: `python-core.md § 3` 新サブセクション。
+
+---
+
+## QA-021: `ParamSpec` / `Concatenate`（PEP 612）
+
+**背景**: デコレータの引数を保持する高度なジェネリクス機能。Decorator パターン（`python-architecture.md § 6.4`）の例で `*args, **kwargs` ではなく `ParamSpec` で書ければ型情報が保持される。
+
+**案**:
+- A. 規定なし
+- B. **Decorator 章に `ParamSpec` の例を追加**（applicable な範囲を限定）
+- C. 「上級者向け、必要なら使え」程度の言及だけ
+
+**反映先**: `python-architecture.md § 6.4` 末尾 or `python-core.md § 3`。
+
+---
+
+## QA-022: PEP 695 ジェネリック構文（Python 3.12+）の採用方針
+
+**背景**: `python-core.md § 3.4` ですでに「Python 3.12+: `def first[T](items: list[T])`」と PEP 695 構文を扱っている。ただし py-kit 全体のサンプルコードは混在気味（Protocol は 3.12+ だが TypeVar も併記）。「3.12+ がデフォルト」と一本化したほうが statement が明快。
+
+**案**:
+- A. 現状維持（混在 OK）
+- B. **3.12+ を py-kit のデフォルト Python バージョンに昇格**（`pyproject.toml` の `target-version = "py312"`、サンプルコードは全て PEP 695 構文）
+- C. **3.11 をデフォルトに維持し、PEP 695 は注記扱い**
+
+**反映先**: `python-core.md § 3.4` / § 7（pyproject 設定）。`python-architecture.md` の Repository 例。
+
+---
+
+## QA-023: `dataclass(kw_only=True)` / `dataclass(slots=True)` / `dataclass(frozen=True)` の使い分け
+
+**背景**: references で `@dataclass` の各オプションについての規定がない。`kw_only=True` で位置引数のばらつきを防げる、`slots=True` でメモリ削減できる、`frozen=True` で不変オブジェクトを表現できる、と用途が明確。
+
+**案**:
+- A. 規定なし
+- B. **value_objects は `frozen=True, slots=True`、5 フィールド以上は `kw_only=True` をデフォルト**と規定
+- C. 推奨レベルで言及（必須でない）
+
+**反映先**: `python-architecture.md § 8` の value_objects パラグラフ、`python-core.md § 3` 新節。
+
+---
+
+## QA-024: `TypeAlias` / `type` 文（PEP 695）の使用
+
+**背景**: 型エイリアスの作り方が `python-core.md § 1.1` に `UserId = NewType("UserId", str)` の例だけ。`type UserId = str`（PEP 695）や `UserId: TypeAlias = str` は触れられていない。
+
+**案**:
+- A. 規定なし
+- B. **3.12+: `type` 文を推奨、3.11: `TypeAlias` を推奨**と明文化
+
+**反映先**: `python-core.md § 3.7`（NewType 節の近く）。
+
+---
+
+## QA-025: 戻り値の `Iterator` / `Iterable` / `Sequence` / `Collection` の使い分け
+
+**背景**: references の例では `list[T]` / `dict[K, V]` を使うことが多いが、戻り値は「読み取り専用 → `Sequence`」「ストリーミング → `Iterator`」「`for` で 1 度だけ回す → `Iterable`」と使い分けると API がクリーンになる。
+
+**案**:
+- A. 規定なし
+- B. **「戻り値はインターフェース型（`Sequence`, `Iterator`）、引数も `Iterable` を許容、内部実装は具体型（`list`）」と明文化**
+- C. ボリュームが大きいので別ファイル化（`python-core.md` の subsection ではなく `core/type-narrowing.md` 等）
+
+**反映先**: `python-core.md § 3` 新節。
+
+---
+
+## QA-026: `assert_never` / `Never` 型による網羅性チェック
+
+**背景**: `match` 文や Literal 分岐で「全ケース処理済み」を型レベルで保証する `typing.assert_never` の言及がない。
+
+**案**:
+- A. 規定なし
+- B. **match の末尾で `case _: assert_never(x)` を推奨**
+
+**反映先**: `python-core.md § 7`（コードスタイル）または § 3。
+
+---
+
+## QA-027: `Annotated` の使用例
+
+**背景**: FastAPI の `Annotated[..., Depends(...)]` が現代的な書き方だが、references の FastAPI 章では旧来の `arg: T = Depends(...)` を使っている。Pydantic でも `Annotated[str, Field(min_length=1)]` のように使える。
+
+**案**:
+- A. 現状維持
+- B. **FastAPI の依存・パスパラメータは `Annotated[Type, Depends/Path/Query]` に書き換え**（FastAPI 公式推奨）
+- C. Annotated を `python-core.md` の汎用節として一度紹介し、`python-fastapi.md` の例も差し替え
+
+**反映先**: `python-fastapi.md § 3.2 / 4.1 / 4.2`、`python-core.md § 3` Annotated 紹介節。
+
+---
+
+## QA-028: mypy / pyright の設定方針
+
+**背景**: 「型ヒントを書く」と決めても型チェッカーを通さなければザル。pyproject.toml の `[tool.mypy]` / `[tool.pyright]` 設定例が references にない。
+
+**案**:
+- A. 規定なし
+- B. **pyproject.toml のサンプルに mypy/pyright 設定を追加**（`strict = true` / `disallow_untyped_defs = true` / `warn_unused_ignores = true` 等）
+- C. **type-check 専用 reference を新設**（`references/type-check.md`：mypy vs pyright の比較、設定、CI 連携）
+
+**反映先**: `python-core.md § 7`（ruff の隣に）、または `python-architecture.md`、または新規 reference。
+
+---
+
+# E. 抽象パターンの実用性
+
+## QA-029: Strategy / Template Method / Factory / Decorator / Observer の比較表は実用的か
+
+**背景**: `python-architecture.md § 6` で 5 パターン解説、§ 6.2 末尾に Strategy vs Template Method 比較表あり。Factory と Strategy、Strategy と Decorator の使い分けは曖昧なまま。
+
+**案**:
+- A. 現状維持
+- B. **5 パターン総合比較表を追加**（「何が変わるか／誰が選ぶか／結合度／適用シーン」を 1 表に）
+- C. 「使うべきでないケース」を各パターンに明記
+
+**反映先**: `python-architecture.md § 6` 章末。
+
+---
+
+## QA-030: Adapter パターンの追加
+
+**背景**: § 6 に Strategy / Template Method / Factory / Decorator / Observer はあるが、**Adapter** がない。Adapter は infrastructure 層で「外部 SDK の interface ↔ ドメイン Protocol」を変換する典型パターンで、純DDD 採用なら必須に近い。
+
+**案**:
+- A. 追加しない（Decorator の説明で兼ねている扱い）
+- B. **§ 6.4 と § 6.5 の間に「6.4.5 Adapter」を追加**
+- C. § 6 章全体を「DDD で使う主要 3 パターン（Strategy / Adapter / Decorator）」に絞って簡素化
+
+**反映先**: `python-architecture.md § 6`。
+
+---
+
+## QA-031: Repository パターン自体の説明セクション
+
+**背景**: 「Repository」という単語が `python-architecture.md` 全体で頻出するが、「Repository とは何か（Aggregate 単位の集合に対する境界、永続化を抽象化する Protocol）」という定義セクションがない。読み手は前提知識が必要。
+
+**案**:
+- A. 現状維持（前提扱い）
+- B. **§ 3 直後に「3.x Repository Pattern」を追加**（Aggregate 単位、find / save / delete の標準シグネチャ、collection-style vs persistence-style）
+- C. DDD タクティカル全般（Entity / Value Object / Aggregate / Repository / Domain Service / Domain Event）の用語集を `references/ddd-tactical.md` として独立化
+
+**反映先**: `python-architecture.md` または新規 reference。
+
+---
+
+## QA-032: Aggregate / Domain Event の扱い
+
+**背景**: `python-architecture.md § 8` のフォルダ構成に `domain/events/` が optional であるが、Aggregate（集約）の概念には触れていない。「Order ↔ LineItem は同じ Aggregate？」「Aggregate Root から子 Entity への参照のルール？」など、DDD の中核概念が抜けている。
+
+**案**:
+- A. 追加しない（簡易採用を維持）
+- B. **「Aggregate と Aggregate Root」セクションを追加**（Order Aggregate の例）
+- C. Domain Event の発行・購読パターンを別ファイルに（`references/domain/events.md`）
+
+**反映先**: `python-architecture.md` または新規。
+
+---
+
+## QA-033: CQRS / Read Model の言及
+
+**背景**: 純DDD と言いつつ、CQRS（Command と Query で経路を分ける）への言及がない。実用上は「ListOrders は Read Model（Pydantic に近い DTO）を直接組み立てる」のが効率的で、純粋に Entity を経由するのは無駄。
+
+**案**:
+- A. 触れない
+- B. **「Read Model 経路の許容」を § 3 章末に追記**（List/Show は Read Model、Create/Update/Delete は Aggregate 経由）
+- C. CQRS 完全採用（write model / read model のフォルダ分離）
+
+**反映先**: `python-architecture.md § 3`。
+
+---
+
+# F. 抜け観点（async / 並行性）
+
+## QA-034: asyncio セクションの新設
+
+**背景**: references に asyncio の規約がない。`python-llm.md` で `async def` が使われているが、「いつ async にする」「sync と async の混在をどう避ける」「`asyncio.gather` vs `asyncio.TaskGroup`」「キャンセル伝播」が未規定。
+
+**案**:
+- A. 追加しない
+- B. **`references/python-async.md`（または `references/concurrency/async.md`）を新設**（async/await の使い時、TaskGroup、キャンセル、タイムアウト、Lock/Semaphore、async generator、async context manager）
+- C. `python-core.md` の節として追加
+
+**反映先**: 新規 reference、`CLAUDE.md` 索引更新。
+
+---
+
+## QA-035: `asyncio.TaskGroup`（Python 3.11+）vs `asyncio.gather`
+
+**背景**: 3.11+ では `TaskGroup` が `gather` よりエラー伝播と構造化並行が安全。references にこの選択肢への言及なし。
+
+**案**:
+- A. 言及なし
+- B. **`TaskGroup` を推奨デフォルトとし、`gather` は「複数結果を返り値で受け取りたい時のみ」と限定**
+
+**反映先**: QA-034 で新設するファイル、または `python-llm.md` の retry / parallel 節。
+
+---
+
+## QA-036: タイムアウトと `asyncio.timeout`
+
+**背景**: `asyncio.wait_for` よりも `async with asyncio.timeout(...)` が 3.11+ の推奨。LLM call / HTTP call で全箇所必須にすべきか。
+
+**案**:
+- A. 言及なし
+- B. **「外部 I/O には必ずタイムアウトを設定」「3.11+: `asyncio.timeout`」と明文化**
+- C. デフォルトタイムアウト値の指針も含める（HTTP: 30s、LLM: 60s 等）
+
+**反映先**: QA-034 新ファイル、`python-llm.md`、`python-fastapi.md`。
+
+---
+
+## QA-037: sync / async の使い分けと混在防止
+
+**背景**: 「sync な関数の中で async を呼ぶには `asyncio.run()` するな（イベントループ衝突）」のような禁止事項が未規定。FastAPI / LLM 周りで重要。
+
+**案**:
+- A. 言及なし
+- B. **「sync / async 境界ルール」を新節として追加**（sync 関数で async を呼ぶには `anyio.from_thread` / `asyncio.run` の挙動差・適用範囲、async 関数で sync 重い処理を呼ぶには `asyncio.to_thread`）
+
+**反映先**: QA-034 新ファイル。
+
+---
+
+## QA-038: マルチプロセス / マルチスレッドの使い分け
+
+**背景**: GIL の関係で CPU bound はマルチプロセス（`concurrent.futures.ProcessPoolExecutor`）、I/O bound は asyncio という基本指針への言及がない。Python 3.13 free-threaded への展望もない。
+
+**案**:
+- A. 言及なし
+- B. **`references/python-concurrency.md` で多軸の使い分け表を提示**（asyncio / threading / multiprocessing / subinterpreter）
+- C. 簡易な原則だけ `python-core.md` に追加
+
+**反映先**: 新規 reference または `python-core.md`。
+
+---
+
+# G. 抜け観点（パッケージング / 依存管理）
+
+## QA-039: `pyproject.toml` の `[project]` テンプレート整備
+
+**背景**: `python-architecture.md § 8` で `pyproject.toml` が言及されているが、`[project]` セクションの最小推奨テンプレート（name, version, dependencies, requires-python, [project.scripts]、license、authors、readme）が示されていない。
+
+**案**:
+- A. 言及なし
+- B. **`pyproject.toml` 完全サンプルを `python-architecture.md` 末尾または独立ファイルで提示**
+- C. **`references/packaging.md` 新設**（pyproject 全節 + entry points + wheel / sdist + PyPI publish 手順）
+
+**反映先**: `python-architecture.md § 9`（新節） or 新規。
+
+---
+
+## QA-040: 依存管理ツールの選定方針
+
+**背景**: pip / pip-tools / poetry / uv / pdm / hatch と選択肢が多いが、py-kit の推奨が明示されていない。uv は近年急速にデファクト化中。
+
+**案**:
+- A. 選ばない（プロジェクト判断）
+- B. **`uv` を py-kit デフォルト推奨**（速い、lockfile も標準的、pip 互換）
+- C. **`uv` または `poetry` を推奨**（チーム規模で選択）
+- D. **`pip + pip-tools` で軽量に**
+
+**反映先**: 新規 reference `packaging.md` または `python-architecture.md`。
+
+---
+
+## QA-041: lockfile / 仮想環境ポリシー
+
+**背景**: `.venv/` / `venv/` の混在が `python-architecture.md § 8` の `.gitignore` 例にあるが、「どちらを正式にするか」未確定。FastAPI 例では `.venv` 前提、bat ランチャー例では `venv` 前提と矛盾。
+
+**案**:
+- A. どちらも許容
+- B. **`.venv/` に統一**（Python 公式ツール（`python -m venv`）のデフォルト相当）
+- C. **`venv/` に統一**
+
+**反映先**: `python-architecture.md § 8`、`python-scripts.md § 2.2 / § 3` の bat ランチャー。
+
+---
+
+## QA-042: dev / prod 依存の分離
+
+**背景**: pytest / mypy / ruff は dev 依存だが、`[project.optional-dependencies.dev]` への分け方が未規定。
+
+**案**:
+- A. 言及なし
+- B. **`[project.optional-dependencies.dev]` を必須化**（`uv pip install -e ".[dev]"`）
+
+**反映先**: pyproject サンプル。
+
+---
+
+## QA-043: Python バージョン下限と最新追従ポリシー
+
+**背景**: references で 3.11 / 3.12+ が混在。EOL ポリシー（3.10 が EOL なのは 2026-10、3.11 は 2027-10）への言及なし。
+
+**案**:
+- A. 言及なし
+- B. **「サポート対象は EOL でない最新 3 バージョン」と明文化**（2026-05 時点: 3.12 / 3.13 / 3.14）
+- C. 「py-kit のデフォルトは Python 3.12」と固定
+
+**反映先**: `python-core.md § 3.4` の Python バージョン節、新規 packaging.md。
+
+---
+
+# H. 抜け観点（パフォーマンス）
+
+## QA-044: プロファイリング指針
+
+**背景**: cProfile / py-spy / scalene などプロファイラの選択指針なし。「最適化の前に計測」原則が明文化されていない。
+
+**案**:
+- A. 言及なし
+- B. **`references/performance.md` 新設**（profile / line_profiler / py-spy / memray の使い分け、ボトルネック検出フロー、最適化禁止事項）
+- C. 触れない（プロジェクト固有）
+
+**反映先**: 新規 reference。
+
+---
+
+## QA-045: パフォーマンス・チート集
+
+**背景**: `dict.get()` vs `dict[]`、list comprehension vs map、`__slots__`、`functools.lru_cache` / `cache` などの定番テクニックの言及なし。
+
+**案**:
+- A. 言及なし
+- B. **`performance.md` に「ホットパスでのチェックリスト」追加**
+- C. 言及しない（プログラマの常識）
+
+**反映先**: 新規 reference。
+
+---
+
+# I. 抜け観点（セキュリティ）
+
+## QA-046: 依存脆弱性スキャン
+
+**背景**: `pip-audit` / `safety` / Dependabot / Snyk への言及なし。
+
+**案**:
+- A. 言及なし
+- B. **`references/security.md` 新設**（`pip-audit` を CI に組み込み、Dependabot 推奨、SBOM）
+- C. CI/CD reference の一部として
+
+**反映先**: 新規 reference。
+
+---
+
+## QA-047: シークレットスキャン
+
+**背景**: `.env` / API キーをコードに直接書いてしまう事故への自動検出（`detect-secrets` / `gitleaks`）への言及なし。py-kit は `.env` 必須運用なので、シークレット漏洩リスクは大きい。
+
+**案**:
+- A. 言及なし
+- B. **`security.md` に pre-commit hook で `detect-secrets` を推奨**
+
+**反映先**: 新規 reference。
+
+---
+
+## QA-048: SQL injection / Path traversal / Pickle 等 Python 特有の落とし穴
+
+**背景**: ORM (SQLAlchemy / Drizzle 系) を使えば SQL injection は防げるが、生 SQL や `f"... WHERE name = '{name}'"` の禁止が明文化されていない。Path traversal（`open(user_input)`）、`pickle.load` の安全性なども未規定。
+
+**案**:
+- A. 言及なし
+- B. **`security.md` に Python 特有のリスクと対策（パラメタライズドクエリ強制、`pathlib.Path().resolve().is_relative_to(...)` 検査、pickle 使用禁止 → `json` / `msgpack` 推奨）**
+
+**反映先**: 新規 reference。
+
+---
+
+## QA-049: HTTPS / TLS / 認証トークン取り扱い
+
+**背景**: FastAPI 例で `HTTPBearer` を使っているが、トークンの保管・refresh / rotation・JWT の検証の規約が明示されていない。
+
+**案**:
+- A. 言及なし
+- B. **`security.md` に「秘密情報の取り扱い」節を追加**（`SecretStr` 必須、ログ出力禁止、JWT 検証は `cryptography` / `python-jose` 等で）
+
+**反映先**: 新規 reference、`python-fastapi.md § 4.2` 補強。
+
+---
+
+# J. 抜け観点（観測性 / エラー追跡）
+
+## QA-050: Sentry / Rollbar 等エラー追跡サービス連携
+
+**背景**: 例外を logger に流すだけでは本番運用で不足。Sentry SDK の統合パターン（`sentry_sdk.init()` の置き場、Pydantic / FastAPI integration、PII フィルタリング）への言及なし。
+
+**案**:
+- A. 言及なし
+- B. **`references/observability.md` 新設**（Sentry / OpenTelemetry / 構造化ログを 1 ファイルで）
+- C. logger 強化（`python-testing.md § 1` を発展）として `cross-cutting/logger.md` の続き
+
+**反映先**: 新規 reference。
+
+---
+
+## QA-051: 構造化ログ（JSON ログ）
+
+**背景**: 現状の `LOG_FORMAT = "[%(asctime)s] %(levelname)s %(name)s %(filename)s:%(lineno)d - %(message)s"` は人間可読だが機械処理しにくい。本番環境では JSON ログにして集約システム（Datadog / Loki / CloudWatch）に送るのが標準。
+
+**案**:
+- A. 現状維持（人間可読）
+- B. **環境変数 `LOG_FORMAT=json|text` で切り替え**（dev: text / prod: json）
+- C. 完全 JSON ログ化（`python-json-logger` / `structlog` を採用）
+- D. `structlog` を標準採用
+
+**反映先**: `python-testing.md § 1` または `cross-cutting/logger.md`。
+
+---
+
+## QA-052: OpenTelemetry 連携
+
+**背景**: 分散トレーシングのデファクト OpenTelemetry への言及なし。FastAPI / SQLAlchemy / httpx には自動計装パッケージがある。
+
+**案**:
+- A. 言及なし
+- B. **`observability.md` に OpenTelemetry 統合節**（auto-instrumentation の使い方、span 設計、Tempo / Jaeger 出力）
+
+**反映先**: 新規 reference。
+
+---
+
+## QA-053: ヘルスチェック・メトリクス
+
+**背景**: `python-fastapi.md § 3.1` で `/health` ルーターはあるが中身が空。`/livez` / `/readyz` / `/metrics`（Prometheus 形式）の規約が未定。
+
+**案**:
+- A. 言及なし
+- B. **`/livez`（プロセス生存）、`/readyz`（依存準備）、`/metrics`（Prometheus）を必須化**
+- C. `python-fastapi.md` に health セクションを補強
+
+**反映先**: `python-fastapi.md § 3` 末尾。
+
+---
+
+# K. 抜け観点（CI / CD）
+
+## QA-054: GitHub Actions テンプレート
+
+**背景**: lint / type-check / test を CI で回す Actions ワークフロー例がない。
+
+**案**:
+- A. 言及なし
+- B. **`references/ci-cd.md` 新設**（GitHub Actions の `ci.yml` テンプレ：ruff / mypy / pytest / coverage / pip-audit）
+- C. プロジェクト固有として触れない
+
+**反映先**: 新規 reference。
+
+---
+
+## QA-055: pre-commit hooks
+
+**背景**: ruff / mypy / detect-secrets を pre-commit で自動実行する設定例なし。
+
+**案**:
+- A. 言及なし
+- B. **`ci-cd.md` または `python-core.md § 7` に `.pre-commit-config.yaml` サンプル**
+
+**反映先**: 上記 reference。
+
+---
+
+## QA-056: Docker / コンテナ化
+
+**背景**: Dockerfile のベストプラクティス（multi-stage、`python:3.12-slim`、`uv` キャッシュ、root 回避）への言及なし。AITuber / FastAPI プロジェクトでは必須に近い。
+
+**案**:
+- A. 言及なし
+- B. **`references/deployment.md` 新設**（Dockerfile テンプレ、docker compose、ヘルスチェック）
+
+**反映先**: 新規 reference。
+
+---
+
+# L. 抜け観点（データ整合性 / トランザクション）
+
+## QA-057: DB トランザクション境界の規定
+
+**背景**: 現状「use case が複数 repository を呼ぶ」例（`CreateOrderUseCase`）はあるが、トランザクション境界（unit of work）が未規定。途中で例外が出たら? Outbox パターンは?
+
+**案**:
+- A. 言及なし
+- B. **`references/persistence.md` 新設**（Unit of Work、トランザクション境界、Outbox、Inbox、楽観ロック）
+- C. `python-architecture.md` の DDD 章拡張
+
+**反映先**: 新規 reference または `python-architecture.md`。
+
+---
+
+## QA-058: 冪等性キーと Outbox パターン
+
+**背景**: イベント駆動・LLM 呼び出し・決済など「失敗時に冪等にリトライ」する設計の規約がない。
+
+**案**:
+- A. 言及なし
+- B. **`persistence.md` または新規 `idempotency.md`**
+
+**反映先**: 新規 reference。
+
+---
+
+## QA-059: マイグレーション戦略
+
+**背景**: Alembic / SQLAlchemy migration の運用ガイド（auto-generate の落とし穴、break change の入れ方、ロールバック）への言及なし。
+
+**案**:
+- A. 言及なし
+- B. **`persistence.md` の中にマイグレーション節**
+
+**反映先**: 新規 reference。
+
+---
+
+# M. 純DDDの硬さ／規模分岐
+
+## QA-060: 純DDD を「すべての project」に強制するか
+
+**背景**: `python-architecture.md § 3 / § 8` は純DDD（domain / application / infrastructure / interface）を **standard** と書いている。だが CLI ツールや 10 ファイル規模のサービスにこれを適用すると過剰。SKILL.md も「Existing Project」ステップで純DDD 違反を全部指摘する硬い構造。
+
+**案**:
+- A. 現状維持（純DDD 一択）
+- B. **規模別レイヤリング戦略を明文化**（XS: 単一ファイル → scripts、S: 50 ファイル以下 → 機能型（feature folders）、M: 50〜200 ファイル → 簡易レイヤード、L: 200+ → 純DDD）
+- C. 純DDD を default に残しつつ「feature-folder layout」を許容するセクションを追加
+- D. デフォルトを「機能型（feature-based）」に変え、純DDD はオプションとして紹介
+
+**反映先**: `python-architecture.md § 3 / § 8` の冒頭、SKILL.md の Step 4。
+
+---
+
+## QA-061: 機能型（feature-based）レイアウトの言及
+
+**背景**: 多くの中小プロジェクトは `app/{users,orders,payments}/` のような機能フォルダ + 各フォルダ内で `model.py / service.py / api.py / tests.py` という構成。py-kit はこれを完全に否定する立場（純DDD のみ）。
+
+**案**:
+- A. 現状維持（純DDD のみ）
+- B. **「機能型 + 純DDD ハイブリッド」を許容**（features × layers の 2 次元）
+- C. **機能型のみのテンプレも提供**（`{pkg}/{feature}/{domain,application,infrastructure}.py`）
+
+**反映先**: `python-architecture.md` 新節 §「Folder Layout Variants」。
+
+---
+
+## QA-062: Use Case クラスを `execute()` メソッド 1 つで縛るか
+
+**背景**: § 5.3 で「すべての use case はクラス、execute() メソッド 1 つ」と暗黙の規定。実用上、「同じ Aggregate に対する 3 つの操作（create/update/cancel）」を 1 クラスにまとめたいケースがある。
+
+**案**:
+- A. 現状維持（クラス × execute）
+- B. **関数型ユースケース許容**（`def create_order(input, repo, payments) -> Order` のような pure function）
+- C. **「単一ユースケース = 1 クラス、関連ユースケース束 = 1 クラス（複数メソッド）」を許容**
+
+**反映先**: `python-architecture.md § 5.3 / § 8.1`。
+
+---
+
+## QA-063: dependency-injector / injector の禁止解除
+
+**背景**: § 5.4 で「DI フレームワークは禁止、`main.py` で手動配線」と規定。10+ use cases なら確かに手動でも管理可能だが、AITuber 規模では `Container` クラスの手動配線がボイラープレートになる。
+
+**案**:
+- A. 現状維持（手動配線推奨）
+- B. **「20+ use cases / 50+ 依存」で `dependency-injector` の使用を許容**
+- C. **`functools.lru_cache` ベースの簡易 DI を py-kit 標準パターンとして提示**
+- D. Pydantic Settings + `@cached_property` の Container を標準化
+
+**反映先**: `python-architecture.md § 5.4`。
+
+---
+
+# N. AITuber 実装との照合
+
+## QA-064: AITuber の `modes/` レイアウトと純DDD の整合性
+
+**背景**: AITuber は `modes/{auto_tweet,game_streaming,notify,personal_chat,youtube_live}/` という「実行モード単位」のフォルダで、純DDD には全くなっていない。py-kit の規約に厳密に従うと AITuber を全面リファクタする必要があるが、それは現実的でない。
+
+**案**:
+- A. 規約のほうを優先（AITuber は規約違反扱い）
+- B. **py-kit に「modes ＋ integrations ＋ runtime ハイブリッド型」を別レイアウトとして追加**（AITuber の構成を一般化）
+- C. AITuber を「サンプルではない、参考実例」と位置づけ、py-kit のあるべき姿は純DDD のままにする
+
+**反映先**: `python-architecture.md` 新節 §「Application-Style Layouts」。
+
+---
+
+## QA-065: AITuber の `integrations/` を py-kit でどう位置づけるか
+
+**背景**: AITuber の `integrations/{stt,tts,vector_store,notify_orchestrator}/` は外部統合の集合。py-kit の純DDD に当てはめると `infrastructure/external_apis/` または `infrastructure/{stt,tts,...}/` 相当。
+
+**案**:
+- A. 現状の py-kit の `infrastructure/external_apis/` 命名を維持
+- B. **`integrations/` を `infrastructure/external_apis/` のエイリアス／別名として許容**
+- C. `infrastructure/` 直下に `integrations/` を新設して external_apis と並列に置く規約
+
+**反映先**: `python-architecture.md § 8`。
+
+---
+
+## QA-066: AITuber の `runtime/` は py-kit のどの層に当たるか
+
+**背景**: AITuber の `runtime/{media_tools, pool}/` は「実行時の補助インフラ」。py-kit の純DDD には対応する層がない（`infrastructure/` に押し込むしかない）。
+
+**案**:
+- A. すべて `infrastructure/` に統合
+- B. **`infrastructure/runtime/` のサブカテゴリを公式化**
+- C. **`runtime/` を `infrastructure/` の隣に独立層として認める**
+
+**反映先**: `python-architecture.md § 8`。
+
+---
+
+## QA-067: AITuber の `core/`, `cycle/`, `history/` をどう分類するか
+
+**背景**: これらは「アプリ固有のドメイン概念 / フロー制御」で、純DDD だと `domain/services/` や `application/use_cases/` 相当だが、ファイル数が多くこれらを切り出すのが運用上自然。
+
+**案**:
+- A. すべて `domain/` または `application/` に押し込む
+- B. **「ドメイン束（feature-bundle）」フォルダの概念を py-kit に追加**
+
+**反映先**: `python-architecture.md § 8` 拡張。
+
+---
+
+## QA-068: AITuber の `server/{routes,ws}/` は `interface/api/` と整合するか
+
+**背景**: AITuber は `server/routes/` (HTTP) と `server/ws/` (WebSocket) を併置。py-kit の `interface/api/` 規約だと WebSocket の置き場が未定義。
+
+**案**:
+- A. WebSocket は `interface/api/ws/` 配下
+- B. **`interface/{api, ws, cli, gui}/` というレイアウト規約を明文化**
+- C. `server/` を上位フォルダとして `server/{api, ws}/` を許容
+
+**反映先**: `python-fastapi.md § 1`、`python-architecture.md § 8`。
+
+---
+
+# O. 共通インフラ（logger / config / constants）
+
+## QA-069: `config.py` の標準サンプル
+
+**背景**: `python-core.md / architecture.md` に `Settings` クラスの断片はあるが、「これがあるべき config.py の完全形」と提示できる正規実装サンプルがない（`logger.py` には `python-testing.md § 1.1` で正規実装がある）。
+
+**案**:
+- A. 提示しない
+- B. **`config.py` 正規サンプルを `python-architecture.md § 4` または `cross-cutting/config.md` に追加**
+
+**反映先**: 該当 reference。
+
+---
+
+## QA-070: `constants.py` の境界規定をもう一歩
+
+**背景**: `python-architecture.md § 4.4` で「constants.py は計算済みパスのみ」と書かれている。これは強い規定だが、`PROJECT_NAME`（パッケージ名）の置き場が曖昧。`pyproject.toml` から取得？ハードコード？
+
+**案**:
+- A. 現状維持（曖昧）
+- B. **`constants.py` には `PROJECT_NAME = "{package_name}"` をハードコード許容と明文化**（パッケージ名は構造の一部）
+- C. `__init__.py` の `__name__` 経由で取得を推奨
+
+**反映先**: `python-architecture.md § 4.4`。
+
+---
+
+## QA-071: `exceptions.py` の整理規約
+
+**背景**: `python-architecture.md § 8` のフォルダ構成では `{pkg}/exceptions.py`（cross-cutting base）が言及されているが、`domain/exceptions/`（業務例外）、`infrastructure/exceptions/`（インフラ例外）、`interface/api/error_handlers.py` の関係が複雑。
+
+**案**:
+- A. 現状維持
+- B. **「例外の階層と配置」セクションを `python-core.md § 5` に追加**（base → domain → infra → interface のマッピング表）
+
+**反映先**: `python-core.md § 5` 補強。
+
+---
+
+## QA-072: ロガー命名階層と `getLogger(__name__)` 規約
+
+**背景**: `python-testing.md § 1.4` で `get_logger(__name__)` を推奨。一方 `LOG_FORMAT` の `%(name)s` ではフルパス（例: `aituber.application.use_cases.create_order`）が出る。階層を活かしたフィルタリング（`logging.getLogger("aituber.infrastructure").setLevel(WARNING)`）への言及が § 1.5 にあるが、サンプル設定が薄い。
+
+**案**:
+- A. 現状維持
+- B. **「サブシステム別ログレベルのテンプレ設定」を `cross-cutting/logger.md` に追加**
+
+**反映先**: `python-testing.md § 1.5` 補強または cross-cutting/logger.md。
+
+---
+
+# P. プロンプト管理・LLM 関連
+
+## QA-073: プロンプトファイル名の規約
+
+**背景**: `python-llm.md § 5.1` で `infrastructure/llm/prompts/classification.md` の例。タスク名がファイル名になるが、「タスクと対応するクラス（`ClassificationLlm` Protocol、`ClassificationClaudeClient`）」とのリンクが緩い（命名規則一致は手動）。
+
+**案**:
+- A. 現状維持
+- B. **「タスク名（snake_case）= Protocol 名（PascalCase + Llm）= プロンプトファイル名（snake_case + .md）」とリンクルール化**
+
+**反映先**: `python-llm.md § 4 / § 5`、`.claude/rules/llm-task-link.md` を py-kit projects テンプレに追加。
+
+---
+
+## QA-074: プロンプトの versioning は必要か
+
+**背景**: § 5.4 で「変更時に PR コメント＋旧版をコメントアウトで残せ」と規定。これはコメント・スワンプを生むリスクがある。
+
+**案**:
+- A. 現状維持
+- B. **「旧版はコメントアウトで残さず、git diff に任せる」**（バージョンは PR 番号でなく git で追う）
+- C. **`prompts/v1/classification.md` のようなフォルダで明示バージョニング**
+
+**反映先**: `python-llm.md § 5.4`。
+
+---
+
+## QA-075: Instructor 推奨は古びていないか
+
+**背景**: § 4.3 で Instructor 採用。最近は OpenAI / Anthropic の native structured output（`response_format=...`）が成熟しつつあり、Instructor の必要性が薄まりつつある。
+
+**案**:
+- A. 現状維持（Instructor 推奨）
+- B. **「2026 年現在: vendor native structured output が第一選択、Instructor は vendor 横断したい時のみ」と書き換え**
+- C. ベンダー native と Instructor の比較表を追加
+
+**反映先**: `python-llm.md § 4.3`。
+
+---
+
+## QA-076: プロンプトキャッシュの cache TTL 説明（5分）
+
+**背景**: § 6.3 で「キャッシュ TTL は ~5 分」と書いてある。実際 Anthropic は 5分キャッシュと 1時間キャッシュ（beta）の 2 階層がある。
+
+**案**:
+- A. 現状維持
+- B. **「5分 / 1時間 の 2 階層あり、`cache_control: {type: ephemeral, ttl: 1h}` で長期キャッシュも使える」と更新**
+
+**反映先**: `python-llm.md § 6.3`。
+
+---
+
+## QA-077: モデル名のハードコード防止
+
+**背景**: § 7.1 の例で `"claude-haiku-4-5-20251001"` がハードコード。`config.py` で持つ規約はあるが、「モデル名は本当に config から取得しているか」を強制する記述（ハードコードしたら lint で警告）はない。
+
+**案**:
+- A. 現状維持
+- B. **モデル名ハードコードは明示的に禁止（`config.llm_models` 経由のみ）**
+
+**反映先**: `python-llm.md § 7`、`python-core.md § 6.4 / architecture § 4`。
+
+---
+
+## QA-078: `complete_structured` ジェネリクス記法（PEP 695）
+
+**背景**: § 2 で `async def complete_structured[T: BaseModel](...) -> T` と書いてあるが、これは Python 3.12+ 構文。3.11 互換は `TypeVar` 必須。
+
+**案**:
+- A. 現状維持（3.12+ 前提）
+- B. **「3.11 互換版」を併記**
+
+**反映先**: `python-llm.md § 2`。
+
+---
+
+## QA-079: LLM 用ストリーミングのドメイン側 API
+
+**背景**: § 6.5 でストリーミングコード例があるが、Protocol（domain）側の API（`-> AsyncIterator[str]`）が `LlmClient` Protocol に含まれていない。
+
+**案**:
+- A. 言及なし
+- B. **`LlmClient.stream(...)` を Protocol に追加**
+
+**反映先**: `python-llm.md § 2`。
+
+---
+
+## QA-080: tool use / function calling
+
+**背景**: 2026 年現在、LLM の関数呼び出し（tool use）は主要機能だが、references で全く触れられていない。
+
+**案**:
+- A. 言及なし
+- B. **`python-llm.md` に「Tool Use Pattern」節を追加**（tool 定義 → schema → invocation loop の構造）
+- C. tools 関連を別ファイルに切り出し（`llm/tools.md`）
+
+**反映先**: `python-llm.md` 新節 / 新規ファイル。
+
+---
+
+## QA-081: RAG（Retrieval-Augmented Generation）パターン
+
+**背景**: AITuber は `integrations/vector_store/` を持っており、RAG が普通に行われている。py-kit references に RAG パターンへの言及なし。
+
+**案**:
+- A. 言及なし
+- B. **`references/llm/rag.md` 新設**（vector store Protocol、embeddings、検索 → 詰め込み、トークン制限）
+
+**反映先**: 新規 reference。
+
+---
+
+# Q. FastAPI 関連の追加観点
+
+## QA-082: FastAPI 0.100+ / Pydantic v2 / Python 3.12+ を前提と明示するか
+
+**背景**: `python-fastapi.md` で `lifespan` を推奨し旧 `on_event` を deprecated と書いているので 0.93+ 前提だが、Pydantic v1 / v2 のどちらを前提とするかは曖昧。
+
+**案**:
+- A. 現状維持
+- B. **「Pydantic v2 / FastAPI 0.110+ 前提」と明文化**（`model_validator`, `model_dump`, `BaseSettings` の `pydantic-settings` 移行も併記）
+
+**反映先**: `python-fastapi.md` 冒頭、Pydantic 関連節。
+
+---
+
+## QA-083: `pydantic-settings` パッケージの採用
+
+**背景**: Pydantic v2 で `BaseSettings` は別パッケージ `pydantic-settings` に移動。references の `Settings(BaseModel)` 例は `from_env()` を手書きしているが、`BaseSettings` のほうが標準的。
+
+**案**:
+- A. 現状維持（手書き）
+- B. **`pydantic-settings.BaseSettings` を `Settings` の標準ベースクラスにする**
+
+**反映先**: `python-architecture.md § 4 / § 7`、`python-llm.md § 7`。
+
+---
+
+## QA-084: FastAPI のバックグラウンドタスク／cron
+
+**背景**: `BackgroundTasks` / `APScheduler` / Celery への言及なし。
+
+**案**:
+- A. 言及なし
+- B. **`python-fastapi.md` に「Background Tasks」節を追加**（FastAPI 内蔵 vs Celery / Arq / Dramatiq の選択指針）
+
+**反映先**: `python-fastapi.md` 新節。
+
+---
+
+## QA-085: レート制限・スロットリング
+
+**背景**: `slowapi` 等のレート制限ライブラリと、Depends での実装パターンへの言及なし。
+
+**案**:
+- A. 言及なし
+- B. **`python-fastapi.md` に「Rate Limiting」節を追加**
+
+**反映先**: `python-fastapi.md`。
+
+---
+
+## QA-086: WebSocket の規約
+
+**背景**: AITuber は `server/ws/` で WebSocket を多用。`python-fastapi.md` には WebSocket への言及がない。
+
+**案**:
+- A. 言及なし
+- B. **`python-fastapi.md § N` に「WebSocket」節を追加**（接続管理、ブロードキャスト、認証、エラー処理）
+- C. 別ファイル `references/fastapi/websocket.md`
+
+**反映先**: `python-fastapi.md` または新規。
+
+---
+
+## QA-087: SSE（Server-Sent Events）
+
+**背景**: ストリーミング LLM 応答を SSE で返すパターンが現代的だが、references で扱われていない。
+
+**案**:
+- A. 言及なし
+- B. **`python-fastapi.md` に「SSE / Streaming Response」節を追加**
+
+**反映先**: `python-fastapi.md`。
+
+---
+
+# R. テスト方針
+
+## QA-088: 「単体テストを書かない」原則の強さ
+
+**背景**: `python-testing.md § 2.1` で「個別メソッドの単体テスト：❌ 書くな」と明言。理由は「AI 支援開発でメンテコストが価値を上回る」。これはユーザー固有の方針で、Python コミュニティの常識（pytest で TDD）と真っ向対立。OSS / 大規模チームには適用しづらい。
+
+**案**:
+- A. 現状維持
+- B. **「プロジェクト判断」と緩和**（境界テストを推奨、個別テストも禁止しない）
+- C. **「個人 / AI 駆動プロジェクト → 境界テストのみ／チーム / OSS → 単体テスト含む」と分岐**
+
+**反映先**: `python-testing.md § 2.1` 冒頭の前置きを書き換え。
+
+---
+
+## QA-089: 統合テスト・E2E テスト・コンテナテスト
+
+**背景**: § 2.6 で「Postgres in a container」と書いてあるが、`testcontainers-python` の使い方が示されていない。
+
+**案**:
+- A. 言及なし
+- B. **`python-testing.md` に `testcontainers-python` の使い方節を追加**
+
+**反映先**: `python-testing.md § 2.6` 補強。
+
+---
+
+## QA-090: モックライブラリの選定（pytest-mock vs unittest.mock）
+
+**背景**: references に出てくる `FakeXxx` クラスは手書き Fake のみ。`pytest-mock`（`mocker` fixture）や `unittest.mock.AsyncMock` の使い分けが未規定。
+
+**案**:
+- A. 現状維持（Fake クラス手書き推奨）
+- B. **「Fake は構造的、Mock は呼び出し追跡用、`pytest-mock` を使う場合のルール」を明文化**
+- C. mock は禁止、Fake のみ
+
+**反映先**: `python-testing.md § 2.2` 補強。
+
+---
+
+## QA-091: ファクトリ（factory_boy / pytest-factoryboy）
+
+**背景**: テストデータを作る `factory_boy` パターンへの言及なし。
+
+**案**:
+- A. 言及なし
+- B. **「テストデータ生成」節を追加**（`factory_boy` 推奨）
+
+**反映先**: `python-testing.md` 新節。
+
+---
+
+## QA-092: プロパティベーステスト（Hypothesis）
+
+**背景**: 値オブジェクトや純粋関数の検証に Hypothesis が有用だが、references に言及なし。
+
+**案**:
+- A. 言及なし
+- B. **「Property-Based Testing」節を追加**
+
+**反映先**: `python-testing.md` 新節 or 「適用範囲」を明記して別ファイル `testing/hypothesis.md`。
+
+---
+
+## QA-093: スナップショットテスト（syrupy 等）
+
+**背景**: LLM 出力や JSON レスポンスのスナップショットテストの言及なし。
+
+**案**:
+- A. 言及なし
+- B. **`testing/snapshot.md` 新設または `python-testing.md` に節追加**
+
+**反映先**: 新規 or `python-testing.md`。
+
+---
+
+## QA-094: coverage 80% 目標は妥当か
+
+**背景**: § 4.2 で `--cov-fail-under=80` が例示されている。「カバレッジは smell-detector」と書きつつしきい値 80 を例示するのは矛盾気味。
+
+**案**:
+- A. 現状維持
+- B. **「カバレッジしきい値の例示は削除、品質指標として参考程度に留める」**
+- C. しきい値はプロジェクト判断（80 / 90 / 75 の例を並列に提示）
+
+**反映先**: `python-testing.md § 4.2`。
+
+---
+
+# S. SKILL.md / フック側
+
+## QA-095: `py-script` の Step 数（3 ステップ）は十分か
+
+**背景**: py-script SKILL.md は 3 ステップ。Step 2 で「クライアント要件確認」、Step 3 で「コード生成」。要件確認をひとつのステップで全部やるのは大雑把。
+
+**案**:
+- A. 現状維持
+- B. **Step 2 を「① 目的の明確化、② I/O・引数の決定、③ 依存パッケージ確認」と細分化**
+
+**反映先**: `plugins/py-kit/skills/py-script/SKILL.md`。
+
+---
+
+## QA-096: `py-project` の「Existing Project」分岐の Quality Check（Step 10）の粒度
+
+**背景**: Step 10 の Quality Check は 8 項目を 1 ステップに詰め込んでいる。1 項目ずつ Step を切るほうが flow として明快（PR135 の next-kit と同様の傾向）。
+
+**案**:
+- A. 現状維持
+- B. **8 項目を 8 サブステップに分解**
+
+**反映先**: `plugins/py-kit/skills/py-project/SKILL.md`。
+
+---
+
+## QA-097: `py-project` の「Existing Project」分岐の References 読み込みは Step 1 で全部か
+
+**背景**: Step 1 で「python-core.md と python-architecture.md を always required で読む」と書かれている。Quality Check（Step 10）で「型ヒント網羅性」「Pydantic 境界」を検査する時にはそれぞれ違う references が要る。Step 1 で全部読むと注入フックの利点と相反。
+
+**案**:
+- A. 現状維持（最初に全部読む）
+- B. **「Step 10 の各サブステップで関連 reference のみ on-demand 読み込み」に変更**
+- C. SKILL.md は「インデックスのみ読み、各 Step で必要な reference を Read」と汎用化
+
+**反映先**: `plugins/py-kit/skills/py-project/SKILL.md` の Step 1。
+
+---
+
+## QA-098: `python-skill-dispatch` フックの発火条件は十分か
+
+**背景**: 現状フックは `.py` の Edit / Write すべてに発火（1 セッション 1 回）。`.pyi` (stub) や `pyproject.toml` 編集時は発火しない。
+
+**案**:
+- A. 現状維持
+- B. **`.pyi`, `pyproject.toml`, `requirements*.txt` も発火対象に追加**
+- C. PR139 候補（references 自動注入フック）で完全カバーするので、当フックは廃止候補
+
+**反映先**: `plugins/py-kit/hooks/hooks.json`、`prompts/python-skill-dispatch.md`。
+
+---
+
+## QA-099: `python-skill-dispatch` のセッションフラグ型ブロックは妥当か
+
+**背景**: 1 セッション 1 回のみブロックする方式（`/tmp/py-kit-py-skill-{sid}`）。一度 dispatch されたら以後そのセッションでは黙る。PR139 候補の自動注入フックと併存させる時に意図が分かりにくくなる可能性。
+
+**案**:
+- A. 現状維持
+- B. **PR139 のフックが導入されたら、本 dispatch フックは廃止**（references 自動注入で十分案内になる）
+- C. dispatch とインジェクションを 1 つのフックに統合
+
+**反映先**: `plugins/py-kit/hooks/`、`changelogs/`。
+
+---
+
+## QA-100: skill description の triggers（日本語例）
+
+**背景**: `py-project` の description で日本語トリガー例（「新しい Python プロジェクト作って」「リファクタして」等）が並んでいる。一方 `py-script` も「スクリプト作って」を含む。「リファクタして」「コードレビューして」が py-project でしか拾えないと、小さい改修依頼で py-script との競合を起こす可能性。
+
+**案**:
+- A. 現状維持
+- B. **トリガーの境界を明文化**（「pyproject.toml がある → py-project / ない → py-script」を Description に書く）
+
+**反映先**: 両 SKILL.md の `description`。
+
+---
+
+# T. その他横断観点
+
+## QA-101: glossary / incidents への py-kit 関連語の登録
+
+**背景**: 用語集 `glossary.md` に `py-kit` の項はあるが、「純DDD」「Composition Root」「Protocol vs ABC」「Aggregate」など py-kit の核心用語は登録されていない。
+
+**案**:
+- A. 現状維持
+- B. **py-kit 固有用語を glossary に追加**（最低: 純DDD、Composition Root、Aggregate、`{Name}able` Protocol 命名、技術 prefix 命名規約、`logger.py` 三兄弟）
+
+**反映先**: `.claude/rules/core/glossary.md` および JP ミラー。
+
+---
+
+## QA-102: `plugins/py-kit/CLAUDE.md` の有無
+
+**背景**: 多くの他プラグイン（claude-kit / work-kit / next-kit 等）は `plugins/{name}/CLAUDE.md` を持つが、py-kit にはない（`references/CLAUDE.md` はある）。
+
+**案**:
+- A. 現状維持
+- B. **`plugins/py-kit/CLAUDE.md` を新設**（プラグイン入口の概要、ファイル構成、開発時の留意点）
+
+**反映先**: 新規 `plugins/py-kit/CLAUDE.md` + JP ミラー。
+
+---
+
+## QA-103: marketplace.json / plugin.json バージョン上げの方針
+
+**背景**: 当 PR 138 で大量の reference 改修が入る場合、`plugin.json` の version は 1.0.0 から MINOR（1.1.0）か MAJOR（2.0.0）にバンプすべきか。Breaking 変更（フォルダ階層化 = QA-001 採用）を伴うなら MAJOR。
+
+**案**:
+- A. 採用 QA の規模で判断（MINOR 候補）
+- B. **フォルダ構成変更を伴うなら MAJOR（2.0.0）**
+- C. **MINOR で押し通す**（references はユーザー外部から参照されない内部実装扱い）
+
+**反映先**: `plugins/py-kit/.claude-plugin/plugin.json`、`.claude-plugin/marketplace.json`、`changelogs/`。
+
+---
+
+## QA-104: `changelogs/` の整備
+
+**背景**: 他プラグインは `changelogs/v{X.Y.Z}.md` で changelog を残している。py-kit には changelogs/ がない。
+
+**案**:
+- A. 現状維持
+- B. **`plugins/py-kit/changelogs/v1.0.0.md`（初版）と当 PR 用 `v1.1.0.md` または `v2.0.0.md` を作成**
+
+**反映先**: 新規。
+
+---
+
+## QA-105: `_overview.md` パターンの導入
+
+**背景**: `.claude/rules/feature/_overview.md` のような「フォルダ目次」を `plugins/py-kit/references/` の各サブフォルダにも置くか（QA-001 採用時）。
+
+**案**:
+- A. `references/CLAUDE.md` 1 つで十分
+- B. **`references/{topic}/_overview.md` を各サブフォルダに置く**（注入フックがフォルダ単位で発火する時に概要だけ渡せる）
+
+**反映先**: フォルダ階層化を採用した場合のみ。
+
+---
+
+## QA-106: スキル description 文体（PR128 の絵文字禁止と整合）
+
+**背景**: 現状 description は日本語例多めで「✅ / ❌」絵文字は使っていないが、念のため検査。
+
+**案**:
+- A. 現状維持で問題なし
+- B. （該当箇所があれば修正）
+
+**反映先**: 両 SKILL.md（確認のみ）。
+
+---
+
+## QA-107: references の英語版・日本語版の同期確認は当 PR でやるか
+
+**背景**: `python-*.md` と `python-*.jp.md` の同期は `jp-mirror-translator` agent（PR133）でやる前提だが、当 PR で大量に英語版を書き換えるなら、JP ミラーも当 PR で同コミットに含めるか別 PR にするか。
+
+**案**:
+- A. 同 PR で同コミット（`skill-jp-mirror-sync.md` のルール準拠）
+- B. **英語版改訂と JP ミラー同期を 2 段階に分ける**（当 PR で英語版、続く PR で JP）
+
+**反映先**: 当 PR のコミット方針。ルール `skill-jp-mirror-sync.md` を厳格適用するなら A 一択。
+
+---
+
+## QA-108: SKILL.md の Step 1 で `references/CLAUDE.md` を読む記述の正確性
+
+**背景**: 両 SKILL.md の Step 1 で `{plugin_root}/references/CLAUDE.md` を読むよう指示。フォルダ階層化（QA-001）採用後はこのパスは変わらないが、サブフォルダの `_overview.md` を読むか否かの判断知識が必要になる。
+
+**案**:
+- A. 現状維持
+- B. **「index を読んでから、関連サブフォルダの `_overview.md` を読む」と Step 1 を 2 段階化**
+
+**反映先**: 両 SKILL.md の Step 1。
+
+---
+
+## QA-109: AI イシュー自動発見システムとの整合
+
+**背景**: `.work/notes/AIイシュー自動発見システム構想.md` に py-kit セクションがあるはず。当 PR の改修内容を反映するか確認。
+
+**案**:
+- A. 当 PR の TODO 通り更新
+- B. AI イシュー側の規約と py-kit の規約に矛盾があれば py-kit 側を優先
+
+**反映先**: `.work/notes/AIイシュー自動発見システム構想.md`。
+
+---
+
+## QA-110: py-kit と他プラグインの hooks（`python-skill-dispatch`）の重複懸念
+
+**背景**: 過去 dev-kit に `python-skill-dispatch` があり、PR129 で py-kit に移管された。dev-kit に古いコピーが残っていないかの確認。
+
+**案**:
+- A. 確認のみ（残っていれば次PR で削除）
+- B. **当 PR で dev-kit 側の残骸も削除**
+
+**反映先**: `plugins/dev-kit/hooks/hooks.json` の確認。
