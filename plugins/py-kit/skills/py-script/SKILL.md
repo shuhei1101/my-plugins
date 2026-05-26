@@ -21,14 +21,14 @@ Creates a clean, standards-compliant single-file Python script.
 Read the index file to identify which references to load:
 
 ```
-{plugin_root}/references/python/_index.md
+{plugin_root}/references/_index.md
 ```
 
 The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-script` → plugin root is `.../{plugin-name}/`).
 
 Then read:
-- `{plugin_root}/references/python/python-core.md` — naming, type hints, comment rules, language rules
-- `{plugin_root}/references/python/python-scripts.md` — simple script structure
+- `{plugin_root}/references/python-core.md` — naming, type hints, comment rules, language rules
+- `{plugin_root}/references/python-scripts.md` — simple script structure
 
 → Proceed to Step 2
 
@@ -73,5 +73,5 @@ Then read:
 
 ## References
 
-- `{plugin_root}/references/python/python-core.md` — Naming Conventions, Type Hints, Comment Rules, Language Rules
-- `{plugin_root}/references/python/python-scripts.md` — Simple Script Structure
+- `{plugin_root}/references/python-core.md` — Naming Conventions, Type Hints, Comment Rules, Language Rules
+- `{plugin_root}/references/python-scripts.md` — Simple Script Structure

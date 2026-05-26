@@ -30,17 +30,17 @@
 まずインデックスファイルを読み込む：
 
 ```
-{plugin_root}/references/python/_index.md
+{plugin_root}/references/_index.md
 ```
 
 スキルファイルの2階層上がプラグインルート（例: `Base directory: .../skills/py-project` → プラグインルートは `.../{plugin-name}/`）。
 
 続いて以下を読む：
-- `{plugin_root}/references/python/python-core.md` — 常に必要
-- `{plugin_root}/references/python/python-architecture.md` — プロジェクト作業では常に必要
-- `{plugin_root}/references/python/python-testing.md` — 新規プロジェクトまたはテスト関連タスク
-- `{plugin_root}/references/python/python-fastapi.md` — FastAPI を使う場合
-- `{plugin_root}/references/python/python-llm.md` — LLM API を呼ぶ場合
+- `{plugin_root}/references/python-core.md` — 常に必要
+- `{plugin_root}/references/python-architecture.md` — プロジェクト作業では常に必要
+- `{plugin_root}/references/python-testing.md` — 新規プロジェクトまたはテスト関連タスク
+- `{plugin_root}/references/python-fastapi.md` — FastAPI を使う場合
+- `{plugin_root}/references/python-llm.md` — LLM API を呼ぶ場合
 
 → ステップ2へ
 
@@ -206,7 +206,7 @@
 
 ## 参考資料
 
-詳細は `{plugin_root}/references/python/_index.md` を参照。
+詳細は `{plugin_root}/references/_index.md` を参照。
 
 **新規プロジェクト（ステップ3〜8）:** `python-core.md`・`python-architecture.md`・`python-testing.md`（必要に応じて `python-fastapi.md` や `python-llm.md` を追加）
 

@@ -23,4 +23,4 @@
 
 - **クリエイタールーティング用の `UserPromptSubmit` ディスパッチフックを追加しないこと。** ユーザーのプロンプトごとに発火して不要なオーバーヘッドになる — `PreToolUse` だけで十分な強制力がある。
 
-このパターンは `skill-creator-dispatch`（claude-kit/dev-kit/ui-kit/work-kit）および `python-skill-dispatch` / `yaml-skill-dispatch`（dev-kit）で採用されている。
+このパターンは `skill-creator-dispatch`（claude-kit/dev-kit/ui-kit/work-kit）および `python-skill-dispatch`（py-kit）/ `yaml-skill-dispatch`（dev-kit）で採用されている。

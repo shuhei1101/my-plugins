@@ -26,14 +26,14 @@ py-kit 規約に従ったクリーンな単一ファイルスクリプトを作�
 まずインデックスファイルを読み込む：
 
 ```
-{plugin_root}/references/python/_index.md
+{plugin_root}/references/_index.md
 ```
 
 スキルファイルの2階層上がプラグインルート（例: `Base directory: .../skills/py-script` → プラグインルートは `.../{plugin-name}/`）。
 
 続いて以下を読む：
-- `{plugin_root}/references/python/python-core.md` — 命名規則・型ヒント・コメントルール・言語ルール
-- `{plugin_root}/references/python/python-scripts.md` — 簡易スクリプト構造
+- `{plugin_root}/references/python-core.md` — 命名規則・型ヒント・コメントルール・言語ルール
+- `{plugin_root}/references/python-scripts.md` — 簡易スクリプト構造
 
 → ステップ2へ
 
@@ -78,5 +78,5 @@ py-kit 規約に従ったクリーンな単一ファイルスクリプトを作�
 
 ## 参考資料
 
-- `{plugin_root}/references/python/python-core.md` — 命名規則・型ヒント・コメントルール・言語ルール
-- `{plugin_root}/references/python/python-scripts.md` — 簡易スクリプト構造
+- `{plugin_root}/references/python-core.md` — 命名規則・型ヒント・コメントルール・言語ルール
+- `{plugin_root}/references/python-scripts.md` — 簡易スクリプト構造
