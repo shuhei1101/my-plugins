@@ -22,7 +22,9 @@ You will be called with a file path. Determine the direction:
 2. Determine the target path: replace `.md` with `.jp.md`
 3. Check if the target already exists (use Glob)
 4. Translate all text content to natural Japanese
-5. Write or update the target file with the JP mirror warning comment at the very top (before any frontmatter or content):
+5. Write or update the target file with the following comment block:
+   - If the file has YAML frontmatter (`---` … `---`): insert **immediately after the closing `---`**
+   - If the file has no frontmatter: insert at the very top of the file
 
 ```
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
