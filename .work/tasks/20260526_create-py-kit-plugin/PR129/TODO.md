@@ -62,4 +62,5 @@ CLAUDE.md インデックスで AI が状況に応じて参照先を選べるよ
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| {次にやること} | {背景・目的} | {即時実施可} |
+| review-py-kit-plugin | PR135（review-next-kit-plugin）と同パターン。py-kit references を Claude Code の一般ベストプラクティスと照合し、改善提案を**質問形式で大量に QA.md** に書き出す。ユーザーが採否判断 → 採用分を実装。**評価観点**: フォルダ/ファイル分割粒度（次PRのフック注入を見据えた小単位化）・命名規則（編集ファイルパスとマッチさせやすい）・コメントルールの過不足・型ヒント網羅性・抽象パターンの実用性（Template Method/Strategy 使い分け基準は妥当か）・抜け観点（async・並行制御・パッケージング・パフォーマンス・セキュリティ・依存管理・packaging/distribution）・純DDDの硬さの妥当性（簡易プロジェクトでも適用してよいか）・既存PythonコードベースのSAITuber参考実装との照合 | 即時実施可 |
+| add-py-kit-references-injection-hook | PR136（add-next-kit-references-injection-hook）と同パターン。`plugins/dev-kit/hooks/hooks.json` を参考に PreToolUse フックを構築し、編集対象 `.py` ファイルのパス/命名から対応する `references/*.md` を Claude へ自動注入する。**設計方針**: フォルダ構造（`references/llm/`・`references/api/`・`references/scripts/` 等）とファイル名規約でマッチング；リファレンスは「広すぎて無関係内容を含む」のを避け小さく分割；現状のフラット構成 + python-skill-dispatch（全 `.py` に一律発火）から、より細かい注入へ移行。**対応マッピング案**: `**/infrastructure/llm/**/*.py` → `python-llm.md`／`**/interface/api/**/*.py` → `python-fastapi.md`／`**/tests/**/test_*.py` → `python-testing.md`／単発 `.py` → `python-scripts.md`／その他 `**/{domain,application,infrastructure,interface}/**/*.py` → `python-architecture.md`+`python-core.md` | 「review-py-kit-plugin」が完了したら（references 構成が確定してからフック設計に着手） |
