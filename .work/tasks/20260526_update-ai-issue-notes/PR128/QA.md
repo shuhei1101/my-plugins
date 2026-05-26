@@ -10,47 +10,30 @@
 
 ## QA-001: YAML スキルの所属プラグイン
 
-YAML は Python 専用ではないが、現状 dev-kit に `yaml` スキルがある。
-py-kit にリネームした際、yaml スキルをどこに置くか？
-
-- A) py-kit に残す（YAML は Python プロジェクトでよく使うため）
-- B) 独立した `dev-kit`（言語非依存の開発ツール群）として存続させる
-- C) 別途 `yaml-kit` を作る
-
-**状態**: 未決定
+**決定**: dev-kit に残す。Python 専用コンテンツは py-kit として新規プラグインを作成し分離する。
 
 ---
 
 ## QA-002: `.work/issues/` の設置先プロジェクト
 
-`.work/issues/` はどのプロジェクトリポジトリ配下に置くか？
-
-- A) AITuber プロジェクト（`c:\Users\shuhe\repo\aituber` 等）に work-kit setup で作成
-- B) プラグインをインストールした任意プロジェクトに作れる汎用設計
-
-**状態**: 未決定
+**決定**: work-kit の setup スキルで `.work/issues/` を作成する（対象プロジェクト汎用）。
 
 ---
 
-## QA-003: audit-kit から py-kit / ui-kit の references 参照方法
+## QA-003: audit-kit から py-kit/ui-kit の references 参照方法
 
-audit-kit の各スキルが py-kit や ui-kit の references（コーディング規約）を参照する場合、
-どのような仕組みで参照するか？
-
-- A) `${CLAUDE_PLUGIN_ROOT}` を使って他プラグインのキャッシュパスを参照（fragile）
-- B) audit-kit の references に必要な内容をコピーして持つ
-- C) audit-kit のスキルが `py-kit:xxx` スキルを呼び出して間接参照
-
-**状態**: 未決定
+**決定**: audit-kit は作成しない。issue-scan・issue-create スキルを work-kit に統合する。
+参照方法は `${CLAUDE_PLUGIN_ROOT}` 経由で対象プロジェクトにインストールされた py-kit / html-kit の references を読む。
 
 ---
 
 ## QA-004: dev-kit → py-kit リネームの既存プロジェクト対応
 
-現在 dev-kit をインストール済みのプロジェクトが py-kit に移行する手順をどうするか？
+**決定**: dev-kit はリネームしない（現状維持）。Python 専用の py-kit を新規作成する。ui-kit は html-kit にリネームする。
 
-- A) marketplace.json の `dev-kit` エントリを `py-kit` に差し替え、ユーザーは再インストール
-- B) `dev-kit` エントリを残しつつ `py-kit` として別エントリを追加し、段階移行
-- C) 移行スクリプトを提供
+---
 
-**状態**: 未決定
+## QA-005: Next.js 対応プラグイン
+
+**決定**: next-kit プラグインを将来 PR で作成予定（PR-E として予約）。
+現在フロントエンドはバニラ HTML を使用しているが、Next.js への移行計画がある。

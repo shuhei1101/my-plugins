@@ -32,7 +32,8 @@ AIイシュー自動発見システムのプラグイン化設計を会話で議
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| rename-dev-kit-to-py-kit | dev-kit プラグインを py-kit にリネーム（MAJOR バンプ） | 即時実施可 |
-| restructure-py-kit-references | py-kit の python.md を複数ファイルに細分化 | 「rename-dev-kit-to-py-kit」が完了したら |
-| create-audit-kit-plugin | audit-kit プラグイン新規作成（issue-rule-scan 先行） | 即時実施可 |
-| integrate-issue-close-to-merge | work-kit merge スキルにイシュークローズ処理を統合 | 「create-audit-kit-plugin」が完了したら |
+| create-py-kit-plugin | py-kit プラグイン新規作成（dev-kit から Python を分離） | 即時実施可 |
+| rename-ui-kit-to-html-kit | ui-kit → html-kit リネーム | 即時実施可 |
+| add-issue-skills-to-work-kit | work-kit に issue-scan・issue-create スキルを追加 | 即時実施可 |
+| integrate-issue-close-to-merge | work-kit merge スキルにイシュークローズ処理を統合 | 「add-issue-skills-to-work-kit」が完了したら |
+| create-next-kit-plugin | next-kit プラグイン新規作成（Next.js 対応） | 将来（フロントエンド移行後） |
