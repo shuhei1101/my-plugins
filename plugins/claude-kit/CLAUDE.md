@@ -22,4 +22,4 @@ When a hook should enforce "use creator skill X before editing file type Y":
 
 - **Do NOT add `UserPromptSubmit` dispatch hooks for creator routing.** They fire on every user prompt and add unnecessary overhead — `PreToolUse` is sufficient as the sole enforcement.
 
-This pattern is used by `skill-creator-dispatch` (claude-kit/dev-kit/ui-kit/work-kit) and by `python-skill-dispatch` / `yaml-skill-dispatch` (dev-kit).
+This pattern is used by `skill-creator-dispatch` (claude-kit/dev-kit/ui-kit/work-kit) and by `python-skill-dispatch` (py-kit) / `yaml-skill-dispatch` (dev-kit).
