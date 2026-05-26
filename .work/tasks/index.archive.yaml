@@ -370,3 +370,10 @@ prs:
   summary: Next.js 対応プラグイン next-kit を新規作成する（フロントエンド移行に向けた準備）
   task: 20260526_create-next-kit-plugin
   completed: true
+- id: 133
+  title: PR133 — jp-mirror-translator-agent
+  type: feat
+  tags: []
+  summary: work-kit プラグインに JP ミラー ↔ 英語版の翻訳エージェントを追加
+  task: 20260527_jp-mirror-translator-agent
+  completed: true
