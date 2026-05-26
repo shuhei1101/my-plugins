@@ -2,14 +2,18 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # Next.js App Router — ライブラリスタック
 
+> **バージョニング方針**: このドキュメントではバージョンを固定しない。ライブラリを導入またはアップグレードする際は、その時点の **最新安定版** をインストールする。ロックファイル（`package-lock.json` / `pnpm-lock.yaml`）がプロジェクトで実際に使われているバージョンを記録する。
+
+---
+
 ## コアフレームワーク
 
-| ライブラリ | バージョン | 目的 |
-|---|---|---|
-| `next` | 16.x | Next.js（App Router） |
-| `react`, `react-dom` | 19.x | React |
-| `typescript` | 5.x | 型システム |
-| `tailwindcss` | 4.x | ユーティリティファースト CSS（Mantine と並行して spacing / layout の微調整に使う） |
+| ライブラリ | 目的 |
+|---|---|
+| `next` | Next.js（App Router） |
+| `react`、`react-dom` | React |
+| `typescript` | 型システム |
+| `tailwindcss` | ユーティリティファースト CSS（スペーシング / レイアウトの微調整は Mantine と併用） |
 
 ---
 
@@ -17,13 +21,13 @@
 
 | ライブラリ | 目的 | 備考 |
 |---|---|---|
-| `@mantine/core` | メインの UI コンポーネントライブラリ — Buttons, Inputs, Tabs, Modal, Table 等 | UI のソース・オブ・トゥルース — 手書きコンポーネントよりも Mantine を優先する |
-| `@mantine/dates` | 日付入力コンポーネント | `DateInput`, `DatePicker` |
-| `@mantine/hooks` | Mantine 提供の React フック | `useDisclosure`, `useMediaQuery`, `useDebouncedValue` |
-| `@mantine/modals` | モーダル管理（命令的 API + プロバイダ） | アプリを `ModalsProvider` でラップする |
-| `@tabler/icons-react` | アイコンセット（プライマリ） | Mantine と組み合わせて使う |
+| `@mantine/core` | メイン UI コンポーネントライブラリ — Button、Input、Tabs、Modal、Table など | 主要な UI ソース — 手作りコンポーネントより Mantine を優先する |
+| `@mantine/dates` | 日付入力コンポーネント | `DateInput`、`DatePicker` |
+| `@mantine/hooks` | Mantine 提供の React フック | `useDisclosure`、`useMediaQuery`、`useDebouncedValue` |
+| `@mantine/modals` | モーダル管理（命令型 API + プロバイダ） | アプリを `ModalsProvider` で包む |
+| `@tabler/icons-react` | アイコンセット（プライマリ） | Mantine と組み合わせる |
 | `react-icons` | アイコンセット（セカンダリ、tabler にないアイコンのフォールバック） | tabler にない場合のみ使う |
-| `mantine-datatable` | ソート／ページネーション付きテーブルコンポーネント | 複雑なリストビュー向け |
+| `mantine-datatable` | ソート / ページング可能なテーブルコンポーネント | 複雑な一覧表示用 |
 | `framer-motion` | アニメーションライブラリ | 意味のあるモーションにのみ控えめに使う |
 
 ### Mantine — 必須セットアップ
@@ -58,38 +62,39 @@ RingProgress, Progress, PasswordInput, Anchor, Checkbox, DateInput
 
 ---
 
-## フォーム＆バリデーション
+## フォーム & バリデーション
 
 | ライブラリ | 目的 | 備考 |
 |---|---|---|
-| `react-hook-form` | フォーム state 管理 | フォーム値とエラーの単一の真実源 |
-| `@hookform/resolvers` | react-hook-form と Zod のブリッジ | `zodResolver(schema)` |
-| `zod` | スキーマバリデーション + 型推論 | `form.ts` でスキーマを定義し、`z.infer<>` で型を推論する |
+| `react-hook-form` | フォーム状態管理 | フォーム値 + エラーの単一の真実の源 |
+| `@hookform/resolvers` | react-hook-form と Zod の橋渡し | `zodResolver(schema)` |
+| `zod` | スキーマバリデーション + 型推論 | `form.ts` でスキーマ定義し、`z.infer<>` で型を推論 |
 
-### 標準コンボ
+### 標準の組み合わせ
 
 ```ts
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { FamilyQuestFormSchema, FamilyQuestFormType } from "../form"
+import { ResourceFormSchema, ResourceFormType } from "../form"
 
-const { register, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<FamilyQuestFormType>({
-  resolver: zodResolver(FamilyQuestFormSchema),
-  defaultValues: { /* ... */ },
-})
+const { register, handleSubmit, formState: { errors }, setValue, watch, reset } =
+  useForm<ResourceFormType>({
+    resolver: zodResolver(ResourceFormSchema),
+    defaultValues: { /* ... */ },
+  })
 ```
 
 完全なパターンは `frontend/patterns/form.md` を参照。
 
 ---
 
-## データ取得／サーバ state
+## データ取得 / サーバーステート
 
 | ライブラリ | 目的 | 備考 |
 |---|---|---|
-| `@tanstack/react-query` | サーバ state（キャッシュ、ロード、エラー、ミューテーション） | `useQuery`（読み取り）／ `useMutation`（書き込み）を使う |
+| `@tanstack/react-query` | サーバーステート（キャッシュ、ローディング、エラー、mutation） | `useQuery`（読み取り）/ `useMutation`（書き込み）を使う |
 
-### QueryClient のセットアップ
+### QueryClient セットアップ
 
 ```ts
 // app/(core)/tanstack.ts
@@ -99,7 +104,7 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000,     // 5 分間 fresh
-      gcTime: 10 * 60 * 1000,        // 10 分でガベージコレクション
+      gcTime: 10 * 60 * 1000,        // 10 分でガベージコレクト
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
@@ -108,20 +113,20 @@ export const queryClient = new QueryClient({
 })
 ```
 
-> 備考: フォームデータ用フック（編集モード取得を伴う `useXxxForm`）は通常、フォームが常に最新のサーバ state を表示するように、これらのデフォルトを `staleTime: 0, refetchOnMount: "always"` で上書きする。
+> フォームロード用のフックは `staleTime: 0, refetchOnMount: "always"` を上書きし、フォームが常に最新のサーバーステートを表示するようにする。
 
 ---
 
-## グローバル state
+## グローバルステート
 
 | ライブラリ | 目的 | 備考 |
 |---|---|---|
-| `zustand` | 軽量なグローバル state ストア | 画面横断の UI state（テーマ、モーダル、一時的な state）に使う |
+| `zustand` | 軽量グローバルステートストア | 画面間 UI ステート（テーマ、モーダル、一時的なステート） |
 
-Zustand を使うのは **以下の場合だけ**:
-- state が無関係な複数のルートにまたがる
-- サーバ state（TanStack Query）でもローカル state（`useState`）でもモデル化できない
-- React Context でも解決できない
+Zustand は次のときに **のみ** 使う:
+- ステートが無関係な複数ルートにまたがる
+- サーバーステート（TanStack Query）にもローカルステート（`useState`）にもモデル化できない
+- React Context では解決できない
 
 Context プロバイダで足りる場合は Context を優先する（`state-management.md` 参照）。
 
@@ -131,11 +136,11 @@ Context プロバイダで足りる場合は Context を優先する（`state-ma
 
 | ライブラリ | 目的 | 備考 |
 |---|---|---|
-| `drizzle-orm` | 型安全な ORM（SQL ビルダ + リレーショナルクエリ） | スキーマは `drizzle/schema.ts` |
-| `drizzle-zod` | Drizzle のテーブル定義から Zod スキーマを生成 | 任意 |
-| `postgres` | PostgreSQL クライアント（Drizzle が利用） | 接続レイヤ |
+| `drizzle-orm` | 型安全 ORM（SQL ビルダー + リレーショナルクエリ） | スキーマは `drizzle/schema.ts` |
+| `drizzle-zod` | Drizzle テーブル定義から Zod スキーマを生成 | 任意 |
+| `postgres` | PostgreSQL クライアント（Drizzle が使用） | コネクション層 |
 
-`backend/database.md` 参照。
+`backend/database.md` を参照。
 
 ---
 
@@ -143,30 +148,29 @@ Context プロバイダで足りる場合は Context を優先する（`state-ma
 
 | ライブラリ | 目的 |
 |---|---|
-| `@supabase/supabase-js` | Supabase クライアント（ブラウザとサーバの両方で使う） |
-| `@supabase/auth-helpers-nextjs` | Supabase Auth 向けの Next.js ヘルパー |
-| `@supabase/ssr` | SSR フレンドリーな認証ヘルパー（クッキー、サーバコンポーネント） |
+| `@supabase/supabase-js` | Supabase クライアント（ブラウザ・サーバー両方で使用） |
+| `@supabase/auth-helpers-nextjs` | Supabase Auth 用の Next.js ヘルパー |
+| `@supabase/ssr` | SSR 向けの認証ヘルパー（cookies、server components） |
 
-認証: Supabase Auth → API ルート向けに `getAuthContext()` でラップ（`{ db, userId }` を返す）。
+認証: Supabase Auth → API ルート用に `getAuthContext()` で包む（`{ db, userId }` を返す）。
+
+> 必要に応じて別の認証プロバイダに置き換える；同じ `getAuthContext()` インターフェースは維持すべき。
 
 ---
 
-## 通知＆フィードバック
+## 通知 & フィードバック
 
 | ライブラリ | 目的 |
 |---|---|
-| `react-hot-toast` | トースト通知（ミューテーション後の成功／エラー） |
+| `react-hot-toast` | トースト通知（mutation 後の成功 / 失敗） |
 
 ### 使い方
 
 ```ts
 import toast from "react-hot-toast"
 
-// 成功時
-toast.success("クエストを更新しました", { duration: 1500 })
-
-// エラー時（通常は handleAppError 内で）
-toast.error("更新に失敗しました")
+toast.success("Saved", { duration: 1500 })
+toast.error("Failed to save")
 ```
 
 ---
@@ -175,7 +179,7 @@ toast.error("更新に失敗しました")
 
 | ライブラリ | 目的 |
 |---|---|
-| `react-error-boundary` | コンポーネントレベルのエラーバウンダリ（providers のレベルで使う） |
+| `react-error-boundary` | コンポーネントレベルのエラーバウンダリ（プロバイダ層で使用） |
 
 ```tsx
 import { ErrorBoundary } from "react-error-boundary"
@@ -192,9 +196,9 @@ import { ErrorFallback } from "@/app/(core)/error/ErrorFallback"
 
 | ライブラリ | 目的 |
 |---|---|
-| `clsx` | 条件付きの className 合成 |
-| `query-string` | URL クエリ文字列のパース／文字列化（`URLSearchParams` で足りないとき） |
-| `react-swipeable` | スワイプジェスチャ（モバイル限定） |
+| `clsx` | 条件付き className 合成 |
+| `query-string` | URL クエリ文字列のパーサー / シリアライザ（`URLSearchParams` で足りない場合） |
+| `react-swipeable` | スワイプジェスチャー（モバイル専用） |
 
 ---
 
@@ -202,40 +206,41 @@ import { ErrorFallback } from "@/app/(core)/error/ErrorFallback"
 
 | ライブラリ | 目的 |
 |---|---|
-| `loglevel` | 軽量なクライアントサイドロガー |
+| （なし） | `app/(core)/logger.ts` のカスタムロガーを使う — `shared/logger.md` 参照 |
 
-> バックエンドのログ集約（Python `structlog` JSON-L）と統合するときは、JS の出力を同じ JSON-L スキーマに揃える。`shared/logger.md` 参照。
+ロガーは JSON Lines を出力する；サードパーティのロガーライブラリは不要。
 
 ---
 
-## 何にどれを使うか — 早見表
+## 何をいつ使うか — クイック判断表
 
-| 必要なもの | 使うもの |
+| 必要 | 使うもの |
 |---|---|
-| UI コンポーネント（ボタン、入力、モーダル等） | Mantine — 先に既存コンポーネントを確認する |
+| UI コンポーネント（button、input、modal、…） | Mantine — まず既存コンポーネントを確認 |
 | アイコン | `@tabler/icons-react`（フォールバック: `react-icons`） |
-| フォーム state | `react-hook-form` + `zodResolver` |
+| フォームステート | `react-hook-form` + `zodResolver` |
 | フォームバリデーションスキーマ | Zod（`form.ts` 内） |
-| サーバデータの取得 | `useQuery`（TanStack Query） |
-| サーバデータのミューテーション | `useMutation`（TanStack Query） |
+| サーバーデータ取得 | `useQuery`（TanStack Query） |
+| サーバーデータ mutation | `useMutation`（TanStack Query） |
 | トースト通知 | `react-hot-toast` |
-| ルート横断の UI state | まず Context、足りなければ Zustand |
-| ローカル UI state | `useState` |
+| ルート横断 UI ステート | まず Context；Context で不足なら Zustand |
+| ローカル UI ステート | `useState` |
 | 条件付き className | `clsx` |
 | DB クエリ | Drizzle（`db.ts` 内） |
 | 認証コンテキスト | Supabase（`getAuthContext()` 経由） |
 | 日付入力 | `@mantine/dates` |
-| 複雑なテーブル（ソート／ページ） | `mantine-datatable` |
+| 複雑なテーブル（ソート / ページ） | `mantine-datatable` |
+| ロギング | カスタムロガー（`shared/logger.md` 参照） |
 
 ---
 
 ## 制約 — 追加してはいけないもの
 
-- **別の UI ライブラリを追加してはいけない**（Material UI, Chakra, Ant Design）— Mantine が単一の真実源
-- **別のフォームライブラリを追加してはいけない**（Formik, react-final-form）— `react-hook-form` に統一する
-- **サーバ state 用に別のフェッチライブラリを追加してはいけない**（SWR, Apollo）— `@tanstack/react-query` が正準
-- **Redux / Recoil / Jotai を追加してはいけない** — TanStack Query（サーバデータ）、Context（横断的な UI）、Zustand（まれなケース）を使う
-- **`axios` を追加してはいけない** — ネイティブの `fetch` で十分。クライアントサイドのヘルパーは `app/api/{resource}/client.ts` に置く
-- **`moment` / `date-fns` をデフォルトとして追加してはいけない** — まずはネイティブの `Date` と `Intl` から始める。多くの日付操作が必要になった場合のみ `date-fns` を追加する
+- **別の UI ライブラリ（Material UI、Chakra、Ant Design）を追加してはいけない** — Mantine が単一の真実の源
+- **別のフォームライブラリ（Formik、react-final-form）を追加してはいけない** — `react-hook-form` を貫く
+- **サーバーステート用に別の fetch ライブラリ（SWR、Apollo）を追加してはいけない** — `@tanstack/react-query` が正典
+- **Redux / Recoil / Jotai を追加してはいけない** — TanStack Query（サーバーデータ）、Context（横断的 UI）、または Zustand（まれなケース）を使う
+- **`axios` を追加してはいけない** — ネイティブ `fetch` で十分；クライアント側ヘルパーは `app/api/{resource}/client.ts` に置く
+- **`moment` / `date-fns` をデフォルトで追加してはいけない** — ネイティブの `Date` と `Intl` から始める；日付操作が多くなって初めて `date-fns` を追加する
 
-新しいライブラリを導入するときは、ここに理由を文書化し、上記の早見表も更新する。
+新しいライブラリを導入するときは、ここに根拠を記載し、上の判断表を更新する。

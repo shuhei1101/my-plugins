@@ -4,14 +4,14 @@
 
 ## 原則
 
-ユーザーが画面で見ているものに影響する状態 — アクティブなタブ、適用中のフィルタ、ソート順、ページネーションのページ、選択中の詳細 ID、展開セクション — はすべて URL クエリ文字列に保持する。
+ユーザーが画面上で見ているものに影響するすべての状態 — 選択中のタブ、適用中のフィルタ、ソート順、ページ番号、選択中の詳細 ID、展開しているセクション — は URL のクエリ文字列に置くべきです。
 
 理由:
-- ページが共有可能になる（URL を貼れば相手が同じビューを見られる）
-- ブラウザの戻る／進むボタンが追加コードなしで正しく動く
-- リロードしても同じ状態が復元される
-- Claude Code（や任意のツール）から URL で特定の UI 状態を指せる
-- メール、プッシュ通知、他アプリからのディープリンクがそのまま動く
+- ページを共有可能（URL を貼れば他人が同じビューを見られる）
+- ブラウザの戻る/進むボタンが追加コードなしで正しく動く
+- 再読み込みで同じ状態が復元される
+- Claude Code（その他のツール）に URL で特定の UI 状態を指し示せる
+- メール・プッシュ通知・他アプリからのディープリンクがそのまま機能する
 
 ---
 
@@ -19,15 +19,15 @@
 
 | 状態 | URL に入れる？ | 理由 |
 |---|---|---|
-| アクティブなタブ | ✅ はい | タブは「ユーザーが何を見ているか」の一部 |
+| 選択中のタブ | ✅ はい | タブは「ユーザーが何を見ているか」の一部 |
 | フィルタ値（検索、タグ、ステータス） | ✅ はい | 共有可能なビュー |
-| ソート列と順序 | ✅ はい | フィルタと同じ |
-| ページネーションのページ | ✅ はい | リスト位置がリロード可能 |
+| ソートのカラムと順序 | ✅ はい | フィルタと同様 |
+| ページ番号 | ✅ はい | 再読み込み可能なリスト位置 |
 | 選択中の詳細 ID（インライン表示時） | ✅ はい | 特定アイテムへのディープリンク |
-| フォームの下書き値 | ❌ いいえ | ユーザー入力 — ノイズが多くセキュリティ上もリスク |
-| ローディング／エラー UI 状態 | ❌ いいえ | 一過性 |
-| アニメーション／展開状態 | ❌ いいえ | 純粋に視覚的 |
-| モーダルの開閉 | ⚠️ 場合により | リンク可能であるべきならはい。そうでなければローカル state |
+| フォームの下書き値 | ❌ いいえ | ユーザー入力 — ノイズが多くセキュリティ上も問題 |
+| ローディング / エラーの UI 状態 | ❌ いいえ | 一時的 |
+| アニメーション / 展開状態 | ❌ いいえ | 純粋に視覚的 |
+| モーダルの開閉 | ⚠️ 場合により | モーダルがリンク可能であるべきならはい、それ以外はローカル state |
 
 ---
 
@@ -42,11 +42,11 @@ const searchParams = useSearchParams()
 
 const tab    = searchParams.get("tab") ?? "list"
 const filter = searchParams.get("filter") ?? ""
-const tags   = searchParams.getAll("tag")           // multiple values
+const tags   = searchParams.getAll("tag")           // 複数値
 const page   = Number(searchParams.get("page") ?? "1")
 ```
 
-`useSearchParams()` は `ReadonlyURLSearchParams` を返す。URL が変化（戻る／進む、プログラム的な push）するとコンポーネントが再レンダリングされる。
+`useSearchParams()` は `ReadonlyURLSearchParams` を返します。URL が変わる（戻る/進む、プログラムによる push）と再レンダリングされます。
 
 ---
 
@@ -80,35 +80,35 @@ const updateQuery = useCallback((patch: Record<string, string | string[] | null>
   router.push(`${pathname}?${params.toString()}`)
 }, [router, pathname, searchParams])
 
-// Usage
+// 使い方
 updateQuery({ tab: "settings" })
-updateQuery({ filter: null })   // remove
-updateQuery({ tag: ["new", "popular"] })  // replace array
+updateQuery({ filter: null })   // 削除
+updateQuery({ tag: ["new", "popular"] })  // 配列の置き換え
 ```
 
-### `router.push` vs `router.replace`
+### `router.push` と `router.replace`
 
-| メソッド | 履歴に新エントリを積むか | 使うとき |
+| メソッド | 履歴エントリを追加するか | 使うとき |
 |---|---|---|
-| `router.push` | ✅ はい | 戻るボタンで変更を取り消したい（フィルタ変更、タブ切替） |
-| `router.replace` | ❌ いいえ | 静かな状態変更（デバウンス済み検索入力、派生状態） |
+| `router.push` | ✅ する | 戻るボタンで変更を取り消したい（フィルタ変更、タブ切替） |
+| `router.replace` | ❌ しない | 静かな状態変化（デバウンスされた検索入力、派生状態） |
 
-デフォルトは `push`。履歴を散らかすような高頻度更新でのみ `replace` を使う。
+デフォルトは `push`。`replace` は履歴を汚さない方が望ましい高頻度更新のときだけ使ってください。
 
 ---
 
-## 状態フックでラップする
+## 状態フックにラップする
 
-各画面では、URL 状態を専用のフックに閉じ込める:
+各画面ごとに、URL 状態を専用フックにカプセル化します。
 
 ```ts
-// _hooks/useQuestListUrlState.ts
+// _hooks/useResourceListUrlState.ts
 "use client"
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useCallback, useMemo } from "react"
 
-export const useQuestListUrlState = () => {
+export const useResourceListUrlState = () => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -141,14 +141,14 @@ export const useQuestListUrlState = () => {
 }
 ```
 
-Screen コンポーネントはこのフックを使い、`useRouter` に直接触れない。
+Screen コンポーネントはこのフックを使い、直接 `useRouter` には触れません。
 
 ---
 
 ## タブ統合の例
 
 ```tsx
-const { tab, setTab } = useQuestListUrlState()
+const { tab, setTab } = useResourceListUrlState()
 
 <Tabs value={tab} onChange={(v) => setTab(v ?? "list")}>
   <Tabs.List>
@@ -160,26 +160,26 @@ const { tab, setTab } = useQuestListUrlState()
 </Tabs>
 ```
 
-URL は `?tab=archive` となり、ブックマーク可能・共有可能・履歴対応となる。
+URL は `?tab=archive` となります — ブックマーク可能、共有可能、履歴に対応。
 
 ---
 
 ## 副作用: フィルタ変更時にページネーションをリセット
 
-フィルタが変わったら、合理的に開くべきはページ 1 だけ。これをセッターに組み込む:
+フィルタが変わったら、対象は常にページ 1 です。これをセッターに組み込みます。
 
 ```ts
 setFilter: (v: string) => updateQuery({ filter: v, page: "1" }),
 setTags:   (v: string[]) => updateQuery({ tag: v, page: "1" }),
 ```
 
-ページネーション変更ではフィルタをリセットしない — こちらは加算的に振る舞う。
+ページネーション変更時にはフィルタをリセットしません — それは加算的な操作です。
 
 ---
 
-## URL 状態のバリデーション
+## URL 状態の検証
 
-信頼できない URL 入力は必ず検証する。非自明なパースには Zod を使う:
+信頼できない URL 入力は検証してください。複雑なパースには Zod を使います。
 
 ```ts
 import { z } from "zod"
@@ -194,27 +194,27 @@ const raw = Object.fromEntries(searchParams.entries())
 const state = UrlStateSchema.parse(raw)
 ```
 
-これにより不正な URL（`?tab=hack`）から守られ、型付きのデフォルト値も得られる。
+これにより不正な URL（`?tab=hack`）から保護され、型付きの適切なデフォルトが得られます。
 
 ---
 
-## URL 状態を使うべきでないとき
+## URL 状態を使ってはいけないとき
 
-| アンチパターン | だめな理由 |
+| アンチパターン | 理由 |
 |---|---|
-| フォーム入力の下書き | 入力途中の値を URL に晒さない |
-| 機密性のあるフィルタ値 | URL に PII を入れない（ログ・キャッシュ・referrer で漏れる） |
-| 高頻度のローカル状態（マウス位置、スクロールなど） | 履歴が過剰に汚れる |
-| 画面遷移でリセットされるべきトグル | ローカル state を使う — それが「一時的」であることの本質 |
+| フォーム入力の下書き | 打ちかけの値を URL に晒さない |
+| 機微なフィルタ値 | URL に PII を含めない（ログ・キャッシュ・リファラ経由で漏れる） |
+| 高頻度のローカル状態（マウス位置、スクロールなど） | 履歴を過剰に汚染してしまう |
+| ナビゲーションでリセットすべきトグル | ローカル state を使う — それが「一過性」の意味 |
 
 ---
 
 ## Server Components と URL 状態
 
-Server Component はフックなしで `searchParams` を直接読める:
+Server Components はフックなしで直接 `searchParams` を読み取れます。
 
 ```tsx
-// app/(app)/quests/page.tsx (Server Component)
+// app/(app)/resources/page.tsx (Server Component)
 type Props = {
   searchParams: Promise<{ tab?: string; filter?: string }>
 }
@@ -223,19 +223,19 @@ export default async function Page({ searchParams }: Props) {
   const params = await searchParams
   const tab = params.tab ?? "list"
 
-  return <QuestListScreen initialTab={tab} />
+  return <ResourceListScreen initialTab={tab} />
 }
 ```
 
-クライアントコンポーネント側はその後 `useSearchParams()` で引き継ぐ。
+その後 client component が `useSearchParams()` で引き継ぎます。
 
 ---
 
 ## 制約
 
-- タブ／フィルタ／ソート／ページ状態は URL に置く。`useState` ではない
-- 画面ごとの URL 状態は `_hooks/use{Feature}UrlState.ts` に閉じ込める
+- タブ / フィルタ / ソート / ページの状態は URL に置く。`useState` には置かない
+- 画面ごとの URL 状態は `_hooks/use{Feature}UrlState.ts` にカプセル化する
 - 信頼できない URL 入力は Zod で検証する
-- フィルタやソートが変わるたびにページネーションをページ 1 に戻す
-- デフォルトは `router.push`（履歴あり）。静かな／デバウンスされた更新でのみ `router.replace` を使う
-- フォーム下書きや PII を URL に置かない
+- フィルタやソートが変わったらページネーションを 1 にリセットする
+- デフォルトは `router.push`（履歴あり）。`router.replace` は静かな/デバウンスされた更新のみ
+- フォーム下書き値や PII を絶対に URL に入れない

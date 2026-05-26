@@ -70,16 +70,16 @@ const queryClient = new QueryClient({
 After a mutation, invalidate by resource name prefix:
 
 ```ts
-queryClient.invalidateQueries({ queryKey: ["familyQuests"] })
+queryClient.invalidateQueries({ queryKey: ["resources"] })
 ```
 
-All keys starting with `["familyQuests", ...]` are refetched. Do not invalidate broader prefixes than needed.
+All keys starting with `["resources", ...]` are refetched. Do not invalidate broader prefixes than needed.
 
 ### Query naming
 
 | Read | queryKey |
 |---|---|
-| List with filter/sort/page | `["resource", filter, sort, page, pageSize]` |
+| List with filter/sort/page | `["resources", filter, sort, page, pageSize]` |
 | Single record | `["resource", id]` |
 | Form data load | `["resourceForm", id]` |
 
@@ -90,7 +90,7 @@ All keys starting with `["familyQuests", ...]` are refetched. Do not invalidate 
 See `frontend/url-state.md`. Anything that affects "what the user is currently looking at" should live in the URL.
 
 ```ts
-const { filter, sort, page, setFilter, setSort, setPage } = useFamilyQuestListUrlState()
+const { filter, sort, page, setFilter, setSort, setPage } = useResourceListUrlState()
 ```
 
 ---
@@ -230,9 +230,9 @@ If `tab` should be shareable, move it to URL state instead.
 Each `useMutation` returns `isPending`. To show a single loading indicator covering multiple mutations:
 
 ```ts
-const { handleDelete, isLoading: deleteLoading } = useDeleteFamilyQuest()
-const { handleRegister, isLoading: registerLoading } = useRegisterFamilyQuest({ setId })
-const { handleUpdate, isLoading: updateLoading } = useUpdateFamilyQuest()
+const { handleDelete, isLoading: deleteLoading } = useDeleteResource()
+const { handleRegister, isLoading: registerLoading } = useRegisterResource({ setId })
+const { handleUpdate, isLoading: updateLoading } = useUpdateResource()
 
 const [submitLoading, setSubmitLoading] = useState(false)
 useEffect(() => {
@@ -273,8 +273,8 @@ After a mutation:
 
 ```ts
 onSuccess: () => {
-  queryClient.invalidateQueries({ queryKey: ["family"] })
-  toast.success("家族を登録しました", { duration: 1500 })
+  queryClient.invalidateQueries({ queryKey: ["resources"] })
+  toast.success("リソースを登録しました", { duration: 1500 })
 }
 ```
 
@@ -284,7 +284,7 @@ onSuccess: () => {
 
 ## Optimistic updates
 
-quest-pay does **not** use optimistic updates. The standard pattern is:
+This project does **not** use optimistic updates. The standard pattern is:
 
 1. `mutation.mutate(args)` → mutation in flight → `isPending: true`
 2. `<LoadingOverlay>` covers the UI

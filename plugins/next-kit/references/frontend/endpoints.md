@@ -3,7 +3,7 @@
 
 ## Principle
 
-Every URL string lives in `app/(core)/endpoints.ts` as a `const`. Never hardcode URL strings in components, hooks, or `client.ts` files.
+Every URL string lives in `app/(core)/endpoints.ts`. Never hardcode URL strings in components, hooks, or `client.ts` files.
 
 ---
 
@@ -13,94 +13,148 @@ Every URL string lives in `app/(core)/endpoints.ts` as a `const`. Never hardcode
 app/(core)/endpoints.ts
 ```
 
-One file, no subfolders. Group related URLs with section comments (`// クエスト関連` etc.).
+One file, no subfolders. Group related URLs into feature-named objects.
 
 ---
 
-## Patterns
+## Two shapes — flat const for singletons, object for feature groups
 
-### 1. Static URL
+### Flat const — for one-off URLs only
 
 ```ts
-export const HOME_URL    = `/home`
-export const QUESTS_URL  = `/quests`
-export const PROFILE_URL = `/profile`
+export const ROOT_URL  = `/`
+export const HOME_URL  = `/home`
+export const ERROR_URL = `/error`
 ```
 
-### 2. Base URL + derived sub-paths via template literals
+Use flat const only when the URL is truly standalone — no list / new / view / edit / API counterpart.
 
-For a feature with related routes, declare the base first, then derive children from it:
+### Object — for feature groups
+
+For any feature with multiple URLs (list / new / view / edit / sub-routes), group them into a single object named `{FEATURE}_URL`:
 
 ```ts
-// クエスト関連
-export const QUESTS_URL         = `/quests`
-export const QUESTS_NEW_URL     = `${QUESTS_URL}/new`
-export const QUEST_URL          = (questId: string) => `${QUESTS_URL}/${questId}`
-export const QUESTS_API_URL     = `/api${QUESTS_URL}`
-export const QUEST_API_URL      = (questId: string) => `${QUESTS_API_URL}/${questId}`
+// 1 つの機能 = 1 つのオブジェクト
+export const RESOURCE_URL = {
+  list:   `/resources`,
+  new:    `/resources/new`,
+  view:   (id: string) => `/resources/${id}/view`,
+  edit:   (id: string) => `/resources/${id}/edit`,
+}
 
-// 家族クエスト
-export const FAMILY_QUESTS_URL       = `${QUESTS_URL}/family`
-export const FAMILY_QUEST_EDIT_URL   = (id: string) => `${FAMILY_QUESTS_URL}/${id}`
-export const FAMILY_QUEST_VIEW_URL   = (id: string) => `${FAMILY_QUEST_EDIT_URL(id)}/view`
-export const FAMILY_QUEST_NEW_URL    = `${FAMILY_QUESTS_URL}/new`
-export const FAMILY_QUESTS_API_URL   = `${QUESTS_API_URL}/family`
-export const FAMILY_QUEST_API_URL    = (id: string) => `${FAMILY_QUESTS_API_URL}/${id}`
+export const RESOURCE_API_URL = {
+  list:   `/api/resources`,
+  detail: (id: string) => `/api/resources/${id}`,
+  publish:(id: string) => `/api/resources/${id}/publish`,
+}
 ```
 
 Benefits:
-- Renaming the base path updates all children automatically
 - The hierarchy is visible at a glance
-- No object-property indirection at call sites
-
-### 3. Dynamic URL with parameters (function form)
-
-When a URL contains IDs, define as a function:
-
-```ts
-export const FAMILY_URL          = (familyId: string) => `/families/${familyId}`
-export const FAMILY_VIEW_URL     = (familyId: string) => `${FAMILY_URL(familyId)}/view`
-export const CHILD_QUEST_URL     = (childId: string, questId: string) =>
-  `${QUEST_URL(questId)}/child/${childId}`
-```
-
-### 4. Auth error / unauthorized
-
-```ts
-export const ERROR_URL      = `/error`
-export const AUTH_ERROR_URL = `${ERROR_URL}/unauthorized`
-```
+- IDE autocompletes by group (`RESOURCE_URL.` shows all related routes)
+- One import per feature instead of one per route
+- API URLs and page URLs sit next to each other in `endpoints.ts`
 
 ---
 
 ## Naming convention
 
-| Suffix | Meaning | Example |
-|---|---|---|
-| `_URL` | Page URL (frontend route) | `HOME_URL`, `QUEST_URL(id)` |
-| `_API_URL` | API route URL | `FAMILY_API_URL`, `QUEST_API_URL(id)` |
-| `_VIEW_URL` | Read-only view of a feature | `FAMILY_VIEW_URL(id)` |
-| `_EDIT_URL` | Edit screen for a feature | `FAMILY_QUEST_EDIT_URL(id)` |
-| `_NEW_URL` | New-record creation page | `QUESTS_NEW_URL` |
+| Constant | Meaning |
+|---|---|
+| `{FEATURE}_URL` | Object holding all frontend route URLs for a feature |
+| `{FEATURE}_API_URL` | Object holding all API route URLs for the same feature |
+| `HOME_URL` / `ROOT_URL` | Flat constants for app-wide singletons |
 
-Naming guidelines:
-- All-caps SNAKE_CASE for the constant
-- Singular when the URL targets a single record (`QUEST_URL(id)`)
-- Plural when the URL is a collection or feature group (`QUESTS_URL`, `FAMILY_QUESTS_URL`)
-- `_URL` for frontend routes; mirror to `_API_URL` for the API counterpart
+| Object key | URL it points to |
+|---|---|
+| `.list` | Collection page (e.g. `/resources`) |
+| `.new` | Creation page (e.g. `/resources/new`) |
+| `.view(id)` | Read-only page (e.g. `/resources/[id]/view`) |
+| `.edit(id)` | Edit page (e.g. `/resources/[id]/edit`) |
+| `.detail(id)` | Generic single-record URL (for API) |
+| `.{customAction}(id)` | Custom action route (e.g. `.publish(id)`, `.archive(id)`) |
+
+> URL constants for `[id]` direct routes (e.g. `/resources/[id]`) are **not** added — the route is a redirect, not a destination. Use `.view(id)` or `.edit(id)` explicitly.
+
+---
+
+## Composition via shared base URL
+
+Compose URLs from a base when several features share a prefix. Define the base as a `const` first, then derive children:
+
+```ts
+const RESOURCES = `/resources`
+const RESOURCES_API = `/api/resources`
+
+export const RESOURCE_URL = {
+  list: RESOURCES,
+  new:  `${RESOURCES}/new`,
+  view: (id: string) => `${RESOURCES}/${id}/view`,
+  edit: (id: string) => `${RESOURCES}/${id}/edit`,
+}
+
+export const RESOURCE_API_URL = {
+  list:    RESOURCES_API,
+  detail:  (id: string) => `${RESOURCES_API}/${id}`,
+  publish: (id: string) => `${RESOURCES_API}/${id}/publish`,
+}
+```
+
+The lowercase `const` is private to the file (no `export`) and only there for composition.
+
+---
+
+## Sub-features inside one feature
+
+When a feature has clear sub-features (e.g. `resources/comments`, `resources/likes`), keep them as separate objects rather than nesting under the parent object:
+
+```ts
+const RESOURCES = `/resources`
+
+export const RESOURCE_URL = {
+  list: RESOURCES,
+  view: (id: string) => `${RESOURCES}/${id}/view`,
+  edit: (id: string) => `${RESOURCES}/${id}/edit`,
+}
+
+export const RESOURCE_COMMENT_URL = {
+  list:   (resourceId: string) => `${RESOURCES}/${resourceId}/comments`,
+  detail: (resourceId: string, commentId: string) =>
+    `${RESOURCES}/${resourceId}/comments/${commentId}`,
+}
+
+export const RESOURCE_COMMENT_API_URL = {
+  list:   (resourceId: string) => `/api/resources/${resourceId}/comments`,
+  detail: (resourceId: string, commentId: string) =>
+    `/api/resources/${resourceId}/comments/${commentId}`,
+  pin:    (resourceId: string, commentId: string) =>
+    `/api/resources/${resourceId}/comments/${commentId}/pin`,
+}
+```
+
+Why not nest? Deep nesting (`RESOURCE_URL.comments.detail(...)`) is harder to import discreetly and harder to read at call sites. Two flat objects with descriptive names are clearer.
 
 ---
 
 ## Usage
 
 ```ts
-import { QUEST_URL, FAMILY_QUEST_API_URL } from "@/app/(core)/endpoints"
+import {
+  HOME_URL,
+  RESOURCE_URL,
+  RESOURCE_API_URL,
+  RESOURCE_COMMENT_API_URL,
+} from "@/app/(core)/endpoints"
 
 // Navigation
-router.push(QUEST_URL(questId))
+router.push(HOME_URL)
+router.push(RESOURCE_URL.list)
+router.push(RESOURCE_URL.view(id))
+router.push(RESOURCE_URL.edit(id))
 
 // API fetch
-const res = await fetch(FAMILY_QUEST_API_URL(familyQuestId))
+const res = await fetch(RESOURCE_API_URL.detail(id))
+await fetch(RESOURCE_COMMENT_API_URL.pin(resourceId, commentId), { method: "POST" })
 ```
 
 ---
@@ -108,45 +162,53 @@ const res = await fetch(FAMILY_QUEST_API_URL(familyQuestId))
 ## Adding a new URL
 
 1. Open `app/(core)/endpoints.ts`
-2. Locate the relevant section (or add a new `// セクション名` comment block)
-3. Define a base if a base doesn't exist; otherwise derive from the existing base
-4. Add both the frontend `_URL` and API `_API_URL` if the route has both sides
-5. For IDs, always define as a function
+2. Locate the relevant feature object (`{FEATURE}_URL`), or create one if it doesn't exist
+3. Add the new key inside the object — match an existing key style (`list`, `new`, `view`, `edit`, or a custom action verb)
+4. Add the matching `{FEATURE}_API_URL` entry if there's a server counterpart
+5. For ID-bearing URLs, define as a function (`(id: string) => ...`)
 
 ---
 
 ## What NOT to do
 
 ```ts
-// ❌ Hardcoded URL string
-router.push("/families/123/view")
-const res = await fetch("/api/families")
-
-// ❌ Object-property indirection
-export const URLS = {
-  HOME: "/home",
-  FAMILY: (id: string) => `/families/${id}`,
-}
-router.push(URLS.HOME)
-// → adds friction with no benefit; flat `const HOME_URL` is simpler
+// ❌ Hardcoded URL string in a component
+router.push("/resources/123/view")
+const res = await fetch("/api/resources")
 
 // ❌ Inline interpolation
-router.push(`/families/${familyId}/view`)
+router.push(`/resources/${id}/view`)
+
+// ❌ Deep nested object (hard to read at call sites)
+export const URLS = {
+  resources: {
+    detail: {
+      view: (id: string) => `/resources/${id}/view`,
+    },
+  },
+}
+
+// ❌ Separate top-level const for every variant (the old flat style)
+export const RESOURCE_LIST_URL = `/resources`
+export const RESOURCE_NEW_URL  = `/resources/new`
+export const RESOURCE_VIEW_URL = (id: string) => `/resources/${id}/view`
+export const RESOURCE_EDIT_URL = (id: string) => `/resources/${id}/edit`
+// → Use a single RESOURCE_URL object instead
 ```
 
 ```ts
 // ✅ Always import the constant
-import { HOME_URL, FAMILY_VIEW_URL } from "@/app/(core)/endpoints"
-router.push(HOME_URL)
-router.push(FAMILY_VIEW_URL(familyId))
+import { RESOURCE_URL } from "@/app/(core)/endpoints"
+router.push(RESOURCE_URL.view(id))
 ```
 
 ---
 
 ## Constraints
 
-- Every URL string lives in `endpoints.ts` as a `const` (or `const` function for dynamic URLs)
-- No hardcoded URL strings anywhere outside `endpoints.ts`
-- Use base URL + template literal composition; do not flat-write the entire path each time
-- Frontend route and its API counterpart are defined together in the same section
+- Every URL string lives in `endpoints.ts` (object form or flat const)
+- One feature = one `{FEATURE}_URL` object (plus one `{FEATURE}_API_URL` if there's an API)
+- Flat const is reserved for app-wide singletons (`HOME_URL`, `ROOT_URL`)
+- No deep nesting (depth ≥ 3 in one object) — split into multiple objects instead
 - Function form for any URL with parameters — never accept `string` interpolation at call sites
+- API URLs and page URLs sit in the same file, grouped by feature

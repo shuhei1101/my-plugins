@@ -24,11 +24,10 @@ For implementation patterns by screen type, see `frontend/patterns/`.
 | `NavigationFAB` | `(core)/_components/NavigationFAB.tsx` | App-shell FAB driven by FABContext |
 | `FABChildItem` | `(core)/_components/FABChildItem.tsx` | Single action chip used inside SubMenuFAB |
 | `FormBackButton` | `(core)/_components/FormBackButton.tsx` | Back-arrow used inside forms |
-| `LevelIcon` | `(core)/_components/LevelIcon.tsx` | Level badge icon |
-| `ViewIconButton` | `(core)/_components/ViewIconButton.tsx` | Icon-rendering action button (read-only) |
-| `RenderIcon` (in `(app)/icons/_components/`) | — | Icon renderer for selected icon id/color |
+| `SelectPopup` | `(core)/_components/SelectPopup.tsx` | Generic selectable-list popup |
+| `IconPickerModal` | `(core)/_components/IconPickerModal.tsx` | Modal for picking an icon id + color |
+| `RenderIcon` | `(core)/_components/RenderIcon.tsx` | Icon renderer for a selected icon id/color |
 | `CopyButton` | `(core)/_components/CopyButton.tsx` | Clipboard copy with feedback toast |
-| `InviteCodePopup` | `(core)/_components/InviteCodePopup.tsx` | Invite code share popup |
 | `FeedbackMessageWrapper` | `(core)/_components/FeedbackMessageWrapper.tsx` | Wraps a message zone for feedback |
 | `FloatingLayout` | `(core)/_components/FloatingLayout.tsx` | Stacking context for floating UI |
 | `AccessErrorHandler` | `(core)/_components/AccessErrorHandler.tsx` | Auth error redirect handler |
@@ -122,8 +121,8 @@ Top-of-page banner with title, optional description, and action buttons on the r
 
 ```tsx
 <PageHeader
-  title="家族クエスト一覧"
-  description="家族のクエストを管理します"
+  title="リソース一覧"
+  description="リソースを管理します"
   actions={
     <Button onClick={handleCreate}>新規作成</Button>
   }
@@ -165,7 +164,7 @@ Horizontally scrollable tab bar. Tabs render inside as `<Tabs.Panel>`.
 Place inside `<Input.Wrapper>` label to mark required fields.
 
 ```tsx
-<Input.Wrapper label={<>クエスト名 <RequiredMark /></>} error={errors.name?.message}>
+<Input.Wrapper label={<>リソース名 <RequiredMark /></>} error={errors.name?.message}>
   <Input {...register("name")} />
 </Input.Wrapper>
 ```

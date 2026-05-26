@@ -3,22 +3,9 @@
 
 ## What this covers
 
-Screens that display a single record in read-only form, often with an edit-mode counterpart. Examples: family profile view, child profile view, public quest detail.
+Screens that display a single record in read-only form. Every record has a sibling edit route (`[id]/edit`) and a router (`[id]/page.tsx`) that redirects to either side based on permission.
 
-For features where view and edit are split across two routes, this file covers the **view** side. See `edit-screen.md` for the edit side.
-
----
-
-## When to use a separate view screen
-
-| Scenario | Recommendation |
-|---|---|
-| Parent has edit permission, child has read-only | Two routes: `/{feature}/[id]` (edit), `/{feature}/[id]/view` (view) |
-| Same user views and edits with a UI mode switch | One route + internal `mode` state — no separate view file needed |
-| Public/shared view (no auth) | Always a separate route (e.g. `/quests/public/[id]/view`) |
-| Detail page is part of a list flow | One route + edit-mode toggle (lighter) |
-
-Default: when in doubt, split into two routes for clarity and deep-linkability.
+For the editable counterpart, see `edit-screen.md`. For the folder structure rationale, see `frontend/conventions/folder-structure.md`.
 
 ---
 
@@ -26,97 +13,138 @@ Default: when in doubt, split into two routes for clarity and deep-linkability.
 
 ```
 app/(app)/{feature}/[id]/
-├── page.tsx                       # edit screen (default)
+├── page.tsx                       # router: redirect to view/ or edit/ based on permission
+├── _components/                   # shared by view and edit
+├── _hooks/                        # shared by view and edit
 └── view/
-    ├── page.tsx                   # view screen (read-only)
+    ├── page.tsx                   # thin wrapper
     ├── {Feature}ViewScreen.tsx
     ├── _components/
     │   ├── {Feature}ViewLayout.tsx     # read-only layout
-    │   └── {Feature}ViewFooter.tsx     # actions (edit button, share)
+    │   └── {Feature}ViewFooter.tsx     # secondary actions
     └── _hooks/
-        └── use{Feature}View.ts         # data fetching
+        └── use{Feature}View.ts          # data fetching for view screen
 ```
 
 ---
 
-## Full example
+## `[id]/page.tsx` — the redirect router
 
-### page.tsx (thin wrapper)
+`[id]/page.tsx` resolves whether the current user can edit, then redirects.
 
 ```tsx
-// app/(app)/families/[id]/view/page.tsx
-import { FamilyProfileViewScreen } from "./FamilyProfileViewScreen"
+// app/(app)/resources/[id]/page.tsx
+import { redirect } from "next/navigation"
+import { getAuthContext } from "@/app/(core)/_auth/withAuth"
+import { canEditResource } from "@/app/api/resources/[id]/service"
+import { RESOURCE_URL } from "@/app/(core)/endpoints"
 
 type Context = { params: Promise<{ id: string }> }
 
 export default async function Page({ params }: Context) {
   const { id } = await params
-  return <FamilyProfileViewScreen familyId={id} />
+  const { userId } = await getAuthContext()
+  const canEdit = await canEditResource({ id, userId })
+  redirect(canEdit ? RESOURCE_URL.edit(id) : RESOURCE_URL.view(id))
 }
 ```
 
-### Screen component
+The screen components themselves never see this branch — view and edit pages stay focused on rendering one mode.
+
+---
+
+## view/page.tsx — thin wrapper
 
 ```tsx
-// app/(app)/families/[id]/view/FamilyProfileViewScreen.tsx
+// app/(app)/resources/[id]/view/page.tsx
+import { ResourceViewScreen } from "./ResourceViewScreen"
+
+type Context = { params: Promise<{ id: string }> }
+
+export default async function Page({ params }: Context) {
+  const { id } = await params
+  return <ResourceViewScreen resourceId={id} />
+}
+```
+
+---
+
+## ViewScreen — top-level composition
+
+```tsx
+// app/(app)/resources/[id]/view/ResourceViewScreen.tsx
 "use client"
 
 import { ScreenWrapper } from "@/app/(core)/_components/ScreenWrapper"
 import { PageHeader } from "@/app/(core)/_components/PageHeader"
-import { LoadingOverlay, Button, Group } from "@mantine/core"
+import { LoadingOverlay, Button } from "@mantine/core"
 import { useRouter } from "next/navigation"
-import { FAMILY_URL } from "@/app/(core)/endpoints"
-import { FamilyProfileViewLayout } from "./_components/FamilyProfileViewLayout"
-import { FamilyProfileViewFooter } from "./_components/FamilyProfileViewFooter"
-import { useFamilyView } from "./_hooks/useFamilyView"
+import { RESOURCE_URL } from "@/app/(core)/endpoints"
+import { ResourceViewLayout } from "./_components/ResourceViewLayout"
+import { ResourceViewFooter } from "./_components/ResourceViewFooter"
+import { useResourceView } from "./_hooks/useResourceView"
 
-type Props = { familyId: string }
+type Props = {
+  /** リソース ID */
+  resourceId: string
+}
 
-/** 家族プロフィール閲覧画面 */
-export const FamilyProfileViewScreen = ({ familyId }: Props) => {
+/** リソース閲覧画面 */
+export const ResourceViewScreen = ({ resourceId }: Props) => {
   const router = useRouter()
-  const { family, isLoading, canEdit } = useFamilyView({ familyId })
+  const { resource, isLoading, canEdit } = useResourceView({ resourceId })
 
   return (
     <ScreenWrapper>
+      {/* ヘッダー（編集権限があれば編集ボタンを表示） */}
       <PageHeader
-        title="家族プロフィール"
+        title="リソース"
         actions={canEdit && (
-          <Button onClick={() => router.push(FAMILY_URL(familyId))}>編集</Button>
+          <Button onClick={() => router.push(RESOURCE_URL.edit(resourceId))}>
+            編集
+          </Button>
         )}
       />
 
+      {/* ロード中オーバーレイ */}
       <LoadingOverlay visible={isLoading} />
 
-      {family && <FamilyProfileViewLayout family={family} />}
+      {/* 本体 */}
+      {resource && <ResourceViewLayout resource={resource} />}
 
-      <FamilyProfileViewFooter family={family} />
+      {/* フッター（共有・通報など二次的アクション） */}
+      <ResourceViewFooter resource={resource} />
     </ScreenWrapper>
   )
 }
 ```
 
-### View hook
+---
+
+## View hook — data fetching
 
 ```ts
-// _hooks/useFamilyView.ts
+// app/(app)/resources/[id]/view/_hooks/useResourceView.ts
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { getFamily } from "@/app/api/families/[id]/client"
+import { getResource } from "@/app/api/resources/[id]/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
 
-type Args = { familyId: string }
+type Args = {
+  /** リソース ID */
+  resourceId: string
+}
 
-/** 家族プロフィール閲覧用データを取得する */
-export const useFamilyView = ({ familyId }: Args) => {
+/** リソース閲覧用データを取得する */
+export const useResourceView = ({ resourceId }: Args) => {
   const router = useRouter()
 
   const { error, data, isLoading } = useQuery({
-    queryKey: ["family", familyId],
+    queryKey: ["resource", resourceId],
     retry: false,
-    queryFn: () => getFamily({ familyId }),
+    queryFn: () => getResource({ resourceId }),
     staleTime: 0,
     refetchOnMount: "always",
   })
@@ -124,33 +152,40 @@ export const useFamilyView = ({ familyId }: Args) => {
   if (error) handleAppError(error, router)
 
   return {
-    family: data?.family,
-    canEdit: data?.canEdit ?? false,
+    resource: data?.resource,
+    canEdit:  data?.canEdit ?? false,
     isLoading,
   }
 }
 ```
 
-### View layout component (presentational)
+The `canEdit` flag is determined server-side and reflected only as a UI toggle on the client (show / hide the edit button).
+
+---
+
+## ViewLayout — presentational
 
 ```tsx
-// _components/FamilyProfileViewLayout.tsx
+// app/(app)/resources/[id]/view/_components/ResourceViewLayout.tsx
 "use client"
 
 import { Stack, Group, Avatar, Text, Title, Divider } from "@mantine/core"
-import type { Family } from "@/drizzle/schema"
+import type { Resource } from "@/drizzle/schema"
 
-type Props = { family: Family }
+type Props = {
+  /** 表示するリソース */
+  resource: Resource
+}
 
-/** 家族プロフィール閲覧レイアウト */
-export const FamilyProfileViewLayout = ({ family }: Props) => {
+/** リソース閲覧レイアウト */
+export const ResourceViewLayout = ({ resource }: Props) => {
   return (
     <Stack gap="md">
       <Group>
-        <Avatar src={family.iconUrl} size="xl" />
+        <Avatar src={resource.iconUrl} size="xl" />
         <Stack gap={0}>
-          <Title order={3}>{family.localName}</Title>
-          <Text c="dimmed">@{family.displayId}</Text>
+          <Title order={3}>{resource.name}</Title>
+          <Text c="dimmed">@{resource.displayId}</Text>
         </Stack>
       </Group>
 
@@ -159,14 +194,8 @@ export const FamilyProfileViewLayout = ({ family }: Props) => {
       <Stack gap="xs">
         <Group>
           <Text fw={500}>登録日:</Text>
-          <Text>{new Date(family.createdAt).toLocaleDateString("ja-JP")}</Text>
+          <Text>{new Date(resource.createdAt).toLocaleDateString("ja-JP")}</Text>
         </Group>
-        {family.onlineName && (
-          <Group>
-            <Text fw={500}>公開名:</Text>
-            <Text>{family.onlineName}</Text>
-          </Group>
-        )}
       </Stack>
     </Stack>
   )
@@ -175,70 +204,96 @@ export const FamilyProfileViewLayout = ({ family }: Props) => {
 
 ---
 
-## Permission-aware view
+## Shared `[id]/_components/` and `[id]/_hooks/`
 
-When the same view component serves multiple roles (parent vs child, public vs authenticated), branch on a `canEdit` flag returned by the API:
+Code used by both view and edit lives one level up:
 
-```ts
-// useFamilyView returns:
-return {
-  family: data?.family,
-  canEdit: data?.canEdit,  // server decides based on userId / role
-  isLoading,
-}
-
-// Screen uses it:
-actions={canEdit && (
-  <Button onClick={() => router.push(FAMILY_URL(familyId))}>編集</Button>
-)}
+```
+[id]/
+├── _components/
+│   └── ResourceHeader.tsx    # 上部の共通ヘッダー（view / edit 両方で表示）
+└── _hooks/
+    └── useResource.ts        # 編集／閲覧両方で使う「単一データ取得」フック
 ```
 
-The API route computes `canEdit` server-side; the client only renders the button. Do not implement client-side authorization beyond UI hiding.
+```ts
+// [id]/_hooks/useResource.ts — view / edit 両方から利用
+"use client"
+
+import { useQuery } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
+import { getResource } from "@/app/api/resources/[id]/client"
+import { handleAppError } from "@/app/(core)/error/handler/client"
+
+/** リソース本体を取得する（view / edit 共通） */
+export const useResource = ({ resourceId }: { resourceId: string }) => {
+  const router = useRouter()
+  const query = useQuery({
+    queryKey: ["resource", resourceId],
+    queryFn: () => getResource({ resourceId }),
+    enabled: !!resourceId,
+  })
+  if (query.error) handleAppError(query.error, router)
+  return query
+}
+```
+
+If `useResourceView` and `useResourceForm` (in edit/) both call the same underlying API with the same shape, refactor to a single `useResource` here.
 
 ---
 
-## Layout composition
+## Permission flag — server-decided
 
-A view screen typically has three regions:
+The server returns `canEdit` in the response. The client never determines edit permission from local logic — it only renders accordingly.
 
-| Region | Component | Role |
-|---|---|---|
-| Header | `PageHeader` | Title + edit button (if `canEdit`) |
-| Body | `XxxViewLayout` | Stacked sections of fields |
-| Footer | `XxxViewFooter` | Secondary actions (share, follow, report) |
+```ts
+// API returns
+{
+  resource: { /* ... */ },
+  canEdit: true,
+}
+```
 
-Use Mantine `Stack` for vertical flow, `Group` for inline elements, `Divider` to separate sections.
+```tsx
+// Screen renders
+actions={canEdit && (
+  <Button onClick={() => router.push(RESOURCE_URL.edit(resourceId))}>
+    編集
+  </Button>
+)}
+```
+
+If a user without permission types `/resources/[id]/edit` directly, the `[id]/page.tsx` redirect (or the `edit/page.tsx` server-side check) sends them back to `view/`.
 
 ---
 
 ## Loading state
 
-Always render `LoadingOverlay` while `isLoading`. Never show partial/uninitialized data.
+Always render `LoadingOverlay` while `isLoading`. Never show partial / uninitialized data.
 
 ```tsx
 <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ blur: 2 }} />
-{family && <FamilyProfileViewLayout family={family} />}
+{resource && <ResourceViewLayout resource={resource} />}
 ```
 
-The `family && ...` guard prevents rendering until data is ready.
+The `resource && ...` guard prevents rendering until data is ready.
 
 ---
 
 ## Empty / not-found state
 
-If the resource doesn't exist (server returned 404), `handleAppError` will redirect.
-For an "expected empty" case (e.g. a family with no members yet), render a meaningful message:
+If the resource doesn't exist, the API returns 404 → `handleAppError` redirects. For "expected empty" cases (e.g. a record with no related items), render a meaningful message:
 
 ```tsx
-{family.members.length === 0 ? (
+{resource.items.length === 0 ? (
   <Center mt="xl">
     <Stack align="center" gap="sm">
-      <Text c="dimmed">まだメンバーがいません</Text>
-      {canEdit && <Button onClick={handleInvite}>メンバーを招待</Button>}
+      <Text c="dimmed">まだアイテムがありません</Text>
+      {canEdit && <Button onClick={handleAdd}>アイテムを追加</Button>}
     </Stack>
   </Center>
 ) : (
-  family.members.map((m) => <MemberCard key={m.id} member={m} />)
+  resource.items.map((item) => <ItemCard key={item.id} item={item} />)
 )}
 ```
 
@@ -246,14 +301,21 @@ For an "expected empty" case (e.g. a family with no members yet), render a meani
 
 ## Click-through to edit
 
-Use `router.push(FAMILY_URL(familyId))` — the URL constant for the edit route is the bare path (`/{feature}/[id]`), not `/view`.
+```ts
+import { RESOURCE_URL } from "@/app/(core)/endpoints"
+
+router.push(RESOURCE_URL.edit(resourceId))
+```
+
+The `RESOURCE_URL` object is defined in `app/(core)/endpoints.ts`:
 
 ```ts
-import { FAMILY_URL, FAMILY_VIEW_URL } from "@/app/(core)/endpoints"
-
-// endpoints.ts
-export const FAMILY_URL = (id: string) => `/families/${id}`            // edit
-export const FAMILY_VIEW_URL = (id: string) => `/families/${id}/view`  // view
+export const RESOURCE_URL = {
+  list: `/resources`,
+  new:  `/resources/new`,
+  view: (id: string) => `/resources/${id}/view`,
+  edit: (id: string) => `/resources/${id}/edit`,
+}
 ```
 
 ---
@@ -261,8 +323,9 @@ export const FAMILY_VIEW_URL = (id: string) => `/families/${id}/view`  // view
 ## Constraints
 
 - View screens are **read-only** — no `useMutation`, no form state, no editable controls
-- All buttons that modify data must navigate to the edit screen, not perform the mutation inline
+- All edit actions navigate to the edit screen, not perform the mutation inline
 - Permission-based UI (`canEdit`) comes from the server, not from client-side role checks
 - Always render `LoadingOverlay` while data is loading
-- Use `XxxViewLayout` / `XxxViewFooter` composition for clarity
-- View URL uses the suffix `/view` (e.g. `/families/[id]/view`)
+- View screen file uses the `ViewScreen` suffix and lives under `[id]/view/`
+- Shared view/edit code lives in `[id]/_components/` and `[id]/_hooks/` (one level up)
+- URL is always built via `RESOURCE_URL.view(id)` — never hardcoded

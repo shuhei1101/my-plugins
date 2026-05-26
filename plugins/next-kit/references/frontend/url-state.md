@@ -101,13 +101,13 @@ Default to `push`. Use `replace` only for high-frequency updates that would clut
 For each screen, encapsulate URL state behind a dedicated hook:
 
 ```ts
-// _hooks/useQuestListUrlState.ts
+// _hooks/useResourceListUrlState.ts
 "use client"
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useCallback, useMemo } from "react"
 
-export const useQuestListUrlState = () => {
+export const useResourceListUrlState = () => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -147,7 +147,7 @@ The Screen component uses the hook and never touches `useRouter` directly.
 ## Tab integration example
 
 ```tsx
-const { tab, setTab } = useQuestListUrlState()
+const { tab, setTab } = useResourceListUrlState()
 
 <Tabs value={tab} onChange={(v) => setTab(v ?? "list")}>
   <Tabs.List>
@@ -213,7 +213,7 @@ This protects against garbage URLs (`?tab=hack`) and gives proper typed defaults
 Server Components can read `searchParams` directly without a hook:
 
 ```tsx
-// app/(app)/quests/page.tsx (Server Component)
+// app/(app)/resources/page.tsx (Server Component)
 type Props = {
   searchParams: Promise<{ tab?: string; filter?: string }>
 }
@@ -222,7 +222,7 @@ export default async function Page({ searchParams }: Props) {
   const params = await searchParams
   const tab = params.tab ?? "list"
 
-  return <QuestListScreen initialTab={tab} />
+  return <ResourceListScreen initialTab={tab} />
 }
 ```
 

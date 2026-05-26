@@ -4,7 +4,7 @@
 
 ## 原則
 
-すべての URL 文字列は `app/(core)/endpoints.ts` に `const` として置く。コンポーネント、フック、`client.ts` ファイルに URL 文字列をハードコードしてはいけない。
+すべての URL 文字列は `app/(core)/endpoints.ts` に置きます。コンポーネント、フック、`client.ts` の中に URL 文字列をハードコードしてはいけません。
 
 ---
 
@@ -14,94 +14,148 @@
 app/(core)/endpoints.ts
 ```
 
-1 ファイルのみ、サブフォルダなし。関連 URL はセクションコメント（`// クエスト関連` など）でグループ化する。
+ファイルは 1 つ、サブフォルダなし。関連 URL は機能名を冠したオブジェクトにまとめます。
 
 ---
 
-## パターン
+## 2 つの形 — 単発はフラット const、機能群はオブジェクト
 
-### 1. 静的 URL
-
-```ts
-export const HOME_URL    = `/home`
-export const QUESTS_URL  = `/quests`
-export const PROFILE_URL = `/profile`
-```
-
-### 2. ベース URL + テンプレートリテラルによる派生サブパス
-
-関連ルートを持つ機能では、まずベースを宣言し、子はそこから派生させる:
+### フラット const — 単発の URL のみ
 
 ```ts
-// クエスト関連
-export const QUESTS_URL         = `/quests`
-export const QUESTS_NEW_URL     = `${QUESTS_URL}/new`
-export const QUEST_URL          = (questId: string) => `${QUESTS_URL}/${questId}`
-export const QUESTS_API_URL     = `/api${QUESTS_URL}`
-export const QUEST_API_URL      = (questId: string) => `${QUESTS_API_URL}/${questId}`
-
-// 家族クエスト
-export const FAMILY_QUESTS_URL       = `${QUESTS_URL}/family`
-export const FAMILY_QUEST_EDIT_URL   = (id: string) => `${FAMILY_QUESTS_URL}/${id}`
-export const FAMILY_QUEST_VIEW_URL   = (id: string) => `${FAMILY_QUEST_EDIT_URL(id)}/view`
-export const FAMILY_QUEST_NEW_URL    = `${FAMILY_QUESTS_URL}/new`
-export const FAMILY_QUESTS_API_URL   = `${QUESTS_API_URL}/family`
-export const FAMILY_QUEST_API_URL    = (id: string) => `${FAMILY_QUESTS_API_URL}/${id}`
+export const ROOT_URL  = `/`
+export const HOME_URL  = `/home`
+export const ERROR_URL = `/error`
 ```
 
-メリット:
-- ベースパスをリネームすればすべての子も自動で更新される
-- 階層構造が一目で見える
-- 呼び出し側でオブジェクトプロパティの間接参照が不要
+フラット const は、URL が本当に単発（list / new / view / edit / API の対応がない）のときだけ使います。
 
-### 3. パラメータ付き動的 URL（関数形式）
+### オブジェクト — 機能群
 
-URL に ID を含む場合は関数として定義する:
+複数の URL を持つ機能（list / new / view / edit / サブルート）は、`{FEATURE}_URL` という名前の 1 つのオブジェクトにまとめます。
 
 ```ts
-export const FAMILY_URL          = (familyId: string) => `/families/${familyId}`
-export const FAMILY_VIEW_URL     = (familyId: string) => `${FAMILY_URL(familyId)}/view`
-export const CHILD_QUEST_URL     = (childId: string, questId: string) =>
-  `${QUEST_URL(questId)}/child/${childId}`
+// 1 つの機能 = 1 つのオブジェクト
+export const RESOURCE_URL = {
+  list:   `/resources`,
+  new:    `/resources/new`,
+  view:   (id: string) => `/resources/${id}/view`,
+  edit:   (id: string) => `/resources/${id}/edit`,
+}
+
+export const RESOURCE_API_URL = {
+  list:   `/api/resources`,
+  detail: (id: string) => `/api/resources/${id}`,
+  publish:(id: string) => `/api/resources/${id}/publish`,
+}
 ```
 
-### 4. 認証エラー／未認証
-
-```ts
-export const ERROR_URL      = `/error`
-export const AUTH_ERROR_URL = `${ERROR_URL}/unauthorized`
-```
+利点:
+- 階層構造が一目で分かる
+- IDE がグループ単位で補完する（`RESOURCE_URL.` で関連ルートがすべて出る）
+- ルート単位ではなく機能単位で 1 つの import で済む
+- API URL とページ URL が `endpoints.ts` 上で隣り合う
 
 ---
 
-## 命名規約
+## 命名規則
 
-| サフィックス | 意味 | 例 |
-|---|---|---|
-| `_URL` | ページ URL（フロントエンドルート） | `HOME_URL`, `QUEST_URL(id)` |
-| `_API_URL` | API ルート URL | `FAMILY_API_URL`, `QUEST_API_URL(id)` |
-| `_VIEW_URL` | 機能の閲覧専用ビュー | `FAMILY_VIEW_URL(id)` |
-| `_EDIT_URL` | 機能の編集画面 | `FAMILY_QUEST_EDIT_URL(id)` |
-| `_NEW_URL` | 新規作成ページ | `QUESTS_NEW_URL` |
+| 定数 | 意味 |
+|---|---|
+| `{FEATURE}_URL` | 機能のフロントエンドルート URL をまとめたオブジェクト |
+| `{FEATURE}_API_URL` | 同じ機能の API ルート URL をまとめたオブジェクト |
+| `HOME_URL` / `ROOT_URL` | アプリ全体の単発用フラット定数 |
 
-命名のガイドライン:
-- 定数名は全大文字の SNAKE_CASE
-- URL が単一レコードを指す場合は単数形（`QUEST_URL(id)`）
-- URL がコレクションや機能群を指す場合は複数形（`QUESTS_URL`, `FAMILY_QUESTS_URL`）
-- フロントエンドルートには `_URL`、対応する API には `_API_URL` をミラーする
+| オブジェクトのキー | 指す URL |
+|---|---|
+| `.list` | 一覧ページ（例: `/resources`） |
+| `.new` | 新規作成ページ（例: `/resources/new`） |
+| `.view(id)` | 閲覧専用ページ（例: `/resources/[id]/view`） |
+| `.edit(id)` | 編集ページ（例: `/resources/[id]/edit`） |
+| `.detail(id)` | 汎用の単一レコード URL（API 用） |
+| `.{customAction}(id)` | カスタムアクションのルート（例: `.publish(id)`, `.archive(id)`） |
+
+> `[id]` の直リンクルート（例: `/resources/[id]`）の URL 定数は**追加しません**。このルートはリダイレクト先であり最終目的地ではないため、`.view(id)` または `.edit(id)` を明示的に使ってください。
+
+---
+
+## 共通ベース URL による合成
+
+複数の機能がプレフィックスを共有する場合、まずベースを `const` で定義し、そこから子を派生させます。
+
+```ts
+const RESOURCES = `/resources`
+const RESOURCES_API = `/api/resources`
+
+export const RESOURCE_URL = {
+  list: RESOURCES,
+  new:  `${RESOURCES}/new`,
+  view: (id: string) => `${RESOURCES}/${id}/view`,
+  edit: (id: string) => `${RESOURCES}/${id}/edit`,
+}
+
+export const RESOURCE_API_URL = {
+  list:    RESOURCES_API,
+  detail:  (id: string) => `${RESOURCES_API}/${id}`,
+  publish: (id: string) => `${RESOURCES_API}/${id}/publish`,
+}
+```
+
+小文字の `const` はファイル内 private（`export` しない）。合成のためだけに存在します。
+
+---
+
+## 1 つの機能の中のサブ機能
+
+明確なサブ機能を持つ機能（例: `resources/comments`, `resources/likes`）は、親オブジェクトの中にネストせず、別オブジェクトとして並列に置いてください。
+
+```ts
+const RESOURCES = `/resources`
+
+export const RESOURCE_URL = {
+  list: RESOURCES,
+  view: (id: string) => `${RESOURCES}/${id}/view`,
+  edit: (id: string) => `${RESOURCES}/${id}/edit`,
+}
+
+export const RESOURCE_COMMENT_URL = {
+  list:   (resourceId: string) => `${RESOURCES}/${resourceId}/comments`,
+  detail: (resourceId: string, commentId: string) =>
+    `${RESOURCES}/${resourceId}/comments/${commentId}`,
+}
+
+export const RESOURCE_COMMENT_API_URL = {
+  list:   (resourceId: string) => `/api/resources/${resourceId}/comments`,
+  detail: (resourceId: string, commentId: string) =>
+    `/api/resources/${resourceId}/comments/${commentId}`,
+  pin:    (resourceId: string, commentId: string) =>
+    `/api/resources/${resourceId}/comments/${commentId}/pin`,
+}
+```
+
+なぜネストしないのか？ 深いネスト（`RESOURCE_URL.comments.detail(...)`）は import が雑然とし、呼び出し箇所での可読性が下がります。説明的な名前を持つフラットなオブジェクトを 2 つ並べる方が明確です。
 
 ---
 
 ## 使い方
 
 ```ts
-import { QUEST_URL, FAMILY_QUEST_API_URL } from "@/app/(core)/endpoints"
+import {
+  HOME_URL,
+  RESOURCE_URL,
+  RESOURCE_API_URL,
+  RESOURCE_COMMENT_API_URL,
+} from "@/app/(core)/endpoints"
 
-// Navigation
-router.push(QUEST_URL(questId))
+// ナビゲーション
+router.push(HOME_URL)
+router.push(RESOURCE_URL.list)
+router.push(RESOURCE_URL.view(id))
+router.push(RESOURCE_URL.edit(id))
 
 // API fetch
-const res = await fetch(FAMILY_QUEST_API_URL(familyQuestId))
+const res = await fetch(RESOURCE_API_URL.detail(id))
+await fetch(RESOURCE_COMMENT_API_URL.pin(resourceId, commentId), { method: "POST" })
 ```
 
 ---
@@ -109,45 +163,53 @@ const res = await fetch(FAMILY_QUEST_API_URL(familyQuestId))
 ## 新しい URL を追加するとき
 
 1. `app/(core)/endpoints.ts` を開く
-2. 該当セクションを探す（無ければ `// セクション名` コメントで新規セクションを追加する）
-3. ベースが無ければ定義する。既にあれば既存のベースから派生させる
-4. ルートに両側があるならフロントエンドの `_URL` と API の `_API_URL` を両方追加する
-5. ID 付きの場合は必ず関数として定義する
+2. 該当する機能オブジェクト（`{FEATURE}_URL`）を見つける。存在しなければ作成する
+3. オブジェクト内に新しいキーを追加する — 既存キーのスタイル（`list`, `new`, `view`, `edit`, あるいはカスタムアクションの動詞）に合わせる
+4. サーバー側の対応があれば対応する `{FEATURE}_API_URL` のエントリも追加する
+5. ID を含む URL は関数形（`(id: string) => ...`）で定義する
 
 ---
 
 ## やってはいけないこと
 
 ```ts
-// ❌ Hardcoded URL string
-router.push("/families/123/view")
-const res = await fetch("/api/families")
+// ❌ コンポーネント内に URL 文字列をハードコード
+router.push("/resources/123/view")
+const res = await fetch("/api/resources")
 
-// ❌ Object-property indirection
+// ❌ インライン補間
+router.push(`/resources/${id}/view`)
+
+// ❌ 深くネストしたオブジェクト（呼び出し箇所で読みづらい）
 export const URLS = {
-  HOME: "/home",
-  FAMILY: (id: string) => `/families/${id}`,
+  resources: {
+    detail: {
+      view: (id: string) => `/resources/${id}/view`,
+    },
+  },
 }
-router.push(URLS.HOME)
-// → adds friction with no benefit; flat `const HOME_URL` is simpler
 
-// ❌ Inline interpolation
-router.push(`/families/${familyId}/view`)
+// ❌ 各バリエーションごとに別のトップレベル const を作る（旧来のフラット方式）
+export const RESOURCE_LIST_URL = `/resources`
+export const RESOURCE_NEW_URL  = `/resources/new`
+export const RESOURCE_VIEW_URL = (id: string) => `/resources/${id}/view`
+export const RESOURCE_EDIT_URL = (id: string) => `/resources/${id}/edit`
+// → 代わりに 1 つの RESOURCE_URL オブジェクトを使う
 ```
 
 ```ts
-// ✅ Always import the constant
-import { HOME_URL, FAMILY_VIEW_URL } from "@/app/(core)/endpoints"
-router.push(HOME_URL)
-router.push(FAMILY_VIEW_URL(familyId))
+// ✅ 必ず定数を import する
+import { RESOURCE_URL } from "@/app/(core)/endpoints"
+router.push(RESOURCE_URL.view(id))
 ```
 
 ---
 
 ## 制約
 
-- すべての URL 文字列は `endpoints.ts` に `const`（動的 URL は `const` 関数）として置く
-- `endpoints.ts` の外で URL 文字列をハードコードしない
-- ベース URL + テンプレートリテラル合成を使う。毎回パス全体をベタ書きしないこと
-- フロントエンドルートと対応する API ルートは同じセクションにまとめて定義する
-- パラメータ付き URL はすべて関数形式とする — 呼び出し側で `string` 補間を許してはいけない
+- すべての URL 文字列は `endpoints.ts` に置く（オブジェクト形またはフラット const）
+- 1 機能 = 1 つの `{FEATURE}_URL` オブジェクト（API があれば加えて 1 つの `{FEATURE}_API_URL`）
+- フラット const はアプリ全体の単発（`HOME_URL`, `ROOT_URL`）のみに使う
+- 深いネスト（1 つのオブジェクト内で深さ 3 以上）はしない — 複数オブジェクトに分割する
+- パラメータを持つ URL は関数形を使う — 呼び出し箇所で `string` 補間を受け付けない
+- API URL とページ URL は同じファイル内に置き、機能ごとにグループ化する

@@ -8,104 +8,116 @@
 |---|---|---|
 | スキーマ | Zod | バリデーションルール + 型推論 |
 | 状態 | react-hook-form | フィールド登録、値追跡、エラー状態 |
-| UI | Mantine | 入力、エラー表示、送信ボタン |
+| UI | Mantine | 入力コンポーネント、エラー表示、送信ボタン |
 
-ブリッジ: `@hookform/resolvers/zod` が `zodResolver(schema)` を提供する。
+橋渡し: `@hookform/resolvers/zod` が `zodResolver(schema)` を提供する。
 
 ---
 
-## フォームごとのフォルダ構成
+## 1 フォームあたりのフォルダ構成
 
 ```
-app/(app)/{feature}/
-├── form.ts                       # Zod スキーマ + 型
-├── page.tsx
-├── {Feature}Edit.tsx              # 画面（useXxxForm + ミューテーションフックを組み合わせる）
+app/(app)/{feature}/[id]/edit/
+├── form.ts                         # Zod スキーマ + 型
+├── page.tsx                        # 薄いラッパー
+├── {Feature}EditScreen.tsx         # フックと EditLayout を合成
 ├── _components/
-│   ├── BasicSettings.tsx           # タブパネル 1（入力フィールド）
+│   ├── {Feature}EditLayout.tsx     # 汎用編集レイアウト（タブ + フッター）
+│   ├── BasicSettings.tsx           # タブパネル 1
 │   ├── DetailSettings.tsx          # タブパネル 2
-│   └── ChildSettings.tsx           # タブパネル 3
+│   └── ...                          # 追加タブパネル
 └── _hooks/
-    └── useXxxForm.ts                # フォーム状態 + 初期データロード
+    └── use{Feature}Form.ts          # フォーム状態 + 初期ロード
 ```
+
+新規画面では同じ構成が `{feature}/new/` に置かれる。画面構成の詳細は `edit-screen.md` を参照。
 
 ---
 
 ## form.ts — Zod スキーマと型
 
 ```ts
-// app/(app)/families/new/form.ts
+// app/(app)/resources/[id]/edit/form.ts
 import { z } from "zod"
-import { DisplayIdSchema, LocalNameSchema, OnlineNameSchema, UserNameSchema, BirthdaySchema, IconIdSchema, IconColorSchema } from "@/app/(core)/schema"
+import {
+  IdSchema,
+  IconIdSchema,
+  IconColorSchema,
+} from "@/app/(core)/schema"
 
-/** 家族登録フォームスキーマ */
-export const FamilyRegisterFormSchema = z.object({
-  displayId:        DisplayIdSchema,
-  localName:        LocalNameSchema,
-  onlineName:       OnlineNameSchema,
-  familyIconId:     IconIdSchema,
-  familyIconColor:  IconColorSchema,
-  parentName:       UserNameSchema,
-  parentBirthday:   BirthdaySchema,
-  parentIconId:     IconIdSchema,
-  parentIconColor:  IconColorSchema,
+/** リソース登録／編集フォームスキーマ */
+export const ResourceFormSchema = z.object({
+  /** リソース名（1〜20 文字、必須） */
+  name: z.string().nonempty({ error: "リソース名は必須です。" })
+                  .min(1)
+                  .max(20, { error: "リソース名は 20 文字以下で入力してください。" }),
+  /** アイコン ID */
+  iconId: IconIdSchema,
+  /** アイコンカラー */
+  iconColor: IconColorSchema,
+  /** タグ（最大 10 件） */
+  tags: z.array(z.string()).max(10),
+  /** カテゴリ ID（NULL は未分類） */
+  categoryId: z.number().nullable(),
 })
 
-/** 家族登録フォーム型 */
-export type FamilyRegisterFormType = z.infer<typeof FamilyRegisterFormSchema>
+/** リソース登録／編集フォーム型（推論） */
+export type ResourceFormType = z.infer<typeof ResourceFormSchema>
 ```
 
-### `app/(core)/schema.ts` に置く再利用可能なプリミティブ
+### `app/(core)/schema.ts` 内の再利用プリミティブ
 
 ```ts
 // app/(core)/schema.ts
 import { z } from "zod"
 
-/** ID共通スキーマ — 半角英数字+アンダースコア */
+/** ID 共通スキーマ — 半角英数字 + アンダースコア */
 export const IdSchema = z.string().regex(/^[a-zA-Z0-9_]+$/, {
   message: "半角英数字とアンダースコアのみ使用可能です",
 })
 
+/** 表示 ID — 5〜20 文字 */
 export const DisplayIdSchema = IdSchema
-  .min(5, { error: "IDは5文字以上で入力してください。" })
-  .max(20, { error: "IDは20文字以下で入力してください。" })
+  .min(5, { error: "ID は 5 文字以上で入力してください。" })
+  .max(20, { error: "ID は 20 文字以下で入力してください。" })
 
-export const LocalNameSchema = z.string()
-  .nonempty({ error: "家族名は必須です。" })
-  .max(10, { error: "家族名は10文字以下で入力してください。" })
+/** アイコン ID */
+export const IconIdSchema = z.number({ error: "アイコンは必須です。" })
 
-export const BirthdaySchema = z.string()
-  .nonempty({ error: "誕生日は必須です。" })
-  .refine((val) => !isNaN(Date.parse(val)), {
-    message: "有効な日付文字列ではありません",
-  })
+/** アイコンカラー */
+export const IconColorSchema = z.string({ error: "アイコンカラーは必須です。" })
 
+/** ソート順 */
 export type SortOrder = "asc" | "desc"
 ```
 
-**再利用可能** なプリミティブはここに集約する。機能固有のスキーマは `{feature}/form.ts` に置く。
+ここには**再利用可能**なプリミティブを集約する。機能固有のスキーマは各機能の `form.ts` に置く。
 
 ### スキーマの拡張
 
 ```ts
-// app/(app)/quests/family/[id]/form.ts
+// app/(app)/resources/[id]/edit/form.ts
 import { z } from "zod"
-import { BaseQuestFormSchema, addAgeMonthRefinements } from "../../form"
+import { BaseResourceFormSchema, addRangeRefinement } from "../../shared-form-helpers"
 
+/** 拡張フィールド */
 export const ChildSettingSchema = z.object({
+  /** 子リソース ID */
   childId: z.string(),
-  isActivate: z.boolean(),
-  hasQuestChildren: z.boolean(),
+  /** 有効フラグ */
+  isActive: z.boolean(),
 })
 
-/** 家族クエストフォーム — BaseQuestFormSchema を拡張 */
-export const FamilyQuestFormSchema = addAgeMonthRefinements(
-  BaseQuestFormSchema.extend({
+/** 拡張リソースフォーム — BaseResourceFormSchema を拡張 */
+export const ExtendedResourceFormSchema = addRangeRefinement(
+  BaseResourceFormSchema.extend({
+    /** 子設定 */
     childSettings: z.array(ChildSettingSchema),
-  })
+  }),
+  "ageFrom", "ageTo",
 )
-export type FamilyQuestFormType = z.infer<typeof FamilyQuestFormSchema>
-export type ChildSettingType   = z.infer<typeof ChildSettingSchema>
+export type ExtendedResourceFormType = z.infer<typeof ExtendedResourceFormSchema>
+export type ChildSettingType         = z.infer<typeof ChildSettingSchema>
 ```
 
 ### `.refine()` によるクロスフィールドバリデーション
@@ -117,38 +129,17 @@ export type ChildSettingType   = z.infer<typeof ChildSettingSchema>
   }
   return true
 }, {
-  message: "対象年齢(開始)は対象年齢(終了)以下である必要があります",
-  path: ["ageFrom"],   // ← このフィールドにエラーを紐付ける
+  message: "開始は終了より小さい必要があります",
+  path: ["ageFrom"],   // このフィールドにエラーを紐付ける
 })
 ```
-
-`path: ["fieldName"]` で特定のフィールドにエラーを紐付けると、`errors.fieldName?.message` が拾えるようになる。
-
-### 再利用可能な refine ヘルパー
-
-```ts
-/** 年齢・月のバリデーションを追加する共通refine */
-export const addAgeMonthRefinements = <T extends z.ZodObject<z.ZodRawShape>>(schema: T) => {
-  return schema
-    .refine(
-      (data) => data.ageFrom == null || data.ageTo == null || data.ageFrom < data.ageTo,
-      { message: "対象年齢(開始)は対象年齢(終了)以下である必要があります", path: ["ageFrom"] }
-    )
-    .refine(
-      (data) => !(data.monthFrom != null && data.monthTo == null),
-      { message: "公開終了月は必須です。", path: ["monthTo"] }
-    )
-}
-```
-
-`addAgeMonthRefinements(BaseSchema.extend({ ... }))` の形で適用する。
 
 ---
 
 ## useXxxForm.ts — フォーム状態フック
 
 ```ts
-// _hooks/useFamilyQuestForm.ts
+// _hooks/useResourceForm.ts
 "use client"
 
 import { useState } from "react"
@@ -157,141 +148,110 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMantineTheme } from "@mantine/core"
-import { FamilyQuestFormSchema, type FamilyQuestFormType } from "../form"
-import { getFamilyQuest } from "@/app/api/quests/family/[id]/client"
+import { ResourceFormSchema, type ResourceFormType } from "../form"
+import { getResource } from "@/app/api/resources/[id]/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
-import { isSameArray } from "@/app/(core)/util"
 
-type Args = { familyQuestId?: string }
+type Args = {
+  /** リソース ID（新規作成時は undefined） */
+  resourceId?: string
+}
 
-/** 家族クエストフォーム状態を取得する */
-export const useFamilyQuestForm = ({ familyQuestId }: Args) => {
+/** リソースフォーム状態を取得する */
+export const useResourceForm = ({ resourceId }: Args) => {
   const theme = useMantineTheme()
   const router = useRouter()
 
-  /** デフォルト値 */
-  const defaultQuest: FamilyQuestFormType = {
+  // デフォルト値
+  const defaultForm: ResourceFormType = {
     name: "",
     iconId: 1,
     iconColor: theme.colors.blue[5],
     tags: [],
     categoryId: null,
-    details: [{ level: 1, successCondition: "", requiredCompletionCount: 1, reward: 0, childExp: 0, requiredClearCount: 1 }],
-    ageFrom: null, ageTo: null, monthFrom: null, monthTo: null,
-    client: "", requestDetail: "",
-    childSettings: [],
   }
 
-  /** react-hook-form 初期化 */
+  // react-hook-form 初期化
   const { register, handleSubmit, formState: { errors }, setValue, watch, reset } =
-    useForm<FamilyQuestFormType>({
-      resolver: zodResolver(FamilyQuestFormSchema),
-      defaultValues: defaultQuest,
+    useForm<ResourceFormType>({
+      resolver: zodResolver(ResourceFormSchema),
+      defaultValues: defaultForm,
     })
 
-  /** 取得時データ（Dirty 判定用） */
-  const [fetchedQuest, setFetchedQuest] = useState(defaultQuest)
+  // 取得時データ（Dirty 判定用）
+  const [fetchedForm, setFetchedForm] = useState(defaultForm)
 
-  /** 既存データを取得（編集モードのみ） */
+  // 既存データを取得（編集モードのみ）
   const { data, error, isLoading } = useQuery({
-    queryKey: ["familyQuestForm", familyQuestId],
+    queryKey: ["resourceForm", resourceId],
     retry: false,
     queryFn: async () => {
-      const { familyQuest } = await getFamilyQuest({ familyQuestId: familyQuestId! })
-      const form: FamilyQuestFormType = {
-        name: familyQuest.quest.name,
-        iconId: familyQuest.quest.iconId,
-        iconColor: familyQuest.quest.iconColor,
-        tags: familyQuest.tags.map((t) => t.name),
-        categoryId: familyQuest.quest.categoryId,
-        details: familyQuest.details.map((d) => ({ /* ... */ })),
-        ageFrom: familyQuest.quest.ageFrom,
-        ageTo: familyQuest.quest.ageTo,
-        monthFrom: familyQuest.quest.monthFrom,
-        monthTo: familyQuest.quest.monthTo,
-        client: familyQuest.quest.client,
-        requestDetail: familyQuest.quest.requestDetail,
-        childSettings: familyQuest.children.map((c) => ({
-          childId: c.childId,
-          isActivate: c.isActivate ?? true,
-          hasQuestChildren: true,
-        })),
+      const { resource } = await getResource({ resourceId: resourceId! })
+      const form: ResourceFormType = {
+        name: resource.name,
+        iconId: resource.iconId,
+        iconColor: resource.iconColor,
+        tags: resource.tags.map((t) => t.name),
+        categoryId: resource.categoryId,
       }
-      setFetchedQuest(form)
+      setFetchedForm(form)
       reset(form)
-      return { questEntity: familyQuest }
+      return { entity: resource }
     },
-    enabled: !!familyQuestId,
+    enabled: !!resourceId,
     staleTime: 0,
     refetchOnMount: "always",
   })
 
   if (error) handleAppError(error, router)
 
-  /** 現在のフォーム値 */
-  const currentQuest = watch()
-
-  /** Dirty 判定 */
+  // Dirty 判定
+  const currentForm = watch()
   const isValueChanged =
-    currentQuest.name !== fetchedQuest.name ||
-    currentQuest.iconId !== fetchedQuest.iconId ||
-    currentQuest.iconColor !== fetchedQuest.iconColor ||
-    !isSameArray(currentQuest.tags, fetchedQuest.tags) ||
-    currentQuest.categoryId !== fetchedQuest.categoryId ||
-    currentQuest.ageFrom !== fetchedQuest.ageFrom ||
-    currentQuest.ageTo !== fetchedQuest.ageTo ||
-    currentQuest.monthFrom !== fetchedQuest.monthFrom ||
-    currentQuest.monthTo !== fetchedQuest.monthTo ||
-    currentQuest.client !== fetchedQuest.client ||
-    currentQuest.requestDetail !== fetchedQuest.requestDetail ||
-    JSON.stringify(currentQuest.details) !== JSON.stringify(fetchedQuest.details) ||
-    JSON.stringify(currentQuest.childSettings) !== JSON.stringify(fetchedQuest.childSettings)
+    currentForm.name      !== fetchedForm.name ||
+    currentForm.iconId    !== fetchedForm.iconId ||
+    currentForm.iconColor !== fetchedForm.iconColor ||
+    currentForm.categoryId !== fetchedForm.categoryId ||
+    JSON.stringify(currentForm.tags) !== JSON.stringify(fetchedForm.tags)
 
   return {
     register, errors, setValue, watch, reset,
     handleSubmit, isValueChanged,
-    fetchedQuest, fetchedEntity: data?.questEntity, isLoading,
+    fetchedForm, fetchedEntity: data?.entity, isLoading,
   }
 }
 ```
 
 ---
 
-## フックの標準的な返り値の形
+## フックの標準返却形
 
-| フィールド | 型 | 出所 | 用途 |
+| フィールド | 型 | 取得元 | 用途 |
 |---|---|---|---|
-| `register` | `UseFormRegister<T>` | react-hook-form | 入力をフォーム状態に紐付ける |
-| `handleSubmit` | `UseFormHandleSubmit<T>` | react-hook-form | 送信ハンドラをバリデーションでラップする |
+| `register` | `UseFormRegister<T>` | react-hook-form | 入力をフォーム状態にバインドする |
+| `handleSubmit` | `UseFormHandleSubmit<T>` | react-hook-form | バリデーション付きで送信ハンドラをラップする |
 | `errors` | `FieldErrors<T>` | react-hook-form | フィールドごとのエラーメッセージ |
-| `setValue` | `UseFormSetValue<T>` | react-hook-form | プログラムからフィールド値を設定 |
-| `watch` | `UseFormWatch<T>` | react-hook-form | 現在の値を購読 |
-| `reset` | `UseFormReset<T>` | react-hook-form | 全値を置き換える |
-| `isValueChanged` | `boolean` | 手動 | 変更がないとき保存を無効化 |
-| `fetchedEntity` | サーバーの応答 | TanStack Query | 読み取り専用データ（`updatedAt` など） |
-| `isLoading` | `boolean` | TanStack Query | `LoadingOverlay` のためのロード状態 |
+| `setValue` | `UseFormSetValue<T>` | react-hook-form | プログラム的にフィールド値を設定する |
+| `watch` | `UseFormWatch<T>` | react-hook-form | 現在の値を購読する |
+| `reset` | `UseFormReset<T>` | react-hook-form | すべての値を置き換える |
+| `isValueChanged` | `boolean` | 手動 | 変更がない場合は保存を無効化する |
+| `fetchedEntity` | サーバーレスポンス | TanStack Query | 読み取り専用データ（`updatedAt` 等） |
+| `isLoading` | `boolean` | TanStack Query | `LoadingOverlay` 用のロード状態 |
 
 ---
 
 ## バリデーションのタイミング
 
-react-hook-form のデフォルトモード（`mode` オプションなし）は以下を意味する:
-- 各フィールドの初回バリデーションは **onBlur**
-- 初回エラー後は **onChange**（ユーザーの入力に応じて再バリデーション）
-- **onSubmit** でスキーマ全体を実行する
+react-hook-form のデフォルトモード（`mode` オプション未指定）の挙動:
+- **onBlur** — 各フィールドの初回バリデーション
+- **onChange** — 初回エラー以降（入力中も再バリデーション）
+- **onSubmit** — スキーマ全体を実行
 
-異なるポリシーが必要な場合のみ `mode` オプションで上書きする:
-
-```ts
-useForm({
-  resolver: zodResolver(schema),
-  mode: "onChange",  // 毎回のキー入力でバリデーション（ほぼ不要）
-})
-```
+別ポリシーが必要な場合のみ `mode` オプションで上書きする。
 
 ---
 
-## UI バインディングパターン
+## UI バインディングのパターン
 
 ### TextInput / Input.Wrapper
 
@@ -299,12 +259,12 @@ useForm({
 import { Input } from "@mantine/core"
 import { RequiredMark } from "@/app/(core)/_components/RequiredMark"
 
-<Input.Wrapper label={<>家族クエスト名 <RequiredMark /></>} error={errors.name?.message}>
-  <Input placeholder="例: お皿洗い" {...register("name")} />
+<Input.Wrapper label={<>リソース名 <RequiredMark /></>} error={errors.name?.message}>
+  <Input placeholder="例: マイリソース" {...register("name")} />
 </Input.Wrapper>
 ```
 
-### NumberInput（setValue + watch でコントロール）
+### NumberInput（setValue + watch による制御）
 
 ```tsx
 import { NumberInput } from "@mantine/core"
@@ -329,7 +289,7 @@ import { NumberInput } from "@mantine/core"
 />
 ```
 
-### IME 対応のカスタムマルチステップ入力
+### IME 対応のタグ入力
 
 ```tsx
 const [draft, setDraft] = useState("")
@@ -358,13 +318,13 @@ const commitTag = () => {
 />
 ```
 
-`isComposing` が IME（日本語入力）変換中の Enter 発火を防ぐ。
+`isComposing` で IME（日本語入力）変換中に Enter が発火するのを防ぐ。
 
 ---
 
 ## エラー表示
 
-### フィールドごと
+### フィールド単位
 
 ```tsx
 <Input.Wrapper error={errors.name?.message}>
@@ -372,10 +332,10 @@ const commitTag = () => {
 </Input.Wrapper>
 ```
 
-### タブレベル（タブごとにエラーを合算）
+### タブ単位
 
 ```ts
-const hasBasicErrors = !!(errors.name || errors.iconId || errors.iconColor)
+const hasBasicErrors  = !!(errors.name || errors.iconId || errors.iconColor)
 const hasDetailErrors = !!errors.details
 ```
 
@@ -385,7 +345,7 @@ const hasDetailErrors = !!errors.details
 { value: "basic", label: "基本", hasErrors: hasBasicErrors, content: <BasicSettings /> }
 ```
 
-タブヘッダーにアイコンを描画する:
+タブのヘッダーにアイコンを描画する:
 
 ```tsx
 rightSection: tab.hasErrors ? <IconAlertCircle size={16} color="red" /> : null
@@ -396,9 +356,9 @@ rightSection: tab.hasErrors ? <IconAlertCircle size={16} color="red" /> : null
 ## 送信フロー
 
 ```tsx
-const onSubmit = handleSubmit((form: FamilyQuestFormType) => {
-  if (familyQuestId) {
-    handleUpdate({ form, familyQuestId })
+const onSubmit = handleSubmit((form: ResourceFormType) => {
+  if (resourceId) {
+    handleUpdate({ form, resourceId, updatedAt: fetchedEntity?.updatedAt })
   } else {
     handleRegister({ form })
   }
@@ -410,16 +370,15 @@ const onSubmit = handleSubmit((form: FamilyQuestFormType) => {
 </form>
 ```
 
-`handleSubmit` は Zod バリデーションが通った場合にのみコールバックを呼ぶ。
-
 ---
 
 ## 制約
 
-- すべてのフォームは `XxxFormSchema` + `XxxFormType` を含む `form.ts` を 1 つだけ持つ
-- 型は推論する（`z.infer<>`）— 手書きしてはいけない
-- `register` はネイティブ HTML 入力向け。コントロールされた Mantine 入力（NumberInput、Select、DateInput など）には `setValue` + `watch` を使う
-- IME（日本語）入力: `Enter` ハンドラは常に `isComposing` でガードすること
+- `form.ts` は `[id]/edit/form.ts`（または `{feature}/new/form.ts`）に置き、`XxxFormSchema` と `XxxFormType` を含む
+- 型は推論（`z.infer<>`）で導出し、手書きしない
+- スキーマの各フィールドには `/** ... */` でドキュメントコメントを付ける（`conventions/comments.md` 参照）
+- `register` はネイティブ HTML 入力用、`setValue` + `watch` は制御された Mantine 入力（NumberInput, Select, DateInput 等）用
+- IME（日本語）入力: `Enter` ハンドラは常に `isComposing` でガードする
 - エラーは `Input.Wrapper` の `error={errors.field?.message}` で表示する
-- `!isValueChanged` の場合は保存ボタンを無効化する
-- すべてのクロスフィールドバリデーションは、対象フィールドへ `path` を設定した `.refine()` で行う
+- `!isValueChanged` のときは保存ボタンを無効化する
+- すべてのクロスフィールドバリデーションは関連フィールドに `path` を設定した `.refine()` で行う

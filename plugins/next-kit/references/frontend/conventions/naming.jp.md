@@ -6,98 +6,75 @@
 
 | 対象 | 規約 | 例 |
 |---|---|---|
-| フォルダ | kebab-case | `quest-list/`, `family-members/` |
-| フックフォルダ | `_hooks/`（複数形、アンダースコア接頭辞 — 常に） | `_hooks/` |
-| コンポーネントフォルダ | `_components/`（複数形、アンダースコア接頭辞） | `_components/` |
-| ページファイル | `page.tsx`（Next.js の規約） | `page.tsx` |
-| 画面コンポーネントファイル | PascalCase + `Screen` サフィックス | `QuestListScreen.tsx` |
-| レイアウトコンポーネントファイル | PascalCase + `Layout` サフィックス | `QuestEditLayout.tsx` |
-| 編集コンポーネントファイル | PascalCase + `Edit` サフィックス | `FamilyQuestEdit.tsx` |
-| ビューコンポーネントファイル | PascalCase + `View` サフィックス | `ChildView.tsx` |
-| サブコンポーネントファイル | PascalCase | `QuestCard.tsx` |
-| フックファイル | camelCase + `use` 接頭辞 | `useQuestList.ts` |
+| フォルダ | kebab-case | `resources/`、`family-members/` |
+| Hook フォルダ | `_hooks/`（複数形、アンダースコア接頭辞 — 常に） | `_hooks/` |
+| Component フォルダ | `_components/`（複数形、アンダースコア接頭辞） | `_components/` |
+| ページファイル | `page.tsx`（Next.js 規約） | `page.tsx` |
+| 一覧画面ファイル | PascalCase + `ListScreen` サフィックス | `ResourceListScreen.tsx` |
+| 新規作成画面ファイル | PascalCase + `NewScreen` サフィックス | `ResourceNewScreen.tsx` |
+| View 画面ファイル | PascalCase + `ViewScreen` サフィックス | `ResourceViewScreen.tsx` |
+| Edit 画面ファイル | PascalCase + `EditScreen` サフィックス | `ResourceEditScreen.tsx` |
+| Layout コンポーネントファイル | PascalCase + `Layout` サフィックス | `ResourceEditLayout.tsx` |
+| サブコンポーネントファイル | PascalCase | `ResourceCard.tsx` |
+| Hook ファイル | camelCase + `use` 接頭辞 | `useResource.ts` |
 | フォームスキーマファイル | `form.ts`（小文字、固定名） | `form.ts` |
-| ユーティリティ／設定／エンドポイントファイル | camelCase | `endpoints.ts`, `logger.ts`, `util.ts` |
-| 動的セグメントフォルダ | `[id]` または `[slug]` | `[id]/`, `[childId]/` |
+| Util / config / endpoints ファイル | camelCase | `endpoints.ts`、`logger.ts`、`util.ts` |
+| 動的セグメントフォルダ | `[id]` または `[slug]` | `[id]/`、`[childId]/` |
 
-> **ルール**: 新規コードでは `_hooks/`（複数形）のみ許可。レガシーの `_hook/`（単数形）に遭遇した場合、そのファイルを触るときに `_hooks/` へ移行する。
+> **ルール**: 新規コードでは `_hooks/`（複数形）のみ許可。既存の `_hook/` はそのファイルに触れる際に移行する。
 
 ---
 
-## Edit と View（読み取り専用）の命名
+## レコードごとの view と edit
 
-ある機能に編集画面と読み取り専用表示の両方がある場合、以下の規約に従う:
+各レコードは **2 つの兄弟ルート** — `view` と `edit` を持つ。画面ファイル名はそのルートに対応するサフィックスを持つ。
 
-| 役割 | コンポーネント名 | フォルダ／パスのパターン |
+| ルート | 画面ファイル | フォルダ位置 |
 |---|---|---|
-| 読み取り専用表示 | `{Feature}View.tsx` | `{feature}/view/page.tsx` または `{feature}/` 直下 |
-| 編集可能フォーム | `{Feature}Edit.tsx` | `{feature}/page.tsx`（デフォルト） |
-| リスト／一覧 | `{Feature}ListScreen.tsx` | `{feature}/page.tsx` |
-| 詳細（表示とアクションの結合） | `{Feature}Screen.tsx` | `{feature}/[id]/page.tsx` |
+| `/{feature}/[id]/view` | `{Feature}ViewScreen.tsx` | `[id]/view/` |
+| `/{feature}/[id]/edit` | `{Feature}EditScreen.tsx` | `[id]/edit/` |
+| `/{feature}/[id]`（任意） | （画面なし — リダイレクトのみ） | `[id]/page.tsx` のみ |
 
-### 実コードからの例
-
-```
-app/(app)/children/[id]/_components/
-├── ChildView.tsx          # 子供プロフィール閲覧
-└── ChildEdit.tsx          # 子供プロフィール編集
-
-app/(app)/families/[id]/view/
-├── page.tsx
-├── FamilyProfileViewScreen.tsx       # 家族プロフィール閲覧画面
-└── _components/
-    ├── FamilyProfileViewLayout.tsx   # 閲覧用レイアウト
-    └── FamilyProfileViewFooter.tsx
-
-app/(app)/quests/family/[id]/
-├── page.tsx
-├── FamilyQuestEdit.tsx               # 家族クエスト編集画面
-└── view/
-    └── page.tsx                       # 家族クエスト閲覧画面
-```
-
-### なぜ 2 ルートに分けるのか（モード切替の単一コンポーネントではなく）
-
-- **2 ルート（編集は `/quests/family/[id]`、閲覧は `/quests/family/[id]/view`）**: URL を分ける必要があるとき（閲覧専用ディープリンク、ロール別のデフォルトルート、異なるパンくず）
-- **単一コンポーネント＋内部モード state**: 切替が純粋に UI 内部の話で、リンク可能である必要が一切ないとき
-
-親と子で権限が異なる機能は、デフォルトで 2 ルート構成にする。
+`[id]/page.tsx` は **決して画面ではない** — 権限を判定して `view/` または `edit/` にリダイレクトするサーバーコンポーネントである。`folder-structure.md` を参照。
 
 ---
 
-## 役割別のコンポーネント命名
+## Screen と Layout と Card の使い分け
 
-| 役割 | サフィックス | 例 | 目的 |
-|---|---|---|---|
-| `Screen` | `XxxScreen.tsx` | `QuestListScreen.tsx` | トップレベルのページ構成（`page.tsx` から呼ばれる） |
-| `Layout` | `XxxLayout.tsx` | `QuestEditLayout.tsx` | 再利用可能な外枠 — ヘッダー + コンテンツ領域 + アクション |
-| `Edit` | `XxxEdit.tsx` | `FamilyQuestEdit.tsx` | 編集可能なフォームラッパー（編集モード用の Screen） |
-| `View` | `XxxView.tsx` | `ChildView.tsx` | 読み取り専用表示（閲覧モード用の Screen） |
-| `Card` | `XxxCard.tsx` | `QuestCard.tsx` | リスト項目の表現 |
-| `Item` | `XxxItem.tsx` | `TimelineItem.tsx` | フィード／リスト内の 1 エントリ |
-| `Settings` | `XxxSettings.tsx` | `BasicSettings.tsx` | 編集フォーム内の 1 セクション／タブ |
-| `Popup` / `Modal` | `XxxPopup.tsx`, `XxxModal.tsx` | `IconSelectPopup.tsx`, `NotificationModal.tsx` | モーダルダイアログ |
-| `Wrapper` | `XxxWrapper.tsx` | `ScreenWrapper.tsx` | 任意の子要素をラップするレイアウト／スタイリングの外枠 |
-| `Button` | `XxxButton.tsx` | `LoadingButton.tsx`, `NavigationButton.tsx` | 特殊化されたボタンのバリアント |
-| `Context` | `XxxContext.tsx` | `FABContext.tsx`, `LoadingContext.tsx` | React Context のプロバイダ + フック |
+| サフィックス | 役割 | いつ使うか |
+|---|---|---|
+| `ListScreen` | コレクションページ | `/{feature}/page.tsx` がレンダリングする |
+| `NewScreen` | 作成ページ | `/{feature}/new/page.tsx` がレンダリングする |
+| `ViewScreen` | 読み取り専用詳細ページ | `/{feature}/[id]/view/page.tsx` がレンダリングする |
+| `EditScreen` | 編集可能な詳細ページ | `/{feature}/[id]/edit/page.tsx` がレンダリングする |
+| `Layout` | Screen 用の再利用可能なシェル | ヘッダー + コンテンツエリア + アクション — Screen ファイルが組み立てる |
+| `Card` | 一覧の 1 アイテム | `*ListScreen.tsx` の中で使う |
+| `Item` | フィードの 1 エントリ | 無限スクロールフィードの中で使う |
+| `Settings` | 編集フォーム内の 1 タブ | `*EditScreen.tsx` の中で使う |
+| `Popup` / `Modal` | モーダルダイアログ | `patterns/dialog.md` を参照 |
+| `Button` | 特殊化されたボタンバリアント | `LoadingButton`、`NavigationButton` |
+| `Context` | React Context + hook のペア | `FABContext`、`LoadingContext` |
+| `Wrapper` | `children` を持つスタイリングシェル | `ScreenWrapper` |
 
 ---
 
-## フックの命名パターン
+## Hook の命名パターン
 
 | パターン | 目的 | 例 |
 |---|---|---|
-| `use{Feature}` | データ取得（読み取り） | `useFamilyQuests`, `useChildren` |
-| `use{Feature}Form` | フォーム state 管理 | `useFamilyQuestForm`, `useFamilyRegisterForm` |
-| `useRegister{Feature}` | 登録ミューテーション | `useRegisterFamilyQuest` |
-| `useUpdate{Feature}` | 更新ミューテーション | `useUpdateFamilyQuest` |
-| `useDelete{Feature}` | 削除ミューテーション | `useDeleteFamilyQuest` |
-| `use{Feature}Submit` | submit ハンドラを統合したもの | `useFamilyQuestSubmit` |
+| `use{Feature}` | データ取得（読み取り） | `useResource`、`useResources` |
+| `use{Feature}List` | コレクションのデータ取得 | `useResourceList` |
+| `use{Feature}View` | View 画面専用の取得 | `useResourceView` |
+| `use{Feature}Form` | フォーム状態管理 | `useResourceForm` |
+| `useRegister{Feature}` | 作成 mutation | `useRegisterResource` |
+| `useUpdate{Feature}` | 更新 mutation | `useUpdateResource` |
+| `useDelete{Feature}` | 削除 mutation | `useDeleteResource` |
+| `use{Feature}UrlState` | URL クエリ文字列のステート | `useResourceListUrlState` |
 
 ルール:
 - 1 ファイル 1 フック — ファイル名は export 名と一致させる
 - 常に `use` で始める（React のルール）
-- 1 ファイルに動詞は 1 つ（`Register`, `Update`, `Delete`）— 組み合わせない
+- 1 ファイル 1 動詞（`Register`、`Update`、`Delete`）— 統合してはいけない
 
 ---
 
@@ -105,12 +82,12 @@ app/(app)/quests/family/[id]/
 
 | パターン | 例 | 備考 |
 |---|---|---|
-| `{Feature}FormSchema`（推奨） | `FamilyRegisterFormSchema` | 新規コードでは `Schema` を使う |
-| `{Feature}Type` | `FamilyRegisterFormType` | `z.infer<>` でスキーマから推論 |
-| `{Feature}RequestSchema` | `PostFamilyRequestSchema` | API リクエストボディのスキーマ（`route.ts` 内） |
-| `{Feature}Request`（型） | `PostFamilyRequest` | `*RequestSchema` から推論 |
+| `{Feature}FormSchema` | `ResourceFormSchema` | Zod オブジェクト |
+| `{Feature}Type` | `ResourceFormType` | `z.infer<>` で推論 |
+| `{Feature}RequestSchema` | `PostResourceRequestSchema` | API リクエストボディスキーマ（`route.ts` 内） |
+| `{Feature}Request`（型） | `PostResourceRequest` | `*RequestSchema` から推論 |
 
-> **レガシー注記**: 既存コードには `Scheme`（旧）と `Schema`（新）のサフィックスが混在する。新規コードはすべて `Schema` を使う。触ったファイルをリファクタする際は `*Scheme` → `*Schema` にリネームする。
+新規コードでは `Schema`（`Scheme` ではなく）を使う。
 
 ---
 
@@ -118,19 +95,26 @@ app/(app)/quests/family/[id]/
 
 完全な規約は `frontend/endpoints.md` を参照。要約:
 
-| パターン | 例 |
-|---|---|
-| 静的なフロントエンド URL | `HOME_URL`, `FAMILIES_URL` |
-| 動的なフロントエンド URL | `FAMILY_URL = (id) => ...` |
-| グループ化された URL オブジェクト | `SETTINGS_URL = { root, profile, ... }` |
-| API エンドポイント URL | `FAMILY_API_URL` |
+```ts
+// グローバル単一 URL — フラットな const
+export const HOME_URL = `/home`
+
+// 機能グループ — オブジェクト
+export const RESOURCE_URL = {
+  list: `/resources`,
+  new:  `/resources/new`,
+  view: (id: string) => `/resources/${id}/view`,
+  edit: (id: string) => `/resources/${id}/edit`,
+}
+```
 
 ---
 
 ## 制約
 
-- `_hooks/`（複数形）が唯一許可される名前 — 新規コードで `_hook/` を使ってはいけない
-- `form.ts` は固定ファイル名 — 各フォーム機能はちょうど 1 つ持つ
-- `Screen` / `View` / `Edit` のサフィックスは省略不可 — 役割を一目で伝えるためのもの
-- 機能フォルダ内で `index.tsx` を使ってはいけない — 常に役割で名前を付ける（`XxxScreen.tsx`）
-- ルートフォルダ直下に型のないコンポーネントを置いてはいけない — `_components/` を使う
+- `_hooks/`（複数形）のみ許可 — 新規コードで `_hook/` を使ってはいけない
+- `form.ts` は固定のファイル名 — 編集可能なフォームには `[id]/edit/` 配下にちょうど 1 つ存在する
+- 画面サフィックスは役割を伝える: `ListScreen` / `NewScreen` / `ViewScreen` / `EditScreen`
+- List / New / View / Edit のいずれかである画面に汎用の `Screen` サフィックスを使ってはいけない
+- 機能フォルダで `index.tsx` を使ってはいけない — 常に役割に応じた名前を付ける
+- ルートフォルダ直下に型未定義のコンポーネントを置いてはいけない — `_components/` を使う

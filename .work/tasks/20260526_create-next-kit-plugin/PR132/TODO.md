@@ -55,6 +55,14 @@ html-kit の後継として位置付け、Next.js 固有のパターンを対象
 | 済 | CLAUDE.md インデックスを新構成に合わせて更新 | `plugins/next-kit/references/CLAUDE.md` |
 | 済 | 全 references の JP ミラー更新 | `plugins/next-kit/references/**/*.jp.md` |
 | 済 | plugin.json / marketplace.json のバージョンを 1.1.0 にバンプ | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | [id]/ 直下に page.tsx を置かないルールに変更（edit/ と view/ サブフォルダに） | `frontend/conventions/folder-structure.md`, `frontend/conventions/naming.md` |
+| 済 | view-screen / edit-screen パターンを新フォルダ構造に対応 | `frontend/patterns/view-screen.md`, `frontend/patterns/edit-screen.md` |
+| 済 | endpoints の URL 構造を更新（[id]/edit, [id]/view のルートに合わせる + オブジェクト形式案を検討） | `frontend/endpoints.md` |
+| 済 | libraries.md のバージョン記述を削除（最新版を使う方針） | `frontend/conventions/libraries.md` |
+| 済 | comments.md のルール変更：全フィールドコメント必須化、編集履歴コメント OK | `frontend/conventions/comments.md` |
+| 済 | quest-pay / family / quest など特定ドメイン名を一般的なプレースホルダに置換 | `frontend/patterns/**.md`, `frontend/components.md`, `frontend/hooks.md`, `frontend/state-management.md`, `frontend/url-state.md` |
+| 済 | 上記変更を JP ミラーにも反映 | `**/*.jp.md` |
+| 済 | plugin.json / marketplace.json を 1.2.0 にバンプ | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 

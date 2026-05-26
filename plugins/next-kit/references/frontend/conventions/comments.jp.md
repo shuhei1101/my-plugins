@@ -4,101 +4,103 @@
 
 ## 言語
 
-コメントはデフォルトで **日本語** で書く。以下が対象:
-- 関数／コンポーネント／フックの説明（`/** ... */`）
-- ロジックセクション前のブロックコメント
-- JSX 内のセクションマーカー
-- DB スキーマのカラム説明
+コメントは原則 **日本語** で書く。以下に適用される:
+- 関数 / コンポーネント / フックの説明（`/** ... */`）
+- 関数引数の説明（`/** @param ... */` 形式または inline）
+- DB スキーマのカラム説明（全カラム必須）
+- 型フィールドの説明（全フィールド推奨）
+- ロジックブロック前のブロックコメント
+- インライン JSX のセクションマーカー
+- 変更履歴コメント（PR 番号、意図、根拠）
 
-コードの識別子（変数名・関数名・型名）は英語のままにする。
+コード識別子（変数、関数名、型）は英語のまま残す。
 
 ---
 
-## コメントのパターン
+## 必須コメントと推奨コメント
 
-### パターン 1: 関数・コンポーネント・フックへの一行 JSDoc
+| 対象 | コメント必須？ | 形式 |
+|---|---|---|
+| Export された関数 / フック / コンポーネントの宣言 | ✅ 必須 | 宣言の上に `/** ... */` 1 行 |
+| 関数引数（意味が自明でない場合） | ✅ 必須 | 型の中でフィールド名の後ろに `/** ... */` |
+| 型 / インターフェースのフィールド | ✅ 必須 | フィールドの上に `/** ... */` |
+| Drizzle スキーマのカラム | ✅ 必須 | カラム定義の上に `/** ... */` |
+| Zod スキーマフィールド（制約を追加する場合） | ⚠️ 推奨 | フィールドの上に `/** ... */` — 意図を記述 |
+| 関連する文のブロック | ⚠️ 推奨 | ブロックの前に `// ...` 1 行 |
+| JSX の見た目上のセクション | ⚠️ 推奨 | `{/* ... */}` |
+| 自明な行 | ❌ しない | — |
+| 変更履歴（PR 番号、意図） | ✅ 許可 | `// PR{N}: {何を変えたか/なぜ}` |
 
-宣言の直上に `/** ... */` を使う。何をするかを 1 文で説明する。
+すべてのファイルが AI と共著されるため、**ドキュメントは多めに書く方向に振る**。将来コードを読む AI も、将来読む人間と同じくらいコメントから恩恵を受ける。
+
+---
+
+## パターン 1: 宣言の上に 1 行 JSDoc
+
+export されるすべての関数 / フック / コンポーネント / 型の直上に `/** ... */` を置く。
 
 ```tsx
-/** 子供個別の報酬編集画面 */
-export const ChildRewardEdit = ({ childId }: Props) => {
+/** リソース個別の編集画面 */
+export const ResourceEdit = ({ resourceId }: Props) => {
   // ...
 }
 
-/** 年齢別報酬フォームを取得する */
-export const useAgeRewardForm = () => {
+/** リソース編集フォームの状態を取得する */
+export const useResourceForm = ({ resourceId }: { resourceId?: string }) => {
   // ...
 }
 
-/** お小遣いを更新する */
+/** リソースを更新する */
 const handleUpdate = () => {
   // ...
 }
+
+/** リソースフォーム型 */
+export type ResourceFormType = z.infer<typeof ResourceFormSchema>
 ```
 
-### パターン 2: ロジックセクション前のブロックコメント
+---
 
-関数内のセクションをラベリングするには 1 行の `//` コメントを使う。
+## パターン 2: 引数とフィールドの説明
 
-```tsx
-// 認証コンテキストを取得する
-const { db, userId } = await getAuthContext()
-
-// クエリパラメータを取得する
-const params = await searchParamsToObject(req.nextUrl.searchParams)
-
-// プロフィール情報を取得する
-const userInfo = await fetchUserInfoByUserId({ userId, db })
-
-// クエストを取得する
-const quests = await selectFamilyQuests({ db, ...params })
-```
-
-### パターン 3: JSX のセクションマーカー
-
-render ツリー内の視覚的セクションをマークするには `{/* ... */}` を使う。
-
-```tsx
-return (
-  <>
-    {/* ヘッダー */}
-    <PageHeader title="クエスト編集" />
-
-    {/* ロード中のオーバーレイ */}
-    <LoadingOverlay visible={isLoading} />
-
-    {/* タブ切り替え */}
-    <ScrollableTabs ...>
-      {/* お小遣いタブ */}
-      <Tabs.Panel value="age">...</Tabs.Panel>
-
-      {/* ランク報酬タブ */}
-      <Tabs.Panel value="level">...</Tabs.Panel>
-    </ScrollableTabs>
-
-    {/* 定額報酬設定FAB */}
-    <SubMenuFAB items={[...]} />
-  </>
-)
-```
-
-### パターン 4: Drizzle スキーマのカラム説明
-
-すべてのカラムに `/** ... */` 説明を付ける。テーブルの自己文書化のために必須。
+すべての引数とフィールドに、宣言の直上で `/** ... */` を付ける。これにより TypeScript / IDE のホバーツールチップに表示され、AI が一目で意図を理解できる。
 
 ```ts
-export const families = pgTable("families", {
-  /** ID */
+type Props = {
+  /** 対象リソースの ID（新規作成時は undefined） */
+  resourceId?: string
+  /** 編集権限があるかどうか */
+  canEdit: boolean
+  /** 削除確認ダイアログをスキップする（テスト用） */
+  skipConfirm?: boolean
+}
+
+type ResourceFormType = {
+  /** リソース名（1〜20 文字） */
+  name: string
+  /** 公開フラグ — true なら全ユーザーに表示 */
+  isPublic: boolean
+  /** タグ（最大 10 件） */
+  tags: string[]
+}
+```
+
+---
+
+## パターン 3: DB スキーマのカラム説明（必須）
+
+`drizzle/schema.ts` の全カラムに `/** ... */` 説明が必須。例外なし。
+
+```ts
+export const resources = pgTable("resources", {
+  /** リソース ID */
   id: uuid("id").primaryKey().defaultRandom(),
-  /** 表示ID */
-  displayId: text("display_id").notNull().unique(),
-  /** ローカル名 */
-  localName: text("local_name").notNull(),
-  /** オンライン名 */
-  onlineName: text("online_name"),
-  /** アイコンID */
-  iconId: integer("icon_id").notNull(),
+  /** リソース名 */
+  name: text("name").notNull(),
+  /** 公開フラグ */
+  isPublic: boolean("is_public").notNull().default(false),
+  /** カテゴリ ID（NULL の場合は未分類） */
+  categoryId: integer("category_id"),
 })
 
 export const timestamps = {
@@ -109,19 +111,130 @@ export const timestamps = {
 }
 ```
 
-### パターン 5: TODO と FIXME
+---
 
-未完成と分かっている作業には `TODO:` を使う。後で対応できるだけの文脈を含める。
+## パターン 4: Zod スキーマフィールドの説明
+
+Zod スキーマがバリデーションルールを持つとき、フィールドの上に意図を記述する。
+
+```ts
+export const ResourceFormSchema = z.object({
+  /** リソース名 — 1〜20 文字、必須 */
+  name: z.string().nonempty().min(1).max(20),
+
+  /** タグ — 最大 10 件 */
+  tags: z.array(z.string()).max(10),
+
+  /** 公開対象年齢 — 開始年齢（任意） */
+  ageFrom: z.number().nullable(),
+
+  /** 公開対象年齢 — 終了年齢（任意） */
+  ageTo: z.number().nullable(),
+})
+```
+
+---
+
+## パターン 5: 関数内のブロックコメント
+
+関数やフックの中のセクションを `//` 1 行コメントでラベル付けする。
 
 ```tsx
-// TODO: 将来的に実装（コメントテーブル作成後）
-// pinned_comment_id: uuid("pinned_comment_id")
+export const ResourceEdit = ({ resourceId }: Props) => {
+  // フォーム状態
+  const { register, errors, watch, setValue, handleSubmit, isValueChanged } =
+    useResourceForm({ resourceId })
 
-// TODO: 子供が複数いる場合の選択UIを追加
+  // 登録・更新・削除の各処理
+  const { handleRegister, isLoading: registerLoading } = useRegisterResource()
+  const { handleUpdate,   isLoading: updateLoading }   = useUpdateResource()
+  const { handleDelete,   isLoading: deleteLoading }   = useDeleteResource()
+
+  // すべての非同期処理のローディングを統合
+  const submitLoading = registerLoading || updateLoading || deleteLoading
+
+  // 送信処理
+  const onSubmit = handleSubmit((form) => {
+    if (resourceId) handleUpdate({ form, resourceId })
+    else            handleRegister({ form })
+  })
+
+  return ( /* ... */ )
+}
+```
+
+---
+
+## パターン 6: JSX セクションマーカー
+
+レンダーツリー内のビジュアルセクションのラベル付けに `{/* ... */}` を使う。
+
+```tsx
+return (
+  <ScreenWrapper>
+    {/* ヘッダー */}
+    <PageHeader title="リソース編集" />
+
+    {/* ロード中のオーバーレイ */}
+    <LoadingOverlay visible={isLoading} />
+
+    {/* タブ切り替え */}
+    <ScrollableTabs ...>
+      {/* 基本設定タブ */}
+      <Tabs.Panel value="basic">...</Tabs.Panel>
+
+      {/* 詳細設定タブ */}
+      <Tabs.Panel value="details">...</Tabs.Panel>
+    </ScrollableTabs>
+  </ScreenWrapper>
+)
+```
+
+---
+
+## パターン 7: 変更履歴コメント
+
+コードだけでは推測しにくい重要な編集を、その場にインラインで記録する。1 行、日本語で。
+
+```ts
+// PR123: 年齢上限フィールドを追加。要件 #45 対応。
+ageUpper: z.number().nullable(),
+
+// PR101: 旧 calculate() を廃止し新仕様に統一。互換性のため null チェックを追加。
+if (value == null) return 0
+
+// PR132: API ステータスを 200 → 204 に変更（フロントは互換）
+return new Response(null, { status: 204 })
+```
+
+記録するとき:
+- 時間経過でコードからは意図が消えていく非自明な変更
+- 外部呼び出し元に影響する API / スキーマ変更
+- 既知の移行期間のために残している互換シム
+- コンテキストなしでは根本原因が分かりにくいバグ修正
+
+記録しないとき:
+- 些細なリネームやフォーマット変更
+- 動作変更を伴わないルーチンのリファクタ
+- 編集したすべての行の「変更ログ」 — それは `git log` の仕事
+
+ファイルに変更履歴コメントが 5 件以上溜まったら、ファイル冒頭の `// History:` ブロックにまとめるか CHANGELOG に切り出すことを検討する。
+
+---
+
+## パターン 8: TODO と FIXME
+
+既知の未完了作業には `TODO:` を使う。後で対処できるよう、十分な文脈を含める。
+
+```tsx
+// TODO: コメントテーブル作成後に有効化する
+// pinnedCommentId: uuid("pinned_comment_id")
+
+// TODO(PR133): 子供が複数いる場合の選択 UI を追加
 const childId = children[0]?.id
 ```
 
-修正が必要な壊れた／誤ったコードには `FIXME:` を使う。
+マージ / リリース前に必ず修正が必要な、既知の壊れた / 誤ったコードには `FIXME:` を使う。
 
 ```tsx
 // FIXME: ageFrom が null のとき NaN になる
@@ -130,77 +243,58 @@ const ageDiff = ageTo - ageFrom
 
 ---
 
-## コメントすべきタイミング
-
-| 場面 | コメント | 理由 |
-|---|---|---|
-| 関数／フック／コンポーネントの宣言 | 付ける | 目的を自己文書化する |
-| 関数内のロジックセクション | 付ける | 長いハンドラを読みやすくする |
-| JSX 内の視覚的セクション | 付ける | UI 領域を一目で識別できる |
-| DB スキーマのカラム | 付ける（常に） | 説明がないとデータベーステーブルが読めなくなる |
-| 複雑な条件分岐や自明でない計算 | 付ける | 「なぜ」を説明する |
-| 自明な行（例: `const id = params.id`） | 付けない | ノイズになる |
-| コードがすでに言っていることの言い換え | 付けない | コメント衛生が悪い |
-
----
-
-## コメントすべきでないもの
+## コメントすべきでないこと
 
 ```tsx
-// ❌ Bad: コードを言い換えているだけ
+// ❌ コードと同じことを繰り返す
 // userId を取得する
 const userId = user.id
 
-// ❌ Bad: 過去の挙動への古い参照
-// 旧バージョンでは getUser() を使っていた
-const profile = await getProfile(id)
-
-// ❌ Bad: 時間が経つと陳腐化する PR 固有のメモ
-// PR128 で追加
-export const newFeature = () => { ... }
-
-// ❌ Bad: 呼び出し元のメモ
-// QuestListScreen から呼ばれる
-export const useQuestList = () => { ... }
+// ❌ 自明な動作の説明
+// state を更新する
+setIsOpen(true)
 ```
 
 ```tsx
-// ✅ Good: 自明でない制約を説明する
+// ✅ 隠れた制約を説明する
 // IME 入力中は Enter を無視する（変換確定キーと競合するため）
 if (e.key === "Enter" && !isComposing) {
   handleSubmit()
 }
 
-// ✅ Good: 関数が何をするかを文書化する（どうやるかではなく）
-/** クエストを家族IDで絞り込み、ページネーションして返す */
+// ✅ 関数の目的を説明する
+/** クエストを家族 ID で絞り込み、ページネーションして返す */
 export const selectFamilyQuests = async ({ db, familyId, page }) => { ... }
 ```
 
 ---
 
-## JSDoc の型注釈は付ける？
+## JSDoc の型注釈は使わない
 
-JSDoc の型注釈（`@param`、`@returns`）は **使わない** — 型は TypeScript が担当する。
+型は TypeScript が扱う。`@param` / `@returns` / `@type` 注釈は書かない — 目的の説明だけにする。
 
 ```tsx
-// ❌ こうしない — TypeScript と冗長
+// ❌ TypeScript と冗長
 /**
- * クエストを取得する
- * @param {string} questId - クエストID
- * @returns {Promise<Quest>} クエスト
+ * リソースを取得する
+ * @param {string} id - リソース ID
+ * @returns {Promise<Resource>} リソース
  */
 
-// ✅ 目的だけを記述する。型はシグネチャに書かれている
-/** クエストを取得する */
-export const getQuest = async (questId: string): Promise<Quest> => { ... }
+// ✅ 目的だけを書く。型はシグネチャに任せる
+/** リソースを取得する */
+export const getResource = async (id: string): Promise<Resource> => { ... }
 ```
 
 ---
 
 ## 制約
 
-- すべての export された関数／フック／コンポーネントに一行 JSDoc を付ける
-- Drizzle スキーマのカラムには `/** ... */` 説明を付ける（例外なし）
-- 長い JSX return の内側にはセクションコメントを入れる
-- `@param` / `@returns` / `@type` を使ってはいけない — 型は TypeScript が担当する
-- コードコメントに PR 番号や変更履歴の参照を書いてはいけない — その用途には git の履歴を使う
+- export されたすべての関数 / フック / コンポーネントに 1 行 JSDoc を付ける
+- すべての Drizzle スキーマカラムに `/** ... */`（必須）、バリデーションのあるすべての Zod スキーマフィールドに `/** ... */`（推奨）
+- 意味が自明でないすべての型フィールドに `/** ... */`
+- 長い JSX return の中にセクションコメント
+- 変更が非自明であれば変更履歴コメントを許可 — 日本語で 1 行、該当する場合は PR 番号を含める
+- `@param` / `@returns` / `@type` を使ってはいけない — 型は TypeScript が扱う
+- コードに既に書かれていることを繰り返さない
+- 完全な変更履歴の権威ある情報源は `git log` — コメントは意図のみを捕捉する

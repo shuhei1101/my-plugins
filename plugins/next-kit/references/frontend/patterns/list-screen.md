@@ -3,7 +3,7 @@
 
 ## What this covers
 
-Screens that show a collection of items with filtering, sorting, pagination, and a click-through to detail/edit. Examples: quest list, family member list, notification feed, child reward history.
+Screens that show a collection of items with filtering, sorting, pagination, and a click-through to a detail/edit view. Examples: resource list, member list, notification feed, history list.
 
 ---
 
@@ -20,6 +20,19 @@ app/(app)/{feature}/
 └── _hooks/
     ├── use{Feature}List.ts         # fetches + filter/sort state
     └── use{Feature}ListUrlState.ts # syncs filter/sort state with URL query string
+```
+
+The detail/edit route lives in a sibling folder where `view/` and `edit/` are siblings under `[id]/`:
+
+```
+app/(app)/{feature}/[id]/
+├── page.tsx            # 権限判定 → redirect to view/ or edit/
+├── _components/         # view/edit 共通
+├── _hooks/              # view/edit 共通
+├── view/
+│   └── page.tsx
+└── edit/
+    └── page.tsx
 ```
 
 ---
@@ -44,54 +57,54 @@ Putting filter/sort/page in the URL makes the list shareable, back-button-friend
 ### page.tsx (thin wrapper)
 
 ```tsx
-// app/(app)/quests/family/page.tsx
-import { FamilyQuestListScreen } from "./FamilyQuestListScreen"
+// app/(app)/resources/page.tsx
+import { ResourceListScreen } from "./ResourceListScreen"
 
 export default function Page() {
-  return <FamilyQuestListScreen />
+  return <ResourceListScreen />
 }
 ```
 
 ### Screen component
 
 ```tsx
-// app/(app)/quests/family/FamilyQuestListScreen.tsx
+// app/(app)/resources/ResourceListScreen.tsx
 "use client"
 
 import { ScreenWrapper } from "@/app/(core)/_components/ScreenWrapper"
 import { PageHeader } from "@/app/(core)/_components/PageHeader"
 import { LoadingOverlay } from "@mantine/core"
-import { FamilyQuestFilterBar } from "./_components/FamilyQuestFilterBar"
-import { FamilyQuestCard } from "./_components/FamilyQuestCard"
-import { FamilyQuestSortMenu } from "./_components/FamilyQuestSortMenu"
-import { useFamilyQuestListUrlState } from "./_hooks/useFamilyQuestListUrlState"
-import { useFamilyQuests } from "./_hooks/useFamilyQuests"
+import { ResourceFilterBar } from "./_components/ResourceFilterBar"
+import { ResourceCard } from "./_components/ResourceCard"
+import { ResourceSortMenu } from "./_components/ResourceSortMenu"
+import { useResourceListUrlState } from "./_hooks/useResourceListUrlState"
+import { useResources } from "./_hooks/useResources"
 
-export const FamilyQuestListScreen = () => {
+export const ResourceListScreen = () => {
   // 1. URL クエリから状態を読み取る + 変更を URL に書き戻す
-  const { filter, sort, page, pageSize, setFilter, setSort, setPage } = useFamilyQuestListUrlState()
+  const { filter, sort, page, pageSize, setFilter, setSort, setPage } = useResourceListUrlState()
 
-  // 2. 上記状態でクエストを取得
-  const { quests, totalRecords, maxPage, isLoading, refetch } = useFamilyQuests({
+  // 2. 上記状態でリソースを取得
+  const { resources, totalRecords, maxPage, isLoading, refetch } = useResources({
     filter, sort, page, pageSize
   })
 
   return (
     <ScreenWrapper>
-      <PageHeader title="家族クエスト一覧" />
+      <PageHeader title="リソース一覧" />
 
       {/* フィルタバー */}
-      <FamilyQuestFilterBar filter={filter} onChange={setFilter} />
+      <ResourceFilterBar filter={filter} onChange={setFilter} />
 
       {/* ソート */}
-      <FamilyQuestSortMenu sort={sort} onChange={setSort} />
+      <ResourceSortMenu sort={sort} onChange={setSort} />
 
       {/* ロード中オーバーレイ */}
       <LoadingOverlay visible={isLoading} />
 
       {/* リスト本体 */}
-      {quests.map((quest) => (
-        <FamilyQuestCard key={quest.id} quest={quest} />
+      {resources.map((resource) => (
+        <ResourceCard key={resource.id} resource={resource} />
       ))}
 
       {/* ページャ */}
@@ -104,22 +117,22 @@ export const FamilyQuestListScreen = () => {
 ### URL state hook
 
 ```ts
-// _hooks/useFamilyQuestListUrlState.ts
+// _hooks/useResourceListUrlState.ts
 "use client"
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { useCallback } from "react"
-import type { FamilyQuestFilterType } from "@/app/api/quests/family/query"
+import type { ResourceFilterType } from "@/app/api/resources/query"
 import type { SortOrder } from "@/app/(core)/schema"
-import type { QuestColumn } from "@/drizzle/schema"
+import type { ResourceColumn } from "@/drizzle/schema"
 
-export const useFamilyQuestListUrlState = () => {
+export const useResourceListUrlState = () => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
   /** URL クエリから現在のフィルタを読み取る */
-  const filter: FamilyQuestFilterType = {
+  const filter: ResourceFilterType = {
     name: searchParams.get("name") ?? undefined,
     categoryId: searchParams.get("categoryId") ?? undefined,
     tags: searchParams.getAll("tag"),
@@ -127,7 +140,7 @@ export const useFamilyQuestListUrlState = () => {
 
   /** ソート状態を読み取る */
   const sort = {
-    column: (searchParams.get("sortColumn") as QuestColumn) ?? "createdAt",
+    column: (searchParams.get("sortColumn") as ResourceColumn) ?? "createdAt",
     order: (searchParams.get("sortOrder") as SortOrder) ?? "desc",
   }
 
@@ -151,7 +164,7 @@ export const useFamilyQuestListUrlState = () => {
     router.push(`${pathname}?${params.toString()}`)
   }, [router, pathname, searchParams])
 
-  const setFilter = (next: FamilyQuestFilterType) => {
+  const setFilter = (next: ResourceFilterType) => {
     updateQuery({
       name: next.name ?? null,
       categoryId: next.categoryId ?? null,
@@ -160,7 +173,7 @@ export const useFamilyQuestListUrlState = () => {
     })
   }
 
-  const setSort = (next: { column: QuestColumn; order: SortOrder }) => {
+  const setSort = (next: { column: ResourceColumn; order: SortOrder }) => {
     updateQuery({ sortColumn: next.column, sortOrder: next.order, page: "1" })
   }
 
@@ -175,32 +188,32 @@ export const useFamilyQuestListUrlState = () => {
 ### Data fetching hook
 
 ```ts
-// _hooks/useFamilyQuests.ts
+// _hooks/useResources.ts
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { getFamilyQuests } from "@/app/api/quests/family/client"
+import { getResources } from "@/app/api/resources/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
-import type { FamilyQuestFilterType } from "@/app/api/quests/family/query"
-import type { QuestColumn } from "@/drizzle/schema"
+import type { ResourceFilterType } from "@/app/api/resources/query"
+import type { ResourceColumn } from "@/drizzle/schema"
 import type { SortOrder } from "@/app/(core)/schema"
 
 type Args = {
-  filter: FamilyQuestFilterType
-  sort: { column: QuestColumn; order: SortOrder }
+  filter: ResourceFilterType
+  sort: { column: ResourceColumn; order: SortOrder }
   page: number
   pageSize: number
 }
 
-/** 家族クエスト一覧を取得する */
-export const useFamilyQuests = ({ filter, sort, page, pageSize }: Args) => {
+/** リソース一覧を取得する */
+export const useResources = ({ filter, sort, page, pageSize }: Args) => {
   const router = useRouter()
 
   const { error, data, isLoading, refetch } = useQuery({
-    queryKey: ["familyQuests", filter, sort, page, pageSize],
+    queryKey: ["resources", filter, sort, page, pageSize],
     retry: false,
-    queryFn: () => getFamilyQuests({
+    queryFn: () => getResources({
       tags: filter.tags,
       name: filter.name,
       categoryId: filter.categoryId,
@@ -216,7 +229,7 @@ export const useFamilyQuests = ({ filter, sort, page, pageSize }: Args) => {
   if (error) handleAppError(error, router)
 
   return {
-    quests: data?.rows ?? [],
+    resources: data?.rows ?? [],
     totalRecords: data?.totalRecords ?? 0,
     maxPage: Math.ceil((data?.totalRecords ?? 0) / pageSize),
     isLoading,
@@ -232,12 +245,12 @@ export const useFamilyQuests = ({ filter, sort, page, pageSize }: Args) => {
 The queryKey must include **every parameter that affects the result**:
 
 ```ts
-queryKey: ["familyQuests", filter, sort, page, pageSize]
+queryKey: ["resources", filter, sort, page, pageSize]
 ```
 
 | Component | Why included |
 |---|---|
-| Resource name string (`"familyQuests"`) | Namespace — distinguishes from other queries |
+| Resource name string (`"resources"`) | Namespace — distinguishes from other queries |
 | `filter` object | Different filters = different data |
 | `sort` object | Different sort = different order |
 | `page`, `pageSize` | Different pagination slice |
@@ -249,10 +262,10 @@ queryKey: ["familyQuests", filter, sort, page, pageSize]
 After a mutation, invalidate the resource namespace (matches by prefix):
 
 ```ts
-queryClient.invalidateQueries({ queryKey: ["familyQuests"] })
+queryClient.invalidateQueries({ queryKey: ["resources"] })
 ```
 
-All keys starting with `["familyQuests", ...]` are invalidated, so any active filter/sort/page combo refetches.
+All keys starting with `["resources", ...]` are invalidated, so any active filter/sort/page combo refetches.
 
 ---
 
@@ -273,7 +286,7 @@ const debouncedCommit = useDebouncedCallback((value: string) => {
 }, 300)
 
 <TextInput
-  placeholder="クエスト名で検索"
+  placeholder="名前で検索"
   value={draft}
   onChange={(e) => {
     setDraft(e.currentTarget.value)
@@ -318,18 +331,18 @@ import { Pagination } from "@mantine/core"
 
 ## Empty states
 
-Always render an empty state when `quests.length === 0 && !isLoading`:
+Always render an empty state when `resources.length === 0 && !isLoading`:
 
 ```tsx
-{quests.length === 0 && !isLoading ? (
+{resources.length === 0 && !isLoading ? (
   <Center mt="xl">
     <Stack align="center" gap="sm">
-      <Text c="dimmed">該当するクエストがありません</Text>
+      <Text c="dimmed">該当するリソースがありません</Text>
       <Button variant="light" onClick={() => setFilter({})}>フィルタをクリア</Button>
     </Stack>
   </Center>
 ) : (
-  quests.map((q) => <FamilyQuestCard key={q.id} quest={q} />)
+  resources.map((r) => <ResourceCard key={r.id} resource={r} />)
 )}
 ```
 
@@ -337,13 +350,38 @@ Always render an empty state when `quests.length === 0 && !isLoading`:
 
 ## Click-through to detail/edit
 
-Use `NavigationButton` or `<Link>` with URL constants:
+Use `NavigationButton` or `<Link>` with URL constants. URL constants are exposed as a single object per resource (`{ list, new, view, edit }`), and view/edit are addressed via dedicated builders:
+
+```ts
+// app/(core)/endpoints.ts
+export const RESOURCE_URL = {
+  list: `/resources`,
+  new:  `/resources/new`,
+  view: (id: string) => `/resources/${id}/view`,
+  edit: (id: string) => `/resources/${id}/edit`,
+}
+
+export const RESOURCE_API_URL = {
+  list:   `/api/resources`,
+  detail: (id: string) => `/api/resources/${id}`,
+}
+```
 
 ```tsx
 import { NavigationButton } from "@/app/(core)/_components/NavigationButton"
-import { QUEST_URL } from "@/app/(core)/endpoints"
+import { RESOURCE_URL } from "@/app/(core)/endpoints"
 
-<NavigationButton href={QUEST_URL(quest.id)} label={quest.name} />
+<NavigationButton href={RESOURCE_URL.view(resource.id)} label={resource.name} />
+```
+
+For programmatic navigation:
+
+```tsx
+import { useRouter } from "next/navigation"
+import { RESOURCE_URL } from "@/app/(core)/endpoints"
+
+const router = useRouter()
+router.push(RESOURCE_URL.view(id))
 ```
 
 ---
@@ -355,4 +393,5 @@ import { QUEST_URL } from "@/app/(core)/endpoints"
 - Filter changes reset pagination to page 1
 - Always render a meaningful empty state — never just whitespace
 - Use Mantine's `Pagination` component, not a hand-rolled one
-- Detail click-through uses URL constants (`QUEST_URL(id)`), never hardcoded strings
+- Detail click-through uses URL constants from the resource's URL object (e.g. `RESOURCE_URL.view(id)`), never hardcoded strings
+- Routes for an item use `[id]/view/` and `[id]/edit/` as sibling folders under `[id]/`; the `[id]/page.tsx` resolves permissions and redirects

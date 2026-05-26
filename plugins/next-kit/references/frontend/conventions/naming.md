@@ -5,80 +5,55 @@
 
 | Target | Convention | Example |
 |---|---|---|
-| Folder | kebab-case | `quest-list/`, `family-members/` |
+| Folder | kebab-case | `resources/`, `family-members/` |
 | Hook folder | `_hooks/` (plural, underscore prefix — always) | `_hooks/` |
 | Component folder | `_components/` (plural, underscore prefix) | `_components/` |
 | Page file | `page.tsx` (Next.js convention) | `page.tsx` |
-| Screen component file | PascalCase + `Screen` suffix | `QuestListScreen.tsx` |
-| Layout component file | PascalCase + `Layout` suffix | `QuestEditLayout.tsx` |
-| Edit component file | PascalCase + `Edit` suffix | `FamilyQuestEdit.tsx` |
-| View component file | PascalCase + `View` suffix | `ChildView.tsx` |
-| Sub-component file | PascalCase | `QuestCard.tsx` |
-| Hook file | camelCase + `use` prefix | `useQuestList.ts` |
+| List screen file | PascalCase + `ListScreen` suffix | `ResourceListScreen.tsx` |
+| New screen file | PascalCase + `NewScreen` suffix | `ResourceNewScreen.tsx` |
+| View screen file | PascalCase + `ViewScreen` suffix | `ResourceViewScreen.tsx` |
+| Edit screen file | PascalCase + `EditScreen` suffix | `ResourceEditScreen.tsx` |
+| Layout component file | PascalCase + `Layout` suffix | `ResourceEditLayout.tsx` |
+| Sub-component file | PascalCase | `ResourceCard.tsx` |
+| Hook file | camelCase + `use` prefix | `useResource.ts` |
 | Form schema file | `form.ts` (lowercase, fixed name) | `form.ts` |
 | Util / config / endpoints file | camelCase | `endpoints.ts`, `logger.ts`, `util.ts` |
 | Dynamic segment folder | `[id]` or `[slug]` | `[id]/`, `[childId]/` |
 
-> **Rule**: only `_hooks/` (plural) is allowed in new code. If legacy `_hook/` (singular) is encountered, migrate it to `_hooks/` when touching the file.
+> **Rule**: only `_hooks/` (plural) is allowed in new code. Migrate any legacy `_hook/` when touching the file.
 
 ---
 
-## Edit vs View (read-only) naming
+## Per-record view vs edit
 
-When a feature has both an edit screen and a read-only display, follow this convention:
+Each record has **two sibling routes** — `view` and `edit`. The screen file name carries the suffix that matches the route.
 
-| Role | Component name | Folder / path pattern |
+| Route | Screen file | Folder location |
 |---|---|---|
-| Read-only display | `{Feature}View.tsx` | `{feature}/view/page.tsx` or directly under `{feature}/` |
-| Editable form | `{Feature}Edit.tsx` | `{feature}/page.tsx` (default) |
-| List / index | `{Feature}ListScreen.tsx` | `{feature}/page.tsx` |
-| Detail (combined display + actions) | `{Feature}Screen.tsx` | `{feature}/[id]/page.tsx` |
+| `/{feature}/[id]/view` | `{Feature}ViewScreen.tsx` | `[id]/view/` |
+| `/{feature}/[id]/edit` | `{Feature}EditScreen.tsx` | `[id]/edit/` |
+| `/{feature}/[id]` (any) | (no screen — redirects) | `[id]/page.tsx` only |
 
-### Examples from real code
-
-```
-app/(app)/children/[id]/_components/
-├── ChildView.tsx          # 子供プロフィール閲覧
-└── ChildEdit.tsx          # 子供プロフィール編集
-
-app/(app)/families/[id]/view/
-├── page.tsx
-├── FamilyProfileViewScreen.tsx       # 家族プロフィール閲覧画面
-└── _components/
-    ├── FamilyProfileViewLayout.tsx   # 閲覧用レイアウト
-    └── FamilyProfileViewFooter.tsx
-
-app/(app)/quests/family/[id]/
-├── page.tsx
-├── FamilyQuestEdit.tsx               # 家族クエスト編集画面
-└── view/
-    └── page.tsx                       # 家族クエスト閲覧画面
-```
-
-### Why two routes vs one component with mode?
-
-- **Two routes (`/quests/family/[id]` for edit, `/quests/family/[id]/view` for view)**: when the URL needs to differ (deep link to view-only, role-based default route, different breadcrumb)
-- **Single component, internal mode state**: when the toggle is purely UI-local and never needs to be linkable
-
-Default to two routes for any feature that parents and children have different permissions on.
+`[id]/page.tsx` is **never a screen** — it is a server component that resolves permissions and redirects to either `view/` or `edit/`. See `folder-structure.md`.
 
 ---
 
-## Component naming by role
+## Screen vs Layout vs Card
 
-| Role | Suffix | Example | Purpose |
-|---|---|---|---|
-| `Screen` | `XxxScreen.tsx` | `QuestListScreen.tsx` | Top-level page composition (called from `page.tsx`) |
-| `Layout` | `XxxLayout.tsx` | `QuestEditLayout.tsx` | Reusable shell — header + content area + actions |
-| `Edit` | `XxxEdit.tsx` | `FamilyQuestEdit.tsx` | Editable form wrapper (Screen for edit mode) |
-| `View` | `XxxView.tsx` | `ChildView.tsx` | Read-only display (Screen for view mode) |
-| `Card` | `XxxCard.tsx` | `QuestCard.tsx` | List-item representation |
-| `Item` | `XxxItem.tsx` | `TimelineItem.tsx` | Single entry inside a feed/list |
-| `Settings` | `XxxSettings.tsx` | `BasicSettings.tsx` | One section/tab inside an edit form |
-| `Popup` / `Modal` | `XxxPopup.tsx`, `XxxModal.tsx` | `IconSelectPopup.tsx`, `NotificationModal.tsx` | Modal dialog |
-| `Wrapper` | `XxxWrapper.tsx` | `ScreenWrapper.tsx` | Layout/styling shell that wraps any children |
-| `Button` | `XxxButton.tsx` | `LoadingButton.tsx`, `NavigationButton.tsx` | Specialized button variant |
-| `Context` | `XxxContext.tsx` | `FABContext.tsx`, `LoadingContext.tsx` | React Context provider + hook |
+| Suffix | Role | When to use |
+|---|---|---|
+| `ListScreen` | Collection page | `/{feature}/page.tsx` renders this |
+| `NewScreen` | Creation page | `/{feature}/new/page.tsx` renders this |
+| `ViewScreen` | Read-only detail page | `/{feature}/[id]/view/page.tsx` renders this |
+| `EditScreen` | Editable detail page | `/{feature}/[id]/edit/page.tsx` renders this |
+| `Layout` | Re-usable shell for a Screen | Header + content area + actions — composed by Screen files |
+| `Card` | One item in a list | Used inside `*ListScreen.tsx` |
+| `Item` | One entry in a feed | Used inside infinite-scroll feeds |
+| `Settings` | One tab inside an edit form | Used inside `*EditScreen.tsx` |
+| `Popup` / `Modal` | Modal dialog | See `patterns/dialog.md` |
+| `Button` | Specialized button variant | `LoadingButton`, `NavigationButton` |
+| `Context` | React Context + hook pair | `FABContext`, `LoadingContext` |
+| `Wrapper` | Styling shell with `children` | `ScreenWrapper` |
 
 ---
 
@@ -86,15 +61,17 @@ Default to two routes for any feature that parents and children have different p
 
 | Pattern | Purpose | Example |
 |---|---|---|
-| `use{Feature}` | Data fetching (read) | `useFamilyQuests`, `useChildren` |
-| `use{Feature}Form` | Form state management | `useFamilyQuestForm`, `useFamilyRegisterForm` |
-| `useRegister{Feature}` | Create mutation | `useRegisterFamilyQuest` |
-| `useUpdate{Feature}` | Update mutation | `useUpdateFamilyQuest` |
-| `useDelete{Feature}` | Delete mutation | `useDeleteFamilyQuest` |
-| `use{Feature}Submit` | Combined submit handler | `useFamilyQuestSubmit` |
+| `use{Feature}` | Data fetching (read) | `useResource`, `useResources` |
+| `use{Feature}List` | Collection data fetching | `useResourceList` |
+| `use{Feature}View` | View-screen specific fetching | `useResourceView` |
+| `use{Feature}Form` | Form state management | `useResourceForm` |
+| `useRegister{Feature}` | Create mutation | `useRegisterResource` |
+| `useUpdate{Feature}` | Update mutation | `useUpdateResource` |
+| `useDelete{Feature}` | Delete mutation | `useDeleteResource` |
+| `use{Feature}UrlState` | URL query string state | `useResourceListUrlState` |
 
 Rules:
-- One hook per file — file name matches export name
+- One hook per file — file name matches the export name
 - Always begin with `use` (React rule)
 - One verb (`Register`, `Update`, `Delete`) per file — never combine
 
@@ -104,12 +81,12 @@ Rules:
 
 | Pattern | Example | Notes |
 |---|---|---|
-| `{Feature}FormSchema` (preferred) | `FamilyRegisterFormSchema` | Use `Schema` for new code |
-| `{Feature}Type` | `FamilyRegisterFormType` | Inferred from schema via `z.infer<>` |
-| `{Feature}RequestSchema` | `PostFamilyRequestSchema` | API request body schema (in `route.ts`) |
-| `{Feature}Request` (type) | `PostFamilyRequest` | Inferred from `*RequestSchema` |
+| `{Feature}FormSchema` | `ResourceFormSchema` | Zod object |
+| `{Feature}Type` | `ResourceFormType` | Inferred via `z.infer<>` |
+| `{Feature}RequestSchema` | `PostResourceRequestSchema` | API request body schema (in `route.ts`) |
+| `{Feature}Request` (type) | `PostResourceRequest` | Inferred from `*RequestSchema` |
 
-> **Legacy note**: the existing codebase has both `Scheme` (older) and `Schema` (newer) suffixes. Use `Schema` for any new code; when refactoring touched files, rename `*Scheme` → `*Schema`.
+Use `Schema` (not `Scheme`) for new code.
 
 ---
 
@@ -117,19 +94,26 @@ Rules:
 
 See `frontend/endpoints.md` for the full convention. Summary:
 
-| Pattern | Example |
-|---|---|
-| Static frontend URL | `HOME_URL`, `FAMILIES_URL` |
-| Dynamic frontend URL | `FAMILY_URL = (id) => ...` |
-| Grouped URL object | `SETTINGS_URL = { root, profile, ... }` |
-| API endpoint URL | `FAMILY_API_URL` |
+```ts
+// Single global URL — flat const
+export const HOME_URL = `/home`
+
+// Feature group — object
+export const RESOURCE_URL = {
+  list: `/resources`,
+  new:  `/resources/new`,
+  view: (id: string) => `/resources/${id}/view`,
+  edit: (id: string) => `/resources/${id}/edit`,
+}
+```
 
 ---
 
 ## Constraints
 
 - `_hooks/` (plural) is the only allowed name — never `_hook/` for new code
-- `form.ts` is a fixed filename — every form feature has exactly one
-- `Screen` / `View` / `Edit` suffixes are not optional — they communicate role at a glance
-- Never use `index.tsx` in feature folders — always name the file after its role (`XxxScreen.tsx`)
+- `form.ts` is a fixed filename — every editable form has exactly one, under `[id]/edit/`
+- Screen suffix communicates role: `ListScreen` / `NewScreen` / `ViewScreen` / `EditScreen`
+- Never use generic `Screen` suffix when the screen is one of List / New / View / Edit
+- Never use `index.tsx` in feature folders — always name the file after its role
 - Do not put untyped components at the root of a route folder — use `_components/`

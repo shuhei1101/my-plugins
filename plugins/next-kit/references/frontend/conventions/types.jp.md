@@ -2,126 +2,129 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # Next.js App Router — 型定義
 
-## 型定義の置き場所
+スキーマフィールドのコメントと JSDoc のルールについては `comments.md` を参照。本ファイルは型定義のメカニクスと配置に焦点を当てる。
+
+---
+
+## 型定義の配置
 
 | 型 | 配置場所 | 例 |
 |---|---|---|
-| フォームスキーマと型 | `app/(app)/{feature}/form.ts` | `FamilyRegisterFormSchema`, `FamilyRegisterFormType` |
-| 共有のフォーム／バリデーション部品 | `app/(core)/schema.ts` | `DisplayIdSchema`, `BirthdaySchema` |
-| API リクエスト／レスポンスの型 | `app/api/{resource}/route.ts`（ハンドラから export） | `PostFamilyRequest`, `GetChildrenResponse` |
-| API クエリパラメータの型 | `app/api/{resource}/query.ts` | `FamilyQuestFilterType` |
-| DB の行の型 | `drizzle/schema.ts`（`$inferSelect` / `$inferInsert` 経由） | `FamilySelect`, `FamilyInsert` |
-| コンポーネントの Props | コンポーネントファイル内（export 不要） | `type Props = { childId: string }` |
-| フックの返り値・引数の型 | フックファイル内（export 不要） | 関数シグネチャにインライン |
-| 複数機能で再利用するドメイン型 | `app/(core)/types.ts`（3 ファイル以上で共有するとき） | `SortOrder`, `Pagination` |
+| フォームスキーマと型 | `app/(app)/{feature}/[id]/edit/form.ts`（または `{feature}/new/form.ts`） | `ResourceFormSchema`、`ResourceFormType` |
+| 共通フォーム / バリデーションのプリミティブ | `app/(core)/schema.ts` | `DisplayIdSchema`、`BirthdaySchema` |
+| API リクエスト / レスポンス型 | `app/api/{resource}/route.ts`(ハンドラから export) | `PostResourceRequest`、`GetResourceListResponse` |
+| API クエリパラメータ型 | `app/api/{resource}/query.ts` | `ResourceFilterType` |
+| DB 行の型 | `drizzle/schema.ts`(`$inferSelect` / `$inferInsert` 経由) | `ResourceSelect`、`ResourceInsert` |
+| コンポーネントの Props | コンポーネントファイルの中（export 不要） | `type Props = { resourceId: string }` |
+| フックの戻り値 / 引数型 | フックファイルの中（export 不要） | 関数シグネチャにインライン |
+| 機能横断で再利用されるドメイン型 | `app/(core)/types.ts`（3 ファイル以上で共有される場合） | `SortOrder`、`Pagination` |
 
-> グローバルな `types.d.ts` は持たない。型はそれを所有するコードのすぐ隣に置く。
+> グローバルな `types.d.ts` は置かない。型はそれを所有するコードの隣に置く。
 
 ---
 
 ## type と interface
 
-デフォルトでは `type` を使う。`interface` は declaration merging や extension が必要な場合のみ使う（アプリコードではまれ）。
+デフォルトは `type` を使う。`interface` は declaration merging やライブラリ拡張が必要な場合のみ（アプリコードではまれ）。
 
 ```ts
-// ✅ すべてに type を使う
-type Props = { childId: string }
+// ✅ すべて type を使う
+type Props = { resourceId: string }
 type SortOrder = "asc" | "desc"
 type Context = { params: Promise<{ id: string }> }
-type QuestSort = { column: QuestColumn; order: SortOrder }
+type ResourceSort = { column: ResourceColumn; order: SortOrder }
 
-// ⚠️ ライブラリの interface を拡張するときだけ interface を使う
+// ⚠️ ライブラリの interface を拡張するときのみ interface
 interface CustomTheme extends MantineTheme { /* ... */ }
 ```
+
+各フィールドには常に `/** ... */` で説明を付ける（`comments.md` 参照）。
 
 ---
 
 ## Zod スキーマ → 型推論
 
-スキーマを Zod で定義し、型を推論する。**型を手書きしてはいけない** — 常にスキーマから推論する。
+Zod でスキーマを定義し、そこから型を推論する。**型を手書きしてはいけない** — 必ずスキーマから推論する。
 
 ```ts
 import { z } from "zod"
 
-/** 家族登録フォームスキーマ */
-export const FamilyRegisterFormSchema = z.object({
-  displayId: z.string().nonempty(),
-  localName: z.string().nonempty().max(10),
-  parentName: z.string().nonempty(),
-  parentBirthday: z.string().nonempty(),
-  onlineName: z.string().nullable(),
-  familyIconId: z.number(),
-  familyIconColor: z.string(),
-  parentIconId: z.number(),
-  parentIconColor: z.string(),
+/** リソース登録フォームスキーマ */
+export const ResourceFormSchema = z.object({
+  /** リソース名（1〜20 文字、必須） */
+  name: z.string().nonempty().min(1).max(20),
+  /** 公開フラグ */
+  isPublic: z.boolean(),
+  /** タグ（最大 10 件） */
+  tags: z.array(z.string()).max(10),
 })
 
-/** 家族登録フォーム型（推論） */
-export type FamilyRegisterFormType = z.infer<typeof FamilyRegisterFormSchema>
+/** リソース登録フォーム型（推論） */
+export type ResourceFormType = z.infer<typeof ResourceFormSchema>
 ```
 
-### 推論にする理由
+### なぜ推論なのか
 
-- スキーマと型が乖離することがない
-- スキーマをリファクタすると型も自動的に追従する
-- スキーマ変更時の差分が小さくなる
+- スキーマと型がずれることが原理上ない
+- スキーマをリファクタすると型も自動的に更新される
+- スキーマ変更時の diff が小さくなる
 
 ---
 
 ## スキーマの合成
 
-### ベーススキーマを拡張する
+### ベーススキーマの拡張
 
 ```ts
-// Base
-export const BaseQuestFormSchema = z.object({
+// ベース
+export const BaseResourceFormSchema = z.object({
+  /** リソース名 */
   name: z.string().nonempty(),
+  /** アイコン ID */
   iconId: z.number(),
-  details: z.array(QuestDetailScheme),
-  // ... shared fields
 })
 
-// 家族向けの拡張
-export const FamilyQuestFormSchema = BaseQuestFormSchema.extend({
-  childSettings: z.array(ChildSettingSchema),
+// 拡張
+export const PremiumResourceFormSchema = BaseResourceFormSchema.extend({
+  /** 有料プラン ID */
+  planId: z.string(),
 })
-export type FamilyQuestFormType = z.infer<typeof FamilyQuestFormSchema>
+export type PremiumResourceFormType = z.infer<typeof PremiumResourceFormSchema>
 ```
 
-### `.refine()` でフィールド横断バリデーション
+### `.refine()` によるフィールド間バリデーション
 
 ```ts
-export const ResetPasswordFormSchema = z.object({
+export const PasswordResetSchema = z.object({
   password: z.string().min(6),
   passwordConfirm: z.string().nonempty(),
 })
 .refine((data) => data.password === data.passwordConfirm, {
   message: "パスワードが一致しません。",
-  path: ["passwordConfirm"],  // このフィールドにエラーを付ける
+  path: ["passwordConfirm"],  // このフィールドにエラーを紐付ける
 })
 ```
 
-### 再利用可能な refine ヘルパー
+`path: ["fieldName"]` で特定のフィールドにエラーを紐付けると、`errors.fieldName?.message` で拾えるようになる。
+
+### 再利用可能な refinement ヘルパー
 
 同じ `.refine()` を複数のスキーマに適用するとき:
 
 ```ts
-/** 年齢・月のバリデーションを追加する共通refine */
-export const addAgeMonthRefinements = <T extends z.ZodObject<z.ZodRawShape>>(schema: T) => {
-  return schema
-    .refine(
-      (data) => data.ageFrom == null || data.ageTo == null || data.ageFrom < data.ageTo,
-      { message: "対象年齢(開始)は対象年齢(終了)以下である必要があります", path: ["ageFrom"] }
-    )
-    .refine(
-      (data) => !(data.monthFrom != null && data.monthTo == null),
-      { message: "公開終了月は必須です。", path: ["monthTo"] }
-    )
-}
+/** 開始 < 終了 のバリデーションを追加する共通 refine */
+export const addRangeRefinement = <T extends z.ZodObject<z.ZodRawShape>>(
+  schema: T,
+  fromKey: string,
+  toKey: string,
+) => schema.refine(
+  (data) => data[fromKey] == null || data[toKey] == null || data[fromKey] < data[toKey],
+  { message: "開始は終了より小さい必要があります", path: [fromKey] }
+)
 
-// 適用
-export const FamilyQuestFormSchema = addAgeMonthRefinements(
-  BaseQuestFormSchema.extend({ childSettings: z.array(ChildSettingSchema) })
+export const ResourceFormSchema = addRangeRefinement(
+  BaseResourceFormSchema.extend({ /* ... */ }),
+  "ageFrom", "ageTo"
 )
 ```
 
@@ -133,139 +136,149 @@ Drizzle ORM はテーブル定義から型を導出するための `$inferSelect
 
 ```ts
 // drizzle/schema.ts
-export const families = pgTable("families", {
+export const resources = pgTable("resources", {
+  /** ID */
   id: uuid("id").primaryKey(),
+  /** リソース名 */
+  name: text("name").notNull(),
+  /** 表示 ID */
   displayId: text("display_id").notNull(),
-  localName: text("local_name").notNull(),
 })
 
-// Select 型（`SELECT * FROM families` に対応）
-export type FamilySelect = typeof families.$inferSelect
+// Select 型（`SELECT * FROM resources` に対応）
+export type ResourceSelect = typeof resources.$inferSelect
 
-// Insert 型（`INSERT INTO families` に対応）
-export type FamilyInsert = Omit<typeof families.$inferInsert, "id" | "createdAt" | "updatedAt">
+// Insert 型（`INSERT INTO resources` に対応）
+export type ResourceInsert = Omit<typeof resources.$inferInsert, "id" | "createdAt" | "updatedAt">
 
 // Update 型
-export type FamilyUpdate = Partial<FamilyInsert>
+export type ResourceUpdate = Partial<ResourceInsert>
 ```
 
 ### よくある派生
 
 ```ts
 // 自動管理カラムを Insert から除外
-export type QuestInsert = Omit<typeof quests.$inferInsert, "id" | "createdAt" | "updatedAt">
+export type ResourceInsert = Omit<typeof resources.$inferInsert, "id" | "createdAt" | "updatedAt">
 
 // 不変フィールドを Update から除外
-export type QuestUpdate = Omit<Partial<QuestInsert>, "type">
+export type ResourceUpdate = Omit<Partial<ResourceInsert>, "type">
 
-// 合成された返り値の型
-export type ChildQuest = {
-  quest: QuestSelect
-  details: QuestDetailSelect[]
-  tags: QuestTagSelect[]
+// 合成戻り型
+export type ResourceWithChildren = {
+  resource: ResourceSelect
+  children: ResourceChildSelect[]
+  tags:     ResourceTagSelect[]
 }
 ```
 
+`drizzle/schema.ts` の全カラムに `/** ... */` 説明が必要（`comments.md` 参照）。
+
 ---
 
-## API リクエスト／レスポンスの型
+## API リクエスト / レスポンスの型
 
 ### リクエスト型（`route.ts` で定義）
 
 ```ts
-// app/api/families/route.ts
+// app/api/resources/route.ts
 import { z } from "zod"
 
-export const PostFamilyRequestSchema = z.object({
-  form: FamilyRegisterFormSchema,
+export const PostResourceRequestSchema = z.object({
+  form: ResourceFormSchema,
 })
-export type PostFamilyRequest = z.infer<typeof PostFamilyRequestSchema>
+export type PostResourceRequest = z.infer<typeof PostResourceRequestSchema>
 
 export async function POST(request: NextRequest) {
   // ...
-  const data = PostFamilyRequestSchema.parse(body)
+  const data = PostResourceRequestSchema.parse(body)
 }
 ```
 
 ### クライアントはリクエスト型を使う
 
 ```ts
-// app/api/families/client.ts
-import type { PostFamilyRequest } from "./route"
+// app/api/resources/client.ts
+import type { PostResourceRequest } from "./route"
 
-export const postFamily = async (request: PostFamilyRequest) => { /* ... */ }
+export const postResource = async (request: PostResourceRequest) => { /* ... */ }
 ```
 
-### `Awaited<ReturnType<...>>` によるレスポンス型
+### `Awaited<ReturnType<...>>` でレスポンス型を導出
 
 ```ts
-// app/api/quests/family/[id]/route.ts
-const fetchQuest = async ({ db, questId }) => {
-  return await db.query.quests.findFirst({ where: eq(quests.id, questId) })
+// app/api/resources/[id]/route.ts
+const fetchResource = async ({ db, id }) => {
+  return await db.query.resources.findFirst({ where: eq(resources.id, id) })
 }
 
-export type GetQuestResponse = Awaited<ReturnType<typeof fetchQuest>>
+export type GetResourceResponse = Awaited<ReturnType<typeof fetchResource>>
 ```
 
 ---
 
 ## ジェネリクス
 
-多態的なフォーム型を扱う再利用可能なレイアウトやフックにはジェネリクスを使う。
+再利用可能なレイアウトや、多相なフォーム型を扱うフックにはジェネリクスを使う。
 
 ```tsx
-// 任意のフォーム型に対応する汎用レイアウト
-type QuestEditLayoutProps<TForm extends Record<string, unknown>> = {
-  questId?: string
+// 任意のフォーム型に対応する汎用 layout
+type EditLayoutProps<TForm extends Record<string, unknown>> = {
+  /** リソース ID（新規作成時は undefined） */
+  resourceId?: string
+  /** ローディング状態 */
   isLoading: boolean
+  /** 送信ハンドラ */
   onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>
+  /** タブ設定 */
   tabs: TabConfig[]
+}
+
+export const EditLayout = <TForm extends Record<string, unknown>>({
+  resourceId, isLoading, onSubmit, tabs,
+}: EditLayoutProps<TForm>) => {
   // ...
 }
 
-export const QuestEditLayout = <TForm extends Record<string, unknown>>({
-  questId, isLoading, onSubmit, tabs,
-}: QuestEditLayoutProps<TForm>) => {
-  // ...
-}
-
-// 使い方
-<QuestEditLayout<FamilyQuestFormType>
-  questId={familyQuestId}
+// 利用側
+<EditLayout<ResourceFormType>
+  resourceId={resourceId}
   // ...
 />
 ```
 
 ```ts
-// 汎用のミューテーションフック
-const mutation = useMutation<void, unknown, AgeRewardFormType>({
-  mutationFn: async (data) => await putChildAgeRewardTable(childId, data),
+// 汎用 mutation フック
+const mutation = useMutation<void, unknown, ResourceFormType>({
+  mutationFn: async (data) => await putResource(resourceId, data),
   // ...
 })
 ```
 
 ---
 
-## 型のインポート
+## 型の import
 
-型だけのインポートは常に `import type` を使う。インポート箇所でランタイム要素を取り込んでいないことが明示できる。
+型のみを import するときは常に `import type` を使う。これにより import 時点でランタイムには何も持ち込まれないことが明示される。
 
 ```ts
 // ✅ 型のみの import
-import type { PostFamilyRequest } from "./route"
-import type { FamilyQuestFormType } from "../form"
-import type { Quest } from "@/drizzle/schema"
+import type { PostResourceRequest } from "./route"
+import type { ResourceFormType } from "../form"
+import type { Resource } from "@/drizzle/schema"
 
-// ❌ 型に対してランタイム import を使ってはいけない
-import { PostFamilyRequest } from "./route"
+// ❌ 型のためにランタイム import を使ってはいけない
+import { PostResourceRequest } from "./route"
 ```
 
 ---
 
 ## 制約
 
-- 型は常に Zod スキーマから推論する（`z.infer<>`）— 手書きで並行する型を書いてはいけない
+- 常に Zod スキーマから型を推論する（`z.infer<>`）— 手書きの並行型を作ってはいけない
 - 型のみの import には常に `import type` を使う
-- デフォルトは `type`。`interface` はライブラリの拡張のときだけ
+- デフォルトは `type`；`interface` はライブラリ拡張のときのみ
 - コンポーネントの `Props` 型はローカル（再利用しない限り export しない）
-- DB の型は `drizzle/schema.ts` から `$inferSelect` / `$inferInsert` で取り出す
+- DB 型は `drizzle/schema.ts` から `$inferSelect` / `$inferInsert` で取得する
+- すべての型フィールドに `/** ... */` 説明を付ける（`comments.md` 参照）
+- すべての Drizzle カラムに `/** ... */` 説明を付ける（`comments.md` 参照）

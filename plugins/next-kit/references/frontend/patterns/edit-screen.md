@@ -3,15 +3,53 @@
 
 ## What this covers
 
-Editable screens that load existing data, let the user modify it through a form, and save via API mutation. Examples: family quest edit, family profile edit, child reward table edit.
+Editable screens that load existing data, let the user modify it through a form, and save via API mutation. The edit screen lives at `[id]/edit/`, sibling to the view screen at `[id]/view/`.
 
-For form-internal mechanics (Zod schema, react-hook-form wiring, validation), see `form.md`.
+For form-internal mechanics (Zod schema, react-hook-form wiring, validation), see `form.md`. For the folder structure rationale, see `frontend/conventions/folder-structure.md`.
+
+---
+
+## Folder layout
+
+```
+app/(app)/{feature}/[id]/edit/
+├── page.tsx                       # thin wrapper (resolves id)
+├── {Feature}EditScreen.tsx         # the edit screen
+├── form.ts                         # Zod schema + Type
+├── _components/                    # tab panels, popups specific to edit
+│   ├── {Feature}EditLayout.tsx     # the form layout
+│   ├── BasicSettings.tsx
+│   └── ...
+└── _hooks/
+    ├── use{Feature}Form.ts         # form state + fetch
+    ├── useRegister{Feature}.ts     # POST mutation
+    ├── useUpdate{Feature}.ts       # PUT mutation
+    └── useDelete{Feature}.ts       # DELETE mutation
+```
+
+For "new" (no ID yet), the layout is identical but lives at `{feature}/new/` instead of `{feature}/[id]/edit/`. New screens have no `useUpdate*` / `useDelete*` hooks.
+
+---
+
+## edit/page.tsx — thin wrapper
+
+```tsx
+// app/(app)/resources/[id]/edit/page.tsx
+import { ResourceEditScreen } from "./ResourceEditScreen"
+
+type Context = { params: Promise<{ id: string }> }
+
+export default async function Page({ params }: Context) {
+  const { id } = await params
+  return <ResourceEditScreen resourceId={id} />
+}
+```
 
 ---
 
 ## Three-hook composition
 
-An edit screen is built from three cooperating hooks:
+An edit screen is built from cooperating single-purpose hooks:
 
 | Hook | Role | Provides |
 |---|---|---|
@@ -20,95 +58,80 @@ An edit screen is built from three cooperating hooks:
 | `useUpdate{Feature}` | Update mutation | `handleUpdate`, `isLoading` |
 | `useDelete{Feature}` | Delete mutation | `handleDelete`, `isLoading` |
 
-`useXxxForm` loads existing data when an ID is present (edit mode) and provides empty defaults when not (create mode). The screen component composes these and dispatches based on whether the ID is set.
+`useXxxForm` loads existing data when an ID is present (edit mode) and provides empty defaults when not. The screen composes these and dispatches based on whether the ID is set.
 
 ---
 
-## Folder layout
-
-```
-app/(app)/{feature}/[id]/
-├── page.tsx                       # thin wrapper, resolves id from params
-├── {Feature}Edit.tsx               # the edit screen
-├── form.ts                         # Zod schema + Type
-├── _components/                    # tab panels, popups
-└── _hooks/
-    ├── use{Feature}Form.ts         # form state + fetch
-    ├── useRegister{Feature}.ts     # POST mutation
-    ├── useUpdate{Feature}.ts       # PUT mutation
-    └── useDelete{Feature}.ts       # DELETE mutation
-```
-
----
-
-## Full example — Screen composition
+## Full example — EditScreen composition
 
 ```tsx
-// app/(app)/quests/family/[id]/FamilyQuestEdit.tsx
+// app/(app)/resources/[id]/edit/ResourceEditScreen.tsx
 "use client"
 
 import { useEffect, useState } from "react"
-import { useFamilyQuestForm } from "./_hooks/useFamilyQuestForm"
-import { useRegisterFamilyQuest } from "./_hooks/useRegisterFamilyQuest"
-import { useUpdateFamilyQuest } from "./_hooks/useUpdateFamilyQuest"
-import { useDeleteFamilyQuest } from "./_hooks/useDeleteFamilyQuest"
-import { QuestEditLayout } from "../../_components/QuestEditLayout"
+import { Button } from "@mantine/core"
+import { useResourceForm } from "./_hooks/useResourceForm"
+import { useRegisterResource } from "./_hooks/useRegisterResource"
+import { useUpdateResource } from "./_hooks/useUpdateResource"
+import { useDeleteResource } from "./_hooks/useDeleteResource"
+import { ResourceEditLayout } from "./_components/ResourceEditLayout"
 import { BasicSettings } from "./_components/BasicSettings"
 import { DetailSettings } from "./_components/DetailSettings"
-import { ChildSettings } from "./_components/ChildSettings"
-import type { FamilyQuestFormType } from "./form"
+import type { ResourceFormType } from "./form"
 
-type Props = { initialQuestId?: string }
+type Props = {
+  /** リソース ID（新規作成時は undefined） */
+  resourceId?: string
+}
 
-/** 家族クエスト編集画面 */
-export const FamilyQuestEdit = ({ initialQuestId }: Props) => {
-  /** 編集中のクエストID（新規→登録後にIDが入る） */
-  const [familyQuestId, setFamilyQuestId] = useState(initialQuestId)
+/** リソース編集画面 */
+export const ResourceEditScreen = ({ resourceId: initialResourceId }: Props) => {
+  // 編集中のリソース ID（新規 → 登録後に ID が入る）
+  const [resourceId, setResourceId] = useState(initialResourceId)
 
-  /** フォーム状態 */
+  // フォーム状態
   const {
     register, errors, setValue, watch, reset,
-    isValueChanged, handleSubmit, fetchedEntity, isLoading: questLoading,
-  } = useFamilyQuestForm({ familyQuestId })
+    isValueChanged, handleSubmit, fetchedEntity, isLoading: formLoading,
+  } = useResourceForm({ resourceId })
 
-  /** 登録 / 更新 / 削除 各処理 */
-  const { handleRegister, isLoading: registerLoading } = useRegisterFamilyQuest({ setId: setFamilyQuestId })
-  const { handleUpdate, isLoading: updateLoading } = useUpdateFamilyQuest()
-  const { handleDelete, isLoading: deleteLoading } = useDeleteFamilyQuest()
+  // 登録・更新・削除 各処理
+  const { handleRegister, isLoading: registerLoading } = useRegisterResource({ setId: setResourceId })
+  const { handleUpdate,   isLoading: updateLoading }   = useUpdateResource()
+  const { handleDelete,   isLoading: deleteLoading }   = useDeleteResource()
 
-  /** すべての非同期ローディングを統合 */
-  const [submitLoading, setSubmitLoading] = useState(false)
-  useEffect(() => {
-    setSubmitLoading(registerLoading || updateLoading || deleteLoading)
-  }, [registerLoading, updateLoading, deleteLoading])
+  // すべての非同期ローディングを統合
+  const submitLoading = registerLoading || updateLoading || deleteLoading
 
-  /** 送信処理 — 登録 / 更新の分岐 */
-  const onSubmit = handleSubmit((form: FamilyQuestFormType) => {
-    if (familyQuestId) {
-      handleUpdate({ form, familyQuestId, updatedAt: fetchedEntity?.base.updatedAt })
+  // 送信処理 — 登録 / 更新の分岐
+  const onSubmit = handleSubmit((form: ResourceFormType) => {
+    if (resourceId) {
+      handleUpdate({ form, resourceId, updatedAt: fetchedEntity?.updatedAt })
     } else {
       handleRegister({ form })
     }
   })
 
-  /** タブごとのエラー判定 */
-  const hasBasicErrors = !!(errors.name || errors.iconId || errors.iconColor || errors.categoryId || errors.tags || errors.client || errors.requestDetail || errors.ageFrom || errors.ageTo || errors.monthFrom || errors.monthTo)
+  // タブごとのエラー判定
+  const hasBasicErrors  = !!(errors.name || errors.iconId || errors.tags)
   const hasDetailErrors = !!errors.details
-  const hasChildErrors = !!errors.childSettings
 
   return (
-    <QuestEditLayout<FamilyQuestFormType>
-      questId={familyQuestId}
-      isLoading={questLoading || submitLoading}
+    <ResourceEditLayout<ResourceFormType>
+      resourceId={resourceId}
+      isLoading={formLoading || submitLoading}
       onSubmit={onSubmit}
       tabs={[
-        { value: "basic",   label: "基本設定",  hasErrors: hasBasicErrors,  content: <BasicSettings register={register} errors={errors} setValue={setValue} watch={watch} /> },
-        { value: "details", label: "詳細設定",  hasErrors: hasDetailErrors, content: <DetailSettings register={register} errors={errors} setValue={setValue} watch={watch} /> },
-        { value: "children",label: "子供設定",  hasErrors: hasChildErrors,  content: <ChildSettings watch={watch} setValue={setValue} familyQuestId={familyQuestId} /> },
+        { value: "basic",   label: "基本",   hasErrors: hasBasicErrors,  content: <BasicSettings  register={register} errors={errors} setValue={setValue} watch={watch} /> },
+        { value: "details", label: "詳細",   hasErrors: hasDetailErrors, content: <DetailSettings register={register} errors={errors} setValue={setValue} watch={watch} /> },
       ]}
       editActions={[
-        <Button key="delete" color="red" onClick={() => handleDelete({ familyQuestId: familyQuestId! })}>削除</Button>,
-        <Button key="save"   disabled={!isValueChanged} type="submit">保存</Button>,
+        <Button key="delete" color="red" onClick={() => handleDelete({ resourceId: resourceId! })}>
+          削除
+        </Button>,
+        <Button key="save" disabled={!isValueChanged} type="submit">
+          保存
+        </Button>,
       ]}
       createActions={[
         <Button key="create" type="submit">登録</Button>,
@@ -125,114 +148,70 @@ export const FamilyQuestEdit = ({ initialQuestId }: Props) => {
 ### 1. Edit / Create mode by ID presence
 
 ```ts
-const [familyQuestId, setFamilyQuestId] = useState(initialQuestId)
-const isEditMode = !!familyQuestId
+const [resourceId, setResourceId] = useState(initialResourceId)
+const isEditMode = !!resourceId
 
-// On registration success, setFamilyQuestId(newId) flips the screen into edit mode
+// On registration success, setResourceId(newId) flips the screen into edit mode
 ```
 
-### 2. Combined loading state across multiple mutations
+### 2. Combined loading state across mutations
 
 ```ts
-const [submitLoading, setSubmitLoading] = useState(false)
-useEffect(() => {
-  setSubmitLoading(registerLoading || updateLoading || deleteLoading)
-}, [registerLoading, updateLoading, deleteLoading])
+const submitLoading = registerLoading || updateLoading || deleteLoading
 ```
 
-Pass the combined `questLoading || submitLoading` to a single `LoadingOverlay` (inside the layout). The user sees one spinner regardless of which mutation is running.
+Pass the combined `formLoading || submitLoading` to a single `LoadingOverlay` (inside the layout). The user sees one spinner regardless of which mutation is running.
 
 ### 3. Submit dispatch by ID presence
 
 ```ts
 const onSubmit = handleSubmit((form) => {
-  if (familyQuestId) {
-    handleUpdate({ form, familyQuestId, updatedAt: fetchedEntity?.base.updatedAt })
-  } else {
-    handleRegister({ form })
-  }
+  if (resourceId) handleUpdate({ form, resourceId, updatedAt: fetchedEntity?.updatedAt })
+  else            handleRegister({ form })
 })
 ```
 
-`handleSubmit` (from react-hook-form) only invokes the callback if Zod validation passes.
+`handleSubmit` (from react-hook-form) only invokes the callback when Zod validation passes.
 
 ---
 
-## Form hook — full example
-
-See `form.md` for the structure. Summary of the key concerns inside `useXxxForm`:
-
-```ts
-export const useFamilyQuestForm = ({ familyQuestId }: { familyQuestId?: string }) => {
-  // 1. デフォルト値の設定
-  const defaultQuest: FamilyQuestFormType = { /* ... */ }
-
-  // 2. react-hook-form 初期化
-  const { register, handleSubmit, formState: { errors }, setValue, watch, reset } =
-    useForm<FamilyQuestFormType>({
-      resolver: zodResolver(FamilyQuestFormSchema),
-      defaultValues: defaultQuest,
-    })
-
-  // 3. 既存データ取得（編集モードのみ）
-  const [fetchedQuest, setFetchedQuest] = useState(defaultQuest)
-  const { data, isLoading } = useQuery({
-    queryKey: ["familyQuestForm", familyQuestId],
-    queryFn: async () => {
-      const { familyQuest } = await getFamilyQuest({ familyQuestId: familyQuestId! })
-      const form = mapEntityToForm(familyQuest)
-      setFetchedQuest(form)   // 比較用に保持
-      reset(form)             // フォームに反映
-      return { questEntity: familyQuest }
-    },
-    enabled: !!familyQuestId,
-    staleTime: 0,
-    refetchOnMount: "always",
-  })
-
-  // 4. Dirty 判定（手動）
-  const currentQuest = watch()
-  const isValueChanged = JSON.stringify(currentQuest) !== JSON.stringify(fetchedQuest)
-
-  return { register, errors, setValue, watch, reset, handleSubmit, isValueChanged, fetchedEntity: data?.questEntity, isLoading }
-}
-```
-
----
-
-## Mutation hooks — full example
+## Mutation hooks — full examples
 
 ### Register (POST)
 
 ```ts
-// _hooks/useRegisterFamilyQuest.ts
+// _hooks/useRegisterResource.ts
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
-import { postFamilyQuest } from "@/app/api/quests/family/client"
+import { postResource } from "@/app/api/resources/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
-import type { FamilyQuestFormType } from "../form"
+import type { ResourceFormType } from "../form"
 
-type Args = { setId: (id: string) => void }
+type Args = {
+  /** 登録成功時に新しい ID を呼び出し元へ通知する */
+  setId: (id: string) => void
+}
 
-/** 家族クエストを登録する */
-export const useRegisterFamilyQuest = ({ setId }: Args) => {
+/** リソースを登録する */
+export const useRegisterResource = ({ setId }: Args) => {
   const router = useRouter()
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: ({ form }: { form: FamilyQuestFormType }) => postFamilyQuest({ form }),
+    mutationFn: ({ form }: { form: ResourceFormType }) => postResource({ form }),
     onSuccess: (data) => {
-      setId(data.questId)
-      queryClient.invalidateQueries({ queryKey: ["familyQuests"] })
-      toast.success("クエストを登録しました", { duration: 1500 })
+      setId(data.resourceId)
+      queryClient.invalidateQueries({ queryKey: ["resources"] })
+      toast.success("登録しました", { duration: 1500 })
     },
     onError: (error) => handleAppError(error, router),
   })
 
-  const handleRegister = ({ form }: { form: FamilyQuestFormType }) => {
+  /** 登録ハンドラ — 確認ダイアログを挟む */
+  const handleRegister = ({ form }: { form: ResourceFormType }) => {
     if (!window.confirm("登録します。よろしいですか？")) return
     mutation.mutate({ form })
   }
@@ -244,38 +223,42 @@ export const useRegisterFamilyQuest = ({ setId }: Args) => {
 ### Update (PUT)
 
 ```ts
-// _hooks/useUpdateFamilyQuest.ts
+// _hooks/useUpdateResource.ts
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
-import { putFamilyQuest } from "@/app/api/quests/family/[id]/client"
+import { putResource } from "@/app/api/resources/[id]/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
-import type { FamilyQuestFormType } from "../form"
+import type { ResourceFormType } from "../form"
 
-type Args = {}
-
-/** 家族クエストを更新する */
-export const useUpdateFamilyQuest = () => {
+/** リソースを更新する */
+export const useUpdateResource = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: ({ form, familyQuestId, updatedAt }: {
-      form: FamilyQuestFormType
-      familyQuestId: string
+    mutationFn: ({ form, resourceId, updatedAt }: {
+      form: ResourceFormType
+      resourceId: string
+      /** 楽観的ロック用のタイムスタンプ */
       updatedAt?: string
-    }) => putFamilyQuest({ form, familyQuestId, updatedAt }),
+    }) => putResource({ form, resourceId, updatedAt }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["familyQuest", variables.familyQuestId] })
-      queryClient.invalidateQueries({ queryKey: ["familyQuests"] })
-      toast.success("クエストを更新しました", { duration: 1500 })
+      queryClient.invalidateQueries({ queryKey: ["resource", variables.resourceId] })
+      queryClient.invalidateQueries({ queryKey: ["resources"] })
+      toast.success("更新しました", { duration: 1500 })
     },
     onError: (error) => handleAppError(error, router),
   })
 
-  const handleUpdate = (args: { form: FamilyQuestFormType; familyQuestId: string; updatedAt?: string }) => {
+  /** 更新ハンドラ — 確認ダイアログを挟む */
+  const handleUpdate = (args: {
+    form: ResourceFormType
+    resourceId: string
+    updatedAt?: string
+  }) => {
     if (!window.confirm("更新します。よろしいですか？")) return
     mutation.mutate(args)
   }
@@ -287,35 +270,36 @@ export const useUpdateFamilyQuest = () => {
 ### Delete
 
 ```ts
-// _hooks/useDeleteFamilyQuest.ts
+// _hooks/useDeleteResource.ts
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
-import { deleteFamilyQuest } from "@/app/api/quests/family/[id]/client"
+import { deleteResource } from "@/app/api/resources/[id]/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
-import { FAMILIES_URL } from "@/app/(core)/endpoints"
+import { RESOURCE_URL } from "@/app/(core)/endpoints"
 
-/** 家族クエストを削除する */
-export const useDeleteFamilyQuest = () => {
+/** リソースを削除する */
+export const useDeleteResource = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: ({ familyQuestId }: { familyQuestId: string }) =>
-      deleteFamilyQuest({ familyQuestId }),
+    mutationFn: ({ resourceId }: { resourceId: string }) =>
+      deleteResource({ resourceId }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["familyQuests"] })
-      toast.success("クエストを削除しました", { duration: 1500 })
-      router.push(FAMILIES_URL)
+      queryClient.invalidateQueries({ queryKey: ["resources"] })
+      toast.success("削除しました", { duration: 1500 })
+      router.push(RESOURCE_URL.list)
     },
     onError: (error) => handleAppError(error, router),
   })
 
-  const handleDelete = ({ familyQuestId }: { familyQuestId: string }) => {
+  /** 削除ハンドラ — 確認ダイアログを挟む */
+  const handleDelete = ({ resourceId }: { resourceId: string }) => {
     if (!window.confirm("削除します。よろしいですか？")) return
-    mutation.mutate({ familyQuestId })
+    mutation.mutate({ resourceId })
   }
 
   return { handleDelete, isLoading: mutation.isPending }
@@ -326,14 +310,14 @@ export const useDeleteFamilyQuest = () => {
 
 ## Dirty check — isValueChanged
 
-The "save" button must be disabled when nothing has changed. quest-pay computes this manually because reset-after-fetch makes `formState.isDirty` unreliable.
+The "save" button must be disabled when nothing has changed. Compare current form values to the originally fetched values:
 
 ```ts
 const currentForm = watch()
 const isValueChanged = JSON.stringify(currentForm) !== JSON.stringify(fetchedForm)
 ```
 
-For better performance with large forms, compare each field individually:
+For better performance with large forms, compare field-by-field:
 
 ```ts
 const isValueChanged =
@@ -343,7 +327,9 @@ const isValueChanged =
   JSON.stringify(currentForm.details) !== JSON.stringify(fetchedForm.details)
 ```
 
-`isSameArray` is from `app/(core)/util.ts` for order-independent array comparison.
+`isSameArray` is a small helper in `app/(core)/util.ts` for order-independent array comparison.
+
+`formState.isDirty` from react-hook-form is unreliable after `reset(fetchedData)` is called — that's why the project tracks the original snapshot manually.
 
 ---
 
@@ -352,7 +338,7 @@ const isValueChanged =
 Pass `fetchedEntity.updatedAt` to the PUT request so the server can reject stale writes (returns `VersionConflictError` → toast).
 
 ```ts
-handleUpdate({ form, familyQuestId, updatedAt: fetchedEntity?.base.updatedAt })
+handleUpdate({ form, resourceId, updatedAt: fetchedEntity?.updatedAt })
 ```
 
 Server-side check (in `service.ts`):
@@ -365,14 +351,56 @@ if (record.updatedAt !== requestUpdatedAt) {
 
 ---
 
+## EditLayout — generic shell
+
+The layout is feature-agnostic and accepts the form type as a generic. See `naming.md` and the layout template inside `_components/ResourceEditLayout.tsx`.
+
+```tsx
+<ResourceEditLayout<ResourceFormType>
+  resourceId={resourceId}
+  isLoading={formLoading || submitLoading}
+  onSubmit={onSubmit}
+  tabs={[ /* ... */ ]}
+  editActions={[ /* ... */ ]}
+  createActions={[ /* ... */ ]}
+/>
+```
+
+---
+
+## "New" screens (no ID yet)
+
+A new screen lives at `{feature}/new/{Feature}NewScreen.tsx` and uses the same `useXxxForm` (without an ID — empty defaults) plus only `useRegisterXxx`. It is structurally a subset of the edit screen.
+
+```
+app/(app)/resources/new/
+├── page.tsx
+├── ResourceNewScreen.tsx
+├── form.ts          # often re-exports from [id]/edit/form.ts
+└── _hooks/
+    └── useRegisterResource.ts
+```
+
+When the same Zod schema applies to both new and edit, place `form.ts` under `[id]/edit/` and re-export from `new/form.ts`:
+
+```ts
+// new/form.ts
+export { ResourceFormSchema, type ResourceFormType } from "../[id]/edit/form"
+```
+
+---
+
 ## Constraints
 
-- One screen file = one `XxxEdit.tsx` component, which composes hooks
+- Edit screen lives at `[id]/edit/{Feature}EditScreen.tsx` — sibling to `[id]/view/`
+- New screen lives at `new/{Feature}NewScreen.tsx`
+- One screen file = one `XxxEditScreen.tsx` component, which composes hooks
 - Three mutation hooks (`useRegisterXxx`, `useUpdateXxx`, `useDeleteXxx`) — never combine
 - Combine all loading flags into a single state and pass to a single `LoadingOverlay`
-- `handleSubmit` dispatches to update or register by ID presence — never branch in `handleRegister`
-- Save button disabled when `!isValueChanged` — prevent no-op submits
+- `handleSubmit` dispatches to update or register by ID presence
+- Save button disabled when `!isValueChanged`
 - `window.confirm` on every destructive or significant action — register, update, delete
 - Toast on every success (`react-hot-toast`)
-- Errors flow through `handleAppError(error, router)` — never `console.error`
+- Errors flow through `handleAppError(error, router)`
 - Pass `updatedAt` to PUT for optimistic locking
+- All URLs via `RESOURCE_URL.*` — never hardcoded

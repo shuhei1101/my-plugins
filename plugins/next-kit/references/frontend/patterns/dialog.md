@@ -5,11 +5,11 @@
 
 | Suffix | Use for | Example |
 |---|---|---|
-| `*Popup` | Lightweight overlays — pickers, selectors | `IconSelectPopup.tsx`, `LoginTypeSelectPopup.tsx`, `InviteCodePopup.tsx` |
+| `*Popup` | Lightweight overlays — pickers, selectors | `IconSelectPopup.tsx`, `TypeSelectPopup.tsx`, `CodeInputPopup.tsx` |
 | `*Modal` | Fuller dialogs — notifications, detail views | `NotificationModal.tsx` |
 | `*Dialog` | Reserved for system confirmation dialogs | (use Mantine's `modals.openConfirmModal()` instead) |
 
-In practice quest-pay uses **`Popup` for most custom overlays** and **`Modal` for content-heavy panels**. They both wrap Mantine's `Modal` component — the suffix communicates intent.
+Convention: use **`Popup` for most custom overlays** and **`Modal` for content-heavy panels**. They both wrap Mantine's `Modal` component — the suffix communicates intent.
 
 ---
 
@@ -19,6 +19,17 @@ In practice quest-pay uses **`Popup` for most custom overlays** and **`Modal` fo
 |---|---|
 | Feature-scoped (used by one screen) | `app/(app)/{feature}/_components/XxxPopup.tsx` |
 | Shared across features | `app/(core)/_components/XxxPopup.tsx` |
+
+For detail/edit screens, `_components/` lives directly under `[id]/` so both `view/` and `edit/` siblings can import the popup:
+
+```
+app/(app)/resources/[id]/
+├── page.tsx
+├── _components/
+│   └── IconSelectPopup.tsx   # shared by view/ and edit/
+├── view/
+└── edit/
+```
 
 ---
 
@@ -47,7 +58,7 @@ Rules:
 ## Full example — IconSelectPopup
 
 ```tsx
-// app/(app)/icons/_components/IconSelectPopup.tsx
+// app/(app)/resources/[id]/_components/IconSelectPopup.tsx
 "use client"
 
 import { Modal, Group, ActionIcon, ColorPicker, Stack } from "@mantine/core"
@@ -111,14 +122,15 @@ export const IconSelectPopup = ({ opened, close, setIcon, setColor, currentIconI
 ### Open/close via `useDisclosure`
 
 ```tsx
+// app/(app)/resources/[id]/edit/ResourceEditScreen.tsx
 "use client"
 
 import { useDisclosure } from "@mantine/hooks"
-import { IconSelectPopup } from "../icons/_components/IconSelectPopup"
+import { IconSelectPopup } from "../_components/IconSelectPopup"
 
-const ParentScreen = () => {
+const ResourceEditScreen = () => {
   const [iconPopupOpened, { open: openIconPopup, close: closeIconPopup }] = useDisclosure(false)
-  const { watch, setValue } = useFamilyQuestForm({ familyQuestId })
+  const { watch, setValue } = useResourceForm({ resourceId })
 
   return (
     <>
@@ -141,7 +153,7 @@ const ParentScreen = () => {
 
 ```tsx
 const [iconOpen,  { open: openIcon,  close: closeIcon  }] = useDisclosure(false)
-const [inviteOpen,{ open: openInvite,close: closeInvite}] = useDisclosure(false)
+const [memberOpen,{ open: openMember,close: closeMember}] = useDisclosure(false)
 const [colorOpen, { open: openColor, close: closeColor }] = useDisclosure(false)
 ```
 
@@ -151,7 +163,7 @@ Each popup gets its own `useDisclosure` — never share state between unrelated 
 
 ## Modal API
 
-quest-pay wraps Mantine's `<Modal>`:
+Wrap Mantine's `<Modal>`:
 
 ```tsx
 <Modal
@@ -203,7 +215,7 @@ const askDelete = () => {
 
 `ModalsProvider` is already configured in `app/(core)/_components/providers.tsx`.
 
-> When confirmation is part of a mutation hook (`useDeleteXxx`), prefer `window.confirm()` for synchronous flow as quest-pay does. Use `modals.openConfirmModal()` when richer markup or styling is needed.
+> When confirmation is part of a mutation hook (`useDeleteXxx`), prefer `window.confirm()` for synchronous flow. Use `modals.openConfirmModal()` when richer markup or styling is needed.
 
 ---
 
@@ -277,7 +289,7 @@ Otherwise, prefer:
 - **Drawer** (Mantine `Drawer`) — side panel, less intrusive
 - **Popover** (Mantine `Popover`) — anchored to a trigger element
 - **Inline expansion** — accordion or expanding card section
-- **Separate route** — for content-heavy or shareable views
+- **Separate route** — for content-heavy or shareable views (e.g. navigate to `RESOURCE_URL.view(id)` instead of opening a modal)
 
 ---
 
@@ -290,3 +302,4 @@ Otherwise, prefer:
 - Use Mantine's `<Modal>` — do not write a custom backdrop/portal
 - For yes/no prompts, use `modals.openConfirmModal()`; for in-mutation prompts, use `window.confirm()` for synchronous flow
 - Never manage `body` overflow manually
+- Popups shared between `view/` and `edit/` belong in `[id]/_components/`, not inside the view/edit folders

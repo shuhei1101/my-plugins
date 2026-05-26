@@ -2,21 +2,24 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # Next.js App Router — カスタムフックのパターン
 
-画面種別ごとのパターン（list / view / edit / form / dialog）は `frontend/patterns/` を参照。このファイルは横断的なフックのリファレンスである。
+画面種別ごとのパターン（一覧 / 閲覧 / 編集 / フォーム / ダイアログ）は `frontend/patterns/` を参照してください。このファイルは横断的なフックのリファレンスです。
 
 ---
 
 ## フックの配置ルール
 
-| 範囲 | 配置場所 |
+| スコープ | 配置場所 |
 |---|---|
-| 単一ルートでのみ使う | `app/(app)/{feature}/_hooks/use{Feature}.ts` |
-| サブルートでのみ使う | `app/(app)/{feature}/[id]/{sub}/_hooks/use{Sub}.ts` |
-| 複数機能で共有する | `app/(core)/_hooks/use{Name}.ts` |
+| 単一ルートのみで使用 | `app/(app)/{feature}/_hooks/use{Feature}.ts` |
+| サブルートのみで使用（例: edit） | `app/(app)/{feature}/[id]/edit/_hooks/use{Sub}.ts` |
+| 兄弟サブルートのみで使用（例: view） | `app/(app)/{feature}/[id]/view/_hooks/use{Sub}.ts` |
+| 複数機能で共通 | `app/(core)/_hooks/use{Name}.ts` |
 
-**フォルダ名は `_hooks/`（複数形、アンダースコア接頭辞）のみ。** 旧来の `_hook/` は触ったときに移行する。
+**フォルダ名: `_hooks/`（複数形・アンダースコア接頭辞）のみ。** 旧来の `_hook/` は触れた時に移行すること。
 
-1 ファイル 1 フック。ファイル名は export 名と一致させる（`useFamilyQuests.ts` は `useFamilyQuests` を export）。
+`[id]/` 配下では、`view/` と `edit/` は兄弟サブルートです。素の `[id]/page.tsx`（存在する場合）はリダイレクト先にすぎず、フックを持ちません。
+
+1 ファイル 1 フック。ファイル名は export 名と一致させる（`useResources.ts` は `useResources` を export）。
 
 ---
 
@@ -24,43 +27,43 @@
 
 | パターン | 目的 | 戻り値 |
 |---|---|---|
-| `use{Feature}` | 読み取り — データの取得とキャッシュ | `data`, `isLoading`, `refetch`, 派生値 |
-| `use{Feature}Form` | フォーム状態 — 初期ロード + react-hook-form 接続 | `register`, `errors`, `setValue`, `watch`, `handleSubmit`, `reset`, `isValueChanged`, `fetchedEntity`, `isLoading` |
-| `useRegister{Feature}` | 登録 mutation | `handleRegister`, `isLoading` |
+| `use{Feature}` | 読み取り — データの取得・キャッシュ | `data`, `isLoading`, `refetch`, 派生値 |
+| `use{Feature}Form` | フォーム状態 — 初期ロード + react-hook-form の配線 | `register`, `errors`, `setValue`, `watch`, `handleSubmit`, `reset`, `isValueChanged`, `fetchedEntity`, `isLoading` |
+| `useRegister{Feature}` | 作成 mutation | `handleRegister`, `isLoading` |
 | `useUpdate{Feature}` | 更新 mutation | `handleUpdate`, `isLoading` |
 | `useDelete{Feature}` | 削除 mutation | `handleDelete`, `isLoading` |
-| `use{Feature}UrlState` | URL クエリ文字列の状態 | 状態値とセッター |
+| `use{Feature}UrlState` | URL クエリ文字列の状態 | 状態値 + セッター |
 
-複数の役割を 1 フックに混ぜてはいけない（`useFamilyQuestEverything` のような形）。1 フックは 1 つのことだけを行う。
+1 つのフックに複数の役割を持たせない（`useResourceEverything` のような）。各フックはひとつのことだけを行うこと。
 
 ---
 
 ## パターン 1 — 読み取り（useQuery）
 
 ```ts
-// _hooks/useFamilyQuests.ts
+// _hooks/useResources.ts
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { getFamilyQuests } from "@/app/api/quests/family/client"
+import { getResources } from "@/app/api/resources/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
 
 type Args = {
-  filter: FamilyQuestFilterType
-  sort: { column: QuestColumn; order: SortOrder }
+  filter: ResourceFilterType
+  sort: { column: ResourceColumn; order: SortOrder }
   page: number
   pageSize: number
 }
 
-/** 家族クエスト一覧を取得する */
-export const useFamilyQuests = ({ filter, sort, page, pageSize }: Args) => {
+/** リソース一覧を取得する */
+export const useResources = ({ filter, sort, page, pageSize }: Args) => {
   const router = useRouter()
 
   const { error, data, isLoading, refetch } = useQuery({
-    queryKey: ["familyQuests", filter, sort, page, pageSize],
+    queryKey: ["resources", filter, sort, page, pageSize],
     retry: false,
-    queryFn: () => getFamilyQuests({ ...filter, sortColumn: sort.column, sortOrder: sort.order, page, pageSize }),
+    queryFn: () => getResources({ ...filter, sortColumn: sort.column, sortOrder: sort.order, page, pageSize }),
     staleTime: 0,
     refetchOnMount: "always",
   })
@@ -68,7 +71,7 @@ export const useFamilyQuests = ({ filter, sort, page, pageSize }: Args) => {
   if (error) handleAppError(error, router)
 
   return {
-    quests: data?.rows ?? [],
+    resources: data?.rows ?? [],
     totalRecords: data?.totalRecords ?? 0,
     isLoading,
     refetch,
@@ -78,47 +81,47 @@ export const useFamilyQuests = ({ filter, sort, page, pageSize }: Args) => {
 
 ### queryKey のルール
 
-- 第 1 要素: リソース名の文字列（`"familyQuests"`）
-- それ以降: 結果に影響するすべてのパラメータ（filter, sort, page）
-- キャッシュ無効化はプレフィックスマッチ — `["familyQuests"]` を invalidate するとすべての派生キーが refetch される
+- 最初の要素: リソース名の文字列（`"resources"`）
+- 以降: 結果に影響するすべてのパラメータ（filter、sort、page）
+- キャッシュ無効化は前方一致でマッチする — `["resources"]` を無効化するとすべてのバリエーションが refetch される
 
 ### staleTime のデフォルト
 
-グローバルなデフォルトは `staleTime: 5 * 60 * 1000`（5 分）。フォーム用のデータ取得フックは `staleTime: 0, refetchOnMount: "always"` で上書きする。フォームは訪問ごとにサーバー状態を反映する必要があるため。
+グローバルデフォルトは `staleTime: 5 * 60 * 1000`（5 分）。フォームデータ用のフックは `staleTime: 0, refetchOnMount: "always"` で上書きする。フォームは毎回サーバーの最新状態を反映する必要があるため。
 
 ---
 
 ## パターン 2 — Mutation（useMutation）
 
 ```ts
-// _hooks/useRegisterFamilyQuest.ts
+// _hooks/useRegisterResource.ts
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
-import { postFamilyQuest } from "@/app/api/quests/family/client"
+import { postResource } from "@/app/api/resources/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
-import type { FamilyQuestFormType } from "../form"
+import type { ResourceFormType } from "../form"
 
 type Args = { setId: (id: string) => void }
 
-/** 家族クエストを登録する */
-export const useRegisterFamilyQuest = ({ setId }: Args) => {
+/** リソースを登録する */
+export const useRegisterResource = ({ setId }: Args) => {
   const router = useRouter()
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: ({ form }: { form: FamilyQuestFormType }) => postFamilyQuest({ form }),
+    mutationFn: ({ form }: { form: ResourceFormType }) => postResource({ form }),
     onSuccess: (data) => {
-      setId(data.questId)
-      queryClient.invalidateQueries({ queryKey: ["familyQuests"] })
-      toast.success("クエストを登録しました", { duration: 1500 })
+      setId(data.resourceId)
+      queryClient.invalidateQueries({ queryKey: ["resources"] })
+      toast.success("リソースを登録しました", { duration: 1500 })
     },
     onError: (error) => handleAppError(error, router),
   })
 
-  const handleRegister = ({ form }: { form: FamilyQuestFormType }) => {
+  const handleRegister = ({ form }: { form: ResourceFormType }) => {
     if (!window.confirm("登録します。よろしいですか？")) return
     mutation.mutate({ form })
   }
@@ -129,10 +132,10 @@ export const useRegisterFamilyQuest = ({ setId }: Args) => {
 
 ### Mutation の規約
 
-- `handleXxx` が画面側から呼ぶ公開関数
-- 破壊的／重要なアクションでは `handleXxx` 内で `window.confirm` を行う
-- 実際に発火させるのは `mutation.mutate(args)` — Promise が特に必要でない限り `mutation.mutateAsync` は呼ばない
-- `onSuccess`: 対象リソースの query を invalidate、トースト表示、（必要なら）画面遷移
+- `handleXxx` が画面から呼ばれる公開関数
+- 破壊的 / 重大なアクションには `handleXxx` の中で `window.confirm`
+- 実際の発火は `mutation.mutate(args)` — Promise が必要なとき以外 `mutation.mutateAsync` は使わない
+- `onSuccess`: 対象リソースのクエリを invalidate + トースト表示 +（必要なら）画面遷移
 - `onError`: `handleAppError` 経由でルーティング
 - `isLoading: mutation.isPending` を返す
 
@@ -143,28 +146,28 @@ export const useRegisterFamilyQuest = ({ setId }: Args) => {
 完全なパターンは `frontend/patterns/form.md` を参照。要約:
 
 ```ts
-export const useFamilyQuestForm = ({ familyQuestId }: { familyQuestId?: string }) => {
-  const defaultQuest: FamilyQuestFormType = { /* ... */ }
+export const useResourceForm = ({ resourceId }: { resourceId?: string }) => {
+  const defaultResource: ResourceFormType = { /* ... */ }
 
   const { register, handleSubmit, formState: { errors }, setValue, watch, reset } =
-    useForm<FamilyQuestFormType>({
-      resolver: zodResolver(FamilyQuestFormSchema),
-      defaultValues: defaultQuest,
+    useForm<ResourceFormType>({
+      resolver: zodResolver(ResourceFormSchema),
+      defaultValues: defaultResource,
     })
 
-  const [fetchedQuest, setFetchedQuest] = useState(defaultQuest)
+  const [fetchedResource, setFetchedResource] = useState(defaultResource)
 
   const { data, isLoading } = useQuery({
-    queryKey: ["familyQuestForm", familyQuestId],
-    queryFn: async () => { /* fetch and reset(form) */ },
-    enabled: !!familyQuestId,
+    queryKey: ["resourceForm", resourceId],
+    queryFn: async () => { /* 取得して reset(form) する */ },
+    enabled: !!resourceId,
     staleTime: 0,
     refetchOnMount: "always",
   })
 
-  const isValueChanged = /* diff currentQuest vs fetchedQuest */
+  const isValueChanged = /* currentResource と fetchedResource の差分 */
 
-  return { register, errors, setValue, watch, reset, handleSubmit, isValueChanged, fetchedEntity: data?.questEntity, isLoading }
+  return { register, errors, setValue, watch, reset, handleSubmit, isValueChanged, fetchedEntity: data?.resourceEntity, isLoading }
 }
 ```
 
@@ -175,7 +178,7 @@ export const useFamilyQuestForm = ({ familyQuestId }: { familyQuestId?: string }
 `frontend/url-state.md` を参照。要約:
 
 ```ts
-export const useFamilyQuestListUrlState = () => {
+export const useResourceListUrlState = () => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -186,7 +189,7 @@ export const useFamilyQuestListUrlState = () => {
     page:   Number(searchParams.get("page") ?? "1"),
   }
 
-  const updateQuery = (patch) => { /* router.push with merged params */ }
+  const updateQuery = (patch) => { /* マージしたパラメータで router.push */ }
 
   return {
     ...state,
@@ -201,52 +204,52 @@ export const useFamilyQuestListUrlState = () => {
 
 ## エラーハンドリング — handleAppError
 
-`useQuery` や `useMutation` から発生するすべてのエラーは `handleAppError(error, router)` を通る。
+`useQuery` や `useMutation` から発生するエラーはすべて `handleAppError(error, router)` を通します。
 
 ```ts
 import { handleAppError } from "@/app/(core)/error/handler/client"
 
-// In useQuery
+// useQuery 内
 if (error) handleAppError(error, router)
 
-// In useMutation
+// useMutation 内
 onError: (error) => handleAppError(error, router),
 ```
 
-`handleAppError` はエラー種別を判別する:
-- `ClientAuthError` → `/error/unauthorized` にリダイレクト
-- `ClientValueError` → メッセージをトースト表示
-- `VersionConflictError` → 「他のユーザーによって更新されています」をトースト表示
-- その他の `AppError` → メッセージをトースト表示
-- 未知のエラー → ログ出力 + 汎用トースト
+`handleAppError` はエラー種別を判定します:
+- `ClientAuthError` → `/error/unauthorized` へリダイレクト
+- `ClientValueError` → メッセージをトーストで表示
+- `VersionConflictError` → トースト「他のユーザーによって更新されています」
+- その他の `AppError` → メッセージをトーストで表示
+- 不明なエラー → ログ + 汎用トースト
 
-画面側で生のエラーメッセージを直接表示することはない。
+画面側では生のエラーメッセージを直接表示してはいけません。
 
 ---
 
 ## フック合成のルール
 
-Screen コンポーネントはフックを合成して使うべきで、複数のヘルパーフックでロジックを連鎖させてはいけない。
+Screen コンポーネントはフックを合成（compose）してください。複数のヘルパーフックを通じてロジックを連鎖させないこと。
 
 ```tsx
-// ✅ Good — screen composes 4 single-purpose hooks
-const { register, errors, isValueChanged, handleSubmit, ... } = useFamilyQuestForm({ familyQuestId })
-const { handleRegister, isLoading: regLoading } = useRegisterFamilyQuest({ setId })
-const { handleUpdate,   isLoading: updLoading } = useUpdateFamilyQuest()
-const { handleDelete,   isLoading: delLoading } = useDeleteFamilyQuest()
+// ✅ 良い例 — Screen が単一目的のフック 4 つを合成する
+const { register, errors, isValueChanged, handleSubmit, ... } = useResourceForm({ resourceId })
+const { handleRegister, isLoading: regLoading } = useRegisterResource({ setId })
+const { handleUpdate,   isLoading: updLoading } = useUpdateResource()
+const { handleDelete,   isLoading: delLoading } = useDeleteResource()
 
-// ❌ Bad — one giant hook hides what's happening
-const { everything } = useFamilyQuestEdit({ familyQuestId })
+// ❌ 悪い例 — 巨大なフックひとつで中身が見えない
+const { everything } = useResourceEdit({ resourceId })
 ```
 
 ---
 
 ## "use client" ディレクティブ
 
-すべてのフックファイルは `"use client"` で始める。フックを使う Screen コンポーネントにも `"use client"` が必要。
+すべてのフックファイルは `"use client"` で始めること。フックを使う Screen コンポーネントも `"use client"` が必要です。
 
 ```ts
-// _hooks/useFamilyQuests.ts
+// _hooks/useResources.ts
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
@@ -255,33 +258,33 @@ import { useQuery } from "@tanstack/react-query"
 
 ---
 
-## フックの戻り値形状の規約
+## フックの戻り値の規約
 
-タプルではなくオブジェクトで返す。呼び出し側は名前で分割代入できる（要素追加に強い）。
+タプルではなくオブジェクトを返してください。呼び出し側が名前で分解できるため、後の追加に強くなります。
 
 ```ts
 // ✅
-return { quests, totalRecords, isLoading, refetch }
+return { resources, totalRecords, isLoading, refetch }
 
-// ❌ (only OK for very stable APIs like useState)
-return [quests, refetch]
+// ❌（useState のような非常に安定した API でのみ可）
+return [resources, refetch]
 ```
 
 ---
 
-## フックを使うべきでないとき
+## フックにしてはいけないとき
 
-純粋に同期的なデータ変換（React state も副作用も無い）であれば、フックではなく通常の関数として残す。
+ロジックが純粋に同期的なデータ変換（React state も副作用もなし）の場合は、フックではなく通常関数のままにしてください。
 
 ```ts
-// ❌ Pointless hook
+// ❌ 意味のないフック
 export const useFormatDate = (date: Date) => date.toLocaleDateString("ja-JP")
 
-// ✅ Regular function
+// ✅ 通常の関数
 export const formatDate = (date: Date) => date.toLocaleDateString("ja-JP")
 ```
 
-`use` 接頭辞は、他のフックを呼ぶ・React state を使う関数にだけ付ける。
+`use` 接頭辞は、他のフックを呼び出すか React state を使う関数のためのものです。
 
 ---
 
@@ -289,8 +292,9 @@ export const formatDate = (date: Date) => date.toLocaleDateString("ja-JP")
 
 - 1 ファイル 1 フック、ファイル名は export 名と一致
 - すべてのフックは `"use client"` で始める
-- すべてのフックは `use` 接頭辞で始める（React のルール）
+- すべてのフックは `use` 接頭辞で始まる（React のルール）
 - `useQuery` / `useMutation` のエラーは `handleAppError(error, router)` を通す
-- オブジェクトで返す（名前付き分割代入）、タプルにしない
-- 1 フックに複数役割を持たせない
-- フォルダ名は `_hooks/`（複数形）のみ
+- オブジェクトを返す（名前付き分解）、タプルは返さない
+- 1 つのフックに複数の役割を持たせない
+- `_hooks/` フォルダ（複数形）だけが許される名前
+- サブルートのフックは `[id]/view/_hooks/` または `[id]/edit/_hooks/` 配下に置く（view/edit は兄弟）

@@ -2,9 +2,9 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # Next.js App Router — コンポーネントカタログ
 
-このファイルは `app/(core)/_components/` 配下の共有コンポーネント、および `app/(app)/_components/` 配下のレイアウト／シェル系コンポーネントをまとめたものである。**新しいコンポーネントを作る前に必ずこのカタログを確認すること** — 既に適合するものが存在している可能性が高い。
+このファイルは `app/(core)/_components/` 配下の共通コンポーネントと、`app/(app)/_components/` 配下のレイアウト/シェルコンポーネントをまとめたものです。**新しいコンポーネントを作る前に必ずこのカタログを確認**してください。既に用途に合うものが存在する可能性が高いです。
 
-画面種別ごとの実装パターンについては `frontend/patterns/` を参照。
+画面種別ごとの実装パターンは `frontend/patterns/` を参照してください。
 
 ---
 
@@ -12,77 +12,76 @@
 
 | コンポーネント | パス | 役割 |
 |---|---|---|
-| `ScreenWrapper` | `(core)/_components/ScreenWrapper.tsx` | すべての Screen を必ず囲むラッパー — padding と max-width を適用 |
-| `PageHeader` | `(core)/_components/PageHeader.tsx` | タイトル＋説明＋アクションの行 |
-| `LoadingButton` | `(core)/_components/LoadingButton.tsx` | 非同期処理中にスピナー表示・disabled になるボタン |
-| `LoadingIndicator` | `(core)/_components/LoadingIndicator.tsx` | シンプルなスピナー |
-| `NavigationButton` | `(core)/_components/NavigationButton.tsx` | アイコン付きのリンクスタイルボタン |
+| `ScreenWrapper` | `(core)/_components/ScreenWrapper.tsx` | すべての Screen を必ず包むラッパー — パディング + 最大幅 |
+| `PageHeader` | `(core)/_components/PageHeader.tsx` | タイトル + 説明 + アクションの行 |
+| `LoadingButton` | `(core)/_components/LoadingButton.tsx` | 非同期処理中にスピナー表示 + ボタンを無効化 |
+| `LoadingIndicator` | `(core)/_components/LoadingIndicator.tsx` | 単純なスピナー |
+| `NavigationButton` | `(core)/_components/NavigationButton.tsx` | アイコン付きのリンク風ボタン |
 | `ScrollableTabs` | `(core)/_components/ScrollableTabs.tsx` | 横スクロール可能なタブバー |
-| `RequiredMark` | `(core)/_components/RequiredMark.tsx` | 必須項目用の赤いアスタリスク |
-| `Input` | `(core)/_components/Input.tsx` | プロジェクト全体で使う TextInput のラッパー |
+| `RequiredMark` | `(core)/_components/RequiredMark.tsx` | 必須フィールド用の赤いアスタリスク |
+| `Input` | `(core)/_components/Input.tsx` | プロジェクト共通の TextInput ラッパー |
 | `FloatingActionButton` | `(core)/_components/FloatingActionButton.tsx` | 単一アクションの FAB |
 | `SubMenuFAB` | `(core)/_components/SubMenuFAB.tsx` | 複数アクションに展開する FAB |
-| `NavigationFAB` | `(core)/_components/NavigationFAB.tsx` | FABContext で駆動されるアプリシェル用 FAB |
-| `FABChildItem` | `(core)/_components/FABChildItem.tsx` | SubMenuFAB の内部で使われる単一アクションチップ |
-| `FormBackButton` | `(core)/_components/FormBackButton.tsx` | フォーム内で使われる戻る矢印 |
-| `LevelIcon` | `(core)/_components/LevelIcon.tsx` | レベルバッジアイコン |
-| `ViewIconButton` | `(core)/_components/ViewIconButton.tsx` | アイコン描画用のアクションボタン（読み取り専用） |
-| `RenderIcon` (in `(app)/icons/_components/`) | — | 選択された icon id/color を描画するアイコンレンダラ |
-| `CopyButton` | `(core)/_components/CopyButton.tsx` | フィードバックトースト付きのクリップボードコピー |
-| `InviteCodePopup` | `(core)/_components/InviteCodePopup.tsx` | 招待コードの共有ポップアップ |
-| `FeedbackMessageWrapper` | `(core)/_components/FeedbackMessageWrapper.tsx` | フィードバック用メッセージゾーンのラッパー |
-| `FloatingLayout` | `(core)/_components/FloatingLayout.tsx` | フローティング UI のスタッキングコンテキスト |
+| `NavigationFAB` | `(core)/_components/NavigationFAB.tsx` | FABContext により駆動されるアプリシェルの FAB |
+| `FABChildItem` | `(core)/_components/FABChildItem.tsx` | SubMenuFAB 内で使われる単一アクションチップ |
+| `FormBackButton` | `(core)/_components/FormBackButton.tsx` | フォーム内で使う戻る矢印 |
+| `SelectPopup` | `(core)/_components/SelectPopup.tsx` | 汎用の選択リストポップアップ |
+| `IconPickerModal` | `(core)/_components/IconPickerModal.tsx` | アイコン id + 色を選ぶモーダル |
+| `RenderIcon` | `(core)/_components/RenderIcon.tsx` | 選択済みアイコン id/色を描画するレンダラー |
+| `CopyButton` | `(core)/_components/CopyButton.tsx` | フィードバックトースト付きクリップボードコピー |
+| `FeedbackMessageWrapper` | `(core)/_components/FeedbackMessageWrapper.tsx` | フィードバック表示用のメッセージ領域ラッパー |
+| `FloatingLayout` | `(core)/_components/FloatingLayout.tsx` | フローティング UI の重ね合わせコンテキスト |
 | `AccessErrorHandler` | `(core)/_components/AccessErrorHandler.tsx` | 認証エラー時のリダイレクトハンドラ |
 | `Providers` | `(core)/_components/providers.tsx` | Mantine + QueryClient + ErrorBoundary のラッパー |
 | `FABContext` | `(core)/_components/FABContext.tsx` | 画面ごとの FAB カスタマイズ |
-| `LoadingContext` | `(core)/_components/LoadingContext.tsx` | グローバルローディングインジケータ |
-| `BackgroundContext` | `(app)/_components/BackgroundContext.tsx` | ページごとの背景画像／色 |
+| `LoadingContext` | `(core)/_components/LoadingContext.tsx` | グローバルなローディングインジケータ |
+| `BackgroundContext` | `(app)/_components/BackgroundContext.tsx` | ページごとの背景画像 / 色 |
 | `BackgroundWrapper` | `(app)/_components/BackgroundWrapper.tsx` | BackgroundContext に従って背景を描画 |
-| `AppShellContent` | `(app)/_components/AppShellContent.tsx` | アプリシェル — サイドバー／ボトムバーのレイアウト切替 |
+| `AppShellContent` | `(app)/_components/AppShellContent.tsx` | アプリシェル — サイドバー/ボトムバーのレイアウト切替 |
 | `SideMenu` | `(app)/_components/SideMenu.tsx` | PC 用サイドバー |
-| `BottomBar` | `(app)/_components/BottomBar.tsx` | モバイル用ボトムタブバー |
+| `BottomBar` | `(app)/_components/BottomBar.tsx` | モバイル用のボトムタブバー |
 | `AppHeader` | `(app)/_components/AppHeader.tsx` | シェル内のトップバー |
-| `ThemeToggleButton` | `(app)/_components/ThemeToggleButton.tsx` | ダーク／ライトテーマ切替 |
+| `ThemeToggleButton` | `(app)/_components/ThemeToggleButton.tsx` | ダーク/ライトテーマ切替 |
 
 ---
 
-## どれを使うべきか
+## 何を使えばよいか
 
 ### ボタンが必要なとき
 
 | 状況 | 使うもの |
 |---|---|
-| 単なる submit / クリックアクション | Mantine `<Button>` |
+| 通常の送信 / クリックアクション | Mantine `<Button>` |
 | 非同期処理（API 呼び出し）を伴う | `<LoadingButton>` |
 | 別ページに遷移する | `<NavigationButton href={...}>` |
 | アイコンのみのボタン | Mantine `<ActionIcon>` |
-| コンテンツ上に浮かぶ主要アクション | `<FloatingActionButton>` |
-| 複数アクションをフロート表示 | `<SubMenuFAB items={...}>` |
+| コンテンツ上にフロートする主要アクション | `<FloatingActionButton>` |
+| フロートする複数アクション | `<SubMenuFAB items={...}>` |
 
-### レイアウトコンテナが必要なとき
+### レイアウト用コンテナが必要なとき
 
 | 状況 | 使うもの |
 |---|---|
-| すべての Screen の外側コンテナ | `<ScreenWrapper>`（必須） |
-| ページタイトル＋アクション行 | `<PageHeader title="..." actions={...}>` |
-| 横方向のタブナビゲーション | `<ScrollableTabs tabs={...} value={...} onChange={...}>` |
-| アイテムの縦積み | Mantine `<Stack>` |
-| インライン要素（横並び） | Mantine `<Group>` |
-| カード状の面 | Mantine `<Card>` または `<Paper>` |
+| すべての Screen の外枠 | `<ScreenWrapper>`（必須） |
+| ページタイトル + アクション行 | `<PageHeader title="..." actions={...}>` |
+| 横タブナビゲーション | `<ScrollableTabs tabs={...} value={...} onChange={...}>` |
+| 縦並びの要素 | Mantine `<Stack>` |
+| 横並びのインライン要素 | Mantine `<Group>` |
+| カード表面 | Mantine `<Card>` または `<Paper>` |
 
 ### フォーム入力が必要なとき
 
 | 状況 | 使うもの |
 |---|---|
-| ラベル＋エラー付きで入力を囲む | Mantine `<Input.Wrapper label="..." error={...}>` |
+| ラベル + エラー付きで入力欄を包む | Mantine `<Input.Wrapper label="..." error={...}>` |
 | テキスト入力 | Mantine `<TextInput>`（またはプロジェクトの `<Input>` ラッパー） |
 | 数値入力 | Mantine `<NumberInput>` |
 | 日付入力 | Mantine `<DateInput>`（`@mantine/dates`） |
 | セレクト | Mantine `<Select>` または `<MultiSelect>` |
 | 複数行テキスト | Mantine `<Textarea>` |
-| タグ／チップ入力 | Mantine `<PillsInput>` |
+| タグ / チップ入力 | Mantine `<PillsInput>` |
 | トグル | Mantine `<Switch>` |
-| 必須項目マーカー | `<RequiredMark />` |
+| 必須フィールドマーカー | `<RequiredMark />` |
 
 ### フィードバック UI が必要なとき
 
@@ -91,13 +90,13 @@
 | ローディングオーバーレイ（コンテンツを覆う） | Mantine `<LoadingOverlay>` |
 | インラインスピナー | `<LoadingIndicator>` |
 | トースト（成功 / 失敗） | `toast.success("...")` / `toast.error("...")`（`react-hot-toast`） |
-| インラインの注意メッセージ | Mantine `<Alert>` |
+| インラインアラートメッセージ | Mantine `<Alert>` |
 | 確認ダイアログ（リッチ） | `modals.openConfirmModal({ ... })`（`@mantine/modals`） |
 | 確認ダイアログ（シンプル、mutation 内） | `window.confirm("...")` |
 
 ### モーダルが必要なとき
 
-`frontend/patterns/dialog.md` を参照。ざっくりルール: ファイル名のサフィックスは `*Popup` または `*Modal`、props は `opened` と `close`。
+`frontend/patterns/dialog.md` を参照。簡単なルール: ファイル名の末尾は `*Popup` または `*Modal`、props は `opened` + `close`。
 
 ---
 
@@ -105,26 +104,26 @@
 
 ### ScreenWrapper
 
-すべての Screen 本体を囲むラッパー。padding、max-width、`LoadingOverlay` を機能させるための `Box pos="relative"` を適用する。
+すべての Screen の本体を包みます。パディング、最大幅、`LoadingOverlay` が機能するための `Box pos="relative"` を適用します。
 
 ```tsx
 import { ScreenWrapper } from "@/app/(core)/_components/ScreenWrapper"
 
 export const MyScreen = () => (
   <ScreenWrapper>
-    {/* everything renders inside */}
+    {/* すべてはこの中に描画される */}
   </ScreenWrapper>
 )
 ```
 
 ### PageHeader
 
-ページ上部のバナー。タイトル、任意の説明、右側にアクションボタンを配置する。
+タイトル、任意の説明、右側のアクションボタンを持つページ最上部のバナー。
 
 ```tsx
 <PageHeader
-  title="家族クエスト一覧"
-  description="家族のクエストを管理します"
+  title="リソース一覧"
+  description="リソースを管理します"
   actions={
     <Button onClick={handleCreate}>新規作成</Button>
   }
@@ -133,7 +132,7 @@ export const MyScreen = () => (
 
 ### LoadingButton
 
-クリックが非同期処理を引き起こす場合は必ず使う。二重 submit を防ぎ、スピナーを表示する。
+クリックで非同期処理が走るときは必ず使用してください。二重送信を防ぎ、スピナーを表示します。
 
 ```tsx
 <LoadingButton loading={isLoading} onClick={handleSubmit}>
@@ -143,7 +142,7 @@ export const MyScreen = () => (
 
 ### ScrollableTabs
 
-横スクロール可能なタブバー。タブは内部で `<Tabs.Panel>` として描画する。
+横スクロール可能なタブバー。タブの中身は `<Tabs.Panel>` として描画します。
 
 ```tsx
 <ScrollableTabs
@@ -159,21 +158,21 @@ export const MyScreen = () => (
 </ScrollableTabs>
 ```
 
-`rightSection` はタブ単位のエラー／未読バッジ／カウントを出す場所として使う。
+`rightSection` はタブ単位のエラー / 未読バッジ / カウントを出す場所として使います。
 
 ### RequiredMark
 
-`<Input.Wrapper>` の label 内に置いて必須項目を示す。
+`<Input.Wrapper>` のラベル内に置いて必須フィールドを示します。
 
 ```tsx
-<Input.Wrapper label={<>クエスト名 <RequiredMark /></>} error={errors.name?.message}>
+<Input.Wrapper label={<>リソース名 <RequiredMark /></>} error={errors.name?.message}>
   <Input {...register("name")} />
 </Input.Wrapper>
 ```
 
 ### FloatingActionButton / SubMenuFAB
 
-コンテンツ上に浮かび、モバイルに優しい主要アクションのエントリポイント。
+コンテンツ上にフロートし、モバイルで使いやすい主要アクションのエントリポイントです。
 
 ```tsx
 <SubMenuFAB items={[
@@ -182,7 +181,7 @@ export const MyScreen = () => (
 ]} />
 ```
 
-アプリシェル全体での FAB カスタマイズ（同じ FAB を複数画面で使う）には `FABContext` + `NavigationFAB` を使う。
+アプリシェル全体の FAB カスタマイズ（同じ FAB を複数画面で使う）には、`FABContext` + `NavigationFAB` を使います。
 
 ```tsx
 import { useFAB } from "@/app/(core)/_components/FABContext"
@@ -203,47 +202,47 @@ const MyScreen = () => {
 
 | Context | フック | 目的 |
 |---|---|---|
-| `FABContext` | `useFAB()` | 画面ごとにアプリシェルの FAB をオーバーライド |
-| `LoadingContext` | `useLoading()` | どこからでもグローバルローディングインジケータを表示 |
-| `BackgroundContext` | `useBackground()` | 画面ごとに背景画像／色を設定 |
-| `ThemeContext` | `useTheme()` | ライト／ダークテーマ + Mantine テーマのオーバーライド |
+| `FABContext` | `useFAB()` | 画面ごとにアプリシェルの FAB を上書き |
+| `LoadingContext` | `useLoading()` | どこからでもグローバルなローディングを表示 |
+| `BackgroundContext` | `useBackground()` | 画面ごとの背景画像/色を設定 |
+| `ThemeContext` | `useTheme()` | ライト/ダークテーマ + Mantine テーマの上書き |
 
-Context を追加するのは、関連のない複数のルートをデータがまたぐ必要があるときだけ。詳細は `state-management.md` を参照。
+Context を追加するのは、複数の無関係なルートをまたいでデータを共有する必要があるときだけです。`state-management.md` を参照してください。
 
 ---
 
-## アプリシェル（読み取り専用 — 機能実装時には変更しない）
+## アプリシェル（読み取り専用 — 機能作業時は変更しない）
 
-`app/(app)/_components/` がグローバルレイアウトを定義している。これらはレイアウトレベルの PR でのみ担当する。
+`app/(app)/_components/` はグローバルレイアウトを定義します。これらはレイアウト層の PR でのみ変更します。
 
 | コンポーネント | 役割 |
 |---|---|
-| `AppShellContent` | `useMediaQuery` に基づき SideMenu（PC）または BottomBar（モバイル）を選択 |
-| `SideMenu` | ナビゲーションリンクとユーザーアバターを持つ PC 用サイドバー |
-| `BottomBar` | 画面下に固定されたモバイル用タブバー |
-| `AppHeader` | ロゴ／戻るボタンを持つトップバー |
+| `AppShellContent` | `useMediaQuery` により SideMenu（PC）か BottomBar（モバイル）を選択 |
+| `SideMenu` | ナビゲーションリンク + ユーザーアバター付きの PC サイドバー |
+| `BottomBar` | 画面下部に固定されたモバイルタブバー |
+| `AppHeader` | ロゴ/戻るボタン付きのトップバー |
 | `BackgroundWrapper` | `BackgroundContext` に従って背景を描画 |
-| `ThemeToggleButton` | ライト／ダーク切替 |
+| `ThemeToggleButton` | ライト/ダーク切替 |
 
 ---
 
 ## コンポーネント検索ファーストの原則
 
-新しい UI 要素を書く前に：
+新しい UI 要素を書き始める前に:
 
-1. **このカタログを確認する** — その役割の既存コンポーネントはあるか？
-2. **Mantine を確認する** — Mantine に該当するものはあるか？（ほぼ常にある）
-3. **どちらにも無い場合に限り** — `app/(core)/_components/` に新規作成し、このカタログに追記する
+1. **このカタログを確認** — 同じ役割の既存コンポーネントはあるか？
+2. **Mantine を確認** — Mantine に該当するものはあるか？（ほぼ常にある）
+3. **どちらにも存在しない場合のみ** — `app/(core)/_components/` に新規作成し、ここに追記する
 
-迷ったら自問する: 「同じようなものを描画するのは今回で 3 回目以上か？」 イエスなら抽出する。
+迷ったら自問してください: 「この種のものを描画するのは 3 回目か？」答えがイエスなら抽出しましょう。
 
 ---
 
 ## 制約
 
-- すべての Screen は `<ScreenWrapper>` を使う — 例外なし
-- 画面固有のコンポーネントは `_components/` のみ、共有コンポーネントは `app/(core)/_components/` のみに置く
-- Mantine を二重実装しない — 適応が必要なら Mantine をラップする、再発明はしない
-- `RequiredMark` はすべての必須フォーム項目のラベルに必須
-- `LoadingButton` は mutation を引き起こすすべてのボタンに必須
+- すべての Screen は `<ScreenWrapper>` を使うこと — 例外なし
+- `_components/` は画面固有コンポーネントだけが置ける唯一の場所。共通コンポーネントは `app/(core)/_components/` だけが置ける場所
+- Mantine を重複させてはいけない — 必要なら Mantine をラップする。再発明しない
+- `RequiredMark` はすべての必須フォームフィールドのラベルで必須
+- `LoadingButton` は mutation を起こすすべてのボタンで必須
 - `ScrollableTabs` は `rightSection` スロットを持つ — タブ単位のエラー表示に使う

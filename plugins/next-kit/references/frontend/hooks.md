@@ -9,13 +9,16 @@ For screen-specific patterns (list / view / edit / form / dialog), see `frontend
 
 | Scope | Location |
 |---|---|
-| Scoped to one route | `app/(app)/{feature}/_hooks/use{Feature}.ts` |
-| Scoped to a sub-route | `app/(app)/{feature}/[id]/{sub}/_hooks/use{Sub}.ts` |
+| Used only by a single route | `app/(app)/{feature}/_hooks/use{Feature}.ts` |
+| Used only by a sub-route (e.g. edit) | `app/(app)/{feature}/[id]/edit/_hooks/use{Sub}.ts` |
+| Used only by a sibling sub-route (e.g. view) | `app/(app)/{feature}/[id]/view/_hooks/use{Sub}.ts` |
 | Shared across multiple features | `app/(core)/_hooks/use{Name}.ts` |
 
 **Folder name: `_hooks/` (plural, underscore prefix) only.** Legacy `_hook/` should be migrated when touched.
 
-One hook per file. File name matches the export name (`useFamilyQuests.ts` exports `useFamilyQuests`).
+Under `[id]/`, `view/` and `edit/` are sibling sub-routes. The bare `[id]/page.tsx` (if it exists) is only a redirect target — it does not own hooks.
+
+One hook per file. File name matches the export name (`useResources.ts` exports `useResources`).
 
 ---
 
@@ -30,36 +33,36 @@ One hook per file. File name matches the export name (`useFamilyQuests.ts` expor
 | `useDelete{Feature}` | Delete mutation | `handleDelete`, `isLoading` |
 | `use{Feature}UrlState` | URL query string state | state values + setters |
 
-Never combine roles in one hook (`useFamilyQuestEverything`). Each hook does one thing.
+Never combine roles in one hook (`useResourceEverything`). Each hook does one thing.
 
 ---
 
 ## Pattern 1 — Read (useQuery)
 
 ```ts
-// _hooks/useFamilyQuests.ts
+// _hooks/useResources.ts
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { getFamilyQuests } from "@/app/api/quests/family/client"
+import { getResources } from "@/app/api/resources/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
 
 type Args = {
-  filter: FamilyQuestFilterType
-  sort: { column: QuestColumn; order: SortOrder }
+  filter: ResourceFilterType
+  sort: { column: ResourceColumn; order: SortOrder }
   page: number
   pageSize: number
 }
 
-/** 家族クエスト一覧を取得する */
-export const useFamilyQuests = ({ filter, sort, page, pageSize }: Args) => {
+/** リソース一覧を取得する */
+export const useResources = ({ filter, sort, page, pageSize }: Args) => {
   const router = useRouter()
 
   const { error, data, isLoading, refetch } = useQuery({
-    queryKey: ["familyQuests", filter, sort, page, pageSize],
+    queryKey: ["resources", filter, sort, page, pageSize],
     retry: false,
-    queryFn: () => getFamilyQuests({ ...filter, sortColumn: sort.column, sortOrder: sort.order, page, pageSize }),
+    queryFn: () => getResources({ ...filter, sortColumn: sort.column, sortOrder: sort.order, page, pageSize }),
     staleTime: 0,
     refetchOnMount: "always",
   })
@@ -67,7 +70,7 @@ export const useFamilyQuests = ({ filter, sort, page, pageSize }: Args) => {
   if (error) handleAppError(error, router)
 
   return {
-    quests: data?.rows ?? [],
+    resources: data?.rows ?? [],
     totalRecords: data?.totalRecords ?? 0,
     isLoading,
     refetch,
@@ -77,9 +80,9 @@ export const useFamilyQuests = ({ filter, sort, page, pageSize }: Args) => {
 
 ### queryKey rules
 
-- First element: resource name string (`"familyQuests"`)
+- First element: resource name string (`"resources"`)
 - Subsequent: every parameter that affects the result (filter, sort, page)
-- Cache invalidation matches by prefix — invalidate `["familyQuests"]` to refetch all variants
+- Cache invalidation matches by prefix — invalidate `["resources"]` to refetch all variants
 
 ### staleTime defaults
 
@@ -90,34 +93,34 @@ The global default is `staleTime: 5 * 60 * 1000` (5 min). Form-data hooks overri
 ## Pattern 2 — Mutation (useMutation)
 
 ```ts
-// _hooks/useRegisterFamilyQuest.ts
+// _hooks/useRegisterResource.ts
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
-import { postFamilyQuest } from "@/app/api/quests/family/client"
+import { postResource } from "@/app/api/resources/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
-import type { FamilyQuestFormType } from "../form"
+import type { ResourceFormType } from "../form"
 
 type Args = { setId: (id: string) => void }
 
-/** 家族クエストを登録する */
-export const useRegisterFamilyQuest = ({ setId }: Args) => {
+/** リソースを登録する */
+export const useRegisterResource = ({ setId }: Args) => {
   const router = useRouter()
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: ({ form }: { form: FamilyQuestFormType }) => postFamilyQuest({ form }),
+    mutationFn: ({ form }: { form: ResourceFormType }) => postResource({ form }),
     onSuccess: (data) => {
-      setId(data.questId)
-      queryClient.invalidateQueries({ queryKey: ["familyQuests"] })
-      toast.success("クエストを登録しました", { duration: 1500 })
+      setId(data.resourceId)
+      queryClient.invalidateQueries({ queryKey: ["resources"] })
+      toast.success("リソースを登録しました", { duration: 1500 })
     },
     onError: (error) => handleAppError(error, router),
   })
 
-  const handleRegister = ({ form }: { form: FamilyQuestFormType }) => {
+  const handleRegister = ({ form }: { form: ResourceFormType }) => {
     if (!window.confirm("登録します。よろしいですか？")) return
     mutation.mutate({ form })
   }
@@ -142,28 +145,28 @@ export const useRegisterFamilyQuest = ({ setId }: Args) => {
 See `frontend/patterns/form.md` for the full pattern. Summary:
 
 ```ts
-export const useFamilyQuestForm = ({ familyQuestId }: { familyQuestId?: string }) => {
-  const defaultQuest: FamilyQuestFormType = { /* ... */ }
+export const useResourceForm = ({ resourceId }: { resourceId?: string }) => {
+  const defaultResource: ResourceFormType = { /* ... */ }
 
   const { register, handleSubmit, formState: { errors }, setValue, watch, reset } =
-    useForm<FamilyQuestFormType>({
-      resolver: zodResolver(FamilyQuestFormSchema),
-      defaultValues: defaultQuest,
+    useForm<ResourceFormType>({
+      resolver: zodResolver(ResourceFormSchema),
+      defaultValues: defaultResource,
     })
 
-  const [fetchedQuest, setFetchedQuest] = useState(defaultQuest)
+  const [fetchedResource, setFetchedResource] = useState(defaultResource)
 
   const { data, isLoading } = useQuery({
-    queryKey: ["familyQuestForm", familyQuestId],
+    queryKey: ["resourceForm", resourceId],
     queryFn: async () => { /* fetch and reset(form) */ },
-    enabled: !!familyQuestId,
+    enabled: !!resourceId,
     staleTime: 0,
     refetchOnMount: "always",
   })
 
-  const isValueChanged = /* diff currentQuest vs fetchedQuest */
+  const isValueChanged = /* diff currentResource vs fetchedResource */
 
-  return { register, errors, setValue, watch, reset, handleSubmit, isValueChanged, fetchedEntity: data?.questEntity, isLoading }
+  return { register, errors, setValue, watch, reset, handleSubmit, isValueChanged, fetchedEntity: data?.resourceEntity, isLoading }
 }
 ```
 
@@ -174,7 +177,7 @@ export const useFamilyQuestForm = ({ familyQuestId }: { familyQuestId?: string }
 See `frontend/url-state.md`. Summary:
 
 ```ts
-export const useFamilyQuestListUrlState = () => {
+export const useResourceListUrlState = () => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -229,13 +232,13 @@ A Screen component should compose hooks, not chain logic through several helper 
 
 ```tsx
 // ✅ Good — screen composes 4 single-purpose hooks
-const { register, errors, isValueChanged, handleSubmit, ... } = useFamilyQuestForm({ familyQuestId })
-const { handleRegister, isLoading: regLoading } = useRegisterFamilyQuest({ setId })
-const { handleUpdate,   isLoading: updLoading } = useUpdateFamilyQuest()
-const { handleDelete,   isLoading: delLoading } = useDeleteFamilyQuest()
+const { register, errors, isValueChanged, handleSubmit, ... } = useResourceForm({ resourceId })
+const { handleRegister, isLoading: regLoading } = useRegisterResource({ setId })
+const { handleUpdate,   isLoading: updLoading } = useUpdateResource()
+const { handleDelete,   isLoading: delLoading } = useDeleteResource()
 
 // ❌ Bad — one giant hook hides what's happening
-const { everything } = useFamilyQuestEdit({ familyQuestId })
+const { everything } = useResourceEdit({ resourceId })
 ```
 
 ---
@@ -245,7 +248,7 @@ const { everything } = useFamilyQuestEdit({ familyQuestId })
 Every hook file must start with `"use client"`. Screen components that use hooks also need `"use client"`.
 
 ```ts
-// _hooks/useFamilyQuests.ts
+// _hooks/useResources.ts
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
@@ -260,10 +263,10 @@ Return an object, not a tuple, so callers destructure by name (resilient to addi
 
 ```ts
 // ✅
-return { quests, totalRecords, isLoading, refetch }
+return { resources, totalRecords, isLoading, refetch }
 
 // ❌ (only OK for very stable APIs like useState)
-return [quests, refetch]
+return [resources, refetch]
 ```
 
 ---
@@ -293,3 +296,4 @@ The "use" prefix is for functions that call other hooks or use React state.
 - Return objects (named destructure), not tuples
 - Never combine multiple roles in a single hook
 - `_hooks/` folder (plural) is the only allowed name
+- Sub-route hooks live under `[id]/view/_hooks/` or `[id]/edit/_hooks/` (view/edit are siblings)

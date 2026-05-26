@@ -16,42 +16,52 @@ Bridge: `@hookform/resolvers/zod` provides `zodResolver(schema)`.
 ## Folder layout per form
 
 ```
-app/(app)/{feature}/
-├── form.ts                       # Zod schema + Type
-├── page.tsx
-├── {Feature}Edit.tsx              # screen (composes useXxxForm + mutation hooks)
+app/(app)/{feature}/[id]/edit/
+├── form.ts                         # Zod schema + Type
+├── page.tsx                        # thin wrapper
+├── {Feature}EditScreen.tsx         # composes hooks + EditLayout
 ├── _components/
-│   ├── BasicSettings.tsx           # tab panel 1 (input fields)
+│   ├── {Feature}EditLayout.tsx     # generic edit layout (tabs + footer)
+│   ├── BasicSettings.tsx           # tab panel 1
 │   ├── DetailSettings.tsx          # tab panel 2
-│   └── ChildSettings.tsx           # tab panel 3
+│   └── ...                          # additional tab panels
 └── _hooks/
-    └── useXxxForm.ts                # form state + initial data load
+    └── use{Feature}Form.ts          # form state + initial load
 ```
+
+For new screens, the same layout lives at `{feature}/new/`. See `edit-screen.md` for the screen composition.
 
 ---
 
 ## form.ts — Zod schema and Type
 
 ```ts
-// app/(app)/families/new/form.ts
+// app/(app)/resources/[id]/edit/form.ts
 import { z } from "zod"
-import { DisplayIdSchema, LocalNameSchema, OnlineNameSchema, UserNameSchema, BirthdaySchema, IconIdSchema, IconColorSchema } from "@/app/(core)/schema"
+import {
+  IdSchema,
+  IconIdSchema,
+  IconColorSchema,
+} from "@/app/(core)/schema"
 
-/** 家族登録フォームスキーマ */
-export const FamilyRegisterFormSchema = z.object({
-  displayId:        DisplayIdSchema,
-  localName:        LocalNameSchema,
-  onlineName:       OnlineNameSchema,
-  familyIconId:     IconIdSchema,
-  familyIconColor:  IconColorSchema,
-  parentName:       UserNameSchema,
-  parentBirthday:   BirthdaySchema,
-  parentIconId:     IconIdSchema,
-  parentIconColor:  IconColorSchema,
+/** リソース登録／編集フォームスキーマ */
+export const ResourceFormSchema = z.object({
+  /** リソース名（1〜20 文字、必須） */
+  name: z.string().nonempty({ error: "リソース名は必須です。" })
+                  .min(1)
+                  .max(20, { error: "リソース名は 20 文字以下で入力してください。" }),
+  /** アイコン ID */
+  iconId: IconIdSchema,
+  /** アイコンカラー */
+  iconColor: IconColorSchema,
+  /** タグ（最大 10 件） */
+  tags: z.array(z.string()).max(10),
+  /** カテゴリ ID（NULL は未分類） */
+  categoryId: z.number().nullable(),
 })
 
-/** 家族登録フォーム型 */
-export type FamilyRegisterFormType = z.infer<typeof FamilyRegisterFormSchema>
+/** リソース登録／編集フォーム型（推論） */
+export type ResourceFormType = z.infer<typeof ResourceFormSchema>
 ```
 
 ### Reusable primitives in `app/(core)/schema.ts`
@@ -60,51 +70,53 @@ export type FamilyRegisterFormType = z.infer<typeof FamilyRegisterFormSchema>
 // app/(core)/schema.ts
 import { z } from "zod"
 
-/** ID共通スキーマ — 半角英数字+アンダースコア */
+/** ID 共通スキーマ — 半角英数字 + アンダースコア */
 export const IdSchema = z.string().regex(/^[a-zA-Z0-9_]+$/, {
   message: "半角英数字とアンダースコアのみ使用可能です",
 })
 
+/** 表示 ID — 5〜20 文字 */
 export const DisplayIdSchema = IdSchema
-  .min(5, { error: "IDは5文字以上で入力してください。" })
-  .max(20, { error: "IDは20文字以下で入力してください。" })
+  .min(5, { error: "ID は 5 文字以上で入力してください。" })
+  .max(20, { error: "ID は 20 文字以下で入力してください。" })
 
-export const LocalNameSchema = z.string()
-  .nonempty({ error: "家族名は必須です。" })
-  .max(10, { error: "家族名は10文字以下で入力してください。" })
+/** アイコン ID */
+export const IconIdSchema = z.number({ error: "アイコンは必須です。" })
 
-export const BirthdaySchema = z.string()
-  .nonempty({ error: "誕生日は必須です。" })
-  .refine((val) => !isNaN(Date.parse(val)), {
-    message: "有効な日付文字列ではありません",
-  })
+/** アイコンカラー */
+export const IconColorSchema = z.string({ error: "アイコンカラーは必須です。" })
 
+/** ソート順 */
 export type SortOrder = "asc" | "desc"
 ```
 
-Centralize **reusable** primitives here. Feature-specific schemas live in `{feature}/form.ts`.
+Centralize **reusable** primitives here. Feature-specific schemas live in each feature's `form.ts`.
 
 ### Schema extension
 
 ```ts
-// app/(app)/quests/family/[id]/form.ts
+// app/(app)/resources/[id]/edit/form.ts
 import { z } from "zod"
-import { BaseQuestFormSchema, addAgeMonthRefinements } from "../../form"
+import { BaseResourceFormSchema, addRangeRefinement } from "../../shared-form-helpers"
 
+/** 拡張フィールド */
 export const ChildSettingSchema = z.object({
+  /** 子リソース ID */
   childId: z.string(),
-  isActivate: z.boolean(),
-  hasQuestChildren: z.boolean(),
+  /** 有効フラグ */
+  isActive: z.boolean(),
 })
 
-/** 家族クエストフォーム — BaseQuestFormSchema を拡張 */
-export const FamilyQuestFormSchema = addAgeMonthRefinements(
-  BaseQuestFormSchema.extend({
+/** 拡張リソースフォーム — BaseResourceFormSchema を拡張 */
+export const ExtendedResourceFormSchema = addRangeRefinement(
+  BaseResourceFormSchema.extend({
+    /** 子設定 */
     childSettings: z.array(ChildSettingSchema),
-  })
+  }),
+  "ageFrom", "ageTo",
 )
-export type FamilyQuestFormType = z.infer<typeof FamilyQuestFormSchema>
-export type ChildSettingType   = z.infer<typeof ChildSettingSchema>
+export type ExtendedResourceFormType = z.infer<typeof ExtendedResourceFormSchema>
+export type ChildSettingType         = z.infer<typeof ChildSettingSchema>
 ```
 
 ### Cross-field validation with `.refine()`
@@ -116,38 +128,17 @@ export type ChildSettingType   = z.infer<typeof ChildSettingSchema>
   }
   return true
 }, {
-  message: "対象年齢(開始)は対象年齢(終了)以下である必要があります",
-  path: ["ageFrom"],   // ← attach error to this field
+  message: "開始は終了より小さい必要があります",
+  path: ["ageFrom"],   // attach error to this field
 })
 ```
-
-`path: ["fieldName"]` attaches the error to a specific field so `errors.fieldName?.message` picks it up.
-
-### Reusable refinement helper
-
-```ts
-/** 年齢・月のバリデーションを追加する共通refine */
-export const addAgeMonthRefinements = <T extends z.ZodObject<z.ZodRawShape>>(schema: T) => {
-  return schema
-    .refine(
-      (data) => data.ageFrom == null || data.ageTo == null || data.ageFrom < data.ageTo,
-      { message: "対象年齢(開始)は対象年齢(終了)以下である必要があります", path: ["ageFrom"] }
-    )
-    .refine(
-      (data) => !(data.monthFrom != null && data.monthTo == null),
-      { message: "公開終了月は必須です。", path: ["monthTo"] }
-    )
-}
-```
-
-Apply with `addAgeMonthRefinements(BaseSchema.extend({ ... }))`.
 
 ---
 
 ## useXxxForm.ts — form state hook
 
 ```ts
-// _hooks/useFamilyQuestForm.ts
+// _hooks/useResourceForm.ts
 "use client"
 
 import { useState } from "react"
@@ -156,100 +147,76 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMantineTheme } from "@mantine/core"
-import { FamilyQuestFormSchema, type FamilyQuestFormType } from "../form"
-import { getFamilyQuest } from "@/app/api/quests/family/[id]/client"
+import { ResourceFormSchema, type ResourceFormType } from "../form"
+import { getResource } from "@/app/api/resources/[id]/client"
 import { handleAppError } from "@/app/(core)/error/handler/client"
-import { isSameArray } from "@/app/(core)/util"
 
-type Args = { familyQuestId?: string }
+type Args = {
+  /** リソース ID（新規作成時は undefined） */
+  resourceId?: string
+}
 
-/** 家族クエストフォーム状態を取得する */
-export const useFamilyQuestForm = ({ familyQuestId }: Args) => {
+/** リソースフォーム状態を取得する */
+export const useResourceForm = ({ resourceId }: Args) => {
   const theme = useMantineTheme()
   const router = useRouter()
 
-  /** デフォルト値 */
-  const defaultQuest: FamilyQuestFormType = {
+  // デフォルト値
+  const defaultForm: ResourceFormType = {
     name: "",
     iconId: 1,
     iconColor: theme.colors.blue[5],
     tags: [],
     categoryId: null,
-    details: [{ level: 1, successCondition: "", requiredCompletionCount: 1, reward: 0, childExp: 0, requiredClearCount: 1 }],
-    ageFrom: null, ageTo: null, monthFrom: null, monthTo: null,
-    client: "", requestDetail: "",
-    childSettings: [],
   }
 
-  /** react-hook-form 初期化 */
+  // react-hook-form 初期化
   const { register, handleSubmit, formState: { errors }, setValue, watch, reset } =
-    useForm<FamilyQuestFormType>({
-      resolver: zodResolver(FamilyQuestFormSchema),
-      defaultValues: defaultQuest,
+    useForm<ResourceFormType>({
+      resolver: zodResolver(ResourceFormSchema),
+      defaultValues: defaultForm,
     })
 
-  /** 取得時データ（Dirty 判定用） */
-  const [fetchedQuest, setFetchedQuest] = useState(defaultQuest)
+  // 取得時データ（Dirty 判定用）
+  const [fetchedForm, setFetchedForm] = useState(defaultForm)
 
-  /** 既存データを取得（編集モードのみ） */
+  // 既存データを取得（編集モードのみ）
   const { data, error, isLoading } = useQuery({
-    queryKey: ["familyQuestForm", familyQuestId],
+    queryKey: ["resourceForm", resourceId],
     retry: false,
     queryFn: async () => {
-      const { familyQuest } = await getFamilyQuest({ familyQuestId: familyQuestId! })
-      const form: FamilyQuestFormType = {
-        name: familyQuest.quest.name,
-        iconId: familyQuest.quest.iconId,
-        iconColor: familyQuest.quest.iconColor,
-        tags: familyQuest.tags.map((t) => t.name),
-        categoryId: familyQuest.quest.categoryId,
-        details: familyQuest.details.map((d) => ({ /* ... */ })),
-        ageFrom: familyQuest.quest.ageFrom,
-        ageTo: familyQuest.quest.ageTo,
-        monthFrom: familyQuest.quest.monthFrom,
-        monthTo: familyQuest.quest.monthTo,
-        client: familyQuest.quest.client,
-        requestDetail: familyQuest.quest.requestDetail,
-        childSettings: familyQuest.children.map((c) => ({
-          childId: c.childId,
-          isActivate: c.isActivate ?? true,
-          hasQuestChildren: true,
-        })),
+      const { resource } = await getResource({ resourceId: resourceId! })
+      const form: ResourceFormType = {
+        name: resource.name,
+        iconId: resource.iconId,
+        iconColor: resource.iconColor,
+        tags: resource.tags.map((t) => t.name),
+        categoryId: resource.categoryId,
       }
-      setFetchedQuest(form)
+      setFetchedForm(form)
       reset(form)
-      return { questEntity: familyQuest }
+      return { entity: resource }
     },
-    enabled: !!familyQuestId,
+    enabled: !!resourceId,
     staleTime: 0,
     refetchOnMount: "always",
   })
 
   if (error) handleAppError(error, router)
 
-  /** 現在のフォーム値 */
-  const currentQuest = watch()
-
-  /** Dirty 判定 */
+  // Dirty 判定
+  const currentForm = watch()
   const isValueChanged =
-    currentQuest.name !== fetchedQuest.name ||
-    currentQuest.iconId !== fetchedQuest.iconId ||
-    currentQuest.iconColor !== fetchedQuest.iconColor ||
-    !isSameArray(currentQuest.tags, fetchedQuest.tags) ||
-    currentQuest.categoryId !== fetchedQuest.categoryId ||
-    currentQuest.ageFrom !== fetchedQuest.ageFrom ||
-    currentQuest.ageTo !== fetchedQuest.ageTo ||
-    currentQuest.monthFrom !== fetchedQuest.monthFrom ||
-    currentQuest.monthTo !== fetchedQuest.monthTo ||
-    currentQuest.client !== fetchedQuest.client ||
-    currentQuest.requestDetail !== fetchedQuest.requestDetail ||
-    JSON.stringify(currentQuest.details) !== JSON.stringify(fetchedQuest.details) ||
-    JSON.stringify(currentQuest.childSettings) !== JSON.stringify(fetchedQuest.childSettings)
+    currentForm.name      !== fetchedForm.name ||
+    currentForm.iconId    !== fetchedForm.iconId ||
+    currentForm.iconColor !== fetchedForm.iconColor ||
+    currentForm.categoryId !== fetchedForm.categoryId ||
+    JSON.stringify(currentForm.tags) !== JSON.stringify(fetchedForm.tags)
 
   return {
     register, errors, setValue, watch, reset,
     handleSubmit, isValueChanged,
-    fetchedQuest, fetchedEntity: data?.questEntity, isLoading,
+    fetchedForm, fetchedEntity: data?.entity, isLoading,
   }
 }
 ```
@@ -279,14 +246,7 @@ react-hook-form's default mode (no `mode` option) means:
 - **onChange** after the first error (re-validates as user types)
 - **onSubmit** runs the entire schema
 
-Override with the `mode` option only if a different policy is required:
-
-```ts
-useForm({
-  resolver: zodResolver(schema),
-  mode: "onChange",  // validate every keystroke (rarely needed)
-})
-```
+Override with the `mode` option only if a different policy is required.
 
 ---
 
@@ -298,8 +258,8 @@ useForm({
 import { Input } from "@mantine/core"
 import { RequiredMark } from "@/app/(core)/_components/RequiredMark"
 
-<Input.Wrapper label={<>家族クエスト名 <RequiredMark /></>} error={errors.name?.message}>
-  <Input placeholder="例: お皿洗い" {...register("name")} />
+<Input.Wrapper label={<>リソース名 <RequiredMark /></>} error={errors.name?.message}>
+  <Input placeholder="例: マイリソース" {...register("name")} />
 </Input.Wrapper>
 ```
 
@@ -328,7 +288,7 @@ import { NumberInput } from "@mantine/core"
 />
 ```
 
-### Custom multi-step input with IME handling
+### Tag input with IME handling
 
 ```tsx
 const [draft, setDraft] = useState("")
@@ -371,10 +331,10 @@ const commitTag = () => {
 </Input.Wrapper>
 ```
 
-### Tab-level (sum errors per tab)
+### Tab-level
 
 ```ts
-const hasBasicErrors = !!(errors.name || errors.iconId || errors.iconColor)
+const hasBasicErrors  = !!(errors.name || errors.iconId || errors.iconColor)
 const hasDetailErrors = !!errors.details
 ```
 
@@ -395,9 +355,9 @@ rightSection: tab.hasErrors ? <IconAlertCircle size={16} color="red" /> : null
 ## Submit flow
 
 ```tsx
-const onSubmit = handleSubmit((form: FamilyQuestFormType) => {
-  if (familyQuestId) {
-    handleUpdate({ form, familyQuestId })
+const onSubmit = handleSubmit((form: ResourceFormType) => {
+  if (resourceId) {
+    handleUpdate({ form, resourceId, updatedAt: fetchedEntity?.updatedAt })
   } else {
     handleRegister({ form })
   }
@@ -409,14 +369,13 @@ const onSubmit = handleSubmit((form: FamilyQuestFormType) => {
 </form>
 ```
 
-`handleSubmit` only calls the callback when Zod validation passes.
-
 ---
 
 ## Constraints
 
-- Every form has exactly one `form.ts` with `XxxFormSchema` + `XxxFormType`
-- The type is inferred (`z.infer<>`), never written by hand
+- `form.ts` lives at `[id]/edit/form.ts` (or `{feature}/new/form.ts`); contains `XxxFormSchema` + `XxxFormType`
+- Type is inferred (`z.infer<>`), never written by hand
+- Document every schema field with `/** ... */` (see `conventions/comments.md`)
 - `register` is for native HTML inputs; `setValue` + `watch` for controlled Mantine inputs (NumberInput, Select, DateInput, etc.)
 - IME (Japanese) input: always guard `Enter` handlers with `isComposing`
 - Errors displayed via `error={errors.field?.message}` on `Input.Wrapper`
