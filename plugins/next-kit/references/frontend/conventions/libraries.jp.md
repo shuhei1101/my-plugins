@@ -169,8 +169,8 @@ Context プロバイダで足りる場合は Context を優先する（`state-ma
 ```ts
 import toast from "react-hot-toast"
 
-toast.success("Saved", { duration: 1500 })
-toast.error("Failed to save")
+toast.success("保存しました", { duration: 1500 })
+toast.error("保存に失敗しました")
 ```
 
 ---
