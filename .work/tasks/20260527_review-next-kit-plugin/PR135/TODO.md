@@ -40,9 +40,9 @@ next-kit プラグイン全体を Claude Code の一般的なベストプラク�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | next-kit の全 references を読み、ベストプラクティスと照合する | `plugins/next-kit/references/**` |
-| - | 観点抜けがあれば洗い出す（パフォーマンス、a11y、SEO、テスト戦略、CI/CD、画像最適化など） | (調査) |
-| - | 改善提案を質問形式で QA.md に大量に書き出す | `.work/tasks/.../PR135/QA.md` |
+| ✅ | next-kit の全 references を読み、ベストプラクティスと照合する | `plugins/next-kit/references/**` |
+| ✅ | 観点抜けがあれば洗い出す（パフォーマンス、a11y、SEO、テスト戦略、CI/CD、画像最適化など） | (調査) |
+| ✅ | 改善提案を質問形式で QA.md に大量に書き出す（QA-001〜QA-072、計 72 件） | `.work/tasks/.../PR135/QA.md` |
 | - | ユーザーに採否を確認し、QA に判断を記録する | (ユーザー対話) |
 | - | 採用された変更を実装する | `plugins/next-kit/references/**` |
 | - | JP ミラーを同期する | `plugins/next-kit/references/**/*.jp.md` |

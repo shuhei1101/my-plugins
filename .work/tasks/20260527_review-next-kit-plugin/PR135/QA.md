@@ -8,4 +8,957 @@
 
 ---
 
-（未決定事項なし）
+## 評価方針
+
+next-kit プラグインの references を全て読み、Next.js / React コミュニティの一般的なベストプラクティスや代替案と照合した結果、議論したい論点を QA-XXX 形式で列挙する。
+ユーザーに 1 つずつ「採用 / 不採用 / 後回し / 議論」を判断してもらう想定。
+
+**判断の凡例**:
+- 採用 → 当 PR で対応（references を改訂）
+- 不採用 → 現状維持の理由を 1 行で記録（再提案防止）
+- 後回し → 次 PR 候補に転記
+- 議論 → 追加情報を確認してから再判断
+
+---
+
+# A. ライブラリ選定の妥当性
+
+## QA-001: Mantine vs shadcn/ui
+
+**背景**: 現状 UI は Mantine 一本だが、2025 年時点の Next.js コミュニティでは shadcn/ui（Tailwind + Radix UI のコピペ式コンポーネント集）が事実上の標準になりつつある。Mantine は完成度が高い反面、バンドルサイズが大きく App Router の RSC 互換性で工夫が要る。
+
+**案**:
+- A. Mantine を維持（現状）
+- B. shadcn/ui に乗り換え（バンドル軽量・RSC 親和性高・カスタマイズ自在）
+- C. 両方を比較する別 PR を切る
+
+**トレードオフ**: shadcn/ui はコンポーネントを「所有」する設計のため初期実装量が増えるが、長期的には依存ロックが緩い。
+
+**決定**:
+
+---
+
+## QA-002: Tailwind CSS と Mantine の併用
+
+**背景**: `libraries.md` に「`tailwindcss` (alongside Mantine for spacing / layout fine-tuning)」とあるが、Mantine は独自の Style API（`px`, `py`, `gap` 等）と Theme を持っているため Tailwind と機能が重複する。両方使うとどちらで書くべきか規約が不明確になりやすい。
+
+**案**:
+- A. Mantine 単独（Tailwind を外す）
+- B. Tailwind 単独（shadcn/ui 等に移行する場合）
+- C. 併用継続 + 使い分けルールを明文化（例: レイアウト=Mantine, 細かい余白=Tailwind）
+
+**決定**:
+
+---
+
+## QA-003: react-hot-toast vs Mantine notifications
+
+**背景**: トースト通知に `react-hot-toast` を採用しているが、Mantine 公式に `@mantine/notifications` がある。テーマ統合・ダーク対応・スタイル一貫性で後者が有利。
+
+**案**:
+- A. `@mantine/notifications` に統一
+- B. `react-hot-toast` 維持（軽量で API が単純）
+
+**決定**:
+
+---
+
+## QA-004: Drizzle vs Prisma
+
+**背景**: ORM に Drizzle を選択。Drizzle は SQL に近く型推論が強いが、Prisma の方が広く普及していてマイグレーション UI・Studio・コミュニティが充実。
+
+**案**:
+- A. Drizzle 維持（型推論・パフォーマンス重視）
+- B. Prisma に乗り換え（生産性・エコシステム重視）
+- C. 選定根拠（パフォーマンス/型推論/SQL 親和性）を `database.md` の冒頭に明記して維持を正当化
+
+**決定**:
+
+---
+
+## QA-005: Supabase Auth vs Auth.js / Clerk
+
+**背景**: 認証に Supabase を採用しているが、`libraries.md` には「同じ `getAuthContext()` インターフェースで他プロバイダに差し替え可能」と記載されている。代替候補（Auth.js, Clerk, Lucia, WorkOS）の比較がない。
+
+**案**:
+- A. Supabase 前提のまま（DB も Supabase なら自然）
+- B. プロバイダ抽象化レイヤの設計指針を `references/backend/auth.md` として追加
+- C. Auth.js を推奨に変更
+
+**決定**:
+
+---
+
+## QA-006: axios 禁止ルールの妥当性
+
+**背景**: 「`axios` を追加しない、native `fetch` で十分」と禁止しているが、リトライ・タイムアウト・abort signal・インターセプターが native fetch には欠けている。
+
+**案**:
+- A. fetch 維持 + `client.ts` 用の薄いラッパー（retry/timeout/abort）を `references/backend/client-helpers.md` に追加
+- B. `ky` などの軽量 fetch ラッパーを採用
+- C. ルール維持（要件が出てから検討）
+
+**決定**:
+
+---
+
+## QA-007: 日付ライブラリの方針
+
+**背景**: 「`moment` / `date-fns` を default にしない、native `Date` + `Intl`」と書かれているが、タイムゾーン・営業日計算・週/月単位の操作で native Date は弱い。
+
+**案**:
+- A. 現状維持
+- B. `date-fns` をデフォルト推奨に格上げ
+- C. `dayjs` または `Temporal` polyfill を推奨に追加
+
+**決定**:
+
+---
+
+## QA-008: framer-motion の必要性
+
+**背景**: アニメーションに `framer-motion` を入れているが、「sparingly for meaningful motion only」とある。Mantine の `Transition` で済む場合が多く、framer-motion はバンドル増（〜50KB）。
+
+**案**:
+- A. 維持
+- B. 削除（必要になったら都度追加）
+- C. ページ単位の dynamic import 推奨を明記
+
+**決定**:
+
+---
+
+## QA-009: react-error-boundary の必要性
+
+**背景**: Next.js App Router は `error.tsx` でルート単位のエラーバウンダリを提供する。`react-error-boundary` を別途使う理由が明確でない。
+
+**案**:
+- A. `error.tsx` に統一して `react-error-boundary` を削除
+- B. provider レベルで `react-error-boundary` 維持、ルートエラーは `error.tsx` と棲み分け
+- C. 役割の使い分けを `references/shared/error.md` に明記
+
+**決定**:
+
+---
+
+# B. App Router の活用度
+
+## QA-010: 全画面 "use client" の妥当性
+
+**背景**: Screen ファイルは全て `"use client"` で始まる前提になっている。これは React Server Components（RSC）の最大のメリット（バンドル削減・サーバー側データ取得・SEO）を捨てている。
+
+**案**:
+- A. 維持（クライアントロジック中心のアプリのため割り切る）
+- B. 「データ取得は RSC、インタラクションは Client Component」のハイブリッドを推奨に変更
+- C. 画面の種類ごとに方針を分ける（List は RSC、Edit は Client など）
+
+**決定**:
+
+---
+
+## QA-011: Server Actions の取り扱い
+
+**背景**: フォーム送信が全て `useMutation` + `fetch` 経由。Next.js 13.4+ の Server Actions は CSRF 対策込み・型安全・プログレッシブエンハンスメント対応で App Router の推奨方針。一切言及がない。
+
+**案**:
+- A. 採用方針を `references/backend/server-actions.md` として新規作成（client.ts/route.ts より優先）
+- B. 採用しない方針（理由を `api-routes.md` に明記）
+- C. 「単純なフォームは Server Actions、複雑な mutation は route.ts」の使い分け
+
+**決定**:
+
+---
+
+## QA-012: `[id]/page.tsx` の redirect を middleware に置き換える
+
+**背景**: 権限判定して view/edit に振り分ける `[id]/page.tsx` は、リクエストごとに「サーバーで auth → サーバーで権限取得 → 302 → クライアントが view/edit を再リクエスト」の 2 ラウンドトリップが発生する。`middleware.ts` でやれば 1 リクエストで完結する。
+
+**案**:
+- A. 現状維持（page.tsx で redirect、シンプル）
+- B. `middleware.ts` で書き換え（パフォーマンス重視）
+- C. ハイブリッド（auth は middleware、権限は page.tsx）
+
+**決定**:
+
+---
+
+## QA-013: loading.tsx / error.tsx / not-found.tsx の規約
+
+**背景**: App Router の標準ファイル（`loading.tsx`, `error.tsx`, `not-found.tsx`, `template.tsx`）の使い方が一切ない。代わりに全画面で `<LoadingOverlay>` を手動配置している。
+
+**案**:
+- A. `loading.tsx` を各ルートに置く規約を追加 + `<LoadingOverlay>` は併用
+- B. `<LoadingOverlay>` 一本化（現状維持）
+- C. RSC データ取得時のみ `loading.tsx`、Client Component は `LoadingOverlay` の使い分け
+
+**決定**:
+
+---
+
+## QA-014: Metadata API と SEO
+
+**背景**: `metadata` / `generateMetadata` を使った OG タグ・SEO 設定の規約がない。検索流入が前提のサービスではマストの観点。
+
+**案**:
+- A. `references/frontend/metadata.md` を新規作成
+- B. SEO 不要のアプリ前提として方針なしを明記
+- C. 既存の `frontend/` に 1 セクション追加
+
+**決定**:
+
+---
+
+## QA-015: next/image / next/font の規約
+
+**背景**: 画像最適化（`next/image`）・フォント最適化（`next/font`）の規約がない。LCP / CLS に直結する重要項目。
+
+**案**:
+- A. `references/frontend/assets.md` を追加（image, font, 静的アセット）
+- B. 画像は別途、フォントは Mantine 任せ
+- C. 不要（決定理由を明記）
+
+**決定**:
+
+---
+
+## QA-016: Streaming / Suspense の活用
+
+**背景**: 部分的な `<Suspense>` 境界、`use()` フック、サーバー側ストリーミングなど App Router の目玉機能に触れていない。
+
+**案**:
+- A. `references/frontend/streaming.md` を追加
+- B. RSC 採用判断（QA-010）とセットで判断
+- C. 不要
+
+**決定**:
+
+---
+
+## QA-017: キャッシュ制御（revalidate / no-store / dynamic）
+
+**背景**: `fetch` のキャッシュタグ（`next: { revalidate, tags }`）、`export const dynamic = "force-dynamic"`、`revalidatePath` 等の規約が一切ない。
+
+**案**:
+- A. `references/backend/caching.md` を新規作成
+- B. RSC を採用しない方針なら不要
+- C. `api-routes.md` に 1 セクション追加
+
+**決定**:
+
+---
+
+# C. フォルダ構造・命名
+
+## QA-018: Route Group 名 `(app)` `(auth)` `(core)`
+
+**背景**: `(core)` という Route Group は非標準（一般的には `(shared)` や Route Group を使わず `_shared/` 等）。`(app)` も `(dashboard)` 等の方が意味が明確。
+
+**案**:
+- A. 現状維持（用語集に登録すれば OK）
+- B. `(app)` → `(dashboard)` または素の `app/`、`(core)` → `_shared/` に変更
+- C. 命名の意図を `folder-structure.md` 冒頭に明記
+
+**決定**:
+
+---
+
+## QA-019: `_components/` `_hooks/` のアンダースコア
+
+**背景**: Next.js の「Private Folder」規約は `_foldername` で「ルートに含めない」を意味する。意図的だが、`components/` `hooks/` （アンダースコアなし）でも問題ない（route ファイルではないため）。
+
+**案**:
+- A. 現状維持（明示的に「ルートではない」と示す）
+- B. アンダースコアを外す（簡潔）
+
+**決定**:
+
+---
+
+## QA-020: view/edit sibling vs 単一画面 + mode
+
+**背景**: `[id]/view/` と `[id]/edit/` を兄弟ルートにする方針は珍しい。多くのプロジェクトは `[id]/page.tsx` に Edit/View を mode で切り替えるか、Edit を別ルート（`[id]/edit/`）にして View はデフォルト（`[id]/page.tsx`）にする。現状の sibling 設計は redirect ラウンドトリップを生む。
+
+**案**:
+- A. 維持（権限変更時のブックマーク追随、URL 一意性を重視）
+- B. View をデフォルト（`[id]/page.tsx` が View）、Edit のみ別ルート
+- C. 単一画面で `?mode=edit` のクエリで切り替え
+
+**決定**:
+
+---
+
+## QA-021: API ルートと Frontend ルートの完全ミラー
+
+**背景**: `app/api/{resource}/[id]/route.ts` を `app/(app)/{feature}/[id]/edit/` と対にするミラー構造は理路整然だが、Server Actions を採用する場合（QA-011）この対称性は不要になる。
+
+**案**:
+- A. 現状維持
+- B. Server Actions 採用前提でミラー構造を緩める
+- C. 大規模になった場合のみミラー、小規模は inline で OK
+
+**決定**:
+
+---
+
+## QA-022: `form.ts` を `[id]/edit/` に置く意図
+
+**背景**: 「新規」と「編集」で同じ Zod スキーマを使うのに、`form.ts` を `[id]/edit/` に置いて `new/form.ts` から re-export するパターンになっている。`{feature}/form.ts` （フィーチャ直下）に置く方が直感的。
+
+**案**:
+- A. 現状維持
+- B. `{feature}/form.ts` に格上げ（edit/new で共通利用）
+- C. スキーマが分かれるケースは個別の form.ts、共通なら直下に
+
+**決定**:
+
+---
+
+## QA-023: `app/api/{resource}/query.ts` の必要性
+
+**背景**: クエリパラメータの型を `query.ts` に独立させているが、`route.ts` 内で定義することも可能。ファイル数が増えてレビュー負荷が上がっている可能性。
+
+**案**:
+- A. 現状維持（責務分離）
+- B. `route.ts` 内に統合（小規模リソースのみ）
+- C. クエリパラメータがある場合のみ `query.ts` を作る（明示的な使い分けを記載）
+
+**決定**:
+
+---
+
+# D. フォーム実装
+
+## QA-024: `register` と `setValue + watch` の混在
+
+**背景**: HTML ネイティブ input は `register("name")`、Mantine の controlled input は `setValue + watch` という二重パターン。複雑化の元。
+
+**案**:
+- A. 現状維持
+- B. RHF の `<Controller>` に統一（全フィールド同一の書き方）
+- C. Mantine の `useForm` （Mantine 専用）に乗り換え
+
+**決定**:
+
+---
+
+## QA-025: `isValueChanged` を手動計算する設計
+
+**背景**: `JSON.stringify` フィールド比較で `isValueChanged` を計算しているが、ネストしたオブジェクト・配列順・undefined/null 比較で誤検出しやすい。`formState.isDirty` が `reset` 後に不安定とのことだが、`useForm({ shouldUseNativeValidation: ..., values })` の使い方で解決できる可能性。
+
+**案**:
+- A. 現状維持（堅実）
+- B. `useForm({ values })` パターン + `formState.isDirty` に乗り換え
+- C. `lodash.isEqual` 等の deep equal ユーティリティを採用
+
+**決定**:
+
+---
+
+## QA-026: `window.confirm` の UX
+
+**背景**: 登録・更新・削除すべてに `window.confirm` が入っているが、ブラウザネイティブダイアログはスタイルできず、モバイルで違和感あり。Mantine の `modals.openConfirmModal` を全 mutation に使う方が UX 一貫性が高い。
+
+**案**:
+- A. 現状維持
+- B. `modals.openConfirmModal` をデフォルトに変更
+- C. 登録・更新は省略可、削除のみ確認必須に緩める
+
+**決定**:
+
+---
+
+## QA-027: 全 mutation に確認ダイアログを入れる是非
+
+**背景**: 「登録」「更新」にまで毎回確認を入れる設計だが、ユーザー操作のテンポを損なう。一般的には削除のみ確認、登録/更新は楽観的に進めて失敗時にトーストが多い。
+
+**案**:
+- A. 現状維持
+- B. 確認は削除のみ必須、他は任意
+- C. 全 mutation 確認なし（toast で結果通知のみ）
+
+**決定**:
+
+---
+
+## QA-028: タグ入力の IME 制御を共通コンポーネント化
+
+**背景**: 各画面で `isComposing` の boilerplate を書く前提だが、共通の `<TagInput>` コンポーネントを `app/(core)/_components/` に切り出すべき。
+
+**案**:
+- A. 現状維持
+- B. `<TagInput>` を共通化（components.md にも追加）
+
+**決定**:
+
+---
+
+## QA-029: フォーム自動保存（autosave）の規約
+
+**背景**: 編集中の自動保存パターン（debounced save、draft 保存、ネットワーク復帰時 retry）の規約がない。長文編集系ユースケースで必要になる。
+
+**案**:
+- A. 必要が出るまで不要
+- B. `references/frontend/patterns/autosave.md` を追加
+- C. 削除・更新は手動、入力 draft のみ localStorage に保存パターンを書く
+
+**決定**:
+
+---
+
+# E. API / バックエンド
+
+## QA-030: PUT vs PATCH
+
+**背景**: Update mutation の HTTP メソッドが PUT になっているが、部分更新であれば PATCH が REST 的に正しい。現状の例だと `putResource` は全フィールド送信になりそう。
+
+**案**:
+- A. 現状維持（PUT = 全置換でも実害なし）
+- B. PATCH に変更（部分更新明示）
+- C. リソース更新の方針を `api-routes.md` で明文化
+
+**決定**:
+
+---
+
+## QA-031: レスポンス封筒の標準化
+
+**背景**: API レスポンスが bare JSON（`return NextResponse.json(data)`）。`{ data, meta }` `{ data, errors }` のような封筒を標準化しないと、ページネーション・エラーフィールドの位置が一貫しない。
+
+**案**:
+- A. 現状維持（シンプル）
+- B. `{ data, meta: { totalRecords, page } }` 形式に統一
+- C. 一覧系のみ封筒、単体は bare
+
+**決定**:
+
+---
+
+## QA-032: API バージョニング
+
+**背景**: `/api/{resource}/...` のみで、`/api/v1/{resource}` 等のバージョニング方針がない。外部公開しないなら不要だが、モバイルアプリと共有する場合は要検討。
+
+**案**:
+- A. 不要（プライベート API のみ前提）
+- B. v1 を入れる
+- C. 公開時に検討するメモを残す
+
+**決定**:
+
+---
+
+## QA-033: idempotency key / リトライ安全性
+
+**背景**: POST mutation がネットワーク再送で二重実行されるリスクがある。クライアント側 retry を入れた場合、サーバー側 idempotency-key の規約が必要になる。
+
+**案**:
+- A. 不要（retry: false で十分）
+- B. 課金等の重要 POST だけ idempotency-key 規約を追加
+- C. `references/backend/idempotency.md` を追加
+
+**決定**:
+
+---
+
+## QA-034: レート制限 / DDoS 対策
+
+**背景**: rate limiting の方針が一切ない。Vercel の `@vercel/firewall` や Upstash Ratelimit の規約候補。
+
+**案**:
+- A. 不要
+- B. `references/backend/rate-limit.md` を追加
+- C. middleware.ts のサンプルだけ用意
+
+**決定**:
+
+---
+
+## QA-035: CSRF / セキュリティヘッダ
+
+**背景**: Same-Origin な Next.js API なら CSRF は基本不要だが、CSP / X-Frame-Options / Strict-Transport-Security の設定方針がない。
+
+**案**:
+- A. `next.config.js` に security headers 雛形を `references/shared/security.md` で提供
+- B. 不要（Vercel デフォルトに任せる）
+
+**決定**:
+
+---
+
+## QA-036: ファイルアップロード / ストレージ
+
+**背景**: 画像・添付ファイルのアップロード規約がない（Supabase Storage / Vercel Blob / S3 等の選択肢）。
+
+**案**:
+- A. `references/backend/upload.md` を追加
+- B. 必要に応じて都度設計
+
+**決定**:
+
+---
+
+## QA-037: Webhook 受信パターン
+
+**背景**: Stripe Webhook 等の検証付き受信（署名検証、idempotency、リトライ）の規約がない。
+
+**案**:
+- A. 不要
+- B. `references/backend/webhooks.md` を追加
+
+**決定**:
+
+---
+
+## QA-038: バックグラウンドジョブ
+
+**背景**: 非同期処理（メール送信、画像処理、定期バッチ）の規約がない。Vercel Cron / Inngest / Trigger.dev 等の選択肢。
+
+**案**:
+- A. 不要
+- B. `references/backend/jobs.md` を追加（Vercel Cron 推奨）
+
+**決定**:
+
+---
+
+## QA-039: リアルタイム / SSE / WebSocket
+
+**背景**: 通知・進捗バー等のリアルタイム機能の規約がない。
+
+**案**:
+- A. 不要
+- B. Supabase Realtime / SSE の使い分けを `references/backend/realtime.md` に書く
+
+**決定**:
+
+---
+
+# F. DB / Drizzle
+
+## QA-040: 主キー UUID の妥当性
+
+**背景**: 全テーブル UUID 主キー。インデックス効率（B-tree）・URL 長・ソート性で ULID / Snowflake が優位なケースあり。
+
+**案**:
+- A. UUID 維持（Postgres `defaultRandom` がシンプル）
+- B. ULID or NanoID に変更
+- C. リソース種別ごとに選択（公開 ID は別カラム）
+
+**決定**:
+
+---
+
+## QA-041: ソフトデリート
+
+**背景**: `deletedAt` カラムによるソフトデリート、復元、監査の規約がない。
+
+**案**:
+- A. 不要（ハードデリートで十分）
+- B. `references/backend/soft-delete.md` を追加
+
+**決定**:
+
+---
+
+## QA-042: トランザクション規約
+
+**背景**: 複数テーブル更新時のトランザクション境界、ロック方針、リトライ規約がない。
+
+**案**:
+- A. service.ts でケースバイケース（暗黙）
+- B. `references/backend/transaction.md` を追加
+
+**決定**:
+
+---
+
+## QA-043: Drizzle Relational Queries vs SQL Builder
+
+**背景**: `db.ts` の例は `db.select().from().where()` の SQL ビルダーパターンのみ。Drizzle の Relational Queries API（`db.query.resources.findFirst({ with: { tags } })`）も強力だが規約に登場しない。
+
+**案**:
+- A. SQL builder 統一
+- B. 「Join あり = Relational Query、単純取得 = SQL builder」と使い分け規約
+- C. Relational Query を推奨
+
+**決定**:
+
+---
+
+## QA-044: 楽観的ロック方式
+
+**背景**: `updatedAt` 比較で楽観的ロックしているが、ナノ秒精度の問題・複数列同時更新時の競合・大規模化時の version 列 vs ETag の検討余地。
+
+**案**:
+- A. 現状維持
+- B. `version: integer` 列を別途持つ（PostgreSQL 推奨）
+- C. ETag ヘッダ方式
+
+**決定**:
+
+---
+
+## QA-045: 監査ログ（createdBy / updatedBy）
+
+**背景**: `createdAt` / `updatedAt` はあるが、誰がいつ変更したかの記録規約がない。
+
+**案**:
+- A. 不要
+- B. 共通 `timestamps` 拡張で `createdBy` / `updatedBy` 追加を推奨
+
+**決定**:
+
+---
+
+# G. 型・コメント
+
+## QA-046: `Awaited<ReturnType<...>>` でレスポンス型を導出
+
+**背景**: クライアントが内部関数 `fetchResource` の戻り値型に依存している。リファクタで内部関数を分割すると型が壊れる。
+
+**案**:
+- A. 現状維持（同一リポジトリで管理しているので OK）
+- B. Response Zod スキーマを別途定義して infer（Request と対称）
+- C. tRPC / OpenAPI で型を生成
+
+**決定**:
+
+---
+
+## QA-047: ジェネリック `<TForm extends Record<string, unknown>>`
+
+**背景**: `EditLayout<TForm>` のジェネリック制約が `Record<string, unknown>` だと型安全性がほぼ消える。
+
+**案**:
+- A. 維持
+- B. `<TForm extends FieldValues>`（react-hook-form の型）に変更
+
+**決定**:
+
+---
+
+## QA-048: 全 Drizzle カラムに `/** ... */` 必須
+
+**背景**: 「カラムには必ず一行 JSDoc を書く」ルール。価値はあるが、`name: text("name").notNull()` のように自明なものまで書かされ、メンテ負荷増。
+
+**案**:
+- A. 現状維持
+- B. 「自明でないカラムだけ必須」に緩める
+- C. 設計上重要なカラム（ステータス、外部キー、フラグ）のみ必須
+
+**決定**:
+
+---
+
+## QA-049: PR 番号付き変更履歴コメント
+
+**背景**: `// PR123: 年齢上限フィールドを追加` のような変更履歴コメントを許容しているが、これは一般的にアンチパターン（`git log` が一次情報、コメントが古びる）。
+
+**案**:
+- A. 現状維持（理由付きで意図保存）
+- B. 廃止（git log と PR description に任せる）
+- C. 「非自明な仕様変更のみ」とより厳しく絞る
+
+**決定**:
+
+---
+
+## QA-050: コメント言語の日本語固定
+
+**背景**: コメントを日本語に固定しているが、将来 OSS 化・外国人開発者参加・AI モデルの英語学習量を考えると英語化の選択肢がある。
+
+**案**:
+- A. 日本語維持
+- B. 英語化
+- C. プロジェクト固有のドメイン用語のみ日本語、汎用説明は英語
+
+**決定**:
+
+---
+
+# H. 状態管理 / フック
+
+## QA-051: TanStack Query のグローバル staleTime
+
+**背景**: グローバル `staleTime: 5min` だが、フォームロード時のみ `staleTime: 0` で上書き。「画面表示中に他人が更新したデータが反映されない」場面と「フォーム編集中の上書き防止」が混在しがち。
+
+**案**:
+- A. 現状維持
+- B. `staleTime: 0` をデフォルト、必要箇所だけ長くする
+- C. リソースごとに staleTime テーブルを定義
+
+**決定**:
+
+---
+
+## QA-052: `useResource` と `useResourceView` の重複
+
+**背景**: `[id]/_hooks/useResource.ts` と `[id]/view/_hooks/useResourceView.ts` が同じ API を叩く例がある。共通化の指針が曖昧。
+
+**案**:
+- A. 共通化必須にする（`useResourceView` を廃止して `useResource` 統一）
+- B. View 専用フィールド（canEdit 等）がある場合のみ View 専用フックを許可
+- C. 現状の重複容認
+
+**決定**:
+
+---
+
+## QA-053: useMutation の Three Hook 分離
+
+**背景**: `useRegisterX` / `useUpdateX` / `useDeleteX` を別ファイル必須としているが、毎フィーチャで 3 ファイルが boilerplate になる。
+
+**案**:
+- A. 現状維持（責務分離・テスト容易性）
+- B. `useResourceMutations` 1 ファイルにまとめて 3 関数 export
+- C. CRUD ジェネレータヘルパーで自動生成
+
+**決定**:
+
+---
+
+## QA-054: 楽観的更新（optimistic updates）の禁止
+
+**背景**: 「optimistic updates は使わない、invalidate + refetch がデフォルト」と決め打ちしているが、いいね・お気に入り等の高頻度 UI では UX 必須。
+
+**案**:
+- A. 現状維持
+- B. 「特定の用途のみ optimistic」と用途リストを明記
+
+**決定**:
+
+---
+
+# I. ロギング / 観測
+
+## QA-055: クライアント側 logger を `console[level]` で出力
+
+**背景**: production でも `console.log` 系で出力する設計。エンドユーザーの DevTools にログが表示されてしまい、情報漏洩・スパムログのリスク。
+
+**案**:
+- A. 現状維持（情報は ctx に絞っているので OK）
+- B. production はサーバー転送 / Sentry / Datadog
+- C. production はログレベル warn 以上に強制
+
+**決定**:
+
+---
+
+## QA-056: Sentry / Datadog 等のエラー監視
+
+**背景**: 外部エラー監視サービスの規約がない。
+
+**案**:
+- A. 不要
+- B. Sentry 推奨を `references/shared/observability.md` で記述
+- C. Vercel Analytics + Speed Insights のみで十分
+
+**決定**:
+
+---
+
+## QA-057: フロントエンドアナリティクス
+
+**背景**: PostHog / Mixpanel / GA / Vercel Analytics の規約がない。
+
+**案**:
+- A. 不要
+- B. 規約を追加
+
+**決定**:
+
+---
+
+# J. 環境 / 設定
+
+## QA-058: YAML config の運用コスト
+
+**背景**: `settings.yaml` + `Zod` バリデーション + `loadConfig` キャッシュという設計は複雑。多くの Next.js プロジェクトは `.env` + `t3-env` 等のシンプル構成で十分。
+
+**案**:
+- A. 現状維持
+- B. `.env` + `@t3-oss/env-nextjs` に置き換え（型安全 env）
+- C. ハイブリッド（シンプルな値は env、深い構造のみ YAML）
+
+**決定**:
+
+---
+
+## QA-059: クライアントへの config 公開を専用 route で
+
+**背景**: `app/api/config/public/route.ts` でクライアントに config を渡す設計だが、ビルド時インライン（`NEXT_PUBLIC_*` 経由）の方が runtime コストゼロ。
+
+**案**:
+- A. 現状維持（hot reload で config 変更を反映）
+- B. ビルド時インラインに変更
+- C. ハイブリッド（変更頻度で使い分け）
+
+**決定**:
+
+---
+
+# K. テスト / CI
+
+## QA-060: テスト戦略
+
+**背景**: ユニット・統合・E2E のテスト方針が完全に欠落。
+
+**案**:
+- A. `references/testing/` フォルダ新設（Vitest + Playwright + Testing Library）
+- B. 当面テストなし方針を明記
+- C. 最低限 form の Zod スキーマと service の単体テストだけ規約化
+
+**決定**:
+
+---
+
+## QA-061: CI/CD
+
+**背景**: GitHub Actions / Vercel Preview の規約がない。
+
+**案**:
+- A. `.github/workflows/` の雛形を `references/devops/ci.md` で提供
+- B. 不要
+
+**決定**:
+
+---
+
+## QA-062: デプロイ戦略
+
+**背景**: Vercel 前提か、自前 Node ホスト・Docker・エッジ実行の選択肢の言及がない。
+
+**案**:
+- A. Vercel 前提を明記
+- B. デプロイ先別の差分を `references/devops/deploy.md` に書く
+
+**決定**:
+
+---
+
+## QA-063: Storybook / コンポーネントカタログ
+
+**背景**: 共通コンポーネントの可視化・状態確認の規約がない。
+
+**案**:
+- A. 不要
+- B. Storybook 推奨を追加
+- C. Ladle / 自作カタログ採用
+
+**決定**:
+
+---
+
+## QA-064: MSW / モック
+
+**背景**: 開発時の API モック規約がない。
+
+**案**:
+- A. 不要
+- B. MSW を `references/devtools/mock.md` で推奨
+
+**決定**:
+
+---
+
+# L. アクセシビリティ / 国際化
+
+## QA-065: アクセシビリティ（a11y）
+
+**背景**: a11y への言及が皆無。Mantine は ARIA 対応されているが、独自コンポーネント（`<NavigationButton>` `<FloatingActionButton>` 等）の規約がない。
+
+**案**:
+- A. 不要
+- B. `references/frontend/a11y.md` を追加（最低限のチェックリスト）
+- C. `axe-core` / `eslint-plugin-jsx-a11y` 必須を明記
+
+**決定**:
+
+---
+
+## QA-066: 国際化（i18n）
+
+**背景**: コメントは日本語、UI 文言も日本語固定。`next-intl` 等で多言語対応する方針がない。
+
+**案**:
+- A. 単一言語前提（日本語固定）を明記
+- B. `references/frontend/i18n.md` を追加
+
+**決定**:
+
+---
+
+# M. その他
+
+## QA-067: PWA / オフライン対応
+
+**背景**: PWA 対応・Service Worker・オフライン UX の規約がない。
+
+**案**:
+- A. 不要
+- B. `next-pwa` 等の規約を追加
+
+**決定**:
+
+---
+
+## QA-068: 機能フラグ / A/B テスト
+
+**背景**: `settings.yaml` に `features:` セクションがあるが、ユーザーごとの段階リリース・A/B テストの規約がない。
+
+**案**:
+- A. 現状の単純フラグで十分
+- B. GrowthBook / Statsig / LaunchDarkly 等の規約を追加
+
+**決定**:
+
+---
+
+## QA-069: モノレポ前提の整理
+
+**背景**: `settings.yaml` のパスに `packages/web/` が登場するなどモノレポを前提にした記述があるが、明示されていない。
+
+**案**:
+- A. モノレポ前提を `folder-structure.md` の冒頭に明記
+- B. 単一パッケージ前提に修正
+- C. 両方対応の書き方に書き直す
+
+**決定**:
+
+---
+
+## QA-070: パフォーマンス予算 / Core Web Vitals
+
+**背景**: バンドルサイズ・LCP・INP の目標値・計測方法の言及がない。
+
+**案**:
+- A. 不要
+- B. `references/performance.md` を追加
+
+**決定**:
+
+---
+
+## QA-071: ESLint / Prettier / TypeScript 設定
+
+**背景**: lint/format/tsconfig の推奨設定が `references/` にない。
+
+**案**:
+- A. 不要（プロジェクトごと）
+- B. 推奨 `tsconfig.json` `eslint.config.js` を `references/devtools/` に追加
+
+**決定**:
+
+---
+
+## QA-072: References の整理度
+
+**背景**: `frontend/` 直下に `components.md` `hooks.md` `state-management.md` `endpoints.md` `url-state.md` が並列に存在し、`conventions/` と `patterns/` の階層分けと混在している。整理の余地。
+
+**案**:
+- A. 現状維持
+- B. `components.md` `hooks.md` を `conventions/` 配下に移動
+- C. `state-management.md` `url-state.md` は `patterns/` 配下が正しい
+
+**決定**:
+
+---
