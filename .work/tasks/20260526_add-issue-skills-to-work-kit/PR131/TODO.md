@@ -30,14 +30,14 @@ work-kit setup スキルにも .work/issues/ ディレクトリ作成を追加�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260526_add-issue-skills-to-work-kit/PR131/QA.md` |
-| - | issue-scan スキルを作成（SKILL.md / SKILL.jp.md） | `plugins/work-kit/skills/issue-scan/` |
-| - | issue-create スキルを作成（SKILL.md / SKILL.jp.md） | `plugins/work-kit/skills/issue-create/` |
-| - | work-kit setup に .work/issues/ ディレクトリ作成を追加 | `plugins/work-kit/skills/setup/` |
-| - | .work/issues/ 用 .gitignore テンプレートを作成 | setup/templates または scripts/ |
-| - | work-kit plugin.json のバージョンを更新 | `plugins/work-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json を更新 | `.claude-plugin/marketplace.json` |
-| - | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
+| x | QA.md に未決定事項を記録する（未決定事項なし） | `.work/tasks/20260526_add-issue-skills-to-work-kit/PR131/QA.md` |
+| x | issue-scan スキルを作成（SKILL.md / SKILL.jp.md） | `plugins/work-kit/skills/issue-scan/` |
+| x | issue-create スキルを作成（SKILL.md / SKILL.jp.md） | `plugins/work-kit/skills/issue-create/` |
+| x | work-kit setup に .work/issues/ ディレクトリ作成を追加 | `plugins/work-kit/skills/setup/` |
+| x | .work/issues/ 用 .gitignore を setup.py で生成 | `plugins/work-kit/skills/setup/scripts/setup.py` |
+| x | work-kit plugin.json のバージョンを更新（2.32.1→2.33.0） | `plugins/work-kit/.claude-plugin/plugin.json` |
+| x | marketplace.json を更新 | `.claude-plugin/marketplace.json` |
+| x | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
 
 ## 参考ドキュメント
 
