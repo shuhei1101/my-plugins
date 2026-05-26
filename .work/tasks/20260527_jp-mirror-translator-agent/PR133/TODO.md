@@ -21,12 +21,12 @@ work-kit プラグインに JP ミラー翻訳専用のエージェントを追�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | QA.md に未決定事項を記録する | - `.work/tasks/.../PR133/QA.md` |
-| x | `.work/notes/` のノートを更新する | - `.work/notes/jp-mirror-policy.md` |
-| x | `plugins/work-kit/agents/` ディレクトリを作成しエージェントファイルを追加する | - `plugins/work-kit/agents/jp-mirror-translator.md` |
-| x | エージェントの JP ミラーを作成する | - `plugins/work-kit/agents/jp-mirror-translator.jp.md` |
-| x | plugin.json / marketplace.json のバージョンを更新する | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | ルール・CLAUDE.md を整備する (エージェントファイルの JP ミラー規約を追加するか検討) | - 次 PR 候補に記載済み |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR133/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/jp-mirror-policy.md` |
+| 済 | `plugins/work-kit/agents/` ディレクトリを作成しエージェントファイルを追加する | - `plugins/work-kit/agents/jp-mirror-translator.md` |
+| 済 | エージェントの JP ミラーを作成する | - `plugins/work-kit/agents/jp-mirror-translator.jp.md` |
+| 済 | plugin.json / marketplace.json のバージョンを更新する | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | ルール・CLAUDE.md を整備する (エージェントファイルの JP ミラー規約を追加するか検討) | - 次 PR 候補に記載済み |
 
 ## 参考ドキュメント
 
