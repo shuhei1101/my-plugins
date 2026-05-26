@@ -38,11 +38,11 @@ work-kit setup スキルにも .work/issues/ ディレクトリ作成を追加�
 | x | work-kit plugin.json のバージョンを更新（2.32.1→2.33.0） | `plugins/work-kit/.claude-plugin/plugin.json` |
 | x | marketplace.json を更新 | `.claude-plugin/marketplace.json` |
 | x | notes を更新する | `.work/notes/AIイシュー自動発見システム構想.md` |
-| - | issue-create の「口頭で話した」→「ユーザーが入力した」に修正 | `plugins/work-kit/skills/issue-create/` |
-| - | issue-log スキルを作成（issue-scan / issue-create 共通の記録ロジック） | `plugins/work-kit/skills/issue-log/` |
-| - | issue-scan / issue-create の記録ステップを issue-log に委譲するよう修正 | `plugins/work-kit/skills/issue-scan/`, `issue-create/` |
-| - | .work/issues/ テンプレートを work-kit templates に追加 | `plugins/work-kit/templates/.work/issues/` |
-| - | setup.py の issues/ 直接生成をテンプレート経由に変更 | `plugins/work-kit/skills/setup/scripts/setup.py` |
+| x | issue-create の「口頭で話した」→「ユーザーが入力した」に修正 | `plugins/work-kit/skills/issue-create/` |
+| x | issue-log スキルを作成（issue-scan / issue-create 共通の記録ロジック） | `plugins/work-kit/skills/issue-log/` |
+| x | issue-scan / issue-create の記録ステップを issue-log に委譲するよう修正 | `plugins/work-kit/skills/issue-scan/`, `issue-create/` |
+| x | .work/issues/ テンプレートを work-kit templates に追加 | `plugins/work-kit/templates/.work/issues/` |
+| x | setup.py の issues/ 直接生成をテンプレート経由に変更 | `plugins/work-kit/skills/setup/scripts/setup.py` |
 
 ## 参考ドキュメント
 
