@@ -49,3 +49,8 @@ my-plugins ローカル設定（`.claude/settings.json`）。グローバル設�
 - ただし現時点では JP ミラー同期ルール（`skill-jp-mirror-sync.md` 等）はエージェントファイルをカバーしていない
 
 → PR133 では `.jp.md` も一緒に作成し、必要に応じてルール追加を次 PR 候補とする。
+## エージェントファイル JP ミラー同期ルール（PR137 で追加予定）
+
+`plugins/{name}/agents/*.md` を編集したときに `*.jp.md` も同コミットで更新するルールを
+`.claude/rules/feature/agent-jp-mirror-sync.md` として追加する。
+`skill-jp-mirror-sync.md` と同形式で、対象は `agents/` フォルダ。
