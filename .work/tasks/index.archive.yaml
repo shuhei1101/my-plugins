@@ -385,3 +385,10 @@ prs:
     スキル移動）
   task: 20260526_create-py-kit-plugin
   completed: true
+- id: 138
+  title: PR138 — review-py-kit-plugin
+  type: docs
+  tags: []
+  summary: py-kit プラグイン全体を Claude Code 一般ベストプラクティスで評価し、改善提案を QA で大量に書き出す（PR135 と同パターン）
+  task: 20260527_review-py-kit-plugin
+  completed: true
