@@ -127,7 +127,8 @@ refs-inject-kit プラグイン自体も削除し、py-kit に直接フックを
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| 済 | injection_rules.yaml の orphan 調査スクリプトで全 reference が pattern に紐付いているか確認。43 ファイル中 5 件 orphan を検出して解消: ① `tools/**/*.py` + `**/scripts/**/*.py` → `scripts/python-script.md` ② `**/gui/**/*.py` + `**/*_gui.py` + `**/gui.py` → `scripts/tkinter.md` ③ `**/server/routes/health*.py` + `**/healthz.py` → `fastapi/health.md` ④ `**/benchmarks/**/*.py` + `**/perf/**/*.py` + `**/profile_*.py` → `performance/cheatsheet.md` ⑤ `**/features/**/service.py` の optional に `architecture/refactoring-judgement.md` 追加。最終確認 orphan 0 / unknown 0 / 紐付け率 43/43 (100%) | `plugins/py-kit/references/injection_rules.yaml` |
+| 済 | injection_rules.yaml の orphan 調査スクリプトで全 reference が pattern に紐付いているか確認。43 ファイル中 5 件 orphan を検出して解消: ① `**/tools/**/*.py` + `**/scripts/**/*.py` → `scripts/python-script.md` ② `**/gui/**/*.py` + `**/*_gui.py` + `**/gui.py` → `scripts/tkinter.md` ③ `**/server/routes/health*.py` + `**/healthz.py` → `fastapi/health.md` ④ `**/benchmarks/**/*.py` + `**/perf/**/*.py` + `**/profile_*.py` → `performance/cheatsheet.md` ⑤ `**/features/**/service.py` の optional に `architecture/refactoring-judgement.md` 追加。最終確認 orphan 0 / unknown 0 / 紐付け率 43/43 (100%) | `plugins/py-kit/references/injection_rules.yaml` |
+| 済 | `tools/**/*.py` を `**/tools/**/*.py` に修正（サブプロジェクト配下の tools/ にもマッチさせるため `**/` 前置） | `plugins/py-kit/references/injection_rules.yaml` |
 
 ## 参考ドキュメント
 
