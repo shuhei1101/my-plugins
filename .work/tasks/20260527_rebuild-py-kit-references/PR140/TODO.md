@@ -104,6 +104,18 @@ PR138 で確定した **大方針** に従って py-kit プラグインの refer
 | 済 | `refs-inject-kit` を v1.1.0 にバンプ + `changelogs/v1.1.0.md` + `CLAUDE.md`(+jp) を新仕様に書き換え + `marketplace.json` 同期 | `plugins/refs-inject-kit/.claude-plugin/plugin.json`, `plugins/refs-inject-kit/CLAUDE.md` (+ jp), `plugins/refs-inject-kit/changelogs/v1.1.0.md`, `.claude-plugin/marketplace.json` |
 | 済 | py-kit 側ドキュメント更新: `injection_rules.yaml` への言及を全削除、`refs-inject-kit/injection_rules.yaml` に集約と明記 | `plugins/py-kit/CLAUDE.md` (+ jp), `plugins/py-kit/references/CLAUDE.md` (+ jp), `plugins/py-kit/skills/py-project/SKILL.md` (+ jp), `plugins/py-kit/changelogs/v2.0.0.md` |
 
+### 第 6 ラウンド後の方針撤回（2026-05-28 追加 5）
+
+ユーザー判断: 集約方式は処理がややこしすぎる → 第 4 ラウンド状態（コミット bfe3f74）に戻す。
+refs-inject-kit プラグイン自体も削除し、py-kit に直接フックを持たせる構成を維持する。
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| 済 | `git checkout bfe3f74 -- ...` で py-kit の関連ファイル群を第 4 ラウンド状態に復元（inject_references.py / templates/ / hooks.json / injection_rules.yaml / CLAUDE.md(jp) / references/CLAUDE.md(jp) / SKILL.md(jp) / changelogs） | `plugins/py-kit/**` |
+| 済 | `plugins/refs-inject-kit/` ディレクトリ全削除 | `plugins/refs-inject-kit/**` |
+| 済 | `marketplace.json` から `refs-inject-kit` エントリ削除 | `.claude-plugin/marketplace.json` |
+| 済 | `changelogs/v2.0.0.md` の「#141（予定）references 自動注入フックの実装」を「同 PR で実装」に修正 | `plugins/py-kit/changelogs/v2.0.0.md` |
+
 ## 参考ドキュメント
 
 - `.work/tasks/20260527_review-py-kit-plugin/PR138/QA.md`: 新方針版 QA（全件確定）。実装の主たる判断材料

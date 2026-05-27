@@ -17,7 +17,7 @@ py-kit is a plugin that provides Python implementation conventions and scaffold 
 | Testing | Integration tests + smoke tests only. No unit tests | Unit tests at all layers |
 | Comments | One-line docstring required for exported items, description required for design-critical fields (consistent with next-kit) | docstring optional |
 
-See `references/index.yaml` (reference list with descriptions) and each reference body for details. Injection rules for py-kit references are centralized in `refs-inject-kit/injection_rules.yaml` (not in py-kit itself).
+See `references/index.yaml` (reference list), `references/injection_rules.yaml` (injection rules), and each reference body for details.
 
 ---
 
@@ -28,7 +28,7 @@ references/
 ├── CLAUDE.md / CLAUDE.jp.md  # Minimal role description for the two management files
 ├── index.yaml                  # Reference list + one-line description (English; parsed by hook)
 ├── index.jp.yaml               # JP mirror of index.yaml (human-only)
-# (injection_rules.yaml lives in refs-inject-kit, not here)
+├── injection_rules.yaml      # Edit-path pattern → required/optional references (language-independent)
 ├── core/                     # Language rules (naming, comments, types, style, decorators)
 ├── architecture/             # Feature-folder layout + function wiring + dependency direction + principles + refactor judgement
 ├── shared/                   # logger / settings / secrets-and-env / errors / types / constants
@@ -45,14 +45,15 @@ references/
 
 ---
 
-## Role of index.yaml + index.jp.yaml
+## Role separation: index.yaml vs injection_rules.yaml
 
 | File | Contents | Language |
 |---|---|---|
-| `index.yaml` | All references' `path` + one-line `description` as a YAML list | English (parsed by the refs-inject-kit hook) |
-| `index.jp.yaml` | JP mirror (used when `REFS_INJECT_KIT_LANG=jp`) | Japanese |
+| `index.yaml` | All references' `path` + one-line `description` as a YAML list | English (parsed by the hook) |
+| `index.jp.yaml` | JP mirror (for humans browsing) | Japanese |
+| `injection_rules.yaml` | Star chart mapping edit-target file-path patterns to `required` / `optional` references | Language-independent |
 
-Injection rules — which file-path patterns inject which py-kit references — are **centralized in `refs-inject-kit/injection_rules.yaml`** (separate plugin, PR140). Each rule references py-kit content using the `${py-kit}/path/to/ref.md` placeholder syntax, which the refs-inject-kit hook resolves at runtime.
+The `py-references-injection` hook (PreToolUse, implemented in the same PR) reads these on every `Edit` / `Write` / `MultiEdit` and auto-injects matched references into Claude's context via `decision: block`.
 
 ---
 
@@ -74,11 +75,12 @@ py-kit hooks follow the `claude-kit` policy:
 - Session-flag-style blocking (`/tmp/{hook-name}-{session_id}`) — block only once per session
 - Do not add dispatch-purpose `UserPromptSubmit` hooks
 
-**The references auto-injection hook is in a separate plugin, `refs-inject-kit`** (PR140):
-- py-kit owns: `references/{index.yaml, index.jp.yaml}` + reference bodies. **No hook code, no injection_rules.yaml.**
-- `refs-inject-kit/injection_rules.yaml` (central) contains all rules. py-kit-related rules use the `${py-kit}/path/to/ref.md` placeholder syntax.
-- On `Edit` / `Write` / `MultiEdit`, refs-inject-kit resolves `${py-kit}` to py-kit's installed `references/` directory and injects matched references via `decision: block`.
-- Switch the injection language via `REFS_INJECT_KIT_LANG=jp`.
+The **references auto-injection hook** (`py-references-injection`, implemented in the same PR) follows this policy:
+- On `PreToolUse(Edit|Write|MultiEdit)`, read `references/injection_rules.yaml` and look up descriptions in `references/index.yaml`
+- Match the file path being edited against `rules[].pattern` (glob)
+- Render the matched `required` / `optional` via the Jinja2 template (`hooks/templates/injection.md.j2`, or `.jp.md.j2` when `PY_KIT_INJECTION_LANG=jp`)
+- Inject into the `reason` field via `decision: block`
+- A session + file-hash token prevents the hook from blocking the same file twice in one session
 
 ---
 

@@ -21,8 +21,7 @@ py-kit は Python 実装の規約と雛形生成を提供するプラグイン�
 | テスト | 結合テスト + スモークテストのみ。単体テストは書かない | 全層単体テスト |
 | コメント | exported に 1 行 docstring 必須、設計上重要フィールドの description 必須（next-kit と整合） | docstring optional |
 
-詳細は `references/index.yaml`（reference 一覧）と各 reference 本文を参照。
-py-kit reference の注入ルールは `refs-inject-kit/injection_rules.yaml` に集約（py-kit 側にはない）。
+詳細は `references/index.yaml`（reference 一覧）と `references/injection_rules.yaml`（注入ルール）、および各 reference 本文を参照。
 
 ---
 
@@ -33,7 +32,7 @@ references/
 ├── CLAUDE.md / CLAUDE.jp.md  # 2 ファイル管理の役割説明（最小指示）
 ├── index.yaml                  # reference 一覧 + 1 行 description（英語、フックが parse）
 ├── index.jp.yaml               # 上の日本語ミラー（人間用）
-# (injection_rules.yaml は refs-inject-kit 側に集約。py-kit 側には置かない)
+├── injection_rules.yaml      # 編集対象パターン → 必読/任意 reference の星取り表（言語非依存）
 ├── core/             # 言語ルール（命名・コメント・型・スタイル）
 ├── architecture/     # 機能フォルダ型 + 関数配線 + 依存方向
 ├── shared/           # logger / settings / errors / types / constants
@@ -50,15 +49,17 @@ references/
 
 ---
 
-## index.yaml + index.jp.yaml の役割
+## index.yaml と injection_rules.yaml の役割分担
 
 | ファイル | 内容 | 言語 |
 |---|---|---|
-| `index.yaml` | 全 reference の `path` + 1 行 `description` を YAML リストで | 英語（refs-inject-kit フックが parse） |
-| `index.jp.yaml` | 日本語ミラー（`REFS_INJECT_KIT_LANG=jp` 時に使用） | 日本語 |
+| `index.yaml` | 全 reference の `path` + 1 行 `description` を YAML リストで | 英語（フックがここから parse） |
+| `index.jp.yaml` | 上の日本語ミラー（人間が一覧確認するため） | 日本語 |
+| `injection_rules.yaml` | 編集対象ファイルパスの pattern に対して `required` / `optional` reference を割り当てる星取り表 | 言語非依存 |
 
-注入ルール（どの pattern にどの py-kit reference を当てるか）は **`refs-inject-kit/injection_rules.yaml` に集約**（別プラグイン、PR140）。
-py-kit reference は `${py-kit}/path/to/ref.md` プレースホルダ記法で指定され、refs-inject-kit のフックが実行時に解決する。
+このマッピングは `py-references-injection` フック（PreToolUse、同 PR で実装済み）が
+`Edit` / `Write` / `MultiEdit` 時に自動で読み、マッチした reference を `decision: block` で
+Claude のコンテキストへ注入する。
 
 ---
 
@@ -80,11 +81,12 @@ py-kit のフックは `claude-kit` の方針に従う:
 - セッションフラグ型ブロック（`/tmp/{hook-name}-{session_id}`）で 1 セッション 1 回だけブロック
 - ディスパッチ用 `UserPromptSubmit` は追加しない
 
-**references 自動注入フックは別プラグイン `refs-inject-kit` に切り出した** (PR140):
-- py-kit が持つもの: `references/{index.yaml, index.jp.yaml}` + 本文。**フックコードも injection_rules.yaml もなし**
-- 注入ルールは `refs-inject-kit/injection_rules.yaml` に集約。py-kit 関連 rules は `${py-kit}/path/to/ref.md` プレースホルダ記法で書く
-- `Edit` / `Write` / `MultiEdit` 時に refs-inject-kit が `${py-kit}` を実 references/ ディレクトリに解決し、マッチした reference を `decision: block` で注入
-- 言語切替は環境変数 `REFS_INJECT_KIT_LANG=jp`
+**references 自動注入フック** (`py-references-injection`、同 PR で実装済み) も上記方針に従う:
+- `PreToolUse(Edit|Write|MultiEdit)` で `references/injection_rules.yaml` を読み、`references/index.yaml` から description を引く
+- 編集対象ファイルパスを `rules[].pattern` と glob 照合
+- マッチした `required` / `optional` を Jinja2 テンプレ（`hooks/templates/injection.md.j2`、または `PY_KIT_INJECTION_LANG=jp` で `.jp.md.j2`）で整形
+- `decision: block` で reason に注入
+- セッション + ファイルハッシュ単位のトークンで同一ファイルへの 2 回目以降の編集はスキップ
 
 ---
 

@@ -35,8 +35,8 @@ Python プロジェクトを扱う。
 
 スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-project` → プラグインルートは `.../py-kit/`）。
 
-`index.yaml` の `references:` リストに全 reference のパスと 1 行説明がある。
-注入ルール（どの編集対象パスにどの reference を割り当てるか）は `refs-inject-kit/injection_rules.yaml` に集約されている（py-kit 関連 rules は `${py-kit}/...` プレースホルダ記法）。
+`index.yaml` の `references:` リストに全 reference のパスと 1 行説明が、
+`{plugin_root}/references/injection_rules.yaml` の `rules:` で「どの編集対象パスにどの reference を割り当てるか」が定義されている。
 
 このスキルで常に読むべきもの:
 - `{plugin_root}/references/core/naming.md`
@@ -191,7 +191,7 @@ Python プロジェクトを扱う。
 ### ステップ10: 変更を実装する
 
 1. タスク（機能追加・リファクタ・バグ修正）を実施する
-2. 編集対象ファイルパスに対する `refs-inject-kit/injection_rules.yaml` の `rules` を確認し、該当 reference を読む（自動注入フックが走るなら結果を待ってもよい）
+2. 編集対象ファイルパスに対する `injection_rules.yaml` の `rules` を確認し、該当 reference を読む（自動注入フックが走るなら結果を待ってもよい）
 3. 規約に従って実装する:
    - 振る舞いは関数で書く（クラスは DTO / ライブラリ要求のみ）
    - 外部依存は関数の型エイリアスで注入
