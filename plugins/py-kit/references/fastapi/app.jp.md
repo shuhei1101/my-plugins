@@ -1,0 +1,255 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# fastapi/app — FastAPI アプリ構成
+
+> このファイルは `app.md` の日本語ミラーです。
+
+`server/app.py` で `build_fastapi(settings) -> FastAPI` を作る。
+依存配線は `main.py` の `build_handlers(settings)` から流す。
+
+---
+
+## サンプル
+
+```python
+# src/{pkg}/server/app.py
+from __future__ import annotations
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from {pkg}.shared.settings import Settings
+from {pkg}.shared.errors import AppError
+from {pkg}.main import build_handlers, Handlers
+from {pkg}.server.routes import chat, health
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """起動・終了時の処理。"""
+    settings = Settings()
+    app.state.settings = settings
+    app.state.handlers = build_handlers(settings)
+    yield
+    # cleanup（必要なら）
+
+
+def build_fastapi() -> FastAPI:
+    """FastAPI アプリを組み立てる。`uvicorn --factory` で呼ぶ。"""
+    app = FastAPI(
+        title="MyApp",
+        version="0.1.0",
+        lifespan=lifespan,
+    )
+
+    # ----- ミドルウェア -----
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # ----- ルーター -----
+    app.include_router(health.router)
+    app.include_router(chat.router)
+
+    # ----- 例外ハンドラ -----
+    from {pkg}.server.error_handlers import register_exception_handlers
+    register_exception_handlers(app)
+
+    return app
+```
+
+---
+
+## 起動
+
+```bash
+uv run uvicorn {pkg}.server.app:build_fastapi --factory --reload --host 127.0.0.1 --port 8000
+```
+
+`--factory` を付けると `build_fastapi()` を呼んだ戻り値を使う（パラメータ化に強い）。
+
+---
+
+## lifespan
+
+`@asynccontextmanager` を使った lifespan で startup / shutdown を表現:
+
+```python
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # ----- startup -----
+    settings = Settings()
+    app.state.settings = settings
+    app.state.handlers = build_handlers(settings)
+    logger.info("starting", extra={"env": settings.env})
+
+    yield
+
+    # ----- shutdown -----
+    logger.info("shutting down")
+    # close connections, flush logs, etc.
+```
+
+`on_event("startup")` / `on_event("shutdown")` は **非推奨**（lifespan に統一）。
+
+---
+
+## ルートからの参照
+
+ルート関数で `Request` を受け取れば `request.app.state.handlers` でアクセス可:
+
+```python
+# src/{pkg}/server/routes/chat.py
+from fastapi import APIRouter, Request
+from {pkg}.features.chat.types import ChatRequest, ChatResponse
+
+router = APIRouter(prefix="/chat", tags=["chat"])
+
+
+@router.post("", response_model=ChatResponse)
+async def post_chat(request: Request, body: ChatRequest) -> ChatResponse:
+    handlers: Handlers = request.app.state.handlers
+    text = await handlers.generate_response(body.user_input)
+    return ChatResponse(text=text)
+```
+
+または `Depends` でラップ:
+
+```python
+# src/{pkg}/server/deps.py
+from fastapi import Request, Depends
+from typing import Annotated
+
+def get_handlers(request: Request) -> Handlers:
+    return request.app.state.handlers
+
+HandlersDep = Annotated[Handlers, Depends(get_handlers)]
+
+
+# routes 側
+@router.post("")
+async def post_chat(body: ChatRequest, handlers: HandlersDep) -> ChatResponse:
+    text = await handlers.generate_response(body.user_input)
+    return ChatResponse(text=text)
+```
+
+`Annotated[T, Depends(...)]` パターンを基本にする（FastAPI 推奨）。
+
+---
+
+## CORS
+
+```python
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,    # 環境ごとに切替
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
+
+本番では `allow_origins=["*"]` を避け、ホワイトリスト指定にする。
+
+---
+
+## カスタム middleware
+
+```python
+from fastapi import Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware
+
+
+class RequestIdMiddleware(BaseHTTPMiddleware):
+    """X-Request-Id ヘッダを付与・ログに残す。"""
+
+    async def dispatch(self, request: Request, call_next) -> Response:
+        rid = request.headers.get("x-request-id") or _gen_id()
+        request.state.request_id = rid
+
+        response = await call_next(request)
+        response.headers["x-request-id"] = rid
+        return response
+
+
+# 登録
+app.add_middleware(RequestIdMiddleware)
+```
+
+ミドルウェアは **クラスベース**が標準（FastAPI 要求）。
+内部処理は関数 (`dispatch` 内) で書く。
+
+---
+
+## ヘルスチェック
+
+```python
+# src/{pkg}/server/routes/health.py
+from fastapi import APIRouter
+
+router = APIRouter(tags=["health"])
+
+
+@router.get("/healthz")
+async def healthz() -> dict[str, str]:
+    """シンプルな疎通確認。"""
+    return {"status": "ok"}
+```
+
+DB 依存などは持たせない（外部依存が落ちると健康でない判定になるのを避ける）。
+
+詳細は `fastapi/health.md`。
+
+---
+
+## OpenAPI スキーマ
+
+`FastAPI(title=, version=)` の値が `/docs` に出る。
+さらにメタデータを足したい場合:
+
+```python
+app = FastAPI(
+    title="MyApp",
+    version="0.1.0",
+    description="LLM-driven chat service.",
+    openapi_tags=[
+        {"name": "chat", "description": "Chat endpoints"},
+        {"name": "health", "description": "Health check"},
+    ],
+)
+```
+
+ルーターに `tags=[...]` を付けるとグループ化される。
+
+---
+
+## やってはいけないこと
+
+```python
+# ❌ グローバル変数で settings を持つ
+SETTINGS = Settings()   # モジュールロード時に env が読まれる→テストやりにくい
+# → lifespan で app.state へ
+
+# ❌ build_fastapi の引数を増やしすぎる
+def build_fastapi(settings, handlers, logger, db_pool, ...) -> FastAPI:
+    ...
+# → lifespan に集約
+
+# ❌ on_event を使う
+@app.on_event("startup")
+async def startup(): ...   # 非推奨、lifespan に統一
+```
+
+---
+
+## 関連ファイル
+
+- `fastapi/routes.md` — ルーター実装パターン
+- `fastapi/schemas.md` — リクエスト/レスポンス Pydantic
+- `fastapi/auth-and-errors.md` — 認証と例外ハンドラ
+- `fastapi/health.md` — ヘルスチェック
+- `architecture/composition-root.md` — build_handlers との連携

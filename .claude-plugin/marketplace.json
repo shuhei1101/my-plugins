@@ -10,26 +10,32 @@
     {
       "name": "dev-kit",
       "source": "./plugins/dev-kit",
-      "description": "Development conventions toolkit — language standards (Python, YAML) and project/script generation skills",
-      "version": "2.2.1"
+      "description": "Development conventions toolkit — YAML standards and YAML skill",
+      "version": "3.0.0"
     },
     {
-      "name": "ui-kit",
-      "source": "./plugins/ui-kit",
-      "description": "Development UI components and conventions — floating debug widget, logging conventions, FLOCSS + design tokens application",
+      "name": "py-kit",
+      "source": "./plugins/py-kit",
+      "description": "Python coding conventions and scaffolding — feature-folder layout, function-first design, TypeScript-style typing, standards references with auto-injection metadata",
+      "version": "2.0.0"
+    },
+    {
+      "name": "html-kit",
+      "source": "./plugins/html-kit",
+      "description": "HTML/CSS/JS development toolkit — floating debug widget, logging conventions, FLOCSS + design tokens application",
       "version": "1.5.2"
     },
     {
       "name": "claude-kit",
       "source": "./plugins/claude-kit",
       "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
-      "version": "3.24.1"
+      "version": "3.26.0"
     },
     {
       "name": "work-kit",
       "source": "./plugins/work-kit",
       "description": "Hook-based project lifecycle management — injects PR task context on every prompt and reminds task updates on stop",
-      "version": "2.33.0"
+      "version": "2.35.0"
     },
     {
       "name": "worktree-kit",
@@ -42,6 +48,12 @@
       "source": "./plugins/guard-kit",
       "description": "Safety guards for dangerous operations — hooks that intercept git push/merge and other risky commands to enforce user confirmation",
       "version": "1.2.1"
+    },
+    {
+      "name": "next-kit",
+      "source": "./plugins/next-kit",
+      "description": "Next.js 16 App Router implementation conventions split per file-type (1 file = 1 use case) — shadcn/ui + Tailwind + Drizzle + TanStack Query + Server Actions + Better Auth, with PreToolUse hook auto-injection (index.yaml + injection_rules.yaml)",
+      "version": "3.1.0"
     }
   ]
 }

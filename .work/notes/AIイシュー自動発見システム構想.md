@@ -45,11 +45,11 @@ AI がコードベース・画面を調査（呼び出し時に実行）
 
 | PR | 内容 | 実施条件 |
 |---|---|---|
-| PR-A | py-kit プラグイン新規作成（dev-kit から Python を分離） | 即時実施可 → PR129 完了 |
-| PR-B | ui-kit → html-kit リネーム | 即時実施可 → PR130 完了 |
-| PR-C | work-kit に issue-scan・issue-create スキルを追加 | 即時実施可 → PR131 完了 |
+| PR-A | py-kit プラグイン新規作成（dev-kit から Python を分離） | ✅ PR129 完了 |
+| PR-B | ui-kit → html-kit リネーム | ✅ PR130 完了 |
+| PR-C | work-kit に issue-scan・issue-create スキルを追加 + `*-kit` フック Read 追加 | 🟡 PR131 進行中 |
 | PR-D | work-kit merge スキルにイシュークローズ処理を統合 | PR-C 完了後 |
-| PR-E | next-kit プラグイン新規作成 | 将来（予約済み） |
+| PR-E | next-kit プラグイン新規作成 | ✅ PR132 で完了 |
 
 ---
 
@@ -66,25 +66,50 @@ plugins/dev-kit/
     └── yaml/
 ```
 
-### py-kit（新規）
+### py-kit（v2.0.0 — PR129 新規作成 / PR138 大方針確定 / PR140 実装）
 
 ```
 plugins/py-kit/
-├── .claude-plugin/plugin.json
-├── references/
-│   ├── CLAUDE.md              # references 内の各ファイルの概要一覧（AI がどれを読むか判断するためのインデックス）
-│   ├── python-core.md         # 命名・型・SOLID・DRY
-│   ├── python-architecture.md # レイヤードアーキテクチャ・フォルダ構成
-│   ├── python-fastapi.md      # エンドポイント設計・共通化パターン
-│   ├── python-llm.md          # LLM クライアントアーキテクチャ
-│   ├── python-testing.md      # テストポリシー
-│   └── python-scripts.md      # スクリプト構成・bat テンプレート
+├── .claude-plugin/plugin.json     # v2.0.0
+├── CLAUDE.md / CLAUDE.jp.md       # プラグイン全体ガイド（PR140 新設）
+├── changelogs/
+│   └── v2.0.0.md
+├── hooks/
+│   ├── hooks.json
+│   └── prompts/
+│       ├── python-skill-dispatch.md
+│       └── python-skill-dispatch.jp.md
+├── references/                    # 38 ファイル（jp ミラー込みで 76）構成
+│   ├── CLAUDE.md / CLAUDE.jp.md   # 「index.yaml を読め」式の最小指示
+│   ├── index.yaml                 # メタデータ + 注入星取り表（PR141 のフックが読む）
+│   ├── core/                      # 命名・コメント・型・言語ルール・スタイル（5 ファイル）
+│   ├── architecture/              # 機能フォルダ型レイアウト・TypeScript 風・関数配線・依存方向（4 ファイル）
+│   ├── shared/                    # logger / settings / errors / types / constants（5 ファイル）
+│   ├── scripts/                   # 単一スクリプト + ランチャー + tkinter（4 ファイル）
+│   ├── testing/                   # 結合テスト方針・pytest・Mock（3 ファイル）
+│   ├── concurrency/               # asyncio / parallelism（2 ファイル）
+│   ├── packaging/                 # pyproject / uv / distribution / python-versions（4 ファイル）
+│   ├── performance/               # プロファイラチート集（1 ファイル）
+│   ├── llm/                       # providers / Instructor / prompts / cost-cache / exceptions-retry（5 ファイル）
+│   └── fastapi/                   # app / routes / schemas / auth-and-errors / health（5 ファイル）
 └── skills/
-    ├── py-script/
-    └── py-project/
+    ├── py-script/                 # SKILL.md / SKILL.jp.md（PR140 で書き直し）
+    └── py-project/                # SKILL.md / SKILL.jp.md（PR140 で書き直し）
 ```
 
-`references/CLAUDE.md`: AI が「今回 LLM 周りを調査したい」と判断したとき、どのファイルを読めばよいかを示すインデックス。ファイル内容を固定化せず、AI が状況に応じて参照先を選べるようにする。
+**設計方針（v2.0.0）**:
+- レイアウトは **機能フォルダ型**（`src/{pkg}/{shared,features,integrations,runtime,server}/`、`shared/` と `main.py` のみ必須）
+- 振る舞いは **モジュールレベルの関数**。クラスは DTO とライブラリ要求のみ
+- 抽象化は **`type` エイリアス（関数の型）+ `Protocol`**（クラス継承による DIP は使わない）
+- DI は `functools.partial` で `build_handlers(settings) -> Handlers` パターン
+- DB は対象外（Web 関連は next-kit に委譲）
+- テストは **結合テスト + スモークテストのみ**（単体テストなし、スモークはユーザー手動実行限定）
+
+**自動注入の仕組み**:
+- `references/index.yaml` の `injection_rules` に「編集対象ファイルパス → 必読 reference / 任意 reference」を集約
+- PR141（`add-py-kit-references-injection-hook`）で PreToolUse フックを実装し、`Edit` / `Write` 時に該当 reference を `decision: block` で Claude へ自動注入する予定
+
+**詳細度**: PR132 next-kit の書きぶり（必須/推奨表・✅/❌対比例・禁止事項リスト）を Python 用に展開。各ファイルが本格リファレンス（数百行規模）。
 
 ### html-kit（ui-kit からリネーム）
 

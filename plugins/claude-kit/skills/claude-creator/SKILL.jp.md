@@ -145,7 +145,7 @@ CLAUDE.md は2種類の使い方がある:
 
 ---
 
-### ステップ4: CLAUDE.md に翻訳する（英語）
+### ステップ4: jp-mirror-translator エージェントで CLAUDE.md を生成する（英語）
 
 #### 条件
 
@@ -153,26 +153,20 @@ CLAUDE.md は2種類の使い方がある:
 
 #### 入力
 
-- ステップ3の CLAUDE.jp.md 内容
+- 作成した `CLAUDE.jp.md` のパス
 
 #### 処理内容
 
-1. CLAUDE.jp.md を行単位で英語に翻訳する
-2. `CLAUDE.md` を書く（Claude Code が指示として読み込むファイル）
-3. CLAUDE.jp.md と見出し構造を揃える
+1. `jp-mirror-translator` エージェントを呼び出して `CLAUDE.jp.md` → `CLAUDE.md` を翻訳する:
+   - Agent ツールで `subagent_type: "claude-kit:jp-mirror-translator"` を使用
+   - `CLAUDE.jp.md` のパスをエージェントのプロンプトとして渡す
+   - エージェントが JP ミラーを読み取り、`CLAUDE.md` を自動的に書き出す
 
 → ステップ5へ進む
 
 #### 出力
 
 - `CLAUDE.md` 作成済み
-
-#### 補足
-
-##### チェックリスト
-
-- [ ] 英語で書いていること（Claude Code が直接読む、日本語不可）
-- [ ] CLAUDE.jp.md と見出し構造が一致していること
 
 ---
 

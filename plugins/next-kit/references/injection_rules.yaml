@@ -1,0 +1,292 @@
+rules:
+  # ---------- 全 TypeScript/TSX ファイル共通 ----------
+  - pattern: "**/*.{ts,tsx}"
+    optional:
+      - frontend/conventions/naming.md
+      - frontend/conventions/comments.md
+      - frontend/conventions/types.md
+
+  # ---------- App Router 標準ファイル ----------
+  - pattern: "**/app/**/layout.tsx"
+    required: [frontend/conventions/route-files.md, frontend/route-groups.md]
+  - pattern: "**/app/**/loading.tsx"
+    required: [frontend/conventions/route-files.md]
+  - pattern: "**/app/**/error.tsx"
+    required: [frontend/error-tsx.md, shared/error-classes.md]
+  - pattern: "**/app/global-error.tsx"
+    required: [frontend/error-tsx.md]
+  - pattern: "**/app/**/not-found.tsx"
+    required: [frontend/not-found-tsx.md]
+  - pattern: "**/app/**/template.tsx"
+    required: [frontend/conventions/route-files.md]
+  - pattern: "**/app/**/default.tsx"
+    required: [frontend/conventions/route-files.md]
+  - pattern: "**/app/**/sitemap.ts"
+    required: [frontend/seo.md]
+  - pattern: "**/app/**/robots.ts"
+    required: [frontend/seo.md]
+  - pattern: "**/app/manifest.ts"
+    required: [frontend/seo.md, frontend/pwa.md]
+  - pattern: "**/app/**/opengraph-image.tsx"
+    required: [frontend/seo.md]
+  - pattern: "**/app/**/twitter-image.tsx"
+    required: [frontend/seo.md]
+  - pattern: "**/app/**/icon.tsx"
+    required: [frontend/seo.md]
+
+  # ---------- proxy.ts ----------
+  - pattern: "**/proxy.ts"
+    required: [backend/proxy.md]
+    optional: [backend/auth-context.md, backend/rate-limit.md]
+  - pattern: "**/middleware.ts"
+    required: [backend/proxy.md]
+
+  # ---------- API ルート (app/api/v1/{resource}/*) ----------
+  - pattern: "**/app/api/v1/**/route.ts"
+    required: [backend/route-ts.md, shared/error-route-handler.md, backend/api-folder-overview.md]
+    optional: [backend/auth-context.md, shared/logger-impl.md, shared/logger-tags.md]
+  - pattern: "**/app/api/v1/**/client.ts"
+    required: [backend/client-ts.md, frontend/endpoints.md]
+    optional: [shared/error-classes.md]
+  - pattern: "**/app/api/v1/**/service.ts"
+    required: [backend/service-ts.md, backend/db-transaction.md]
+    optional: [backend/db-history.md, backend/db-optimistic-lock.md, shared/error-classes.md]
+  - pattern: "**/app/api/v1/**/db.ts"
+    required: [backend/db-ts.md, backend/drizzle-style.md, backend/db-optimistic-lock.md]
+    optional: [shared/error-classes.md]
+  - pattern: "**/app/api/v1/**/query.ts"
+    required: [backend/query-ts.md, backend/drizzle-style.md]
+    optional: [shared/error-classes.md]
+  - pattern: "**/app/api/v1/**/dbHelper.ts"
+    required: [backend/db-helper-ts.md]
+
+  # ---------- API Webhook 受信 ----------
+  - pattern: "**/app/api/v1/webhooks/**/route.ts"
+    required: [backend/webhooks.md, shared/logger-impl.md]
+    optional: [backend/idempotency.md]
+
+  # ---------- API Cron / Jobs ----------
+  - pattern: "**/app/api/v1/cron/**/route.ts"
+    required: [backend/jobs.md, backend/route-ts.md]
+
+  # ---------- 認証関連 ----------
+  - pattern: "**/lib/auth.ts"
+    required: [backend/auth-setup.md, backend/auth-schema.md]
+  - pattern: "**/app/(shared)/auth/index.ts"
+    required: [backend/auth-context.md]
+  - pattern: "**/app/(shared)/auth/provider.ts"
+    required: [backend/auth-context.md, backend/auth-setup.md]
+  - pattern: "**/app/(shared)/auth/client.ts"
+    required: [backend/auth-client.md]
+  - pattern: "**/app/(shared)/actions/auth.ts"
+    required: [backend/auth-actions.md, backend/actions-ts.md]
+  - pattern: "**/app/api/v1/auth/**/route.ts"
+    required: [backend/auth-setup.md, backend/route-ts.md]
+
+  # ---------- DB スキーマ ----------
+  - pattern: "**/drizzle/schema.ts"
+    required: [backend/db-id.md, backend/db-timestamps.md, backend/db-relations.md]
+    optional: [backend/db-enum.md, backend/auth-schema.md]
+  - pattern: "**/drizzle/db.ts"
+    required: [backend/db-id.md]
+  - pattern: "**/drizzle/migrations/**/*.sql"
+    required: [backend/db-migration.md]
+  - pattern: "**/drizzle.config.ts"
+    required: [backend/db-migration.md]
+
+  # ---------- Server Actions ----------
+  - pattern: "**/app/(authenticated)/**/actions.ts"
+    required: [backend/actions-ts.md, shared/error-action-handler.md, backend/caching.md]
+    optional: [backend/service-ts.md, backend/auth-context.md]
+  - pattern: "**/app/(shared)/actions/**/*.ts"
+    required: [backend/actions-ts.md, shared/error-action-handler.md]
+
+  # ---------- フォーム ----------
+  - pattern: "**/app/(authenticated)/**/form.ts"
+    required: [frontend/form-ts.md, frontend/conventions/types.md]
+
+  # ---------- 一覧画面 ----------
+  - pattern: "**/app/(authenticated)/*/page.tsx"
+    required: [frontend/list-page-tsx.md, frontend/feature-folder.md, frontend/conventions/server-vs-client.md]
+    optional: [frontend/seo.md]
+  - pattern: "**/app/(authenticated)/**/*ListScreen.tsx"
+    required: [frontend/list-screen-tsx.md, frontend/conventions/server-vs-client.md, frontend/use-query-pattern.md, frontend/use-url-state-pattern.md]
+    optional: [frontend/empty-state.md, frontend/screen-wrapper.md, frontend/page-header.md]
+
+  # ---------- 新規作成画面 ----------
+  - pattern: "**/app/(authenticated)/*/new/page.tsx"
+    required: [frontend/edit-page-tsx.md, frontend/feature-folder.md]
+  - pattern: "**/app/(authenticated)/**/*NewScreen.tsx"
+    required: [frontend/edit-screen-tsx.md, frontend/form-component.md, frontend/use-action-state.md]
+    optional: [frontend/screen-wrapper.md]
+
+  # ---------- 詳細画面 (View, [id]/page.tsx そのもの) ----------
+  - pattern: "**/app/(authenticated)/*/[id]/page.tsx"
+    required: [frontend/view-page-tsx.md, frontend/id-routing.md, frontend/conventions/server-vs-client.md]
+    optional: [frontend/seo.md, frontend/not-found-tsx.md]
+  - pattern: "**/app/(authenticated)/**/*ViewScreen.tsx"
+    required: [frontend/view-screen-tsx.md, frontend/conventions/server-vs-client.md]
+    optional: [frontend/screen-wrapper.md, frontend/page-header.md]
+
+  # ---------- 編集画面 ----------
+  - pattern: "**/app/(authenticated)/*/[id]/edit/page.tsx"
+    required: [frontend/edit-page-tsx.md, frontend/id-routing.md, backend/auth-context.md]
+    optional: [frontend/not-found-tsx.md]
+  - pattern: "**/app/(authenticated)/**/*EditScreen.tsx"
+    required: [frontend/edit-screen-tsx.md, frontend/form-component.md, frontend/use-action-state.md, backend/actions-ts.md]
+    optional: [frontend/confirm-dialog.md, frontend/screen-wrapper.md, backend/db-optimistic-lock.md]
+
+  # ---------- フック (hooks/) ----------
+  - pattern: "**/hooks/use*Form.ts"
+    required: [frontend/use-form-pattern.md, frontend/form-component.md, frontend/form-ts.md]
+  - pattern: "**/hooks/use*UrlState.ts"
+    required: [frontend/use-url-state-pattern.md, frontend/url-state.md]
+  - pattern: "**/hooks/use*.ts"
+    optional: [frontend/use-query-pattern.md, frontend/use-mutation-pattern.md]
+
+  # ---------- 共通コンポーネント (app/(shared)/components/) ----------
+  - pattern: "**/app/(shared)/components/ScreenWrapper.tsx"
+    required: [frontend/screen-wrapper.md]
+  - pattern: "**/app/(shared)/components/PageHeader.tsx"
+    required: [frontend/page-header.md]
+  - pattern: "**/app/(shared)/components/LoadingButton.tsx"
+    required: [frontend/loading-button.md]
+  - pattern: "**/app/(shared)/components/TagInput.tsx"
+    required: [frontend/tag-input.md]
+  - pattern: "**/app/(shared)/components/EmptyState.tsx"
+    required: [frontend/empty-state.md]
+  - pattern: "**/app/(shared)/components/RequiredMark.tsx"
+    required: [frontend/required-mark.md]
+  - pattern: "**/app/(shared)/components/AutosaveIndicator.tsx"
+    required: [frontend/autosave-indicator.md]
+  - pattern: "**/app/(shared)/components/**/*.tsx"
+    optional: [frontend/components-catalog.md]
+  - pattern: "**/app/(shared)/hooks/useConfirmDialog.ts"
+    required: [frontend/confirm-dialog.md]
+  - pattern: "**/app/(shared)/providers/ConfirmDialogProvider.tsx"
+    required: [frontend/confirm-dialog.md]
+  - pattern: "**/app/(shared)/providers/QueryProvider.tsx"
+    required: [frontend/query-client-setup.md]
+
+  # ---------- Dialog / Modal / Sheet ----------
+  - pattern: "**/*Dialog.tsx"
+    required: [frontend/dialog.md]
+  - pattern: "**/*AlertDialog.tsx"
+    required: [frontend/dialog.md]
+  - pattern: "**/*Sheet.tsx"
+    required: [frontend/dialog.md]
+  - pattern: "**/*Drawer.tsx"
+    required: [frontend/dialog.md]
+  - pattern: "**/*Popover.tsx"
+    required: [frontend/dialog.md]
+
+  # ---------- Autosave ----------
+  - pattern: "**/hooks/useAutosave.ts"
+    required: [frontend/autosave.md, frontend/autosave-indicator.md]
+  - pattern: "**/useBeforeUnload.ts"
+    required: [frontend/autosave.md]
+
+  # ---------- URL / endpoints ----------
+  - pattern: "**/app/(shared)/endpoints.ts"
+    required: [frontend/endpoints.md]
+
+  # ---------- Logger / Error ----------
+  - pattern: "**/app/(shared)/logger.ts"
+    required: [shared/logger-impl.md, shared/logger-tags.md]
+  - pattern: "**/app/(shared)/errors/appError.ts"
+    required: [shared/error-classes.md]
+  - pattern: "**/app/(shared)/errors/handler/server.ts"
+    required: [shared/error-route-handler.md, shared/error-classes.md]
+  - pattern: "**/app/(shared)/errors/handler/action.ts"
+    required: [shared/error-action-handler.md, shared/error-classes.md]
+  - pattern: "**/app/(shared)/errors/handler/client.ts"
+    required: [shared/error-client-handler.md, shared/error-classes.md]
+  - pattern: "**/app/(shared)/actions/types.ts"
+    required: [shared/error-action-handler.md, backend/actions-ts.md]
+
+  # ---------- 環境変数 / 設定 ----------
+  - pattern: ".env"
+    required: [shared/environment.md, shared/security.md]
+  - pattern: ".env.local"
+    required: [shared/environment.md, shared/security.md]
+  - pattern: ".env.sample"
+    required: [shared/environment.md]
+  - pattern: ".env.example"
+    required: [shared/environment.md]
+  - pattern: "**/config/settings.yaml"
+    required: [shared/environment.md]
+  - pattern: "**/config/settings.sample.yaml"
+    required: [shared/environment.md]
+  - pattern: "**/app/(shared)/config.ts"
+    required: [shared/environment.md]
+  - pattern: "**/env.ts"
+    required: [shared/environment.md]
+  - pattern: "**/next.config.ts"
+    optional: [shared/security.md, frontend/assets.md, backend/caching.md]
+  - pattern: "**/next.config.js"
+    optional: [shared/security.md, frontend/assets.md, backend/caching.md]
+
+  # ---------- フィーチャ全般 (Server vs Client / Conventions) ----------
+  - pattern: "**/app/(authenticated)/**/*.tsx"
+    optional: [frontend/feature-folder.md, frontend/conventions/server-vs-client.md]
+  - pattern: "**/app/(auth)/**/*.tsx"
+    optional: [frontend/route-groups.md]
+
+  # ---------- Storybook ----------
+  - pattern: "**/*.stories.tsx"
+    required: [devtools/storybook.md, frontend/components-catalog.md]
+  - pattern: "**/*.stories.ts"
+    required: [devtools/storybook.md]
+  - pattern: "**/.storybook/main.ts"
+    required: [devtools/storybook.md]
+  - pattern: "**/.storybook/preview.ts"
+    required: [devtools/storybook.md]
+
+  # ---------- MSW ----------
+  - pattern: "**/mocks/handlers.ts"
+    required: [devtools/mock.md]
+  - pattern: "**/mocks/browser.ts"
+    required: [devtools/mock.md]
+  - pattern: "**/mocks/server.ts"
+    required: [devtools/mock.md]
+
+  # ---------- Lint / Format / TypeScript ----------
+  - pattern: "**/eslint.config.{js,ts,mjs}"
+    required: [devtools/lint-and-format.md]
+  - pattern: "**/prettier.config.{js,ts,mjs}"
+    required: [devtools/lint-and-format.md]
+  - pattern: "**/.prettierrc"
+    required: [devtools/lint-and-format.md]
+  - pattern: "**/tsconfig.json"
+    required: [devtools/lint-and-format.md]
+
+  # ---------- Tests ----------
+  - pattern: "**/tests/e2e/**/*.spec.ts"
+    required: [testing/e2e.md, testing/strategy.md]
+    optional: [testing/fixtures.md]
+  - pattern: "**/tests/pages/**/*.ts"
+    required: [testing/e2e.md]
+  - pattern: "**/tests/unit/**/*.test.ts"
+    required: [testing/unit.md, testing/strategy.md]
+  - pattern: "**/tests/unit/**/*.test.tsx"
+    required: [testing/unit.md]
+  - pattern: "**/tests/components/**/*.test.tsx"
+    required: [testing/unit.md]
+  - pattern: "**/tests/fixtures/**/*.ts"
+    required: [testing/fixtures.md]
+  - pattern: "**/playwright.config.ts"
+    required: [testing/e2e.md]
+  - pattern: "**/vitest.config.ts"
+    required: [testing/unit.md]
+
+  # ---------- デプロイ / Vercel ----------
+  - pattern: "**/vercel.json"
+    required: [devops/deploy.md, backend/jobs.md]
+  - pattern: "**/Dockerfile"
+    required: [devops/deploy.md]
+
+  # ---------- PWA ----------
+  - pattern: "**/app/sw.ts"
+    required: [frontend/pwa.md]
+  - pattern: "**/public/sw.js"
+    required: [frontend/pwa.md]
