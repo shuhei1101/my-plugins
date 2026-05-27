@@ -242,7 +242,7 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 
 ---
 
-### Step 5: Translate to the English skill (`SKILL.md`)
+### Step 5: Generate the English skill (`SKILL.md`) via jp-mirror-translator
 
 #### Condition
 
@@ -250,60 +250,14 @@ The `description` frontmatter is the auto-trigger — write it precisely to cont
 
 #### Input
 
-- JP mirror content
+- Path to the created `SKILL.jp.md`
 
 #### Process
 
-1. Translate to English, keeping the same structure as SKILL.jp.md:
-
-   ```markdown
-   ---
-   name: <skill-name>
-   description: |
-     Precise trigger conditions in English.
-     "When the user says X", "when editing Y", "when Z".
-   ---
-
-   # <Skill Name> — One-line summary
-
-   <What this skill does in 1-2 sentences>
-
-   ---
-
-   ## Overview
-
-   <Background, purpose, why this skill exists>
-
-   ---
-
-   ## Tasks
-
-   ### Step N: <Action name>
-
-   #### Condition
-   (Preconditions)
-
-   #### Input
-   (Data, files, user input)
-
-   #### Process
-   1. Concrete action
-   → Proceed to Step N+1
-
-   #### Output
-   (What exists as a result of this step)
-
-   #### Notes
-   (Use only the subsections you need)
-
-   ##### Checklist / Branching / References
-
-   ---
-
-   ## References
-   (Shared tables, definitions, or links used across multiple steps only.
-    Content used by a single step belongs inside that step.)
-   ```
+1. Invoke the `jp-mirror-translator` agent to translate `SKILL.jp.md` → `SKILL.md`:
+   - Use the Agent tool with `subagent_type: "claude-kit:jp-mirror-translator"`
+   - Pass the path to `SKILL.jp.md` as the agent prompt
+   - The agent reads the JP mirror and writes `SKILL.md` automatically
 
 → Proceed to Step 6
 

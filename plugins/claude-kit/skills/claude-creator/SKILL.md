@@ -152,7 +152,7 @@ without loading that context at every session start.
 
 ---
 
-### Step 4: Translate to CLAUDE.md (English)
+### Step 4: Generate CLAUDE.md (English) via jp-mirror-translator
 
 #### Condition
 
@@ -160,26 +160,20 @@ without loading that context at every session start.
 
 #### Input
 
-- CLAUDE.jp.md content
+- Path to the created `CLAUDE.jp.md`
 
 #### Process
 
-1. Translate line-by-line to English
-2. Write `CLAUDE.md` — the file Claude Code reads as directives
-3. Keep heading structure identical to CLAUDE.jp.md
+1. Invoke the `jp-mirror-translator` agent to translate `CLAUDE.jp.md` → `CLAUDE.md`:
+   - Use the Agent tool with `subagent_type: "claude-kit:jp-mirror-translator"`
+   - Pass the path to `CLAUDE.jp.md` as the agent prompt
+   - The agent reads the JP mirror and writes `CLAUDE.md` automatically
 
 → Proceed to Step 5
 
 #### Output
 
 - `CLAUDE.md` written
-
-#### Notes
-
-##### Checklist
-
-- [ ] Body written in English (Claude Code reads this directly — no Japanese)
-- [ ] Heading structure identical to CLAUDE.jp.md
 
 ---
 

@@ -1,0 +1,129 @@
+references:
+  - path: core/naming.md
+    description: Naming conventions. Functions snake_case, type aliases UpperCamel, files/modules snake_case. Standard file names inside a feature folder (types/service/query/route/client/db).
+
+  - path: core/comments.md
+    description: Comment rules. 1-line docstring required on exported functions/types; description required on design-significant Pydantic/dataclass fields; PR-numbered change history; TODO must carry an issue number.
+
+  - path: core/type-hints.md
+    description: Type hints body. PEP 695 generics, Self, @typing.override, Annotated, TYPE_CHECKING, type statement, NewType, assert_never, Literal+match.
+
+  - path: core/decorators.md
+    description: Recommended decorators (@dataclass / @final / @cache / @cached_property / @override / @contextmanager) and handler decorators for cross-cutting concerns (@catch_and_log / @catch_and_map / @with_retry / @with_timeout); limited use of @overload.
+
+  - path: core/language-rules.md
+    description: Language rules. Comments in Japanese; print/logger/bat in English; f-string for formatting; import order; exception hierarchy (AppError base class).
+
+  - path: core/style.md
+    description: Style settings. Recommended config for ruff/mypy/pyright; line length 100; double quotes; section markers.
+
+  - path: architecture/layout.md
+    description: Top-level layout. Only shared/ and main.py are required; features / integrations / runtime / server are optional. Standard structure inside a feature folder (types.py / service.py / query.py / route.py / client.py).
+
+  - path: architecture/ts-style.md
+    description: The central document for TypeScript-style Python. Type-alias for function types + Callable for DI; Protocol for structural typing; usage table for @dataclass / Pydantic / TypedDict.
+
+  - path: architecture/composition-root.md
+    description: Responsibilities of main.py. Wire functions in build_handlers(settings) with functools.partial; hold them in a Handlers dataclass for type-safe access. Library-standard classes (FastAPI, CLI, etc.) are used as-is.
+
+  - path: architecture/dependencies.md
+    description: Dependency direction rule. One-way features/server -> integrations -> shared. Same-layer cross-reference is forbidden. Dependency inversion (DIP) is done via function-type aliases.
+
+  - path: architecture/design-principles.md
+    description: Design-principle priorities. DRY > SOLID > extensibility awareness. Function-first; class use is restricted to DTOs and library requirements.
+
+  - path: architecture/refactoring-judgement.md
+    description: Refactoring judgement. How many times before extracting; when to abstract; when to externalize config; when to split a file.
+
+  - path: shared/logger.md
+    description: Standard JSON Lines logger. get_logger(__name__), structured logging, log-level policy.
+
+  - path: shared/settings.md
+    description: Standard pattern for pydantic_settings.BaseSettings. .env / .env.sample workflow; SecretStr; nested settings.
+
+  - path: shared/secrets-and-env.md
+    description: Separation of secrets / environment / structure / assets / runtime state. How to choose between .env / settings.yaml / code / index.yaml / data/.
+
+  - path: shared/errors.md
+    description: Exception hierarchy. AppError base class; domain sub-classes; mapping to HTTP errors.
+
+  - path: shared/types.md
+    description: Common type aliases. Choosing between NewType and type statement; standard for identifier types (e.g. UserId).
+
+  - path: shared/constants.md
+    description: Role boundary of constants.py. Storage for pre-computed paths such as PROJECT_ROOT, LOG_DIR. Runtime-variable values go to settings.
+
+  - path: scripts/python-script.md
+    description: Structure of a single-file Python script. Docstring, argparse, main() -> int, section markers.
+
+  - path: scripts/launchers-windows.md
+    description: Windows bat launcher. chcp 65001, setlocal, PowerShell timestamps, log/ directory output. Never write Japanese inside a bat file (absolute).
+
+  - path: scripts/launchers-unix.md
+    description: UNIX shell script. set -euo pipefail, tee for logging, .venv activation.
+
+  - path: scripts/tkinter.md
+    description: tkinter GUI conventions. Standard style, settings dialog, blue accent color.
+
+  - path: testing/strategy.md
+    description: Test policy. No unit tests; only integration tests + smoke tests. Smoke tests hit real external services and are user-triggered only (AI must not auto-run them).
+
+  - path: testing/pytest.md
+    description: pytest conventions. conftest.py, fixtures, parametrize, pytest-asyncio, tests/ layout.
+
+  - path: testing/mocks.md
+    description: Mock patterns for integration tests. LLM mocks, HTTP mocks, time mocks, swapping implementations via function-type aliases.
+
+  - path: concurrency/async.md
+    description: asyncio conventions. TaskGroup, asyncio.timeout, sync/async boundaries, async generators / context managers.
+
+  - path: concurrency/parallelism.md
+    description: Parallel processing. Choosing between multiprocessing / threading / subinterpreters; the GIL; CPU bound vs IO bound.
+
+  - path: packaging/pyproject.md
+    description: Complete pyproject.toml sample. [project] / [tool.ruff] / [tool.mypy] / [tool.pyright] / [tool.pytest].
+
+  - path: packaging/dependencies.md
+    description: Dependency management. uv is the standard; optional-dependencies.dev required; unified .venv; lockfile workflow.
+
+  - path: packaging/distribution.md
+    description: Distribution. wheel/sdist, PyPI publish, exposing the CLI via entry_points.
+
+  - path: packaging/python-versions.md
+    description: Python version policy. Use the newest version possible; feature-table for 3.12+.
+
+  - path: performance/cheatsheet.md
+    description: Performance cheatsheet. Choosing between profilers (cProfile / snakeviz / line_profiler / py-spy / scalene / memray); hot-path checklist.
+
+  - path: llm/providers.md
+    description: LLM provider implementation. Abstract Claude / OpenAI / Gemini as functions; wrap vendor exceptions into domain exceptions; log token usage.
+
+  - path: llm/instructor.md
+    description: Structured outputs with Instructor + Pydantic. How to build task-specific client functions.
+
+  - path: llm/prompts-authoring.md
+    description: Authoring and assembling prompt files. prompts/ at project root; H3-section-sized parts; static (.md) vs dynamic (.j2); SoT management via index.yaml; assembly via includes.
+
+  - path: llm/prompts-loader.md
+    description: Prompt loader implementation. Place index_loader / builder / types under src/{pkg}/integrations/llm/prompts/; Jinja2 + StrictUndefined; build_prompt / build_bundle.
+
+  - path: llm/cost-cache.md
+    description: Cost management. Design premise of prompt caching (stack from top; static at top, dynamic at bottom); Anthropic cache_control; OpenAI automatic cache; max_tokens; Batch API; streaming.
+
+  - path: llm/exceptions-retry.md
+    description: LLM exception hierarchy. rate-limit / server / bad-request / auth / timeout / content-filter; retry strategies; honoring Retry-After.
+
+  - path: fastapi/app.md
+    description: FastAPI app composition. build_app pattern, lifespan, middleware, CORS.
+
+  - path: fastapi/routes.md
+    description: Router implementation. Annotated[Type, Depends/Path/Query]; route functions stay thin; business logic in service.py.
+
+  - path: fastapi/schemas.md
+    description: I/O Pydantic schemas. Field constraints; to_domain / from_domain methods to keep feature-internal DTOs separate.
+
+  - path: fastapi/auth-and-errors.md
+    description: Authentication with Depends + handling SecretStr + error handling via exception_handler.
+
+  - path: fastapi/health.md
+    description: Health check. Simple /healthz that just returns 200.

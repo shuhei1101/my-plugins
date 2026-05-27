@@ -1,0 +1,133 @@
+rules:
+  - pattern: "**/*.py"
+    required:
+      - core/naming.md
+      - core/language-rules.md
+      - core/style.md
+    optional:
+      - core/comments.md
+      - core/type-hints.md
+
+  - pattern: "**/shared/decorators.py"
+    required: [core/decorators.md]
+  - pattern: "**/_decorators.py"
+    required: [core/decorators.md]
+
+  - pattern: "**/shared/logger.py"
+    required: [shared/logger.md]
+  - pattern: "**/shared/settings.py"
+    required: [shared/settings.md, shared/secrets-and-env.md]
+  - pattern: "**/shared/errors.py"
+    required: [shared/errors.md]
+  - pattern: "**/shared/types.py"
+    required: [shared/types.md, core/type-hints.md]
+  - pattern: "**/shared/constants.py"
+    required: [shared/constants.md]
+    optional: [shared/secrets-and-env.md]
+
+  - pattern: "**/main.py"
+    required: [architecture/composition-root.md, architecture/layout.md]
+    optional: [architecture/dependencies.md, architecture/design-principles.md]
+  - pattern: "**/__main__.py"
+    required: [architecture/composition-root.md]
+
+  - pattern: "**/features/**/types.py"
+    required: [architecture/ts-style.md, architecture/layout.md, core/type-hints.md]
+  - pattern: "**/features/**/service.py"
+    required: [architecture/ts-style.md, architecture/dependencies.md]
+    optional: [architecture/design-principles.md, architecture/refactoring-judgement.md, core/decorators.md]
+  - pattern: "**/features/**/query.py"
+    required: [architecture/ts-style.md]
+  - pattern: "**/features/**/route.py"
+    required: [fastapi/routes.md, fastapi/schemas.md]
+    optional: [fastapi/auth-and-errors.md]
+  - pattern: "**/features/**/client.py"
+    required: [architecture/ts-style.md]
+
+  - pattern: "**/integrations/llm/**/*.py"
+    required: [llm/providers.md, llm/exceptions-retry.md]
+    optional: [llm/cost-cache.md, llm/instructor.md, core/decorators.md]
+  - pattern: "**/integrations/llm/prompts/**/*.py"
+    required: [llm/prompts-loader.md, llm/prompts-authoring.md]
+  - pattern: "**/integrations/**/client.py"
+    required: [architecture/ts-style.md]
+    optional: [architecture/dependencies.md, core/decorators.md]
+
+  - pattern: "prompts/**/*.md"
+    required: [llm/prompts-authoring.md]
+  - pattern: "prompts/**/*.j2"
+    required: [llm/prompts-authoring.md]
+  - pattern: "prompts/index.yaml"
+    required: [llm/prompts-authoring.md]
+    optional: [llm/prompts-loader.md]
+
+  - pattern: "**/server/app.py"
+    required: [fastapi/app.md, architecture/composition-root.md]
+  - pattern: "**/server/routes/**/*.py"
+    required: [fastapi/routes.md, fastapi/schemas.md]
+    optional: [fastapi/auth-and-errors.md]
+  - pattern: "**/server/ws/**/*.py"
+    required: [fastapi/app.md]
+  - pattern: "**/server/error_handlers.py"
+    required: [shared/errors.md, fastapi/auth-and-errors.md]
+
+  - pattern: "**/runtime/**/*.py"
+    required: [concurrency/async.md]
+    optional: [concurrency/parallelism.md]
+
+  - pattern: "**/tests/**/test_*.py"
+    required: [testing/strategy.md, testing/pytest.md]
+    optional: [testing/mocks.md]
+  - pattern: "**/tests/smoke/**/*.py"
+    required: [testing/strategy.md]
+  - pattern: "**/tests/conftest.py"
+    required: [testing/pytest.md, testing/mocks.md]
+
+  - pattern: "**/pyproject.toml"
+    required: [packaging/pyproject.md, packaging/dependencies.md]
+    optional: [packaging/python-versions.md, packaging/distribution.md, core/style.md]
+
+  - pattern: "**/*.bat"
+    required: [scripts/launchers-windows.md]
+  - pattern: "**/*.sh"
+    required: [scripts/launchers-unix.md]
+
+  - pattern: ".env"
+    required: [shared/secrets-and-env.md]
+  - pattern: ".env.sample"
+    required: [shared/secrets-and-env.md]
+  - pattern: "**/config/settings.yaml*"
+    required: [shared/secrets-and-env.md, shared/settings.md]
+
+  # ---------- 単一ファイルスクリプト ----------
+  # tools/ 配下と scripts/ 配下は単一ファイルスクリプト規約を必読に
+  # `**/` 前置でサブプロジェクト（モノレポ等）の packages/foo/tools/... にもマッチさせる
+  - pattern: "**/tools/**/*.py"
+    required: [scripts/python-script.md]
+  - pattern: "**/scripts/**/*.py"
+    required: [scripts/python-script.md]
+
+  # ---------- tkinter GUI ----------
+  - pattern: "**/gui/**/*.py"
+    required: [scripts/tkinter.md]
+  - pattern: "**/*_gui.py"
+    required: [scripts/tkinter.md]
+  - pattern: "**/gui.py"
+    required: [scripts/tkinter.md]
+
+  # ---------- FastAPI health ----------
+  - pattern: "**/server/routes/health*.py"
+    required: [fastapi/health.md]
+  - pattern: "**/server/routes/**/health*.py"
+    required: [fastapi/health.md]
+  - pattern: "**/healthz.py"
+    required: [fastapi/health.md]
+
+  # ---------- パフォーマンス（プロファイラ・ベンチマーク） ----------
+  - pattern: "**/benchmarks/**/*.py"
+    required: [performance/cheatsheet.md]
+    optional: [testing/pytest.md]
+  - pattern: "**/perf/**/*.py"
+    required: [performance/cheatsheet.md]
+  - pattern: "**/profile_*.py"
+    required: [performance/cheatsheet.md]

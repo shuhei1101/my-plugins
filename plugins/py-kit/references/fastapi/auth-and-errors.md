@@ -1,0 +1,281 @@
+# fastapi/auth-and-errors — Authentication and Exception Handlers
+
+---
+
+## Basic authentication patterns
+
+### Bearer token
+
+```python
+# src/{pkg}/server/auth.py
+from __future__ import annotations
+from fastapi import Header, Depends
+from typing import Annotated
+
+from {pkg}.shared.errors import UnauthorizedError
+from {pkg}.shared.types import UserId
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class AuthContext:
+    """認証済みコンテキスト。"""
+    user_id: UserId
+    scopes: tuple[str, ...]
+
+
+async def verify_token(
+    authorization: Annotated[str | None, Header()] = None,
+) -> AuthContext:
+    """Authorization: Bearer <token> を検証する。"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise UnauthorizedError("missing or malformed bearer token")
+
+    token = authorization.removeprefix("Bearer ").strip()
+    payload = _decode_jwt(token)   # 別実装
+    return AuthContext(
+        user_id=payload["sub"],
+        scopes=tuple(payload.get("scopes", [])),
+    )
+
+
+# 型エイリアス
+Auth = Annotated[AuthContext, Depends(verify_token)]
+```
+
+Used in routes:
+
+```python
+@router.get("/me")
+async def get_me(auth: Auth) -> UserResponse:
+    user = await fetch_user(auth.user_id, find=...)
+    return UserResponse.from_domain(user)
+```
+
+---
+
+### API Key
+
+```python
+async def verify_api_key(
+    x_api_key: Annotated[str | None, Header(alias="x-api-key")] = None,
+    request: Request,
+) -> str:
+    """X-Api-Key ヘッダで認証する。"""
+    if not x_api_key:
+        raise UnauthorizedError("missing api key")
+
+    settings: Settings = request.app.state.settings
+    if x_api_key != settings.api_key.get_secret_value():
+        raise UnauthorizedError("invalid api key")
+
+    return x_api_key
+
+
+ApiKeyAuth = Annotated[str, Depends(verify_api_key)]
+```
+
+---
+
+### Scope validation
+
+```python
+def require_scope(scope: str):
+    """指定 scope を持つことを要求する Depends ファクトリ。"""
+
+    async def checker(auth: Auth) -> AuthContext:
+        if scope not in auth.scopes:
+            raise ForbiddenError(f"missing scope: {scope}")
+        return auth
+
+    return Depends(checker)
+
+
+@router.post("/admin/users")
+async def create_admin_user(
+    body: CreateUserRequest,
+    auth: Annotated[AuthContext, require_scope("admin:write")],
+) -> UserResponse:
+    ...
+```
+
+---
+
+## Handling SecretStr
+
+If `shared/settings.py` uses `SecretStr`, extract the value explicitly when validating:
+
+```python
+# ✅ Good
+settings.api_key.get_secret_value()
+
+# ❌ str() でログ出力するとマスクされてバグる
+str(settings.api_key)   # "**********" が出る
+```
+
+Never put secrets in error logs:
+
+```python
+# ❌ Bad
+logger.error(f"auth failed with key {x_api_key}")
+
+# ✅ Good
+logger.warning("auth failed", extra={"reason": "invalid key"})
+```
+
+---
+
+## Batch registering exception handlers
+
+Map the exception hierarchy defined in `shared/errors.md` to HTTP:
+
+```python
+# src/{pkg}/server/error_handlers.py
+from __future__ import annotations
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+
+from {pkg}.shared.errors import (
+    AppError,
+    ValidationError,
+    NotFoundError,
+    ConflictError,
+    ForbiddenError,
+    UnauthorizedError,
+    IntegrationError,
+    IntegrationTimeoutError,
+    LlmRateLimitError,
+)
+from {pkg}.shared.logger import get_logger
+
+logger = get_logger(__name__)
+
+
+def register_exception_handlers(app: FastAPI) -> None:
+    @app.exception_handler(ValidationError)
+    async def _(_: Request, exc: ValidationError):
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+    @app.exception_handler(UnauthorizedError)
+    async def _(_: Request, exc: UnauthorizedError):
+        return JSONResponse({"error": str(exc)}, status_code=401)
+
+    @app.exception_handler(ForbiddenError)
+    async def _(_: Request, exc: ForbiddenError):
+        return JSONResponse({"error": str(exc)}, status_code=403)
+
+    @app.exception_handler(NotFoundError)
+    async def _(_: Request, exc: NotFoundError):
+        return JSONResponse({"error": str(exc)}, status_code=404)
+
+    @app.exception_handler(ConflictError)
+    async def _(_: Request, exc: ConflictError):
+        return JSONResponse({"error": str(exc)}, status_code=409)
+
+    @app.exception_handler(LlmRateLimitError)
+    async def _(_: Request, exc: LlmRateLimitError):
+        headers = {"retry-after": str(int(exc.retry_after))} if exc.retry_after else {}
+        return JSONResponse({"error": "rate limited"}, status_code=429, headers=headers)
+
+    @app.exception_handler(IntegrationTimeoutError)
+    async def _(_: Request, exc: IntegrationTimeoutError):
+        return JSONResponse({"error": "upstream timeout"}, status_code=504)
+
+    @app.exception_handler(IntegrationError)
+    async def _(_: Request, exc: IntegrationError):
+        logger.exception("integration error")
+        return JSONResponse({"error": "external service error"}, status_code=502)
+
+    @app.exception_handler(AppError)
+    async def _(_: Request, exc: AppError):
+        logger.exception("app error")
+        return JSONResponse({"error": str(exc)}, status_code=500)
+```
+
+---
+
+## Status code mapping table
+
+| Exception | HTTP | Use |
+|---|---|---|
+| `ValidationError` | 400 | Input validation error |
+| `UnauthorizedError` | 401 | No authentication / invalid token |
+| `ForbiddenError` | 403 | Authentication OK but insufficient permissions |
+| `NotFoundError` | 404 | Resource not found |
+| `ConflictError` | 409 | Duplicate / optimistic lock failure |
+| `LlmRateLimitError` | 429 | Rate limit exceeded (notify the client) |
+| `AppError` | 500 | Other application exceptions |
+| `IntegrationError` | 502 | Originating from external service |
+| `IntegrationTimeoutError` | 504 | External timeout |
+
+---
+
+## Custom error response format
+
+Unified format:
+
+```python
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ErrorResponse:
+    error: str
+    code: str           # "validation_error", "not_found" 等
+    detail: dict | None = None
+    request_id: str | None = None
+
+
+@app.exception_handler(ValidationError)
+async def _(request: Request, exc: ValidationError):
+    return JSONResponse(
+        ErrorResponse(
+            error=str(exc),
+            code="validation_error",
+            request_id=getattr(request.state, "request_id", None),
+        ).__dict__,
+        status_code=400,
+    )
+```
+
+Unifying the schema lets the frontend write the type just once.
+
+---
+
+## Pydantic's `RequestValidationError`
+
+FastAPI automatically validates the request body with Pydantic. On failure it raises `RequestValidationError`.
+By default it returns 422. To customize:
+
+```python
+from fastapi.exceptions import RequestValidationError
+
+
+@app.exception_handler(RequestValidationError)
+async def _(_: Request, exc: RequestValidationError):
+    return JSONResponse(
+        {"error": "validation failed", "errors": exc.errors()},
+        status_code=400,    # 422 のままでもよい
+    )
+```
+
+---
+
+## Do not
+
+```python
+# ❌ HTTPException を直接 raise
+raise HTTPException(404, "user not found")
+# → NotFoundError を raise（exception_handler が変換）
+
+# ❌ 認証失敗をログに大量に出す（DoS で詰まる）
+logger.error("auth failed")   # 失敗の集計は別途、毎回 logger.error はやりすぎ
+
+# ❌ 秘密情報をエラーメッセージに含める
+raise UnauthorizedError(f"token {token} is invalid")   # トークン漏洩
+```
+
+---
+
+## Related files
+
+- `shared/errors.md` — Exception hierarchy definition
+- `fastapi/routes.md` — How to use Depends
+- `fastapi/app.md` — Where to call register_exception_handlers
+- `shared/settings.md` — Handling SecretStr

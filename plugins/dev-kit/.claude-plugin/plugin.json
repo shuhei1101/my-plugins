@@ -1,5 +1,5 @@
 {
   "name": "dev-kit",
-  "description": "Development conventions toolkit — language standards (Python, YAML) and project/script generation skills",
-  "version": "2.2.1"
+  "description": "Development conventions toolkit — YAML standards and YAML skill",
+  "version": "3.0.0"
 }

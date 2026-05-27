@@ -1,0 +1,116 @@
+# shared/constants.py — Computed constants
+
+`constants.py` holds only **pre-computed, immutable values**. Runtime-variable values (those switched via env, etc.) belong in `settings.py`.
+
+---
+
+## Role boundaries
+
+| Location | Contents |
+|---|---|
+| `constants.py` | Constants computed from project structure (PROJECT_ROOT, LOG_DIR); business-fixed constants (MAX_TAGS, DEFAULT_TIMEOUT_SEC, etc.) |
+| `settings.py` | Values to switch via env / .env (API keys, model names, log_level) |
+| Each feature's `types.py` | Feature-specific constants (business Enums, etc.) |
+
+---
+
+## Sample
+
+```python
+# src/{pkg}/shared/constants.py
+from __future__ import annotations
+from pathlib import Path
+
+# ----- パス -----
+PROJECT_ROOT: Path = Path(__file__).resolve().parents[2]
+"""プロジェクトのルートディレクトリ（src/ の 1 つ上）。"""
+
+LOG_DIR: Path = PROJECT_ROOT / "log"
+"""ログ出力ディレクトリ。"""
+
+CONFIG_DIR: Path = PROJECT_ROOT / "config"
+"""設定ファイル置き場。"""
+
+DATA_DIR: Path = PROJECT_ROOT / "data"
+"""データファイル置き場（メディア / 永続化等）。"""
+
+# ----- 業務的な固定値 -----
+MAX_TAGS_PER_POST: int = 10
+"""1 投稿あたりのタグ最大数。"""
+
+DEFAULT_PAGE_SIZE: int = 20
+"""ページネーションの既定件数。"""
+
+DEFAULT_TIMEOUT_SEC: float = 30.0
+"""外部 API 呼び出しの既定タイムアウト（秒）。"""
+```
+
+---
+
+## Naming
+
+- Unified in `UPPER_SNAKE_CASE`
+- Always include type annotations (do not rely on type inference)
+- For items that need explanation, use a docstring or `# ` comment
+
+---
+
+## What not to do
+
+```python
+# ❌ 実行時に変わる値を constants に入れる
+LOG_LEVEL = "INFO"   # → settings.py に入れる（env で切り替えるため）
+OPENAI_MODEL = "gpt-4o"   # → settings.py（モデル切替したい）
+
+# ❌ 計算結果を都度書く（同じパスを 5 箇所で計算するなら共通定数に）
+log_path = Path(__file__).resolve().parents[2] / "log" / "..."   # 散在する
+
+# ❌ 巨大な dict を constants に置く
+PROMPTS = {
+    "greet": "...",   # 大きければプロンプトファイルや config に
+    "farewell": "...",
+}
+```
+
+---
+
+## Benefits of pre-computed Paths
+
+```python
+from {pkg}.shared.constants import LOG_DIR
+
+log_file = LOG_DIR / "app.log"
+log_file.write_text("...", encoding="utf-8")
+```
+
+- Computed once at startup; afterwards it is just a reference
+- Same value no matter where it is called from (does not depend on the current directory)
+- "Go to definition" works in the IDE
+
+---
+
+## Relationship with Enum
+
+When the set of business-valid values is fixed, use **`Enum` or `Literal`**:
+
+```python
+# Literal の場合（軽量）
+type Status = Literal["draft", "published", "archived"]
+
+# Enum の場合（ライブラリ要求等）
+from enum import StrEnum
+
+class Status(StrEnum):
+    DRAFT = "draft"
+    PUBLISHED = "published"
+    ARCHIVED = "archived"
+```
+
+Use `Literal` by default. Use `StrEnum` only when a library requires it.
+
+---
+
+## Related files
+
+- `shared/settings.md` — management of runtime-variable values
+- `architecture/layout.md` — positioning of shared/

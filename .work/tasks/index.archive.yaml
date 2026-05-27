@@ -370,3 +370,62 @@ prs:
   summary: Next.js 対応プラグイン next-kit を新規作成する（フロントエンド移行に向けた準備）
   task: 20260526_create-next-kit-plugin
   completed: true
+- id: 133
+  title: PR133 — jp-mirror-translator-agent
+  type: feat
+  tags: []
+  summary: work-kit プラグインに JP ミラー ↔ 英語版の翻訳エージェントを追加
+  task: 20260527_jp-mirror-translator-agent
+  completed: true
+- id: 129
+  title: PR129 — create-py-kit-plugin
+  type: feat
+  tags: []
+  summary: dev-kit から Python を分離し py-kit プラグインを新規作成する（references/python/ 構成・py-script/py-project
+    スキル移動）
+  task: 20260526_create-py-kit-plugin
+  completed: true
+- id: 138
+  title: PR138 — review-py-kit-plugin
+  type: docs
+  tags: []
+  summary: py-kit プラグイン全体を Claude Code 一般ベストプラクティスで評価し、改善提案を QA で大量に書き出す（PR135 と同パターン）
+  task: 20260527_review-py-kit-plugin
+  completed: true
+- id: 139
+  title: PR139 — interactive-review-skills
+  type: feat
+  tags: []
+  summary: QA.mdをAskUserQuestion形式で提示するqa-reviewスキルと、実装内容をインタラクティブにレビューするimpl-reviewスキルをwork-kitに追加
+  task: 20260527_interactive-review-skills
+  completed: true
+- id: 137
+  title: PR137 — agent-jp-mirror-rule
+  type: docs
+  tags: []
+  summary: plugins/{name}/agents/*.md 変更時に .jp.md も同コミットで更新する JP ミラー同期ルールを追加
+  task: 20260527_agent-jp-mirror-rule
+  completed: true
+- id: 141
+  title: PR141 — move-jp-mirror-agent-to-claude-kit
+  type: refactor
+  tags: []
+  summary: jp-mirror-translator エージェントを work-kit から claude-kit に移動し、creator skills
+    の JP ミラー生成でエージェントを使うよう変更。不要な agent-jp-mirror-sync ルールと _overview.md を削除。
+  task: 20260528_move-jp-mirror-agent-to-claude-kit
+  completed: true
+- id: 140
+  title: PR140 — rebuild-py-kit-references
+  type: refactor
+  tags: []
+  summary: PR138 確定方針（DDD廃止 → 機能フォルダ型 + TypeScript 風 + 関数ファースト）に従って py-kit references
+    を全面再構築。38 ファイル + index.yaml + SKILL.md 書き直し + MAJOR バンプ + glossary 更新 + JP ミラー全件
+  task: 20260527_rebuild-py-kit-references
+  completed: true
+- id: 142
+  title: PR142 — add-j2-support-to-mark-generated
+  type: feat
+  tags: []
+  summary: mark-generated スキルに .j2 ファイルサポートを追加し、PreToolUse フックで .j2 編集時にスタンプ確認を促す
+  task: 20260528_add-j2-support-to-mark-generated
+  completed: true

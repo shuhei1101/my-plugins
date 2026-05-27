@@ -208,7 +208,7 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 ---
 
-### Step 6: Translate to the English rule (`.claude/rules/<name>.md`)
+### Step 6: Generate the English rule (`.claude/rules/<name>.md`) via jp-mirror-translator
 
 #### Condition
 
@@ -216,26 +216,20 @@ reads a file matching the `paths:` pattern (not on shell-only commands like mv/r
 
 #### Input
 
-- JP mirror content from Step 5
+- Path to the created `.claude/rules-jp/<name>.md`
 
 #### Process
 
-1. Translate line-by-line to English
-2. Create `.claude/rules/<name>.md` with the same structure
-3. Keep heading structure identical to the JP mirror
+1. Invoke the `jp-mirror-translator` agent to translate the JP mirror → English rule:
+   - Use the Agent tool with `subagent_type: "claude-kit:jp-mirror-translator"`
+   - Pass the path to `.claude/rules-jp/<name>.md` as the agent prompt
+   - The agent reads the JP mirror and writes `.claude/rules/<name>.md` automatically
 
 → Proceed to Step 7
 
 #### Output
 
 - `.claude/rules/<name>.md` created
-
-#### Notes
-
-##### Prohibitions
-
-- Do not write the body in Japanese — this file is auto-loaded by Claude as directives
-- Keep heading structure identical to the JP mirror
 
 ---
 

@@ -241,7 +241,7 @@
 
 ---
 
-### ステップ5: SKILL.md に翻訳する（英語）
+### ステップ5: jp-mirror-translator エージェントで SKILL.md を生成する（英語）
 
 #### 条件
 
@@ -249,12 +249,14 @@
 
 #### 入力
 
-- ステップ3のSKILL.jp.md内容
+- 作成した `SKILL.jp.md` のパス
 
 #### 処理内容
 
-1. SKILL.jp.md を行単位で英語に翻訳する
-2. `.claude/skills/<name>/SKILL.md` を同じステップ構造で作成する
+1. `jp-mirror-translator` エージェントを呼び出して `SKILL.jp.md` → `SKILL.md` を翻訳する:
+   - Agent ツールで `subagent_type: "claude-kit:jp-mirror-translator"` を使用
+   - `SKILL.jp.md` のパスをエージェントのプロンプトとして渡す
+   - エージェントが JP ミラーを読み取り、`SKILL.md` を自動的に書き出す
 → ステップ6へ進む
 
 #### 出力
