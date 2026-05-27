@@ -247,7 +247,7 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 
 ---
 
-## QA-011: 「Repository」「Service」「UseCase」「Provider」など概念サフィックスのリスト化
+## QA-011: 「Repository」「Service」「UseCase」「Provider」など概念サフィックスのリスト化 ✅決定
 
 **背景**: 純DDD のレイヤーごとに「ファイル名 / クラス名にこのサフィックスが付くと自動的にこの層」というマッピングがあると注入フックが組みやすい。
 - `domain/repositories/*_repository.py` → Repository（Protocol）
@@ -264,11 +264,21 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. **動詞ファイル名 + サフィックスなしクラス名**（`create_order.py` / `CreateOrder`）→ DDD 純度高
 - D. レイヤーごとに使い分ける（UseCase は動詞、Repository はサフィックスあり）
 
-**反映先**: `python-architecture.md § 8.2`（File-per-Class Rule）と各層の例。
+**決定**: **A — 現状維持（動詞ファイル名 + サフィックスありクラス名）**
+
+**理由**: ユーザー指摘「フォルダ名でマッチングできるんちゃう？」が正しい。注入フックは `**/application/use_cases/**/*.py` のフォルダパスでマッチングすれば UseCase だと識別可能。ファイル名にサフィックスを付ける必要なし。動詞ファイル名は DDD の慣習として読みやすさを保てる。
+
+**反映先**: `references/core/naming.md`（旧 `python-core.md § 1`）に「レイヤー別ファイル/クラス命名対応表」を新設:
+- `domain/repositories/{noun}_repository.py` → `class {Noun}Repository(Protocol)`
+- `domain/services/{noun}_service.py` → `class {Noun}Service`
+- `application/use_cases/{verb}_{noun}.py` → `class {Verb}{Noun}UseCase`
+- `infrastructure/persistence/{tech}_{noun}_repository.py` → `class {Tech}{Noun}Repository`
+- `infrastructure/llm/providers/{vendor}_provider.py` → `class {Vendor}Provider`
+- `infrastructure/llm/instructor_clients/{task}_{vendor}_client.py` → `class {Task}{Vendor}Client`
 
 ---
 
-## QA-012: tests/ ディレクトリ内のファイル命名は `test_{動詞}_use_case.py` か `test_{動詞}.py` か
+## QA-012: tests/ ディレクトリ内のファイル命名は `test_{動詞}_use_case.py` か `test_{動詞}.py` か ✅決定
 
 **背景**: 現在の例は `tests/application/use_cases/test_create_order.py`。`test_create_order_use_case.py` ではない。一方クラス名は `CreateOrderUseCase`。
 
@@ -276,11 +286,15 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - A. 現状維持（ソースのファイル名にミラー）
 - B. テストファイルにはサフィックス付ける（`test_create_order_use_case.py`）
 
-**反映先**: `python-testing.md § 2.3 / 2.4`。
+**決定**: **A — 現状維持（ソースファイル名にミラー）**
+
+**理由**: QA-011 で「ファイル名は動詞、フォルダでレイヤー識別」と確定したので、テスト側もソースのファイル名にミラーするのが一貫。
+
+**反映先**: `references/testing/*.md`（旧 `python-testing.md § 2.3 / 2.4`）の Test File Naming 表は現状のまま維持。
 
 ---
 
-## QA-013: ヘルパー関数 / private 関数のファイル配置
+## QA-013: ヘルパー関数 / private 関数のファイル配置 ✅決定
 
 **背景**: 「1 ファイル = 1 クラス」だが、軽量なヘルパー関数群（純粋関数のユーティリティ）の置き場が `python-architecture.md § 8.2` で「private helper classes / small dataclasses used in one place may share a file with their consumer」とあるだけで明示されていない。
 
@@ -289,13 +303,20 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. `domain/utils/` を許容（ただし「ユーティリティのゴミ箱化」リスク）
 - C. **ヘルパーは consumer のローカルにのみ置く**（共有したいなら domain service へ昇格）
 
-**反映先**: `python-architecture.md § 8.2`。
+**決定**: **A — 「consumer 同居 OR 同フォルダの _helpers.py」を明文化**
+
+**理由**: B は domain/utils がゴミ箱化するリスクが高く、C は「複数ファイルで使う軽量関数も全部 domain service に昇格」では大袈裟。実用的な落とし所として A。
+
+**反映先**: `references/architecture/ddd-layout.md`（旧 § 8.2）にヘルパー配置規約を追加:
+- 1 ファイル内のみで使うヘルパー → consumer ファイル末尾の `_helper()` private 関数
+- 同フォルダ内 2 ファイル以上で使うヘルパー → 同フォルダの `_helpers.py`
+- レイヤーを跨いで使う共通ロジック → 該当レイヤーの service へ昇格（`domain/services/` or 該当する場所）
 
 ---
 
 # C. コメントルールの過不足
 
-## QA-014: PR 番号付き変更履歴コメント（`# PR{N}: ...`）の運用
+## QA-014: PR 番号付き変更履歴コメント（`# PR{N}: ...`）の運用 ✅決定
 
 **背景**: `python-core.md § 2.4` で「非自明な変更には PR 番号付きコメントを残す」「コードが書き換わったらコメント削除」と規定。`python-llm.md § 5.4` でもプロンプト変更時の PR 番号併記が義務化されている。
 ユーザー意向（用語集の `## 用語集` の `直接変更履歴コメント` 関連）では PR132 由来のルールを Python でも採用したい。
@@ -307,11 +328,13 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. **存在意義を限定**（「過渡期の暫定実装」「他の PR とコンフリクトする可能性のある変更」のみ。通常の改修では書かない）
 - D. 期限付き（コメントに `# PR{N} (expires 2026-12-31): ...` を強制し、期限切れは lint で警告）
 
-**反映先**: `python-core.md § 2.4`、`python-llm.md § 5.4`、（必要なら）削除条件を明記したルール `.claude/rules/python-pr-comment-cleanup.md`。
+**決定**: **A — 現状維持**
+
+**反映先**: `references/core/comments.md` § 2.4 と `references/llm/prompts.md` § 5.4 の規定を維持。当 PR で文言の補強なし。
 
 ---
 
-## QA-015: 必須／推奨／禁止のコメント表が厳しすぎないか
+## QA-015: 必須／推奨／禁止のコメント表が厳しすぎないか ✅決定
 
 **背景**: `python-core.md § 2.1` で「クラス docstring：⚠️ Optional（クラスに非自明な不変条件があるときのみ必須）」「関数 docstring：⚠️ Optional」と規定。一方で「Restating what code does：❌ Forbidden」。「コードを再述すること」を禁じるのは妥当だが、エディタ補完で `docstring を一行書いただけで違反」と判定されかねない。
 
@@ -320,11 +343,15 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. 文言緩和（「再述」を禁ずるのではなく「再述だけの docstring は避ける」と表現）
 - C. **「docstring は書かないがデフォルト」を明文化**し、書く場合の条件をリスト化
 
-**反映先**: `python-core.md § 2.1 / § 2.3`。
+**決定**: **B — 文言緩和**
+
+**理由**: 「Forbidden」表現は補完で書いた程度の docstring まで否定する印象になる。「再述だけの docstring は書く価値がないので避ける」「書くなら一行で意図/非自明性を伝える」とポジティブに書き直す。
+
+**反映先**: `references/core/comments.md` § 2.1 / § 2.3（旧 `python-core.md § 2.1 / § 2.3`）の Forbidden 表現を緩和。表の `❌ Forbidden` を `⚠️ Avoid`（再述だけの docstring）に変更し、本文で「書くなら非自明性を伝えるもの限定」と説明。
 
 ---
 
-## QA-016: 日本語コメントの扱い（§ 6.2 の表との整合）
+## QA-016: 日本語コメントの扱い（§ 6.2 の表との整合）✅決定
 
 **背景**: `python-core.md § 6.1` で `print()` / logger は **英語のみ**（CP932 対策）。しかし § 6.2 で「コードコメントは ✅ OK だが共有コードベースでは英語推奨」と曖昧。py-kit を使う層は「日本人ユーザーの個人プロジェクト」が多そうなので「コードコメントは日本語可、ただし出力（print/logger/例外メッセージ）は英語」と強く線引きしたほうが現実的。
 
@@ -334,11 +361,29 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. **すべて英語推奨**（OSS 化を見据える）
 - D. 「個人 / 個人プロジェクト：日本語 OK、業務 / OSS：英語」と分岐
 
-**反映先**: `python-core.md § 6.2` の表と前後の文章。
+**決定**: **B（強化版）— 「基本すべて日本語推奨。技術的に英語必須の箇所のみ英語」と明文化**
+
+**理由**: ユーザー意向「基本すべて日本語推奨。bat ファイル等バグる箇所のみ英語」。py-kit のターゲット層に合わせて日本語をデフォルトに。
+
+**反映先**: `references/core/language-rules.md`（旧 § 6）の表と本文を以下に書き換え:
+
+| 場所 | 言語 | 理由 |
+|---|---|---|
+| コードコメント | **日本語推奨** | デフォルト |
+| docstring | **日本語推奨** | デフォルト |
+| `.env.sample` コメント | **日本語推奨** | 人間が読む |
+| GUI 表示文字列 (tkinter) | **日本語推奨** | Python stdout |
+| pytest test 名 | **日本語推奨** | テスト出力は手元 |
+| 例外メッセージ | **日本語推奨**（ログに乗るが file handler は UTF-8 で書く） | デフォルト |
+| `print()` / logger 出力 | **英語必須** | bat ランチャー / cmd.exe が CP932 で文字化け |
+| `.bat` ファイル本体 | **英語必須** | cmd.exe が CP932 で parse、日本語は文字化け / 動作不能 |
+| Shell スクリプト (`.sh`) | **日本語 OK**（UTF-8 locale 前提） | Linux は UTF-8 デフォルト |
+
+「基本日本語、出力と bat だけ英語」と一文で要約も冒頭に追加。
 
 ---
 
-## QA-017: 「TODO / XXX / FIXME」禁止規定の運用
+## QA-017: 「TODO / XXX / FIXME」禁止規定の運用 ✅決定
 
 **背景**: `python-core.md § 2.6` で「TODO はオーナーまたは issue リンクなしで書くな」と禁止寄りの規定。実用上、「あとで戻ってくるための一時メモ」として TODO は普通に使う。
 
@@ -348,11 +393,17 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. 完全禁止（issue を立てるかその場で直す）
 - D. 「TODO は許容、ただし PR マージ前に必ず issue 化」運用ルール化
 
-**反映先**: `python-core.md § 2.6`、（必要なら）pre-commit hook で `# TODO(` のフォーマット検査。
+**決定**: **A — issue との紐付け必須**
+
+**理由**: ユーザー意向「issue との紐付け必須」。`# TODO(#42): ...` のように issue 番号を必ず付ける。オーナー名のみ（`# TODO(@john): ...`）は許容しない方針に強化。
+
+**反映先**: `references/core/comments.md` § 2.6（旧 `python-core.md § 2.6`）の Forbidden 表現を「issue 番号必須」に強化。許容フォーマット: `# TODO(#<issue-number>): {what}`。`XXX:` / `FIXME:` も同じ規定を適用。
+
+**運用上の留意**: py-kit プロジェクトでは `.work/issues/`（work-kit が管理）の ISSUE 番号でも OK とする（GitHub issue を立てない個人プロジェクトでも `.work/issues/ISSUE-{N}.md` を参照できる）。
 
 ---
 
-## QA-018: セクションマーカー（`# ── stdlib ─` 等）は scripts 専用か全 Python か
+## QA-018: セクションマーカー（`# ── stdlib ─` 等）は scripts 専用か全 Python か ✅決定
 
 **背景**: `python-core.md § 2.5` は「scripts only」と明示。一方 `python-scripts.md § 1.2` で詳細仕様。プロジェクトの個別モジュール（例：複雑な `infrastructure/` の adapter ファイル）でも見通しを良くしたいケースがある。
 
@@ -361,13 +412,15 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. **全 Python ファイル許容**（ただし「過剰使用するな」と注意書き）
 - C. scripts 専用＋「複雑な単一ファイル（200 行超）では使ってよい」例外条項
 
-**反映先**: `python-core.md § 2.5`、`python-scripts.md § 1.2`。
+**決定**: **B — 全 Python ファイル許容**
+
+**反映先**: `references/core/comments.md` § 2.5（旧 `python-core.md § 2.5`）と `references/scripts/python-script.md` § 1.2 を更新。「セクションマーカーは scripts 専用ではなく、長いモジュールで見通しを良くしたいときに使ってよい。ただし短いファイル（〜50 行）では過剰なので避ける」と書き換え。
 
 ---
 
 # D. 型ヒント網羅性
 
-## QA-019: `@override` デコレータ（PEP 698 / Python 3.12+）の使用ルール
+## QA-019: `@override` デコレータ（PEP 698 / Python 3.12+）の使用ルール ✅決定
 
 **背景**: 現状 references に `@override` の記述が一切ない。Protocol 実装や ABC 派生クラスでメソッドをオーバーライドする際に `@typing.override` を付けると、シグネチャ不整合を mypy/pyright が検出してくれる。
 
@@ -377,11 +430,23 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - C. 推奨だが任意
 - D. ABC / 親クラスを継承する場合のみ必須、Protocol 構造的実装には不要
 
-**反映先**: `python-core.md § 3` 新サブセクション、または `python-architecture.md § 3` Protocol 章。
+**決定**: **B — オーバーライドメソッドには `@typing.override` 必須**
+
+**理由**: ユーザー意向「どんどん使っていい」。Protocol 実装・ABC 派生・親クラスからの override すべてで mypy/pyright の安全チェックを効かせる。
+
+**他におすすめなデコレータ**（同じく規約化する候補。当 PR で `references/core/type-hints.md` に追加）:
+- `@typing.final` — クラスやメソッドの override を禁止して mixin の不変条件を守る
+- `@typing.no_type_check` — 型チェック対象外。レガシーコード境界用、新規禁止
+- `@functools.cached_property` — 純粋関数的なインスタンス計算結果のキャッシュ（DI Container の遅延構築に有用）
+- `@functools.cache` / `@functools.lru_cache` — 純粋関数のメモ化
+- `@dataclass(frozen=True, slots=True, kw_only=True)` — value object 標準（QA-023 で扱う）
+- `@runtime_checkable` — Protocol を isinstance チェック可能にする（既に references 内で言及あり）
+
+**反映先**: `references/core/type-hints.md`（旧 `python-core.md § 3`）に新節「3.x Recommended Decorators」を追加。`@override` を最初の必須項目として記載し、上記他デコレータも合わせて推奨パターンとして紹介。`references/architecture/patterns.md` の Decorator パターンとは別物と注記（こちらは標準ライブラリのデコレータ）。
 
 ---
 
-## QA-020: `Self` 型（PEP 673 / Python 3.11+）
+## QA-020: `Self` 型（PEP 673 / Python 3.11+）の使用 ✅決定
 
 **背景**: ビルダー／チェーン可能なメソッドや `from_xxx` クラスメソッドで `-> "ClassName"` ではなく `-> Self` を使うべき場面が多い。references に記載なし。
 
@@ -389,11 +454,23 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - A. 規定なし
 - B. **`Self` の使用箇所と例を `python-core.md § 3` に追加**（クラスメソッド、in-place mutation メソッド等）
 
-**反映先**: `python-core.md § 3` 新サブセクション。
+**決定**: **B — `Self` を type-hints.md に追加**
+
+**理由**: ユーザー意向「Self で書いていい。ファクトリメソッド（from_*）はよく使ってほしい。何でもかんでも Factory にするより軽量な `from_*` メソッドはあり。依存の方向性には注意」。
+
+**反映先**: `references/core/type-hints.md`（旧 `python-core.md § 3`）に新節「3.x `Self` 型」を追加。
+
+**Self を使う場面**:
+- **`from_xxx` クラスメソッド** — `@classmethod def from_dict(cls, data: dict) -> Self: ...`（軽量ファクトリの第一選択。`Factory` クラスを別途立てるのは「構築ロジックが複雑」「依存注入が必要」「複数の実装を切り替える」場合だけ）
+- **in-place mutation メソッド** — `def add(self, item: T) -> Self: ...`（メソッドチェーン可能なコレクション）
+- **ビルダーパターン** — `def with_x(self, x: X) -> Self: ...`
+- **Pydantic `model_validator(mode="after")` の戻り値** — `def check(self) -> Self: ...`
+
+**依存方向性の注意**（ユーザー指摘）: `from_xxx` を `domain/entities/` の Entity に書く場合、`cls(...)` で構築する引数の型が domain 層内（value objects 等）に閉じているか確認。`from_db_row(cls, row: SqlAlchemyRow)` のように外部 SDK 型を直接受け取るのは依存方向違反 → 該当は `infrastructure/persistence/` の repository 側で変換する。
 
 ---
 
-## QA-021: `ParamSpec` / `Concatenate`（PEP 612）
+## QA-021: `ParamSpec` / `Concatenate`（PEP 612）✅決定
 
 **背景**: デコレータの引数を保持する高度なジェネリクス機能。Decorator パターン（`python-architecture.md § 6.4`）の例で `*args, **kwargs` ではなく `ParamSpec` で書ければ型情報が保持される。
 
@@ -402,11 +479,13 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. **Decorator 章に `ParamSpec` の例を追加**（applicable な範囲を限定）
 - C. 「上級者向け、必要なら使え」程度の言及だけ
 
-**反映先**: `python-architecture.md § 6.4` 末尾 or `python-core.md § 3`。
+**決定**: **B — Decorator 章に `ParamSpec` の例を追加**
+
+**反映先**: `references/architecture/patterns.md` の Decorator パターン節（旧 `python-architecture.md § 6.4`）末尾に「型を保持するデコレータの書き方（PEP 612: ParamSpec / Concatenate）」サブ節を追加。Decorator パターンを定義する際にデコレータ関数で型を消さないための標準テクニックとして例示。`@functools.wraps` も併せて記載。
 
 ---
 
-## QA-022: PEP 695 ジェネリック構文（Python 3.12+）の採用方針
+## QA-022: PEP 695 ジェネリック構文（Python 3.12+）の採用方針 ✅決定
 
 **背景**: `python-core.md § 3.4` ですでに「Python 3.12+: `def first[T](items: list[T])`」と PEP 695 構文を扱っている。ただし py-kit 全体のサンプルコードは混在気味（Protocol は 3.12+ だが TypeVar も併記）。「3.12+ がデフォルト」と一本化したほうが statement が明快。
 
@@ -415,11 +494,20 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. **3.12+ を py-kit のデフォルト Python バージョンに昇格**（`pyproject.toml` の `target-version = "py312"`、サンプルコードは全て PEP 695 構文）
 - C. **3.11 をデフォルトに維持し、PEP 695 は注記扱い**
 
-**反映先**: `python-core.md § 3.4` / § 7（pyproject 設定）。`python-architecture.md` の Repository 例。
+**決定**: **B — 3.12+ を py-kit デフォルトに昇格、PEP 695 一本化**
+
+**反映先**:
+- `references/core/type-hints.md` § 3.4: 3.12+ 構文を主、`TypeVar` は legacy code 向け注記のみ
+- `references/architecture/ddd-layout.md` の Repository 例を `class Repository[EntityT]:` 構文に書き換え
+- `references/llm/providers.md` の `LlmClient.complete_structured[T: BaseModel]` 構文を 3.12+ 前提に
+- `pyproject.toml` サンプルの `requires-python = ">=3.12"` / `target-version = "py312"`
+- 「3.11 互換が必要な場合」は legacy 注記として残し、本筋は 3.12+
+
+**注**: Python 3.12 の標準 EOL は 2028-10。質問文で「2026-10 EOL」と誤記したが、選択結果に影響なし（むしろより安定した選択肢）。
 
 ---
 
-## QA-023: `dataclass(kw_only=True)` / `dataclass(slots=True)` / `dataclass(frozen=True)` の使い分け
+## QA-023: `dataclass(kw_only=True)` / `dataclass(slots=True)` / `dataclass(frozen=True)` の使い分け ✅決定
 
 **背景**: references で `@dataclass` の各オプションについての規定がない。`kw_only=True` で位置引数のばらつきを防げる、`slots=True` でメモリ削減できる、`frozen=True` で不変オブジェクトを表現できる、と用途が明確。
 
@@ -428,11 +516,23 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. **value_objects は `frozen=True, slots=True`、5 フィールド以上は `kw_only=True` をデフォルト**と規定
 - C. 推奨レベルで言及（必須でない）
 
-**反映先**: `python-architecture.md § 8` の value_objects パラグラフ、`python-core.md § 3` 新節。
+**決定**: **B — value_objects は frozen+slots、5 フィールド以上は kw_only を必須化**
+
+**反映先**: `references/architecture/ddd-layout.md` の value_objects 節と `references/core/type-hints.md` の Recommended Decorators 節に dataclass オプション表を追加:
+
+| 用途 | 推奨 dataclass オプション |
+|---|---|
+| value_object（値オブジェクト） | `@dataclass(frozen=True, slots=True)` |
+| Entity（識別子で同値判定するが状態は変わる） | `@dataclass(slots=True, eq=False)`（eq は識別子比較を `__eq__` で別途定義） |
+| Input / Output DTO（5 フィールド以上） | `@dataclass(frozen=True, slots=True, kw_only=True)` |
+| Input / Output DTO（〜4 フィールド） | `@dataclass(frozen=True, slots=True)` |
+| 内部状態を持つ可変クラス | `@dataclass(slots=True)` |
+
+Pydantic を使う場面（境界・外部 I/O）は dataclass ではなく BaseModel を使う点も別途明記。
 
 ---
 
-## QA-024: `TypeAlias` / `type` 文（PEP 695）の使用
+## QA-024: `TypeAlias` / `type` 文（PEP 695）の使用 ✅決定
 
 **背景**: 型エイリアスの作り方が `python-core.md § 1.1` に `UserId = NewType("UserId", str)` の例だけ。`type UserId = str`（PEP 695）や `UserId: TypeAlias = str` は触れられていない。
 
@@ -440,11 +540,21 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - A. 規定なし
 - B. **3.12+: `type` 文を推奨、3.11: `TypeAlias` を推奨**と明文化
 
-**反映先**: `python-core.md § 3.7`（NewType 節の近く）。
+**決定**: **B — 3.12+ は `type` 文推奨**
+
+**反映先**: `references/core/type-hints.md` § 3.7 付近に「型エイリアスの作り方」表を新設:
+
+| 目的 | 構文 | 例 |
+|---|---|---|
+| 単なる別名（型互換あり） | `type` 文（PEP 695） | `type JsonValue = dict[str, "JsonValue"] \| list["JsonValue"] \| str \| int \| float \| bool \| None` |
+| nominal typing（型レベルで区別したい） | `NewType` | `UserId = NewType("UserId", str)`（QA-009 で必須化済みの実用パターン） |
+| 旧 3.11 互換 | `TypeAlias` | `UserId: TypeAlias = str`（legacy のみ） |
+
+QA-022 で 3.12+ 一本化採用済みなので、`type` 文と `NewType` の 2 択を主軸に説明。`TypeAlias` は legacy 注記。
 
 ---
 
-## QA-025: 戻り値の `Iterator` / `Iterable` / `Sequence` / `Collection` の使い分け
+## QA-025: 戻り値の `Iterator` / `Iterable` / `Sequence` / `Collection` の使い分け ✅決定
 
 **背景**: references の例では `list[T]` / `dict[K, V]` を使うことが多いが、戻り値は「読み取り専用 → `Sequence`」「ストリーミング → `Iterator`」「`for` で 1 度だけ回す → `Iterable`」と使い分けると API がクリーンになる。
 
@@ -453,7 +563,18 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 - B. **「戻り値はインターフェース型（`Sequence`, `Iterator`）、引数も `Iterable` を許容、内部実装は具体型（`list`）」と明文化**
 - C. ボリュームが大きいので別ファイル化（`python-core.md` の subsection ではなく `core/type-narrowing.md` 等）
 
-**反映先**: `python-core.md § 3` 新節。
+**決定**: **B — 「戻り値はインターフェース型、引数は Iterable 許容、内部実装は具体型」を明記**
+
+**反映先**: `references/core/type-hints.md` に新節「3.x コレクション型の選び方」を追加。表で「戻り値・引数・内部変数」のそれぞれで何を選ぶかを示す:
+
+| 文脈 | 推奨型 | 例 |
+|---|---|---|
+| 関数の戻り値（読み取り専用に渡したい） | `Sequence[T]` / `Mapping[K, V]` | `def find_all() -> Sequence[User]:` |
+| 関数の戻り値（呼び出し側がストリーミング処理） | `Iterator[T]` または `AsyncIterator[T]` | `def stream() -> Iterator[Event]:` |
+| 関数の引数（受け取る側は 1 度だけイテレートで十分） | `Iterable[T]` | `def process(items: Iterable[User]) -> None:` |
+| 関数の引数（インデックス参照や len() が必要） | `Sequence[T]` | `def get_first(items: Sequence[T]) -> T:` |
+| 内部変数・ローカル変数 | 具体型（`list[T]` / `dict[K, V]`） | `cache: dict[UserId, User] = {}` |
+| Public 属性（クラスフィールド） | 具体型（後で list メソッド使う前提） | `_users: list[User]` |
 
 ---
 
