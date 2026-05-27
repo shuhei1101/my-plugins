@@ -158,6 +158,29 @@ logger.info("llm_call", extra={
 
 ---
 
+## Anthropic キャッシュの追加挙動（短く）
+
+実装中によく踏むハマりどころだけ:
+
+- **積み順**: `tools → system → messages` の順で hash 化される。上位を変えると下位全部 invalidate される（tools 変更で全 invalid、system 変更で messages 全 invalid 等）
+- **breakpoint の置き方**: `cache_control` は「**変わらない最後のブロック**」に置く。timestamp / 受信メッセージ等の変動ブロックに置くと毎回 cache miss + write になり逆に高い
+- **automatic vs explicit**:
+  - **automatic** (`request 直下に cache_control 1 個**): 最後の cacheable block に自動で breakpoint が乗る。会話履歴の伸長に追従するので **多ターン会話のデフォルト** に最適
+  - **explicit** (ブロック単位に `cache_control`): 最大 4 つまで。tools / system / 過去履歴を別々のキャッシュにしたい時用
+- **lookback は 20 ブロックまで**: explicit breakpoint の戻り検索は 20 個まで。長い会話で breakpoint が前回書込み位置から 20 ブロック以上離れると hit しない → 静的部分にもう 1 つ explicit breakpoint を置いて常に書込みが残るようにする
+- **最小キャッシュサイズ**（これ未満は無効、エラーも出ない）:
+  - Opus 4.5+ / Haiku 4.5: **4096 tokens**
+  - Sonnet 4.x / Opus 4.x（4.5 未満）: **1024 tokens**
+  - Haiku 3.5: 2048 tokens
+  - 確認は `response.usage.cache_creation_input_tokens` と `cache_read_input_tokens` が両方 0 → cache されてない
+- **5m vs 1h cache**:
+  - **5m**: デフォルト、書込みは base input × 1.25。使うたびに無料で refresh
+  - **1h**: 書込みは base input × 2.0。**5 分超 〜 1 時間以内**に再呼び出しがある場合だけ得
+  - 混在する場合は **1h を 5m より上（先頭側）** に並べる（順序逆だと API エラー）
+- **pre-warming**: `max_tokens: 0` でリクエストを投げると system / tools をキャッシュに書き込むだけして即返る。ユーザー流入前にウォームアップしたい時用
+
+---
+
 ## モデル選定
 
 | 用途 | 推奨モデル |

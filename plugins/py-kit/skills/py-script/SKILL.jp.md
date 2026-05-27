@@ -26,7 +26,7 @@ py-kit 規約に従った単一ファイル / 数ファイルのスクリプト�
 まず references のインデックスを読む:
 
 ```
-{plugin_root}/references/index.yaml
+{plugin_root}/references/index.md
 ```
 
 スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-script` → プラグインルートは `.../py-kit/`）。
@@ -108,7 +108,7 @@ tkinter GUI なら:
 
 ## 参考資料
 
-詳細は `{plugin_root}/references/index.yaml` を参照。
+詳細は `{plugin_root}/references/index.md` を参照。
 
 主要 reference:
 - `core/*` — 言語ルール

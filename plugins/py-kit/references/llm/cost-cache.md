@@ -155,6 +155,29 @@ logger.info("llm_call", extra={
 
 ---
 
+## Anthropic cache — additional gotchas (brief)
+
+Just the pitfalls you hit during implementation:
+
+- **Stacking order**: hashed in `tools → system → messages` order. Changing a higher layer invalidates everything below (changing tools invalidates everything; changing system invalidates all messages, etc.)
+- **Where to place the breakpoint**: put `cache_control` on the **last block that does not change**. Putting it on a variable block (timestamp / incoming message) means a cache miss + write every time — *more* expensive
+- **Automatic vs explicit**:
+  - **Automatic** (single `cache_control` at request root): API automatically places the breakpoint on the last cacheable block. Best default for **multi-turn conversations** because it follows the growing history
+  - **Explicit** (`cache_control` per block, up to 4): use when you want to cache tools / system / past history independently
+- **Lookback is 20 blocks**: an explicit breakpoint's lookback for prior writes is 20 blocks deep. In long conversations, once the breakpoint drifts 20+ blocks past the last write, hits stop — add a second explicit breakpoint in the static section so a write is always reachable
+- **Minimum cacheable size** (below this, caching is silently disabled, no error):
+  - Opus 4.5+ / Haiku 4.5: **4096 tokens**
+  - Sonnet 4.x / Opus 4.x (pre-4.5): **1024 tokens**
+  - Haiku 3.5: 2048 tokens
+  - Verify: if `response.usage.cache_creation_input_tokens` and `cache_read_input_tokens` are both 0, nothing was cached
+- **5m vs 1h cache**:
+  - **5m**: default, write costs base input × 1.25, and each use refreshes it for free
+  - **1h**: write costs base input × 2.0. Only worth it when reuse falls **between 5 min and 1 h**
+  - When mixing, place **1h blocks before 5m blocks** (the longer TTL must come first, otherwise the API returns 400)
+- **Pre-warming**: send a request with `max_tokens: 0` to write your system / tools into the cache and return immediately. Useful for warming the cache before users arrive
+
+---
+
 ## Model selection
 
 | Use case | Recommended model |

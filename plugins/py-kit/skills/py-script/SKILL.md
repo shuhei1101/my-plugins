@@ -21,7 +21,7 @@ Create a single-file (or few-file) script that follows py-kit conventions.
 First, read the references index:
 
 ```
-{plugin_root}/references/index.yaml
+{plugin_root}/references/index.md
 ```
 
 The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-script` → plugin root is `.../py-kit/`).
@@ -103,7 +103,7 @@ For a tkinter GUI:
 
 ## References
 
-See `{plugin_root}/references/index.yaml` for details.
+See `{plugin_root}/references/index.md` for details.
 
 Primary references:
 - `core/*` — language rules

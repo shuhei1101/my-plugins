@@ -64,6 +64,16 @@ PR138 で確定した **大方針** に従って py-kit プラグインの refer
 | 済 | `py-references-injection` フックを `/claude-kit:hook-creator` 経由で作成。`PreToolUse(Edit/Write/MultiEdit)` で発火、`inject_references.py` が `index.yaml` の `injection_rules` を照合 → Jinja2 テンプレで整形 → `decision: block` で注入。同一ファイルへの 2 回目以降の編集はセッション + ファイルハッシュ単位トークンでスキップ | `plugins/py-kit/hooks/inject_references.py`, `plugins/py-kit/hooks/templates/injection.md.j2`, `plugins/py-kit/hooks/hooks.json` |
 | 済 | JP ミラー再生成（変更分 10 ファイル：新規 6 + 修正 4） | 上記ファイル群の `*.md` 側 |
 
+### 第 2 ラウンドコミット後のレビュー反映（2026-05-28 追加）
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| 済 | `llm/cost-cache.md`(+jp) に Anthropic キャッシュ追加挙動を簡潔追記（積み順、breakpoint 位置、automatic vs explicit、20 blocks lookback、最小トークン、5m vs 1h cache、pre-warming） | `references/llm/cost-cache.md` (+ jp) |
+| 済 | `hooks/templates/injection.md.j2` を 2 言語化: 既存を `.jp.md.j2` にリネーム（完全日本語化）+ `.md.j2` を完全英語版で新規作成。`PY_KIT_INJECTION_LANG=jp` で切替 | `plugins/py-kit/hooks/templates/injection.md.j2`, `plugins/py-kit/hooks/templates/injection.jp.md.j2` |
+| 済 | `references/index.yaml` を 3 ファイルに分割: `index.md`（英語 Markdown テーブル、フックが parse）+ `index.jp.md`（日本語ミラー、人間用）+ `injection_rules.yaml`（pattern → 必読/任意 reference、言語非依存） | `references/index.md`, `references/index.jp.md`, `references/injection_rules.yaml` |
+| 済 | `inject_references.py` を改修: `injection_rules.yaml` で rules 取得 + `index.md` の Markdown テーブルを正規表現でパースして description を取得。環境変数 `PY_KIT_INJECTION_LANG` で言語切替 | `plugins/py-kit/hooks/inject_references.py` |
+| 済 | `references/CLAUDE.md`(+jp) と `plugins/py-kit/CLAUDE.md`(+jp) を新ファイル構成（index.md + injection_rules.yaml）に合わせて更新。SKILL.md(jp)（py-project / py-script）の参照も `index.md` へ。changelogs/v2.0.0.md も同期 | `references/CLAUDE.md` (+ jp), `plugins/py-kit/CLAUDE.md` (+ jp), `plugins/py-kit/skills/**/SKILL.md` (+ jp), `plugins/py-kit/changelogs/v2.0.0.md` |
+
 ## 参考ドキュメント
 
 - `.work/tasks/20260527_review-py-kit-plugin/PR138/QA.md`: 新方針版 QA（全件確定）。実装の主たる判断材料

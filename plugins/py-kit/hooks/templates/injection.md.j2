@@ -2,13 +2,13 @@
 # py-kit references — auto-injected
 
 You are about to edit `{{ file_path }}`.
-The py-kit injection hook matched this path against `references/index.yaml`.
+The py-kit injection hook matched this path against `references/injection_rules.yaml`.
 Read and follow the required references below **before** editing this file.
 
 {% if required %}
 ---
 
-## Required references (必読)
+## Required references
 
 {% for ref in required %}
 ### `references/{{ ref.path }}`
@@ -24,7 +24,7 @@ Read and follow the required references below **before** editing this file.
 
 ---
 
-## Optional references (参考 — 必要に応じて `Read` してください)
+## Optional references (use `Read` if you need them)
 
 {% for ref in optional %}
 - `references/{{ ref.path }}` — {{ ref.description }}

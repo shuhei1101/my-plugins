@@ -1,54 +1,51 @@
-# py-kit References — Index
+# py-kit references — index
 
-py-kit's Python conventions are organized as **multiple reference files split along topical axes**.
-Metadata and injection rules are consolidated in `index.yaml` so that only the necessary files
-need to be read depending on what is being edited.
+The py-kit Python conventions are split into **topic-axis reference files**.
+You only read the ones relevant to your current edit.
 
----
+Management is split across two files:
 
-## File to read first
-
-**`plugins/py-kit/references/index.yaml`**
-
-This file contains:
-- `path` and a one-line `description` for every reference
-- `injection_rules` (star chart) keyed by the file path being edited
+| File | Role |
+|---|---|
+| **`index.md`** (English) / **`index.jp.md`** (Japanese mirror) | Reference list + one-line `description`. The hook parses the English version for injection (Japanese version is a human-only mirror). |
+| **`injection_rules.yaml`** | Mapping of edit-target file-path patterns → required / optional references (language-independent). |
 
 ---
 
-## How to read (manual case)
+## Reading manually
 
-1. **Read `index.yaml`**
-2. **Match the path of the file you are editing against the `pattern` entries in `injection_rules`**
-   - Example: editing `src/{pkg}/features/chat/service.py` → both `**/*.py` and `**/features/**/service.py` match
-3. **Read all of the matched rule's `required` items, plus relevant items from `optional` as needed**
-4. If something feels missing, look at the `description` of each entry in `references` and pull in any file that looks applicable
-
----
-
-## How to read (automatic case)
-
-The **PreToolUse hook** to be implemented in the next PR `add-py-kit-references-injection-hook`
-automatically evaluates `injection_rules` against the file path being edited
-and injects the necessary references into Claude via `decision: block`.
-
-Once that hook is in place, the required references will automatically flow into the context
-every time the user invokes `Edit` / `Write`, so Claude no longer needs to read `index.yaml` itself each time.
+1. Read **`index.md`** to see what each reference covers.
+2. Match the edit-target file path against the `rules[].pattern` entries in **`injection_rules.yaml`**.
+   - Example: editing `src/{pkg}/features/chat/service.py` matches both `**/*.py` and `**/features/**/service.py`.
+3. Read all `required` references for the matching rules; read `optional` ones if relevant.
 
 ---
 
-## Invocation from SKILLs
+## Reading automatically
 
-Step 1 of each of `py-kit:py-project` / `py-kit:py-script` instructs reading
-this directory's `index.yaml` first.
-Skill-specific scenarios (e.g. force-injecting `scripts/python-script.md` for `py-script`)
-are written on the SKILL.md side.
+The `py-references-injection` hook (PreToolUse, implemented in the same PR) does this on every `Edit` / `Write` / `MultiEdit`:
+
+1. Reads `injection_rules.yaml` and collects matching rules
+2. Looks up each reference's description from `index.md`
+3. Reads each reference body
+4. Renders the Jinja2 template (`hooks/templates/injection.md.j2`)
+5. Injects the result via `decision: block` in the `reason` field
+
+A session + file-hash token prevents the hook from blocking the same file twice in one session.
+
+Switch the injection language by setting `PY_KIT_INJECTION_LANG=jp` (default is `en`).
+
+---
+
+## Used by SKILLs
+
+`py-kit:py-project` and `py-kit:py-script` both read `index.md` first in their Step 1.
+Skill-specific behavior (e.g. `py-script` force-loading `scripts/python-script.md`) is encoded in the SKILL file itself.
 
 ---
 
 ## Maintenance
 
-- When adding a new reference, always update both `references:` and `injection_rules:` in `index.yaml`
-- Update `index.yaml` likewise when deleting or renaming files
-- As a rule, write nothing in `references/CLAUDE.md` other than "read `index.yaml`"
-  (per-reference explanations are consolidated in the `description` field within `index.yaml`)
+- When adding a new reference, update **all three**: `index.md`, `index.jp.md`, and `injection_rules.yaml`.
+- Same for deletes / renames.
+- Keep `references/CLAUDE.md` minimal — point to the two management files; the per-reference descriptions live only in `index.md` (and its JP mirror).

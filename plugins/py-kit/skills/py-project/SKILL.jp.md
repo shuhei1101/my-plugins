@@ -8,7 +8,7 @@
 
 **スキル名**: py-kit:py-project
 **トリガー**: Python プロジェクトに関する作業全般。
-新規プロジェクトをゼロから作る場合（機能フォルダ型レイアウト・関数ファースト設計・index.yaml・テスト雛形を生成）と、
+新規プロジェクトをゼロから作る場合（機能フォルダ型レイアウト・関数ファースト設計・テスト雛形を生成）と、
 既存プロジェクトへの作業（レビュー・機能追加・リファクタ・バグ修正）の両方をカバーする。
 「新しい Python プロジェクト作って」「土台から作りたい」「このコード見て」「機能追加して」
 「リファクタして」「バグ直して」「コードレビューして」など。
@@ -30,13 +30,13 @@ Python プロジェクトを扱う。
 まず references のインデックスを読む:
 
 ```
-{plugin_root}/references/index.yaml
+{plugin_root}/references/index.md
 ```
 
 スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-project` → プラグインルートは `.../py-kit/`）。
 
-`index.yaml` の `references:` セクションでファイル一覧と概要が、
-`injection_rules:` セクションで「どのファイルパスにどの reference を割り当てるか」が定義されている。
+`index.md` のテーブルで全 reference のパスと 1 行説明が、
+`{plugin_root}/references/injection_rules.yaml` の `rules:` で「どの編集対象パスにどの reference を割り当てるか」が定義されている。
 
 このスキルで常に読むべきもの:
 - `{plugin_root}/references/core/naming.md`
@@ -52,7 +52,7 @@ Python プロジェクトを扱う。
 タスクに応じて以下も:
 - 新規プロジェクト → `testing/strategy.md`, `packaging/pyproject.md`, `packaging/dependencies.md`
 - FastAPI 使用 → `fastapi/app.md`, `fastapi/routes.md`, `fastapi/schemas.md`
-- LLM 使用 → `llm/providers.md`, `llm/exceptions-retry.md`（必要なら `llm/instructor.md`, `llm/prompts.md`）
+- LLM 使用 → `llm/providers.md`, `llm/exceptions-retry.md`（必要なら `llm/instructor.md`, `llm/prompts-authoring.md`, `llm/prompts-loader.md`）
 
 → ステップ2へ
 
@@ -191,7 +191,7 @@ Python プロジェクトを扱う。
 ### ステップ10: 変更を実装する
 
 1. タスク（機能追加・リファクタ・バグ修正）を実施する
-2. 編集対象ファイルパスに対する `index.yaml` の `injection_rules` を確認し、該当 reference を読む
+2. 編集対象ファイルパスに対する `injection_rules.yaml` の `rules` を確認し、該当 reference を読む（自動注入フックが走るなら結果を待ってもよい）
 3. 規約に従って実装する:
    - 振る舞いは関数で書く（クラスは DTO / ライブラリ要求のみ）
    - 外部依存は関数の型エイリアスで注入
@@ -232,7 +232,7 @@ Python プロジェクトを扱う。
 
 ## 参考資料
 
-詳細は `{plugin_root}/references/index.yaml` を参照。
+詳細は `{plugin_root}/references/index.md` を参照。
 
 このスキルが扱う代表的な reference:
 - `core/*` — 言語ルール

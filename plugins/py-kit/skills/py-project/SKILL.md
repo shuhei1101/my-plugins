@@ -3,7 +3,7 @@ name: py-kit:py-project
 description: >
   Work with a Python project — create a new project from scratch, or review/extend/refactor/fix
   an existing one. Covers both new project scaffolding (feature-folder layout, function-first
-  design, index.yaml, test skeleton) and existing project work (review, feature addition,
+  design, test skeleton) and existing project work (review, feature addition,
   refactor, bug fix).
   Examples: "新しい Python プロジェクト作って", "土台から作りたい", "このコード見て",
   "機能追加して", "リファクタして", "バグ直して", "コードレビューして".
@@ -24,13 +24,13 @@ Handles Python projects under py-kit's new policy
 First, read the references index:
 
 ```
-{plugin_root}/references/index.yaml
+{plugin_root}/references/index.md
 ```
 
 The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-project` → plugin root is `.../py-kit/`).
 
-The `references:` section of `index.yaml` lists each file with a short summary, and the
-`injection_rules:` section defines "which references to assign to which file paths".
+The Markdown table in `index.md` lists each reference path with a one-line description, and
+`{plugin_root}/references/injection_rules.yaml` defines "which references to assign to which file paths".
 
 Always read the following for this skill:
 - `{plugin_root}/references/core/naming.md`
@@ -46,7 +46,7 @@ Always read the following for this skill:
 Add the following depending on the task:
 - New project → `testing/strategy.md`, `packaging/pyproject.md`, `packaging/dependencies.md`
 - Using FastAPI → `fastapi/app.md`, `fastapi/routes.md`, `fastapi/schemas.md`
-- Using an LLM → `llm/providers.md`, `llm/exceptions-retry.md` (and `llm/instructor.md`, `llm/prompts.md` if needed)
+- Using an LLM → `llm/providers.md`, `llm/exceptions-retry.md` (and `llm/instructor.md`, `llm/prompts-authoring.md`, `llm/prompts-loader.md` if needed)
 
 → Proceed to Step 2
 
@@ -185,7 +185,7 @@ Review from the new-policy perspective:
 ### Step 10: Implement changes
 
 1. Carry out the task (feature addition / refactor / bug fix).
-2. Check `index.yaml`'s `injection_rules` for the edited file paths and read the matching references.
+2. Check `injection_rules.yaml`'s `rules` for the edited file paths and read the matching references (or wait for the auto-injection hook to deliver them).
 3. Implement according to the standards:
    - Behavior in functions (classes only for DTOs / library requirements)
    - Inject external dependencies as function type aliases
@@ -226,7 +226,7 @@ Identify what must be updated alongside the changed files:
 
 ## References
 
-See `{plugin_root}/references/index.yaml` for full details.
+See `{plugin_root}/references/index.md` for full details.
 
 Typical references covered by this skill:
 - `core/*` — language rules

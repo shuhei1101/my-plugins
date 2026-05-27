@@ -2,8 +2,12 @@
 """py-kit references auto-injection hook.
 
 PreToolUse(Edit | Write | MultiEdit) で発火し、編集対象ファイルパスを
-references/index.yaml の injection_rules と照合する。マッチした reference の本文を
+references/injection_rules.yaml の rules と照合する。マッチした reference の本文を
 Jinja2 で整形して `decision: block` の reason に注入する。
+
+description は references/index.md（英語の Markdown テーブル）から path → description
+として抽出する。日本語が必要な場合は環境変数 PY_KIT_INJECTION_LANG=jp を設定すれば
+index.jp.md + injection.jp.md.j2 を使う。
 
 同一ファイルへの 2 回目以降の編集は、セッション + ファイルハッシュ単位のトークンで
 スキップする (1 セッション 1 ファイル 1 回だけブロック)。
@@ -83,6 +87,37 @@ def _match_any(pattern: str, candidates: list[str]) -> bool:
 
 
 # --------------------------------------------------------------------------- #
+# Markdown テーブルから path → description を抽出
+# --------------------------------------------------------------------------- #
+# `| `core/naming.md` | 命名規約。... |` 形式の行から拾う。
+# パスは backtick で囲まれているか裸かのどちらか許容。
+_TABLE_ROW = re.compile(
+    r"""^\|\s*                       # 行頭の |
+        `?(?P<path>[^|`]+?\.md)`?    # パスセル（.md で終わる）
+        \s*\|\s*                     # 区切り
+        (?P<desc>[^|]+?)             # 説明セル
+        \s*\|""",
+    re.VERBOSE,
+)
+
+
+def _parse_index_md(text: str) -> dict[str, str]:
+    """Markdown テーブル行から path → description を抜き出す。"""
+    out: dict[str, str] = {}
+    for line in text.splitlines():
+        m = _TABLE_ROW.match(line.strip())
+        if not m:
+            continue
+        path = m.group("path").strip()
+        desc = m.group("desc").strip()
+        # セパレータ行 (---) を除外
+        if path.startswith("---") or set(path.replace(":", "").strip()) <= {"-"}:
+            continue
+        out[path] = desc
+    return out
+
+
+# --------------------------------------------------------------------------- #
 # main
 # --------------------------------------------------------------------------- #
 def main() -> int:
@@ -110,16 +145,35 @@ def main() -> int:
 
     plugin_root = _plugin_root()
     refs_dir = plugin_root / "references"
-    index_yaml = refs_dir / "index.yaml"
-    if not index_yaml.exists():
-        _eprint(f"index.yaml not found at {index_yaml}")
+
+    # 言語選択: 環境変数 PY_KIT_INJECTION_LANG=jp で日本語版
+    lang = os.environ.get("PY_KIT_INJECTION_LANG", "en").lower()
+    index_filename = "index.jp.md" if lang == "jp" else "index.md"
+    template_filename = "injection.jp.md.j2" if lang == "jp" else "injection.md.j2"
+
+    rules_yaml = refs_dir / "injection_rules.yaml"
+    index_md = refs_dir / index_filename
+    if not rules_yaml.exists():
+        _eprint(f"injection_rules.yaml not found at {rules_yaml}")
+        return 0
+    if not index_md.exists():
+        _eprint(f"{index_filename} not found at {index_md}")
         return 0
 
+    # ----- injection_rules.yaml をロード -----
     try:
-        idx = yaml.safe_load(index_yaml.read_text(encoding="utf-8")) or {}
+        rules_doc = yaml.safe_load(rules_yaml.read_text(encoding="utf-8")) or {}
     except Exception as e:
-        _eprint(f"index.yaml parse error: {e}")
+        _eprint(f"injection_rules.yaml parse error: {e}")
         return 0
+    rules = rules_doc.get("rules") or []
+
+    # ----- index.md (Markdown) から path → description -----
+    try:
+        descriptions = _parse_index_md(index_md.read_text(encoding="utf-8"))
+    except Exception as e:
+        _eprint(f"{index_filename} read error: {e}")
+        descriptions = {}
 
     # ----- file_path の候補を作る (絶対パス + プロジェクトルートからの相対パス) -----
     norm: list[str] = [file_path.replace("\\", "/")]
@@ -133,7 +187,7 @@ def main() -> int:
     # ----- injection_rules を照合 -----
     required: list[str] = []
     optional: list[str] = []
-    for rule in idx.get("injection_rules") or []:
+    for rule in rules:
         pat = rule.get("pattern", "")
         if not pat:
             continue
@@ -166,11 +220,6 @@ def main() -> int:
     token.touch()
 
     # ----- reference 本文 + description を集める -----
-    descriptions: dict[str, str] = {
-        (r.get("path") or ""): (r.get("description") or "")
-        for r in (idx.get("references") or [])
-    }
-
     def _read_ref(rel_path: str) -> dict[str, str]:
         body = ""
         full = refs_dir / rel_path
@@ -198,14 +247,14 @@ def main() -> int:
         lstrip_blocks=True,
     )
     try:
-        tmpl = env.get_template("injection.md.j2")
+        tmpl = env.get_template(template_filename)
         reason = tmpl.render(
             file_path=file_path,
             required=required_data,
             optional=optional_data,
         )
     except Exception as e:
-        _eprint(f"template render error: {e}")
+        _eprint(f"template render error ({template_filename}): {e}")
         # フォールバック: 最小限の本文だけ流す
         lines = [f"# py-kit references (template error: {e})", "", f"target: {file_path}", ""]
         for r in required_data:

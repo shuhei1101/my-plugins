@@ -17,7 +17,7 @@ py-kit is a plugin that provides Python implementation conventions and scaffold 
 | Testing | Integration tests + smoke tests only. No unit tests | Unit tests at all layers |
 | Comments | One-line docstring required for exported items, description required for design-critical fields (consistent with next-kit) | docstring optional |
 
-See `references/index.yaml` and each reference for details.
+See `references/index.md` (reference list), `references/injection_rules.yaml` (injection rules), and each reference body for details.
 
 ---
 
@@ -25,33 +25,35 @@ See `references/index.yaml` and each reference for details.
 
 ```
 references/
-├── CLAUDE.md         # Minimal "read index.yaml" instruction
-├── index.yaml        # Metadata + injection rules (star chart)
-├── core/             # Language rules (naming, comments, types, style)
-├── architecture/     # Feature-folder layout + function wiring + dependency direction
-├── shared/           # logger / settings / errors / types / constants
-├── scripts/          # Single-file scripts + launcher + tkinter
-├── testing/          # Integration tests + smoke policy + Mock patterns
-├── concurrency/      # asyncio + parallelism
-├── packaging/        # pyproject.toml + uv + distribution
-├── performance/      # Profiler cheat sheet
-├── llm/              # LLM providers / Instructor / prompts / caching
-└── fastapi/          # app / routes / schemas / auth-errors / health
+├── CLAUDE.md / CLAUDE.jp.md  # Minimal role description for the two management files
+├── index.md                  # Reference list + one-line description (English; parsed by hook)
+├── index.jp.md               # JP mirror of index.md (human-only)
+├── injection_rules.yaml      # Edit-path pattern → required/optional references (language-independent)
+├── core/                     # Language rules (naming, comments, types, style, decorators)
+├── architecture/             # Feature-folder layout + function wiring + dependency direction + principles + refactor judgement
+├── shared/                   # logger / settings / secrets-and-env / errors / types / constants
+├── scripts/                  # Single-file scripts + launcher + tkinter
+├── testing/                  # Integration tests + smoke policy + Mock patterns
+├── concurrency/              # asyncio + parallelism
+├── packaging/                # pyproject.toml + uv + distribution
+├── performance/              # Profiler cheat sheet
+├── llm/                      # LLM providers / Instructor / prompts authoring + loader / caching
+└── fastapi/                  # app / routes / schemas / auth-errors / health
 ```
 
-38 reference files in total (76 including JP mirrors).
+39 reference files in total (78 including JP mirrors).
 
 ---
 
-## Role of index.yaml
+## Role separation: index.md vs injection_rules.yaml
 
-`references/index.yaml` contains two kinds of information:
+| File | Contents | Language |
+|---|---|---|
+| `index.md` | All references' `path` + one-line `description` in a Markdown table | English (parsed by the hook) |
+| `index.jp.md` | JP mirror (for humans browsing) | Japanese |
+| `injection_rules.yaml` | Star chart mapping edit-target file-path patterns to `required` / `optional` references | Language-independent |
 
-1. **`references:`** — `path` + one-line `description` for every reference
-2. **`injection_rules:`** — A star chart that assigns `required` / `optional` references to patterns of file paths being edited
-
-This mapping will be implemented as a PreToolUse hook in PR141 (the next PR);
-on `Edit` / `Write`, matched references are automatically injected into Claude's context via `decision: block`.
+The `py-references-injection` hook (PreToolUse, implemented in the same PR) reads these on every `Edit` / `Write` / `MultiEdit` and auto-injects matched references into Claude's context via `decision: block`.
 
 ---
 
@@ -73,11 +75,12 @@ py-kit hooks follow the `claude-kit` policy:
 - Session-flag-style blocking (`/tmp/{hook-name}-{session_id}`) — block only once per session
 - Do not add dispatch-purpose `UserPromptSubmit` hooks
 
-The **references auto-injection hook** to be added in the next PR also follows this policy:
-- Read `references/index.yaml` on `PreToolUse(Edit|Write)`
-- Match the file path being edited against `injection_rules.pattern`
-- Format the matched `required` / `optional` with a Jinja2 template
-- Inject into the reason via `decision: block`
+The **references auto-injection hook** (`py-references-injection`, implemented in the same PR) follows this policy:
+- On `PreToolUse(Edit|Write|MultiEdit)`, read `references/injection_rules.yaml` and look up descriptions in `references/index.md`
+- Match the file path being edited against `rules[].pattern` (glob)
+- Render the matched `required` / `optional` via the Jinja2 template (`hooks/templates/injection.md.j2`, or `.jp.md.j2` when `PY_KIT_INJECTION_LANG=jp`)
+- Inject into the `reason` field via `decision: block`
+- A session + file-hash token prevents the hook from blocking the same file twice in one session
 
 ---
 
