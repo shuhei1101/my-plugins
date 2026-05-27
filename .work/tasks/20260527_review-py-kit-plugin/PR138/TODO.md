@@ -75,7 +75,7 @@ py-kit プラグイン全体を **Claude Code の一般的なベストプラク�
 | 済 | 抜け観点を洗い出す（async・packaging・依存管理・パフォーマンス・セキュリティ・観測性・CI/CD） | (調査) |
 | 済 | AITuber 参考実装と py-kit 規約の照合 | `/mnt/c/Users/shuhe/repo/aituber/src/aituber` |
 | 済 | 改善提案を**質問形式で QA.md に大量に**書き出す（QA-001 から QA-110、計 110 件） | `.work/tasks/.../PR138/QA.md` |
-| - | ユーザーに採否を確認し、QA に判断を記録する | (ユーザー対話) |
+| 済 | ユーザーに採否を確認し、QA に判断を記録する | (ユーザー対話) |
 | - | 採用された提案を実装（references の書き直し・分割・追加） | `plugins/py-kit/references/**` |
 | - | SKILL.md / SKILL.jp.md を新構成に合わせて更新（必要なら） | `plugins/py-kit/skills/**` |
 | - | JP ミラーを同期する | `plugins/py-kit/references/**/*.jp.md` |
