@@ -6,74 +6,84 @@
 | Target | Convention | Example |
 |---|---|---|
 | Folder | kebab-case | `resources/`, `family-members/` |
-| Hook folder | `_hooks/` (plural, underscore prefix — always) | `_hooks/` |
-| Component folder | `_components/` (plural, underscore prefix) | `_components/` |
-| Page file | `page.tsx` (Next.js convention) | `page.tsx` |
-| List screen file | PascalCase + `ListScreen` suffix | `ResourceListScreen.tsx` |
-| New screen file | PascalCase + `NewScreen` suffix | `ResourceNewScreen.tsx` |
-| View screen file | PascalCase + `ViewScreen` suffix | `ResourceViewScreen.tsx` |
-| Edit screen file | PascalCase + `EditScreen` suffix | `ResourceEditScreen.tsx` |
-| Layout component file | PascalCase + `Layout` suffix | `ResourceEditLayout.tsx` |
-| Sub-component file | PascalCase | `ResourceCard.tsx` |
-| Hook file | camelCase + `use` prefix | `useResource.ts` |
-| Form schema file | `form.ts` (lowercase, fixed name) | `form.ts` |
-| Util / config / endpoints file | camelCase | `endpoints.ts`, `logger.ts`, `util.ts` |
-| Dynamic segment folder | `[id]` or `[slug]` | `[id]/`, `[childId]/` |
+| Hook folder | `hooks/`（複数形、アンダースコアなし） | `hooks/` |
+| Component folder | `components/`（複数形、アンダースコアなし） | `components/` |
+| Page file | `page.tsx`（Next.js 規約） | `page.tsx` |
+| Layout file | `layout.tsx` | `layout.tsx` |
+| Loading file | `loading.tsx` | `loading.tsx` |
+| Error file | `error.tsx`, `global-error.tsx` | `error.tsx` |
+| Not-found file | `not-found.tsx` | `not-found.tsx` |
+| Template file | `template.tsx` | `template.tsx` |
+| Proxy file | `proxy.ts`（Next.js 16: 旧 middleware.ts） | `proxy.ts` |
+| List screen file | PascalCase + `ListScreen` 接尾辞 | `ResourceListScreen.tsx` |
+| New screen file | PascalCase + `NewScreen` 接尾辞 | `ResourceNewScreen.tsx` |
+| View screen file | PascalCase + `ViewScreen` 接尾辞 | `ResourceViewScreen.tsx` |
+| Edit screen file | PascalCase + `EditScreen` 接尾辞 | `ResourceEditScreen.tsx` |
+| Layout component | PascalCase + `Layout` 接尾辞 | `ResourceEditLayout.tsx` |
+| Sub-component | PascalCase | `ResourceCard.tsx` |
+| Hook file | camelCase + `use` プレフィックス | `useResource.ts` |
+| Form schema file | `form.ts`（小文字固定） | `form.ts` |
+| Util / config / endpoints | camelCase | `endpoints.ts`, `logger.ts`, `utils.ts` |
+| Dynamic segment | `[id]`, `[slug]`, `[childId]` | `[id]/` |
+| Route Group | `(name)` 小文字 | `(authenticated)`, `(auth)`, `(shared)` |
 
-> **Rule**: only `_hooks/` (plural) is allowed in new code. Migrate any legacy `_hook/` when touching the file.
+### アンダースコアプレフィックスの廃止（PR135）
+
+旧 `_components/` `_hooks/` の `_` プレフィックスは **不要** と判断（→ 廃止）。`components/` `hooks/` で十分。
+- Next.js Private Folder（`_` prefix）は route 化を回避するための機能だが、`components/` `hooks/` はそもそも route ファイル名と衝突しない
+- 視覚的にもシンプル、フックトリガーパターンとしても扱いやすい
 
 ---
 
-## Per-record view vs edit
+## Per-record View / Edit 規約
 
-Each record has **two sibling routes** — `view` and `edit`. The screen file name carries the suffix that matches the route.
+各レコードは **`[id]/page.tsx` が View**、**`[id]/edit/page.tsx` が Edit**:
 
-| Route | Screen file | Folder location |
+| URL | Screen file | Path |
 |---|---|---|
-| `/{feature}/[id]/view` | `{Feature}ViewScreen.tsx` | `[id]/view/` |
+| `/{feature}/[id]` | `{Feature}ViewScreen.tsx` | `[id]/` |
 | `/{feature}/[id]/edit` | `{Feature}EditScreen.tsx` | `[id]/edit/` |
-| `/{feature}/[id]` (any) | (no screen — redirects) | `[id]/page.tsx` only |
 
-`[id]/page.tsx` is **never a screen** — it is a server component that resolves permissions and redirects to either `view/` or `edit/`. See `folder-structure.md`.
+権限ガードは `proxy.ts` で行う（`backend/proxy.md` 参照）。
 
 ---
 
-## Screen vs Layout vs Card
+## Screen / Layout / Card
 
-| Suffix | Role | When to use |
+| 接尾辞 | 役割 | When to use |
 |---|---|---|
-| `ListScreen` | Collection page | `/{feature}/page.tsx` renders this |
-| `NewScreen` | Creation page | `/{feature}/new/page.tsx` renders this |
-| `ViewScreen` | Read-only detail page | `/{feature}/[id]/view/page.tsx` renders this |
-| `EditScreen` | Editable detail page | `/{feature}/[id]/edit/page.tsx` renders this |
-| `Layout` | Re-usable shell for a Screen | Header + content area + actions — composed by Screen files |
-| `Card` | One item in a list | Used inside `*ListScreen.tsx` |
-| `Item` | One entry in a feed | Used inside infinite-scroll feeds |
-| `Settings` | One tab inside an edit form | Used inside `*EditScreen.tsx` |
-| `Popup` / `Modal` | Modal dialog | See `patterns/dialog.md` |
-| `Button` | Specialized button variant | `LoadingButton`, `NavigationButton` |
-| `Context` | React Context + hook pair | `FABContext`, `LoadingContext` |
-| `Wrapper` | Styling shell with `children` | `ScreenWrapper` |
+| `ListScreen` | 一覧画面 | `/{feature}/page.tsx` から render |
+| `NewScreen` | 新規作成画面 | `/{feature}/new/page.tsx` から render |
+| `ViewScreen` | 読み取り画面 | `/{feature}/[id]/page.tsx` から render |
+| `EditScreen` | 編集画面 | `/{feature}/[id]/edit/page.tsx` から render |
+| `Layout` | Screen 内で使う再利用シェル | header + content + actions の構成体 |
+| `Card` | 一覧内の 1 アイテム | `*ListScreen.tsx` の中で使用 |
+| `Item` | フィードの 1 エントリ | infinite-scroll feed 内 |
+| `Settings` | edit フォームのタブ | `*EditScreen.tsx` 内のタブパネル |
+| `Dialog` / `Sheet` | shadcn/ui のモーダル系 | `dialog.md` 参照 |
+| `Form` | フォーム部分コンポーネント | 入力グループの再利用ブロック |
+| `Provider` | Context Provider | `app/(shared)/providers/` 配下 |
+| `Wrapper` | スタイリングシェル with `children` | `ScreenWrapper` 等 |
 
 ---
 
-## Hook naming patterns
+## Hook naming
 
 | Pattern | Purpose | Example |
 |---|---|---|
-| `use{Feature}` | Data fetching (read) | `useResource`, `useResources` |
-| `use{Feature}List` | Collection data fetching | `useResourceList` |
-| `use{Feature}View` | View-screen specific fetching | `useResourceView` |
-| `use{Feature}Form` | Form state management | `useResourceForm` |
-| `useRegister{Feature}` | Create mutation | `useRegisterResource` |
-| `useUpdate{Feature}` | Update mutation | `useUpdateResource` |
-| `useDelete{Feature}` | Delete mutation | `useDeleteResource` |
-| `use{Feature}UrlState` | URL query string state | `useResourceListUrlState` |
+| `use{Feature}` | 単体読み取り | `useResource` |
+| `use{Feature}List` | 一覧読み取り | `useResourceList` |
+| `use{Feature}View` | View 専用フィールドがある場合 | `useResourceView` |
+| `use{Feature}Form` | フォーム state + 初期ロード | `useResourceForm` |
+| `useRegister{Feature}` | 作成 mutation | `useRegisterResource` |
+| `useUpdate{Feature}` | 更新 mutation | `useUpdateResource` |
+| `useDelete{Feature}` | 削除 mutation | `useDeleteResource` |
+| `use{Feature}UrlState` | URL クエリ state | `useResourceListUrlState` |
 
-Rules:
-- One hook per file — file name matches the export name
-- Always begin with `use` (React rule)
-- One verb (`Register`, `Update`, `Delete`) per file — never combine
+ルール:
+- 1 hook = 1 file、ファイル名 = export 名
+- 必ず `use` で始める（React のルール）
+- 1 動詞（Register / Update / Delete）= 1 ファイル
 
 ---
 
@@ -82,38 +92,71 @@ Rules:
 | Pattern | Example | Notes |
 |---|---|---|
 | `{Feature}FormSchema` | `ResourceFormSchema` | Zod object |
-| `{Feature}Type` | `ResourceFormType` | Inferred via `z.infer<>` |
-| `{Feature}RequestSchema` | `PostResourceRequestSchema` | API request body schema (in `route.ts`) |
-| `{Feature}Request` (type) | `PostResourceRequest` | Inferred from `*RequestSchema` |
+| `{Feature}FormType` | `ResourceFormType` | `z.infer<>` で導出 |
+| `{Feature}FilterSchema` | `ResourceFilterSchema` | フィルタ用 Zod |
+| `{Feature}Filter` (type) | `ResourceFilter` | 同上の型 |
+| `{Feature}RequestSchema` | `PostResourceRequestSchema` | API リクエストボディ用（`route.ts` 内） |
+| `{Feature}Request` (type) | `PostResourceRequest` | 同上の型 |
 
-Use `Schema` (not `Scheme`) for new code.
+新規コードは `Schema`（`Scheme` ではない）を使う。既存コードの `Scheme` は触る際にリネーム。
+
+---
+
+## Server Action naming
+
+```ts
+// app/(authenticated)/resources/actions.ts
+'use server'
+
+export async function createResource(input: ResourceFormType) { /* ... */ }
+export async function updateResource(id: string, input: ResourceFormType) { /* ... */ }
+export async function deleteResource(id: string) { /* ... */ }
+```
+
+- ファイル: `actions.ts`（フィーチャ直下、または `app/(shared)/actions/` 配下）
+- 関数名は動詞 + 名詞（`createResource`, `updateResource`, `deleteResource`）
+- 詳細: `backend/server-actions.md`
 
 ---
 
 ## URL constant naming
 
-See `frontend/endpoints.md` for the full convention. Summary:
+詳細は `frontend/endpoints.md`。サマリ:
 
 ```ts
-// Single global URL — flat const
+// 単発の URL
 export const HOME_URL = `/home`
 
-// Feature group — object
+// フィーチャグループ（オブジェクト）
 export const RESOURCE_URL = {
   list: `/resources`,
   new:  `/resources/new`,
-  view: (id: string) => `/resources/${id}/view`,
+  view: (id: string) => `/resources/${id}`,         // [id]/page.tsx が View
   edit: (id: string) => `/resources/${id}/edit`,
+}
+
+// API はバージョン付き
+export const RESOURCE_API_URL = {
+  list:   `/api/v1/resources`,
+  detail: (id: string) => `/api/v1/resources/${id}`,
 }
 ```
 
 ---
 
+## File header marker
+
+next-kit で生成された references / SKILL は冒頭に `<!-- Generated by ... -->` のメタデータコメントを保持する。手書きで作成・編集する場合も同コメントを残す。
+
+---
+
 ## Constraints
 
-- `_hooks/` (plural) is the only allowed name — never `_hook/` for new code
-- `form.ts` is a fixed filename — every editable form has exactly one, under `[id]/edit/`
-- Screen suffix communicates role: `ListScreen` / `NewScreen` / `ViewScreen` / `EditScreen`
-- Never use generic `Screen` suffix when the screen is one of List / New / View / Edit
-- Never use `index.tsx` in feature folders — always name the file after its role
-- Do not put untyped components at the root of a route folder — use `_components/`
+- アンダースコアプレフィックスは使わない（旧 `_hooks/` `_components/` から PR135 で変更）
+- `form.ts` はフィーチャ直下に置く（new と edit で共用）
+- Screen 接尾辞: `ListScreen` / `NewScreen` / `ViewScreen` / `EditScreen` を使い分ける
+- 単に `Screen` という接尾辞は使わない
+- `index.tsx` は feature folder に置かない（役割名のファイル名を付ける）
+- 動的 segment は `[id]`、ネスト時は `[childId]` のように区別
+- Route Group は `(authenticated)` `(auth)` `(shared)` の 3 つ
+- Proxy ファイルは `proxy.ts`（旧 `middleware.ts` から Next.js 16 でリネーム）

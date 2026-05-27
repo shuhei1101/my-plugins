@@ -3,54 +3,62 @@
 
 ## Language
 
-Comments are written in **Japanese** by default. This applies to:
-- Function / component / hook descriptions (`/** ... */`)
-- Function argument descriptions (`/** @param ... */` style or inline)
-- DB schema column descriptions (all columns required)
-- Type field descriptions (all fields recommended)
-- Block comments before logic sections
-- Inline JSX section markers
-- Change-history comments (PR number, intent, rationale)
+コメントは **日本語** で書く（コード識別子は英語のまま）。対象:
 
-Code identifiers (variables, function names, types) remain in English.
+- exported 関数 / コンポーネント / hook の JSDoc
+- 引数・フィールドの説明
+- DB スキーマカラムの説明（設計上重要なものに限定）
+- Zod スキーマフィールドの説明（同上）
+- ロジックブロックの単行コメント
+- JSX セクションマーカー
+- PR 番号付き変更履歴コメント
 
 ---
 
 ## Required vs recommended comments
 
-| Target | Comment required? | Format |
+| Target | Comment? | Format |
 |---|---|---|
-| Exported function / hook / component declaration | ✅ Required | `/** ... */` one-liner above declaration |
-| Function argument (when meaning is non-obvious) | ✅ Required | `/** ... */` after the field name inside the type |
-| Type / interface field | ✅ Required | `/** ... */` above the field |
-| Drizzle schema column | ✅ Required | `/** ... */` above the column definition |
-| Zod schema field (when adding constraints) | ⚠️ Recommended | `/** ... */` above the field — describes intent |
-| Block of related statements | ⚠️ Recommended | `// ...` single line before the block |
-| JSX visual section | ⚠️ Recommended | `{/* ... */}` |
-| Self-explanatory line | ❌ Don't | — |
-| Change-history (PR number, intent) | ✅ Allowed | `// PR{N}: {何を変えたか/なぜ}` |
+| exported 関数 / hook / コンポーネント宣言 | ✅ 必須 | `/** ... */` 1 行 |
+| 関数引数（意味が非自明な場合） | ✅ 必須 | 型内の field 上に `/** ... */` |
+| 型・interface のフィールド | ✅ 推奨（設計上重要なもの） | フィールド上に `/** ... */` |
+| Drizzle スキーマカラム | ✅ 必須（**設計上重要なカラム**のみ） | カラム上に `/** ... */` |
+| Zod スキーマフィールド | ✅ 推奨（**設計上重要なフィールド**のみ） | フィールド上に `/** ... */` |
+| 関連 statement ブロック | ⚠️ 推奨 | `// ...` 1 行 |
+| JSX のビジュアルセクション | ⚠️ 推奨 | `{/* ... */}` |
+| 自明な行 | ❌ 書かない | — |
+| 変更履歴（PR 番号、意図） | ✅ 許可 | `// PR{N}: {何を/なぜ}` |
 
-Because every file is co-authored with AI, **err on the side of more documentation**. A future AI reading the code benefits from the same comments a future human does.
+### 「設計上重要」の判断（PR135 で緩和）
+
+**必須** にすべきカラム / フィールド:
+- 外部キー（`xxxId` で他テーブルを参照するもの）
+- ステータス系 enum（`status`, `type`, `kind`）
+- フラグ（boolean のうち業務的に意味のあるもの）
+- 楽観ロック用カラム（`version`, `updatedAt`）
+- 監査カラム（`createdBy`, `updatedBy`）
+- 業務的に複雑な意味を持つカラム
+
+**任意** で OK なカラム / フィールド:
+- 自明な列（`name`, `email`, `description`, `title` 等、識別子で意味が分かるもの）
+- 標準的なタイムスタンプ（`createdAt`, `updatedAt` は `timestamps` ヘルパーで一括定義）
+
+すべてのカラムに JSDoc 必須としていた旧ルールは過剰だったため緩和。
 
 ---
 
 ## Pattern 1: One-line JSDoc on declarations
 
-Place `/** ... */` immediately above every exported function / hook / component / type.
+exported な関数・コンポーネント・hook・型の上に `/** ... */` を 1 行で。
 
 ```tsx
 /** リソース個別の編集画面 */
-export const ResourceEdit = ({ resourceId }: Props) => {
+export const ResourceEditScreen = ({ resourceId }: Props) => {
   // ...
 }
 
 /** リソース編集フォームの状態を取得する */
 export const useResourceForm = ({ resourceId }: { resourceId?: string }) => {
-  // ...
-}
-
-/** リソースを更新する */
-const handleUpdate = () => {
   // ...
 }
 
@@ -62,7 +70,7 @@ export type ResourceFormType = z.infer<typeof ResourceFormSchema>
 
 ## Pattern 2: Argument and field descriptions
 
-Document every argument and field with `/** ... */` directly above its declaration. This gives TypeScript / IDE hover tooltips and helps AI understand intent at a glance.
+引数とフィールドを `/** ... */` で説明（IDE tooltip & AI 可読性向上）。
 
 ```ts
 type Props = {
@@ -70,92 +78,72 @@ type Props = {
   resourceId?: string
   /** 編集権限があるかどうか */
   canEdit: boolean
-  /** 削除確認ダイアログをスキップする（テスト用） */
-  skipConfirm?: boolean
-}
-
-type ResourceFormType = {
-  /** リソース名（1〜20 文字） */
-  name: string
-  /** 公開フラグ — true なら全ユーザーに表示 */
-  isPublic: boolean
-  /** タグ（最大 10 件） */
-  tags: string[]
 }
 ```
 
 ---
 
-## Pattern 3: DB schema column descriptions (mandatory)
+## Pattern 3: Drizzle スキーマカラム
 
-Every column in `drizzle/schema.ts` must have a `/** ... */` description. No exceptions.
+設計上重要なカラムのみ `/** ... */`。
 
 ```ts
 export const resources = pgTable("resources", {
-  /** リソース ID */
   id: uuid("id").primaryKey().defaultRandom(),
-  /** リソース名 */
   name: text("name").notNull(),
-  /** 公開フラグ */
+  /** 公開フラグ — true なら全ユーザーに表示 */
   isPublic: boolean("is_public").notNull().default(false),
   /** カテゴリ ID（NULL の場合は未分類） */
-  categoryId: integer("category_id"),
+  categoryId: integer("category_id").references(() => categories.id, { onDelete: "set null" }),
+  /** ステータス — draft = 下書き、published = 公開、archived = 非表示 */
+  status: resourceStatus("status").notNull().default("draft"),
 })
 
+// timestamps ヘルパー（共通定義）
 export const timestamps = {
   /** 作成日時 */
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   /** 更新日時 */
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }
 ```
 
 ---
 
-## Pattern 4: Zod schema field descriptions
+## Pattern 4: Zod スキーマフィールド
 
-When the Zod schema carries validation rules, describe the intent above the field.
+設計上重要なフィールドのみ `/** ... */`。
 
 ```ts
 export const ResourceFormSchema = z.object({
-  /** リソース名 — 1〜20 文字、必須 */
-  name: z.string().nonempty().min(1).max(20),
-
-  /** タグ — 最大 10 件 */
+  name: z.string().min(1).max(20),
+  /** タグ（最大 10 件、重複不可） */
   tags: z.array(z.string()).max(10),
-
-  /** 公開対象年齢 — 開始年齢（任意） */
+  /** 公開対象年齢 — null は制限なし */
   ageFrom: z.number().nullable(),
-
-  /** 公開対象年齢 — 終了年齢（任意） */
+  /** 公開対象年齢 — null は制限なし */
   ageTo: z.number().nullable(),
 })
 ```
 
 ---
 
-## Pattern 5: Block comments inside functions
-
-Use single-line `//` comments to label sections inside a function or hook.
+## Pattern 5: Block comments
 
 ```tsx
-export const ResourceEdit = ({ resourceId }: Props) => {
+export const ResourceEditScreen = ({ resourceId }: Props) => {
   // フォーム状態
-  const { register, errors, watch, setValue, handleSubmit, isValueChanged } =
-    useResourceForm({ resourceId })
+  const form = useResourceForm({ resourceId })
 
-  // 登録・更新・削除の各処理
-  const { handleRegister, isLoading: registerLoading } = useRegisterResource()
-  const { handleUpdate,   isLoading: updateLoading }   = useUpdateResource()
-  const { handleDelete,   isLoading: deleteLoading }   = useDeleteResource()
-
-  // すべての非同期処理のローディングを統合
-  const submitLoading = registerLoading || updateLoading || deleteLoading
+  // mutation 群
+  const register = useRegisterResource()
+  const update = useUpdateResource()
+  const remove = useDeleteResource()
 
   // 送信処理
-  const onSubmit = handleSubmit((form) => {
-    if (resourceId) handleUpdate({ form, resourceId })
-    else            handleRegister({ form })
+  const onSubmit = form.handleSubmit((data) => {
+    if (resourceId) update.mutate({ id: resourceId, data })
+    else register.mutate(data)
   })
 
   return ( /* ... */ )
@@ -166,34 +154,34 @@ export const ResourceEdit = ({ resourceId }: Props) => {
 
 ## Pattern 6: JSX section markers
 
-Use `{/* ... */}` to label visual sections inside a render tree.
-
 ```tsx
 return (
   <ScreenWrapper>
     {/* ヘッダー */}
     <PageHeader title="リソース編集" />
 
-    {/* ロード中のオーバーレイ */}
-    <LoadingOverlay visible={isLoading} />
-
     {/* タブ切り替え */}
-    <ScrollableTabs ...>
-      {/* 基本設定タブ */}
-      <Tabs.Panel value="basic">...</Tabs.Panel>
+    <Tabs defaultValue="basic">
+      <TabsList>
+        <TabsTrigger value="basic">基本</TabsTrigger>
+        <TabsTrigger value="details">詳細</TabsTrigger>
+      </TabsList>
 
-      {/* 詳細設定タブ */}
-      <Tabs.Panel value="details">...</Tabs.Panel>
-    </ScrollableTabs>
+      {/* 基本タブ */}
+      <TabsContent value="basic">...</TabsContent>
+
+      {/* 詳細タブ */}
+      <TabsContent value="details">...</TabsContent>
+    </Tabs>
   </ScreenWrapper>
 )
 ```
 
 ---
 
-## Pattern 7: Change-history comments
+## Pattern 7: 変更履歴コメント
 
-Record significant edits inline when they would be hard to deduce from the code alone. Keep one line, in Japanese.
+Claude Code が読みやすいよう、**非自明な変更** には PR 番号付きコメントを残す。
 
 ```ts
 // PR123: 年齢上限フィールドを追加。要件 #45 対応。
@@ -206,39 +194,34 @@ if (value == null) return 0
 return new Response(null, { status: 204 })
 ```
 
-When to record:
-- Non-obvious changes whose intent disappears from the code over time
-- API / schema changes that affect external callers
-- Compatibility shims kept for a known migration period
-- Bug fixes whose root cause would be unclear without context
+**書くとき**:
+- 非自明な変更で、意図がコードから読み取れなくなりがちな箇所
+- API / schema 変更で外部 caller に影響するもの
+- バグ修正で「なぜこの分岐が必要か」が背景知識を要するもの
 
-When NOT to record:
-- Trivial renames or formatting changes
-- Routine refactors with no behavior change
-- "Change log" of every line touched — that's what `git log` is for
+**書かないとき**:
+- 自明なリネーム・フォーマット
+- 振る舞いを変えない単純なリファクタ
+- 全行に変更履歴を書く（`git log` が一次情報）
 
-If a file accumulates 5+ change-history comments, consider summarizing in a `// History:` block at the top of the file or extracting to a CHANGELOG.
+ファイルに 5 個以上溜まったら冒頭の `// History:` ブロックに集約 or CHANGELOG に移す。
 
 ---
 
-## Pattern 8: TODO and FIXME
-
-Use `TODO:` for known-incomplete work. Include enough context to act on later.
+## Pattern 8: TODO / FIXME
 
 ```tsx
 // TODO: コメントテーブル作成後に有効化する
-// pinnedCommentId: uuid("pinned_comment_id")
+// pinnedCommentId: uuid("pinned_comment_id"),
 
-// TODO(PR133): 子供が複数いる場合の選択 UI を追加
+// TODO(PR140): 子供が複数いる場合の UI を追加
 const childId = children[0]?.id
-```
 
-Use `FIXME:` for known broken/incorrect code that must be fixed before merge / release.
-
-```tsx
 // FIXME: ageFrom が null のとき NaN になる
 const ageDiff = ageTo - ageFrom
 ```
+
+`TODO:` = 既知の未完成、`FIXME:` = リリース前に修正必須。
 
 ---
 
@@ -255,32 +238,30 @@ setIsOpen(true)
 ```
 
 ```tsx
-// ✅ 隠れた制約を説明する
+// ✅ 隠れた制約を説明
 // IME 入力中は Enter を無視する（変換確定キーと競合するため）
-if (e.key === "Enter" && !isComposing) {
-  handleSubmit()
-}
+if (e.key === "Enter" && !isComposing) handleSubmit()
 
-// ✅ 関数の目的を説明する
+// ✅ 関数の目的を説明
 /** クエストを家族 ID で絞り込み、ページネーションして返す */
-export const selectFamilyQuests = async ({ db, familyId, page }) => { ... }
+export const fetchFamilyQuests = async ({ db, familyId, page }) => { ... }
 ```
 
 ---
 
-## JSDoc type annotations are not used
+## JSDoc 型注釈は書かない
 
-TypeScript handles types. Do not write `@param` / `@returns` / `@type` annotations — only purpose descriptions.
+TypeScript が型を扱うので `@param` `@returns` `@type` は書かない。
 
 ```tsx
-// ❌ Redundant with TypeScript
+// ❌ TypeScript と重複
 /**
  * リソースを取得する
  * @param {string} id - リソース ID
  * @returns {Promise<Resource>} リソース
  */
 
-// ✅ Just describe purpose; types live in the signature
+// ✅ 目的だけ書く、型はシグネチャに
 /** リソースを取得する */
 export const getResource = async (id: string): Promise<Resource> => { ... }
 ```
@@ -289,11 +270,10 @@ export const getResource = async (id: string): Promise<Resource> => { ... }
 
 ## Constraints
 
-- One-line JSDoc on every exported function / hook / component
-- `/** ... */` on every Drizzle schema column (mandatory) and every Zod schema field with validation (recommended)
-- `/** ... */` on every type field with non-obvious meaning
-- Section comments inside long JSX returns
-- Change-history comments allowed when the change is non-obvious — keep them in Japanese, one line, include PR number when applicable
-- Never use `@param` / `@returns` / `@type` — TypeScript handles types
-- Never restate what the code already says
-- `git log` is the authoritative source for full change history — comments capture intent only
+- exported な関数・hook・コンポーネントには 1 行 JSDoc
+- Drizzle / Zod スキーマは **設計上重要なカラム/フィールドのみ** JSDoc 必須（自明なものは任意）
+- 長い JSX には section comment
+- 変更履歴コメントは非自明な変更時のみ、日本語、1 行、PR 番号入り
+- `@param` `@returns` `@type` は書かない
+- コードが既に語っていることを繰り返さない
+- `git log` が full history の一次情報、コメントは「意図」だけを残す

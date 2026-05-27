@@ -429,3 +429,10 @@ prs:
   summary: mark-generated スキルに .j2 ファイルサポートを追加し、PreToolUse フックで .j2 編集時にスタンプ確認を促す
   task: 20260528_add-j2-support-to-mark-generated
   completed: true
+- id: 135
+  title: PR135 — review-next-kit-plugin
+  type: docs
+  tags: []
+  summary: next-kit プラグイン自体のレビュー・改善提案を QA 形式で大量に書き出す
+  task: 20260527_review-next-kit-plugin
+  completed: true
