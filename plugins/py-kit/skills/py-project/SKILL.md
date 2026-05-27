@@ -24,12 +24,12 @@ Handles Python projects under py-kit's new policy
 First, read the references index:
 
 ```
-{plugin_root}/references/index.md
+{plugin_root}/references/index.yaml
 ```
 
 The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-project` → plugin root is `.../py-kit/`).
 
-The Markdown table in `index.md` lists each reference path with a one-line description, and
+The `references:` list in `index.yaml` lists each reference path with a one-line description, and
 `{plugin_root}/references/injection_rules.yaml` defines "which references to assign to which file paths".
 
 Always read the following for this skill:
@@ -226,7 +226,7 @@ Identify what must be updated alongside the changed files:
 
 ## References
 
-See `{plugin_root}/references/index.md` for full details.
+See `{plugin_root}/references/index.yaml` for full details.
 
 Typical references covered by this skill:
 - `core/*` — language rules

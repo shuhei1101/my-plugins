@@ -17,7 +17,7 @@ py-kit is a plugin that provides Python implementation conventions and scaffold 
 | Testing | Integration tests + smoke tests only. No unit tests | Unit tests at all layers |
 | Comments | One-line docstring required for exported items, description required for design-critical fields (consistent with next-kit) | docstring optional |
 
-See `references/index.md` (reference list), `references/injection_rules.yaml` (injection rules), and each reference body for details.
+See `references/index.yaml` (reference list), `references/injection_rules.yaml` (injection rules), and each reference body for details.
 
 ---
 
@@ -26,8 +26,8 @@ See `references/index.md` (reference list), `references/injection_rules.yaml` (i
 ```
 references/
 ├── CLAUDE.md / CLAUDE.jp.md  # Minimal role description for the two management files
-├── index.md                  # Reference list + one-line description (English; parsed by hook)
-├── index.jp.md               # JP mirror of index.md (human-only)
+├── index.yaml                  # Reference list + one-line description (English; parsed by hook)
+├── index.jp.yaml               # JP mirror of index.yaml (human-only)
 ├── injection_rules.yaml      # Edit-path pattern → required/optional references (language-independent)
 ├── core/                     # Language rules (naming, comments, types, style, decorators)
 ├── architecture/             # Feature-folder layout + function wiring + dependency direction + principles + refactor judgement
@@ -45,12 +45,12 @@ references/
 
 ---
 
-## Role separation: index.md vs injection_rules.yaml
+## Role separation: index.yaml vs injection_rules.yaml
 
 | File | Contents | Language |
 |---|---|---|
-| `index.md` | All references' `path` + one-line `description` in a Markdown table | English (parsed by the hook) |
-| `index.jp.md` | JP mirror (for humans browsing) | Japanese |
+| `index.yaml` | All references' `path` + one-line `description` as a YAML list | English (parsed by the hook) |
+| `index.jp.yaml` | JP mirror (for humans browsing) | Japanese |
 | `injection_rules.yaml` | Star chart mapping edit-target file-path patterns to `required` / `optional` references | Language-independent |
 
 The `py-references-injection` hook (PreToolUse, implemented in the same PR) reads these on every `Edit` / `Write` / `MultiEdit` and auto-injects matched references into Claude's context via `decision: block`.
@@ -76,7 +76,7 @@ py-kit hooks follow the `claude-kit` policy:
 - Do not add dispatch-purpose `UserPromptSubmit` hooks
 
 The **references auto-injection hook** (`py-references-injection`, implemented in the same PR) follows this policy:
-- On `PreToolUse(Edit|Write|MultiEdit)`, read `references/injection_rules.yaml` and look up descriptions in `references/index.md`
+- On `PreToolUse(Edit|Write|MultiEdit)`, read `references/injection_rules.yaml` and look up descriptions in `references/index.yaml`
 - Match the file path being edited against `rules[].pattern` (glob)
 - Render the matched `required` / `optional` via the Jinja2 template (`hooks/templates/injection.md.j2`, or `.jp.md.j2` when `PY_KIT_INJECTION_LANG=jp`)
 - Inject into the `reason` field via `decision: block`

@@ -30,12 +30,12 @@ Python プロジェクトを扱う。
 まず references のインデックスを読む:
 
 ```
-{plugin_root}/references/index.md
+{plugin_root}/references/index.yaml
 ```
 
 スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-project` → プラグインルートは `.../py-kit/`）。
 
-`index.md` のテーブルで全 reference のパスと 1 行説明が、
+`index.yaml` の `references:` リストに全 reference のパスと 1 行説明が、
 `{plugin_root}/references/injection_rules.yaml` の `rules:` で「どの編集対象パスにどの reference を割り当てるか」が定義されている。
 
 このスキルで常に読むべきもの:
@@ -232,7 +232,7 @@ Python プロジェクトを扱う。
 
 ## 参考資料
 
-詳細は `{plugin_root}/references/index.md` を参照。
+詳細は `{plugin_root}/references/index.yaml` を参照。
 
 このスキルが扱う代表的な reference:
 - `core/*` — 言語ルール

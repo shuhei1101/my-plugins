@@ -21,7 +21,7 @@ py-kit は Python 実装の規約と雛形生成を提供するプラグイン�
 | テスト | 結合テスト + スモークテストのみ。単体テストは書かない | 全層単体テスト |
 | コメント | exported に 1 行 docstring 必須、設計上重要フィールドの description 必須（next-kit と整合） | docstring optional |
 
-詳細は `references/index.md`（reference 一覧）と `references/injection_rules.yaml`（注入ルール）、および各 reference 本文を参照。
+詳細は `references/index.yaml`（reference 一覧）と `references/injection_rules.yaml`（注入ルール）、および各 reference 本文を参照。
 
 ---
 
@@ -30,8 +30,8 @@ py-kit は Python 実装の規約と雛形生成を提供するプラグイン�
 ```
 references/
 ├── CLAUDE.md / CLAUDE.jp.md  # 2 ファイル管理の役割説明（最小指示）
-├── index.md                  # reference 一覧 + 1 行 description（英語、フックが parse）
-├── index.jp.md               # 上の日本語ミラー（人間用）
+├── index.yaml                  # reference 一覧 + 1 行 description（英語、フックが parse）
+├── index.jp.yaml               # 上の日本語ミラー（人間用）
 ├── injection_rules.yaml      # 編集対象パターン → 必読/任意 reference の星取り表（言語非依存）
 ├── core/             # 言語ルール（命名・コメント・型・スタイル）
 ├── architecture/     # 機能フォルダ型 + 関数配線 + 依存方向
@@ -49,12 +49,12 @@ references/
 
 ---
 
-## index.md と injection_rules.yaml の役割分担
+## index.yaml と injection_rules.yaml の役割分担
 
 | ファイル | 内容 | 言語 |
 |---|---|---|
-| `index.md` | 全 reference の `path` + 1 行 `description` を Markdown テーブルで | 英語（フックがここから parse） |
-| `index.jp.md` | 上の日本語ミラー（人間が一覧確認するため） | 日本語 |
+| `index.yaml` | 全 reference の `path` + 1 行 `description` を YAML リストで | 英語（フックがここから parse） |
+| `index.jp.yaml` | 上の日本語ミラー（人間が一覧確認するため） | 日本語 |
 | `injection_rules.yaml` | 編集対象ファイルパスの pattern に対して `required` / `optional` reference を割り当てる星取り表 | 言語非依存 |
 
 このマッピングは `py-references-injection` フック（PreToolUse、同 PR で実装済み）が
@@ -82,7 +82,7 @@ py-kit のフックは `claude-kit` の方針に従う:
 - ディスパッチ用 `UserPromptSubmit` は追加しない
 
 **references 自動注入フック** (`py-references-injection`、同 PR で実装済み) も上記方針に従う:
-- `PreToolUse(Edit|Write|MultiEdit)` で `references/injection_rules.yaml` を読み、`references/index.md` から description を引く
+- `PreToolUse(Edit|Write|MultiEdit)` で `references/injection_rules.yaml` を読み、`references/index.yaml` から description を引く
 - 編集対象ファイルパスを `rules[].pattern` と glob 照合
 - マッチした `required` / `optional` を Jinja2 テンプレ（`hooks/templates/injection.md.j2`、または `PY_KIT_INJECTION_LANG=jp` で `.jp.md.j2`）で整形
 - `decision: block` で reason に注入

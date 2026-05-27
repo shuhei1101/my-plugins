@@ -5,9 +5,9 @@ PreToolUse(Edit | Write | MultiEdit) で発火し、編集対象ファイルパ�
 references/injection_rules.yaml の rules と照合する。マッチした reference の本文を
 Jinja2 で整形して `decision: block` の reason に注入する。
 
-description は references/index.md（英語の Markdown テーブル）から path → description
-として抽出する。日本語が必要な場合は環境変数 PY_KIT_INJECTION_LANG=jp を設定すれば
-index.jp.md + injection.jp.md.j2 を使う。
+description は references/index.yaml（英語）から path → description として取得する。
+日本語が必要な場合は環境変数 PY_KIT_INJECTION_LANG=jp を設定すれば
+index.jp.yaml + injection.jp.md.j2 を使う。
 
 同一ファイルへの 2 回目以降の編集は、セッション + ファイルハッシュ単位のトークンで
 スキップする (1 セッション 1 ファイル 1 回だけブロック)。
@@ -87,37 +87,6 @@ def _match_any(pattern: str, candidates: list[str]) -> bool:
 
 
 # --------------------------------------------------------------------------- #
-# Markdown テーブルから path → description を抽出
-# --------------------------------------------------------------------------- #
-# `| `core/naming.md` | 命名規約。... |` 形式の行から拾う。
-# パスは backtick で囲まれているか裸かのどちらか許容。
-_TABLE_ROW = re.compile(
-    r"""^\|\s*                       # 行頭の |
-        `?(?P<path>[^|`]+?\.md)`?    # パスセル（.md で終わる）
-        \s*\|\s*                     # 区切り
-        (?P<desc>[^|]+?)             # 説明セル
-        \s*\|""",
-    re.VERBOSE,
-)
-
-
-def _parse_index_md(text: str) -> dict[str, str]:
-    """Markdown テーブル行から path → description を抜き出す。"""
-    out: dict[str, str] = {}
-    for line in text.splitlines():
-        m = _TABLE_ROW.match(line.strip())
-        if not m:
-            continue
-        path = m.group("path").strip()
-        desc = m.group("desc").strip()
-        # セパレータ行 (---) を除外
-        if path.startswith("---") or set(path.replace(":", "").strip()) <= {"-"}:
-            continue
-        out[path] = desc
-    return out
-
-
-# --------------------------------------------------------------------------- #
 # main
 # --------------------------------------------------------------------------- #
 def main() -> int:
@@ -148,16 +117,16 @@ def main() -> int:
 
     # 言語選択: 環境変数 PY_KIT_INJECTION_LANG=jp で日本語版
     lang = os.environ.get("PY_KIT_INJECTION_LANG", "en").lower()
-    index_filename = "index.jp.md" if lang == "jp" else "index.md"
+    index_filename = "index.jp.yaml" if lang == "jp" else "index.yaml"
     template_filename = "injection.jp.md.j2" if lang == "jp" else "injection.md.j2"
 
     rules_yaml = refs_dir / "injection_rules.yaml"
-    index_md = refs_dir / index_filename
+    index_yaml = refs_dir / index_filename
     if not rules_yaml.exists():
         _eprint(f"injection_rules.yaml not found at {rules_yaml}")
         return 0
-    if not index_md.exists():
-        _eprint(f"{index_filename} not found at {index_md}")
+    if not index_yaml.exists():
+        _eprint(f"{index_filename} not found at {index_yaml}")
         return 0
 
     # ----- injection_rules.yaml をロード -----
@@ -168,12 +137,17 @@ def main() -> int:
         return 0
     rules = rules_doc.get("rules") or []
 
-    # ----- index.md (Markdown) から path → description -----
+    # ----- index.yaml から path → description -----
+    descriptions: dict[str, str] = {}
     try:
-        descriptions = _parse_index_md(index_md.read_text(encoding="utf-8"))
+        idx_doc = yaml.safe_load(index_yaml.read_text(encoding="utf-8")) or {}
+        for ref in idx_doc.get("references") or []:
+            p = ref.get("path")
+            d = ref.get("description") or ""
+            if p:
+                descriptions[p] = d
     except Exception as e:
-        _eprint(f"{index_filename} read error: {e}")
-        descriptions = {}
+        _eprint(f"{index_filename} parse error: {e}")
 
     # ----- file_path の候補を作る (絶対パス + プロジェクトルートからの相対パス) -----
     norm: list[str] = [file_path.replace("\\", "/")]

@@ -74,6 +74,16 @@ PR138 で確定した **大方針** に従って py-kit プラグインの refer
 | 済 | `inject_references.py` を改修: `injection_rules.yaml` で rules 取得 + `index.md` の Markdown テーブルを正規表現でパースして description を取得。環境変数 `PY_KIT_INJECTION_LANG` で言語切替 | `plugins/py-kit/hooks/inject_references.py` |
 | 済 | `references/CLAUDE.md`(+jp) と `plugins/py-kit/CLAUDE.md`(+jp) を新ファイル構成（index.md + injection_rules.yaml）に合わせて更新。SKILL.md(jp)（py-project / py-script）の参照も `index.md` へ。changelogs/v2.0.0.md も同期 | `references/CLAUDE.md` (+ jp), `plugins/py-kit/CLAUDE.md` (+ jp), `plugins/py-kit/skills/**/SKILL.md` (+ jp), `plugins/py-kit/changelogs/v2.0.0.md` |
 
+### 第 3 ラウンドコミット後のレビュー反映（2026-05-28 追加 2）
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| 済 | `injection.jp.md.j2` に JP ミラー警告コメントを追加（`.j2` 拡張子は mark-generated のルール対象外だが、実態が JP ミラーなので明示追加） | `plugins/py-kit/hooks/templates/injection.jp.md.j2` |
+| 済 | `cost-cache.md`(+jp) の「Anthropic キャッシュの追加挙動（短く）」セクション全削除（ユーザー判断: 結局不要、トークンもったいない） | `references/llm/cost-cache.md` (+ jp) |
+| 済 | `index.md` / `index.jp.md` を YAML に復元: `index.yaml`（英語）+ `index.jp.yaml`（日本語ミラー）。Python フックが parse する用途には YAML が正解、Markdown 化は誤判断。description は en/jp を別ファイル分離（YAML 構造は同じ） | `references/index.yaml`, `references/index.jp.yaml`（`index.md` / `index.jp.md` は削除） |
+| 済 | `inject_references.py` を YAML パースに戻す（`_parse_index_md` を削除し `yaml.safe_load(index.yaml)` で `references[]` を直接ループ） | `plugins/py-kit/hooks/inject_references.py` |
+| 済 | ドキュメント参照を `index.md` → `index.yaml` に一括書き換え（CLAUDE.md(+jp)、SKILL.md(+jp) × 2、changelogs/v2.0.0.md）。「Markdown テーブル」表現も「YAML リスト」に修正 | 各ドキュメント |
+
 ## 参考ドキュメント
 
 - `.work/tasks/20260527_review-py-kit-plugin/PR138/QA.md`: 新方針版 QA（全件確定）。実装の主たる判断材料
