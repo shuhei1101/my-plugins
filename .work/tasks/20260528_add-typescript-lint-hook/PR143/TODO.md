@@ -38,16 +38,17 @@ PR135 で next-kit の規約として QA-046 (`Awaited<ReturnType<typeof fetchRe
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | QA.md に未決定事項を記録する（A/B/C 案の選択、配置 plugin、対象プロジェクトの検出方法、エラー時の挙動など） | `.work/tasks/.../PR143/QA.md` |
-| - | フック実装 (PostToolUse か pre-commit か、または両方) | `plugins/{kit}/hooks/...` |
-| - | 対象プロジェクトの検出ロジック (tsconfig.json の有無で判定など) | 同上 |
-| - | エラー時のユーザー通知方法 (stderr / decision: block / toast 等) | 同上 |
-| - | `*.ts` `*.tsx` 編集時のみ走らせる matcher 設定 | `plugins/{kit}/hooks/hooks.json` |
+| 済 | フック実装 (PostToolUse + tsc --noEmit --incremental) | `plugins/next-kit/hooks/ts_check.py` |
+| 済 | 対象プロジェクトの検出ロジック (tsconfig.json の上方探索) | 同上 |
+| 済 | エラー時のユーザー通知方法 (stdout 出力のみ) | 同上 |
+| 済 | `*.ts` `*.tsx` 編集時のみ走らせる matcher 設定 | `plugins/next-kit/hooks/hooks.json` |
 | - | テスト (実際の TS プロジェクトで Edit して検知できるか確認) | 手動検証 |
-| - | ルール・CLAUDE.md を整備する (フック設定方法の説明) | `plugins/{kit}/CLAUDE.md` 等 |
-| - | plugin.json / marketplace.json のバンプ | `plugins/{kit}/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | ルール・CLAUDE.md を整備する (フック設定方法の説明) | `plugins/next-kit/references/CLAUDE.md` |
+| 済 | plugin.json / marketplace.json のバンプ | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
+- `.work/notes/typescript-lint-hook.md`: 本 PR の設計メモ
 - `plugins/py-kit/hooks/inject_references.py`: 同種の PreToolUse フック実装パターン (PR140 で確立)
 - `plugins/next-kit/hooks/inject_references.py`: next-kit 版 (PR135)
 - `plugins/next-kit/references/conventions/types.md`: QA-046 採用の根拠
