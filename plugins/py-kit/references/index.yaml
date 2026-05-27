@@ -1,7 +1,7 @@
 # py-kit references インデックス
 #
 # 各 reference ファイルの概要と、編集対象ファイルパスに対する注入ルール（星取り表）を定義する。
-# このファイルは PreToolUse フック（次 PR で実装予定）が読み込み、
+# このファイルは PreToolUse フック（add-py-kit-references-injection-hook）が読み込み、
 # 編集対象ファイルにマッチした reference を Claude へ自動注入する。
 #
 # Claude は CLAUDE.md の指示に従って、まずこのファイルを読み、
@@ -9,15 +9,18 @@
 
 # ---------- メタデータ：reference 一覧 ----------
 references:
-  # ----- core: 言語ルール -----
+  # ----- core: 言語ルール（細粒度に分割） -----
   - path: core/naming.md
     description: 命名規約。関数 snake_case、型エイリアス UpperCamel、ファイル/モジュール snake_case。feature フォルダ内の標準ファイル名（types/service/query/route/client/db）対応表
 
   - path: core/comments.md
-    description: コメントルール。exported 関数/型に 1 行 docstring 必須、Pydantic/dataclass の設計上重要フィールドの説明必須、PR 番号付き変更履歴、TODO は issue 番号必須
+    description: コメントルール。exported 関数/型に 1 行 docstring 必須、Pydantic/dataclass の設計上重要フィールドの description 必須、PR 番号付き変更履歴、TODO は issue 番号必須
 
   - path: core/type-hints.md
-    description: 型ヒント全般。PEP 695 ジェネリクス、Self、@typing.override、Annotated、Recommended Decorators（@dataclass / @final / @cache 等）、TYPE_CHECKING、type 文、NewType、assert_never、ハンドラーデコレータ
+    description: 型ヒント本体。PEP 695 ジェネリクス、Self、@typing.override、Annotated、TYPE_CHECKING、type 文、NewType、assert_never、Literal+match
+
+  - path: core/decorators.md
+    description: 推奨デコレータ（@dataclass / @final / @cache / @cached_property / @override / @contextmanager）と、横断関心事を吸収するハンドラーデコレータ（@catch_and_log / @catch_and_map / @with_retry / @with_timeout）、@overload の限定使用
 
   - path: core/language-rules.md
     description: 言語ルール。コメントは日本語、print/logger/bat は英語、文字列フォーマット f-string、import 順、例外階層（AppError 基底クラス）
@@ -30,13 +33,19 @@ references:
     description: トップレベルレイアウト。必須は shared/ と main.py のみ、任意で features/integrations/runtime/server。feature フォルダ内の標準構成（types.py / service.py / query.py / route.py / client.py）
 
   - path: architecture/ts-style.md
-    description: TypeScript 風 Python の中心ドキュメント。type エイリアスで関数の型を定義 + Callable で DI、Protocol で構造的型付け、@dataclass/Pydantic/TypedDict の使い分け表、@overload の限定使用
+    description: TypeScript 風 Python の中心ドキュメント。type エイリアスで関数の型を定義 + Callable で DI、Protocol で構造的型付け、@dataclass/Pydantic/TypedDict の使い分け表
 
   - path: architecture/composition-root.md
-    description: main.py の責務。build_app(settings) で関数を functools.partial で配線、Handlers dataclass で型安全に保持。FastAPI/CLI 等ライブラリ標準クラスはそのまま使う
+    description: main.py の責務。build_handlers(settings) で関数を functools.partial で配線、Handlers dataclass で型安全に保持。FastAPI/CLI 等ライブラリ標準クラスはそのまま使う
 
   - path: architecture/dependencies.md
     description: 依存方向ルール。features/server → integrations → shared の一方向。同層内相互参照は禁止。逆依存（DIP）は関数の型エイリアスで実現
+
+  - path: architecture/design-principles.md
+    description: 設計原則の優先順位。DRY > SOLID > 拡張性意識。関数ファーストでクラスは DTO とライブラリ要求のみ
+
+  - path: architecture/refactoring-judgement.md
+    description: リファクタ判断基準。何回書いたら共通化、いつ抽象化、いつ設定外出し、いつファイル分割するか
 
   # ----- shared: 横断インフラ -----
   - path: shared/logger.md
@@ -44,6 +53,9 @@ references:
 
   - path: shared/settings.md
     description: pydantic_settings.BaseSettings 標準パターン。.env / .env.sample 運用、SecretStr、ネストした設定
+
+  - path: shared/secrets-and-env.md
+    description: シークレット / 環境 / 構造 / アセット / ランタイム状態の保管先の分離方針。.env / settings.yaml / コード / index.yaml / data/ の使い分け
 
   - path: shared/errors.md
     description: 例外階層。AppError 基底クラス、ドメイン別サブクラス、HTTP エラーとのマッピング
@@ -59,7 +71,7 @@ references:
     description: 単一ファイル Python スクリプトの構造。docstring、argparse、main() 返り値 int、セクションマーカー
 
   - path: scripts/launchers-windows.md
-    description: Windows 用 bat ランチャー。chcp 65001、setlocal、PowerShell 時刻、log/ ディレクトリ出力
+    description: Windows 用 bat ランチャー。chcp 65001、setlocal、PowerShell 時刻、log/ ディレクトリ出力。**bat 内に日本語を書かない**（絶対）
 
   - path: scripts/launchers-unix.md
     description: UNIX 用 shell スクリプト。set -euo pipefail、tee でログ、.venv activate
@@ -108,14 +120,17 @@ references:
   - path: llm/instructor.md
     description: Instructor + Pydantic で構造化出力。task-specific クライアント関数の作り方
 
-  - path: llm/prompts.md
-    description: プロンプトファイル管理。integrations/llm/prompts/*.md、Jinja2 / Template、prompt versioning
+  - path: llm/prompts-authoring.md
+    description: プロンプトファイルの書き方と組み立て。プロジェクトルート直下 prompts/、H3 セクション単位で部品化、static (.md) と dynamic (.j2)、index.yaml で SoT 管理、includes で組み立て
+
+  - path: llm/prompts-loader.md
+    description: プロンプトのローダー実装。src/{pkg}/integrations/llm/prompts/ 配下に index_loader / builder / types を置く、Jinja2 + StrictUndefined、build_prompt / build_bundle
 
   - path: llm/cost-cache.md
-    description: コスト管理。トークン管理、max_tokens、プロンプトキャッシュ、batch API、streaming
+    description: コスト管理。プロンプトキャッシュの設計考え方（上から積む / 固定値は上 / 動的値は下）、Anthropic cache_control、OpenAI 自動キャッシュ、max_tokens、Batch API、ストリーミング
 
   - path: llm/exceptions-retry.md
-    description: LLM 例外階層。rate-limit / server / bad-request / auth / timeout / content-filter、リトライ戦略
+    description: LLM 例外階層。rate-limit / server / bad-request / auth / timeout / content-filter、リトライ戦略、Retry-After 尊重
 
   # ----- fastapi: FastAPI -----
   - path: fastapi/app.md
@@ -139,58 +154,77 @@ references:
 #   optional: 任意参照（参考として案内）
 # pattern は glob。複数 pattern にマッチした場合は和集合で注入する。
 injection_rules:
-  # 全 Python ファイルに常に注入する基礎ルール
+  # ----- 全 Python ファイルに常に注入する基礎ルール -----
+  # 「最小原則」: 全 .py に必読する core はあえて絞る。残りはパス別に効かせる
   - pattern: "**/*.py"
     required:
       - core/naming.md
-      - core/comments.md
-      - core/type-hints.md
       - core/language-rules.md
       - core/style.md
+    optional:
+      - core/comments.md
+      - core/type-hints.md
 
-  # shared/ 配下
+  # ----- デコレータ系（自作デコレータを書く時だけ） -----
+  - pattern: "**/shared/decorators.py"
+    required: [core/decorators.md]
+  - pattern: "**/_decorators.py"
+    required: [core/decorators.md]
+
+  # ----- shared/ 配下 -----
   - pattern: "**/shared/logger.py"
     required: [shared/logger.md]
   - pattern: "**/shared/settings.py"
-    required: [shared/settings.md]
+    required: [shared/settings.md, shared/secrets-and-env.md]
   - pattern: "**/shared/errors.py"
     required: [shared/errors.md]
   - pattern: "**/shared/types.py"
-    required: [shared/types.md]
+    required: [shared/types.md, core/type-hints.md]
   - pattern: "**/shared/constants.py"
     required: [shared/constants.md]
+    optional: [shared/secrets-and-env.md]
 
-  # composition root
+  # ----- composition root -----
   - pattern: "**/main.py"
     required: [architecture/composition-root.md, architecture/layout.md]
-    optional: [architecture/dependencies.md]
+    optional: [architecture/dependencies.md, architecture/design-principles.md]
   - pattern: "**/__main__.py"
     required: [architecture/composition-root.md]
 
-  # features/
+  # ----- features/ -----
   - pattern: "**/features/**/types.py"
-    required: [architecture/ts-style.md, architecture/layout.md]
+    required: [architecture/ts-style.md, architecture/layout.md, core/type-hints.md]
   - pattern: "**/features/**/service.py"
-    required: [architecture/ts-style.md, architecture/layout.md, architecture/dependencies.md]
+    required: [architecture/ts-style.md, architecture/dependencies.md]
+    optional: [architecture/design-principles.md, core/decorators.md]
   - pattern: "**/features/**/query.py"
-    required: [architecture/ts-style.md, architecture/layout.md]
+    required: [architecture/ts-style.md]
   - pattern: "**/features/**/route.py"
     required: [fastapi/routes.md, fastapi/schemas.md]
     optional: [fastapi/auth-and-errors.md]
   - pattern: "**/features/**/client.py"
     required: [architecture/ts-style.md]
 
-  # integrations/
+  # ----- integrations/ -----
   - pattern: "**/integrations/llm/**/*.py"
-    required: [llm/providers.md, llm/instructor.md, llm/exceptions-retry.md]
-    optional: [llm/cost-cache.md, llm/prompts.md]
-  - pattern: "**/integrations/llm/prompts/*.md"
-    required: [llm/prompts.md]
+    required: [llm/providers.md, llm/exceptions-retry.md]
+    optional: [llm/cost-cache.md, llm/instructor.md, core/decorators.md]
+  - pattern: "**/integrations/llm/prompts/**/*.py"
+    required: [llm/prompts-loader.md, llm/prompts-authoring.md]
   - pattern: "**/integrations/**/client.py"
     required: [architecture/ts-style.md]
-    optional: [architecture/dependencies.md]
+    optional: [architecture/dependencies.md, core/decorators.md]
 
-  # server/
+  # ----- prompts/ 配下の編集（プロジェクトルート直下） -----
+  - pattern: "prompts/**/*.md"
+    required: [llm/prompts-authoring.md]
+  - pattern: "prompts/**/*.j2"
+    required: [llm/prompts-authoring.md]
+  - pattern: "prompts/index.yaml"
+    required: [llm/prompts-authoring.md]
+    optional: [llm/prompts-loader.md]
+
+  # ----- server/ -----
   - pattern: "**/server/app.py"
     required: [fastapi/app.md, architecture/composition-root.md]
   - pattern: "**/server/routes/**/*.py"
@@ -198,31 +232,44 @@ injection_rules:
     optional: [fastapi/auth-and-errors.md]
   - pattern: "**/server/ws/**/*.py"
     required: [fastapi/app.md]
+  - pattern: "**/server/error_handlers.py"
+    required: [shared/errors.md, fastapi/auth-and-errors.md]
 
-  # runtime/
+  # ----- runtime/ -----
   - pattern: "**/runtime/**/*.py"
     required: [concurrency/async.md]
     optional: [concurrency/parallelism.md]
 
-  # tests/
+  # ----- tests/ -----
   - pattern: "**/tests/**/test_*.py"
     required: [testing/strategy.md, testing/pytest.md]
     optional: [testing/mocks.md]
   - pattern: "**/tests/smoke/**/*.py"
     required: [testing/strategy.md]
+  - pattern: "**/tests/conftest.py"
+    required: [testing/pytest.md, testing/mocks.md]
 
-  # packaging
+  # ----- packaging -----
   - pattern: "**/pyproject.toml"
     required: [packaging/pyproject.md, packaging/dependencies.md]
-    optional: [packaging/python-versions.md, packaging/distribution.md]
+    optional: [packaging/python-versions.md, packaging/distribution.md, core/style.md]
 
-  # launcher scripts
+  # ----- launcher scripts -----
   - pattern: "**/*.bat"
     required: [scripts/launchers-windows.md]
   - pattern: "**/*.sh"
     required: [scripts/launchers-unix.md]
 
+  # ----- env / settings.yaml -----
+  - pattern: ".env"
+    required: [shared/secrets-and-env.md]
+  - pattern: ".env.sample"
+    required: [shared/secrets-and-env.md]
+  - pattern: "**/config/settings.yaml*"
+    required: [shared/secrets-and-env.md, shared/settings.md]
+
   # 注:
   # - 単一ファイルスクリプト判定はパスでは難しいので、SKILL.md (py-script) の
   #   Step 1 で scripts/python-script.md を強制注入する運用にする
   # - tkinter は import 検出が必要なので、SKILL.md 経由で注入する
+  # - パフォーマンス系は profiling 作業時に手動で performance/cheatsheet.md を読む運用

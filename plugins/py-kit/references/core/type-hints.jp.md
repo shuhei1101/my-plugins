@@ -188,98 +188,25 @@ def label(status: Status) -> str:
 
 ---
 
-## 推奨デコレータ（Recommended Decorators）
+## デコレータ系
 
-| デコレータ | 用途 |
-|---|---|
-| `@dataclass(frozen=True, slots=True, kw_only=True)` | 不変 DTO 標準 |
-| `@final` | 継承禁止クラス / メソッド |
-| `@functools.cache` | 純粋関数のメモ化（引数キー固定） |
-| `@functools.cached_property` | クラス属性の lazy 計算 |
-| `@typing.override` | メソッドオーバーライド明示 |
-| `@contextlib.contextmanager` | with 文用関数定義 |
+推奨デコレータ (`@dataclass` / `@final` / `@cache` / `@cached_property` / `@override` / `@contextmanager` 等) と、横断関心事を扱うハンドラーデコレータ (`@catch_and_log` / `@catch_and_map` / `@with_retry` / `@with_timeout`)、および `@overload` の解説は分離した:
+
+→ `core/decorators.md`
+
+このファイルでは型ヒント本体だけを扱う。
 
 ---
 
-## ハンドラーデコレータパターン
+## DTO 定義の使い分け
 
-例外キャッチや横断関心事は **関数デコレータで束ねる**（クラスベース AOP は使わない）。
-
-```python
-from typing import Callable, Awaitable
-from functools import wraps
-import logging
-
-def catch_and_log(*exc_types: type[Exception], level: str = "warning"):
-    """指定例外をログだけ出してデフォルト値を返すデコレータ。"""
-    def decorator[**P, R](fn: Callable[P, R]) -> Callable[P, R | None]:
-        @wraps(fn)
-        def wrapped(*args: P.args, **kwargs: P.kwargs) -> R | None:
-            try:
-                return fn(*args, **kwargs)
-            except exc_types as e:
-                logging.getLogger(fn.__module__).log(
-                    getattr(logging, level.upper()),
-                    f"{fn.__name__} failed: {e}",
-                )
-                return None
-        return wrapped
-    return decorator
-
-
-@catch_and_log(ValueError, level="warning")
-def parse_input(raw: str) -> Input:
-    return Input.model_validate_json(raw)
-```
-
-代表的なデコレータ:
-- `@catch_and_log(*exc_types, level=...)` — 指定例外を握りつぶしてログ
-- `@catch_and_map(SrcError, to=DstError)` — 例外型を変換
-- `@with_retry(times=3, backoff=0.5)` — リトライ
-- `@with_timeout(seconds=60)` — タイムアウト
-- `@measure_time(metric="...")` — 実行時間メトリクス
-
----
-
-## `@overload`（限定使用）
-
-戻り値が引数型で分岐する関数のみ:
-
-```python
-from typing import overload, Literal
-
-@overload
-def parse(value: Literal["int"]) -> int: ...
-@overload
-def parse(value: Literal["str"]) -> str: ...
-def parse(value: str) -> int | str:
-    return 0 if value == "int" else ""
-```
-
-ほとんどのケースでは型エイリアス + Callable / Protocol で済むので、`@overload` の出番は少ない。
-
----
-
-## DTO 定義の使い分け早見表
-
-| 用途 | 推奨 | 理由 |
-|---|---|---|
-| 外部 HTTP リクエスト/レスポンス | `pydantic.BaseModel` | ランタイム検証 |
-| 設定（.env / YAML / TOML） | `pydantic_settings.BaseSettings` | 検証 + env 読み込み |
-| LLM 構造化出力（Instructor） | `pydantic.BaseModel` | Instructor 要求 |
-| CLI 引数のパース後の構造体 | `pydantic.BaseModel` | 検証あり |
-| 関数間の内部 DTO（軽量） | `@dataclass(frozen=True, slots=True, kw_only=True)` | 軽量・型安全 |
-| 関数の引数オブジェクト | `@dataclass` | 軽量、`__init__` 自動 |
-| 一時的な dict 型付け（JSON 由来） | `TypedDict` | dict のまま扱える |
-| 構造的型付け（duck typing） | `Protocol` | 継承不要 |
-| ライブラリが要求する継承先 | そのライブラリの基底 | やむなし |
-
-詳しくは `architecture/ts-style.md` 参照。
+Pydantic / dataclass / TypedDict / Protocol の使い分け表は `architecture/ts-style.md` の中心セクションで管理している。重複防止のためここには置かない。
 
 ---
 
 ## 関連ファイル
 
-- `architecture/ts-style.md` — TypeScript 風 Python の中心ドキュメント
-- `core/language-rules.md` — 例外階層
+- `core/decorators.md` — 推奨デコレータ + ハンドラーデコレータ + `@overload`
+- `architecture/ts-style.md` — DTO 使い分け表 / TypeScript 風スタイル
+- `core/language-rules.md` — 例外階層 / import 順
 - `core/comments.md` — フィールド説明の書き方

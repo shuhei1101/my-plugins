@@ -46,10 +46,56 @@ response = await client.chat.completions.create(
 
 ---
 
+## プロンプトキャッシュ — 設計の前提（最重要）
+
+**プロンプトキャッシュは「先頭から共通したぶん」だけ効く。** 中間や末尾だけ揃ってもヒットしない。
+
+LLM への入力は **スタック** のように上から順に積まれていて、その**先頭プレフィックスがバイト単位で一致するぶんだけ** がキャッシュ対象になる。
+たとえばシステムプロンプトが完全一致 → そこまではヒット、ユーザーメッセージで分岐 → そこ以降はミス、というふうに切れる。
+
+### 設計ルール: 固定値は上、動的値は下
+
+| 位置 | 内容 |
+|---|---|
+| **上（先頭）** | 不変のキャラ設定 / 役割定義 / 出力スキーマ / few-shot 例 — **キャッシュさせたい部分** |
+| **中** | セッション単位で固定（会話の base context、ペルソナ） |
+| **下（末尾）** | リクエストごとに変わる値（直近の会話履歴・ユーザー入力・時刻） |
+
+逆順に積む（動的値を上に置く）と、たった 1 文字の差で**それ以降全部キャッシュミス**になり、コストが跳ね上がる。
+
+### 具体的なやり方
+
+- `system` メッセージは **不変ブロックを優先** して連結する。動的な指示は user メッセージ側に回す
+- `messages` 配列も **古い履歴ほど上** に。要約 + 最新数件の場合は「要約 → 古い順履歴 → 最新ユーザー入力」
+- few-shot 例はシステム or 最初の user/assistant ペアに置く（ランダム順禁止）
+- **`{timestamp}` を system に埋め込まない** — 1 秒変わるたびにキャッシュが切れる
+
+### キャッシュが切れる典型ミス
+
+```python
+# ❌ system プロンプトに動的値を入れる
+system = f"You are an assistant. Current time: {now_iso()}"
+# → 毎回違うのでキャッシュ完全ミス
+
+# ❌ user 履歴の順序を入れ替える
+messages = sorted(messages, key=lambda m: m["importance"])   # 並び順が変わる
+# → 同じ会話でもキャッシュヒットしない
+
+# ✅ 不変部分を上、動的部分を最下段に
+system = STATIC_ROLE_AND_RULES
+messages = [
+    {"role": "system", "content": SUMMARY_OF_HISTORY},  # session で固定
+    *recent_messages,                                    # 末尾だけ毎回変わる
+    {"role": "user", "content": user_input},
+]
+```
+
+---
+
 ## プロンプトキャッシュ（Anthropic）
 
-Claude API は `cache_control` でプロンプト前半をキャッシュできる。
-**同じシステムプロンプトを多数回使う** ときに効く（90% 値引き）:
+Claude API は `cache_control` でプロンプト前半を明示的にキャッシュ。
+**同じシステムプロンプトを多数回使う** ときに効く（読み出し時のコストが入力単価の 10% に下がる）:
 
 ```python
 response = await client.messages.create(
@@ -65,7 +111,7 @@ response = await client.messages.create(
     max_tokens=1024,
 )
 
-# 使用量に cache_read_input_tokens が出る
+# 使用量に cache_read_input_tokens / cache_creation_input_tokens が出る
 logger.info("llm_call", extra={
     "cache_read_tokens": response.usage.cache_read_input_tokens,
     "cache_creation_tokens": response.usage.cache_creation_input_tokens,
@@ -74,16 +120,41 @@ logger.info("llm_call", extra={
 
 **条件**:
 - システムプロンプト >= 1024 トークン（Haiku は 2048）必要
-- 5 分以内に再呼び出しでヒット
-- システム + ユーザーメッセージの一部もキャッシュできる
+- 5 分以内に再呼び出しでヒット（`ephemeral`）。長期は `cache_control: {"type": "ephemeral", "ttl": "1h"}` も可
+- `cache_control` ブロックは system / messages / tools のいずれにも付けられる。**4 ブロックまで**
+- ブロックの境界が「キャッシュの切れ目」。意図的に「ここまで固定」と分けるイメージ
 
 ---
 
 ## プロンプトキャッシュ（OpenAI）
 
-OpenAI も自動プロンプトキャッシュがある（gpt-4o 以降）。`>= 1024 トークン` のプロンプトを
-同一プレフィックスで送ると 50% 値引きが自動適用される。**コード変更不要**。
-ログに `cached_tokens` フィールドが出る。
+OpenAI も **自動プロンプトキャッシュ** がある（gpt-4o / o1 以降）。
+`>= 1024 トークン` のプロンプトを **同一プレフィックスで送ると 50% 値引きが自動適用** される。**コード変更不要**。
+ログに `usage.prompt_tokens_details.cached_tokens` フィールドが出る。
+
+```python
+response = await client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system", "content": LONG_SYSTEM_PROMPT},   # 同一テキストを送れば自動ヒット
+        *messages,
+    ],
+)
+logger.info("llm_call", extra={
+    "cached_tokens": response.usage.prompt_tokens_details.cached_tokens,
+})
+```
+
+**条件**:
+- プロンプトの **先頭から最低 1024 トークン** が前回と一致
+- 一致単位は 128 トークンごと（端数は切り捨て）
+- 5〜10 分でキャッシュは失効（明示制御なし）
+
+### 両者共通の運用ポイント
+
+- **system プロンプトに動的値を埋め込まない**（上記「キャッシュが切れる典型ミス」）
+- 1 セッションで何度も同じ system + 履歴 を送るユースケース（チャット / ストリーミング / バッチ抽出）でメリット大
+- 1 回しか呼ばないユースケースでは効かない（むしろ Anthropic は cache creation の 25% プレミアムで割高）
 
 ---
 

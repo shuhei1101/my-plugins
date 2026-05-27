@@ -54,15 +54,15 @@ PR138 で確定した **大方針** に従って py-kit プラグインの refer
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | layout から「廃止された概念」セクション削除（書いてないこと自明）、`modes/` 言及も AITuber 固有なので削除 | `references/architecture/layout.md` (+ jp) |
-| - | bat ファイル内に日本語を絶対書かないルールを明記（chcp ありでも文字化けエラーの実害） | `references/scripts/launchers-windows.md` (+ jp) |
-| - | cost-cache: OpenAI のプロンプトキャッシュも明示記載、プロンプトキャッシュの設計考え方（上から積む / 固定値は上・動的値は下）を追記 | `references/llm/cost-cache.md` (+ jp) |
-| - | `llm/prompts.md` を「プロンプト書き方（authoring）」「ローダー（loader）」の 2 ファイルに分割。AITuber 流のプロジェクトルート直下 `prompts/` 配置、`prompts/index.yaml` 管理、レベル 3 セクション単位の分割と組み立て方を反映 | `references/llm/prompts-authoring.md` + `prompts-loader.md` (+ jp) |
-| - | 全 reference を「フック注入単位として無駄が出ない粒度」で見直し、肥大化したものは分割 | `references/**/*.md` |
-| - | `references/index.yaml` を上記の分割/追加に合わせて更新（references 一覧 + injection_rules） | `references/index.yaml` |
-| - | aituber `.claude/rules-jp` を調査して Python 共通として py-kit に移植できるルールを抽出 | `references/**` |
-| - | `add-py-kit-references-injection-hook` フックを `/claude-kit:hook-creator` で作成（編集対象ファイルパスに `injection_rules` を当てて該当 reference を `decision: block` で注入） | `plugins/py-kit/hooks/*` |
-| - | JP ミラー再生成（変更ファイルのみ） | `**/*.jp.md` |
+| 済 | layout から「廃止された概念」セクション削除（書いてないこと自明）、`modes/` 言及も AITuber 固有なので削除、サブフィーチャ例も整理、prompts はプロジェクトルート直下と明記 | `references/architecture/layout.md` (+ jp) |
+| 済 | bat ファイル内に日本語を絶対書かないルールを明記（chcp ありでも文字化けエラーの実害）+ 標準テンプレ内コメントも全部英語化 | `references/scripts/launchers-windows.md` (+ jp) |
+| 済 | cost-cache: 「プロンプトキャッシュ — 設計の前提（最重要）」セクション新設で「上から積む / 固定値は上・動的値は下」の考え方追記。OpenAI 自動キャッシュも実装サンプルと共に明示。Anthropic 側も TTL や `cache_control` ブロック説明拡張 | `references/llm/cost-cache.md` (+ jp) |
+| 済 | `llm/prompts.md` を `prompts-authoring.md`（書き方・部品化・index.yaml 組み立て）と `prompts-loader.md`（ローダー実装・Jinja2・PromptBundle）の 2 ファイルに分割。AITuber 流のプロジェクトルート直下 `prompts/`、`static/`(.md) と `dynamic/`(.j2) の分離、H3 セクション単位の部品化、`build_prompt` / `build_bundle` パターン、ミラー言語切替を反映 | `references/llm/prompts-authoring.md` + `prompts-loader.md` (+ jp) |
+| 済 | 全 reference を「フック注入単位として無駄が出ない粒度」で見直し、肥大化していた `core/type-hints.md` から推奨デコレータ + ハンドラーデコレータ + @overload を `core/decorators.md` に切り出し | `references/core/type-hints.md`, `references/core/decorators.md` (+ jp) |
+| 済 | `references/index.yaml` を上記の分割/追加に合わせて更新（references 一覧 39 件 + injection_rules を粒度別に再設計） | `references/index.yaml` |
+| 済 | aituber `.claude/rules-jp` を調査して Python 共通として py-kit に移植できるルール 3 件を抽出: `architecture/design-principles.md`（DRY > SOLID > 拡張性）、`architecture/refactoring-judgement.md`（何回書いたら共通化 / いつ抽象化 / いつ設定外出し）、`shared/secrets-and-env.md`（.env / settings.yaml / コード / index.yaml / data/ の分離） | `references/architecture/{design-principles,refactoring-judgement}.md`, `references/shared/secrets-and-env.md` (+ jp) |
+| 済 | `py-references-injection` フックを `/claude-kit:hook-creator` 経由で作成。`PreToolUse(Edit/Write/MultiEdit)` で発火、`inject_references.py` が `index.yaml` の `injection_rules` を照合 → Jinja2 テンプレで整形 → `decision: block` で注入。同一ファイルへの 2 回目以降の編集はセッション + ファイルハッシュ単位トークンでスキップ | `plugins/py-kit/hooks/inject_references.py`, `plugins/py-kit/hooks/templates/injection.md.j2`, `plugins/py-kit/hooks/hooks.json` |
+| 済 | JP ミラー再生成（変更分 10 ファイル：新規 6 + 修正 4） | 上記ファイル群の `*.md` 側 |
 
 ## 参考ドキュメント
 

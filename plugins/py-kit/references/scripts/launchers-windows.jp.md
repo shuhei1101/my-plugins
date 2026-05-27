@@ -14,26 +14,26 @@ Windows で Python スクリプトを起動する `.bat` ファイルの規約�
 chcp 65001 > nul
 setlocal
 
-:: ----- このスクリプトの場所をカレントにする -----
+:: ----- cd into this script's directory -----
 cd /d "%~dp0"
 
-:: ----- venv 有効化（存在すれば） -----
+:: ----- activate venv if present -----
 if exist .venv\Scripts\activate.bat (
     call .venv\Scripts\activate.bat
 )
 
-:: ----- タイムスタンプ（YYYYMMDD-HHMMSS）を PowerShell で生成 -----
+:: ----- timestamp (YYYYMMDD-HHMMSS) via PowerShell (locale-independent) -----
 for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd-HHmmss"') do set TS=%%i
 
-:: ----- ログディレクトリ -----
+:: ----- log directory -----
 if not exist log mkdir log
 set LOG=log\script-%TS%.log
 
-:: ----- 実行 -----
+:: ----- run -----
 python script.py %* > "%LOG%" 2>&1
 set EXIT_CODE=%ERRORLEVEL%
 
-:: ----- 結果を表示 -----
+:: ----- show result -----
 type "%LOG%"
 echo.
 echo (log: %LOG%)
@@ -41,6 +41,8 @@ echo (exit: %EXIT_CODE%)
 
 endlocal & exit /b %EXIT_CODE%
 ```
+
+> bat 内のコメント (`::`) も全部英語。理由は後述の「bat ファイル内に日本語を書かない」を参照。
 
 ---
 
@@ -100,7 +102,7 @@ run.bat --input data.csv --output result.json -v
 `python` が PATH にない / `py` ランチャーを使いたい場合:
 
 ```bat
-:: py がある場合は優先（Windows 標準）
+:: prefer py launcher (Windows standard) if available
 where py >nul 2>&1 && (set PY=py) || (set PY=python)
 %PY% -3.12 script.py %*
 ```
@@ -110,16 +112,34 @@ where py >nul 2>&1 && (set PY=py) || (set PY=python)
 
 ---
 
-## 出力メッセージは英語
+## bat ファイル内に日本語を書かない（絶対）
 
-bat スクリプトは Windows のコードページ問題が起きやすいので、出力は **英語** で書く:
+**bat ファイル内の文字列・コメントは全部 ASCII / 英語のみ。日本語は絶対に書かない。**
+
+`chcp 65001` を付けても、以下のいずれかで実害が出る:
+- cmd.exe のコードページ初期化タイミングで bat 本体のリテラル文字列が壊れる
+- `for /f` などの parse 結果が文字化けする
+- リダイレクト先（ファイル / パイプ / 別プロセス）で文字化けする
+- 一度文字化けすると `if` 文の比較や `set` の値が壊れて、エラーすら出ずに静かに動作が変わる
 
 ```bat
-echo (log: %LOG%)         :: ✅
-echo （ログ：%LOG%）        :: ❌（文字化けリスクあり）
+:: ✅ OK
+echo (log: %LOG%)
+:: comment in English only
+
+:: ❌ NG（chcp ありでも事故る）
+echo （ログ：%LOG%）
+:: 日本語コメントも禁止
 ```
 
-`chcp 65001` を付けても、コンソールやリダイレクト先の挙動次第で文字化けする。
+例外なし。bat 内の日本語は **編集者の感覚で気付けない事故** を生むので、全面禁止する。
+
+UI 表示用の日本語が必要な場合は、bat はそれを呼び出すだけにして、本体（Python）側で日本語を出力する。
+
+### 関連: sh ランチャーは緩い
+
+`launchers-unix.md` の sh / bash は UTF-8 環境が標準なので日本語可。
+**bat だけが特殊** という認識でいい。
 
 ---
 
@@ -152,15 +172,19 @@ endlocal & exit /b %ERRORLEVEL%
 ## やってはいけないこと
 
 ```bat
-:: ❌ chcp なし → 文字化けの種
+:: NG: no chcp - source of garbling
 @echo off
 python script.py
 
-:: ❌ setlocal なし → 親シェルを汚染
+:: NG: no setlocal - pollutes parent shell
 set TEMPVAR=foo
 
-:: ❌ %time% / %date% を素で連結 → locale 依存で失敗
-set TS=%date%-%time%   :: 不正なファイル名になる可能性
+:: NG: raw concat of %time% / %date% - fails depending on locale
+set TS=%date%-%time%   :: may yield an invalid filename
+
+:: NG: Japanese inside bat
+echo （ログ出力）
+:: 日本語コメントも禁止
 ```
 
 ---

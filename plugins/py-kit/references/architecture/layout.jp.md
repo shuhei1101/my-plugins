@@ -35,15 +35,9 @@ src/{pkg}/
 |---|---|---|
 | `__main__.py` | `python -m {pkg}` で起動するエントリポイント | CLI ツール |
 | `features/` | ビジネス機能 | `features/chat/`, `features/auto_tweet/` |
-| `integrations/` | 外部サービス連携 | `integrations/llm/`, `integrations/tts/`, `integrations/obs/` |
-| `runtime/` | 実行時インフラ（queue / workflow / state） | AITuber 規模で必要 |
+| `integrations/` | 外部サービス連携 | `integrations/llm/`, `integrations/tts/` |
+| `runtime/` | 実行時インフラ（queue / workflow / state） | 必要に応じて |
 | `server/` | HTTP/WS サーバ | FastAPI 使う場合 |
-
-### 廃止された概念
-
-- `modes/` フォルダは作らない（`features/` で同じパターンで配置）
-- `domain/` / `application/` / `infrastructure/` / `interface/` は使わない
-- `core/` フォルダは作らない（`shared/` に統合）
 
 ---
 
@@ -83,12 +77,10 @@ src/{pkg}/
 ├── __init__.py
 ├── types.py
 ├── service.py
-├── personal/               # サブフィーチャ
-│   ├── __init__.py
-│   ├── types.py
-│   └── service.py
-└── auto_tweet/
-    └── ...
+└── personal/               # サブフィーチャ
+    ├── __init__.py
+    ├── types.py
+    └── service.py
 ```
 
 ---
@@ -118,23 +110,21 @@ src/{pkg}/
 ```
 {pkg}/integrations/
 ├── __init__.py
-├── llm/                    # LLM プロバイダ
-│   ├── __init__.py
-│   ├── types.py            # AsyncChatFn / ChatRequest / ChatResponse 等
-│   ├── openai_client.py    # OpenAI 実装
-│   ├── claude_client.py    # Anthropic 実装
-│   ├── mock_client.py      # テスト用 Mock
-│   └── prompts/            # プロンプトファイル
-├── tts/                    # TTS プロバイダ
-│   └── ...
-└── obs/                    # OBS WebSocket
-    └── ...
+└── llm/                    # サービス種別ごとにサブフォルダ
+    ├── __init__.py
+    ├── types.py            # 関数の型エイリアス（AsyncChatFn 等）と DTO
+    ├── openai_client.py    # 各ベンダー実装
+    ├── claude_client.py
+    └── mock_client.py      # テスト用 Mock
 ```
 
 `integrations/` は **外部サービスとの境界**。
 - 関数の型エイリアス（`AsyncChatFn` 等）を `types.py` に定義
 - 各プロバイダ実装を別ファイルで提供
 - テスト用 Mock も同じフォルダに置く
+
+> プロンプトファイルは **プロジェクトルート直下の `prompts/`** に置く（`llm/prompts-authoring.md` 参照）。
+> `integrations/llm/` 配下にはローダーや provider 実装だけを置く。
 
 ---
 
@@ -166,7 +156,7 @@ src/{pkg}/
 
 ---
 
-## runtime/ の中身（任意・AITuber 規模で使う）
+## runtime/ の中身（任意・大規模プロジェクトで使う）
 
 ```
 {pkg}/runtime/

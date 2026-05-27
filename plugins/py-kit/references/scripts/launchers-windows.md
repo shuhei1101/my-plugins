@@ -11,26 +11,26 @@ Conventions for `.bat` files that launch Python scripts on Windows.
 chcp 65001 > nul
 setlocal
 
-:: ----- このスクリプトの場所をカレントにする -----
+:: ----- cd into this script's directory -----
 cd /d "%~dp0"
 
-:: ----- venv 有効化（存在すれば） -----
+:: ----- activate venv if present -----
 if exist .venv\Scripts\activate.bat (
     call .venv\Scripts\activate.bat
 )
 
-:: ----- タイムスタンプ（YYYYMMDD-HHMMSS）を PowerShell で生成 -----
+:: ----- timestamp (YYYYMMDD-HHMMSS) via PowerShell (locale-independent) -----
 for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd-HHmmss"') do set TS=%%i
 
-:: ----- ログディレクトリ -----
+:: ----- log directory -----
 if not exist log mkdir log
 set LOG=log\script-%TS%.log
 
-:: ----- 実行 -----
+:: ----- run -----
 python script.py %* > "%LOG%" 2>&1
 set EXIT_CODE=%ERRORLEVEL%
 
-:: ----- 結果を表示 -----
+:: ----- show result -----
 type "%LOG%"
 echo.
 echo (log: %LOG%)
@@ -39,44 +39,46 @@ echo (exit: %EXIT_CODE%)
 endlocal & exit /b %EXIT_CODE%
 ```
 
+> Comments inside the bat (`::`) are all English too. See the later "Do not write Japanese inside bat files" section for the reason.
+
 ---
 
 ## Required elements
 
 | Element | Reason |
 |---|---|
-| `@echo off` | Don't echo the commands themselves to the screen |
-| `chcp 65001 > nul` | Avoid UTF-8 mojibake |
-| `setlocal` ... `endlocal` | Avoid polluting environment variables |
-| `cd /d "%~dp0"` | Use the location of the bat file as the base |
-| `.venv\Scripts\activate.bat` (with existence check) | Auto-activate venv |
-| **Timestamp via PowerShell** | `%time%` is locale-dependent (mix of `9:30` and `09:30`); PowerShell is safe |
-| Ensure `log\` directory | Log output destination |
-| `> "%LOG%" 2>&1` | Send both stdout and stderr to the log |
-| `type "%LOG%"` | Also display on screen after execution |
-| `exit /b %EXIT_CODE%` | Propagate Python's exit code to the caller |
+| `@echo off` | suppress echoing commands themselves |
+| `chcp 65001 > nul` | avoid UTF-8 garbling |
+| `setlocal` ... `endlocal` | avoid environment variable pollution |
+| `cd /d "%~dp0"` | base on where the bat is located |
+| `.venv\Scripts\activate.bat` (with existence check) | auto-activate venv |
+| **PowerShell-based timestamp** | `%time%` is locale-dependent (mixing `9:30` and `09:30`); PowerShell is safe |
+| ensure `log\` directory | log output destination |
+| `> "%LOG%" 2>&1` | route both stdout / stderr to the log |
+| `type "%LOG%"` | also show on screen after execution |
+| `exit /b %EXIT_CODE%` | propagate Python's exit code to the caller |
 
 ---
 
 ## Timestamp generation: why PowerShell
 
-`%date%` and `%time%` change format with the Windows locale setting:
+`%date%` and `%time%` change format depending on Windows locale settings:
 - `2026/05/28 ` / `2026-05-28` / `05/28/2026` …
 - `9:30:45.12` / `09:30:45.12` …
 
-Per-locale parsing for these is accident-prone. **PowerShell's `Get-Date -Format`** is locale-independent:
+Individually parsing all of these is an accident waiting to happen. **PowerShell's `Get-Date -Format`** is locale-independent:
 
 ```bat
 for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd-HHmmss"') do set TS=%%i
 ```
 
-Add `-NoProfile` to reduce startup cost.
+Append `-NoProfile` to reduce startup cost.
 
 ---
 
 ## Argument forwarding
 
-Pass all arguments to Python verbatim with `%*`:
+`%*` passes all arguments through to Python:
 
 ```bat
 python script.py %* > "%LOG%" 2>&1
@@ -88,39 +90,57 @@ Example:
 run.bat --input data.csv --output result.json -v
 ```
 
-→ Python's argparse interprets them as-is.
+→ argparse interprets it directly on the Python side.
 
 ---
 
 ## Choosing among multiple binaries
 
-When `python` is not in PATH / you want to use the `py` launcher:
+When `python` is not on PATH / you want to use the `py` launcher:
 
 ```bat
-:: py がある場合は優先（Windows 標準）
+:: prefer py launcher (Windows standard) if available
 where py >nul 2>&1 && (set PY=py) || (set PY=python)
 %PY% -3.12 script.py %*
 ```
 
-However, in the standard flow where you activate venv, `python` is fine
-(venv's `Scripts\python.exe` will be called).
+But in the standard flow that activates a venv, `python` is fine
+(it resolves to `Scripts\python.exe` inside the venv).
 
 ---
 
-## Output messages in English
+## Do not write Japanese inside bat files (absolute)
 
-bat scripts are prone to Windows code-page issues, so write output messages in **English**:
+**All strings and comments inside a bat file must be ASCII / English only. Never write Japanese.**
+
+Even with `chcp 65001`, real damage occurs through any of the following:
+- The cmd.exe code page initialization timing breaks literal strings inside the bat itself
+- Parse results of `for /f` and similar get garbled
+- Redirect targets (files / pipes / other processes) become garbled
+- Once garbled, `if` comparisons and `set` values silently break — behavior changes without even an error
 
 ```bat
-echo (log: %LOG%)         :: ✅
-echo （ログ：%LOG%）        :: ❌（文字化けリスクあり）
+:: ✅ OK
+echo (log: %LOG%)
+:: comment in English only
+
+:: ❌ NG (still breaks even with chcp)
+echo （ログ：%LOG%）
+:: Japanese comments are also forbidden
 ```
 
-Even with `chcp 65001`, mojibake can still happen depending on console behavior or redirection target.
+No exceptions. Japanese inside a bat creates **accidents that the editor cannot notice by feel**, so we ban it entirely.
+
+When Japanese is needed for UI display, have the bat just invoke things, and have the main body (Python) output Japanese.
+
+### Related: sh launchers are looser
+
+Under `launchers-unix.md`, sh / bash run in UTF-8 environments by default, so Japanese is allowed.
+**Only bat is special** — that's the right mental model.
 
 ---
 
-## Sample: run-server.bat for launching FastAPI
+## Sample: run-server.bat for FastAPI
 
 ```bat
 @echo off
@@ -149,21 +169,25 @@ endlocal & exit /b %ERRORLEVEL%
 ## Things you must not do
 
 ```bat
-:: ❌ chcp なし → 文字化けの種
+:: NG: no chcp - source of garbling
 @echo off
 python script.py
 
-:: ❌ setlocal なし → 親シェルを汚染
+:: NG: no setlocal - pollutes parent shell
 set TEMPVAR=foo
 
-:: ❌ %time% / %date% を素で連結 → locale 依存で失敗
-set TS=%date%-%time%   :: 不正なファイル名になる可能性
+:: NG: raw concat of %time% / %date% - fails depending on locale
+set TS=%date%-%time%   :: may yield an invalid filename
+
+:: NG: Japanese inside bat
+echo （ログ出力）
+:: 日本語コメントも禁止
 ```
 
 ---
 
 ## Related files
 
-- `scripts/launchers-unix.md` — UNIX counterpart
-- `scripts/python-script.md` — the Python script that gets called
-- `core/language-rules.md` — bat output should be English
+- `scripts/launchers-unix.md` — UNIX-side counterpart
+- `scripts/python-script.md` — Python script that gets called
+- `core/language-rules.md` — bat output is English
