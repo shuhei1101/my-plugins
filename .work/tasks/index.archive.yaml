@@ -392,3 +392,25 @@ prs:
   summary: py-kit プラグイン全体を Claude Code 一般ベストプラクティスで評価し、改善提案を QA で大量に書き出す（PR135 と同パターン）
   task: 20260527_review-py-kit-plugin
   completed: true
+- id: 139
+  title: PR139 — interactive-review-skills
+  type: feat
+  tags: []
+  summary: QA.mdをAskUserQuestion形式で提示するqa-reviewスキルと、実装内容をインタラクティブにレビューするimpl-reviewスキルをwork-kitに追加
+  task: 20260527_interactive-review-skills
+  completed: true
+- id: 137
+  title: PR137 — agent-jp-mirror-rule
+  type: docs
+  tags: []
+  summary: plugins/{name}/agents/*.md 変更時に .jp.md も同コミットで更新する JP ミラー同期ルールを追加
+  task: 20260527_agent-jp-mirror-rule
+  completed: true
+- id: 141
+  title: PR141 — move-jp-mirror-agent-to-claude-kit
+  type: refactor
+  tags: []
+  summary: jp-mirror-translator エージェントを work-kit から claude-kit に移動し、creator skills
+    の JP ミラー生成でエージェントを使うよう変更。不要な agent-jp-mirror-sync ルールと _overview.md を削除。
+  task: 20260528_move-jp-mirror-agent-to-claude-kit
+  completed: true
