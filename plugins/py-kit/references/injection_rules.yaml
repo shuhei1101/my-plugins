@@ -101,7 +101,8 @@ rules:
 
   # ---------- 単一ファイルスクリプト ----------
   # tools/ 配下と scripts/ 配下は単一ファイルスクリプト規約を必読に
-  - pattern: "tools/**/*.py"
+  # `**/` 前置でサブプロジェクト（モノレポ等）の packages/foo/tools/... にもマッチさせる
+  - pattern: "**/tools/**/*.py"
     required: [scripts/python-script.md]
   - pattern: "**/scripts/**/*.py"
     required: [scripts/python-script.md]
