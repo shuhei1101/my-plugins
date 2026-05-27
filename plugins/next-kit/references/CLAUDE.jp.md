@@ -38,6 +38,19 @@ next-kit の規約は **1 ファイル = 1 ユースケース** の reference �
 
 ---
 
+## TypeScript 型チェックフック
+
+`next-ts-check` フック（PostToolUse、`hooks/ts_check.py`）が `*.ts` / `*.tsx` ファイルへの `Edit` / `Write` / `MultiEdit` 後に自動実行される:
+
+1. 編集ファイルのディレクトリから親方向に `tsconfig.json` を探索（モノレポ対応）
+2. 見つかったディレクトリで `tsc --noEmit --incremental` を実行
+3. 型エラーがあれば stdout に出力 → Claude がコンテキストとして受け取り修正できる
+4. ブロックしない（`decision: block` は使用しない）— エラーは参考情報として扱う
+
+ビルドキャッシュを無効にしたい場合は `tsc --noEmit`（`--incremental` なし）に変更する。
+
+---
+
 ## SKILL から利用
 
 `next-kit:implement` は Step 1 で `index.yaml` を最初に読み、編集対象に該当する reference を特定する。

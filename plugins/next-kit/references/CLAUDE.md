@@ -37,6 +37,19 @@ Switch the injection language by setting `NEXT_KIT_INJECTION_LANG=jp` (default i
 
 ---
 
+## TypeScript type-check hook
+
+The `next-ts-check` hook (PostToolUse, `hooks/ts_check.py`) runs automatically after every `Edit` / `Write` / `MultiEdit` on `*.ts` / `*.tsx` files:
+
+1. Searches upward from the edited file to find the nearest `tsconfig.json` (monorepo-aware)
+2. Runs `tsc --noEmit --incremental` in that directory
+3. If type errors are found, outputs them to stdout so Claude can see and fix them
+4. Never blocks (`decision: block` is not used) — errors are informational
+
+Switch to `tsc --noEmit` (without `--incremental`) if you want to disable the build cache.
+
+---
+
 ## Used by SKILLs
 
 `next-kit:implement` reads `index.yaml` first in its Step 1 to identify which reference applies to the edit target.
