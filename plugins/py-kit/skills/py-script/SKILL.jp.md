@@ -15,7 +15,7 @@
 
 # py-kit:py-script — 簡易 Python スクリプト作成
 
-py-kit 規約に従ったクリーンな単一ファイルスクリプトを作成する。
+py-kit 規約に従った単一ファイル / 数ファイルのスクリプトを作成する。
 
 ---
 
@@ -23,17 +23,30 @@ py-kit 規約に従ったクリーンな単一ファイルスクリプトを作�
 
 ### ステップ1: 規約を読み込む
 
-まずインデックスファイルを読み込む：
+まず references のインデックスを読む:
 
 ```
-{plugin_root}/references/CLAUDE.md
+{plugin_root}/references/index.yaml
 ```
 
-スキルファイルの2階層上がプラグインルート（例: `Base directory: .../skills/py-script` → プラグインルートは `.../{plugin-name}/`）。
+スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-script` → プラグインルートは `.../py-kit/`）。
 
-続いて以下を読む：
-- `{plugin_root}/references/python-core.md` — 命名規則・型ヒント・コメントルール・言語ルール
-- `{plugin_root}/references/python-scripts.md` — 簡易スクリプト構造
+このスキルで読むべきもの:
+- `{plugin_root}/references/core/naming.md` — 命名規約
+- `{plugin_root}/references/core/comments.md` — docstring とフィールド説明
+- `{plugin_root}/references/core/type-hints.md` — PEP 695 / 型注釈
+- `{plugin_root}/references/core/language-rules.md` — 日本語コメント / 英語ログ
+- `{plugin_root}/references/core/style.md` — ruff / 行長
+- `{plugin_root}/references/scripts/python-script.md` — スクリプト構造
+
+bat ランチャーも作るなら:
+- `{plugin_root}/references/scripts/launchers-windows.md`
+
+UNIX ランチャーなら:
+- `{plugin_root}/references/scripts/launchers-unix.md`
+
+tkinter GUI なら:
+- `{plugin_root}/references/scripts/tkinter.md`
 
 → ステップ2へ
 
@@ -43,9 +56,11 @@ py-kit 規約に従ったクリーンな単一ファイルスクリプトを作�
 
 #### 処理内容
 
-1. スクリプトの目的が不明な場合は確認する。
-2. 必要なサードパーティパッケージを特定する。
-3. 出力先とファイル名を確認する。
+1. スクリプトの目的が不明な場合は確認する
+2. 必要なサードパーティパッケージを特定する
+3. 出力先とファイル名を確認する
+4. GUI（tkinter）が必要かどうか確認する
+5. ランチャー（bat / sh）が必要かどうか確認する
 
 → ステップ3へ
 
@@ -55,28 +70,48 @@ py-kit 規約に従ったクリーンな単一ファイルスクリプトを作�
 
 #### 処理内容
 
-1. `python-scripts.md` の「簡易スクリプト構造」に従ってファイルを作成（ファイルヘッダー docstring → 標準ライブラリ → サードパーティ → 定数 → プライベート関数 → `main()` → `parse_args()` → `if __name__ == "__main__"`）。
-2. 型ヒントを全箇所に付ける。
-3. 必要なパッケージは `# pip install {package}` でインラインコメント。
-4. `python-core.md` の命名規則・コメントルールを適用する。
-5. `print()` / ログ出力は英語のみ。
+1. `scripts/python-script.md` の標準テンプレートに従ってファイルを作成:
+   - モジュール docstring（1 行目で何をするか）
+   - `from __future__ import annotations`
+   - 標準ライブラリ → サードパーティ → 自モジュール の順で import
+   - 定数（`UPPER_SNAKE_CASE`）
+   - logger セットアップ
+   - `_parse_args()` で argparse
+   - 処理本体の関数（`process(...)` 等）
+   - `main() -> int` でまとめる
+   - `if __name__ == "__main__": sys.exit(main())`
+2. 型ヒントを全箇所に付ける（PEP 695）
+3. 必要なパッケージは `# pip install {package}` をファイル先頭のコメントで明示
+4. `core/naming.md`（snake_case 関数、UpperCamel 型）と `core/comments.md`（exported 関数 docstring）に従う
+5. `print()` ではなく `logger` を使う。ログメッセージは **英語**
+6. 例外処理: 想定例外は捕まえる、未捕捉は `logger.exception` で traceback ごと残す
+7. ランチャーが必要なら同時に作成（`scripts/launchers-windows.md` / `scripts/launchers-unix.md`）
 
 → 完了
 
 #### 出力
 
-- py-kit 規約に従ったスクリプトファイルが作成済み
+- py-kit 規約に従ったスクリプトファイル
+- 必要なら bat / sh ランチャー
 
 #### 補足
 
 ##### 禁止事項
 
-- `pyproject.toml`・`logger.py`・`config.py`・bat ファイル・setup スクリプト・`tests/` フォルダを作らない（それらはフルプロジェクト用）
-- 一回限りのスクリプトに不要な抽象化を加えない
+- `pyproject.toml` を作らない（必要なら `py-kit:py-project` で本格プロジェクト化）
+- `logger.py` / `settings.py` / `errors.py` 等の `shared/` モジュールを作らない（インライン）
+- `tests/` フォルダを作らない
+- 1 回限りのスクリプトに不要な抽象化を加えない（YAGNI）
+- 単体テストを書かない（py-kit 全体の方針）
 
 ---
 
 ## 参考資料
 
-- `{plugin_root}/references/python-core.md` — 命名規則・型ヒント・コメントルール・言語ルール
-- `{plugin_root}/references/python-scripts.md` — 簡易スクリプト構造
+詳細は `{plugin_root}/references/index.yaml` を参照。
+
+主要 reference:
+- `core/*` — 言語ルール
+- `scripts/python-script.md` — スクリプトの骨格
+- `scripts/launchers-*.md` — ランチャー
+- `scripts/tkinter.md` — GUI 付ける場合

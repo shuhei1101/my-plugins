@@ -35,20 +35,20 @@ PR138 で確定した **大方針** に従って py-kit プラグインの refer
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に作業中の未決定事項を記録する | `.work/tasks/.../PR140/QA.md` |
-| - | 既存 references を解体（python-{core,architecture,scripts,testing,fastapi,llm}.md + jp） | `plugins/py-kit/references/python-*.md` |
-| - | 新フォルダ構成へ移行（38 ファイル）。フォルダ: core / architecture / shared / scripts / testing / concurrency / packaging / performance / llm / fastapi | `plugins/py-kit/references/**` |
-| - | `references/index.yaml` 新規作成（メタデータ + 注入星取り表、PR138 QA.md § D-6 参照） | `plugins/py-kit/references/index.yaml` |
-| - | `references/CLAUDE.md` を「index.yaml を読め」式に書き換え | `plugins/py-kit/references/CLAUDE.md` (+ jp) |
-| - | 各 reference 本文を新方針で書く（PR138 QA の決定事項を展開） | `plugins/py-kit/references/**/*.md` |
-| - | SKILL.md（py-project / py-script）を新方針で全面書き直し | `plugins/py-kit/skills/py-project/SKILL.md`, `plugins/py-kit/skills/py-script/SKILL.md` |
-| - | `plugins/py-kit/CLAUDE.md` 新設 | `plugins/py-kit/CLAUDE.md` (+ jp) |
-| - | `plugin.json` を MAJOR バンプ（1.0.0 → 2.0.0） | `plugins/py-kit/.claude-plugin/plugin.json` |
-| - | `marketplace.json` を同期 | `.claude-plugin/marketplace.json` |
-| - | `changelogs/v2.0.0.md` 作成 | `plugins/py-kit/changelogs/v2.0.0.md` |
-| - | JP ミラー全件同時生成（`jp-mirror-translator` agent 利用可） | `plugins/py-kit/**/*.jp.md` |
-| - | glossary 用語の整理（PR138 で追加済みの新方針用語を確認） | `.claude/rules/core/glossary.md` (+ jp) |
-| - | `.work/notes/AIイシュー自動発見システム構想.md` の py-kit セクションを新方針で更新 | `.work/notes/AIイシュー自動発見システム構想.md` |
+| 済 | QA.md に作業中の未決定事項を記録する（QA は空のまま完了） | `.work/tasks/.../PR140/QA.md` |
+| 済 | 既存 references を解体（python-{core,architecture,scripts,testing,fastapi,llm}.md + jp） | `plugins/py-kit/references/python-*.md` |
+| 済 | 新フォルダ構成へ移行（38 ファイル）。フォルダ: core / architecture / shared / scripts / testing / concurrency / packaging / performance / llm / fastapi | `plugins/py-kit/references/**` |
+| 済 | `references/index.yaml` 新規作成（メタデータ + 注入星取り表、PR138 QA.md § D-6 参照） | `plugins/py-kit/references/index.yaml` |
+| 済 | `references/CLAUDE.md` を「index.yaml を読め」式に書き換え | `plugins/py-kit/references/CLAUDE.md` (+ jp) |
+| 済 | 各 reference 本文を新方針で書く（PR138 QA の決定事項を展開） | `plugins/py-kit/references/**/*.md` |
+| 済 | SKILL.md（py-project / py-script）を新方針で全面書き直し | `plugins/py-kit/skills/py-project/SKILL.md`, `plugins/py-kit/skills/py-script/SKILL.md` |
+| 済 | `plugins/py-kit/CLAUDE.md` 新設 | `plugins/py-kit/CLAUDE.md` (+ jp) |
+| 済 | `plugin.json` を MAJOR バンプ（1.0.0 → 2.0.0） | `plugins/py-kit/.claude-plugin/plugin.json` |
+| 済 | `marketplace.json` を同期 | `.claude-plugin/marketplace.json` |
+| 済 | `changelogs/v2.0.0.md` 作成 | `plugins/py-kit/changelogs/v2.0.0.md` |
+| 済 | JP ミラー全件同時生成（日本語先行 → 11 並列 agent で英語版生成） | `plugins/py-kit/**/*.md`（EN + jp）|
+| 済 | glossary 用語の整理（PR138 用語確認 + py-kit エントリを v2 実装完了表現に更新） | `.claude/rules/core/glossary.md` (+ jp) |
+| 済 | `.work/notes/AIイシュー自動発見システム構想.md` の py-kit セクションを新方針で更新 | `.work/notes/AIイシュー自動発見システム構想.md` |
 
 ## 参考ドキュメント
 

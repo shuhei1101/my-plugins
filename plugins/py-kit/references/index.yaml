@@ -1,0 +1,228 @@
+# py-kit references インデックス
+#
+# 各 reference ファイルの概要と、編集対象ファイルパスに対する注入ルール（星取り表）を定義する。
+# このファイルは PreToolUse フック（次 PR で実装予定）が読み込み、
+# 編集対象ファイルにマッチした reference を Claude へ自動注入する。
+#
+# Claude は CLAUDE.md の指示に従って、まずこのファイルを読み、
+# 編集対象に必要な reference を判断して読み込む。
+
+# ---------- メタデータ：reference 一覧 ----------
+references:
+  # ----- core: 言語ルール -----
+  - path: core/naming.md
+    description: 命名規約。関数 snake_case、型エイリアス UpperCamel、ファイル/モジュール snake_case。feature フォルダ内の標準ファイル名（types/service/query/route/client/db）対応表
+
+  - path: core/comments.md
+    description: コメントルール。exported 関数/型に 1 行 docstring 必須、Pydantic/dataclass の設計上重要フィールドの説明必須、PR 番号付き変更履歴、TODO は issue 番号必須
+
+  - path: core/type-hints.md
+    description: 型ヒント全般。PEP 695 ジェネリクス、Self、@typing.override、Annotated、Recommended Decorators（@dataclass / @final / @cache 等）、TYPE_CHECKING、type 文、NewType、assert_never、ハンドラーデコレータ
+
+  - path: core/language-rules.md
+    description: 言語ルール。コメントは日本語、print/logger/bat は英語、文字列フォーマット f-string、import 順、例外階層（AppError 基底クラス）
+
+  - path: core/style.md
+    description: スタイル設定。ruff/mypy/pyright の推奨設定、行長 100、ダブルクォート、セクションマーカー
+
+  # ----- architecture: アーキテクチャ -----
+  - path: architecture/layout.md
+    description: トップレベルレイアウト。必須は shared/ と main.py のみ、任意で features/integrations/runtime/server。feature フォルダ内の標準構成（types.py / service.py / query.py / route.py / client.py）
+
+  - path: architecture/ts-style.md
+    description: TypeScript 風 Python の中心ドキュメント。type エイリアスで関数の型を定義 + Callable で DI、Protocol で構造的型付け、@dataclass/Pydantic/TypedDict の使い分け表、@overload の限定使用
+
+  - path: architecture/composition-root.md
+    description: main.py の責務。build_app(settings) で関数を functools.partial で配線、Handlers dataclass で型安全に保持。FastAPI/CLI 等ライブラリ標準クラスはそのまま使う
+
+  - path: architecture/dependencies.md
+    description: 依存方向ルール。features/server → integrations → shared の一方向。同層内相互参照は禁止。逆依存（DIP）は関数の型エイリアスで実現
+
+  # ----- shared: 横断インフラ -----
+  - path: shared/logger.md
+    description: JSON Lines 形式の logger 標準実装。get_logger(__name__)、構造化ログ、ログレベル運用
+
+  - path: shared/settings.md
+    description: pydantic_settings.BaseSettings 標準パターン。.env / .env.sample 運用、SecretStr、ネストした設定
+
+  - path: shared/errors.md
+    description: 例外階層。AppError 基底クラス、ドメイン別サブクラス、HTTP エラーとのマッピング
+
+  - path: shared/types.md
+    description: 共通型エイリアス。NewType と type 文の使い分け、識別子型（UserId 等）の標準
+
+  - path: shared/constants.md
+    description: constants.py の役割境界。PROJECT_ROOT, LOG_DIR 等の計算済みパス置き場。実行時可変値は settings へ
+
+  # ----- scripts: スクリプト -----
+  - path: scripts/python-script.md
+    description: 単一ファイル Python スクリプトの構造。docstring、argparse、main() 返り値 int、セクションマーカー
+
+  - path: scripts/launchers-windows.md
+    description: Windows 用 bat ランチャー。chcp 65001、setlocal、PowerShell 時刻、log/ ディレクトリ出力
+
+  - path: scripts/launchers-unix.md
+    description: UNIX 用 shell スクリプト。set -euo pipefail、tee でログ、.venv activate
+
+  - path: scripts/tkinter.md
+    description: tkinter GUI 規約。標準スタイル、設定ダイアログ、アクセントカラー（blue）
+
+  # ----- testing: テスト -----
+  - path: testing/strategy.md
+    description: テスト方針。単体テストは書かない、結合テスト + スモークテストのみ。スモークは外部接続用でユーザー手動実行限定（AI 自動実行禁止）
+
+  - path: testing/pytest.md
+    description: pytest 規約。conftest.py、fixtures、parametrize、pytest-asyncio、tests/ レイアウト
+
+  - path: testing/mocks.md
+    description: 結合テストの Mock パターン。LLM Mock、HTTP Mock、時刻 Mock、関数の型エイリアスを利用した注入差し替え
+
+  # ----- concurrency: 並行性 -----
+  - path: concurrency/async.md
+    description: asyncio 規約。TaskGroup、asyncio.timeout、sync/async 境界、async generator/context manager
+
+  - path: concurrency/parallelism.md
+    description: 並列処理。multiprocessing / threading / subinterpreter の使い分け、GIL、CPU bound vs IO bound
+
+  # ----- packaging: パッケージング -----
+  - path: packaging/pyproject.md
+    description: pyproject.toml 完全サンプル。[project] / [tool.ruff] / [tool.mypy] / [tool.pyright] / [tool.pytest]
+
+  - path: packaging/dependencies.md
+    description: 依存管理。uv 標準、optional-dependencies.dev 必須、.venv 統一、lock ファイル運用
+
+  - path: packaging/distribution.md
+    description: 配布。wheel/sdist、PyPI publish、entry_points で CLI 公開
+
+  - path: packaging/python-versions.md
+    description: Python バージョン方針。極力高いバージョンを採用、3.12 以降の機能対応表
+
+  # ----- performance: パフォーマンス -----
+  - path: performance/cheatsheet.md
+    description: パフォーマンスチート集。プロファイラ（cProfile / snakeviz / line_profiler / py-spy / scalene / memray）の使い分け、ホットパスのチェックリスト
+
+  # ----- llm: LLM -----
+  - path: llm/providers.md
+    description: LLM プロバイダ実装。Claude / OpenAI / Gemini を関数で抽象化、vendor 例外をドメイン例外にラップ、token usage ログ
+
+  - path: llm/instructor.md
+    description: Instructor + Pydantic で構造化出力。task-specific クライアント関数の作り方
+
+  - path: llm/prompts.md
+    description: プロンプトファイル管理。integrations/llm/prompts/*.md、Jinja2 / Template、prompt versioning
+
+  - path: llm/cost-cache.md
+    description: コスト管理。トークン管理、max_tokens、プロンプトキャッシュ、batch API、streaming
+
+  - path: llm/exceptions-retry.md
+    description: LLM 例外階層。rate-limit / server / bad-request / auth / timeout / content-filter、リトライ戦略
+
+  # ----- fastapi: FastAPI -----
+  - path: fastapi/app.md
+    description: FastAPI アプリ構成。build_app パターン、lifespan、middleware、CORS
+
+  - path: fastapi/routes.md
+    description: ルーター実装。Annotated[Type, Depends/Path/Query]、route 関数は thin、service.py に処理本体
+
+  - path: fastapi/schemas.md
+    description: 入出力 Pydantic スキーマ。Field 制約、to_domain/from_domain メソッドで feature 内 DTO と分離
+
+  - path: fastapi/auth-and-errors.md
+    description: 認証 Depends + SecretStr の取り扱い + exception_handler によるエラーハンドリング
+
+  - path: fastapi/health.md
+    description: ヘルスチェック。/healthz で 200 を返すだけのシンプル実装
+
+# ---------- 注入フックの星取り表 ----------
+# 編集対象ファイルパスのパターン → 注入する reference の組
+#   required: 必須注入（必読として Claude に提示）
+#   optional: 任意参照（参考として案内）
+# pattern は glob。複数 pattern にマッチした場合は和集合で注入する。
+injection_rules:
+  # 全 Python ファイルに常に注入する基礎ルール
+  - pattern: "**/*.py"
+    required:
+      - core/naming.md
+      - core/comments.md
+      - core/type-hints.md
+      - core/language-rules.md
+      - core/style.md
+
+  # shared/ 配下
+  - pattern: "**/shared/logger.py"
+    required: [shared/logger.md]
+  - pattern: "**/shared/settings.py"
+    required: [shared/settings.md]
+  - pattern: "**/shared/errors.py"
+    required: [shared/errors.md]
+  - pattern: "**/shared/types.py"
+    required: [shared/types.md]
+  - pattern: "**/shared/constants.py"
+    required: [shared/constants.md]
+
+  # composition root
+  - pattern: "**/main.py"
+    required: [architecture/composition-root.md, architecture/layout.md]
+    optional: [architecture/dependencies.md]
+  - pattern: "**/__main__.py"
+    required: [architecture/composition-root.md]
+
+  # features/
+  - pattern: "**/features/**/types.py"
+    required: [architecture/ts-style.md, architecture/layout.md]
+  - pattern: "**/features/**/service.py"
+    required: [architecture/ts-style.md, architecture/layout.md, architecture/dependencies.md]
+  - pattern: "**/features/**/query.py"
+    required: [architecture/ts-style.md, architecture/layout.md]
+  - pattern: "**/features/**/route.py"
+    required: [fastapi/routes.md, fastapi/schemas.md]
+    optional: [fastapi/auth-and-errors.md]
+  - pattern: "**/features/**/client.py"
+    required: [architecture/ts-style.md]
+
+  # integrations/
+  - pattern: "**/integrations/llm/**/*.py"
+    required: [llm/providers.md, llm/instructor.md, llm/exceptions-retry.md]
+    optional: [llm/cost-cache.md, llm/prompts.md]
+  - pattern: "**/integrations/llm/prompts/*.md"
+    required: [llm/prompts.md]
+  - pattern: "**/integrations/**/client.py"
+    required: [architecture/ts-style.md]
+    optional: [architecture/dependencies.md]
+
+  # server/
+  - pattern: "**/server/app.py"
+    required: [fastapi/app.md, architecture/composition-root.md]
+  - pattern: "**/server/routes/**/*.py"
+    required: [fastapi/routes.md, fastapi/schemas.md]
+    optional: [fastapi/auth-and-errors.md]
+  - pattern: "**/server/ws/**/*.py"
+    required: [fastapi/app.md]
+
+  # runtime/
+  - pattern: "**/runtime/**/*.py"
+    required: [concurrency/async.md]
+    optional: [concurrency/parallelism.md]
+
+  # tests/
+  - pattern: "**/tests/**/test_*.py"
+    required: [testing/strategy.md, testing/pytest.md]
+    optional: [testing/mocks.md]
+  - pattern: "**/tests/smoke/**/*.py"
+    required: [testing/strategy.md]
+
+  # packaging
+  - pattern: "**/pyproject.toml"
+    required: [packaging/pyproject.md, packaging/dependencies.md]
+    optional: [packaging/python-versions.md, packaging/distribution.md]
+
+  # launcher scripts
+  - pattern: "**/*.bat"
+    required: [scripts/launchers-windows.md]
+  - pattern: "**/*.sh"
+    required: [scripts/launchers-unix.md]
+
+  # 注:
+  # - 単一ファイルスクリプト判定はパスでは難しいので、SKILL.md (py-script) の
+  #   Step 1 で scripts/python-script.md を強制注入する運用にする
+  # - tkinter は import 検出が必要なので、SKILL.md 経由で注入する

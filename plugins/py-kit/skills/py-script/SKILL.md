@@ -10,7 +10,7 @@ description: >
 
 # py-kit:py-script — Simple Python Script
 
-Creates a clean, standards-compliant single-file Python script.
+Create a single-file (or few-file) script that follows py-kit conventions.
 
 ---
 
@@ -18,17 +18,30 @@ Creates a clean, standards-compliant single-file Python script.
 
 ### Step 1: Load standards
 
-Read the index file to identify which references to load:
+First, read the references index:
 
 ```
-{plugin_root}/references/CLAUDE.md
+{plugin_root}/references/index.yaml
 ```
 
-The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-script` → plugin root is `.../{plugin-name}/`).
+The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-script` → plugin root is `.../py-kit/`).
 
-Then read:
-- `{plugin_root}/references/python-core.md` — naming, type hints, comment rules, language rules
-- `{plugin_root}/references/python-scripts.md` — simple script structure
+Read the following for this skill:
+- `{plugin_root}/references/core/naming.md` — naming conventions
+- `{plugin_root}/references/core/comments.md` — docstrings and field descriptions
+- `{plugin_root}/references/core/type-hints.md` — PEP 695 / type annotations
+- `{plugin_root}/references/core/language-rules.md` — Japanese comments / English logs
+- `{plugin_root}/references/core/style.md` — ruff / line length
+- `{plugin_root}/references/scripts/python-script.md` — script structure
+
+If a bat launcher is also needed:
+- `{plugin_root}/references/scripts/launchers-windows.md`
+
+For a UNIX launcher:
+- `{plugin_root}/references/scripts/launchers-unix.md`
+
+For a tkinter GUI:
+- `{plugin_root}/references/scripts/tkinter.md`
 
 → Proceed to Step 2
 
@@ -38,9 +51,11 @@ Then read:
 
 #### Process
 
-1. Confirm what the script should do if not already clear.
-2. Identify required third-party packages (if any).
+1. Confirm the script's purpose if unclear.
+2. Identify any third-party packages required.
 3. Confirm the output location and filename.
+4. Confirm whether a GUI (tkinter) is needed.
+5. Confirm whether a launcher (bat / sh) is needed.
 
 → Proceed to Step 3
 
@@ -50,28 +65,48 @@ Then read:
 
 #### Process
 
-1. Use the Simple Script Structure from `python-scripts.md` (file header docstring → stdlib imports → third-party → constants → private helpers → `main()` → `parse_args()` → `if __name__ == "__main__"`).
-2. Apply type hints everywhere.
-3. Document required packages with `# pip install {package}` inline comments.
-4. Apply naming conventions and comment rules from `python-core.md`.
-5. Write `print()` / log output in English only.
+1. Create the file following the standard template in `scripts/python-script.md`:
+   - Module docstring (line 1 describes what it does)
+   - `from __future__ import annotations`
+   - Imports in order: standard library → third-party → own modules
+   - Constants (`UPPER_SNAKE_CASE`)
+   - Logger setup
+   - `_parse_args()` for argparse
+   - Body functions (e.g. `process(...)`)
+   - `main() -> int` to tie everything together
+   - `if __name__ == "__main__": sys.exit(main())`
+2. Apply type hints everywhere (PEP 695).
+3. Declare required packages with `# pip install {package}` comments at the top of the file.
+4. Follow `core/naming.md` (snake_case functions, UpperCamel types) and `core/comments.md` (docstrings on exported functions).
+5. Use `logger` instead of `print()`. Log messages in **English**.
+6. Exception handling: catch expected exceptions; for uncaught ones, leave a full traceback via `logger.exception`.
+7. If a launcher is needed, create it at the same time (`scripts/launchers-windows.md` / `scripts/launchers-unix.md`).
 
 → Done
 
 #### Output
 
-- Script file created following py-kit standards
+- Script file following py-kit conventions
+- bat / sh launcher if required
 
 #### Notes
 
 ##### Prohibitions
 
-- Do not create `pyproject.toml`, `logger.py`, `config.py`, bat files, setup scripts, or a tests folder — those belong in a full project
-- Do not add unnecessary abstraction for a one-off script
+- Do not create `pyproject.toml` (if needed, use `py-kit:py-project` for a full project).
+- Do not create `shared/` modules such as `logger.py` / `settings.py` / `errors.py` (inline them).
+- Do not create a `tests/` folder.
+- Do not add unnecessary abstraction for a one-off script (YAGNI).
+- Do not write unit tests (overall py-kit policy).
 
 ---
 
 ## References
 
-- `{plugin_root}/references/python-core.md` — Naming Conventions, Type Hints, Comment Rules, Language Rules
-- `{plugin_root}/references/python-scripts.md` — Simple Script Structure
+See `{plugin_root}/references/index.yaml` for details.
+
+Primary references:
+- `core/*` — language rules
+- `scripts/python-script.md` — script skeleton
+- `scripts/launchers-*.md` — launchers
+- `scripts/tkinter.md` — when adding a GUI
