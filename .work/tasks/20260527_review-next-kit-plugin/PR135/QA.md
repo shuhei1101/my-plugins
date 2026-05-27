@@ -857,6 +857,205 @@ next-kit プラグインの references を全て読み、Next.js / React コミ�
 
 ---
 
-# 全 QA 決定完了
+# 追加レビュー（実装後）
 
-72 件すべての判断を反映した。次に references の改訂作業に入る。
+## QA-073: References の分割方針（ユースケース＝ファイル単位） ❌未決定
+
+**背景**: PR135 で完成させた references を実装してみると、1 ファイルに複数の異なるファイル種別・概念を詰め込みすぎていた。
+
+具体例:
+- `backend/api-routes.md` — `route.ts` / `client.ts` / `service.ts` / `db.ts` / `query.ts` / `dbHelper.ts` の **6 種類** の書き方を 1 ファイルに集約
+  → 「`query.ts` だけ書きたい」のに他 5 種類の情報まで読み込まれて煩い
+- `backend/auth.md` — 「プロバイダ選定」「比較表」「トレードオフ」が大半（11–22 行目の比較表）
+  → フックで自動読み込みされたとき、選定情報は無価値（既に決定済の規約を実装するだけ）
+- 他にも同様の「複数概念詰め込み」「比較・選定」「決定不明確」が散見される
+
+**運用目的**:
+- 将来 `UserPromptSubmit` / `PreToolUse` フックで **ファイルパス・ファイル名一致** に応じた references 自動 inject を構築する（次 PR）
+- 例: 編集中ファイルが `query.ts` → `backend/query-ts.md` だけ inject
+- そのため reference は **「このファイルを書くときに必要な情報だけ」** で完結している必要がある
+
+---
+
+### 提案: 分割の基本方針
+
+1. **1 ファイル = 1 ユースケース = 1 ファイル種別の書き方** に分割
+2. **比較・選定・トレードオフ・代替案は削除**（フックで読まれても無価値）
+3. **「決定された規約 + 実装手順 + コード例」だけ** を残す
+4. **ファイル名はフックトリガーキーワード** と一致させる（例: `query-ts.md` ← `query.ts` 編集時にマッチ）
+5. **共通項（概念図・分離理由など）が複数ファイルから参照される場合のみ**、別途 overview ファイル化（薄く保つ）
+
+---
+
+### 提案: 分割マップ
+
+#### backend/api-routes.md（5+ファイル詰め込み）→ 分割
+
+| 旧 | 新 | フックトリガー候補 |
+|---|---|---|
+| api-routes.md 全体 | **削除**（個別ファイルに分散） | — |
+| (CQRS 分離の概念図のみ) | `backend/api-folder-overview.md`（短く） | `app/api/v1/**` フォルダを最初に触れたとき |
+| route.ts セクション | `backend/route-ts.md` | `app/api/v1/**/route.ts` |
+| client.ts セクション | `backend/client-ts.md` | `app/api/v1/**/client.ts` |
+| service.ts セクション | `backend/service-ts.md` | `app/api/v1/**/service.ts` |
+| db.ts セクション | `backend/db-ts.md` | `app/api/v1/**/db.ts` |
+| query.ts セクション | `backend/query-ts.md` | `app/api/v1/**/query.ts` |
+| dbHelper.ts セクション | `backend/db-helper-ts.md` | `app/api/v1/**/dbHelper.ts` |
+
+#### backend/auth.md（選定だらけ）→ 実装手順だけ残す
+
+| 旧 | 新 |
+|---|---|
+| プロバイダ選定の比較表 | **削除**（決定だけ短く別 ADR or notes へ） |
+| getAuthContext() 実装 | `backend/auth-context.md`（`app/(shared)/auth/index.ts` 編集時） |
+| Better Auth セットアップ | `backend/auth-better.md`（採用時のみ。テンプレ）|
+| Auth.js セットアップ | `backend/auth-nextauth.md`（採用時のみ。テンプレ）|
+| DB スキーマ（auth 用） | `backend/auth-schema.md`（`drizzle/schema.ts` 編集時に併読） |
+| ログイン / ログアウト Action | `backend/auth-actions.md`（`app/(shared)/actions/auth.ts` 編集時） |
+
+#### backend/database.md（巨大）→ 概念別に分割
+
+| 旧 | 新 | フックトリガー |
+|---|---|---|
+| 全体 | **削除** | — |
+| ID 設計 / UUID vs integer | `backend/db-id.md` | `drizzle/schema.ts` 編集時 |
+| timestamps / auditFields | `backend/db-timestamps.md` | 同上 |
+| Enum | `backend/db-enum.md` | 同上 |
+| Relations / index | `backend/db-relations.md` | 同上 |
+| トランザクション規約 | `backend/db-transaction.md` | `service.ts` 編集時 |
+| 楽観的ロック | `backend/db-optimistic-lock.md` | `db.ts` `service.ts` |
+| ハードデリート + 履歴 | `backend/db-history.md` | `db.ts` `service.ts` |
+| Drizzle 流儀（SQL Builder vs Relational） | `backend/drizzle-style.md` | `query.ts` `db.ts` |
+| マイグレーション運用 | `backend/db-migration.md` | `drizzle.config.ts` |
+
+#### backend/server-actions.md → 分割
+
+| 旧 | 新 | フックトリガー |
+|---|---|---|
+| 全体 | `backend/actions-ts.md` | `**/actions.ts` 編集時 |
+| ActionResult 型 | （上に統合 or `shared/action-result.md` 共通化） | 同上 |
+| useTransition / useActionState のクライアント側 | `frontend/use-action-state.md` | `*Screen.tsx` 編集時 |
+
+#### frontend/conventions/libraries.md（巨大、比較中心）→ 削除 + 採用ライブラリのみ参照
+
+| 旧 | 新 |
+|---|---|
+| ライブラリ一覧（決定 OK） | `frontend/stack-overview.md`（短く採用一覧のみ） |
+| 比較・トレードオフ | **削除**（フックで読まれても無価値） |
+| 各ライブラリの導入手順 | 必要なら個別の `frontend/setup-{name}.md` |
+
+#### frontend/conventions/folder-structure.md → 分割
+
+| 旧 | 新 |
+|---|---|
+| 全体構造 | `frontend/app-folder-overview.md`（`app/` 直下を最初に触れたとき） |
+| Route Group | `frontend/route-groups.md`（フォルダ命名時） |
+| Per-feature 配置 | `frontend/feature-folder.md`（`app/(authenticated)/{feature}/` 編集時） |
+| `[id]/` View / Edit 配置 | `frontend/id-routing.md`（`[id]/` 配下編集時） |
+
+#### frontend/patterns/* → さらに細分化
+
+| 旧 | 新 |
+|---|---|
+| edit-screen.md | `frontend/edit-screen.md`（EditScreen.tsx 用、フォーム本体）+ `frontend/edit-page-tsx.md`（page.tsx 用 wrapper） |
+| form.md | `frontend/form-schema.md`（form.ts 用）+ `frontend/form-component.md`（shadcn Form の書き方）+ 入力タイプ別の個別ファイル（任意） |
+| list-screen.md | `frontend/list-screen.md` + `frontend/list-page-tsx.md` |
+| view-screen.md | 同様に分割 |
+
+#### shared/error.md → 分割
+
+| 旧 | 新 |
+|---|---|
+| エラークラス階層 | `shared/error-classes.md`（`app/(shared)/errors/` 編集時） |
+| withRouteErrorHandling | （`route-ts.md` に統合 or `shared/error-route-handler.md`） |
+| handleActionError | （`actions-ts.md` に統合 or `shared/error-action-handler.md`） |
+| handleAppError | （hook 系で読む用 `shared/error-client-handler.md`） |
+| error.tsx / global-error.tsx | `frontend/error-tsx.md`（`error.tsx` 編集時） |
+| not-found.tsx | `frontend/not-found-tsx.md`（`not-found.tsx` 編集時） |
+
+#### shared/logger.md → 分割
+
+| 旧 | 新 |
+|---|---|
+| Logger 実装 | `shared/logger-impl.md`（`logger.ts` 編集時） |
+| 使い方（route / service / hook ごと） | 該当する `*-ts.md` に統合 |
+| Component tag 一覧 | `shared/logger-tags.md`（薄い参照） |
+
+#### testing/* → 既に分割気味だが更に細分化
+
+| 旧 | 新 |
+|---|---|
+| strategy.md | 概念のみ短く `testing/overview.md` |
+| unit.md | `testing/vitest-config.md`, `testing/component-test.md`, `testing/schema-test.md`, `testing/service-test.md` |
+| e2e.md | `testing/playwright-config.md`, `testing/page-object.md`, `testing/e2e-spec.md` |
+| fixtures.md | `testing/fixture-factory.md`, `testing/db-cleanup.md` |
+
+#### shared/environment.md → 分割
+
+| 旧 | 新 |
+|---|---|
+| .env と YAML の使い分け | `shared/env-vs-yaml.md`（薄く） |
+| env 実装（t3-env） | `shared/env-setup.md` |
+| YAML config 実装 | `shared/yaml-config.md`（`config.ts` 編集時） |
+| settings.yaml サンプル | `shared/yaml-sample.md`（`settings.yaml` 編集時） |
+
+---
+
+### 削除候補
+
+完全に「フックトリガーで読み込まれても価値がない」ファイル:
+
+- 全 references の **比較・選定セクション** → 削除（採用ライブラリだけリストする）
+- 「ライブラリのどっちを使うか」「Why X over Y」 → 削除
+- アンチパターンの抽象論 → コード例に「これは NG: ...」コメントで吸収
+
+決定の経緯を残したい場合は **PR の commit message / `.work/notes/`** に書く（reference には残さない）。
+
+---
+
+### 想定する次 PR の自動 inject ハック例
+
+```jsonc
+// hooks/hooks.json（次 PR で書く想定）
+{
+  "PreToolUse": [
+    {
+      "matcher": "Edit|Write",
+      "tool_input": { "file_path": "**/api/v1/**/query.ts" },
+      "command": "echo 'Read and follow: plugins/next-kit/references/backend/query-ts.md'"
+    },
+    {
+      "matcher": "Edit|Write",
+      "tool_input": { "file_path": "**/api/v1/**/route.ts" },
+      "command": "echo 'Read and follow: plugins/next-kit/references/backend/route-ts.md'"
+    }
+    // ...
+  ]
+}
+```
+
+reference 側はこのマッピングと 1:1 で対応する必要がある。
+
+---
+
+### 提案する判断
+
+| 案 | 内容 |
+|---|---|
+| **A. 全面分割（推奨）** | 上記マップ通り、PR135 内で全 references を分割し直す。新規 / 削除 / 移動が膨大（45 → 70+ ファイル）。次 PR でフック構築。 |
+| **B. 段階分割** | PR135 では特に問題が大きい `api-routes.md`, `auth.md`, `database.md`, `libraries.md`, `error.md` だけ先に分割。残りは次 PR で。 |
+| **C. 別 PR に切り出し** | PR135 は現状で merge し、新 PR で全面分割。フック構築と同 PR に。 |
+
+**Claude の推奨**: **A**（PR135 内で全面分割）。フック構築 PR で「reference が分割されていない」事態を避けるため、references の最終形態を先に揃える。
+
+**決定**:
+
+---
+
+### 補足: 命名規約
+
+- ファイル名は **ファイル種別と一致**（`query.ts` → `query-ts.md`）
+- ファイル名は **対象パスから連想できる単語**（`route.ts` → `route-ts.md`、`error.tsx` → `error-tsx.md`）
+- 概念単位（特定ファイルにマッピングしない）は短い名詞（`error-classes.md`, `route-groups.md`, `stack-overview.md`）
+- 「overview」は最小限（フックで毎回読まれるのを避ける）
+
