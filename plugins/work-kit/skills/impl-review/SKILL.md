@@ -14,7 +14,7 @@ Analyzes commits on the current PR branch and walks the user through each change
 
 ## Overview
 
-The skill first builds a high-level "overview list" of change areas, presents it to the user, then walks through each item one by one via `AskUserQuestion`. If the user selects "もっと詳しく" (deep dive), the skill spirals into detail for that area and then returns to the main list.
+The skill builds an internal "overview list" of change areas and immediately walks through each item one by one via `AskUserQuestion` — without showing the full list preview to the user. If the user selects "もっと詳しく" (deep dive), the skill spirals into detail for that area and then returns to the main list.
 
 ---
 
@@ -28,12 +28,13 @@ The skill first builds a high-level "overview list" of change areas, presents it
 
 #### Process
 
-1. If called with a PR number argument (e.g. `PR139`), find the branch:
+1. If there is an in-progress PR in the current conversation session, use that branch as the first priority
+2. If a PR number is explicitly provided as an argument (e.g. `PR139`), use it to find the branch:
    ```bash
    git branch --list "*PR{N}*"
    ```
-2. If called without arguments, use the current branch
-3. Confirm the base branch (default: `master`)
+3. If neither applies, fall back to the current branch
+4. Confirm the base branch (default: `master`)
 
 → Proceed to Step 2
 
@@ -69,7 +70,7 @@ The skill first builds a high-level "overview list" of change areas, presents it
 
 ---
 
-### Step 3: Build the overview list
+### Step 3: Build the overview list internally
 
 #### Condition
 
@@ -85,11 +86,11 @@ The skill first builds a high-level "overview list" of change areas, presents it
    - A 2–3 sentence explanation of what changed and why
    - The key files involved
 
-→ Proceed to Step 4
+→ Proceed to Step 4 (do NOT show the full list to the user)
 
 #### Output
 
-- Overview list with 2–8 change areas
+- Overview list with 2–8 change areas (held internally)
 
 #### Notes
 
@@ -101,26 +102,11 @@ The skill first builds a high-level "overview list" of change areas, presents it
 
 ---
 
-### Step 4: Present the overview
+### Step 4: Interactive review loop
 
 #### Condition
 
 - Step 3 complete
-
-#### Process
-
-1. Output the full overview list as a numbered Markdown list so the user knows what's coming
-2. State that you will walk through each item one by one
-
-→ Proceed to Step 5
-
----
-
-### Step 5: Interactive review loop
-
-#### Condition
-
-- Step 4 complete
 
 #### Process
 
@@ -140,22 +126,22 @@ For each item in the overview list in order:
 3. If `もっと詳しく` (deep-dive mode):
    - Present detailed information: specific code changes, the reason for the approach, potential risks
    - Use `AskUserQuestion` again:
-     - **question**: "さらに深掘りしますか？"
+     - **question**: 「さらに深掘りしますか？」
      - **options**: `OK / 終わり` / `別の角度から説明して` / `問題あり`
    - Continue until the user selects `OK / 終わり` or `問題あり`
    - After exiting deep-dive, return to the overview list and continue with the next item
 
 4. If `問題あり`: record the item as flagged, then continue to the next item
 
-→ Proceed to Step 6
+→ Proceed to Step 5
 
 ---
 
-### Step 6: Completion report
+### Step 5: Completion report
 
 #### Condition
 
-- All items reviewed (Step 5 complete)
+- All items reviewed (Step 4 complete)
 
 #### Process
 
