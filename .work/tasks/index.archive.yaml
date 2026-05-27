@@ -377,3 +377,10 @@ prs:
   summary: work-kit プラグインに JP ミラー ↔ 英語版の翻訳エージェントを追加
   task: 20260527_jp-mirror-translator-agent
   completed: true
+- id: 137
+  title: PR137 — agent-jp-mirror-rule
+  type: docs
+  tags: []
+  summary: plugins/{name}/agents/*.md 変更時に .jp.md も同コミットで更新する JP ミラー同期ルールを追加
+  task: 20260527_agent-jp-mirror-rule
+  completed: true
