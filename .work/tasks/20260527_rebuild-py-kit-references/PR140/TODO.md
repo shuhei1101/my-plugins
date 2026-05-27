@@ -93,6 +93,17 @@ PR138 で確定した **大方針** に従って py-kit プラグインの refer
 | 済 | `marketplace.json` に `refs-inject-kit` v1.0.0 を登録 | `.claude-plugin/marketplace.json` |
 | 済 | `plugins/py-kit/CLAUDE.md(+jp)` / `references/CLAUDE.md(+jp)` / `changelogs/v2.0.0.md` の注入フック説明を「`refs-inject-kit` に委譲」に書き換え。環境変数も `PY_KIT_INJECTION_LANG` → `REFS_INJECT_KIT_LANG` に統一 | 各ドキュメント |
 
+### 第 5 ラウンドコミット後のレビュー反映（2026-05-28 追加 4）
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| 済 | `injection_rules.yaml` を refs-inject-kit に集約。py-kit/references/injection_rules.yaml 削除 → refs-inject-kit/injection_rules.yaml に移管、各 reference を `${py-kit}/...` プレースホルダ記法に変換 | `plugins/refs-inject-kit/injection_rules.yaml`, `plugins/py-kit/references/injection_rules.yaml` 削除 |
+| 済 | `inject_references.py` v1.1.0 改修: 自プラグイン直下の `injection_rules.yaml` を読む + `${plugin-name}` を `${CLAUDE_PROJECT_DIR}/plugins/{plugin}/references/` または `~/.claude/plugins/cache/*/{plugin}/*/references/` に解決 + 各プラグインの `index.yaml` から description 取得 | `plugins/refs-inject-kit/hooks/inject_references.py` |
+| 済 | テンプレ injection.md.j2 / injection.jp.md.j2 を `required` / `optional` フラット形式に戻し、各 entry に `raw` (`${plugin}/path` 文字列) を含める | `plugins/refs-inject-kit/hooks/templates/*` |
+| 済 | `refs-inject-kit:add-plugin` スキル新規（シンプル）: `enabled_plugins:` に追加 + `rules:` にコメント付きスタブ挿入。rules 本体は手動編集 | `plugins/refs-inject-kit/skills/add-plugin/SKILL.md` (+ jp) |
+| 済 | `refs-inject-kit` を v1.1.0 にバンプ + `changelogs/v1.1.0.md` + `CLAUDE.md`(+jp) を新仕様に書き換え + `marketplace.json` 同期 | `plugins/refs-inject-kit/.claude-plugin/plugin.json`, `plugins/refs-inject-kit/CLAUDE.md` (+ jp), `plugins/refs-inject-kit/changelogs/v1.1.0.md`, `.claude-plugin/marketplace.json` |
+| 済 | py-kit 側ドキュメント更新: `injection_rules.yaml` への言及を全削除、`refs-inject-kit/injection_rules.yaml` に集約と明記 | `plugins/py-kit/CLAUDE.md` (+ jp), `plugins/py-kit/references/CLAUDE.md` (+ jp), `plugins/py-kit/skills/py-project/SKILL.md` (+ jp), `plugins/py-kit/changelogs/v2.0.0.md` |
+
 ## 参考ドキュメント
 
 - `.work/tasks/20260527_review-py-kit-plugin/PR138/QA.md`: 新方針版 QA（全件確定）。実装の主たる判断材料

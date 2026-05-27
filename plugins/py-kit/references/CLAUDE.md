@@ -3,21 +3,18 @@
 The py-kit Python conventions are split into **topic-axis reference files**.
 You only read the ones relevant to your current edit.
 
-Management is split across two files:
-
 | File | Role |
 |---|---|
-| **`index.yaml`** (English) / **`index.jp.yaml`** (Japanese mirror) | Reference list + one-line `description`. The hook parses the English version for injection (Japanese version is a human-only mirror). |
-| **`injection_rules.yaml`** | Mapping of edit-target file-path patterns → required / optional references (language-independent). |
+| **`index.yaml`** (English) / **`index.jp.yaml`** (Japanese mirror) | Reference list + one-line `description`. The refs-inject-kit hook parses the English version (Japanese version is used when `REFS_INJECT_KIT_LANG=jp`). |
+
+Injection rules — which file-path patterns inject which references — are **not in py-kit**. They live in **`refs-inject-kit/injection_rules.yaml`** and reference py-kit content using the `${py-kit}/path/to/ref.md` placeholder syntax.
 
 ---
 
 ## Reading manually
 
 1. Read **`index.yaml`** to see what each reference covers.
-2. Match the edit-target file path against the `rules[].pattern` entries in **`injection_rules.yaml`**.
-   - Example: editing `src/{pkg}/features/chat/service.py` matches both `**/*.py` and `**/features/**/service.py`.
-3. Read all `required` references for the matching rules; read `optional` ones if relevant.
+2. To know which references apply to a given file path, see `refs-inject-kit/injection_rules.yaml` (the rules whose `pattern` matches the edit target).
 
 ---
 
@@ -25,12 +22,12 @@ Management is split across two files:
 
 The **`refs-inject-kit` plugin** (separate plugin, PR140) does this on every `Edit` / `Write` / `MultiEdit`:
 
-1. Auto-discovers installed plugins that have `references/injection_rules.yaml`
-2. Reads each plugin's `injection_rules.yaml` and collects matching rules
-3. Looks up each reference's description from the plugin's `index.yaml`
-4. Reads each reference body
-5. Renders the Jinja2 template (`refs-inject-kit/hooks/templates/injection.md.j2`)
-6. Injects the result via `decision: block` in the `reason` field
+1. Reads its own central `injection_rules.yaml`
+2. Matches the edit target against `rules[].pattern` and collects `${plugin-name}/path` references
+3. Resolves `${py-kit}` to py-kit's installed `references/` directory
+4. Looks up each reference's description from py-kit's `index.yaml`
+5. Reads each reference body
+6. Renders the Jinja2 template and injects via `decision: block`
 
 A session + file-hash token prevents the hook from blocking the same file twice in one session.
 
@@ -47,6 +44,6 @@ Skill-specific behavior (e.g. `py-script` force-loading `scripts/python-script.m
 
 ## Maintenance
 
-- When adding a new reference, update **all three**: `index.yaml`, `index.jp.yaml`, and `injection_rules.yaml`.
+- When adding a new reference: update **`index.yaml`** and **`index.jp.yaml`** in py-kit, and **add a rule in `refs-inject-kit/injection_rules.yaml`** using the `${py-kit}/...` syntax.
 - Same for deletes / renames.
-- Keep `references/CLAUDE.md` minimal — point to the two management files; the per-reference descriptions live only in `index.yaml` (and its JP mirror).
+- Keep `references/CLAUDE.md` minimal — the per-reference descriptions live only in `index.yaml` (and its JP mirror).

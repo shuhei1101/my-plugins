@@ -1,0 +1,118 @@
+# refs-inject-kit — central injection rules
+#
+# 全プラグインの reference 注入ルールをここに集約する。
+#   - enabled_plugins: 有効化したプラグイン名のリスト（フックが自動検出するが、明示宣言にもなる）
+#   - rules: パスパターン → 必読/任意 reference のマッピング
+#
+# `required` / `optional` の各要素は `${plugin-name}/{path-under-references}` 形式。
+# フック (inject_references.py) が `${plugin-name}` を以下の順で解決する:
+#   1. ${CLAUDE_PROJECT_DIR}/plugins/{plugin}/references/  (marketplace 開発時)
+#   2. ${HOME}/.claude/plugins/cache/*/{plugin}/*/references/  (インストール済み)
+#   3. ${REFS_INJECT_KIT_EXTRA_PATHS} の各エントリ
+#
+# プラグインを追加するには `refs-inject-kit:add-plugin {plugin-name}` スキルを使う。
+
+enabled_plugins:
+  - py-kit
+
+rules:
+  # ========== py-kit ==========
+  - pattern: "**/*.py"
+    required:
+      - "${py-kit}/core/naming.md"
+      - "${py-kit}/core/language-rules.md"
+      - "${py-kit}/core/style.md"
+    optional:
+      - "${py-kit}/core/comments.md"
+      - "${py-kit}/core/type-hints.md"
+
+  - pattern: "**/shared/decorators.py"
+    required: ["${py-kit}/core/decorators.md"]
+  - pattern: "**/_decorators.py"
+    required: ["${py-kit}/core/decorators.md"]
+
+  - pattern: "**/shared/logger.py"
+    required: ["${py-kit}/shared/logger.md"]
+  - pattern: "**/shared/settings.py"
+    required: ["${py-kit}/shared/settings.md", "${py-kit}/shared/secrets-and-env.md"]
+  - pattern: "**/shared/errors.py"
+    required: ["${py-kit}/shared/errors.md"]
+  - pattern: "**/shared/types.py"
+    required: ["${py-kit}/shared/types.md", "${py-kit}/core/type-hints.md"]
+  - pattern: "**/shared/constants.py"
+    required: ["${py-kit}/shared/constants.md"]
+    optional: ["${py-kit}/shared/secrets-and-env.md"]
+
+  - pattern: "**/main.py"
+    required: ["${py-kit}/architecture/composition-root.md", "${py-kit}/architecture/layout.md"]
+    optional: ["${py-kit}/architecture/dependencies.md", "${py-kit}/architecture/design-principles.md"]
+  - pattern: "**/__main__.py"
+    required: ["${py-kit}/architecture/composition-root.md"]
+
+  - pattern: "**/features/**/types.py"
+    required: ["${py-kit}/architecture/ts-style.md", "${py-kit}/architecture/layout.md", "${py-kit}/core/type-hints.md"]
+  - pattern: "**/features/**/service.py"
+    required: ["${py-kit}/architecture/ts-style.md", "${py-kit}/architecture/dependencies.md"]
+    optional: ["${py-kit}/architecture/design-principles.md", "${py-kit}/core/decorators.md"]
+  - pattern: "**/features/**/query.py"
+    required: ["${py-kit}/architecture/ts-style.md"]
+  - pattern: "**/features/**/route.py"
+    required: ["${py-kit}/fastapi/routes.md", "${py-kit}/fastapi/schemas.md"]
+    optional: ["${py-kit}/fastapi/auth-and-errors.md"]
+  - pattern: "**/features/**/client.py"
+    required: ["${py-kit}/architecture/ts-style.md"]
+
+  - pattern: "**/integrations/llm/**/*.py"
+    required: ["${py-kit}/llm/providers.md", "${py-kit}/llm/exceptions-retry.md"]
+    optional: ["${py-kit}/llm/cost-cache.md", "${py-kit}/llm/instructor.md", "${py-kit}/core/decorators.md"]
+  - pattern: "**/integrations/llm/prompts/**/*.py"
+    required: ["${py-kit}/llm/prompts-loader.md", "${py-kit}/llm/prompts-authoring.md"]
+  - pattern: "**/integrations/**/client.py"
+    required: ["${py-kit}/architecture/ts-style.md"]
+    optional: ["${py-kit}/architecture/dependencies.md", "${py-kit}/core/decorators.md"]
+
+  - pattern: "prompts/**/*.md"
+    required: ["${py-kit}/llm/prompts-authoring.md"]
+  - pattern: "prompts/**/*.j2"
+    required: ["${py-kit}/llm/prompts-authoring.md"]
+  - pattern: "prompts/index.yaml"
+    required: ["${py-kit}/llm/prompts-authoring.md"]
+    optional: ["${py-kit}/llm/prompts-loader.md"]
+
+  - pattern: "**/server/app.py"
+    required: ["${py-kit}/fastapi/app.md", "${py-kit}/architecture/composition-root.md"]
+  - pattern: "**/server/routes/**/*.py"
+    required: ["${py-kit}/fastapi/routes.md", "${py-kit}/fastapi/schemas.md"]
+    optional: ["${py-kit}/fastapi/auth-and-errors.md"]
+  - pattern: "**/server/ws/**/*.py"
+    required: ["${py-kit}/fastapi/app.md"]
+  - pattern: "**/server/error_handlers.py"
+    required: ["${py-kit}/shared/errors.md", "${py-kit}/fastapi/auth-and-errors.md"]
+
+  - pattern: "**/runtime/**/*.py"
+    required: ["${py-kit}/concurrency/async.md"]
+    optional: ["${py-kit}/concurrency/parallelism.md"]
+
+  - pattern: "**/tests/**/test_*.py"
+    required: ["${py-kit}/testing/strategy.md", "${py-kit}/testing/pytest.md"]
+    optional: ["${py-kit}/testing/mocks.md"]
+  - pattern: "**/tests/smoke/**/*.py"
+    required: ["${py-kit}/testing/strategy.md"]
+  - pattern: "**/tests/conftest.py"
+    required: ["${py-kit}/testing/pytest.md", "${py-kit}/testing/mocks.md"]
+
+  - pattern: "**/pyproject.toml"
+    required: ["${py-kit}/packaging/pyproject.md", "${py-kit}/packaging/dependencies.md"]
+    optional: ["${py-kit}/packaging/python-versions.md", "${py-kit}/packaging/distribution.md", "${py-kit}/core/style.md"]
+
+  - pattern: "**/*.bat"
+    required: ["${py-kit}/scripts/launchers-windows.md"]
+  - pattern: "**/*.sh"
+    required: ["${py-kit}/scripts/launchers-unix.md"]
+
+  - pattern: ".env"
+    required: ["${py-kit}/shared/secrets-and-env.md"]
+  - pattern: ".env.sample"
+    required: ["${py-kit}/shared/secrets-and-env.md"]
+  - pattern: "**/config/settings.yaml*"
+    required: ["${py-kit}/shared/secrets-and-env.md", "${py-kit}/shared/settings.md"]

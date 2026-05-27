@@ -58,8 +58,8 @@
     {
       "name": "refs-inject-kit",
       "source": "./plugins/refs-inject-kit",
-      "description": "Generic PreToolUse hook that auto-injects reference documents — discovers installed plugins with references/injection_rules.yaml and renders matched references via decision:block",
-      "version": "1.0.0"
+      "description": "Auto-inject reference documents on file edits — central injection_rules.yaml with ${plugin-name}/path placeholder syntax, resolves placeholders to installed plugin references and renders via decision:block",
+      "version": "1.1.0"
     }
   ]
 }

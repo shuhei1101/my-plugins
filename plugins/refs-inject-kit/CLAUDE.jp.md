@@ -4,73 +4,86 @@
 
 `refs-inject-kit` は **汎用 PreToolUse フックプラグイン** で、ファイル編集時に reference ドキュメントを自動注入する。
 
-このプラグイン自体は reference 内容を持たない。代わりに、以下のファイルを持つ **他のインストール済みプラグインを検出** する:
+reference を持つ全プラグインの注入ルールを **このプラグイン自身の `injection_rules.yaml` に集約** する。
+各ルールは `${plugin-name}/path/to/ref.md` プレースホルダ記法で reference を指定する。
+フックが実行時に `${plugin-name}` を実際にインストール済みプラグインの `references/` に解決する。
 
-- `references/injection_rules.yaml` — パスパターン → 必読/任意 reference のマッピング
-- `references/index.yaml` (+ 任意 `index.jp.yaml`) — `path` + `description` リスト
+---
+
+## ファイル構成
+
+```
+plugins/refs-inject-kit/
+├── injection_rules.yaml      # 中央 rules: enabled_plugins + rules
+├── hooks/
+│   ├── hooks.json            # PreToolUse(Edit|Write|MultiEdit)
+│   ├── inject_references.py  # rules ロード、プレースホルダ展開、Jinja2 render
+│   └── templates/
+│       ├── injection.md.j2
+│       └── injection.jp.md.j2
+└── skills/
+    └── add-plugin/           # refs-inject-kit:add-plugin
+```
+
+reference を持つ各プラグイン（`py-kit`、`next-kit` 等）は以下だけ提供すればよい:
+
+- `references/index.yaml` — `references[].{path, description}`（英語、description 取得用）
+- `references/index.jp.yaml` — 日本語ミラー（任意、`REFS_INJECT_KIT_LANG=jp` 時に使用）
 - `references/**/*.md` — reference 本文
 
-…そして `Edit` / `Write` / `MultiEdit` のたびに、編集対象ファイルパスを各プラグインのルールと照合し、マッチした reference を `decision: block` で注入する。
+**クライアントプラグイン側に `injection_rules.yaml` は置かない。** rules は全部ここに集約。
 
 ---
 
-## なぜ分離するか
+## injection_rules.yaml
 
-`py-kit` / `next-kit` などの reference を持つプラグインは、**同じ** 注入動作を必要とする — YAML を読む、glob で照合、Jinja2 でレンダリング、block する。
-これを各プラグインにコピーすると drift が発生する。このプラグインはそれを集約する。
+```yaml
+enabled_plugins:
+  - py-kit
 
----
+rules:
+  - pattern: "**/*.py"
+    required:
+      - "${py-kit}/core/naming.md"
+      - "${py-kit}/core/style.md"
+    optional:
+      - "${py-kit}/core/comments.md"
+```
 
-## プラグイン作者の統合手順
+### `${plugin-name}` 解決順
 
-参加したいプラグインは、`references/` 配下に 3 ファイルを置くだけ:
-
-1. `references/injection_rules.yaml`
-   ```yaml
-   rules:
-     - pattern: "**/*.py"
-       required: [core/naming.md, core/style.md]
-       optional: [core/comments.md]
-     - pattern: "**/features/**/service.py"
-       required: [architecture/ts-style.md]
-   ```
-
-2. `references/index.yaml` (英語、フックが `description` を parse)
-   ```yaml
-   references:
-     - path: core/naming.md
-       description: Naming conventions...
-   ```
-
-3. `references/index.jp.yaml` (任意、`REFS_INJECT_KIT_LANG=jp` 時に使用)
-
-…そして reference 本文を Markdown で `references/` 配下に置く。
-
-**プラグイン側にフックコードもテンプレートも不要。** `refs-inject-kit` を一緒にインストールするだけ。
-
----
-
-## 検出パス
-
-`refs-inject-kit` は以下を走査して reference を持つプラグインを見つける:
-
-1. `${HOME}/.claude/plugins/cache/*/*/*/references/injection_rules.yaml` (インストール済み)
-2. `${CLAUDE_PROJECT_DIR}/plugins/*/references/injection_rules.yaml` (marketplace 開発時)
-3. `${REFS_INJECT_KIT_EXTRA_PATHS}` (`:` / `;` 区切りの追加プラグインルート)
+1. `${CLAUDE_PROJECT_DIR}/plugins/{plugin}/references/` — marketplace 開発時
+2. `${HOME}/.claude/plugins/cache/*/{plugin}/*/references/` — インストール済み（最新バージョン）
+3. `${REFS_INJECT_KIT_EXTRA_PATHS}` — `:` 区切りで追加プラグインルート
 
 ---
 
 ## 言語切替
 
-- デフォルト: 英語（各プラグインの `index.yaml` を読み、`injection.md.j2` を使う）
-- `REFS_INJECT_KIT_LANG=jp`: `index.jp.yaml` を読み、`injection.jp.md.j2` を使う
+- デフォルト: 英語（`injection.md.j2` と `{plugin}/references/index.yaml` を使う）
+- `REFS_INJECT_KIT_LANG=jp`: `injection.jp.md.j2` と `{plugin}/references/index.jp.yaml` を使う
 
 ---
 
 ## ループ防止
 
-セッション + ファイルハッシュ単位のトークン (`/tmp/refs-inject-kit-{session_id}-{hash}`) で、各ファイルにつきセッション内 1 回だけブロックする。
+セッション + ファイルハッシュ単位のトークン（`/tmp/refs-inject-kit-{session_id}-{hash}`）で、
+各ファイルにつきセッション内 1 回だけブロックする。
 ユーザーが注入された reference を読んで再試行すれば、以降はパスする。
+
+---
+
+## プラグインを追加する
+
+同梱スキル経由:
+
+```
+/refs-inject-kit:add-plugin py-kit
+```
+
+`py-kit` を `enabled_plugins:` に追加し、`rules:` セクションにコメント付きスタブを挿入する。
+具体的な `pattern` → `required` / `optional` の rules はユーザー（または同じ会話の AI）が手書きする。
+スキルは rules を**自動生成しない**。
 
 ---
 
@@ -80,7 +93,7 @@
 - `pyyaml`
 - `jinja2`
 
-ホストプロジェクトで `pip install pyyaml jinja2` または `uv add --dev pyyaml jinja2` で入れる。
+`pip install pyyaml jinja2`（あるいはプロジェクトで `uv add --dev pyyaml jinja2`）で入れる。
 
 ---
 
@@ -88,4 +101,5 @@
 
 | バージョン | 概要 |
 |---|---|
-| 1.0.0 | 初回リリース。py-kit v2.0.0 の `inject_references.py` から切り出し (PR140)。複数プラグイン自動検出対応。 |
+| 1.1.0 | `injection_rules.yaml` を中央集約、`${plugin-name}/path` プレースホルダ記法、`add-plugin` スキル追加（PR140） |
+| 1.0.0 | 初回リリース: 各プラグインに `references/injection_rules.yaml` を置く自動検出方式（1.1.0 で廃止） |

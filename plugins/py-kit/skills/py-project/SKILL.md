@@ -29,8 +29,8 @@ First, read the references index:
 
 The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-project` → plugin root is `.../py-kit/`).
 
-The `references:` list in `index.yaml` lists each reference path with a one-line description, and
-`{plugin_root}/references/injection_rules.yaml` defines "which references to assign to which file paths".
+The `references:` list in `index.yaml` lists each reference path with a one-line description.
+Injection rules ("which references to assign to which file paths") are centralized in `refs-inject-kit/injection_rules.yaml` (py-kit-related rules use the `${py-kit}/...` placeholder syntax).
 
 Always read the following for this skill:
 - `{plugin_root}/references/core/naming.md`
@@ -185,7 +185,7 @@ Review from the new-policy perspective:
 ### Step 10: Implement changes
 
 1. Carry out the task (feature addition / refactor / bug fix).
-2. Check `injection_rules.yaml`'s `rules` for the edited file paths and read the matching references (or wait for the auto-injection hook to deliver them).
+2. Check `refs-inject-kit/injection_rules.yaml`'s `rules` for the edited file paths and read the matching references (or wait for the auto-injection hook to deliver them).
 3. Implement according to the standards:
    - Behavior in functions (classes only for DTOs / library requirements)
    - Inject external dependencies as function type aliases

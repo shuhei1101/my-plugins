@@ -21,7 +21,8 @@ py-kit は Python 実装の規約と雛形生成を提供するプラグイン�
 | テスト | 結合テスト + スモークテストのみ。単体テストは書かない | 全層単体テスト |
 | コメント | exported に 1 行 docstring 必須、設計上重要フィールドの description 必須（next-kit と整合） | docstring optional |
 
-詳細は `references/index.yaml`（reference 一覧）と `references/injection_rules.yaml`（注入ルール）、および各 reference 本文を参照。
+詳細は `references/index.yaml`（reference 一覧）と各 reference 本文を参照。
+py-kit reference の注入ルールは `refs-inject-kit/injection_rules.yaml` に集約（py-kit 側にはない）。
 
 ---
 
@@ -32,7 +33,7 @@ references/
 ├── CLAUDE.md / CLAUDE.jp.md  # 2 ファイル管理の役割説明（最小指示）
 ├── index.yaml                  # reference 一覧 + 1 行 description（英語、フックが parse）
 ├── index.jp.yaml               # 上の日本語ミラー（人間用）
-├── injection_rules.yaml      # 編集対象パターン → 必読/任意 reference の星取り表（言語非依存）
+# (injection_rules.yaml は refs-inject-kit 側に集約。py-kit 側には置かない)
 ├── core/             # 言語ルール（命名・コメント・型・スタイル）
 ├── architecture/     # 機能フォルダ型 + 関数配線 + 依存方向
 ├── shared/           # logger / settings / errors / types / constants
@@ -49,18 +50,15 @@ references/
 
 ---
 
-## index.yaml と injection_rules.yaml の役割分担
+## index.yaml + index.jp.yaml の役割
 
 | ファイル | 内容 | 言語 |
 |---|---|---|
-| `index.yaml` | 全 reference の `path` + 1 行 `description` を YAML リストで | 英語（フックがここから parse） |
-| `index.jp.yaml` | 上の日本語ミラー（人間が一覧確認するため） | 日本語 |
-| `injection_rules.yaml` | 編集対象ファイルパスの pattern に対して `required` / `optional` reference を割り当てる星取り表 | 言語非依存 |
+| `index.yaml` | 全 reference の `path` + 1 行 `description` を YAML リストで | 英語（refs-inject-kit フックが parse） |
+| `index.jp.yaml` | 日本語ミラー（`REFS_INJECT_KIT_LANG=jp` 時に使用） | 日本語 |
 
-これら 3 ファイルは **別プラグイン `refs-inject-kit`**（同 PR で新設）が消費する。
-`refs-inject-kit` がインストール済みプラグインを走査し、`Edit` / `Write` / `MultiEdit` 時に
-パスを `rules[].pattern` と照合し、マッチした reference を `decision: block` で
-Claude のコンテキストへ自動注入する。
+注入ルール（どの pattern にどの py-kit reference を当てるか）は **`refs-inject-kit/injection_rules.yaml` に集約**（別プラグイン、PR140）。
+py-kit reference は `${py-kit}/path/to/ref.md` プレースホルダ記法で指定され、refs-inject-kit のフックが実行時に解決する。
 
 ---
 
@@ -83,9 +81,9 @@ py-kit のフックは `claude-kit` の方針に従う:
 - ディスパッチ用 `UserPromptSubmit` は追加しない
 
 **references 自動注入フックは別プラグイン `refs-inject-kit` に切り出した** (PR140):
-- py-kit 自身は **フックコードを持たない**。`references/{index.yaml, index.jp.yaml, injection_rules.yaml}` だけ持つ
-- `refs-inject-kit` がインストール済みプラグインを走査して `references/injection_rules.yaml` を持つものを自動検出
-- `Edit` / `Write` / `MultiEdit` 時にマッチした reference を `decision: block` で注入
+- py-kit が持つもの: `references/{index.yaml, index.jp.yaml}` + 本文。**フックコードも injection_rules.yaml もなし**
+- 注入ルールは `refs-inject-kit/injection_rules.yaml` に集約。py-kit 関連 rules は `${py-kit}/path/to/ref.md` プレースホルダ記法で書く
+- `Edit` / `Write` / `MultiEdit` 時に refs-inject-kit が `${py-kit}` を実 references/ ディレクトリに解決し、マッチした reference を `decision: block` で注入
 - 言語切替は環境変数 `REFS_INJECT_KIT_LANG=jp`
 
 ---

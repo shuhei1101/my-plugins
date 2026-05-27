@@ -17,7 +17,7 @@ py-kit is a plugin that provides Python implementation conventions and scaffold 
 | Testing | Integration tests + smoke tests only. No unit tests | Unit tests at all layers |
 | Comments | One-line docstring required for exported items, description required for design-critical fields (consistent with next-kit) | docstring optional |
 
-See `references/index.yaml` (reference list), `references/injection_rules.yaml` (injection rules), and each reference body for details.
+See `references/index.yaml` (reference list with descriptions) and each reference body for details. Injection rules for py-kit references are centralized in `refs-inject-kit/injection_rules.yaml` (not in py-kit itself).
 
 ---
 
@@ -28,7 +28,7 @@ references/
 ├── CLAUDE.md / CLAUDE.jp.md  # Minimal role description for the two management files
 ├── index.yaml                  # Reference list + one-line description (English; parsed by hook)
 ├── index.jp.yaml               # JP mirror of index.yaml (human-only)
-├── injection_rules.yaml      # Edit-path pattern → required/optional references (language-independent)
+# (injection_rules.yaml lives in refs-inject-kit, not here)
 ├── core/                     # Language rules (naming, comments, types, style, decorators)
 ├── architecture/             # Feature-folder layout + function wiring + dependency direction + principles + refactor judgement
 ├── shared/                   # logger / settings / secrets-and-env / errors / types / constants
@@ -45,15 +45,14 @@ references/
 
 ---
 
-## Role separation: index.yaml vs injection_rules.yaml
+## Role of index.yaml + index.jp.yaml
 
 | File | Contents | Language |
 |---|---|---|
-| `index.yaml` | All references' `path` + one-line `description` as a YAML list | English (parsed by the hook) |
-| `index.jp.yaml` | JP mirror (for humans browsing) | Japanese |
-| `injection_rules.yaml` | Star chart mapping edit-target file-path patterns to `required` / `optional` references | Language-independent |
+| `index.yaml` | All references' `path` + one-line `description` as a YAML list | English (parsed by the refs-inject-kit hook) |
+| `index.jp.yaml` | JP mirror (used when `REFS_INJECT_KIT_LANG=jp`) | Japanese |
 
-These three files are consumed by the **`refs-inject-kit` plugin** (separate plugin, PR140), which scans installed plugins, matches `Edit` / `Write` / `MultiEdit` paths against the rules, and auto-injects matched references via `decision: block`.
+Injection rules — which file-path patterns inject which py-kit references — are **centralized in `refs-inject-kit/injection_rules.yaml`** (separate plugin, PR140). Each rule references py-kit content using the `${py-kit}/path/to/ref.md` placeholder syntax, which the refs-inject-kit hook resolves at runtime.
 
 ---
 
@@ -75,10 +74,10 @@ py-kit hooks follow the `claude-kit` policy:
 - Session-flag-style blocking (`/tmp/{hook-name}-{session_id}`) — block only once per session
 - Do not add dispatch-purpose `UserPromptSubmit` hooks
 
-**The references auto-injection hook has been extracted into a separate plugin, `refs-inject-kit`** (PR140):
-- py-kit itself **owns no hook code**. It only owns `references/{index.yaml, index.jp.yaml, injection_rules.yaml}` and the reference bodies.
-- `refs-inject-kit` scans installed plugins for those with `references/injection_rules.yaml` and discovers them automatically.
-- On `Edit` / `Write` / `MultiEdit`, the matched references are injected via `decision: block`.
+**The references auto-injection hook is in a separate plugin, `refs-inject-kit`** (PR140):
+- py-kit owns: `references/{index.yaml, index.jp.yaml}` + reference bodies. **No hook code, no injection_rules.yaml.**
+- `refs-inject-kit/injection_rules.yaml` (central) contains all rules. py-kit-related rules use the `${py-kit}/path/to/ref.md` placeholder syntax.
+- On `Edit` / `Write` / `MultiEdit`, refs-inject-kit resolves `${py-kit}` to py-kit's installed `references/` directory and injects matched references via `decision: block`.
 - Switch the injection language via `REFS_INJECT_KIT_LANG=jp`.
 
 ---

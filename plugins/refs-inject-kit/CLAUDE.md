@@ -3,64 +3,62 @@
 
 `refs-inject-kit` is a **generic PreToolUse hook plugin** that auto-injects reference documents on file edits.
 
-It does not own any reference content itself. Instead, it discovers other installed plugins that have:
-- `references/injection_rules.yaml` — path-pattern → required/optional reference mapping
-- `references/index.yaml` (+ optional `index.jp.yaml`) — `path` + `description` list
+All injection rules across all reference-bearing plugins are **centralized in this plugin's own `injection_rules.yaml`**. Each rule references a target reference using the `${plugin-name}/path/to/ref.md` placeholder syntax. The hook resolves `${plugin-name}` to the actual installed plugin's `references/` directory at runtime.
+
+---
+
+## Files
+
+```
+plugins/refs-inject-kit/
+├── injection_rules.yaml      # central rules: enabled_plugins + rules
+├── hooks/
+│   ├── hooks.json            # PreToolUse(Edit|Write|MultiEdit)
+│   ├── inject_references.py  # rules loader, placeholder resolver, Jinja2 render
+│   └── templates/
+│       ├── injection.md.j2
+│       └── injection.jp.md.j2
+└── skills/
+    └── add-plugin/           # refs-inject-kit:add-plugin
+```
+
+Each reference-bearing plugin (e.g. `py-kit`, `next-kit`) only needs to provide:
+
+- `references/index.yaml` — `references[].{path, description}` (English; parsed for descriptions)
+- `references/index.jp.yaml` — JP mirror (optional; used when `REFS_INJECT_KIT_LANG=jp`)
 - `references/**/*.md` — reference bodies
 
-…and, on every `Edit` / `Write` / `MultiEdit`, matches the edited file path against each plugin's rules and injects the matched references via `decision: block`.
+**No injection_rules.yaml in client plugins.** All rules live here.
 
 ---
 
-## Why split this out
+## injection_rules.yaml
 
-`py-kit`, `next-kit`, and similar reference-bearing plugins all need the **same** injection behavior — read YAML, glob-match, render Jinja2, block. Copying that Python code into every plugin causes drift. This plugin centralizes it.
+```yaml
+enabled_plugins:
+  - py-kit
 
----
+rules:
+  - pattern: "**/*.py"
+    required:
+      - "${py-kit}/core/naming.md"
+      - "${py-kit}/core/style.md"
+    optional:
+      - "${py-kit}/core/comments.md"
+```
 
-## How plugin authors integrate
+### `${plugin-name}` resolution order
 
-To make your plugin participate, just add three files under `references/`:
-
-1. `references/injection_rules.yaml`
-   ```yaml
-   rules:
-     - pattern: "**/*.py"
-       required: [core/naming.md, core/style.md]
-       optional: [core/comments.md]
-     - pattern: "**/features/**/service.py"
-       required: [architecture/ts-style.md]
-   ```
-
-2. `references/index.yaml` (English; parsed for `description`)
-   ```yaml
-   references:
-     - path: core/naming.md
-       description: Naming conventions...
-   ```
-
-3. `references/index.jp.yaml` (optional; used when `REFS_INJECT_KIT_LANG=jp`)
-
-…and the reference bodies as Markdown files under the same `references/` tree.
-
-**No hook code or template needed in your plugin.** Just install `refs-inject-kit` alongside.
-
----
-
-## Detection paths
-
-`refs-inject-kit` finds reference-bearing plugins by scanning:
-
-1. `${HOME}/.claude/plugins/cache/*/*/*/references/injection_rules.yaml` (installed plugins)
-2. `${CLAUDE_PROJECT_DIR}/plugins/*/references/injection_rules.yaml` (marketplace development)
-3. `${REFS_INJECT_KIT_EXTRA_PATHS}` (`:` / `;`-separated list of additional plugin roots)
+1. `${CLAUDE_PROJECT_DIR}/plugins/{plugin}/references/` — marketplace development
+2. `${HOME}/.claude/plugins/cache/*/{plugin}/*/references/` — installed (latest version)
+3. `${REFS_INJECT_KIT_EXTRA_PATHS}` — `:`-separated list of additional plugin roots
 
 ---
 
 ## Language switching
 
-- Default: English (reads each plugin's `index.yaml`, uses `injection.md.j2`)
-- `REFS_INJECT_KIT_LANG=jp`: reads `index.jp.yaml`, uses `injection.jp.md.j2`
+- Default: English (uses `injection.md.j2` and `{plugin}/references/index.yaml`)
+- `REFS_INJECT_KIT_LANG=jp`: uses `injection.jp.md.j2` and `{plugin}/references/index.jp.yaml`
 
 ---
 
@@ -70,13 +68,25 @@ A session + file-hash token (`/tmp/refs-inject-kit-{session_id}-{hash}`) ensures
 
 ---
 
+## Adding a plugin
+
+Use the bundled skill:
+
+```
+/refs-inject-kit:add-plugin py-kit
+```
+
+This adds `py-kit` to `enabled_plugins:` and inserts a commented-out stub section in `rules:`. The user (or an AI in the same chat) writes the concrete `pattern` → `required` / `optional` rules manually — the skill does **not** auto-generate them.
+
+---
+
 ## Dependencies
 
 - Python 3.8+
 - `pyyaml`
 - `jinja2`
 
-Install via `pip install pyyaml jinja2` or `uv add --dev pyyaml jinja2` in the host project.
+Install via `pip install pyyaml jinja2` (or `uv add --dev pyyaml jinja2` in a project).
 
 ---
 
@@ -84,4 +94,5 @@ Install via `pip install pyyaml jinja2` or `uv add --dev pyyaml jinja2` in the h
 
 | Version | Notes |
 |---|---|
-| 1.0.0 | Initial release. Extracted from py-kit v2.0.0's `inject_references.py` (PR140). Multi-plugin auto-detection. |
+| 1.1.0 | Centralized `injection_rules.yaml` with `${plugin-name}/path` placeholder syntax; added `add-plugin` skill (PR140) |
+| 1.0.0 | Initial release: per-plugin `references/injection_rules.yaml` auto-discovery (deprecated by 1.1.0) |
