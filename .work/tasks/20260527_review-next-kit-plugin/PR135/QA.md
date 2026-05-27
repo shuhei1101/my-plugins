@@ -859,7 +859,7 @@ next-kit プラグインの references を全て読み、Next.js / React コミ�
 
 # 追加レビュー（実装後）
 
-## QA-073: References の分割方針（ユースケース＝ファイル単位） ❌未決定
+## QA-073: References の分割方針（ユースケース＝ファイル単位） ✅決定
 
 **背景**: PR135 で完成させた references を実装してみると、1 ファイルに複数の異なるファイル種別・概念を詰め込みすぎていた。
 
@@ -1048,7 +1048,20 @@ reference 側はこのマッピングと 1:1 で対応する必要がある。
 
 **Claude の推奨**: **A**（PR135 内で全面分割）。フック構築 PR で「reference が分割されていない」事態を避けるため、references の最終形態を先に揃える。
 
-**決定**:
+**決定**: **A — PR135 内で全面分割**、かつ **比較・選定・トレードオフ系の記述は完全削除**（決定の経緯は commit message / `.work/notes/` に残す）。
+
+**実行方針**:
+- 既存 46 ファイルを **全削除** → 新構成（70+ ファイル）で書き直し
+- ファイル名はフックトリガーキーワードと一致（`query.ts` → `query-ts.md` 等）
+- 各ファイルは「決定された規約 + 実装手順 + コード例」だけで完結
+- 比較表・「Why X over Y」・代替案リストは削除
+- 採用スタックは `CLAUDE.md` インデックス内の表で簡潔に示す（`libraries.md` `stack-overview.md` は作らない）
+- patterns/ は page.tsx wrapper と Screen.tsx を分割（`list-page-tsx.md` + `list-screen-tsx.md` 等）
+- Logger の使い方は各ファイル種別 reference に統合、`logger-impl.md` と `logger-tags.md` は薄く残す
+- shared/error は frontend/backend に振り分け、`error-classes.md` だけ shared に残す
+- plugin.json は 2.0.0 → **3.0.0** にバンプ（破壊的再構成）
+
+**反映先**: 全 references の構造改訂。次 PR でフック構築する際に 1:1 マッピング可能な状態を作る。
 
 ---
 

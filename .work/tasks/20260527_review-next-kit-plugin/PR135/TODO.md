@@ -52,6 +52,12 @@ next-kit プラグイン全体を Claude Code の一般的なベストプラク�
 | 済 | SKILL.md（implement）を新構成に合わせて更新 | `plugins/next-kit/skills/implement/SKILL.md` |
 | 済 | JP ミラーを同期する（46 ファイル） | `plugins/next-kit/references/**/*.jp.md`, `plugins/next-kit/skills/**/*.jp.md` |
 | 済 | plugin.json / marketplace.json を MAJOR バンプ（1.2.0 → 2.0.0、破壊的変更） | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| - | QA-073: references をユースケース＝ファイル単位で全面再分割（46 → 70+） | `plugins/next-kit/references/**` |
+| - | 旧 references を全削除し、新構成で書き直し | 同上 |
+| - | 比較・選定・トレードオフ系を完全削除 | 同上 |
+| - | CLAUDE.md と SKILL.md を新分割マップで再生成 | `plugins/next-kit/references/CLAUDE.md`, `plugins/next-kit/skills/implement/SKILL.md` |
+| - | JP ミラーを再生成 | `plugins/next-kit/**/*.jp.md` |
+| - | plugin.json / marketplace.json を 2.0.0 → 3.0.0 にバンプ（再構成のため） | 同上 |
 
 ## 参考ドキュメント
 
