@@ -27,11 +27,11 @@ PR135 で next-kit references を 90 ファイルに整備した。references �
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する（計画書フォーマット・用途検知方法など） | `.work/tasks/.../PR144/QA.md` |
-| - | py-kit の `py-project` SKILL.md を参考にスキル設計・実装 | `plugins/next-kit/skills/plan/SKILL.md` (+ `.jp.md`) |
-| - | plugin.json バンプ (3.1.0 → 3.2.0) | `plugins/next-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json 同期 | `.claude-plugin/marketplace.json` |
-| - | next-kit CLAUDE.md にスキル一覧を追記 | `plugins/next-kit/CLAUDE.md` (+ `.jp.md`) |
+| 済 | QA.md に未決定事項を記録する（計画書フォーマット・用途検知方法など） | `.work/tasks/.../PR144/QA.md` |
+| 済 | py-kit の `py-project` SKILL.md を参考にスキル設計・実装 | `plugins/next-kit/skills/plan/SKILL.md` (+ `.jp.md`) |
+| 済 | plugin.json バンプ (3.3.0 → 3.4.0) | `plugins/next-kit/.claude-plugin/plugin.json` |
+| 済 | marketplace.json 同期 | `.claude-plugin/marketplace.json` |
+| 済 | next-kit references/CLAUDE.md にスキル記載を追記 | `plugins/next-kit/references/CLAUDE.md` (+ `.jp.md`) |
 
 ## 参考ドキュメント
 
