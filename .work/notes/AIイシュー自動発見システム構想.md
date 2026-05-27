@@ -48,7 +48,7 @@ AI がコードベース・画面を調査（呼び出し時に実行）
 | PR-A | py-kit プラグイン新規作成（dev-kit から Python を分離） | ✅ PR129 作成 / PR138 大方針 / PR140 references 全面再構築・自動注入フック実装 |
 | PR-B | ui-kit → html-kit リネーム | ✅ PR130 完了 |
 | PR-C | work-kit に issue-scan・issue-create・issue-save スキルを追加 + `*-kit` フックに Read マッチャー追加 | ✅ PR131 完了 |
-| PR-D | work-kit merge スキルにイシュークローズ処理を統合 | PR-C 完了後 |
+| PR-D | work-kit merge スキルにイシュークローズ処理を統合 | ✅ PR146 完了 |
 | PR-E | next-kit プラグイン新規作成 + references 全面再構築（90 ファイル + 自動注入フック） | ✅ PR132 作成 / PR135 全面再構築 |
 
 ---
@@ -292,11 +292,15 @@ scan_records:
 `resolution: wontfix` は「この問題は把握しているが意図的に修正しない」という意思決定の記録。
 スキャンのたびに同じ問題が再検出されないよう、`wontfix` でクローズされたイシューはスキャン結果から除外する。
 
-#### linked_pr の連携
+#### linked_pr の連携（✅ PR146 で実装済み）
 
-- `_index.archive.yaml` の `linked_pr` に対応 PR 番号を記録
-- TODO.md に `## 関連イシュー` セクションを設け、このイシューと対応 PR を紐付け
-- work-kit merge 実行時に自動でイシューをクローズ（PR-D で実装）
+- `_index.archive.yaml` の `closed_issues[].linked_pr` に対応 PR 番号を記録
+- TODO.md の `## 関連イシュー` テーブル（カラム: `ID | 概要 | resolution`）で、このイシューと対応 PR・解決区分を紐付け
+- work-kit `merge` スキルが Step 5（`set-completed` / `archive` の前）で TODO.md の `## 関連イシュー` を読み、行ごとに `plugins/work-kit/scripts/issue-tool.py close` を呼んで自動クローズする
+  - イシューファイル: `.work/issues/ISSUE-{N}.md` → `.work/issues/closed/ISSUE-{N}.md` に git rename
+  - `_index.yaml`: 該当エントリを削除（gitignore のまま）
+  - `_index.archive.yaml.closed_issues`: `linked_pr` 付きエントリを追記
+- `.work/issues/` 自体が存在しないプロジェクト（イシュー管理未導入）では silent skip
 
 ---
 
@@ -367,7 +371,7 @@ PR135 / PR140 の成果により、フック自動注入の基盤は py-kit / ne
 
 | タスク | 状態 | 備考 |
 |---|---|---|
-| PR-D: merge スキルにイシュークローズ処理を統合 | 未実装 | work-kit issue-scan/create が前提（PR131 完了済み） |
+| PR-D: merge スキルにイシュークローズ処理を統合 | ✅ PR146 完了 | work-kit issue-scan/create が前提（PR131 完了済み） |
 | issue-scan の references 参照精度向上 | 未検討 | next-kit / py-kit references が 1 ファイル = 1 ユースケース化された今、scan 時の粒度を合わせる |
 | スキャン対象の拡張（Next.js フロントエンド） | 未検討 | 現在は HTML / backend が対象。next-kit プロジェクトへの適用を検討 |
 
