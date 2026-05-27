@@ -60,6 +60,15 @@ work-kit setup スキルにも .work/issues/ ディレクトリ作成を追加�
 | 済 | スキャン済みファイルの除外（`_index.archive.yaml` の scan_records から判断） | `plugins/work-kit/skills/issue-scan/` |
 | 済 | 対応する JP ミラー更新 | `plugins/work-kit/skills/issue-scan/SKILL.jp.md` |
 
+| - | master を PR131 ブランチに取り込み（py-kit / next-kit / html-kit を取得） | (merge commit) |
+| - | py-kit hooks.json に Read マッチャーを追加 | `plugins/py-kit/hooks/hooks.json` |
+| - | py-kit inject_references.py の許可 tool に Read を追加 | `plugins/py-kit/hooks/inject_references.py` |
+| - | next-kit hooks.json に Read マッチャーを追加 | `plugins/next-kit/hooks/hooks.json` |
+| - | next-kit inject_references.py の許可 tool に Read を追加 | `plugins/next-kit/hooks/inject_references.py` |
+| - | issue-scan を簡素化: injection_rules.yaml 直接参照を廃止し、Read 時にフックが自動注入する設計に切り替え | `plugins/work-kit/skills/issue-scan/` |
+| - | py-kit / next-kit / work-kit の plugin.json バージョン bump | 該当 plugin.json |
+| - | marketplace.json のバージョン更新 | `.claude-plugin/marketplace.json` |
+
 ## 次PR候補
 
 | タイトル | 概要 | 実施条件 |
