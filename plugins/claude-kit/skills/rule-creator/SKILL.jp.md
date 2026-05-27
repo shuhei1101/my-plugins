@@ -209,7 +209,7 @@
 
 ---
 
-### ステップ6: 英語ルールに翻訳する (`.claude/rules/<name>.md`)
+### ステップ6: jp-mirror-translator エージェントで英語ルールを生成する (`.claude/rules/<name>.md`)
 
 #### 条件
 
@@ -217,26 +217,20 @@
 
 #### 入力
 
-- ステップ5のJPミラー内容
+- 作成した `.claude/rules-jp/<name>.md` のパス
 
 #### 処理内容
 
-1. JPミラーを行単位で英語に翻訳する
-2. `.claude/rules/<name>.md` を同じ構造で作成する
-3. JPミラーと見出し構造を揃える
+1. `jp-mirror-translator` エージェントを呼び出して JP ミラー → 英語ルールを翻訳する:
+   - Agent ツールで `subagent_type: "claude-kit:jp-mirror-translator"` を使用
+   - `.claude/rules-jp/<name>.md` のパスをエージェントのプロンプトとして渡す
+   - エージェントが JP ミラーを読み取り、`.claude/rules/<name>.md` を自動的に書き出す
 
 → ステップ7へ進む
 
 #### 出力
 
 - `.claude/rules/<name>.md` 作成済み
-
-#### 補足
-
-##### 禁止事項
-
-- 日本語で書かない（Claude Code が指示として自動ロード）
-- JPミラーと構造がずれないようにする
 
 ---
 
