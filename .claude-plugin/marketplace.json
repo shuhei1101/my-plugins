@@ -17,7 +17,7 @@
       "name": "py-kit",
       "source": "./plugins/py-kit",
       "description": "Python coding conventions and scaffolding — feature-folder layout, function-first design, TypeScript-style typing, standards references with auto-injection metadata",
-      "version": "2.0.0"
+      "version": "2.1.0"
     },
     {
       "name": "html-kit",
@@ -53,7 +53,7 @@
       "name": "next-kit",
       "source": "./plugins/next-kit",
       "description": "Next.js 16 App Router implementation conventions split per file-type (1 file = 1 use case) — shadcn/ui + Tailwind + Drizzle + TanStack Query + Server Actions + Better Auth, with PreToolUse hook auto-injection (index.yaml + injection_rules.yaml)",
-      "version": "3.1.0"
+      "version": "3.2.0"
     }
   ]
 }
