@@ -45,7 +45,7 @@ PR131 で `.work/issues/` 配下のイシュー管理（issue-scan / issue-creat
 | 済 | `.work/notes/AIイシュー自動発見システム構想.md` の linked_pr / 関連イシュー 章を仕様確定として反映 | `.work/notes/AIイシュー自動発見システム構想.md` |
 | 済 | work-kit plugin.json バージョン bump（MINOR）+ changelog | `plugins/work-kit/.claude-plugin/plugin.json`<br>`plugins/work-kit/changelogs/v2.36.0.md` |
 | 済 | marketplace.json バージョン更新 | `.claude-plugin/marketplace.json` |
-| - | issue-tool.py のコメント・docstring を日本語化 | `plugins/work-kit/scripts/issue-tool.py` |
+| 済 | issue-tool.py のコメント・docstring・CLI ヘルプを日本語化 | `plugins/work-kit/scripts/issue-tool.py` |
 
 ## 参考ドキュメント
 
