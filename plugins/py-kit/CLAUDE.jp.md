@@ -70,7 +70,8 @@ Claude のコンテキストへ注入する。
 | `py-kit:py-project` | Python プロジェクト全般（新規 / 既存）。機能フォルダ型レイアウトで雛形生成、または既存コードのレビュー・拡張 |
 | `py-kit:py-script` | 単一ファイル / 数ファイルの簡易スクリプト |
 
-スキル選択フックは `hooks/python-skill-dispatch.md`（既存）。
+スキル選択フックはなし。スキルはユーザーが **明示的に呼び出す**（`/py-kit:py-project`、`/py-kit:py-script`）。
+自動 dispatch は PR140 で廃止 — references 自動注入フック（`inject_references.py`）が `Edit` / `Write` のたびに該当 reference を届けるので、別の dispatch フックは冗長。
 
 ---
 

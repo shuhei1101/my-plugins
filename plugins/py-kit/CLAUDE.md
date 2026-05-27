@@ -64,7 +64,7 @@ The `py-references-injection` hook (PreToolUse, implemented in the same PR) read
 | `py-kit:py-project` | General Python projects (new / existing). Scaffold generation in the feature-folder layout, or review / extension of existing code |
 | `py-kit:py-script` | Simple scripts of a single file or a few files |
 
-The skill selection hook is `hooks/python-skill-dispatch.md` (existing).
+No skill-selection hook. Skills are invoked **explicitly** by the user (`/py-kit:py-project`, `/py-kit:py-script`). Auto-dispatching was removed in PR140 — the references auto-injection hook (`inject_references.py`) already delivers the relevant references on every `Edit` / `Write`, so a separate dispatch hook is redundant.
 
 ---
 

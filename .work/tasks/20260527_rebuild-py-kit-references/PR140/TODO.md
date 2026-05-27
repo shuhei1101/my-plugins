@@ -116,6 +116,13 @@ refs-inject-kit プラグイン自体も削除し、py-kit に直接フックを
 | 済 | `marketplace.json` から `refs-inject-kit` エントリ削除 | `.claude-plugin/marketplace.json` |
 | 済 | `changelogs/v2.0.0.md` の「#141（予定）references 自動注入フックの実装」を「同 PR で実装」に修正 | `plugins/py-kit/changelogs/v2.0.0.md` |
 
+### 第 7 ラウンドコミット後のレビュー反映（2026-05-28 追加 6）
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| 済 | `python-skill-dispatch` フック撤去（refs auto-injection があれば dispatch は冗長）。`hooks.json` から PreToolUse Edit/Write の dispatch エントリ削除 + `hooks/prompts/python-skill-dispatch.{md,jp.md}` 削除 + `hooks/prompts/` 空ディレクトリ削除。py-project / py-script スキル本体は残し、ユーザー明示呼び出し用に維持 | `plugins/py-kit/hooks/hooks.json`, `plugins/py-kit/hooks/prompts/**` |
+| 済 | `plugins/py-kit/CLAUDE.md`(+jp) を「スキル選択フックはなし、ユーザー明示呼び出し」に書き換え。`changelogs/v2.0.0.md` の廃止リストに `python-skill-dispatch` 撤去を追記 | `plugins/py-kit/CLAUDE.md` (+ jp), `plugins/py-kit/changelogs/v2.0.0.md` |
+
 ## 参考ドキュメント
 
 - `.work/tasks/20260527_review-py-kit-plugin/PR138/QA.md`: 新方針版 QA（全件確定）。実装の主たる判断材料
