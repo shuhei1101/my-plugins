@@ -457,3 +457,10 @@ prs:
   summary: PR135 の references 再構築 + フック導入を .work/notes/AIイシュー自動発見システム構想.md に反映
   task: 20260528_update-ai-issue-discovery-notes-pr135
   completed: true
+- id: 146
+  title: PR146 — integrate-issue-close-to-merge
+  type: feat
+  tags: []
+  summary: work-kit merge スキルにイシュークローズ処理を統合
+  task: 20260528_integrate-issue-close-to-merge
+  completed: true
