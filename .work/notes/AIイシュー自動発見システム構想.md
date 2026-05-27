@@ -38,18 +38,18 @@ AI がコードベース・画面を調査（呼び出し時に実行）
 | `dev-kit` | YAML スキル + 汎用開発ツール | 現状維持 |
 | `py-kit` | Python コーディング規約・スキャフォールド | 新規作成（dev-kit から Python を分離） |
 | `html-kit` | HTML/CSS/JS 実装規約・スキャフォールド | ui-kit をリネーム |
-| `next-kit` | Next.js 実装規約・スキャフォールド | 将来 PR（予約済み） |
+| `next-kit` | Next.js 実装規約・スキャフォールド | ✅ PR132 作成 / PR135 references 全面再構築 |
 | `work-kit` | PR ライフサイクル管理 + イシュー管理スキル | 既存に2スキル追加 |
 
 ### PR 区切り案
 
-| PR | 内容 | 実施条件 |
+| PR | 内容 | 状態 |
 |---|---|---|
-| PR-A | py-kit プラグイン新規作成（dev-kit から Python を分離） | 即時実施可 |
+| PR-A | py-kit プラグイン新規作成（dev-kit から Python を分離） | ✅ PR129 作成 / PR138 大方針 / PR140 references 全面再構築・自動注入フック実装 |
 | PR-B | ui-kit → html-kit リネーム | ✅ PR130 完了 |
-| PR-C | work-kit に issue-scan・issue-create スキルを追加 | 即時実施可 |
-| PR-D | work-kit merge スキルにイシュークローズ処理を統合 | PR-C 完了後 |
-| PR-E | next-kit プラグイン新規作成 | ✅ PR132 で完了 |
+| PR-C | work-kit に issue-scan・issue-create スキルを追加 | ✅ PR131 完了 |
+| PR-D | work-kit merge スキルにイシュークローズ処理を統合 | 未実装（PR131 完了後も着手せず） |
+| PR-E | next-kit プラグイン新規作成 + references 全面再構築（90 ファイル + 自動注入フック） | ✅ PR132 作成 / PR135 全面再構築 |
 
 ---
 
@@ -105,11 +105,48 @@ plugins/py-kit/
 - DB は対象外（Web 関連は next-kit に委譲）
 - テストは **結合テスト + スモークテストのみ**（単体テストなし、スモークはユーザー手動実行限定）
 
-**自動注入の仕組み**:
+**自動注入の仕組み（✅ PR140 で実装済み）**:
 - `references/index.yaml` の `injection_rules` に「編集対象ファイルパス → 必読 reference / 任意 reference」を集約
-- PR141（`add-py-kit-references-injection-hook`）で PreToolUse フックを実装し、`Edit` / `Write` 時に該当 reference を `decision: block` で Claude へ自動注入する予定
+- `hooks/inject_references.py` (PreToolUse) が `Edit` / `Write` 時に該当 reference を `decision: block` で Claude へ自動注入する
 
 **詳細度**: PR132 next-kit の書きぶり（必須/推奨表・✅/❌対比例・禁止事項リスト）を Python 用に展開。各ファイルが本格リファレンス（数百行規模）。
+
+### next-kit（v3.1.0 — PR132 新規作成 / PR135 全面再構築）
+
+```
+plugins/next-kit/
+├── .claude-plugin/plugin.json     # v3.1.0
+├── CLAUDE.md / CLAUDE.jp.md       # プラグイン全体ガイド
+├── changelogs/
+│   └── v3.1.0.md
+├── hooks/
+│   ├── hooks.json
+│   ├── inject_references.py       # next-references-injection フック (PR135)
+│   └── templates/
+│       ├── injection.md.j2
+│       └── injection.jp.md.j2
+└── references/                    # 90 ファイル（jp ミラー込みで 180）構成
+    ├── CLAUDE.md / CLAUDE.jp.md   # 「index.yaml を読め」式の最小指示
+    ├── index.yaml / index.jp.yaml # reference 一覧 + メタデータ
+    ├── injection_rules.yaml       # pattern → required/optional マッピング
+    ├── frontend/                  # page.tsx・screen.tsx・フォーム・コンポーネント等（~40 ファイル）
+    ├── backend/                   # route.ts・query.ts・db.ts・auth・Service 等（~40 ファイル）
+    ├── shared/                    # 型定義・定数・ユーティリティ
+    ├── testing/                   # テスト規約
+    ├── devops/                    # デプロイ・CI 等
+    └── devtools/                  # 開発ツール設定
+```
+
+**設計方針（PR135 全面再構築後）**:
+- **1 ファイル = 1 ユースケース**: `query.ts` 編集 → `query-ts.md` だけ inject（他のファイル種別の情報は入らない）
+- ファイル名がフックのトリガーキーワードに直接対応（`route.ts` → `route-ts.md`、`EditScreen.tsx` → `edit-screen-tsx.md`）
+- 比較・選定・トレードオフセクションは完全削除（決定済みの情報は不要、inject 時にノイズになる）
+- Stack: shadcn/ui + Tailwind + react-hook-form + Zod + TanStack Query + Drizzle + Server Actions + Better Auth
+
+**自動注入の仕組み（✅ PR135 で実装済み）**:
+- `references/injection_rules.yaml` の `rules:` に「編集対象ファイルパス → required/optional reference」を集約
+- `hooks/inject_references.py` (PreToolUse: Edit/Write/MultiEdit) が該当 reference を `decision: block` で Claude へ自動注入
+- `NEXT_KIT_INJECTION_LANG=jp` で日本語版テンプレに切替（デフォルト en）
 
 ### html-kit（ui-kit からリネーム）
 
@@ -148,6 +185,65 @@ plugins/work-kit/skills/
 ├── ISSUE-002.md
 └── ISSUE-003.md
 ```
+
+---
+
+## References 設計原則（フック自動注入前提）
+
+PR135 / PR140 の設計経験から確立した原則。issue-scan が references を参照する場合も同様に適用する。
+
+### 1 ファイル = 1 ユースケース
+
+- 「`query.ts` を編集したとき inject される reference」は `query-ts.md` 1 ファイルだけ
+- 1 つの reference に複数のファイル種別を詰め込まない
+- ファイル名 = トリガーキーワード（`injection_rules.yaml` の pattern と 1:1 対応）
+
+### injection_rules.yaml から設計を始める
+
+reference の目次（TOC）ではなく「どのファイル編集でこの reference を読ませたいか」を先に決め、そこからファイル名・内容を導く。
+
+### 削除するもの
+
+- 比較・選定・トレードオフセクション → `.work/notes/` か commit メッセージに記録
+- 実装者が「編集中のファイルとは無関係」な情報 → 別 reference に分離 or 削除
+
+### 参照
+
+- インシデント: `bestprac-over-usecase-references-bloat.md`（ベストプラ網羅型の失敗例）
+- ルール: `.claude/rules/feature/kit-hooks-index-sync.md`（kit 間の構造同期強制）
+
+---
+
+## kit-hooks-index-sync ルール
+
+`py-kit` と `next-kit`（および将来の `*-kit`）は **同じ references 自動注入構造** を共有する:
+
+| ファイル | 役割 |
+|---|---|
+| `hooks/inject_references.py` | PreToolUse フック本体（plugin ごとに env var 名・ログタグのみ異なる） |
+| `hooks/hooks.json` | フック登録（PreToolUse: Edit/Write/MultiEdit） |
+| `hooks/templates/injection.md.j2` + `.jp.md.j2` | 注入テンプレ（Jinja2） |
+| `references/index.yaml` + `index.jp.yaml` | reference 一覧 + メタデータ |
+| `references/injection_rules.yaml` | pattern → required/optional マッピング |
+| `references/CLAUDE.md` + `CLAUDE.jp.md` | 「index.yaml を読め」式インデックス |
+
+**片方の kit で構造を変えたら、他の kit も同じコミットで変える**（`.claude/rules/feature/kit-hooks-index-sync.md` で強制）。
+
+共通化（共通スクリプト化）は PR140 で試みたが、各 plugin が独立 install される都合上断念。ルールで「同コミット更新」を強制する形に落ち着いた。
+
+---
+
+## 学びとアンチパターン
+
+### ベストプラ網羅型 references の失敗（PR135）
+
+**何が起きたか**: PR135 当初、「ベストプラクティスを網羅する」観点で 46 ファイル構成を設計。`api-routes.md` に 6 種類のファイル型の規約を詰め込み、`auth.md` に認証ライブラリの比較表を収録した。
+
+**なぜ失敗か**: `query.ts` を 1 行編集したときに、関係ない 5 種類のファイル型の情報まで inject される。比較表は決定後には不要なのに毎回 inject されるノイズになる。
+
+**解決**: QA-073 で全面再分割。46 → 90 ファイル、ファイル名をトリガーキーワードに対応させた（`query-ts.md`、`edit-screen-tsx.md` など）。比較・選定セクションは全削除。
+
+**詳細**: `.claude/references/incidents/bestprac-over-usecase-references-bloat.md`
 
 ---
 
@@ -221,7 +317,7 @@ scan_records:
 ```
 1. _index.archive.yaml の scan_records を確認し、未スキャン箇所を特定
 2. 今回スキャンする対象をユーザーに提示（frontend画面 / backend-layer / ルール系）
-3. 対象領域の py-kit または html-kit references を参照
+3. 対象領域の py-kit / next-kit / html-kit references を参照（フック注入と同じ粒度で読む）
 4. プロジェクトコードを読んで規約と照合
 5. 問題あり → ISSUE-{N}.md を作成、_index.yaml に追記
 6. scan_records に記録（日時・スコープ・検出イシュー）
@@ -259,3 +355,25 @@ scan_records:
 ### スキャン頻度
 - `issue-scan` は手動呼び出しが基本
 - 定期実行は外部プログラムから Claude Code に投げる形で対応（プラグイン外）
+
+---
+
+## 次のステップ（AI イシュー自動発見の具体実装に向けて）
+
+PR135 / PR140 の成果により、フック自動注入の基盤は py-kit / next-kit の両方で揃った。
+「AI がコードベースを規約と照合し、イシューを自動発見する」という構想の実装前提が整った状態。
+
+### 残タスク
+
+| タスク | 状態 | 備考 |
+|---|---|---|
+| PR-D: merge スキルにイシュークローズ処理を統合 | 未実装 | work-kit issue-scan/create が前提（PR131 完了済み） |
+| issue-scan の references 参照精度向上 | 未検討 | next-kit / py-kit references が 1 ファイル = 1 ユースケース化された今、scan 時の粒度を合わせる |
+| スキャン対象の拡張（Next.js フロントエンド） | 未検討 | 現在は HTML / backend が対象。next-kit プロジェクトへの適用を検討 |
+
+### 基盤として確立したもの（PR135 / PR140 の成果）
+
+- **py-kit** (v2.0.0): 38 ファイル、`inject_references.py` で自動注入済み
+- **next-kit** (v3.1.0): 90 ファイル、`inject_references.py` で自動注入済み
+- **kit-hooks-index-sync ルール**: 両 kit の構造が同一フォーマットを維持することを保証
+- **1 ファイル = 1 ユースケース設計原則**: 将来の新 kit にも適用すべき設計規約として確立
