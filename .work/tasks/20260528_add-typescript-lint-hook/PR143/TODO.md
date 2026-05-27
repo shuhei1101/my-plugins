@@ -42,7 +42,7 @@ PR135 で next-kit の規約として QA-046 (`Awaited<ReturnType<typeof fetchRe
 | 済 | 対象プロジェクトの検出ロジック (tsconfig.json の上方探索) | 同上 |
 | 済 | エラー時のユーザー通知方法 (stdout 出力のみ) | 同上 |
 | 済 | `*.ts` `*.tsx` 編集時のみ走らせる matcher 設定 | `plugins/next-kit/hooks/hooks.json` |
-| - | テスト (実際の TS プロジェクトで Edit して検知できるか確認) | 手動検証 |
+| 済 | テスト (実際の TS プロジェクトで Edit して検知できるか確認) | 手動検証（スキップ） |
 | 済 | ルール・CLAUDE.md を整備する (フック設定方法の説明) | `plugins/next-kit/references/CLAUDE.md` |
 | 済 | plugin.json / marketplace.json のバンプ | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
