@@ -46,8 +46,8 @@
     {
       "name": "next-kit",
       "source": "./plugins/next-kit",
-      "description": "Next.js 16 App Router implementation conventions split per file-type (1 file = 1 use case) — shadcn/ui + Tailwind + Drizzle + TanStack Query + Server Actions + Better Auth, designed for PreToolUse hook auto-injection",
-      "version": "3.0.0"
+      "description": "Next.js 16 App Router implementation conventions split per file-type (1 file = 1 use case) — shadcn/ui + Tailwind + Drizzle + TanStack Query + Server Actions + Better Auth, with PreToolUse hook auto-injection (index.yaml + injection_rules.yaml)",
+      "version": "3.1.0"
     }
   ]
 }
