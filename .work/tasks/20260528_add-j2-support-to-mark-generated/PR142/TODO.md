@@ -20,13 +20,13 @@ Step 3 の対応表に `.j2` を追加し、`hooks.json` に `.j2` ファイル�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR142/QA.md` |
-| - | mark-generated SKILL.md Step 3 に `.j2` を追加 | - `plugins/claude-kit/skills/mark-generated/SKILL.md` |
-| - | SKILL.jp.md も同期更新 | - `plugins/claude-kit/skills/mark-generated/SKILL.jp.md` |
-| - | hooks.json に `.j2` 用 PreToolUse フックを追加 | - `plugins/claude-kit/hooks/hooks.json` |
-| - | フックプロンプトを作成 | - `plugins/claude-kit/hooks/prompts/j2-stamp-check.md` |
-| - | フックプロンプトの JP ミラーを作成 | - `plugins/claude-kit/hooks/prompts/j2-stamp-check.jp.md` |
-| - | plugin.json / marketplace.json のバージョンを更新 | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| x | QA.md に未決定事項を記録する | - `.work/tasks/.../PR142/QA.md` |
+| x | mark-generated SKILL.md Step 3 に `.j2` を追加 | - `plugins/claude-kit/skills/mark-generated/SKILL.md` |
+| x | SKILL.jp.md も同期更新 | - `plugins/claude-kit/skills/mark-generated/SKILL.jp.md` |
+| x | hooks.json に `.j2` 用 PreToolUse フックを追加 | - `plugins/claude-kit/hooks/hooks.json` |
+| x | フックプロンプトを作成 | - `plugins/claude-kit/hooks/prompts/j2-stamp-check.md` |
+| x | フックプロンプトの JP ミラーを作成 | - `plugins/claude-kit/hooks/prompts/j2-stamp-check.jp.md` |
+| x | plugin.json / marketplace.json のバージョンを更新 | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
