@@ -1,8 +1,9 @@
 ---
 name: issue-scan
 description: |
-  コードベースをスキャンして規約違反・品質問題を発見し、`.work/issues/` にイシューとして記録するスキル。
-  `_index.archive.yaml` のスキャン履歴を確認してスキャン済み領域の再検出を避ける。
+  プロジェクトのソースコードから 1 ファイルをランダムに選び、該当する `*-kit` プラグインの reference と比較して
+  規約違反・改善余地をイシューとして `.work/issues/` に記録するスキル。
+  `_index.archive.yaml` のスキャン履歴を見てスキャン済みファイルは除外する。
   ユーザーが「issue-scan」「コードをスキャン」「イシューを探して」「問題を見つけて」と言ったとき、
   または `/work-kit:issue-scan` を明示的に呼び出したときに起動する。
 ---
@@ -16,10 +17,8 @@ description: |
 
 # work-kit:issue-scan — コードベーススキャン
 
-プロジェクトのコードを py-kit・html-kit などのプラグイン規約と照合し、
-発見した問題を `.work/issues/` にイシューとして記録するスキル。
-
-スキャン対象: フロントエンド HTML ファイル単位、またはバックエンドレイヤー単位。
+毎回 1 ファイルをランダムに選び、該当する `*-kit` プラグインの reference と比較して
+発見した問題を `/work-kit:issue-save` 経由で `.work/issues/` に記録するスキル。
 
 ---
 
@@ -27,19 +26,20 @@ description: |
 
 **前提条件**:
 - `.work/issues/` が存在すること（なければ `/work-kit:setup` を実行）
-- py-kit または html-kit プラグインのいずれかがインストールされていること（照合基準となる references を提供）
+- `*-kit` 形式のプラグイン（py-kit / next-kit など）が1つ以上インストールされていること
 
-**スキャン単位の設計**:
-- **フロントエンド**: HTML ファイル 1 枚単位
-- **バックエンド**: レイヤー 1 層単位（endpoint → application → domain → infrastructure → llm-client）
-
-**重複防止**: `_index.archive.yaml` で `wontfix` クローズされたイシューはスキャン結果から除外する。
+**動作方針**:
+- プロジェクトの技術スタックを AI が判定し、適用する `*-kit` プラグインを決める
+- そのプラグイン配下のソースファイルから、まだスキャンしていないものを 1 つランダムに選ぶ
+- 選んだファイルを reference と照合してイシューを起こす
+- フックは `Edit/Write/MultiEdit` でしか発火しないため、本スキルでは
+  `*-kit/references/injection_rules.yaml` を直接読んで該当 reference を特定する
 
 ---
 
 ## 作業内容
 
-### ステップ1: スキャン履歴を確認する
+### ステップ1: スキャン履歴を読む
 
 #### 条件
 
@@ -47,26 +47,24 @@ description: |
 
 #### 処理内容
 
-1. `.work/issues/` が存在するか確認する:
-   - 存在しない場合 → 先に `/work-kit:setup` を実行するよう伝えて停止
-2. `_index.archive.yaml` が存在すれば読み込む（なければ空の状態から開始）:
-   - `scan_records` のエントリをすべて把握する（日時・スコープ・発見イシュー）
-   - `resolution: wontfix` でクローズされたイシューのIDを把握する（結果から除外する）
-3. `_index.yaml` が存在すれば読み込む:
-   - 現在の `last_id` を把握する（なければ 0 として扱う）
-   - オープンイシューの一覧（id・scan_scope）を把握する
+1. `.work/issues/` が存在するか確認する
+   - 存在しない場合 → `/work-kit:setup` を促して停止
+2. `_index.archive.yaml` を読み込む（なければ空として扱う）
+   - `scan_records` のエントリ（過去にスキャンしたファイル一覧）を把握する
+   - `closed_issues` の `resolution: wontfix` の ID を把握する（結果から除外する）
+3. `_index.yaml` を読み込む（なければ空として扱う）
+   - 現在の `last_id` を把握する（issue-save が使用）
 
 → ステップ2へ進む
 
 #### 出力
 
-- スキャン済みスコープの一覧
-- 現在の `last_id`
-- 除外する wontfix イシュー ID の一覧
+- スキャン済みファイルパスの集合
+- wontfix イシュー ID の集合
 
 ---
 
-### ステップ2: スキャン対象を決める
+### ステップ2: 適用する `*-kit` プラグインを判定する
 
 #### 条件
 
@@ -74,32 +72,26 @@ description: |
 
 #### 処理内容
 
-1. スキャン候補をユーザーに提示する（種類別に整理）:
-
-   **フロントエンド**（html-kit）:
-   - プロジェクト内の HTML ファイルを列挙する（例: `find . -name "*.html" -not -path "*/node_modules/*"`）
-   - スキャン済みファイルには最終スキャン日を付記する
-
-   **バックエンド**（py-kit）:
-   - endpoint レイヤー
-   - application レイヤー
-   - domain レイヤー
-   - infrastructure レイヤー
-   - llm-client レイヤー
-   - スキャン済みのものには最終スキャン日を付記する
-
-2. ユーザーに確認する: 「どのスコープをスキャンしますか？」
-3. リストにないスコープをユーザーが指定した場合はカスタムスコープとして受け入れる
+1. プロジェクトの技術スタックを以下で判定する:
+   - Python プロジェクト → `pyproject.toml` の存在、または `**/*.py` ファイルの存在
+   - Next.js プロジェクト → `next.config.*` の存在、または `package.json` の `dependencies` / `devDependencies` に `next` が含まれる
+   - HTML プロジェクト → スタンドアロンの `**/*.html` の存在
+2. 該当する各プラグインについて以下を確認する:
+   - `${CLAUDE_PLUGIN_ROOT}/../py-kit/references/injection_rules.yaml`
+   - `${CLAUDE_PLUGIN_ROOT}/../next-kit/references/injection_rules.yaml`
+   - `${CLAUDE_PLUGIN_ROOT}/../html-kit/references/injection_rules.yaml`（存在すれば）
+   - 他に `${CLAUDE_PLUGIN_ROOT}/../*-kit/references/injection_rules.yaml` が見つかれば検討に加える
+3. 適用候補が 1 つも無ければ、その旨をレポートして停止する
 
 → ステップ3へ進む
 
 #### 出力
 
-- 確定したスキャンスコープ（例: `frontend/dev/chat.html` または `layer:endpoint`）
+- 適用する `*-kit` プラグインの一覧（各プラグインのパスと検出根拠つき）
 
 ---
 
-### ステップ3: 該当する規約資料を読み込む
+### ステップ3: スキャン対象ファイルをランダムに 1 つ選ぶ
 
 #### 条件
 
@@ -107,21 +99,24 @@ description: |
 
 #### 処理内容
 
-1. 確定したスコープに応じて、適用するプラグイン references を判断する:
-   - フロントエンドスコープ → html-kit の references を `${CLAUDE_PLUGIN_ROOT}` 経由で読み込む:
-     - `${CLAUDE_PLUGIN_ROOT}/../html-kit/references/principles.md`（存在すれば）
-     - `${CLAUDE_PLUGIN_ROOT}/../html-kit/references/ui-design.md`（存在すれば）
-   - バックエンドスコープ → py-kit の references を読み込む:
-     - `${CLAUDE_PLUGIN_ROOT}/../py-kit/references/python-core.md`（存在すれば）
-     - `${CLAUDE_PLUGIN_ROOT}/../py-kit/references/python-architecture.md`（存在すれば）
-     - スコープ固有の資料（例: endpoint レイヤーなら `python-fastapi.md`）
-2. 参照ファイルが存在しない場合は一般的なコードレビュー原則で進める
+1. 適用プラグインそれぞれの `injection_rules.yaml` を読み、`rules[].pattern` を集める
+2. プロジェクト内で各 pattern にマッチするファイルを列挙する
+   - `find` や glob を使う
+   - `.work/`・`.git/`・`node_modules/`・`.venv/`・`venv/`・`__pycache__/`・`dist/`・`build/` などは除外する
+3. `_index.archive.yaml` の `scan_records[].scope` に既に登場しているファイルを除外する
+4. 残ったファイルからランダムに 1 つを選ぶ
+5. 残候補が 0 件のとき: ユーザーに「すべてスキャン済みです。再スキャンしますか？」と確認し、Yes なら除外を解いて選び直し、No なら停止する
 
 → ステップ4へ進む
 
+#### 出力
+
+- 選ばれたファイルパス（例: `src/myapp/features/chat/service.py`）
+- どの `*-kit` プラグインに属するか
+
 ---
 
-### ステップ4: コードをスキャンする
+### ステップ4: ファイルに該当する reference を特定する
 
 #### 条件
 
@@ -129,51 +124,90 @@ description: |
 
 #### 処理内容
 
-1. 確定したスコープの対象ファイル・ディレクトリを読み込む
-2. 読み込んだ規約資料と照合し、以下の問題を探す:
-   - 命名規約違反
-   - アーキテクチャ境界違反
-   - エラーハンドリング漏れ・型アノテーション不足（バックエンド）
-   - UI パターンの不統一（フロントエンド）
-   - アクセシビリティ問題（フロントエンド）
-   - コード重複
-   - その他、読み込んだ規約資料にある違反項目
-3. `wontfix` でクローズ済みのイシューと同じ問題は除外する
-4. 独立した・対処可能な問題のリストを整理する
+1. 選ばれたファイルが属するプラグインの `injection_rules.yaml` を再度読み、
+   `pattern`（glob）でファイルパスとマッチする rule をすべて拾う
+   - マッチ判定は `fnmatch` 系セマンティクス（`**` は再帰）
+   - 複数 rule にマッチした場合はすべて採用
+2. マッチした各 rule の `required` と `optional` の reference パスを集約する
+3. 同プラグインの `index.yaml` を読み、各 reference の `description` を取得する
+4. 各 reference 本体（例: `${CLAUDE_PLUGIN_ROOT}/../py-kit/references/core/naming.md`）を読み込む
 
 → ステップ5へ進む
 
+#### 出力
+
+- 選ばれたファイルに対する適用 reference のリスト（本体内容を含む）
+
 ---
 
-### ステップ5: イシューを記録する
+### ステップ5: ファイルを reference と比較してイシューを発見する
 
 #### 条件
 
-- 常に実行する（問題が見つからなくてもスキャン記録を書く必要がある）
+- 常に — ステップ4の後に実行する
 
 #### 処理内容
 
-1. 発見した各問題について以下を呼び出す:
-   ```
-   /work-kit:issue-save --title "{タイトル}" --type {タイプ} --priority {優先度} --tags {タグ} --scope "{スコープ}" --problem "{問題の説明}" --fix "{修正案}"
-   ```
-   - 次のイシューに進む前に `issue-save` がイシュー ID を返すまで待つ
-   - 返ってきた ISSUE ID をすべて収集する
-2. `_index.archive.yaml` にスキャン記録を追記する:
+1. 選ばれたファイルの本体を読む
+2. ステップ4で読んだ各 reference と照合し、以下を探す:
+   - 規約違反（命名・型・コメント・スタイル）
+   - アーキテクチャ違反（依存方向・レイヤー境界）
+   - 改善余地（DRY 違反・冗長コード・古い書き方など、reference に記載された規約に基づくもの）
+3. `wontfix` で既にクローズされているイシューと同じ内容は除外する
+4. 独立して対処可能な単位ごとに整理する
+
+→ ステップ6へ進む
+
+#### 出力
+
+- 発見した問題の一覧（タイトル / タイプ / 優先度 / 該当箇所 / 修正案）
+
+---
+
+### ステップ6: イシューを保存する
+
+#### 条件
+
+- 常に — ステップ5の後に実行する
+
+#### 処理内容
+
+1. 発見した各問題について `/work-kit:issue-save` を呼び出す:
+   - タイトル / タイプ / 優先度 / タグ / スコープ（= 選ばれたファイルパス）/ 問題の説明 / 修正案を渡す
+   - issue-save が返す ISSUE ID を収集する
+2. 問題が 0 件でもステップ7のスキャン記録は必ず書く
+
+→ ステップ7へ進む
+
+#### 出力
+
+- 作成したイシュー ID のリスト
+
+---
+
+### ステップ7: スキャン記録を更新する
+
+#### 条件
+
+- 常に — ステップ6の後に実行する
+
+#### 処理内容
+
+1. `_index.archive.yaml` の `scan_records` に以下を追記する:
    ```yaml
    scan_records:
      - date: {YYYY-MM-DD}
        skill: issue-scan
-       scope: "{スコープ}"
-       issues_found: [{ISSUE-N}, ...]   # 何も見つからなければ空リスト
+       scope: "{選ばれたファイルパス}"
+       issues_found: [{ISSUE-N}, ...]   # 0 件なら空リスト
    ```
-   `_index.archive.yaml` が存在しない場合は `closed_issues: []` と `scan_records: []` を持つ新規ファイルとして作成する
+2. `_index.archive.yaml` が存在しなければ `closed_issues: []` と `scan_records: []` で新規作成する
 
-→ ステップ6へ進む
+→ ステップ8へ進む
 
 ---
 
-### ステップ6: 結果をレポートする
+### ステップ8: 結果をレポートする
 
 #### 条件
 
@@ -181,14 +215,13 @@ description: |
 
 #### 処理内容
 
-1. 以下のサマリーをレポートする:
-   - スキャンスコープと実施日
-   - 新規イシュー件数
-   - 各イシューの一覧: ID・タイトル・優先度
-2. 問題が見つからなかった場合は、対象スコープはクリーンである旨を伝える
-3. 必要なら `wontfix` でイシューをクローズできることも伝える（修正予定なしの場合）
+1. 以下をユーザーに報告する:
+   - 適用したプラグイン
+   - スキャンしたファイルパス
+   - 作成したイシュー数とその一覧（ID / タイトル / 優先度）
+   - 問題が 0 件の場合はその旨
+2. 修正予定なしの場合は `_index.archive.yaml` の `resolution: wontfix` で閉じられる旨を伝える
 
 #### 補足
 
-- このスキルでは `git commit` を実行しない — イシューファイルはユーザーが確認した後にコミットする
-- 優先度の調整はユーザーがコミット前に行う
+- このスキルでは `git commit` を行わない — ユーザーが確認した後にコミットする

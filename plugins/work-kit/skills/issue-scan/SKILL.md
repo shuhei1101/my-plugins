@@ -1,8 +1,9 @@
 ---
 name: issue-scan
 description: |
-  Scan the codebase for rule violations and quality issues, recording results as issues in `.work/issues/`.
-  Checks scan history in `_index.archive.yaml` to avoid re-scanning already-covered areas.
+  Pick one source file at random from the project and compare it against the matching `*-kit`
+  plugin references; record any rule violations or improvements as issues in `.work/issues/`.
+  Excludes already-scanned files via `_index.archive.yaml`.
   Trigger when the user says "issue-scan", "scan for issues", "find problems in the code",
   "コードをスキャン", "イシューを探して", or invokes `/work-kit:issue-scan` explicitly.
 ---
@@ -10,10 +11,8 @@ description: |
 
 # work-kit:issue-scan — Scan Codebase for Issues
 
-Scans the project code against applicable plugin references (py-kit, html-kit, etc.)
-and records newly discovered problems as issues in `.work/issues/` via `/work-kit:issue-save`.
-
-Scope options: a specific frontend HTML file, a backend layer, or a custom scope.
+Picks one project file at random per invocation, compares it against the matching `*-kit`
+plugin references, and records discovered problems via `/work-kit:issue-save` into `.work/issues/`.
 
 ---
 
@@ -21,13 +20,14 @@ Scope options: a specific frontend HTML file, a backend layer, or a custom scope
 
 **Prerequisites**:
 - `.work/issues/` must exist (run `/work-kit:setup` if it doesn't)
-- At least one of `py-kit` or `html-kit` plugins should be installed (provides the references to check against)
+- At least one `*-kit` plugin (py-kit / next-kit etc.) must be installed
 
-**Scan unit design**:
-- **Frontend**: one HTML file per scan
-- **Backend**: one layer per scan (endpoint → application → domain → infrastructure → llm-client)
-
-**Duplicate prevention**: `wontfix` issues in `_index.archive.yaml` are excluded from scan results.
+**Approach**:
+- The skill detects the project's tech stack and determines which `*-kit` plugins apply
+- It picks one source file at random from those plugins' scope, excluding already-scanned ones
+- It compares the chosen file against the relevant references and raises issues
+- Hooks fire only on `Edit/Write/MultiEdit`, so this skill reads
+  `*-kit/references/injection_rules.yaml` directly to find the applicable references
 
 ---
 
@@ -41,26 +41,24 @@ Scope options: a specific frontend HTML file, a backend layer, or a custom scope
 
 #### Process
 
-1. Check whether `.work/issues/` exists:
-   - If not → report that setup must be run first (`/work-kit:setup`), then stop
-2. Read `_index.archive.yaml` if it exists (start from empty if not):
-   - Note all `scan_records` entries (date, scope, issues_found)
-   - Note all `closed_issues` with `resolution: wontfix` — these will be excluded from results
-3. Read `_index.yaml` if it exists:
-   - Note the current `last_id` value (default 0 if missing)
-   - Note all open issues (ids and scan_scope fields)
+1. Check whether `.work/issues/` exists
+   - If not → prompt for `/work-kit:setup` and stop
+2. Read `_index.archive.yaml` (treat as empty if missing)
+   - Collect all `scan_records` entries (set of files already scanned)
+   - Collect `closed_issues` whose `resolution: wontfix` (to exclude from results)
+3. Read `_index.yaml` (treat as empty if missing)
+   - Note the current `last_id` (used by issue-save)
 
 → Proceed to Step 2
 
 #### Output
 
-- List of already-scanned scopes
-- Current `last_id`
-- List of wontfix issue ids to exclude
+- Set of already-scanned file paths
+- Set of wontfix issue IDs
 
 ---
 
-### Step 2: Determine scan scope
+### Step 2: Detect applicable `*-kit` plugins
 
 #### Condition
 
@@ -68,32 +66,26 @@ Scope options: a specific frontend HTML file, a backend layer, or a custom scope
 
 #### Process
 
-1. Present the user with scan options, grouped by type:
-
-   **Frontend** (html-kit):
-   - List HTML files found in the project (e.g. `find . -name "*.html" -not -path "*/node_modules/*"`)
-   - Mark already-scanned files with their last scan date
-
-   **Backend** (py-kit):
-   - endpoint layer
-   - application layer
-   - domain layer
-   - infrastructure layer
-   - llm-client layer
-   - Mark already-scanned layers with their last scan date
-
-2. Ask the user: "Which scope do you want to scan?"
-3. If the user specifies a scope not in the list, accept it as a custom scope
+1. Detect the project's tech stack from:
+   - Python project → `pyproject.toml` exists or any `**/*.py` files exist
+   - Next.js project → `next.config.*` exists or `package.json` has `next` in `dependencies` / `devDependencies`
+   - HTML project → standalone `**/*.html` files exist
+2. For each detected stack, confirm the corresponding plugin's injection rules file exists:
+   - `${CLAUDE_PLUGIN_ROOT}/../py-kit/references/injection_rules.yaml`
+   - `${CLAUDE_PLUGIN_ROOT}/../next-kit/references/injection_rules.yaml`
+   - `${CLAUDE_PLUGIN_ROOT}/../html-kit/references/injection_rules.yaml` (if present)
+   - Any other `${CLAUDE_PLUGIN_ROOT}/../*-kit/references/injection_rules.yaml` found is also considered
+3. If no applicable plugin is found, report so and stop
 
 → Proceed to Step 3
 
 #### Output
 
-- Confirmed scan scope (e.g. `frontend/dev/chat.html` or `layer:endpoint`)
+- List of applicable `*-kit` plugins (with their path and detection reason)
 
 ---
 
-### Step 3: Load applicable references
+### Step 3: Pick one target file at random
 
 #### Condition
 
@@ -101,21 +93,24 @@ Scope options: a specific frontend HTML file, a backend layer, or a custom scope
 
 #### Process
 
-1. Based on the confirmed scope, determine which plugin references apply:
-   - Frontend scope → load html-kit references via `${CLAUDE_PLUGIN_ROOT}` substitution:
-     - Read `${CLAUDE_PLUGIN_ROOT}/../html-kit/references/principles.md` (if exists)
-     - Read `${CLAUDE_PLUGIN_ROOT}/../html-kit/references/ui-design.md` (if exists)
-   - Backend scope → load py-kit references:
-     - Read `${CLAUDE_PLUGIN_ROOT}/../py-kit/references/python-core.md` (if exists)
-     - Read `${CLAUDE_PLUGIN_ROOT}/../py-kit/references/python-architecture.md` (if exists)
-     - Read scope-specific reference if applicable (e.g. `python-fastapi.md` for endpoint layer)
-2. If referenced files do not exist, proceed with general code review principles
+1. Read each applicable plugin's `injection_rules.yaml` and collect every `rules[].pattern`
+2. Enumerate project files matching any of those patterns
+   - Use `find` or glob expansion
+   - Exclude common non-source directories: `.work/`, `.git/`, `node_modules/`, `.venv/`, `venv/`, `__pycache__/`, `dist/`, `build/`
+3. Remove files that already appear in `_index.archive.yaml`'s `scan_records[].scope`
+4. From the remaining candidates, pick one at random
+5. If zero candidates remain: ask the user "All files have been scanned. Re-scan anyway?" — if yes, drop the exclusion and pick again; if no, stop
 
 → Proceed to Step 4
 
+#### Output
+
+- Chosen file path (e.g. `src/myapp/features/chat/service.py`)
+- The `*-kit` plugin that owns this file
+
 ---
 
-### Step 4: Scan the code
+### Step 4: Resolve applicable references for the file
 
 #### Condition
 
@@ -123,51 +118,90 @@ Scope options: a specific frontend HTML file, a backend layer, or a custom scope
 
 #### Process
 
-1. Read the target file(s) or directory for the confirmed scope
-2. Compare the code against the loaded references, looking for:
-   - Naming convention violations
-   - Architectural boundary violations
-   - Missing error handling or type annotations (backend)
-   - UI pattern inconsistencies (frontend)
-   - Accessibility issues (frontend)
-   - Code duplication
-   - Any other rule violations found in references
-3. Exclude any findings that match `wontfix` closed issues (same problem already decided not to fix)
-4. Compile a list of distinct, actionable problems
+1. Re-read the owning plugin's `injection_rules.yaml` and find every rule whose `pattern` (glob)
+   matches the chosen file path
+   - Match semantics follow `fnmatch` (`**` is recursive)
+   - If multiple rules match, take all of them
+2. Aggregate the `required` and `optional` reference paths from the matched rules
+3. Read the same plugin's `index.yaml` to look up each reference's `description`
+4. Read each reference body (e.g. `${CLAUDE_PLUGIN_ROOT}/../py-kit/references/core/naming.md`)
 
 → Proceed to Step 5
 
+#### Output
+
+- List of applicable references for the chosen file (with body content)
+
 ---
 
-### Step 5: Record issues
+### Step 5: Compare file against references to find issues
 
 #### Condition
 
-- Always — run even if no issues found (scan record must be written)
+- Always — run after Step 4
 
 #### Process
 
-1. For each newly found problem, invoke:
-   ```
-   /work-kit:issue-save --title "{title}" --type {type} --priority {priority} --tags {tags} --scope "{scope}" --problem "{problem description}" --fix "{suggested fix}"
-   ```
-   - Wait for `issue-save` to return the ISSUE ID before calling it for the next issue
-   - Collect all returned ISSUE IDs
-2. Append a scan record to `_index.archive.yaml`:
+1. Read the chosen file's content
+2. Compare against each reference loaded in Step 4 and look for:
+   - Convention violations (naming, types, comments, style)
+   - Architectural violations (dependency direction, layer boundaries)
+   - Improvement opportunities (DRY violations, dead code, outdated patterns — anything cited by the references)
+3. Drop findings that match an already-`wontfix` closed issue
+4. Group the remaining findings into independently actionable units
+
+→ Proceed to Step 6
+
+#### Output
+
+- List of discovered problems (title / type / priority / location / suggested fix)
+
+---
+
+### Step 6: Save issues
+
+#### Condition
+
+- Always — run after Step 5
+
+#### Process
+
+1. For each discovered problem, invoke `/work-kit:issue-save`:
+   - Pass title / type / priority / tags / scope (= chosen file path) / problem description / suggested fix
+   - Collect the ISSUE IDs returned by issue-save
+2. Even if zero problems were found, the scan record in Step 7 must still be written
+
+→ Proceed to Step 7
+
+#### Output
+
+- List of created issue IDs
+
+---
+
+### Step 7: Update the scan record
+
+#### Condition
+
+- Always — run after Step 6
+
+#### Process
+
+1. Append the following to `_index.archive.yaml`'s `scan_records`:
    ```yaml
    scan_records:
      - date: {YYYY-MM-DD}
        skill: issue-scan
-       scope: "{scope}"
-       issues_found: [{ISSUE-N}, ...]   # empty list if none found
+       scope: "{chosen file path}"
+       issues_found: [{ISSUE-N}, ...]   # empty list if zero found
    ```
-   If `_index.archive.yaml` does not exist yet, create it with `closed_issues: []` and `scan_records: []`
+2. If `_index.archive.yaml` does not exist yet, create it with `closed_issues: []` and `scan_records: []`
 
-→ Proceed to Step 6
+→ Proceed to Step 8
 
 ---
 
-### Step 6: Report results
+### Step 8: Report results
 
 #### Condition
 
@@ -175,14 +209,13 @@ Scope options: a specific frontend HTML file, a backend layer, or a custom scope
 
 #### Process
 
-1. Report a summary:
-   - Scan scope and date
-   - Number of new issues found
-   - List each new issue: id, title, priority
-2. If no issues found, state that the scope appears clean
-3. Mention that issues can be closed as `wontfix` if no fix is planned
+1. Report to the user:
+   - Which plugin was applied
+   - The scanned file path
+   - Number of issues created and their list (ID / title / priority)
+   - If zero issues, state that the file looks clean
+2. Mention that issues can be closed with `resolution: wontfix` if no fix is planned
 
 #### Notes
 
-- Do NOT run `git commit` in this skill — issue files are user-reviewed before committing
-- The user decides priority adjustments before committing
+- Do NOT run `git commit` in this skill — the user reviews before committing
