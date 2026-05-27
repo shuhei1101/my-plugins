@@ -52,7 +52,10 @@ Switch to `tsc --noEmit` (without `--incremental`) if you want to disable the bu
 
 ## Used by SKILLs
 
-`next-kit:implement` reads `index.yaml` first in its Step 1 to identify which reference applies to the edit target.
+| Skill | Role | When to use |
+|---|---|---|
+| `next-kit:implement` | Reads the matching reference for the edit-target file and implements according to it | When writing or editing a specific file |
+| `next-kit:plan` | Loads references matching the user's request scope and outputs an implementation plan document (file tree + per-file roles + conventions) | Before starting implementation — to plan what files to create |
 
 ---
 
