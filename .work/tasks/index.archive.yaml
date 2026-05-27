@@ -464,3 +464,10 @@ prs:
   summary: next-kit references を読んでページ/API/feature の設計計画書（ISSUE形式）を生成する1スキル /next-kit:plan
   task: 20260528_add-next-kit-plan-skill
   completed: true
+- id: 146
+  title: PR146 — integrate-issue-close-to-merge
+  type: feat
+  tags: []
+  summary: work-kit merge スキルにイシュークローズ処理を統合
+  task: 20260528_integrate-issue-close-to-merge
+  completed: true

@@ -58,3 +58,5 @@
 | jp-mirror-translator | work-kit のサブエージェント（`plugins/work-kit/agents/jp-mirror-translator.md`）。英語オリジナルと JP ミラーの間で翻訳を行う。モデル: haiku。`.md` パスを渡すと `.jp.md` を生成・更新し、`.jp.md` パスを渡すと英語版を更新する（PR133 で追加）。 |
 | qa-review | work-kit のスキル（`/work-kit:qa-review [PR{N}]`）。PR の QA.md を読み込み、未解決の各項目を AskUserQuestion で最大 4 件単位のバッチで提示する。全回答はプロンプト履歴に保持され、全バッチ終了後に QA.md を一括更新する（PR139 で追加）。 |
 | impl-review | work-kit のスキル（`/work-kit:impl-review`）。PR のコミットを分析し、各変更エリアを AskUserQuestion でインタラクティブに提示する。セッションで作業中の PR を優先使用し、大枠リストは内部保持（ユーザーへの事前提示なし）。深掘りモードあり。スマホや SSH 接続など差分を直接確認しづらい環境向け（PR139 で追加）。 |
+| issue-tool | work-kit のヘルパスクリプト（`plugins/work-kit/scripts/issue-tool.py`）。`close` サブコマンドで `.work/issues/ISSUE-{N}.md` を `.work/issues/closed/` に移動し、ローカルの `_index.yaml` から該当エントリを削除、`_index.archive.yaml` の `closed_issues` に `linked_pr` / `resolution` 付きで追記する。`merge` スキルが TODO.md の `## 関連イシュー` テーブルから呼び出す（PR146 で追加）。 |
+| 関連イシュー | TODO.md の `## 関連イシュー` セクション（カラム: `ID / 概要 / resolution`）。この PR で解決する `.work/issues/ISSUE-{N}` を列挙する。`merge` スキル Step 5 がこのテーブルを読み、各行について [[issue-tool]] `close` を呼び、イシューを自動クローズしてアーカイブに `linked_pr` を記録する（PR146 で追加）。関連イシューが無い PR ではセクションごと削除する。 |

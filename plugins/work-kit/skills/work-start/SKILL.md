@@ -227,6 +227,13 @@ Also fill in the subsections under `## 概要` (between `## 概要` and `## 作�
 - Use the table format: `| PR番号 | 概要 |` — one row per related PR
 - Leave the placeholder row if there are no related PRs
 
+Also fill in the `## 関連イシュー` section (between `## 参考ドキュメント` and `## 次PR候補`):
+- List `.work/issues/ISSUE-{N}` entries that this PR is intended to resolve
+- Use the table format: `| ID | 概要 | resolution |` — one row per issue
+- `resolution` is `resolved` (the PR fixes the issue) or `wontfix` (the issue is intentionally not fixed)
+- These rows drive the auto-close logic in the `merge` skill (issue files are moved to `.work/issues/closed/` and recorded in `_index.archive.yaml.closed_issues`)
+- **If there are no related issues**: delete the `## 関連イシュー` heading and table entirely (do not keep an empty placeholder)
+
 Also fill in the `## 次PR候補` section at the bottom of TODO.md (columns: title / summary / 実施条件):
 - If the user mentioned follow-up work or future PRs during this session, list them here
 - Fill in `実施条件` for each candidate:

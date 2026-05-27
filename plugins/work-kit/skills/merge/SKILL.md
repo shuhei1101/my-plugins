@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # work-kit:merge — Merge a PR
 
-Runs the full merge flow: TODO checklist verification → master compatibility check → conversation-to-claude inside the worktree (if claude-kit installed) → index archive → `--no-ff` merge → worktree cleanup → QA doc sync → auto-invoke pr-handoff for any next PR candidates.
+Runs the full merge flow: TODO checklist verification → master compatibility check → conversation-to-claude inside the worktree (if claude-kit installed) → close related issues → index archive → `--no-ff` merge → worktree cleanup → QA doc sync → auto-invoke pr-handoff for any next PR candidates.
 
 ---
 
@@ -184,11 +184,57 @@ Running inside the worktree includes them in the PR branch so the merge commit c
 
 ---
 
-### Step 5: Mark the PR as completed in index.yaml
+### Step 5: Close related issues (inside the worktree)
 
 #### Condition
 
 - Step 4 complete
+
+#### Process
+
+1. Read the `## 関連イシュー` section of `.work/tasks/{date}_{title}/PR{N}/TODO.md` in the worktree
+2. **If the section is absent, empty, or only contains the template placeholder row** (`| ISSUE-{N} | ... |`) → skip the rest of this step and proceed to Step 6
+3. For each row in the table, run the close command **inside the worktree**:
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
+  --issues-dir ../$(basename $(pwd))-wt-PR{N}/.work/issues \
+  --issue-id ISSUE-{NNN} \
+  --resolution {resolved|wontfix} \
+  --linked-pr {N}
+```
+
+   The script:
+   - Moves `.work/issues/ISSUE-{NNN}.md` → `.work/issues/closed/ISSUE-{NNN}.md`
+   - Removes the entry from `_index.yaml` (gitignored — no commit needed)
+   - Appends a `closed_issues` entry (with `linked_pr`) to `_index.archive.yaml`
+4. If `.work/issues/` does not exist on the project (issue management not adopted), the script prints a skip message — treat as a no-op
+5. Commit the changes inside the worktree:
+
+```bash
+git -C ../$(basename $(pwd))-wt-PR{N} add .work/issues/
+git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: close related issues for PR{N} #PR{N}"
+```
+
+→ Proceed to Step 6
+
+#### Notes
+
+- The issue file moves are git-tracked renames; `_index.yaml` stays gitignored
+- This commit will be included in the `--no-ff` merge in Step 8
+- If no issue rows were processed, do not create an empty commit
+
+##### Why before mark-completed / archive
+
+Running this step **before** `set-completed` / `archive` keeps the issue-close commit on the PR branch (where it semantically belongs) rather than mixing it with index management.
+
+---
+
+### Step 6: Mark the PR as completed in index.yaml
+
+#### Condition
+
+- Step 5 complete
 
 #### Process
 
@@ -199,7 +245,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
   .work/tasks/index.yaml --id {N}
 ```
 
-→ Proceed to Step 6
+→ Proceed to Step 7
 
 #### Notes
 
@@ -208,11 +254,11 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
 
 ---
 
-### Step 6: Archive completed index entries
+### Step 7: Archive completed index entries
 
 #### Condition
 
-- Step 5 complete
+- Step 6 complete
 
 #### Process
 
@@ -233,7 +279,7 @@ git -C ../$(basename $(pwd))-wt-PR{N} add .work/tasks/index.archive.yaml
 git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.archive.yaml #PR{N}"
 ```
 
-→ Proceed to Step 7
+→ Proceed to Step 8
 
 #### Notes
 
@@ -243,16 +289,16 @@ git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.a
 
 ---
 
-### Step 7: Execute the merge
+### Step 8: Execute the merge
 
 #### Condition
 
-- Step 6 complete
+- Step 7 complete
 
 > ⚠️ **Pre-merge check required**
-> If `index.archive.yaml` was not committed in the worktree in Step 6, the archive changes will be missing from the merge commit.
-> **Confirm that the `git commit` inside the worktree in Step 6 has completed before running the merge command.**
-> (Skip this check only if Step 6 reported 0 entries moved — no commit was needed.)
+> If `index.archive.yaml` was not committed in the worktree in Step 7, the archive changes will be missing from the merge commit.
+> **Confirm that the `git commit` inside the worktree in Step 7 has completed before running the merge command.**
+> (Skip this check only if Step 7 reported 0 entries moved — no commit was needed.)
 
 #### Notes
 
@@ -269,11 +315,11 @@ git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.a
 git merge --no-ff -m "{type}: {title} #PR{N}" PR{N}/{type}/{title}
 ```
 
-→ Proceed to Step 8
+→ Proceed to Step 9
 
 ---
 
-### Step 8: Remove the worktree and branch
+### Step 9: Remove the worktree and branch
 
 #### Process
 
@@ -284,7 +330,7 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
-→ Proceed to Step 9
+→ Proceed to Step 10
 
 #### Notes
 
@@ -294,7 +340,7 @@ git branch -d PR{N}/{type}/{title}
 
 ---
 
-### Step 9: Update QA.md
+### Step 10: Update QA.md
 
 #### Process
 
@@ -306,22 +352,22 @@ git add .work/
 git commit -m "docs: post-merge update for PR{N}"
 ```
 
-→ Proceed to Step 10
+→ Proceed to Step 11
 
 ---
 
-### Step 10: Report merge completion
+### Step 11: Report merge completion
 
 #### Process
 
 1. Report the merge as complete to the user
    - Include the merged branch name, PR number, and task folder
 
-→ Proceed to Step 11
+→ Proceed to Step 12
 
 ---
 
-### Step 11: Delegate next PR candidates to pr-handoff
+### Step 12: Delegate next PR candidates to pr-handoff
 
 #### Process
 
@@ -329,11 +375,11 @@ git commit -m "docs: post-merge update for PR{N}"
 2. **If next PR candidates exist**: invoke `/work-kit:pr-handoff` (no user confirmation needed). Delegate all classification and reservation logic to that skill
 3. **If next PR candidates are empty**: skip pr-handoff
 
-→ Proceed to Step 12
+→ Proceed to Step 13
 
 ---
 
-### Step 12: Present next PR candidates in 3 categories
+### Step 13: Present next PR candidates in 3 categories
 
 #### Process
 

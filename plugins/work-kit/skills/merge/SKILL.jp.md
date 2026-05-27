@@ -15,7 +15,7 @@
 ## 概要
 
 PR のマージフローを実行するスキル。
-TODO 確認 → master 適合確認 → conversation-to-claude 実行（ワークツリー内、claude-kit インストール済みの場合） → index アーカイブ → `--no-ff` マージ → ワークツリークリーンアップ → ドキュメント更新 → 次PR候補があれば pr-handoff で予約、を行う。
+TODO 確認 → master 適合確認 → conversation-to-claude 実行（ワークツリー内、claude-kit インストール済みの場合） → 関連イシューのクローズ → index アーカイブ → `--no-ff` マージ → ワークツリークリーンアップ → ドキュメント更新 → 次PR候補があれば pr-handoff で予約、を行う。
 
 ---
 
@@ -190,11 +190,57 @@ cd -
 
 ---
 
-### ステップ5: index.yaml で PR を完了済みにする
+### ステップ5: 関連イシューをクローズする（ワークツリー内）
 
 #### 条件
 
 - ステップ4が完了していること
+
+#### 処理内容
+
+1. ワークツリーの `.work/tasks/{date}_{title}/PR{N}/TODO.md` から `## 関連イシュー` セクションを読み込む
+2. **セクション自体が無い、空、またはテンプレートのプレースホルダー行（`| ISSUE-{N} | ... |`）のみ**の場合 → このステップの残りをスキップしてステップ6へ進む
+3. テーブルの各行について、ワークツリー内で以下を実行する:
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
+  --issues-dir ../$(basename $(pwd))-wt-PR{N}/.work/issues \
+  --issue-id ISSUE-{NNN} \
+  --resolution {resolved|wontfix} \
+  --linked-pr {N}
+```
+
+   スクリプトの挙動:
+   - `.work/issues/ISSUE-{NNN}.md` を `.work/issues/closed/ISSUE-{NNN}.md` に移動
+   - `_index.yaml`（gitignore 対象 — コミット不要）から該当エントリを削除
+   - `_index.archive.yaml` の `closed_issues` に `linked_pr` 付きエントリを追記
+4. プロジェクトに `.work/issues/` が存在しない（イシュー管理が未導入）場合は、スクリプトがスキップメッセージを出力する — そのまま no-op として扱う
+5. 変更をワークツリー内でコミットする:
+
+```bash
+git -C ../$(basename $(pwd))-wt-PR{N} add .work/issues/
+git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: close related issues for PR{N} #PR{N}"
+```
+
+→ ステップ6へ進む
+
+#### 補足
+
+- イシューファイルの移動は git の rename として追跡される。`_index.yaml` は gitignore のままで OK
+- このコミットはステップ8の `--no-ff` マージに同梱される
+- 1 件もイシュー行が処理されなかった場合は空コミットを作らない
+
+##### なぜ set-completed / archive より前か
+
+このステップを `set-completed` / `archive` より**前**に置くことで、イシュークローズのコミットを PR ブランチ上に残し（意味的にはここに属する変更）、index 管理のコミットと混在しないようにする。
+
+---
+
+### ステップ6: index.yaml で PR を完了済みにする
+
+#### 条件
+
+- ステップ5が完了していること
 
 #### 処理内容
 
@@ -205,7 +251,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
   .work/tasks/index.yaml --id {N}
 ```
 
-→ ステップ6へ進む
+→ ステップ7へ進む
 
 #### 補足
 
@@ -214,11 +260,11 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
 
 ---
 
-### ステップ6: 完了済みエントリをアーカイブする
+### ステップ7: 完了済みエントリをアーカイブする
 
 #### 条件
 
-- ステップ5が完了していること
+- ステップ6が完了していること
 
 #### 処理内容
 
@@ -239,25 +285,25 @@ git -C ../$(basename $(pwd))-wt-PR{N} add .work/tasks/index.archive.yaml
 git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.archive.yaml #PR{N}"
 ```
 
-→ ステップ7へ進む
+→ ステップ8へ進む
 
 #### 補足
 
 - `index.yaml` は gitignore 対象のためコミット不要
-- `index.archive.yaml` は git 追跡対象 — 派生元ブランチに直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ7のマージに含まれる）
+- `index.archive.yaml` は git 追跡対象 — 派生元ブランチに直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ8のマージに含まれる）
 - archive コマンドはメインリポジトリの `index.yaml` を読み、ワークツリーの `index.archive.yaml` に書き込む
 
 ---
 
-### ステップ7: マージを実行する
+### ステップ8: マージを実行する
 
 #### 条件
 
-- ステップ6が完了していること
+- ステップ7が完了していること
 
 > ⚠️ **マージ前の必須確認**
-> ステップ6でワークツリー内の `index.archive.yaml` をコミットし忘れたままマージを実行すると、アーカイブ変更がマージコミットに含まれない。
-> **マージコマンドを実行する前に、必ずステップ6のワークツリー内 `git commit` が完了していることを確認すること。**
+> ステップ7でワークツリー内の `index.archive.yaml` をコミットし忘れたままマージを実行すると、アーカイブ変更がマージコミットに含まれない。
+> **マージコマンドを実行する前に、必ずステップ7のワークツリー内 `git commit` が完了していることを確認すること。**
 > （アーカイブ件数が 0 だったためコミット不要だった場合はこの確認をスキップしてよい）
 
 #### 補足
@@ -275,11 +321,11 @@ git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.a
 git merge --no-ff -m "{type}: {title} #PR{N}" PR{N}/{type}/{title}
 ```
 
-→ ステップ8へ進む
+→ ステップ9へ進む
 
 ---
 
-### ステップ8: ワークツリーとブランチを削除する
+### ステップ9: ワークツリーとブランチを削除する
 
 #### 処理内容
 
@@ -290,7 +336,7 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
-→ ステップ9へ進む
+→ ステップ10へ進む
 
 #### 補足
 
@@ -301,7 +347,7 @@ git branch -d PR{N}/{type}/{title}
 
 ---
 
-### ステップ9: ドキュメントを更新する
+### ステップ10: ドキュメントを更新する
 
 #### 処理内容
 
@@ -313,22 +359,22 @@ git add .work/
 git commit -m "docs: PR{N} マージ後ドキュメント更新"
 ```
 
-→ ステップ10へ進む
+→ ステップ11へ進む
 
 ---
 
-### ステップ10: マージ完了をユーザーに報告
+### ステップ11: マージ完了をユーザーに報告
 
 #### 処理内容
 
 1. マージが完了したことをユーザーに報告する
    - マージ済みブランチ名・PR番号・対象タスクフォルダを含める
 
-→ ステップ11へ進む
+→ ステップ12へ進む
 
 ---
 
-### ステップ11: 次PR候補を pr-handoff に委譲
+### ステップ12: 次PR候補を pr-handoff に委譲
 
 #### 処理内容
 
@@ -336,11 +382,11 @@ git commit -m "docs: PR{N} マージ後ドキュメント更新"
 2. **次PR候補がある場合**: `/work-kit:pr-handoff` を呼び出す（ユーザー確認不要）。分類・予約のロジックはすべて pr-handoff に委譲する
 3. **次PR候補が空の場合**: pr-handoff はスキップ
 
-→ ステップ12へ進む
+→ ステップ13へ進む
 
 ---
 
-### ステップ12: 次PR候補の状況を 3 カテゴリで提示
+### ステップ13: 次PR候補の状況を 3 カテゴリで提示
 
 #### 処理内容
 
