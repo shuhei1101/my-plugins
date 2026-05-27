@@ -37,14 +37,14 @@ PR131 で `.work/issues/` 配下のイシュー管理（issue-scan / issue-creat
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260528_integrate-issue-close-to-merge/PR146/QA.md` |
-| - | merge SKILL.md/jp.md にイシュークローズ Step を追加（TODO.md の `## 関連イシュー` を読み、対象イシューを `closed/` 移動 + index 更新） | `plugins/work-kit/skills/merge/` |
-| - | work-start の TODO.md テンプレートに `## 関連イシュー` セクションを追加 | `plugins/work-kit/templates/.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` |
-| - | work-start SKILL.md/jp.md の TODO 記入ガイドに `## 関連イシュー` 説明を追加 | `plugins/work-kit/skills/work-start/` |
-| - | merge スキルが行うクローズ処理のヘルパスクリプト or SKILL ステップ詳細化 | `plugins/work-kit/skills/merge/` or `scripts/` |
-| - | `.work/notes/AIイシュー自動発見システム構想.md` の linked_pr / 関連イシュー 章を仕様確定として反映 | `.work/notes/AIイシュー自動発見システム構想.md` |
-| - | work-kit plugin.json バージョン bump（MINOR） | `plugins/work-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json バージョン更新 | `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する（未決定事項なし） | `.work/tasks/20260528_integrate-issue-close-to-merge/PR146/QA.md` |
+| 済 | merge SKILL.md/jp.md にイシュークローズ Step を追加（TODO.md の `## 関連イシュー` を読み、対象イシューを `closed/` 移動 + index 更新） | `plugins/work-kit/skills/merge/` |
+| 済 | work-start の TODO.md テンプレートに `## 関連イシュー` セクションを追加 | `plugins/work-kit/templates/.work/tasks/yyyymmdd_xxx/PRXXX/TODO.md` |
+| 済 | work-start SKILL.md/jp.md の TODO 記入ガイドに `## 関連イシュー` 説明を追加 | `plugins/work-kit/skills/work-start/` |
+| 済 | merge スキルが行うクローズ処理のヘルパスクリプトを追加（`issue-tool.py close`） | `plugins/work-kit/scripts/issue-tool.py` |
+| 済 | `.work/notes/AIイシュー自動発見システム構想.md` の linked_pr / 関連イシュー 章を仕様確定として反映 | `.work/notes/AIイシュー自動発見システム構想.md` |
+| 済 | work-kit plugin.json バージョン bump（MINOR）+ changelog | `plugins/work-kit/.claude-plugin/plugin.json`<br>`plugins/work-kit/changelogs/v2.36.0.md` |
+| 済 | marketplace.json バージョン更新 | `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
