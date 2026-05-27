@@ -392,3 +392,10 @@ prs:
   summary: py-kit プラグイン全体を Claude Code 一般ベストプラクティスで評価し、改善提案を QA で大量に書き出す（PR135 と同パターン）
   task: 20260527_review-py-kit-plugin
   completed: true
+- id: 139
+  title: PR139 — interactive-review-skills
+  type: feat
+  tags: []
+  summary: QA.mdをAskUserQuestion形式で提示するqa-reviewスキルと、実装内容をインタラクティブにレビューするimpl-reviewスキルをwork-kitに追加
+  task: 20260527_interactive-review-skills
+  completed: true

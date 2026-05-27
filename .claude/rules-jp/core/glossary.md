@@ -51,3 +51,5 @@
 | .work/issues/ | work-kit setup で作成されるプロジェクトローカルのイシュー管理ディレクトリ。オープンイシューファイル（ISSUE-{N}.md）、`closed/` サブフォルダ、git 管理外の `_index.yaml`、git 管理の `_index.archive.yaml` を含む。 |
 | wontfix | イシューの解決ステータス（`_index.archive.yaml` の `resolution: wontfix`）。「把握しているが意図的に修正しない」という意思決定を記録する。wontfix でクローズされたイシューは次回スキャン結果から除外される。 |
 | jp-mirror-translator | work-kit のサブエージェント（`plugins/work-kit/agents/jp-mirror-translator.md`）。英語オリジナルと JP ミラーの間で翻訳を行う。モデル: haiku。`.md` パスを渡すと `.jp.md` を生成・更新し、`.jp.md` パスを渡すと英語版を更新する（PR133 で追加）。 |
+| qa-review | work-kit のスキル（`/work-kit:qa-review [PR{N}]`）。PR の QA.md を読み込み、未解決の各項目を AskUserQuestion で最大 4 件単位のバッチで提示する。全回答はプロンプト履歴に保持され、全バッチ終了後に QA.md を一括更新する（PR139 で追加）。 |
+| impl-review | work-kit のスキル（`/work-kit:impl-review`）。PR のコミットを分析し、各変更エリアを AskUserQuestion でインタラクティブに提示する。セッションで作業中の PR を優先使用し、大枠リストは内部保持（ユーザーへの事前提示なし）。深掘りモードあり。スマホや SSH 接続など差分を直接確認しづらい環境向け（PR139 で追加）。 |
