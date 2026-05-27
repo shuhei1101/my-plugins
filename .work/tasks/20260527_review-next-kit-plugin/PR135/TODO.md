@@ -58,6 +58,13 @@ next-kit プラグイン全体を Claude Code の一般的なベストプラク�
 | 済 | CLAUDE.md と SKILL.md を新分割マップで再生成 | `plugins/next-kit/references/CLAUDE.md`, `plugins/next-kit/skills/implement/SKILL.md` |
 | 済 | JP ミラーを再生成 | `plugins/next-kit/**/*.jp.md` |
 | 済 | plugin.json / marketplace.json を 2.0.0 → 3.0.0 にバンプ（再構成のため） | 同上 |
+| - | PR140 (py-kit) の実装に合わせて hooks/ と index.yaml + injection_rules.yaml を導入 | `plugins/next-kit/hooks/**`, `plugins/next-kit/references/index.yaml`, `injection_rules.yaml` |
+| - | `hooks/inject_references.py` + `templates/injection.{md,jp.md}.j2` + `hooks.json` を実装（env: `NEXT_KIT_INJECTION_LANG`） | `plugins/next-kit/hooks/` |
+| - | `references/index.yaml` + `index.jp.yaml` を 91 ファイル分作成 | `plugins/next-kit/references/index.yaml`, `index.jp.yaml` |
+| - | `references/injection_rules.yaml` で全ファイルパターンマッピングを作成 | `plugins/next-kit/references/injection_rules.yaml` |
+| - | `references/CLAUDE.md(jp)` を「index.yaml を読め」スタイルに簡素化 | `plugins/next-kit/references/CLAUDE.md(.jp).md` |
+| - | plugin.json / marketplace.json を 3.0.0 → 3.1.0 にバンプ（フック追加） | `plugins/next-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| - | my-plugins ルール作成: kit 間の hooks / index 構造同期ルール（py-kit ↔ next-kit、将来 X-kit） | `.claude/rules/feature/kit-hooks-index-sync.md` (+ jp) |
 
 ## 参考ドキュメント
 
