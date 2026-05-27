@@ -413,7 +413,7 @@ def serialize[T: BaseModel](model: T) -> str:
 - B. 一部だけ採用（例えば「型は UpperCamel」だけ強制、ファイル名標準は任意）
 - C. 別案
 
-**決定**: ⬜
+**決定**: **A — 全部採用**（一般的な命名規則であり違和感なし）
 
 ---
 
@@ -474,7 +474,28 @@ src/{pkg}/
 - B. 案 B（フラット）
 - C. **案 C（必須は `shared/` + `main.py` のみ、他は推奨フォルダ名を提示するが任意）**
 
-**決定**: ⬜
+**決定**: **C — ハイブリッド + `modes/` は除外**
+
+**ユーザー判断**:
+- features と modes が被っている。features 1 本に絞れる
+- LLM 配下は `integrations/llm/` に入れる
+- 必須: `shared/` + `main.py` だけ
+- 任意: `features/` / `integrations/` / `runtime/` / `server/` のみ
+
+**確定したトップレベル構成**（最小規約）:
+```
+src/{pkg}/
+├── __init__.py
+├── __main__.py
+├── main.py                       # composition root（必須）
+├── shared/                       # 横断インフラ（必須）
+├── features/                     # ビジネス機能（任意。プロジェクトで使うなら）
+├── integrations/                 # 外部サービス連携（任意。LLM は integrations/llm/）
+├── runtime/                      # 実行時インフラ（任意。AITuber 規模で使う）
+└── server/                       # HTTP/WS サーバ（任意。FastAPI 使う場合）
+```
+
+**`modes/` は廃止** — `features/` の中に同じパターンで配置すれば十分（例: `features/personal_chat/` `features/auto_tweet/`）。これにより B-6 の決定も「modes 不要」に修正（後述）。
 
 ---
 
@@ -503,7 +524,11 @@ quest-pay 流（`route.ts` / `service.ts` / `db.ts` / `query.ts` / `client.ts` �
 - B. もっと自由（ファイル名規約なし）
 - C. もっと厳格（必ず 5 ファイル全部置く）
 
-**決定**: ⬜
+**決定**: **A — 標準パターン推奨、小さい feature は `types.py` + `service.py` だけでも可**
+
+**ユーザー意向**: 「フォルダで意味を示して、ファイル名は一単語で済むようにしたい。types と service だけでも OK」
+
+ファイル名は **一単語に統一**（`types.py` / `service.py` / `query.py` / `route.py` / `client.py` / `db.py` / `_helpers.py`）。フォルダ名で「何のドメインか」を表現する。
 
 ---
 
@@ -535,7 +560,11 @@ shared/
 
 **推奨**: **A**（`shared/` 1 つ）。フォルダを増やしすぎると探すのに迷う。
 
-**決定**: ⬜
+**決定**: **A — `shared/` 1 つに統合**
+
+**ユーザー意向**: 「shared だけでいい。core は不要。元々入れたかったのは app.py / route / WebSocket だけど、それは `server/` に入る」
+
+`shared/` の中身は `types.py` / `errors.py` / `logger.py` / `settings.py` / `constants.py` / `utils.py` の 6 ファイル構成で確定。
 
 ---
 
@@ -587,7 +616,25 @@ def build_fastapi(settings: Settings) -> FastAPI:
 - B. `Container` クラスに集約する（旧 DI スタイル）
 - C. `functools.partial` を主軸に簡素な書き方を推奨
 
-**決定**: ⬜
+**決定**: **A 寄り + 「ライブラリ標準に従う」原則**
+
+**ユーザー意向**: 「ライブラリ公式（FastAPI 等）が推奨してるのがクラスならそのままクラスで。関数でできるところは関数。複雑な工夫で標準を曲げるのは避ける」
+
+**反映先 `architecture/composition-root.md` の方針**:
+1. **ライブラリ標準に従う**: FastAPI が `FastAPI()` インスタンスを要求する、Pydantic Settings が `BaseSettings` 継承を要求するなど、フレームワーク標準のクラス使用はそのまま採用
+2. **自由に決められる範囲は関数**: サービスの処理、永続化操作、外部 API 呼び出し等は関数で
+3. **複雑な工夫は避ける**: 「これは関数でできるはずだ」と無理に標準を曲げる書き方はしない
+4. **配線スタイル**: `build_app(settings)` パターン + `functools.partial` で関数の引数を埋める。サンプルの「辞書のキーがハードコード」になる問題は、配線結果を **dataclass の `Handlers` に格納** すれば軽減できる:
+
+```python
+@dataclass(frozen=True, slots=True)
+class Handlers:
+    generate_response: Callable[[str], Awaitable[str]]
+    create_user: Callable[[CreateUserInput], User]
+    # 必要なものを明示的に列挙
+```
+
+辞書のキー誤記が静的解析で検出される利点も得られる。
 
 ---
 
@@ -616,17 +663,27 @@ features / modes / server
 - B. 緩く（同層内も OK にする）
 - C. もっと厳格（feature 同士の参照を完全禁止、必ず shared 経由）
 
-**決定**: ⬜
+**決定**: **A — 依存方向ルールを明文化 + 逆依存は関数の型エイリアスで DIP**
+
+**ユーザー意向**:
+- 「`shared` は誰にも依存しない、これでいい」
+- 「逆依存（高レイヤから低レイヤへの依存を逆転させたい）合成は、クラス不使用方針なのでインターフェースではなく **関数の型** を定義してインターフェースチックにできる」
+
+**反映先 `architecture/dependencies.md`**:
+- 依存方向: `features / server` → `integrations` → `shared`（一方向）
+- `runtime/` は `integrations` と `shared` まで
+- 同層内（features 同士、integrations 同士）の相互参照は基本禁止
+- **依存性逆転（DIP）が必要な場合**: クラス＋ ABC は使わず、**関数の型エイリアス（`type X = Callable[..., ...]`）** で抽象境界を定義し、低レイヤ側は実装関数を提供、高レイヤ側はその型を引数で受ける（A-5 と整合）。型自体は `shared/types.py` または抽象元 feature の `types.py` に置く。
 
 ---
 
-## B-6: モードのまとめ方 ✅決定
+## B-6: モードのまとめ方 ✅決定（B-1 で再判断）
 
-**決定**: **A — `modes/` フォルダにまとめる**
+**決定**: **`modes/` 廃止 — `features/` に統合**
 
-**ユーザー意向**: 「モードフォルダみたいなの作ってその下に置いた方がいい」
+**理由**: B-1 でユーザーが「features と modes が被ってる、features 1 本に絞れそう」と判断したため、当初の「`modes/` フォルダにまとめる」案を撤回。
 
-**反映先**: `architecture/layout.md` に「modes/ は『複数モード切替が必要なアプリ』限定の任意フォルダ」と記載。AITuber のように動作モードが明確なアプリ向け。
+**反映先**: 動作モード（AITuber の personal_chat / auto_tweet 等）は `features/personal_chat/` `features/auto_tweet/` のように **features 配下に通常の feature として配置**。`modes/` 専用フォルダは作らない。
 
 ---
 
@@ -660,7 +717,22 @@ features / modes / server
 - **C. ハイブリッド**: pure 関数（utils / helpers / 計算関数）は単体テスト、副作用ある関数は境界テストのみ
 - **D. プロジェクト判断**（規約化しない）
 
-**決定**: ⬜
+**決定**: **A — 単体テスト書かない、結合テスト + スモークテストのみ**
+
+**ユーザー意向**:
+- 「単体テスト書く意味が薄い。AI で完全に開発してるから、ソースコード見た時点で仕様が一目瞭然。わざわざテストに起こす必要なし」
+- **採用するテスト**:
+  - **結合テスト**: ユースケースごと。ルート部分（エンドポイント）からサービスを叩いて、条件分岐に入り、結果が返ってくるまでを 1 単位でテスト。外部サービスは Mock 化（LLM・TTS 等）
+  - **スモークテスト**: 外部サービスに実際に接続できるかの確認。お金がかかるので **ユーザーが指定した時のみ実行**。AI が自動で実行することは禁止
+- 単体テストは作らない
+
+**反映先 `testing/strategy.md`**:
+- 「結合テストとスモークテストの 2 種類のみ」を明文化
+- 結合テスト: `tests/{feature}/test_{usecase}.py`。外部依存はすべて Mock。`pytest` で `uv run pytest tests/` を回す
+- スモークテスト: `tests/smoke/test_*.py` に隔離。`uv run pytest tests/smoke/ --run-smoke` のように **明示的フラグ + ユーザー実行のみ**。CI / AI 自動実行から除外
+- 単体テストは書かない理由を明記（AI 駆動開発前提でソースコードが一次仕様）
+
+`testing/mocks.md` は「結合テストで外部依存を Mock 化する具体パターン集」として整備（LLM Mock / HTTP Mock / 時刻 Mock 等）。
 
 ---
 
@@ -693,7 +765,9 @@ Python に流すと:
 - A. 上記の通り強化（旧 QA-015 を上書き、Next.js と整合）
 - B. 旧 QA-015 のまま（Optional 主体）
 
-**決定**: ⬜
+**決定**: **A — 強化**
+
+**反映先**: `core/comments.md` を Next.js コメントルールと同じ思想で書き換え。旧 QA-015 の「Optional」緩和方針は新方針で上書き。
 
 ---
 
@@ -724,7 +798,9 @@ class CreateUserInput(BaseModel):
 - A. 「設計上重要なフィールドは `# ` コメント または `Field(description=...)` で説明必須」と明文化
 - B. 任意
 
-**決定**: ⬜
+**決定**: **A — 必須化**
+
+**反映先**: `core/comments.md` に「設計上重要なフィールドの説明必須」節を追加。「設計上重要」の判断基準は next-kit の comments.md と同じ（外部キー / ステータス系 enum / 業務的に意味のあるフラグ / 楽観ロックカラム / 監査カラム / 業務的に複雑な意味を持つフィールド）。
 
 ---
 
@@ -816,7 +892,7 @@ plugins/py-kit/references/
 - A. 上記の構成で確定
 - B. 一部修正（例: `dependencies.md` を `layout.md` に統合する等）
 
-**決定**: ⬜
+**決定**: **A — 上記の構成で確定**（38 ファイル）。星取り表は D-6 で別途整備。
 
 ---
 
@@ -855,6 +931,232 @@ plugins/py-kit/references/
 
 ---
 
+## D-6: references/index.yaml でメタデータ管理 + 星取り表（新規・ユーザー要望）✅決定
+
+**ユーザー要望**:
+> 星取り表が欲しい。どのフォルダの部分一致ファイルパスに対してどのマークダウンファイルを読ませるか。フックで使う。
+> 注入プロンプトは Jinja2 でテンプレ化、必須 md と任意 md の配列を引数で渡すだけにしたい。
+> 各 md にディスクリプション（概要）が要る。AI がファイルパスだけ渡されても読めないので。
+> references 配下に YAML ファイル置いて、ファイルに対するメタデータを定義。
+> Jinja2 プレースホルダにはファイル名 + 概要を一緒に渡す。
+> CLAUDE.md は「index.yaml を読め」とだけ書いておけば済む。
+
+### 設計案
+
+**`plugins/py-kit/references/index.yaml`** — 単一のメタデータ + 星取り表ファイル:
+
+```yaml
+# py-kit references インデックス
+# 各 reference ファイルの概要と、編集対象ファイルパスとのマッピングを定義
+
+references:
+  - path: core/naming.md
+    description: 命名規約（関数 snake_case、型 UpperCamel、ファイル/モジュール snake_case、レイヤー別ファイル名対応表）
+  - path: core/comments.md
+    description: コメントルール（exported 関数/型に 1 行 docstring 必須、Pydantic 設計上重要フィールドの説明必須、PR 番号変更履歴、TODO は issue 番号必須）
+  - path: core/type-hints.md
+    description: 型ヒント全般（PEP 695、Self、@typing.override、Annotated、Recommended Decorators、TYPE_CHECKING、ジェネリック制約、type 文、NewType、assert_never）
+  - path: core/language-rules.md
+    description: 言語ルール（コメントは日本語、出力 print/logger と bat は英語、文字列フォーマット、import 順、例外階層）
+  - path: core/style.md
+    description: スタイル設定（ruff/mypy/pyright 設定、行長、quotes、セクションマーカー）
+  - path: architecture/layout.md
+    description: トップレベルレイアウト（shared/ + main.py 必須、features/integrations/runtime/server は任意）と feature 内構造（types.py/service.py/query.py/route.py/client.py の標準ファイル名）
+  - path: architecture/ts-style.md
+    description: TypeScript 風 Python（type エイリアスで関数型 DI、Protocol、@dataclass vs Pydantic vs TypedDict 使い分け、@overload）
+  - path: architecture/composition-root.md
+    description: main.py での関数配線（build_app + functools.partial + Handlers dataclass）、ライブラリ標準クラスはそのまま
+  - path: architecture/dependencies.md
+    description: 依存方向ルール（shared → integrations → features/server）、関数型エイリアスで DIP
+  - path: shared/logger.md
+    description: JSONL 形式 logger 標準実装、get_logger(__name__)
+  - path: shared/settings.md
+    description: pydantic_settings.BaseSettings、.env、.env.sample
+  - path: shared/errors.md
+    description: 例外階層、AppError 基底クラス
+  - path: shared/types.md
+    description: 共通型エイリアス、NewType vs type 文の使い分け
+  - path: shared/constants.md
+    description: constants.py（PROJECT_ROOT, LOG_DIR 等の計算済みパスのみ）
+  - path: scripts/python-script.md
+    description: 単一ファイル script の構造（docstring/argparse/main 返り値 int/section markers）
+  - path: scripts/launchers-windows.md
+    description: bat ランチャー（chcp 65001、PowerShell 時刻、log/ 出力、setlocal）
+  - path: scripts/launchers-unix.md
+    description: shell スクリプト（set -euo pipefail、tee、.venv activate）
+  - path: scripts/tkinter.md
+    description: tkinter GUI 規約（スタイル、設定ダイアログ、blue accent button）
+  - path: testing/strategy.md
+    description: テスト方針（単体テスト書かない、結合テスト + スモークテストのみ。スモークはユーザー実行限定）
+  - path: testing/pytest.md
+    description: pytest 規約、conftest、fixtures
+  - path: testing/mocks.md
+    description: 結合テストの Mock パターン（LLM Mock / HTTP Mock / 時刻 Mock 等）
+  - path: concurrency/async.md
+    description: asyncio、TaskGroup、asyncio.timeout、sync/async 境界、async generator/context manager
+  - path: concurrency/parallelism.md
+    description: multiprocessing / threading / subinterpreter、GIL と CPU/IO bound
+  - path: packaging/pyproject.md
+    description: pyproject.toml 完全サンプル（[project] + [tool.ruff] + [tool.mypy] + [tool.pytest]）
+  - path: packaging/dependencies.md
+    description: uv デフォルト、optional-dependencies.dev 必須、.venv 統一
+  - path: packaging/distribution.md
+    description: wheel / sdist / PyPI publish、entry points
+  - path: packaging/python-versions.md
+    description: 「極力高いバージョン」方針、3.12 以降の機能対応表
+  - path: performance/cheatsheet.md
+    description: プロファイラの使い分け（cProfile/snakeviz/line_profiler/py-spy/scalene/memray）+ ホットパスチート集
+  - path: llm/providers.md
+    description: Claude/OpenAI/Gemini provider 関数（vendor 例外を domain 例外にラップ、token usage ログ）
+  - path: llm/instructor.md
+    description: Instructor + Pydantic 構造化出力、task-specific LLM クライアント
+  - path: llm/prompts.md
+    description: プロンプトファイル管理（infrastructure/llm/prompts/*.md）、Jinja2 / Template、prompt versioning
+  - path: llm/cost-cache.md
+    description: トークン管理、max_tokens、プロンプトキャッシュ、batch API、streaming
+  - path: llm/exceptions-retry.md
+    description: LLM 例外階層（rate-limit/server/bad-request/auth/timeout/content-filter）、retry 戦略
+  - path: fastapi/app.md
+    description: build_app パターン、lifespan、middleware、CORS
+  - path: fastapi/routes.md
+    description: ルーター、Annotated[Type, Depends/Path/Query]、route 関数は thin
+  - path: fastapi/schemas.md
+    description: 入出力 Pydantic スキーマ、Field 制約、to_domain/from_domain メソッド
+  - path: fastapi/auth-and-errors.md
+    description: 認証 Depends + 秘密情報 SecretStr の取り扱い + exception_handler
+  - path: fastapi/health.md
+    description: シンプルなヘルスチェック（/healthz で 200 を返すだけ）
+
+# 注入フックの星取り表
+# 編集対象ファイルパスのパターン → 注入する reference の組
+# required: 必須注入。optional: 任意参照として案内
+injection_rules:
+  - pattern: "**/*.py"
+    required: [core/naming.md, core/comments.md, core/type-hints.md, core/language-rules.md, core/style.md]
+
+  - pattern: "**/shared/logger.py"
+    required: [shared/logger.md]
+  - pattern: "**/shared/settings.py"
+    required: [shared/settings.md]
+  - pattern: "**/shared/errors.py"
+    required: [shared/errors.md]
+  - pattern: "**/shared/types.py"
+    required: [shared/types.md]
+  - pattern: "**/shared/constants.py"
+    required: [shared/constants.md]
+
+  - pattern: "**/main.py"
+    required: [architecture/composition-root.md, architecture/layout.md]
+    optional: [architecture/dependencies.md]
+  - pattern: "**/__main__.py"
+    required: [architecture/composition-root.md]
+
+  - pattern: "**/features/**/types.py"
+    required: [architecture/ts-style.md, architecture/layout.md]
+  - pattern: "**/features/**/service.py"
+    required: [architecture/ts-style.md, architecture/layout.md, architecture/dependencies.md]
+  - pattern: "**/features/**/query.py"
+    required: [architecture/ts-style.md, architecture/layout.md]
+  - pattern: "**/features/**/route.py"
+    required: [fastapi/routes.md, fastapi/schemas.md]
+    optional: [fastapi/auth-and-errors.md]
+  - pattern: "**/features/**/client.py"
+    required: [architecture/ts-style.md]
+
+  - pattern: "**/integrations/llm/**/*.py"
+    required: [llm/providers.md, llm/instructor.md, llm/exceptions-retry.md]
+    optional: [llm/cost-cache.md, llm/prompts.md]
+  - pattern: "**/integrations/llm/prompts/*.md"
+    required: [llm/prompts.md]
+  - pattern: "**/integrations/**/client.py"
+    required: [architecture/ts-style.md]
+    optional: [architecture/dependencies.md]
+
+  - pattern: "**/server/app.py"
+    required: [fastapi/app.md, architecture/composition-root.md]
+  - pattern: "**/server/routes/**/*.py"
+    required: [fastapi/routes.md, fastapi/schemas.md]
+    optional: [fastapi/auth-and-errors.md]
+  - pattern: "**/server/ws/**/*.py"
+    required: [fastapi/app.md]
+
+  - pattern: "**/runtime/**/*.py"
+    required: [concurrency/async.md]
+    optional: [concurrency/parallelism.md]
+
+  - pattern: "**/tests/**/test_*.py"
+    required: [testing/strategy.md, testing/pytest.md]
+    optional: [testing/mocks.md]
+  - pattern: "**/tests/smoke/**/*.py"
+    required: [testing/strategy.md]
+
+  - pattern: "**/pyproject.toml"
+    required: [packaging/pyproject.md, packaging/dependencies.md]
+    optional: [packaging/python-versions.md, packaging/distribution.md]
+
+  - pattern: "**/*.bat"
+    required: [scripts/launchers-windows.md]
+  - pattern: "**/*.sh"
+    required: [scripts/launchers-unix.md]
+
+  # 単一ファイルスクリプトの判定はパスから難しいので、py-kit:py-script 起動時に強制注入
+  # (フックではなく SKILL.md の Step 1 で読み込む)
+```
+
+**反映先**:
+- 新規ファイル `plugins/py-kit/references/index.yaml` を作成（当 PR の実装フェーズで）
+- `plugins/py-kit/references/CLAUDE.md` は「**index.yaml を読んで該当 reference を判断せよ**」のシンプルな指示に書き換え
+- 注入フック（PR139 候補）が index.yaml を読んで、編集対象ファイルパスに該当する `required` を block で注入、`optional` は「必要に応じて読んでください」と reason 文に列挙
+
+---
+
+## D-7: 注入フック用 Jinja2 テンプレート（新規・ユーザー要望）✅決定
+
+**ユーザー要望**:
+> プロンプト基盤は Jinja2 で書いて、必須/任意の md を引数で渡すだけ。
+> ファイルパスだけでは AI が読まないので description（概要）も一緒に渡す。
+
+### 設計案
+
+**`plugins/py-kit/hooks/prompts/inject-references.md.j2`**:
+
+```jinja
+あなたは Python ファイル `{{ target_file }}` を編集しようとしています。
+py-kit の規約に従うため、以下の reference を読み込んでから作業してください。
+
+## 必読 References（必ず読んでから編集を進めること）
+
+{% for ref in required %}
+- `{{ ref.path }}` — {{ ref.description }}
+{% endfor %}
+
+## 任意 References（必要に応じて参照）
+
+{% for ref in optional %}
+- `{{ ref.path }}` — {{ ref.description }}
+{% endfor %}
+
+すべての reference は `${CLAUDE_PLUGIN_ROOT}/references/` 配下にあります。
+```
+
+**フック側 Python ロジック（PR139 候補で実装）**:
+```python
+# 1. tool_input.file_path を取得
+# 2. index.yaml を読み込み
+# 3. injection_rules を順番にチェック、pattern にマッチするものを集める
+# 4. required / optional を集計（重複除去）
+# 5. それぞれの reference の description を index.yaml の references セクションから取得
+# 6. inject-references.md.j2 を render
+# 7. decision: block で reason に流し込む
+```
+
+**反映先**:
+- 新規ファイル `plugins/py-kit/hooks/prompts/inject-references.md.j2` を作成（当 PR の実装フェーズ）
+- `plugins/py-kit/hooks/prompts/inject-references.jp.md.j2` も同時に作成（JP ミラー）
+- フック実装本体は PR139 候補（`add-py-kit-references-injection-hook`）で行う。当 PR では「テンプレートとデータ構造のみ準備」
+
+---
+
 # E. その他横断観点（継続）
 
 旧 QA.old.md QA-095〜110 の方針を継続（C-2 確定）:
@@ -869,8 +1171,24 @@ plugins/py-kit/references/
 
 ---
 
-# 未解決 QA 一覧（ユーザー判断待ち）
+# 未解決 QA 一覧
 
-A-13、B-1、B-2、B-3、B-4、B-5、B-8、C-1、C-2、D-1 の **10 件**。
+**全件確定 ✅**
 
-その他はユーザー判断反映済み or 旧 QA から継続採用済み。
+すべての QA が決定済み。これにより当 PR の実装フェーズへ進む準備が整った。
+
+## 実装フェーズの作業項目（TODO.md へ反映）
+
+1. references の新フォルダ構成へ移行（38 ファイル、jp ミラー含めて 76 ファイル）
+   - 既存 `python-core.md` / `python-architecture.md` / `python-scripts.md` / `python-testing.md` / `python-fastapi.md` / `python-llm.md` を解体し、新構成へ
+2. `references/index.yaml` 新規作成（D-6 の設計）
+3. `references/CLAUDE.md` を「index.yaml を読め」式に書き換え
+4. 新規 reference 群の本文作成（A〜D セクションの決定事項を各 md に展開）
+5. `hooks/prompts/inject-references.md.j2` テンプレ作成（D-7）
+6. SKILL.md（py-project / py-script）を新方針で全面書き直し（D-5）
+7. `plugins/py-kit/CLAUDE.md` 新設（QA-102）
+8. `plugin.json` / `marketplace.json` を MAJOR バンプ（2.0.0、QA-103）
+9. `changelogs/v2.0.0.md` 作成（QA-104）
+10. glossary 更新（新方針の用語を追加、旧 DDD 用語を削除、QA-101）
+11. JP ミラー全件同時生成
+12. `.work/notes/AIイシュー自動発見システム構想.md` の py-kit セクション更新
