@@ -69,6 +69,9 @@ work-kit setup スキルにも .work/issues/ ディレクトリ作成を追加�
 | 済 | py-kit / next-kit / work-kit の plugin.json バージョン bump | py-kit 2.1.0, next-kit 3.2.0, work-kit 2.35.0 |
 | 済 | marketplace.json のバージョン更新 | `.claude-plugin/marketplace.json` |
 
+| - | issue-scan: 選んだファイルだけでなく関連ファイル（同フォルダ・関連レイヤー）も Read して文脈に取り込む方針を追記 | `plugins/work-kit/skills/issue-scan/` |
+| - | issue-save: 生成する `ISSUE-{N}.md` に `/claude-kit:mark-generated` で provenance メタデータを刻むステップを追加 | `plugins/work-kit/skills/issue-save/` |
+
 ## 次PR候補
 
 | タイトル | 概要 | 実施条件 |
