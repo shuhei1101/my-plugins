@@ -457,3 +457,10 @@ prs:
   summary: PR135 の references 再構築 + フック導入を .work/notes/AIイシュー自動発見システム構想.md に反映
   task: 20260528_update-ai-issue-discovery-notes-pr135
   completed: true
+- id: 144
+  title: PR144 — add-next-kit-plan-skill
+  type: feat
+  tags: []
+  summary: next-kit references を読んでページ/API/feature の設計計画書（ISSUE形式）を生成する1スキル /next-kit:plan
+  task: 20260528_add-next-kit-plan-skill
+  completed: true
