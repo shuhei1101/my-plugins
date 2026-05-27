@@ -414,3 +414,10 @@ prs:
     の JP ミラー生成でエージェントを使うよう変更。不要な agent-jp-mirror-sync ルールと _overview.md を削除。
   task: 20260528_move-jp-mirror-agent-to-claude-kit
   completed: true
+- id: 142
+  title: PR142 — add-j2-support-to-mark-generated
+  type: feat
+  tags: []
+  summary: mark-generated スキルに .j2 ファイルサポートを追加し、PreToolUse フックで .j2 編集時にスタンプ確認を促す
+  task: 20260528_add-j2-support-to-mark-generated
+  completed: true
