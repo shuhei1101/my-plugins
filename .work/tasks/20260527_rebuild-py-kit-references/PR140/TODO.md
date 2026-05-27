@@ -123,6 +123,12 @@ refs-inject-kit プラグイン自体も削除し、py-kit に直接フックを
 | 済 | `python-skill-dispatch` フック撤去（refs auto-injection があれば dispatch は冗長）。`hooks.json` から PreToolUse Edit/Write の dispatch エントリ削除 + `hooks/prompts/python-skill-dispatch.{md,jp.md}` 削除 + `hooks/prompts/` 空ディレクトリ削除。py-project / py-script スキル本体は残し、ユーザー明示呼び出し用に維持 | `plugins/py-kit/hooks/hooks.json`, `plugins/py-kit/hooks/prompts/**` |
 | 済 | `plugins/py-kit/CLAUDE.md`(+jp) を「スキル選択フックはなし、ユーザー明示呼び出し」に書き換え。`changelogs/v2.0.0.md` の廃止リストに `python-skill-dispatch` 撤去を追記 | `plugins/py-kit/CLAUDE.md` (+ jp), `plugins/py-kit/changelogs/v2.0.0.md` |
 
+### 第 8 ラウンドコミット後のレビュー反映（2026-05-28 追加 7）
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| 済 | injection_rules.yaml の orphan 調査スクリプトで全 reference が pattern に紐付いているか確認。43 ファイル中 5 件 orphan を検出して解消: ① `tools/**/*.py` + `**/scripts/**/*.py` → `scripts/python-script.md` ② `**/gui/**/*.py` + `**/*_gui.py` + `**/gui.py` → `scripts/tkinter.md` ③ `**/server/routes/health*.py` + `**/healthz.py` → `fastapi/health.md` ④ `**/benchmarks/**/*.py` + `**/perf/**/*.py` + `**/profile_*.py` → `performance/cheatsheet.md` ⑤ `**/features/**/service.py` の optional に `architecture/refactoring-judgement.md` 追加。最終確認 orphan 0 / unknown 0 / 紐付け率 43/43 (100%) | `plugins/py-kit/references/injection_rules.yaml` |
+
 ## 参考ドキュメント
 
 - `.work/tasks/20260527_review-py-kit-plugin/PR138/QA.md`: 新方針版 QA（全件確定）。実装の主たる判断材料

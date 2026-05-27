@@ -35,7 +35,7 @@ rules:
     required: [architecture/ts-style.md, architecture/layout.md, core/type-hints.md]
   - pattern: "**/features/**/service.py"
     required: [architecture/ts-style.md, architecture/dependencies.md]
-    optional: [architecture/design-principles.md, core/decorators.md]
+    optional: [architecture/design-principles.md, architecture/refactoring-judgement.md, core/decorators.md]
   - pattern: "**/features/**/query.py"
     required: [architecture/ts-style.md]
   - pattern: "**/features/**/route.py"
@@ -98,3 +98,35 @@ rules:
     required: [shared/secrets-and-env.md]
   - pattern: "**/config/settings.yaml*"
     required: [shared/secrets-and-env.md, shared/settings.md]
+
+  # ---------- 単一ファイルスクリプト ----------
+  # tools/ 配下と scripts/ 配下は単一ファイルスクリプト規約を必読に
+  - pattern: "tools/**/*.py"
+    required: [scripts/python-script.md]
+  - pattern: "**/scripts/**/*.py"
+    required: [scripts/python-script.md]
+
+  # ---------- tkinter GUI ----------
+  - pattern: "**/gui/**/*.py"
+    required: [scripts/tkinter.md]
+  - pattern: "**/*_gui.py"
+    required: [scripts/tkinter.md]
+  - pattern: "**/gui.py"
+    required: [scripts/tkinter.md]
+
+  # ---------- FastAPI health ----------
+  - pattern: "**/server/routes/health*.py"
+    required: [fastapi/health.md]
+  - pattern: "**/server/routes/**/health*.py"
+    required: [fastapi/health.md]
+  - pattern: "**/healthz.py"
+    required: [fastapi/health.md]
+
+  # ---------- パフォーマンス（プロファイラ・ベンチマーク） ----------
+  - pattern: "**/benchmarks/**/*.py"
+    required: [performance/cheatsheet.md]
+    optional: [testing/pytest.md]
+  - pattern: "**/perf/**/*.py"
+    required: [performance/cheatsheet.md]
+  - pattern: "**/profile_*.py"
+    required: [performance/cheatsheet.md]
