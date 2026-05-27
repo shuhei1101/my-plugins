@@ -55,6 +55,11 @@ work-kit setup スキルにも .work/issues/ ディレクトリ作成を追加�
 | 済 | `.work/issues/` テンプレートに `_index.archive.yaml` を追加 | `plugins/work-kit/templates/.work/issues/` |
 | 済 | `.work/tasks/` テンプレートに `index.archive.yaml` を追加 | `plugins/work-kit/templates/.work/tasks/` |
 
+| - | issue-scan を再設計: プロジェクトのファイルをランダム選択 → `*-kit` plugin の `injection_rules.yaml`/`index.yaml` から該当 reference を引いて比較 | `plugins/work-kit/skills/issue-scan/` |
+| - | 適用 plugin の AI 自動判定（py-kit / next-kit / html-kit など。プロジェクトに該当する技術がなければスキップ） | `plugins/work-kit/skills/issue-scan/` |
+| - | スキャン済みファイルの除外（`_index.archive.yaml` の scan_records から判断） | `plugins/work-kit/skills/issue-scan/` |
+| - | 対応する JP ミラー更新 | `plugins/work-kit/skills/issue-scan/SKILL.jp.md` |
+
 ## 次PR候補
 
 | タイトル | 概要 | 実施条件 |
