@@ -28,6 +28,8 @@ AskUserQuestion機能を活用したインタラクティブなレビュー系�
 | x | impl-review SKILL.jp.md を作成する | - `plugins/work-kit/skills/impl-review/SKILL.jp.md` |
 | x | plugin.json のバージョンをバンプする | - `plugins/work-kit/.claude-plugin/plugin.json` |
 | x | marketplace.json を更新する | - `.claude-plugin/marketplace.json` |
+| - | impl-review: Step1をセッションから判断・Step4（大枠リスト提示）を削除・ステップ番号再割り当て | - `plugins/work-kit/skills/impl-review/SKILL.md` / `SKILL.jp.md` |
+| - | qa-review: Step1をセッションから判断・Step3をAskUserQuestion最大4件まとめて提示・Step4を全回答後に一括反映 | - `plugins/work-kit/skills/qa-review/SKILL.md` / `SKILL.jp.md` |
 
 ## 参考ドキュメント
 
