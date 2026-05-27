@@ -4,61 +4,53 @@
 > このファイルは `CLAUDE.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更する場合は JP ミラーを先に更新し、その後 `CLAUDE.md` にも反映してください。
 
-このファイルは py-kit のすべての Python リファレンスへの入口。py-kit スキル
-（`py-kit:py-script`・`py-kit:py-project`）はステップ1でまずこのファイルを読み、
-タスクに応じた具体的なリファレンスファイルを次に読む。
+py-kit の Python 規約は **トピック軸に分割された複数の reference ファイル** で構成されている。
+編集対象に応じて必要なものだけ読めるように、次の 2 ファイルで管理:
 
-このファイルは `plugins/py-kit/references/` に置く — 配下のいずれかのファイルが
-読まれるとインデックスが会話コンテキストに乗るようにするため。
-
----
-
-## どのファイルをいつ読むか
-
-タスクに合うリファレンスを選ぶ。`python-core.md` は常に必ず読む。
-
-| タスク | 読むファイル |
+| ファイル | 役割 |
 |---|---|
-| すべての Python 作業（ベースライン・必須） | `python-core.md` |
-| プロジェクト設計・雛形生成・リファクタリング・品質レビュー | `python-architecture.md` |
-| 単一ファイルの簡易スクリプト作成（`pyproject.toml` なし・テストなし） | `python-core.md` + `python-scripts.md` |
-| bat ランチャー・FastAPI run.bat・tkinter GUI の生成 | `python-scripts.md` |
-| `logger.py` 作成・pytest 雛形・モック整備 | `python-testing.md` |
-| FastAPI エンドポイント・ルーター・ミドルウェアの実装 | `python-fastapi.md` |
-| LLM API（Claude / OpenAI）のラップ・Instructor・プロンプトファイル | `python-llm.md` |
+| **`index.yaml`** (英語) / **`index.jp.yaml`** (日本語) | reference 一覧 + 1 行 description。注入時の description は英語版を使う（フックが parse する）。日本語版は人間が一覧確認するためのもの |
+| **`injection_rules.yaml`** | 編集対象ファイルパスのパターン → 必読 / 任意 reference のマッピング（言語非依存） |
 
 ---
 
-## 「○○ を作る」クイックマップ
+## 読み方（手動の場合）
 
-| 作るもの | 読む順序 |
-|---|---|
-| 単発 Python スクリプト | `python-core.md` → `python-scripts.md` |
-| 新規レイヤード構成のプロジェクト（FastAPI・LLM なし） | `python-core.md` → `python-architecture.md` → `python-testing.md` |
-| 新規 FastAPI サービス | `python-core.md` → `python-architecture.md` → `python-fastapi.md` → `python-testing.md` |
-| 新規 LLM 駆動サービス | `python-core.md` → `python-architecture.md` → `python-llm.md` → `python-testing.md` |
-| 既存プロジェクトのレビュー | `python-core.md` → `python-architecture.md` →（変更箇所に応じた個別ファイル） |
+1. **`index.yaml`（または `index.jp.yaml`）** を読んで、各 reference の概要を把握
+2. 編集対象ファイルのパスを **`injection_rules.yaml`** の `rules[].pattern` と照合
+   - 例: `src/{pkg}/features/chat/service.py` を編集する → `**/*.py` と `**/features/**/service.py` がマッチ
+3. マッチしたルールの `required` を全部、`optional` から関連するものを必要に応じて読む
 
 ---
 
-## ファイル一覧
+## 読み方（自動の場合）
 
-| ファイル | 一言説明 |
-|---|---|
-| `python-core.md` | 命名規則・コメントルール・型ヒント・言語ルール — 常に必須のベースライン |
-| `python-architecture.md` | SOLID・DRY・デザインパターン（Strategy / Template Method / Factory / Decorator）・DI・Pydantic 境界・レイヤードアーキテクチャ・プロジェクトフォルダ構成（純DDD） |
-| `python-scripts.md` | 単一ファイルスクリプト構造・argparse パターン・bat ランチャーテンプレート（Windows）・FastAPI run.bat・tkinter GUI |
-| `python-testing.md` | ロガー仕様・テストポリシー・pytest 規約・モック整理 |
-| `python-fastapi.md` | DDD準拠のプロジェクト構成・ルーターパターン・依存性注入・ミドルウェア・lifespan |
-| `python-llm.md` | LLM クライアント Protocol 抽象化・プロバイダパターン・タスク特化型 LLM・構造化出力（Pydantic + Instructor）・プロンプトファイル・トークン/コスト管理・エラーハンドリング |
+`add-py-kit-references-injection-hook`（既に同 PR で実装済み）の **PreToolUse フック** が、
+`Edit` / `Write` / `MultiEdit` のたびに自動で:
 
-各ファイルには JP ミラー（`*.jp.md`）が同じ構造で存在する。
+1. `injection_rules.yaml` を読んで該当 rule を集める
+2. `index.yaml` から各 reference の description を引く
+3. 各 reference 本文を読む
+4. Jinja2 テンプレ (`hooks/templates/injection.md.j2`) で整形
+5. `decision: block` の reason に注入
+
+セッション + ファイルハッシュ単位のトークンで、同一ファイルへの 2 回目以降はスキップ。
+
+注入言語の切替は環境変数 `PY_KIT_INJECTION_LANG=jp` で（デフォルトは `en`）。
 
 ---
 
-## スキルのリファレンス読み込み手順
+## SKILL からの呼び出し
 
-1. まずこの `CLAUDE.md` を読む — どのリファレンスが該当するかを特定する
-2. 該当するリファレンスファイルを**全部・通しで**読む（コード生成前に）
-3. セクション飛ばし読み禁止 — 各セクションに、書こうとしているコード種別に効くルールが含まれている
-4. ルールがユーザーの明示指示と矛盾する場合は逸脱前に確認する
+`py-kit:py-project` / `py-kit:py-script` 各スキルの Step 1 は、まずこの `index.yaml` を最初に読む。
+スキル固有のシナリオ（例: `py-script` なら `scripts/python-script.md` を強制注入）は
+SKILL.md 側に書く。
+
+---
+
+## メンテナンス
+
+- 新規 reference を追加したら **`index.yaml` + `index.jp.yaml` + `injection_rules.yaml`** の 3 ファイルを必ず更新する
+- ファイル削除 / リネーム時も同様
+- `references/CLAUDE.md` には、原則として「2 ファイルの役割を読め」以外の情報を書かない
+  （個別 reference の説明は `index.yaml` のテーブルに集約）

@@ -414,3 +414,11 @@ prs:
     の JP ミラー生成でエージェントを使うよう変更。不要な agent-jp-mirror-sync ルールと _overview.md を削除。
   task: 20260528_move-jp-mirror-agent-to-claude-kit
   completed: true
+- id: 140
+  title: PR140 — rebuild-py-kit-references
+  type: refactor
+  tags: []
+  summary: PR138 確定方針（DDD廃止 → 機能フォルダ型 + TypeScript 風 + 関数ファースト）に従って py-kit references
+    を全面再構築。38 ファイル + index.yaml + SKILL.md 書き直し + MAJOR バンプ + glossary 更新 + JP ミラー全件
+  task: 20260527_rebuild-py-kit-references
+  completed: true

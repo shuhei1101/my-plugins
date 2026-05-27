@@ -1,60 +1,51 @@
-# py-kit References — Index
+# py-kit references — index
 
-This file is the entry point for all py-kit Python references. py-kit skills
-(`py-kit:py-script`, `py-kit:py-project`) read this first in Step 1, then load
-the specific reference files that match the task.
+The py-kit Python conventions are split into **topic-axis reference files**.
+You only read the ones relevant to your current edit.
 
-Place this file inside `plugins/py-kit/references/` so that any read under that
-directory carries the index into the conversation context.
+Management is split across two files:
 
----
-
-## When to Read What
-
-Pick the references that match the task. Always start with `python-core.md`.
-
-| Task | Read |
+| File | Role |
 |---|---|
-| Any Python work (baseline — always required) | `python-core.md` |
-| Designing or scaffolding a project / refactoring / quality review | `python-architecture.md` |
-| Writing a simple single-file script (no `pyproject.toml`, no tests) | `python-core.md` + `python-scripts.md` |
-| Generating bat launchers / FastAPI run.bat / tkinter GUI | `python-scripts.md` |
-| Setting up `logger.py` / pytest skeleton / mocks | `python-testing.md` |
-| Implementing FastAPI endpoints / routers / middleware | `python-fastapi.md` |
-| Wrapping an LLM API (Claude / OpenAI) / Instructor / prompt files | `python-llm.md` |
+| **`index.yaml`** (English) / **`index.jp.yaml`** (Japanese mirror) | Reference list + one-line `description`. The hook parses the English version for injection (Japanese version is a human-only mirror). |
+| **`injection_rules.yaml`** | Mapping of edit-target file-path patterns → required / optional references (language-independent). |
 
 ---
 
-## Quick "I'm building..." Map
+## Reading manually
 
-| Building... | Read in order |
-|---|---|
-| A one-off Python script | `python-core.md` → `python-scripts.md` |
-| A new layered project (no FastAPI, no LLM) | `python-core.md` → `python-architecture.md` → `python-testing.md` |
-| A new FastAPI service | `python-core.md` → `python-architecture.md` → `python-fastapi.md` → `python-testing.md` |
-| A new LLM-powered service | `python-core.md` → `python-architecture.md` → `python-llm.md` → `python-testing.md` |
-| Reviewing an existing project | `python-core.md` → `python-architecture.md` → (specific file based on what changed) |
+1. Read **`index.yaml`** to see what each reference covers.
+2. Match the edit-target file path against the `rules[].pattern` entries in **`injection_rules.yaml`**.
+   - Example: editing `src/{pkg}/features/chat/service.py` matches both `**/*.py` and `**/features/**/service.py`.
+3. Read all `required` references for the matching rules; read `optional` ones if relevant.
 
 ---
 
-## File List
+## Reading automatically
 
-| File | One-liner |
-|---|---|
-| `python-core.md` | Naming, comment rules, type hints, language rules — the always-required baseline |
-| `python-architecture.md` | SOLID, DRY, design patterns (Strategy / Template Method / Factory / Decorator), DI, Pydantic boundaries, layered architecture, project folder structure (pure DDD) |
-| `python-scripts.md` | Single-file script structure, argparse patterns, bat launcher templates (Windows), FastAPI run.bat, tkinter GUI |
-| `python-testing.md` | Logger specification, test policy, pytest conventions, mock organization |
-| `python-fastapi.md` | DDD-aligned project layout, router patterns, dependency injection, middleware, lifespan |
-| `python-llm.md` | LLM client Protocol abstraction, provider pattern, task-specific LLMs, structured output (Pydantic + Instructor), prompt files, token / cost management, error handling |
+The `py-references-injection` hook (PreToolUse, implemented in the same PR) does this on every `Edit` / `Write` / `MultiEdit`:
 
-Each file has a JP mirror (`*.jp.md`) with the same structure.
+1. Reads `injection_rules.yaml` and collects matching rules
+2. Looks up each reference's description from `index.yaml`
+3. Reads each reference body
+4. Renders the Jinja2 template (`hooks/templates/injection.md.j2`)
+5. Injects the result via `decision: block` in the `reason` field
+
+A session + file-hash token prevents the hook from blocking the same file twice in one session.
+
+Switch the injection language by setting `PY_KIT_INJECTION_LANG=jp` (default is `en`).
 
 ---
 
-## Reading Protocol for Skills
+## Used by SKILLs
 
-1. Read this `CLAUDE.md` first — identify which references apply
-2. Read **all applicable** reference files **in full** before generating code
-3. Do not skim sections — every section has rules that apply to the kind of code being written
-4. If a rule conflicts with the user's explicit instruction, ask before deviating
+`py-kit:py-project` and `py-kit:py-script` both read `index.yaml` first in their Step 1.
+Skill-specific behavior (e.g. `py-script` force-loading `scripts/python-script.md`) is encoded in the SKILL file itself.
+
+---
+
+## Maintenance
+
+- When adding a new reference, update **all three**: `index.yaml`, `index.jp.yaml`, and `injection_rules.yaml`.
+- Same for deletes / renames.
+- Keep `references/CLAUDE.md` minimal — point to the two management files; the per-reference descriptions live only in `index.yaml` (and its JP mirror).

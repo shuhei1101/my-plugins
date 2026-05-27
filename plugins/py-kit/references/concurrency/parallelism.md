@@ -1,0 +1,182 @@
+# concurrency/parallelism — Parallel Processing
+
+Choosing between threading / multiprocessing / subinterpreters.
+
+---
+
+## GIL and assumptions
+
+| Workload type | Effect of the GIL | Recommended |
+|---|---|---|
+| **IO-bound** (HTTP / file / DB / sleep) | Largely negligible | `asyncio` or `threading` |
+| **CPU-bound** (computation / image processing / compression) | Does not parallelize within a single process | `multiprocessing` or `subinterpreters` |
+
+In Python 3.13+, the GIL can be removed with a `--disable-gil` build, but until library
+support catches up, design with the GIL in mind.
+
+---
+
+## Quick reference
+
+| What you want to do | API | Notes |
+|---|---|---|
+| Many parallel HTTP calls | `asyncio` + httpx.AsyncClient | See `concurrency/async.md` |
+| Many parallel sync IO calls (legacy library) | `concurrent.futures.ThreadPoolExecutor` | GIL is released during IO waits |
+| Heavy computation, parallelized to CPU core count | `concurrent.futures.ProcessPoolExecutor` | Arguments / return values must be picklable |
+| Parallelize an existing sync function from async | `asyncio.to_thread` | Lightweight |
+| Speed up numerical computation | NumPy / numba / cython | Combine with multiprocessing if true parallelism is needed |
+
+---
+
+## ThreadPoolExecutor
+
+```python
+from concurrent.futures import ThreadPoolExecutor
+
+def fetch_sync(url: str) -> str:
+    """同期 HTTP 取得（古い lib 想定）。"""
+    import urllib.request
+    return urllib.request.urlopen(url).read().decode()
+
+
+def fetch_many(urls: list[str], *, max_workers: int = 10) -> list[str]:
+    """N 並列で取得。"""
+    with ThreadPoolExecutor(max_workers=max_workers) as ex:
+        return list(ex.map(fetch_sync, urls))
+```
+
+When calling from async, use `asyncio.to_thread` per function:
+
+```python
+import asyncio
+
+async def fetch_many_async(urls: list[str]) -> list[str]:
+    async with asyncio.TaskGroup() as tg:
+        tasks = [tg.create_task(asyncio.to_thread(fetch_sync, url)) for url in urls]
+    return [t.result() for t in tasks]
+```
+
+---
+
+## ProcessPoolExecutor
+
+Run CPU-bound work in parallel across physical cores:
+
+```python
+from concurrent.futures import ProcessPoolExecutor
+import os
+
+def heavy_calc(n: int) -> int:
+    """重い計算（純 Python）。"""
+    total = 0
+    for i in range(n):
+        total += i * i
+    return total
+
+
+def parallel_calc(values: list[int]) -> list[int]:
+    """CPU コア数だけ並列に走らせる。"""
+    with ProcessPoolExecutor(max_workers=os.cpu_count()) as ex:
+        return list(ex.map(heavy_calc, values))
+```
+
+**Constraints**:
+- Arguments / return values must be `pickle`-able (functions / DTOs / primitive types are OK; lambdas and closures are not)
+- Process startup has a cost, so it is counterproductive unless each task is heavy enough (rule of thumb: 100ms or more)
+- Do not forget the `if __name__ == "__main__":` guard (required on Windows / macOS)
+
+```python
+if __name__ == "__main__":
+    results = parallel_calc([10**6, 10**7, 10**8])
+```
+
+---
+
+## subprocess (running external commands)
+
+```python
+import subprocess
+
+def run_ffmpeg(input_path: Path, output_path: Path) -> None:
+    """ffmpeg を呼んで変換する。"""
+    result = subprocess.run(
+        ["ffmpeg", "-i", str(input_path), str(output_path)],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    # result.stdout / result.stderr が使える
+```
+
+In an async context, use `asyncio.create_subprocess_exec`:
+
+```python
+import asyncio
+
+async def run_ffmpeg_async(input_path: Path, output_path: Path) -> None:
+    proc = await asyncio.create_subprocess_exec(
+        "ffmpeg", "-i", str(input_path), str(output_path),
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await proc.communicate()
+    if proc.returncode != 0:
+        raise RuntimeError(f"ffmpeg failed: {stderr.decode()}")
+```
+
+---
+
+## subinterpreters (PEP 734, Python 3.13+)
+
+In 3.13, the standard `interpreters` module was added, allowing parallel execution in a more lightweight isolated environment than processes.
+However, the API is experimental and library support is limited. **For new projects, it is recommended to wait and see**.
+Consider it only when it becomes truly necessary.
+
+---
+
+## Shared state
+
+- Between threads: `threading.Lock`, `queue.Queue`, `threading.Event`
+- Between processes: `multiprocessing.Queue`, `multiprocessing.Manager`, `multiprocessing.shared_memory`
+
+That said, more shared state means more bugs, so **avoid it**. The basic approach is to use a Producer / Consumer model and pass data through queues.
+
+---
+
+## Decision flow summary
+
+```
+やりたい処理は CPU バウンド？
+├── No (IO) → asyncio が第一候補。古い lib なら ThreadPool
+└── Yes
+    ├── 1 タスク 100ms 未満 → 並列化しない、または numpy/numba 等で内部高速化
+    └── 1 タスク 100ms 以上 → ProcessPoolExecutor
+```
+
+---
+
+## What not to do
+
+```python
+# ❌ asyncio で重い計算を直書き（イベントループが固まる）
+async def bad() -> int:
+    return sum(i*i for i in range(10**8))   # CPU バウンドを await なしで
+
+# ✅ to_thread か ProcessPoolExecutor へ
+async def good() -> int:
+    return await asyncio.to_thread(heavy_calc, 10**8)
+
+# ❌ ProcessPoolExecutor にラムダ / closure を渡す
+ex.map(lambda x: x*2, values)   # pickle できない
+
+# ❌ multiprocessing でグローバル変数を共有しようとする
+counter = 0
+def worker(): counter += 1   # 別プロセスの counter は別物
+```
+
+---
+
+## Related files
+
+- `concurrency/async.md` — the main choice for IO-bound work
+- `performance/cheatsheet.md` — procedure for identifying bottlenecks

@@ -1,0 +1,206 @@
+# Recommended Decorators + Handler Decorators
+
+The decorators recommended for use in py-kit, and the **handler decorator** pattern that absorbs cross-cutting concerns.
+
+---
+
+## Recommended Decorators
+
+| Decorator | Purpose |
+|---|---|
+| `@dataclass(frozen=True, slots=True, kw_only=True)` | Standard for immutable DTOs |
+| `@final` | Class / method that prohibits inheritance |
+| `@functools.cache` | Memoization of pure functions (fixed argument keys) |
+| `@functools.cached_property` | Lazy computation of class attributes |
+| `@typing.override` | Explicit method override |
+| `@contextlib.contextmanager` | Function definition for `with` statements |
+| `@contextlib.asynccontextmanager` | For `async with` |
+
+Sample:
+
+```python
+from dataclasses import dataclass
+from functools import cache, cached_property
+from typing import final, override
+from contextlib import contextmanager
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class User:
+    id: str
+    name: str
+
+
+@cache
+def expensive_compute(x: int) -> int:
+    return x * x
+
+
+@final
+class Singleton:
+    @cached_property
+    def heavy(self) -> Heavy:
+        return Heavy()
+
+
+class Child(Parent):
+    @override
+    def name(self) -> str:
+        return "child"
+
+
+@contextmanager
+def temp_chdir(path: Path) -> Iterator[None]:
+    prev = Path.cwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(prev)
+```
+
+---
+
+## Handler Decorators (Cross-cutting concerns)
+
+**Bundle cross-cutting concerns such as exception catching / retry / timeout / metrics using function decorators**.
+Do not use class-based AOP (aspect-oriented programming).
+
+### Representative decorators
+
+| Decorator | Purpose |
+|---|---|
+| `@catch_and_log(*exc_types, level=...)` | Swallow the specified exceptions with a log and return `None` |
+| `@catch_and_map(SrcError, to=DstError)` | Convert exception types (vendor exception → domain exception) |
+| `@with_retry(times=3, backoff=0.5)` | Retry with exponential backoff |
+| `@with_timeout(seconds=60)` | Overall timeout |
+| `@measure_time(metric="...")` | Execution time metric |
+
+Define these together in `{pkg}/shared/decorators.py` and import them where needed.
+
+### `@catch_and_log` implementation example
+
+```python
+# {pkg}/shared/decorators.py
+from __future__ import annotations
+import logging
+from functools import wraps
+from typing import Callable
+
+
+def catch_and_log(*exc_types: type[Exception], level: str = "warning"):
+    """指定例外をログだけ出して None を返すデコレータ。"""
+    def decorator[**P, R](fn: Callable[P, R]) -> Callable[P, R | None]:
+        @wraps(fn)
+        def wrapped(*args: P.args, **kwargs: P.kwargs) -> R | None:
+            try:
+                return fn(*args, **kwargs)
+            except exc_types as e:
+                logging.getLogger(fn.__module__).log(
+                    getattr(logging, level.upper()),
+                    f"{fn.__name__} failed: {e}",
+                )
+                return None
+        return wrapped
+    return decorator
+
+
+@catch_and_log(ValueError, level="warning")
+def parse_input(raw: str) -> Input:
+    return Input.model_validate_json(raw)
+```
+
+### `@catch_and_map` implementation example
+
+Use this when wrapping vendor exceptions (OpenAI / Anthropic / httpx) into domain exceptions:
+
+```python
+def catch_and_map(src: type[Exception], *, to: type[Exception]):
+    """例外型を変換する。raise from で原因連鎖。"""
+    def decorator[**P, R](fn: Callable[P, R]) -> Callable[P, R]:
+        @wraps(fn)
+        def wrapped(*args: P.args, **kwargs: P.kwargs) -> R:
+            try:
+                return fn(*args, **kwargs)
+            except src as e:
+                raise to(str(e)) from e
+        return wrapped
+    return decorator
+
+
+@catch_and_map(anthropic.APIStatusError, to=LlmServerError)
+async def call_claude(messages: list[Message]) -> str: ...
+```
+
+### `@with_retry` implementation example
+
+Details are in `llm/exceptions-retry.md`. Placing the same implementation in `shared/decorators.py` lets you use it outside LLM as well.
+
+### `@with_timeout` implementation example
+
+A wrapper for `asyncio.timeout`. Details are in `concurrency/async.md`.
+
+```python
+def with_timeout[**P, R](*, seconds: float):
+    def decorator(fn: Callable[P, Awaitable[R]]) -> Callable[P, Awaitable[R]]:
+        @wraps(fn)
+        async def wrapped(*args: P.args, **kwargs: P.kwargs) -> R:
+            try:
+                async with asyncio.timeout(seconds):
+                    return await fn(*args, **kwargs)
+            except TimeoutError as e:
+                raise IntegrationTimeoutError(f"{fn.__name__} timed out") from e
+        return wrapped
+    return decorator
+```
+
+### Composing them
+
+They are applied from the outside in. Read "bottom to top":
+
+```python
+@with_timeout(seconds=60)               # 3. 全体 60 秒で打ち切り
+@with_retry(retries=3, on=(LlmRateLimitError, LlmServerError))   # 2. 3 回までリトライ
+@catch_and_map(openai.APIStatusError, to=LlmServerError)         # 1. vendor 例外を変換
+async def chat(req: ChatRequest) -> ChatResponse:
+    response = await client.chat.completions.create(model=..., messages=req)
+    return response.choices[0].message.content or ""
+```
+
+---
+
+## `@overload` (limited use)
+
+Only for functions whose return type branches on the argument type:
+
+```python
+from typing import overload, Literal
+
+
+@overload
+def parse(value: Literal["int"]) -> int: ...
+@overload
+def parse(value: Literal["str"]) -> str: ...
+def parse(value: str) -> int | str:
+    return 0 if value == "int" else ""
+```
+
+In most cases, type aliases + Callable / Protocol suffice, so `@overload` is rarely needed.
+
+---
+
+## Cautions for self-made decorators
+
+1. **Always apply `@functools.wraps(fn)`** (preserve metadata)
+2. **Type hints** should use the PEP 695 `[**P, R]` parameter specification
+3. **Separate async and sync** into different functions when needed
+4. **Keep side effects minimal**: limit to a single responsibility such as logging only, exception conversion only, etc.
+
+---
+
+## Related files
+
+- `core/type-hints.md` — type hint basics
+- `shared/errors.md` — exception hierarchy
+- `llm/exceptions-retry.md` — full implementation of `@with_retry`
+- `concurrency/async.md` — `asyncio.timeout`

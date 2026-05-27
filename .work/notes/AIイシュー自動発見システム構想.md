@@ -66,39 +66,50 @@ plugins/dev-kit/
     └── yaml/
 ```
 
-### py-kit（新規）※ PR129 で実装済み
+### py-kit（v2.0.0 — PR129 新規作成 / PR138 大方針確定 / PR140 実装）
 
 ```
 plugins/py-kit/
-├── .claude-plugin/plugin.json
+├── .claude-plugin/plugin.json     # v2.0.0
+├── CLAUDE.md / CLAUDE.jp.md       # プラグイン全体ガイド（PR140 新設）
+├── changelogs/
+│   └── v2.0.0.md
 ├── hooks/
 │   ├── hooks.json
 │   └── prompts/
 │       ├── python-skill-dispatch.md
 │       └── python-skill-dispatch.jp.md
-├── references/                    # フラット配置（python/ サブフォルダ廃止）
-│   ├── CLAUDE.md                  # インデックス（references/ 配下読み込み時に自動ロード）
-│   ├── CLAUDE.jp.md
-│   ├── python-core.md             # 命名15項目・コメント必須/推奨表・型ヒント網羅・エラー処理・言語ルール
-│   ├── python-architecture.md     # SOLID/DRY 詳細・純DDDレイヤー・No Hardcoding・Composition Root・Strategy/Template Method/Factory/Decorator/Observer・Pydantic 境界・プロジェクトフォルダ構成（純DDD）
-│   ├── python-fastapi.md          # 純DDD配置（interface/api/）・build_app・lifespan・ルーター規約・Depends()・Pydantic schemas/・middleware・error_handlers
-│   ├── python-llm.md              # 三層抽象（task-specific / provider / SDK）・Instructor 構造化出力・プロンプト管理・トークン/コスト/キャッシュ・複数ベンダー併用・LLM 例外階層
-│   ├── python-testing.md          # ロガー仕様・テストポリシー表・モック方針・各種テストテンプレ・ソース↔テストリンク
-│   ├── python-scripts.md          # 簡易スクリプト構造・bat ルール表・FastAPI run.bat・tkinter GUI・Linux/macOS 等価
-│   └── *.jp.md                    # 各ファイルの JP ミラー
+├── references/                    # 38 ファイル（jp ミラー込みで 76）構成
+│   ├── CLAUDE.md / CLAUDE.jp.md   # 「index.yaml を読め」式の最小指示
+│   ├── index.yaml                 # メタデータ + 注入星取り表（PR141 のフックが読む）
+│   ├── core/                      # 命名・コメント・型・言語ルール・スタイル（5 ファイル）
+│   ├── architecture/              # 機能フォルダ型レイアウト・TypeScript 風・関数配線・依存方向（4 ファイル）
+│   ├── shared/                    # logger / settings / errors / types / constants（5 ファイル）
+│   ├── scripts/                   # 単一スクリプト + ランチャー + tkinter（4 ファイル）
+│   ├── testing/                   # 結合テスト方針・pytest・Mock（3 ファイル）
+│   ├── concurrency/               # asyncio / parallelism（2 ファイル）
+│   ├── packaging/                 # pyproject / uv / distribution / python-versions（4 ファイル）
+│   ├── performance/               # プロファイラチート集（1 ファイル）
+│   ├── llm/                       # providers / Instructor / prompts / cost-cache / exceptions-retry（5 ファイル）
+│   └── fastapi/                   # app / routes / schemas / auth-and-errors / health（5 ファイル）
 └── skills/
-    ├── py-script/                 # SKILL.md / SKILL.jp.md
-    └── py-project/                # SKILL.md / SKILL.jp.md
+    ├── py-script/                 # SKILL.md / SKILL.jp.md（PR140 で書き直し）
+    └── py-project/                # SKILL.md / SKILL.jp.md（PR140 で書き直し）
 ```
 
-**設計決定事項（QA-001 / 2026-05-27 決定）**:
-- フォルダ構成は**純DDD**（domain / application / infrastructure / interface）
-- Protocol の置き場所は `domain/repositories/`（ドメイン層集約）
-- 具体実装は `infrastructure/`（依存方向：interface・infrastructure → application → domain）
+**設計方針（v2.0.0）**:
+- レイアウトは **機能フォルダ型**（`src/{pkg}/{shared,features,integrations,runtime,server}/`、`shared/` と `main.py` のみ必須）
+- 振る舞いは **モジュールレベルの関数**。クラスは DTO とライブラリ要求のみ
+- 抽象化は **`type` エイリアス（関数の型）+ `Protocol`**（クラス継承による DIP は使わない）
+- DI は `functools.partial` で `build_handlers(settings) -> Handlers` パターン
+- DB は対象外（Web 関連は next-kit に委譲）
+- テストは **結合テスト + スモークテストのみ**（単体テストなし、スモークはユーザー手動実行限定）
 
-`references/CLAUDE.md`: スキルが Step 1 で読むインデックス。`references/` 配下の任意ファイルが読み込まれるとClaude Code がコンテキストに自動ロードする設計。タスク → 参照ファイルのマッピング表とクイック「○○を作る」マップを掲載。
+**自動注入の仕組み**:
+- `references/index.yaml` の `injection_rules` に「編集対象ファイルパス → 必読 reference / 任意 reference」を集約
+- PR141（`add-py-kit-references-injection-hook`）で PreToolUse フックを実装し、`Edit` / `Write` 時に該当 reference を `decision: block` で Claude へ自動注入する予定
 
-**詳細度**: PR132 next-kit の書きぶり（コメント必須/推奨表・✅/❌対比例・禁止事項リスト・Definition of Done チェックリスト）を Python 用に展開。各ファイルが本格リファレンス（数百〜千行規模）。
+**詳細度**: PR132 next-kit の書きぶり（必須/推奨表・✅/❌対比例・禁止事項リスト）を Python 用に展開。各ファイルが本格リファレンス（数百行規模）。
 
 ### html-kit（ui-kit からリネーム）
 
