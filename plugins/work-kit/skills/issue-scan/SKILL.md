@@ -84,7 +84,7 @@ the file against those references and records discovered problems via `/work-kit
 
 ---
 
-### Step 3: Read the file and receive references
+### Step 3: Read the file and related files, then receive references
 
 #### Condition
 
@@ -92,18 +92,25 @@ the file against those references and records discovered problems via `/work-kit
 
 #### Process
 
-1. Read the file chosen in Step 2
+1. Read the file chosen in Step 2 (the primary scan target)
 2. If a `*-kit` `PreToolUse(Read)` hook matches, its `decision: block` response will inject the
    applicable reference bodies into the conversation as `reason`
    - The injection contains the required / optional reference bodies for this file
-3. If no injection occurred, treat the file as "no applicable `*-kit` reference" and skip to Step 6
+3. **Also Read related files to build context**:
+   - Sibling files in the same folder (e.g. for `features/chat/service.py`, also `types.py`, `route.py`, `query.py`)
+   - Files the primary target depends on / files that call into the primary target (follow imports)
+   - The whole related layer when the issue might span a layer (e.g. read the rest of the LLM folder)
+   - Keep the related-file set as small as needed for sound judgement — do not over-expand
+   - Related files are not the scan target, so do NOT record them in `scan_records.scope`
+4. If no injection occurred, treat the file as "no applicable `*-kit` reference" and skip to Step 6
    (still write the scan record)
 
 → Injection present → Step 4 / No injection → Step 6
 
 #### Output
 
-- The file's content
+- The primary file's content
+- Related files' content (context only)
 - Injected reference bodies (may be absent)
 
 ---
@@ -116,12 +123,15 @@ the file against those references and records discovered problems via `/work-kit
 
 #### Process
 
-1. Compare the file against each injected reference, looking for:
+1. Compare the primary file (and related files from Step 3 where useful) against each injected
+   reference, looking for:
    - Convention violations (naming, types, comments, style)
    - Architectural violations (dependency direction, layer boundaries)
    - Improvement opportunities (DRY violations, dead code, outdated patterns — anything the references call out)
-2. Drop findings that match an already-`wontfix` closed issue
-3. Group findings into independently actionable units
+2. Related files are used as judgement material; the issues themselves are raised against the
+   primary target file (mention related-file problems inline, or defer them to a later scan)
+3. Drop findings that match an already-`wontfix` closed issue
+4. Group findings into independently actionable units
 
 → Proceed to Step 5
 
