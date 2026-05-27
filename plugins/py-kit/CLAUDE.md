@@ -53,7 +53,7 @@ references/
 | `index.jp.yaml` | JP mirror (for humans browsing) | Japanese |
 | `injection_rules.yaml` | Star chart mapping edit-target file-path patterns to `required` / `optional` references | Language-independent |
 
-The `py-references-injection` hook (PreToolUse, implemented in the same PR) reads these on every `Edit` / `Write` / `MultiEdit` and auto-injects matched references into Claude's context via `decision: block`.
+These three files are consumed by the **`refs-inject-kit` plugin** (separate plugin, PR140), which scans installed plugins, matches `Edit` / `Write` / `MultiEdit` paths against the rules, and auto-injects matched references via `decision: block`.
 
 ---
 
@@ -75,12 +75,11 @@ py-kit hooks follow the `claude-kit` policy:
 - Session-flag-style blocking (`/tmp/{hook-name}-{session_id}`) — block only once per session
 - Do not add dispatch-purpose `UserPromptSubmit` hooks
 
-The **references auto-injection hook** (`py-references-injection`, implemented in the same PR) follows this policy:
-- On `PreToolUse(Edit|Write|MultiEdit)`, read `references/injection_rules.yaml` and look up descriptions in `references/index.yaml`
-- Match the file path being edited against `rules[].pattern` (glob)
-- Render the matched `required` / `optional` via the Jinja2 template (`hooks/templates/injection.md.j2`, or `.jp.md.j2` when `PY_KIT_INJECTION_LANG=jp`)
-- Inject into the `reason` field via `decision: block`
-- A session + file-hash token prevents the hook from blocking the same file twice in one session
+**The references auto-injection hook has been extracted into a separate plugin, `refs-inject-kit`** (PR140):
+- py-kit itself **owns no hook code**. It only owns `references/{index.yaml, index.jp.yaml, injection_rules.yaml}` and the reference bodies.
+- `refs-inject-kit` scans installed plugins for those with `references/injection_rules.yaml` and discovers them automatically.
+- On `Edit` / `Write` / `MultiEdit`, the matched references are injected via `decision: block`.
+- Switch the injection language via `REFS_INJECT_KIT_LANG=jp`.
 
 ---
 

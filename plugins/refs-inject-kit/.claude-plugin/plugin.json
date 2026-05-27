@@ -1,0 +1,5 @@
+{
+  "name": "refs-inject-kit",
+  "description": "Auto-inject reference documents on file edits — generic PreToolUse hook that detects installed plugins with references/injection_rules.yaml and injects matched references via decision:block",
+  "version": "1.0.0"
+}

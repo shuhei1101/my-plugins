@@ -25,18 +25,18 @@ py-kit の Python 規約は **トピック軸に分割された複数の referen
 
 ## 読み方（自動の場合）
 
-`add-py-kit-references-injection-hook`（既に同 PR で実装済み）の **PreToolUse フック** が、
-`Edit` / `Write` / `MultiEdit` のたびに自動で:
+**`refs-inject-kit` プラグイン**（同 PR で新設）が `Edit` / `Write` / `MultiEdit` のたびに自動で:
 
-1. `injection_rules.yaml` を読んで該当 rule を集める
-2. `index.yaml` から各 reference の description を引く
-3. 各 reference 本文を読む
-4. Jinja2 テンプレ (`hooks/templates/injection.md.j2`) で整形
-5. `decision: block` の reason に注入
+1. インストール済みプラグインから `references/injection_rules.yaml` を持つものを自動検出
+2. 各プラグインの `injection_rules.yaml` を読んで該当 rule を集める
+3. 各プラグインの `index.yaml` から各 reference の description を引く
+4. 各 reference 本文を読む
+5. Jinja2 テンプレ (`refs-inject-kit/hooks/templates/injection.md.j2`) で整形
+6. `decision: block` の reason に注入
 
 セッション + ファイルハッシュ単位のトークンで、同一ファイルへの 2 回目以降はスキップ。
 
-注入言語の切替は環境変数 `PY_KIT_INJECTION_LANG=jp` で（デフォルトは `en`）。
+注入言語の切替は環境変数 `REFS_INJECT_KIT_LANG=jp` で（デフォルトは `en`）。
 
 ---
 

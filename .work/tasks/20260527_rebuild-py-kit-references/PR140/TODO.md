@@ -84,6 +84,15 @@ PR138 で確定した **大方針** に従って py-kit プラグインの refer
 | 済 | `inject_references.py` を YAML パースに戻す（`_parse_index_md` を削除し `yaml.safe_load(index.yaml)` で `references[]` を直接ループ） | `plugins/py-kit/hooks/inject_references.py` |
 | 済 | ドキュメント参照を `index.md` → `index.yaml` に一括書き換え（CLAUDE.md(+jp)、SKILL.md(+jp) × 2、changelogs/v2.0.0.md）。「Markdown テーブル」表現も「YAML リスト」に修正 | 各ドキュメント |
 
+### 第 4 ラウンドコミット後のレビュー反映（2026-05-28 追加 3）
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| 済 | 自動注入フックを **`refs-inject-kit` 新規プラグイン** に切り出し（py-kit/next-kit/他で共通化可能）。`hooks/hooks.json` + `hooks/inject_references.py`（インストール済みプラグインを `~/.claude/plugins/cache/*/*/*/references/injection_rules.yaml` で自動検出、`${CLAUDE_PROJECT_DIR}/plugins/*/...` + `${REFS_INJECT_KIT_EXTRA_PATHS}` も走査）+ `hooks/templates/injection.md.j2` / `.jp.md.j2`（複数プラグイン対応版）+ `CLAUDE.md(+jp)` + `changelogs/v1.0.0.md` | `plugins/refs-inject-kit/**` |
+| 済 | py-kit から injection 関連を撤去: `hooks/inject_references.py` 削除 + `hooks/templates/` 削除 + `hooks/hooks.json` から MultiEdit matcher と `inject_references.py` 呼び出し削除（`python-skill-dispatch` は残す） | `plugins/py-kit/hooks/**` |
+| 済 | `marketplace.json` に `refs-inject-kit` v1.0.0 を登録 | `.claude-plugin/marketplace.json` |
+| 済 | `plugins/py-kit/CLAUDE.md(+jp)` / `references/CLAUDE.md(+jp)` / `changelogs/v2.0.0.md` の注入フック説明を「`refs-inject-kit` に委譲」に書き換え。環境変数も `PY_KIT_INJECTION_LANG` → `REFS_INJECT_KIT_LANG` に統一 | 各ドキュメント |
+
 ## 参考ドキュメント
 
 - `.work/tasks/20260527_review-py-kit-plugin/PR138/QA.md`: 新方針版 QA（全件確定）。実装の主たる判断材料

@@ -54,6 +54,12 @@
       "source": "./plugins/next-kit",
       "description": "Next.js App Router implementation conventions — folder structure, component patterns, API routes, and scaffolding skills",
       "version": "1.2.0"
+    },
+    {
+      "name": "refs-inject-kit",
+      "source": "./plugins/refs-inject-kit",
+      "description": "Generic PreToolUse hook that auto-injects reference documents — discovers installed plugins with references/injection_rules.yaml and renders matched references via decision:block",
+      "version": "1.0.0"
     }
   ]
 }

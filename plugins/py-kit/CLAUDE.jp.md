@@ -57,9 +57,10 @@ references/
 | `index.jp.yaml` | 上の日本語ミラー（人間が一覧確認するため） | 日本語 |
 | `injection_rules.yaml` | 編集対象ファイルパスの pattern に対して `required` / `optional` reference を割り当てる星取り表 | 言語非依存 |
 
-このマッピングは `py-references-injection` フック（PreToolUse、同 PR で実装済み）が
-`Edit` / `Write` / `MultiEdit` 時に自動で読み、マッチした reference を `decision: block` で
-Claude のコンテキストへ注入する。
+これら 3 ファイルは **別プラグイン `refs-inject-kit`**（同 PR で新設）が消費する。
+`refs-inject-kit` がインストール済みプラグインを走査し、`Edit` / `Write` / `MultiEdit` 時に
+パスを `rules[].pattern` と照合し、マッチした reference を `decision: block` で
+Claude のコンテキストへ自動注入する。
 
 ---
 
@@ -81,12 +82,11 @@ py-kit のフックは `claude-kit` の方針に従う:
 - セッションフラグ型ブロック（`/tmp/{hook-name}-{session_id}`）で 1 セッション 1 回だけブロック
 - ディスパッチ用 `UserPromptSubmit` は追加しない
 
-**references 自動注入フック** (`py-references-injection`、同 PR で実装済み) も上記方針に従う:
-- `PreToolUse(Edit|Write|MultiEdit)` で `references/injection_rules.yaml` を読み、`references/index.yaml` から description を引く
-- 編集対象ファイルパスを `rules[].pattern` と glob 照合
-- マッチした `required` / `optional` を Jinja2 テンプレ（`hooks/templates/injection.md.j2`、または `PY_KIT_INJECTION_LANG=jp` で `.jp.md.j2`）で整形
-- `decision: block` で reason に注入
-- セッション + ファイルハッシュ単位のトークンで同一ファイルへの 2 回目以降の編集はスキップ
+**references 自動注入フックは別プラグイン `refs-inject-kit` に切り出した** (PR140):
+- py-kit 自身は **フックコードを持たない**。`references/{index.yaml, index.jp.yaml, injection_rules.yaml}` だけ持つ
+- `refs-inject-kit` がインストール済みプラグインを走査して `references/injection_rules.yaml` を持つものを自動検出
+- `Edit` / `Write` / `MultiEdit` 時にマッチした reference を `decision: block` で注入
+- 言語切替は環境変数 `REFS_INJECT_KIT_LANG=jp`
 
 ---
 

@@ -12,13 +12,6 @@
               "import sys,json,pathlib,tempfile; d=json.loads(sys.stdin.read()); f=d.get('tool_input',{}).get('file_path','') or ''; sys.exit(0) if not f.endswith('.py') else None; sid=d.get('session_id','default'); flag=pathlib.Path(tempfile.gettempdir())/f'py-kit-py-skill-{sid}'; sys.exit(0) if flag.exists() else None; flag.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/python-skill-dispatch.md"
             ]
-          },
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/inject_references.py"
-            ]
           }
         ]
       },
@@ -32,25 +25,6 @@
               "-c",
               "import sys,json,pathlib,tempfile; d=json.loads(sys.stdin.read()); f=d.get('tool_input',{}).get('file_path','') or ''; sys.exit(0) if not f.endswith('.py') else None; sid=d.get('session_id','default'); flag=pathlib.Path(tempfile.gettempdir())/f'py-kit-py-skill-{sid}'; sys.exit(0) if flag.exists() else None; flag.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/python-skill-dispatch.md"
-            ]
-          },
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/inject_references.py"
-            ]
-          }
-        ]
-      },
-      {
-        "matcher": "MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/inject_references.py"
             ]
           }
         ]

@@ -23,17 +23,18 @@ Management is split across two files:
 
 ## Reading automatically
 
-The `py-references-injection` hook (PreToolUse, implemented in the same PR) does this on every `Edit` / `Write` / `MultiEdit`:
+The **`refs-inject-kit` plugin** (separate plugin, PR140) does this on every `Edit` / `Write` / `MultiEdit`:
 
-1. Reads `injection_rules.yaml` and collects matching rules
-2. Looks up each reference's description from `index.yaml`
-3. Reads each reference body
-4. Renders the Jinja2 template (`hooks/templates/injection.md.j2`)
-5. Injects the result via `decision: block` in the `reason` field
+1. Auto-discovers installed plugins that have `references/injection_rules.yaml`
+2. Reads each plugin's `injection_rules.yaml` and collects matching rules
+3. Looks up each reference's description from the plugin's `index.yaml`
+4. Reads each reference body
+5. Renders the Jinja2 template (`refs-inject-kit/hooks/templates/injection.md.j2`)
+6. Injects the result via `decision: block` in the `reason` field
 
 A session + file-hash token prevents the hook from blocking the same file twice in one session.
 
-Switch the injection language by setting `PY_KIT_INJECTION_LANG=jp` (default is `en`).
+Switch the injection language by setting `REFS_INJECT_KIT_LANG=jp` (default is `en`).
 
 ---
 
