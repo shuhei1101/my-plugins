@@ -481,7 +481,7 @@ py-kit プラグインの references / skills / hooks を全て読み、Python �
 
 **決定**: **B — Decorator 章に `ParamSpec` の例を追加**
 
-**反映先**: `references/architecture/patterns.md` の Decorator パターン節（旧 `python-architecture.md § 6.4`）末尾に「型を保持するデコレータの書き方（PEP 612: ParamSpec / Concatenate）」サブ節を追加。Decorator パターンを定義する際にデコレータ関数で型を消さないための標準テクニックとして例示。`@functools.wraps` も併せて記載。
+**反映先**: QA-029/030 で Decorator パターン章自体を削除する方針となったため、**`core/type-hints.md` の Recommended Decorators 節（QA-019）に統合**。`ParamSpec` / `Concatenate` / `@functools.wraps` を「自前デコレータを書くときの型保持テクニック」として例示。
 
 ---
 
@@ -578,7 +578,7 @@ QA-022 で 3.12+ 一本化採用済みなので、`type` 文と `NewType` の 2 
 
 ---
 
-## QA-026: `assert_never` / `Never` 型による網羅性チェック
+## QA-026: `assert_never` / `Never` 型による網羅性チェック ✅決定
 
 **背景**: `match` 文や Literal 分岐で「全ケース処理済み」を型レベルで保証する `typing.assert_never` の言及がない。
 
@@ -586,11 +586,13 @@ QA-022 で 3.12+ 一本化採用済みなので、`type` 文と `NewType` の 2 
 - A. 規定なし
 - B. **match の末尾で `case _: assert_never(x)` を推奨**
 
-**反映先**: `python-core.md § 7`（コードスタイル）または § 3。
+**決定**: **B — match 末尾で `case _: assert_never(x)` を推奨**
+
+**反映先**: `references/core/type-hints.md` に新節「3.x 網羅性チェック（assert_never）」を追加。`Literal[...]` / Enum / tagged union を `match` で分岐するときの標準パターンとして例示。`if/elif` 分岐でも末尾の `else: assert_never(x)` を許容と明記。
 
 ---
 
-## QA-027: `Annotated` の使用例
+## QA-027: `Annotated` の使用例 ✅決定
 
 **背景**: FastAPI の `Annotated[..., Depends(...)]` が現代的な書き方だが、references の FastAPI 章では旧来の `arg: T = Depends(...)` を使っている。Pydantic でも `Annotated[str, Field(min_length=1)]` のように使える。
 
@@ -599,11 +601,16 @@ QA-022 で 3.12+ 一本化採用済みなので、`type` 文と `NewType` の 2 
 - B. **FastAPI の依存・パスパラメータは `Annotated[Type, Depends/Path/Query]` に書き換え**（FastAPI 公式推奨）
 - C. Annotated を `python-core.md` の汎用節として一度紹介し、`python-fastapi.md` の例も差し替え
 
-**反映先**: `python-fastapi.md § 3.2 / 4.1 / 4.2`、`python-core.md § 3` Annotated 紹介節。
+**決定**: **B（実質 C を含む）— `Annotated[Type, Depends/Path/Query]` に書き換え + `core/type-hints.md` でも汎用節を追加**
+
+**反映先**:
+- `references/core/type-hints.md` に「`Annotated` の使い方」節を新設（汎用例: FastAPI の Depends、Pydantic の Field、msgspec の field、custom metadata）
+- `references/fastapi/*.md` の Depends/Path/Query/Body の例を全て `Annotated[Type, Depends(get_xxx)]` 形式に書き換え
+- `references/architecture/pydantic-boundary.md` の Pydantic フィールド例も `Annotated[str, Field(min_length=1)]` 形式を併記
 
 ---
 
-## QA-028: mypy / pyright の設定方針
+## QA-028: mypy / pyright の設定方針 ✅決定
 
 **背景**: 「型ヒントを書く」と決めても型チェッカーを通さなければザル。pyproject.toml の `[tool.mypy]` / `[tool.pyright]` 設定例が references にない。
 
@@ -612,93 +619,161 @@ QA-022 で 3.12+ 一本化採用済みなので、`type` 文と `NewType` の 2 
 - B. **pyproject.toml のサンプルに mypy/pyright 設定を追加**（`strict = true` / `disallow_untyped_defs = true` / `warn_unused_ignores = true` 等）
 - C. **type-check 専用 reference を新設**（`references/type-check.md`：mypy vs pyright の比較、設定、CI 連携）
 
-**反映先**: `python-core.md § 7`（ruff の隣に）、または `python-architecture.md`、または新規 reference。
+**決定**: **B — pyproject.toml に mypy/pyright 設定を追加**
+
+**反映先**: `references/core/style.md`（または `references/core/type-hints.md` 末尾）に pyproject.toml サンプル設定を追加:
+
+```toml
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unreachable = true
+
+[tool.pyright]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+reportMissingTypeStubs = "warning"
+```
+
+「両方入れる必要はなく、プロジェクトごとに pyright（速い・VS Code 親和性）か mypy（mypy plugin が豊富）を 1 つ選ぶ」と注記。`ruff` の隣に並べて記載。
 
 ---
 
 # E. 抽象パターンの実用性
 
-## QA-029: Strategy / Template Method / Factory / Decorator / Observer の比較表は実用的か
+## QA-029: Strategy / Template Method / Factory / Decorator / Observer の比較表は実用的か ✅決定（方針大転換）
 
 **背景**: `python-architecture.md § 6` で 5 パターン解説、§ 6.2 末尾に Strategy vs Template Method 比較表あり。Factory と Strategy、Strategy と Decorator の使い分けは曖昧なまま。
 
 **案**:
 - A. 現状維持
-- B. **5 パターン総合比較表を追加**（「何が変わるか／誰が選ぶか／結合度／適用シーン」を 1 表に）
+- B. **5 パターン総合比較表を追加**
 - C. 「使うべきでないケース」を各パターンに明記
 
-**反映先**: `python-architecture.md § 6` 章末。
+**決定**: **設計パターン章は大幅削減 — Template Method のみ残す**
+
+**ユーザー意向（QA-029/030 を通じての方針転換）**:
+> DDD 書けばインターフェースの書き方わかるし、アノテーションとテンプレートパターン書けばあとはいらん。ファクトリとかも from_ メソッド（ファクトリメソッド）でいい。わざわざファクトリパターンとかいらん。デコレータとかオブザーバとかわかりづらいだけ。
+
+**`references/architecture/patterns.md` の最終構成**:
+- ✅ 残す: **Template Method パターン**（フローを基底クラスで固定、ステップだけ override する用途）
+- ❌ 削除: **Strategy** — DDD の Protocol + 注入で自然に表現できる
+- ❌ 削除: **Factory** — `@classmethod from_xxx()`（QA-020 Self 型 + from_ メソッド推奨）で十分。複雑な構築でも `build_container()` のような関数で書ける
+- ❌ 削除: **Decorator パターン** — わかりづらい。横断関心事は ABC の Template Method で吸収できる
+- ❌ 削除: **Observer** — わかりづらい。素直に直接呼ぶか asyncio.Queue で書く
+
+**反映先**: `references/architecture/patterns.md` を Template Method 中心に書き直し。冒頭に「設計パターンは Template Method のみ。他のパターンは DDD の Protocol + DI / `from_` クラスメソッド / 直接呼び出しで自然に表現できるため、py-kit では推奨しない」と明示。`@typing.override` / `@functools.wraps` / `ParamSpec` 等の **言語機能としてのデコレータ**は `core/type-hints.md` で扱う（QA-019, QA-021）。
 
 ---
 
-## QA-030: Adapter パターンの追加
+## QA-030: Adapter パターンの追加 ✅決定
 
 **背景**: § 6 に Strategy / Template Method / Factory / Decorator / Observer はあるが、**Adapter** がない。Adapter は infrastructure 層で「外部 SDK の interface ↔ ドメイン Protocol」を変換する典型パターンで、純DDD 採用なら必須に近い。
 
 **案**:
 - A. 追加しない（Decorator の説明で兼ねている扱い）
-- B. **§ 6.4 と § 6.5 の間に「6.4.5 Adapter」を追加**
+- B. § 6.4 と § 6.5 の間に「6.4.5 Adapter」を追加
 - C. § 6 章全体を「DDD で使う主要 3 パターン（Strategy / Adapter / Decorator）」に絞って簡素化
 
-**反映先**: `python-architecture.md § 6`。
+**決定**: **A — 追加しない**
+
+**理由**: ユーザー意向「そんなの書かなくても分かる。DDD なんだから」。`domain/repositories/` に Protocol、`infrastructure/persistence/` に concrete implementation を置くという DDD レイアウトを守れば、Adapter は構造的に発生する。あえてパターン名を当てて説明する必要なし。
+
+**反映先**: なし（追加作業なし）。
 
 ---
 
-## QA-031: Repository パターン自体の説明セクション
+## QA-031: Repository パターン自体の説明セクション ✅決定
 
 **背景**: 「Repository」という単語が `python-architecture.md` 全体で頻出するが、「Repository とは何か（Aggregate 単位の集合に対する境界、永続化を抽象化する Protocol）」という定義セクションがない。読み手は前提知識が必要。
 
 **案**:
 - A. 現状維持（前提扱い）
-- B. **§ 3 直後に「3.x Repository Pattern」を追加**（Aggregate 単位、find / save / delete の標準シグネチャ、collection-style vs persistence-style）
-- C. DDD タクティカル全般（Entity / Value Object / Aggregate / Repository / Domain Service / Domain Event）の用語集を `references/ddd-tactical.md` として独立化
+- B. **`ddd-layout.md` 内に「Repository Pattern」節を追加**
+- C. DDD タクティカル全般を `references/ddd-tactical.md` として独立化
 
-**反映先**: `python-architecture.md` または新規 reference。
+**決定**: **B — ddd-layout.md 内に「Repository Pattern」節を追加**
+
+**反映先**: `references/architecture/ddd-layout.md` の Layer Roles 節の直後に「Repository Pattern」節を追加:
+- Aggregate 単位での境界
+- 標準シグネチャ: `find_by_id` / `save` / `delete` / `find_all` (or query-specific finder)
+- collection-style（メモリ上のコレクションに見立てる）vs persistence-style（CRUD 風）の選択指針
+- Protocol は domain、concrete は infrastructure
 
 ---
 
-## QA-032: Aggregate / Domain Event の扱い
+## QA-032: Aggregate / Domain Event の扱い ✅決定
 
 **背景**: `python-architecture.md § 8` のフォルダ構成に `domain/events/` が optional であるが、Aggregate（集約）の概念には触れていない。「Order ↔ LineItem は同じ Aggregate？」「Aggregate Root から子 Entity への参照のルール？」など、DDD の中核概念が抜けている。
 
 **案**:
 - A. 追加しない（簡易採用を維持）
-- B. **「Aggregate と Aggregate Root」セクションを追加**（Order Aggregate の例）
-- C. Domain Event の発行・購読パターンを別ファイルに（`references/domain/events.md`）
+- B. **`ddd-layout.md` に Aggregate 説明を追加**
+- C. Domain Event の発行・購読パターンを別ファイル `references/domain/events.md` に切り出し
 
-**反映先**: `python-architecture.md` または新規。
+**決定**: **B — ddd-layout.md に Aggregate 説明を追加**
+
+**反映先**: `references/architecture/ddd-layout.md` に Aggregate 節を新設:
+- Aggregate Root の定義
+- 子 Entity への参照ルール（外部からは Root 経由でのみ操作）
+- 一貫性境界（同一 Aggregate 内は同一トランザクション）
+- 「いつ Aggregate を分けるか」（一貫性が必要な範囲で線を引く）
+- Order Aggregate の具体例
+
+Domain Event は当 PR では別ファイル化せず、ddd-layout.md 内で軽く触れる程度（必要になったら QA-057/058 の persistence 議論と一緒に別ファイル化検討）。
 
 ---
 
-## QA-033: CQRS / Read Model の言及
+## QA-033: CQRS / Read Model の言及 ✅決定
 
 **背景**: 純DDD と言いつつ、CQRS（Command と Query で経路を分ける）への言及がない。実用上は「ListOrders は Read Model（Pydantic に近い DTO）を直接組み立てる」のが効率的で、純粋に Entity を経由するのは無駄。
 
 **案**:
 - A. 触れない
-- B. **「Read Model 経路の許容」を § 3 章末に追記**（List/Show は Read Model、Create/Update/Delete は Aggregate 経由）
+- B. **「Read Model 経路の許容」を § 3 章末に追記**
 - C. CQRS 完全採用（write model / read model のフォルダ分離）
 
-**反映先**: `python-architecture.md § 3`。
+**決定**: **B + 関数型 / DTO 寄せ — Read 経路は DTO を直接組み立てる関数で書ける**
+
+**ユーザー意向**: 「関数系で書くのもあり。あとは、DDD より DTO 利用に寄せろやっぱり。TypeScript 風に。ラムダとか使って関数型的に」
+
+**反映先**:
+- `references/architecture/ddd-layout.md` に「Read Model 経路の許容」節を新設:
+  - List/Show 系は Pydantic DTO を直接組み立てる関数で書ける（Entity 経由しなくてよい）
+  - 関数型スタイル（モジュールレベル関数 + Pydantic DTO + Protocol 注入）を許容
+  - 「全部クラスで書く必要はない」と明示
+- TypeScript 風（interface + 軽量関数）の書き方を許容するスタイル指針も併記
+- Create/Update/Delete 系は Aggregate 経由を維持
+- QA-062 にも波及（UseCase クラス縛り緩和: 関数型 UseCase を許容）
 
 ---
 
 # F. 抜け観点（async / 並行性）
 
-## QA-034: asyncio セクションの新設
+## QA-034: asyncio セクションの新設 ✅決定
 
 **背景**: references に asyncio の規約がない。`python-llm.md` で `async def` が使われているが、「いつ async にする」「sync と async の混在をどう避ける」「`asyncio.gather` vs `asyncio.TaskGroup`」「キャンセル伝播」が未規定。
 
 **案**:
 - A. 追加しない
-- B. **`references/python-async.md`（または `references/concurrency/async.md`）を新設**（async/await の使い時、TaskGroup、キャンセル、タイムアウト、Lock/Semaphore、async generator、async context manager）
-- C. `python-core.md` の節として追加
+- B. **`references/concurrency/async.md` を新設**
 
-**反映先**: 新規 reference、`CLAUDE.md` 索引更新。
+**決定**: **B — `references/concurrency/async.md` を新設**
+
+**反映先**: 新規ファイル `references/concurrency/async.md` を作成し、`CLAUDE.md` 索引に追加。内容:
+- async/await の使い時（I/O bound のみ、ライブラリが async API を提供する場合）
+- TaskGroup（3.11+）で構造化並行（QA-035）
+- asyncio.timeout（3.11+）で全外部 I/O にタイムアウト（QA-036）
+- sync / async 境界ルール（QA-037）
+- asyncio.Lock / Semaphore（並行制御）
+- async generator / async context manager
+- キャンセル伝播の挙動と `asyncio.CancelledError` の扱い
 
 ---
 
-## QA-035: `asyncio.TaskGroup`（Python 3.11+）vs `asyncio.gather`
+## QA-035: `asyncio.TaskGroup`（Python 3.11+）vs `asyncio.gather` ✅決定
 
 **背景**: 3.11+ では `TaskGroup` が `gather` よりエラー伝播と構造化並行が安全。references にこの選択肢への言及なし。
 
@@ -706,91 +781,134 @@ QA-022 で 3.12+ 一本化採用済みなので、`type` 文と `NewType` の 2 
 - A. 言及なし
 - B. **`TaskGroup` を推奨デフォルトとし、`gather` は「複数結果を返り値で受け取りたい時のみ」と限定**
 
-**反映先**: QA-034 で新設するファイル、または `python-llm.md` の retry / parallel 節。
+**決定**: **B — `TaskGroup` をデフォルト推奨**
+
+**反映先**: `references/concurrency/async.md` に明文化。サンプルコードは TaskGroup で書く。
 
 ---
 
-## QA-036: タイムアウトと `asyncio.timeout`
+## QA-036: タイムアウトと `asyncio.timeout` ✅決定
 
 **背景**: `asyncio.wait_for` よりも `async with asyncio.timeout(...)` が 3.11+ の推奨。LLM call / HTTP call で全箇所必須にすべきか。
 
 **案**:
 - A. 言及なし
-- B. **「外部 I/O には必ずタイムアウトを設定」「3.11+: `asyncio.timeout`」と明文化**
-- C. デフォルトタイムアウト値の指針も含める（HTTP: 30s、LLM: 60s 等）
+- B. 「外部 I/O には必ずタイムアウトを設定」「3.11+: `asyncio.timeout`」と明文化
+- C. **B + デフォルトタイムアウト値の指針も含める**（HTTP: 30s、LLM: 60s 等）
 
-**反映先**: QA-034 新ファイル、`python-llm.md`、`python-fastapi.md`。
+**決定**: **C — タイムアウト必須 + 推奨デフォルト値も明記**
+
+**反映先**: `references/concurrency/async.md`、`references/llm/providers.md`、`references/fastapi/*.md`。推奨スタートポイント:
+
+| 用途 | デフォルト |
+|---|---|
+| HTTP (httpx 等) | 30s |
+| LLM completion (Claude/OpenAI 等) | 60s |
+| LLM streaming (chunk timeout) | 30s（chunk 単位） |
+| DB query | 5s |
+| File I/O | 10s |
+| Inter-service RPC | 10s |
+
+「これは出発点。プロジェクトの SLA に応じて調整」と注記。
 
 ---
 
-## QA-037: sync / async の使い分けと混在防止
+## QA-037: sync / async の使い分けと混在防止 ✅決定
 
 **背景**: 「sync な関数の中で async を呼ぶには `asyncio.run()` するな（イベントループ衝突）」のような禁止事項が未規定。FastAPI / LLM 周りで重要。
 
 **案**:
 - A. 言及なし
-- B. **「sync / async 境界ルール」を新節として追加**（sync 関数で async を呼ぶには `anyio.from_thread` / `asyncio.run` の挙動差・適用範囲、async 関数で sync 重い処理を呼ぶには `asyncio.to_thread`）
+- B. **「sync / async 境界ルール」を新節として追加**
 
-**反映先**: QA-034 新ファイル。
+**決定**: **B — sync / async 境界ルールを新節**
+
+**反映先**: `references/concurrency/async.md` に「sync / async 境界」節を追加:
+- sync 関数で async を呼ぶには `asyncio.run()` だが、すでにイベントループが回っている場合は使用禁止（FastAPI route 内など）
+- async 関数で sync な重い処理を呼ぶには `asyncio.to_thread(...)` または `loop.run_in_executor(...)`
+- `anyio.from_thread.run` の使い時（async 関数を別スレッドから呼ぶ）
+- 「全部 async に寄せるか、全部 sync で書くかどちらかで統一、混在 NG」を強調
 
 ---
 
-## QA-038: マルチプロセス / マルチスレッドの使い分け
+## QA-038: マルチプロセス / マルチスレッドの使い分け ✅決定
 
 **背景**: GIL の関係で CPU bound はマルチプロセス（`concurrent.futures.ProcessPoolExecutor`）、I/O bound は asyncio という基本指針への言及がない。Python 3.13 free-threaded への展望もない。
 
 **案**:
 - A. 言及なし
-- B. **`references/python-concurrency.md` で多軸の使い分け表を提示**（asyncio / threading / multiprocessing / subinterpreter）
-- C. 簡易な原則だけ `python-core.md` に追加
+- B. **`references/concurrency/parallelism.md` を新設**
 
-**反映先**: 新規 reference または `python-core.md`。
+**決定**: **B — `references/concurrency/parallelism.md` を新設**
+
+**反映先**: 新規ファイル `references/concurrency/parallelism.md`。内容:
+- asyncio / threading / multiprocessing / subinterpreter (3.13+) の使い分け表
+- CPU bound vs I/O bound の判別フロー
+- `concurrent.futures.ThreadPoolExecutor` / `ProcessPoolExecutor` の使い分け
+- Python 3.13 free-threaded（PEP 703）への展望
+- IPC オーバーヘッドの注意点
 
 ---
 
 # G. 抜け観点（パッケージング / 依存管理）
 
-## QA-039: `pyproject.toml` の `[project]` テンプレート整備
+## QA-039: `pyproject.toml` の `[project]` テンプレート整備 ✅決定
 
 **背景**: `python-architecture.md § 8` で `pyproject.toml` が言及されているが、`[project]` セクションの最小推奨テンプレート（name, version, dependencies, requires-python, [project.scripts]、license、authors、readme）が示されていない。
 
 **案**:
 - A. 言及なし
-- B. **`pyproject.toml` 完全サンプルを `python-architecture.md` 末尾または独立ファイルで提示**
-- C. **`references/packaging.md` 新設**（pyproject 全節 + entry points + wheel / sdist + PyPI publish 手順）
+- B. `pyproject.toml` 完全サンプルを `python-architecture.md` 末尾または独立ファイルで提示
+- C. **`references/packaging/` を新設**
 
-**反映先**: `python-architecture.md § 9`（新節） or 新規。
+**決定**: **C — `references/packaging/` フォルダを新設**
+
+**反映先**: 新規フォルダ `references/packaging/` に最大粒度方針で 3〜4 ファイル:
+- `packaging/pyproject.md` — pyproject.toml の全節サンプル（[project] / [tool.ruff] / [tool.mypy] / [tool.pytest] / [tool.uv] 等を含む完全形）
+- `packaging/dependencies.md` — 依存管理（uv 推奨・QA-040、optional-dependencies.dev 必須・QA-042）
+- `packaging/distribution.md` — entry points / wheel / sdist / PyPI publish 手順
+- `packaging/python-versions.md` — Python バージョン下限・追従ポリシー（QA-043）
+
+`CLAUDE.md` 索引に `packaging/` フォルダを追加。
 
 ---
 
-## QA-040: 依存管理ツールの選定方針
+## QA-040: 依存管理ツールの選定方針 ✅決定
 
 **背景**: pip / pip-tools / poetry / uv / pdm / hatch と選択肢が多いが、py-kit の推奨が明示されていない。uv は近年急速にデファクト化中。
 
 **案**:
 - A. 選ばない（プロジェクト判断）
 - B. **`uv` を py-kit デフォルト推奨**（速い、lockfile も標準的、pip 互換）
-- C. **`uv` または `poetry` を推奨**（チーム規模で選択）
-- D. **`pip + pip-tools` で軽量に**
+- C. `uv` または `poetry` を推奨（チーム規模で選択）
+- D. `pip + pip-tools` で軽量に
 
-**反映先**: 新規 reference `packaging.md` または `python-architecture.md`。
+**決定**: **B — `uv` を py-kit デフォルト推奨**
+
+**反映先**: `references/packaging/dependencies.md` に `uv` 前提の手順を記載。`uv venv` / `uv pip install -e ".[dev]"` / `uv sync` / `uv lock` / `uv run python -m {package}` 等の主要コマンドをサンプル化。bat ランチャー（`references/scripts/launchers-windows.md`）も `uv` 経由の venv セットアップに更新。
 
 ---
 
-## QA-041: lockfile / 仮想環境ポリシー
+## QA-041: lockfile / 仮想環境ポリシー ✅決定
 
 **背景**: `.venv/` / `venv/` の混在が `python-architecture.md § 8` の `.gitignore` 例にあるが、「どちらを正式にするか」未確定。FastAPI 例では `.venv` 前提、bat ランチャー例では `venv` 前提と矛盾。
 
 **案**:
 - A. どちらも許容
-- B. **`.venv/` に統一**（Python 公式ツール（`python -m venv`）のデフォルト相当）
-- C. **`venv/` に統一**
+- B. **`.venv/` に統一**（Python 公式ツール `python -m venv` / `uv venv` のデフォルト相当）
+- C. `venv/` に統一
 
-**反映先**: `python-architecture.md § 8`、`python-scripts.md § 2.2 / § 3` の bat ランチャー。
+**決定**: **B — `.venv/` に統一**
+
+**反映先**:
+- `references/architecture/ddd-layout.md` の `.gitignore` サンプルを `.venv/` に統一
+- `references/scripts/launchers-windows.md` の bat ランチャー（`call "%~dp0.venv\Scripts\activate.bat"`）も `.venv` 前提に書き換え
+- `references/scripts/launchers-unix.md` の shell スクリプト（`source "${SCRIPT_DIR}/.venv/bin/activate"`）も `.venv` 前提
+- `references/packaging/dependencies.md` で `uv venv` のデフォルト（`.venv` 生成）と一致を明記
 
 ---
 
-## QA-042: dev / prod 依存の分離
+## QA-042: dev / prod 依存の分離 ✅決定
 
 **背景**: pytest / mypy / ruff は dev 依存だが、`[project.optional-dependencies.dev]` への分け方が未規定。
 
@@ -798,26 +916,37 @@ QA-022 で 3.12+ 一本化採用済みなので、`type` 文と `NewType` の 2 
 - A. 言及なし
 - B. **`[project.optional-dependencies.dev]` を必須化**（`uv pip install -e ".[dev]"`）
 
-**反映先**: pyproject サンプル。
+**決定**: **B — `[project.optional-dependencies.dev]` 必須化**
+
+**反映先**: `references/packaging/pyproject.md` のサンプルに `[project.optional-dependencies.dev]` を含める。`pytest` / `mypy`（または pyright） / `ruff` / `pytest-cov` / `pre-commit` などを dev に。FastAPI / LLM 等プロジェクト固有の追加 dev 依存（`testcontainers`, `httpx[testing]` 等）の例も。
 
 ---
 
-## QA-043: Python バージョン下限と最新追従ポリシー
+## QA-043: Python バージョン下限と最新追従ポリシー ✅決定
 
-**背景**: references で 3.11 / 3.12+ が混在。EOL ポリシー（3.10 が EOL なのは 2026-10、3.11 は 2027-10）への言及なし。
+**背景**: references で 3.11 / 3.12+ が混在。EOL ポリシーへの言及なし。
 
 **案**:
 - A. 言及なし
-- B. **「サポート対象は EOL でない最新 3 バージョン」と明文化**（2026-05 時点: 3.12 / 3.13 / 3.14）
+- B. 「サポート対象は EOL でない最新 3 バージョン」
 - C. 「py-kit のデフォルトは Python 3.12」と固定
 
-**反映先**: `python-core.md § 3.4` の Python バージョン節、新規 packaging.md。
+**決定**: **B（強化版）— 「極力高いバージョンを使う」**
+
+**ユーザー意向**: 「極力高いやつを使う」
+
+**反映先**: `references/packaging/python-versions.md` を新設し、以下を記載:
+- **py-kit のデフォルト**: 利用可能な最新の安定版 Python（2026-05 時点: 3.13）。新規プロジェクトでは積極的に最新を採用
+- **下限**: EOL でない最新 1 つ前まで（既存プロジェクトのマイグレーション猶予のため）
+- **3.14 リリース後**: デフォルトを 3.14 に切り替え、下限を 3.13 に更新（このときこの reference を更新する）
+- バージョンを上げると使える機能（PEP 695 構文、`@override`、`Self`、`asyncio.timeout`、free-threaded（3.13t）等）の対応表を併記
+- QA-022 で確定済みの「PEP 695 一本化」と整合
 
 ---
 
 # H. 抜け観点（パフォーマンス）
 
-## QA-044: プロファイリング指針
+## QA-044: プロファイリング指針 ⏸️保留（ユーザー説明待ち）
 
 **背景**: cProfile / py-spy / scalene などプロファイラの選択指針なし。「最適化の前に計測」原則が明文化されていない。
 
@@ -826,11 +955,33 @@ QA-022 で 3.12+ 一本化採用済みなので、`type` 文と `NewType` の 2 
 - B. **`references/performance.md` 新設**（profile / line_profiler / py-spy / memray の使い分け、ボトルネック検出フロー、最適化禁止事項）
 - C. 触れない（プロジェクト固有）
 
-**反映先**: 新規 reference。
+**ユーザーからの質問**: 「これ何か教えて？」
+
+**プロファイラ各種の説明**:
+
+| ツール | 何をするか | 使い時 |
+|---|---|---|
+| **cProfile**（stdlib） | 関数単位の呼び出し回数・累積時間を計測 | まず最初に。全体のホットスポット把握。pip 不要 |
+| **`python -m cProfile -o out.prof script.py`** → **snakeviz** で可視化 | cProfile の出力をブラウザでフレームグラフ表示 | cProfile の結果を見やすく解析する時 |
+| **line_profiler** | 行単位の実行時間を計測 | cProfile で特定したホット関数の中をさらに深掘り |
+| **py-spy** | 別プロセスから実行中の Python プロセスをサンプリング | 本番運用中（停止できない）のプロセスのプロファイル |
+| **scalene** | CPU + メモリ + GPU を統合プロファイル | メモリリーク疑い + CPU 両方一度に見たい時 |
+| **memray** | メモリアロケーションの完全トレース | メモリリーク原因の特定。本番運用での OOM 解析 |
+| **timeit**（stdlib） | 小さなコードスニペットを大量に回して計測 | 「dict.get vs dict[key]」みたいなマイクロベンチ |
+
+**推奨フロー**:
+1. cProfile + snakeviz でホットスポット特定
+2. 特定したホット関数を line_profiler で深掘り
+3. メモリ問題なら memray、本番なら py-spy
+4. 計測結果を見てから最適化（推測で最適化しない）
+
+**再回答待ち**: この説明を踏まえて、上記 A/B/C のどれにするか改めてご判断ください。
+
+**仮の方向性**: 説明文を見るに **B が妥当**（performance.md として独立化し、フロー + 各ツールの使い分け + 「計測前に最適化するな」原則を 1 ファイルに）。
 
 ---
 
-## QA-045: パフォーマンス・チート集
+## QA-045: パフォーマンス・チート集 ✅決定
 
 **背景**: `dict.get()` vs `dict[]`、list comprehension vs map、`__slots__`、`functools.lru_cache` / `cache` などの定番テクニックの言及なし。
 
@@ -839,7 +990,17 @@ QA-022 で 3.12+ 一本化採用済みなので、`type` 文と `NewType` の 2 
 - B. **`performance.md` に「ホットパスでのチェックリスト」追加**
 - C. 言及しない（プログラマの常識）
 
-**反映先**: 新規 reference。
+**決定**: **B + エラーハンドリング用デコレータ推奨追加**
+
+**ユーザー意向**: 「使っていいよ。特にエラーハンドリングとして `@` のアノテーションでハンドラーみたいなのを作るのも推奨したい」
+
+**反映先**:
+- `references/performance/cheatsheet.md`（QA-044 で performance/ 採用が決まった場合）または `core/type-hints.md` の Recommended Decorators 節（QA-019）に追記
+- 「**ハンドラーデコレータパターン**」を新設:
+  - `@handler` でエラーハンドリングを束ねる（例: `@with_retry(times=3)` / `@with_timeout(60)` / `@catch_and_log(LlmError, log_level="warning")`）
+  - これは QA-029 で削除する「Decorator パターン」とは別の話で、`functools.wraps` ＋ 関数デコレータで横断関心事をまとめる軽量パターン
+  - sample: `@catch_and_map(anthropic.APIStatusError, to=LlmServerError)` のような業務エラー変換デコレータ
+- パフォーマンスチート: `__slots__`, `@cache`, `@lru_cache(maxsize=...)`, list comprehension, `operator.itemgetter`, `dataclasses.astuple/asdict`, `collections.defaultdict / Counter` 等を簡潔に列挙
 
 ---
 
