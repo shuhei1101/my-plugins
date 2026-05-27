@@ -30,6 +30,15 @@
               "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); fp=d.get('tool_input',{}).get('file_path','') or ''; sys.exit(0) if not (re.search(r'(?:^|/)CLAUDE(?:\\.local)?\\.md$', fp) and not fp.endswith('.jp.md')) else None; sid=d.get('session_id','default'); flag=pathlib.Path(tempfile.gettempdir())/f'claude-creator-dispatch-{sid}'; sys.exit(0) if flag.exists() else None; flag.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/claude-creator-dispatch.md"
             ]
+          },
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); fp=d.get('tool_input',{}).get('file_path','') or ''; sys.exit(0) if not fp.endswith('.j2') else None; sid=d.get('session_id','default'); flag=pathlib.Path(tempfile.gettempdir())/f'j2-stamp-check-{sid}'; sys.exit(0) if flag.exists() else None; flag.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/j2-stamp-check.md"
+            ]
           }
         ]
       },
@@ -61,6 +70,15 @@
               "-c",
               "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); fp=d.get('tool_input',{}).get('file_path','') or ''; sys.exit(0) if not (re.search(r'(?:^|/)CLAUDE(?:\\.local)?\\.md$', fp) and not fp.endswith('.jp.md')) else None; sid=d.get('session_id','default'); flag=pathlib.Path(tempfile.gettempdir())/f'claude-creator-dispatch-{sid}'; sys.exit(0) if flag.exists() else None; flag.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/claude-creator-dispatch.md"
+            ]
+          },
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); fp=d.get('tool_input',{}).get('file_path','') or ''; sys.exit(0) if not fp.endswith('.j2') else None; sid=d.get('session_id','default'); flag=pathlib.Path(tempfile.gettempdir())/f'j2-stamp-check-{sid}'; sys.exit(0) if flag.exists() else None; flag.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/j2-stamp-check.md"
             ]
           }
         ]
