@@ -37,7 +37,7 @@ PR135 で next-kit の規約として QA-046 (`Awaited<ReturnType<typeof fetchRe
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する（A/B/C 案の選択、配置 plugin、対象プロジェクトの検出方法、エラー時の挙動など） | `.work/tasks/.../PR143/QA.md` |
+| 済 | QA.md に未決定事項を記録する（A/B/C 案の選択、配置 plugin、対象プロジェクトの検出方法、エラー時の挙動など） | `.work/tasks/.../PR143/QA.md` |
 | - | フック実装 (PostToolUse か pre-commit か、または両方) | `plugins/{kit}/hooks/...` |
 | - | 対象プロジェクトの検出ロジック (tsconfig.json の有無で判定など) | 同上 |
 | - | エラー時のユーザー通知方法 (stderr / decision: block / toast 等) | 同上 |

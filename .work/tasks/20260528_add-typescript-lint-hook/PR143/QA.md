@@ -8,7 +8,7 @@
 
 ---
 
-## QA-001: フック実装方式 ❌未決定
+## QA-001: フック実装方式 ✅決定
 
 **背景**: TS の型崩れを検知する方法は複数考えられる。
 PostToolUse はリアルタイム検知できるが、毎回 `tsc --noEmit` を走らせると遅い（大規模プロジェクトでは数秒〜数十秒）。pre-commit ならコミット時の最終ガードになる。
@@ -19,11 +19,11 @@ PostToolUse はリアルタイム検知できるが、毎回 `tsc --noEmit` を�
 - C. **A + B の併用**（リアルタイム + 最終ガード）
 - D. **`tsc --noEmit --incremental`** でインクリメンタル実行（遅さ問題の緩和）
 
-**決定**:
+**決定**: A + D（PostToolUse(Edit/Write/MultiEdit) で `tsc --noEmit --incremental` を実行）
 
 ---
 
-## QA-002: 配置 plugin ❌未決定
+## QA-002: 配置 plugin ✅決定
 
 **背景**: フックをどの plugin に置くか。
 
@@ -32,11 +32,11 @@ PostToolUse はリアルタイム検知できるが、毎回 `tsc --noEmit` を�
 - B. **next-kit** に置く（TS 関連の規約は next-kit にある）
 - C. 新規 **`ts-check-kit`** plugin を作る（独立、将来 Vue/Svelte 等の TS プロジェクト共通として再利用可）
 
-**決定**:
+**決定**: B（next-kit）。TS 規約は next-kit にまとまっており、新 plugin 作成は早すぎる分離（PR140 の反省）
 
 ---
 
-## QA-003: 対象プロジェクトの検出方法 ❌未決定
+## QA-003: 対象プロジェクトの検出方法 ✅決定
 
 **背景**: フックが発火するプロジェクトをどう判定するか。
 
@@ -45,11 +45,11 @@ PostToolUse はリアルタイム検知できるが、毎回 `tsc --noEmit` を�
 - B. **`package.json` に `typescript` 依存があるか**で判定
 - C. 編集対象ファイルから `tsconfig.json` を上方向に探索（モノレポ対応）
 
-**決定**:
+**決定**: C（編集対象ファイルから上方向に `tsconfig.json` を探索）。モノレポ対応が重要
 
 ---
 
-## QA-004: エラー時の挙動 ❌未決定
+## QA-004: エラー時の挙動 ✅決定
 
 **背景**: `tsc --noEmit` が失敗したときの挙動。
 
@@ -59,11 +59,11 @@ PostToolUse はリアルタイム検知できるが、毎回 `tsc --noEmit` を�
 - C. **toast / sonner で通知**（フロント前提）— Claude Code のフックでは不可
 - D. **コミット時 (pre-commit) なら失敗で commit を止める**（git 標準）
 
-**決定**:
+**決定**: A（stderr 出力のみ）。`decision: block` は連続 Edit 中に割り込み作業フローを壊す。reason にエラーを出して Claude が判断する形
 
 ---
 
-## QA-005: incremental ビルド / キャッシュ ❌未決定
+## QA-005: incremental ビルド / キャッシュ ✅決定
 
 **背景**: `tsc --noEmit` を毎回 cold start で走らせると遅い。
 
@@ -72,11 +72,11 @@ PostToolUse はリアルタイム検知できるが、毎回 `tsc --noEmit` を�
 - B. **デバウンス**（最後の Edit から N 秒経って初めて実行）
 - C. **changed files のみ**チェック（`tsc --noEmit --listFiles` 等で差分判定）— 厳密性が落ちる
 
-**決定**:
+**決定**: A（`--incremental`）。TypeScript 標準の仕組みで信頼性が高い。QA-001 の決定と統合
 
 ---
 
-## QA-006: ts-go / Biome 等の代替 ❌未決定
+## QA-006: ts-go / Biome 等の代替 ✅決定
 
 **背景**: 公式 `tsc` の代替として高速な型チェッカーがある。
 
@@ -85,4 +85,4 @@ PostToolUse はリアルタイム検知できるが、毎回 `tsc --noEmit` を�
 - B. **`@biomejs/biome`** で lint + 型チェック（高速、ただし型推論は tsc ほど厳密でない）
 - C. **`ts-go`** (Microsoft TypeScript-Go) を採用（実験的、高速）
 
-**決定**:
+**決定**: A（`tsc --noEmit`）。公式ツールで追加セットアップ不要。`ts-go` は実験的すぎ、Biome は型推論が tsc ほど厳密でない
