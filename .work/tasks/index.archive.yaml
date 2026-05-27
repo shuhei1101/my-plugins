@@ -436,3 +436,10 @@ prs:
   summary: next-kit プラグイン自体のレビュー・改善提案を QA 形式で大量に書き出す
   task: 20260527_review-next-kit-plugin
   completed: true
+- id: 143
+  title: PR143 — add-typescript-lint-hook
+  type: feat
+  tags: []
+  summary: Edit/Write 後に tsc --noEmit を自動実行して TS 型崩れを早期検知するフックを追加 (PR135 QA-046 補強)
+  task: 20260528_add-typescript-lint-hook
+  completed: true
