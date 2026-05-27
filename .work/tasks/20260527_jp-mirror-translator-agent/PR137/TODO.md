@@ -25,11 +25,11 @@ PR133 で work-kit に `jp-mirror-translator` エージェントを追加した�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | QA.md に未決定事項を記録する | - `.work/tasks/.../PR137/QA.md` |
-| x | `.work/notes/` のノートを更新する | - `.work/notes/jp-mirror-policy.md` |
-| x | エージェントファイル JP ミラー同期ルールを作成する | - `.claude/rules/feature/agent-jp-mirror-sync.md` |
-| x | JP ミラーを作成する | - `.claude/rules-jp/feature/agent-jp-mirror-sync.md` |
-| x | `_overview.md` にルールを追記する | - `.claude/rules/feature/_overview.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR137/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/jp-mirror-policy.md` |
+| 済 | エージェントファイル JP ミラー同期ルールを作成する | - `.claude/rules/feature/agent-jp-mirror-sync.md` |
+| 済 | JP ミラーを作成する | - `.claude/rules-jp/feature/agent-jp-mirror-sync.md` |
+| 済 | `_overview.md` にルールを追記する | - `.claude/rules/feature/_overview.md` |
 
 ## 参考ドキュメント
 
