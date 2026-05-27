@@ -50,6 +50,20 @@ PR138 で確定した **大方針** に従って py-kit プラグインの refer
 | 済 | glossary 用語の整理（PR138 用語確認 + py-kit エントリを v2 実装完了表現に更新） | `.claude/rules/core/glossary.md` (+ jp) |
 | 済 | `.work/notes/AIイシュー自動発見システム構想.md` の py-kit セクションを新方針で更新 | `.work/notes/AIイシュー自動発見システム構想.md` |
 
+### 第 1 コミット後のレビューフィードバック対応（2026-05-28）
+
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| - | layout から「廃止された概念」セクション削除（書いてないこと自明）、`modes/` 言及も AITuber 固有なので削除 | `references/architecture/layout.md` (+ jp) |
+| - | bat ファイル内に日本語を絶対書かないルールを明記（chcp ありでも文字化けエラーの実害） | `references/scripts/launchers-windows.md` (+ jp) |
+| - | cost-cache: OpenAI のプロンプトキャッシュも明示記載、プロンプトキャッシュの設計考え方（上から積む / 固定値は上・動的値は下）を追記 | `references/llm/cost-cache.md` (+ jp) |
+| - | `llm/prompts.md` を「プロンプト書き方（authoring）」「ローダー（loader）」の 2 ファイルに分割。AITuber 流のプロジェクトルート直下 `prompts/` 配置、`prompts/index.yaml` 管理、レベル 3 セクション単位の分割と組み立て方を反映 | `references/llm/prompts-authoring.md` + `prompts-loader.md` (+ jp) |
+| - | 全 reference を「フック注入単位として無駄が出ない粒度」で見直し、肥大化したものは分割 | `references/**/*.md` |
+| - | `references/index.yaml` を上記の分割/追加に合わせて更新（references 一覧 + injection_rules） | `references/index.yaml` |
+| - | aituber `.claude/rules-jp` を調査して Python 共通として py-kit に移植できるルールを抽出 | `references/**` |
+| - | `add-py-kit-references-injection-hook` フックを `/claude-kit:hook-creator` で作成（編集対象ファイルパスに `injection_rules` を当てて該当 reference を `decision: block` で注入） | `plugins/py-kit/hooks/*` |
+| - | JP ミラー再生成（変更ファイルのみ） | `**/*.jp.md` |
+
 ## 参考ドキュメント
 
 - `.work/tasks/20260527_review-py-kit-plugin/PR138/QA.md`: 新方針版 QA（全件確定）。実装の主たる判断材料
