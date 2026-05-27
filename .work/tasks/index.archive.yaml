@@ -443,6 +443,13 @@ prs:
   summary: Edit/Write 後に tsc --noEmit を自動実行して TS 型崩れを早期検知するフックを追加 (PR135 QA-046 補強)
   task: 20260528_add-typescript-lint-hook
   completed: true
+- id: 131
+  title: PR131 — add-issue-skills-to-work-kit
+  type: feat
+  tags: []
+  summary: work-kit に issue-scan・issue-create スキルを追加し、.work/issues/ ディレクトリ管理を実装する
+  task: 20260526_add-issue-skills-to-work-kit
+  completed: true
 - id: 145
   title: PR145 — update-ai-issue-discovery-notes-pr135
   type: docs

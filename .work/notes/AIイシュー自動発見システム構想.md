@@ -47,8 +47,8 @@ AI がコードベース・画面を調査（呼び出し時に実行）
 |---|---|---|
 | PR-A | py-kit プラグイン新規作成（dev-kit から Python を分離） | ✅ PR129 作成 / PR138 大方針 / PR140 references 全面再構築・自動注入フック実装 |
 | PR-B | ui-kit → html-kit リネーム | ✅ PR130 完了 |
-| PR-C | work-kit に issue-scan・issue-create スキルを追加 | ✅ PR131 完了 |
-| PR-D | work-kit merge スキルにイシュークローズ処理を統合 | 未実装（PR131 完了後も着手せず） |
+| PR-C | work-kit に issue-scan・issue-create・issue-save スキルを追加 + `*-kit` フックに Read マッチャー追加 | ✅ PR131 完了 |
+| PR-D | work-kit merge スキルにイシュークローズ処理を統合 | PR-C 完了後 |
 | PR-E | next-kit プラグイン新規作成 + references 全面再構築（90 ファイル + 自動注入フック） | ✅ PR132 作成 / PR135 全面再構築 |
 
 ---
