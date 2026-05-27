@@ -21,13 +21,13 @@ AskUserQuestion機能を活用したインタラクティブなレビュー系�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260527_interactive-review-skills/PR139/QA.md` |
-| - | qa-review SKILL.md を作成する | - `plugins/work-kit/skills/qa-review/SKILL.md` |
-| - | qa-review SKILL.jp.md を作成する | - `plugins/work-kit/skills/qa-review/SKILL.jp.md` |
-| - | impl-review SKILL.md を作成する | - `plugins/work-kit/skills/impl-review/SKILL.md` |
-| - | impl-review SKILL.jp.md を作成する | - `plugins/work-kit/skills/impl-review/SKILL.jp.md` |
-| - | plugin.json のバージョンをバンプする | - `plugins/work-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json を更新する | - `.claude-plugin/marketplace.json` |
+| x | QA.md に未決定事項を記録する | - `.work/tasks/20260527_interactive-review-skills/PR139/QA.md` |
+| x | qa-review SKILL.md を作成する | - `plugins/work-kit/skills/qa-review/SKILL.md` |
+| x | qa-review SKILL.jp.md を作成する | - `plugins/work-kit/skills/qa-review/SKILL.jp.md` |
+| x | impl-review SKILL.md を作成する | - `plugins/work-kit/skills/impl-review/SKILL.md` |
+| x | impl-review SKILL.jp.md を作成する | - `plugins/work-kit/skills/impl-review/SKILL.jp.md` |
+| x | plugin.json のバージョンをバンプする | - `plugins/work-kit/.claude-plugin/plugin.json` |
+| x | marketplace.json を更新する | - `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
