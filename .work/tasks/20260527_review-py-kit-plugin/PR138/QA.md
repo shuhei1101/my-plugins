@@ -1103,57 +1103,20 @@ injection_rules:
   # (フックではなく SKILL.md の Step 1 で読み込む)
 ```
 
-**反映先**:
-- 新規ファイル `plugins/py-kit/references/index.yaml` を作成（当 PR の実装フェーズで）
+**反映先**（当 PR では作成のみ。フック実装は別 PR）:
+- 新規ファイル `plugins/py-kit/references/index.yaml` を作成（メタデータ + 星取り表）
 - `plugins/py-kit/references/CLAUDE.md` は「**index.yaml を読んで該当 reference を判断せよ**」のシンプルな指示に書き換え
-- 注入フック（PR139 候補）が index.yaml を読んで、編集対象ファイルパスに該当する `required` を block で注入、`optional` は「必要に応じて読んでください」と reason 文に列挙
+- このフック実装は別 PR（次PR候補 `add-py-kit-references-injection-hook`）で実施
 
 ---
 
-## D-7: 注入フック用 Jinja2 テンプレート（新規・ユーザー要望）✅決定
+## D-7: 注入フック用 Jinja2 テンプレート ✅決定（次 PR で実装）
 
-**ユーザー要望**:
-> プロンプト基盤は Jinja2 で書いて、必須/任意の md を引数で渡すだけ。
-> ファイルパスだけでは AI が読まないので description（概要）も一緒に渡す。
+**ユーザー要望**: プロンプト基盤は Jinja2 で書いて、必須/任意の md を description 付きで渡すだけにしたい。
 
-### 設計案
+**当 PR でやること**: 当 PR では実装しない。次 PR で hook-creator スキル経由で hook を作る際に同時に整備する（Python スクリプト + Jinja2 テンプレート + index.yaml を利用する）。
 
-**`plugins/py-kit/hooks/prompts/inject-references.md.j2`**:
-
-```jinja
-あなたは Python ファイル `{{ target_file }}` を編集しようとしています。
-py-kit の規約に従うため、以下の reference を読み込んでから作業してください。
-
-## 必読 References（必ず読んでから編集を進めること）
-
-{% for ref in required %}
-- `{{ ref.path }}` — {{ ref.description }}
-{% endfor %}
-
-## 任意 References（必要に応じて参照）
-
-{% for ref in optional %}
-- `{{ ref.path }}` — {{ ref.description }}
-{% endfor %}
-
-すべての reference は `${CLAUDE_PLUGIN_ROOT}/references/` 配下にあります。
-```
-
-**フック側 Python ロジック（PR139 候補で実装）**:
-```python
-# 1. tool_input.file_path を取得
-# 2. index.yaml を読み込み
-# 3. injection_rules を順番にチェック、pattern にマッチするものを集める
-# 4. required / optional を集計（重複除去）
-# 5. それぞれの reference の description を index.yaml の references セクションから取得
-# 6. inject-references.md.j2 を render
-# 7. decision: block で reason に流し込む
-```
-
-**反映先**:
-- 新規ファイル `plugins/py-kit/hooks/prompts/inject-references.md.j2` を作成（当 PR の実装フェーズ）
-- `plugins/py-kit/hooks/prompts/inject-references.jp.md.j2` も同時に作成（JP ミラー）
-- フック実装本体は PR139 候補（`add-py-kit-references-injection-hook`）で行う。当 PR では「テンプレートとデータ構造のみ準備」
+**反映先**: 次 PR 候補 `add-py-kit-references-injection-hook` のスコープに含める。
 
 ---
 
@@ -1175,20 +1138,33 @@ py-kit の規約に従うため、以下の reference を読み込んでから�
 
 **全件確定 ✅**
 
-すべての QA が決定済み。これにより当 PR の実装フェーズへ進む準備が整った。
+すべての QA が決定済み。**当 PR は QA 確定までで完了**。実装は別 PR で行う。
 
-## 実装フェーズの作業項目（TODO.md へ反映）
+## 当 PR のスコープ（完了）
 
+- ✅ py-kit プラグイン全体のレビュー
+- ✅ 大方針転換（DDD 廃止 → 機能フォルダ型 + TypeScript 風 + 関数型ファースト）
+- ✅ QA 全件確定（QA.old.md の旧 QA 反映 + 新 QA.md の A〜E 確定）
+- ✅ 次 PR 候補の予約（実装フェーズを次 PR に分離）
+
+## 次 PR で行う実装作業
+
+**PR 候補 1: `rebuild-py-kit-references`（references の解体・再構成）**
 1. references の新フォルダ構成へ移行（38 ファイル、jp ミラー含めて 76 ファイル）
    - 既存 `python-core.md` / `python-architecture.md` / `python-scripts.md` / `python-testing.md` / `python-fastapi.md` / `python-llm.md` を解体し、新構成へ
-2. `references/index.yaml` 新規作成（D-6 の設計）
+2. `references/index.yaml` 新規作成（D-6 のメタデータ + 星取り表）
 3. `references/CLAUDE.md` を「index.yaml を読め」式に書き換え
 4. 新規 reference 群の本文作成（A〜D セクションの決定事項を各 md に展開）
-5. `hooks/prompts/inject-references.md.j2` テンプレ作成（D-7）
-6. SKILL.md（py-project / py-script）を新方針で全面書き直し（D-5）
-7. `plugins/py-kit/CLAUDE.md` 新設（QA-102）
-8. `plugin.json` / `marketplace.json` を MAJOR バンプ（2.0.0、QA-103）
-9. `changelogs/v2.0.0.md` 作成（QA-104）
-10. glossary 更新（新方針の用語を追加、旧 DDD 用語を削除、QA-101）
-11. JP ミラー全件同時生成
-12. `.work/notes/AIイシュー自動発見システム構想.md` の py-kit セクション更新
+5. SKILL.md（py-project / py-script）を新方針で全面書き直し（D-5）
+6. `plugins/py-kit/CLAUDE.md` 新設（QA-102）
+7. `plugin.json` / `marketplace.json` を MAJOR バンプ（2.0.0、QA-103）
+8. `changelogs/v2.0.0.md` 作成（QA-104）
+9. glossary 更新（新方針の用語を追加、旧 DDD 用語を削除、QA-101）
+10. JP ミラー全件同時生成
+11. `.work/notes/AIイシュー自動発見システム構想.md` の py-kit セクション更新
+
+**PR 候補 2: `add-py-kit-references-injection-hook`（注入フック実装）**
+- `references/index.yaml` を読んで、編集対象ファイルパスに応じた reference 群を Claude へ注入する PreToolUse フックを作る
+- `/claude-kit:hook-creator` 経由で作成
+- Python スクリプト内で YAML 読み込み + Jinja2 でプロンプト生成 + `decision: block` で注入
+- 実施条件: PR 候補 1 が完了してから（references が新構成になってから）

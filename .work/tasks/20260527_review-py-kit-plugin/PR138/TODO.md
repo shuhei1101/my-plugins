@@ -76,12 +76,9 @@ py-kit プラグイン全体を **Claude Code の一般的なベストプラク�
 | 済 | AITuber 参考実装と py-kit 規約の照合 | `/mnt/c/Users/shuhe/repo/aituber/src/aituber` |
 | 済 | 改善提案を**質問形式で QA.md に大量に**書き出す（QA-001 から QA-110、計 110 件） | `.work/tasks/.../PR138/QA.md` |
 | 済 | ユーザーに採否を確認し、QA に判断を記録する | (ユーザー対話) |
-| - | 採用された提案を実装（references の書き直し・分割・追加） | `plugins/py-kit/references/**` |
-| - | SKILL.md / SKILL.jp.md を新構成に合わせて更新（必要なら） | `plugins/py-kit/skills/**` |
-| - | JP ミラーを同期する | `plugins/py-kit/references/**/*.jp.md` |
-| - | plugin.json / marketplace.json をバージョンバンプ（変更規模に応じて MINOR or MAJOR） | `plugins/py-kit/.claude-plugin/plugin.json`・`.claude-plugin/marketplace.json` |
-| - | `.work/notes/AIイシュー自動発見システム構想.md` の py-kit セクションを更新 | `.work/notes/AIイシュー自動発見システム構想.md` |
-| - | ルール・CLAUDE.md・glossary を整備する（必要なら） | `.claude/rules/**`・`CLAUDE.md` 等 |
+| 済 | 次PR候補の予約（実装フェーズを別 PR へ分離） | (本 TODO の「次PR候補」参照) |
+
+**当 PR の実装は行わない**。採用された提案の実装・SKILL.md 書き直し・JP ミラー・version bump・notes 更新・CLAUDE.md / glossary 整備はすべて次 PR `rebuild-py-kit-references` で行う。フック実装は更にその後の PR `add-py-kit-references-injection-hook` で行う。
 
 ## 参考ドキュメント
 
@@ -97,4 +94,5 @@ py-kit プラグイン全体を **Claude Code の一般的なベストプラク�
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| add-py-kit-references-injection-hook | PR136（add-next-kit-references-injection-hook）と同パターン。`plugins/dev-kit/hooks/hooks.json` を参考に PreToolUse フックを構築し、編集対象 `.py` ファイルのパス/命名から対応する `references/*.md` を Claude へ自動注入する。**設計方針**: フォルダ構造（`references/llm/`・`references/api/`・`references/scripts/` 等）とファイル名規約でマッチング；リファレンスは「広すぎて無関係内容を含む」のを避け小さく分割（PR138 で構成見直し済みの前提）；現状のフラット構成 + python-skill-dispatch（全 `.py` に一律発火）から、より細かい注入へ移行。**対応マッピング案**: `**/infrastructure/llm/**/*.py` → `python-llm.md`／`**/interface/api/**/*.py` → `python-fastapi.md`／`**/tests/**/test_*.py` → `python-testing.md`／単発 `.py`（プロジェクト外） → `python-scripts.md`／その他 `**/{domain,application,infrastructure,interface}/**/*.py` → `python-architecture.md` + `python-core.md` | 即時実施可 |
+| rebuild-py-kit-references | PR138 で確定した新方針（DDD 廃止 → 機能フォルダ型 + TypeScript 風 + 関数型ファースト）に従って py-kit の references を全面再構成。**作業**: ① 既存 6 ファイル（python-{core,architecture,scripts,testing,fastapi,llm}.md）を解体、② 新フォルダ構成（38 ファイル、QA.md § D-1 参照）へ移行、③ 各 reference 本文を新方針で書き直し、④ `references/index.yaml` 新規作成（メタデータ + 注入フック星取り表、QA.md § D-6 参照）、⑤ `references/CLAUDE.md` を「index.yaml を読め」式に書き換え、⑥ SKILL.md（py-project / py-script）を新方針で全面書き直し、⑦ `plugins/py-kit/CLAUDE.md` 新設、⑧ plugin.json / marketplace.json を MAJOR バンプ（2.0.0）、⑨ changelogs/v2.0.0.md 作成、⑩ glossary 更新（新方針用語追加 / 旧 DDD 用語削除）、⑪ JP ミラー全件同時生成、⑫ `.work/notes/AIイシュー自動発見システム構想.md` の py-kit セクション更新。実装方針の判断材料は PR138 の `.work/tasks/20260527_review-py-kit-plugin/PR138/QA.md` を参照。 | 即時実施可（PR138 マージ後） |
+| add-py-kit-references-injection-hook | py-kit に references 自動注入フック（PreToolUse）を追加。`references/index.yaml` の `injection_rules` を読んで、編集対象ファイルパスにマッチする `required` を必読・`optional` を任意参照として Claude へ注入する。**実装**: `/claude-kit:hook-creator` で hook 作成 → Python スクリプト本体で `index.yaml` 読み込み + Jinja2 でプロンプト render + `decision: block` で reason に流し込む。Jinja2 テンプレ（必読/任意 + description）も同 PR で整備。 | 「rebuild-py-kit-references」が完了したら |
