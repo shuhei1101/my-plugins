@@ -443,3 +443,10 @@ prs:
   summary: Edit/Write 後に tsc --noEmit を自動実行して TS 型崩れを早期検知するフックを追加 (PR135 QA-046 補強)
   task: 20260528_add-typescript-lint-hook
   completed: true
+- id: 145
+  title: PR145 — update-ai-issue-discovery-notes-pr135
+  type: docs
+  tags: []
+  summary: PR135 の references 再構築 + フック導入を .work/notes/AIイシュー自動発見システム構想.md に反映
+  task: 20260528_update-ai-issue-discovery-notes-pr135
+  completed: true
