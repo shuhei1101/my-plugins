@@ -8,7 +8,7 @@
 1. **会話ターン単位キャッシュ**: session-kit が **UserPromptSubmit で現セッションの注入トークンを削除**する。セッション単位だと長い会話で注入情報が下に埋もれるため、毎ターン削除して再注入させる。`SessionStart` では 1日 TTL で古いトークンを掃除（溜まり防止）。PreCompact / マーカーは廃止。
 2. **パターン単位トークン**: py-kit/next-kit の注入トークンを**ファイル単位から injection_rules のパターン単位**に変更。同じパターンにマッチする別ファイルを開いても、そのパターンの reference は再注入しない。ファイルが複数パターンにマッチする場合、未トークンのパターンの reference のみ注入する。
 
-用語: **注入トークン** = `/tmp/{plugin}-references-injection-{session_id}-{patternhash}`（py-kit/next-kit がマッチしたパターンごとに作る空ファイル）。マーカー（`claude-session-ctx-gen-*`）の概念は廃止。session-kit は利用側のトークンを外部から削除するだけで、利用側は session-kit を知らない。
+用語: **注入トークン** = `~/.claude/tokens/{plugin}/{session_id}-{patternhash}`（py-kit/next-kit がマッチしたパターンごとに作る空ファイル、プラグインごとにサブフォルダ）。マーカー（`claude-session-ctx-gen-*`）の概念は廃止。session-kit は利用側のトークンを `~/.claude/tokens/*/` 横断で外部から削除するだけで、利用側は session-kit を知らない。置き場所は /tmp ではなく `~/.claude/tokens/` 配下（WSL/Windows の home 解決先変動は許容）。
 
 ### 実施条件
 
@@ -33,6 +33,7 @@
 | 済 | glossary から「セッションマーカー」を削除、session-kit/注入トークンを新挙動に更新 | - `.claude/rules/core/glossary.md`, `.claude/rules-jp/core/glossary.md` |
 | 済 | marketplace.json に各版を反映 | - `.claude-plugin/marketplace.json` |
 | 済 | UserPromptSubmit トークン削除・SessionStart TTL 掃除・パターン単位トークンの動作を検証 | - session-kit / py-kit / next-kit |
+| 済 | トークン置き場所を /tmp → `~/.claude/tokens/{plugin}/` に変更（プラグインごとサブフォルダ、mkdir、横断 glob、tempfile 除去）+ ドキュメント/glossary 反映・再検証 | - `plugins/{py-kit,next-kit}/hooks/inject_references.py`, `plugins/session-kit/hooks/session_gc.py`, 各 CLAUDE/hooks.md/glossary |
 
 ## 参考ドキュメント
 
