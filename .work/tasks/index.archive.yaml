@@ -513,3 +513,10 @@ prs:
   summary: claude-kit の creator-dispatch フックをインライン -c からスクリプト抽出して統一形式に
   task: 20260528_modernize-creator-dispatch-hooks
   completed: true
+- id: 152
+  title: PR152 — add-pre-compact-conversation-hook
+  type: feat
+  tags: []
+  summary: /compact 直前に conversation-to-claude を実行する PreCompact フックを claude-kit に追加
+  task: 20260528_add-pre-compact-conversation-hook
+  completed: true
