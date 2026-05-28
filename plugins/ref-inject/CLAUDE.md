@@ -67,7 +67,7 @@ Paths mirror the template — no relocation.
 ## Injection design (baked into the hook)
 
 - `required` references → **full body** injected; `optional` → **path + description only**
-- Token: `~/.claude/tokens/{plugin}/{session_id}.yaml`, a pattern-keyed YAML map; each entry has `injected_at` (epoch). Re-inject when `now - injected_at >= TTL`. Extensible (add fields later).
+- Token: `~/.claude/tokens/{plugin}/{session_id}.yaml`, a pattern-keyed YAML map; each entry has `expires_at` (epoch, = injection time + TTL). Skip re-injection while `now < expires_at`; re-inject once `now >= expires_at`. Extensible (add fields later). Because the expiry is baked in at injection time, changing the TTL env var does not retroactively affect already-written entries.
 - TTL: default `3600`s, overridable via `settings.json` `env` → `{PREFIX}_INJECTION_TTL`
 - Cleanup: every hook fire scans all `{session_id}.yaml`, drops expired entries, deletes emptied files
 - Language: `{PREFIX}_INJECTION_LANG=jp` switches descriptions/template to Japanese
