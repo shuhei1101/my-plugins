@@ -30,7 +30,10 @@ next-kit の `frontend/conventions/comments.md` と同じ思想で Python に適
 | Pydantic / dataclass の**設計上重要な**フィールド | ✅ 必須 | `Field(description=...)` または `# ` インラインコメント |
 | 普通のフィールド（自明なもの） | ❌ 不要 | — |
 | 関連 statement ブロック | ⚠️ 推奨 | `# ` 単行ラベル |
+| **高レイヤー / オーケストレーション関数の各ステップ** | ✅ 必須 | `# ` 各ステップの意図（ブロックマーカーだけにしない） |
+| **高レイヤーコードの条件分岐** | ✅ 必須 | `# ` 分岐ごとのラベル（条件の意味 + 何をするか） |
 | 自明な 1 行 | ❌ 不要 | — |
+| ログ出力のみの行（`logger.*`） | ❌ 不要 | — |
 | 変更履歴（PR 番号 + 意図） | ✅ 許可 | `# PR{N}: {何を変えたか/なぜ}` |
 | TODO / FIXME | ✅ 許可 | issue 番号必須（`# TODO(#123): ...`） |
 
@@ -146,6 +149,72 @@ async def handle_chat(input: ChatInput, *, chat: AsyncChatFn) -> ChatOutput:
     return ChatOutput(text=text[:MAX_RESPONSE_LEN])
 ```
 
+### 高レイヤー / オーケストレーション関数: マーカーだけでなく中身にもコメント
+
+サービス層などの**オーケストレーション関数** — ユースケースを束ねる関数（route → service → 分岐 → 結果）— は「その機能が何をするか」の最上位の説明なので、人間がよく読む。こういう関数ではブロックマーカーだけでは足りない。**各ステップが何をしてなぜそうするのか**、特に非自明な箇所に一言コメントを足す。
+
+レイヤーごとのコメント濃度:
+
+| レイヤー | コメント濃度 |
+|---|---|
+| サービス / ユースケースのオーケストレーション（高レイヤー・ユーザがよく見る） | **濃い** — マーカー + 各ステップの意図 + 分岐ごとのラベル |
+| 機能内部 / ヘルパー（`_` 始まり） | 中 — 役立つ箇所にマーカー |
+| 純粋な末端ユーティリティ（文字列処理・計算） | 薄い — docstring のみ |
+
+```python
+async def handle_personal_chat(
+    input: PersonalChatInput,
+    *,
+    classify: ClassifyIntent,
+    chat: AsyncChatFn,
+    save_log: SaveChatLog,
+) -> PersonalChatOutput:
+    """個人チャットを処理する。意図分類 → 応答生成 → ログ保存までを束ねる。"""
+
+    logger.info("personal chat start: user=%s", input.user_id)
+
+    # ユーザー発話の意図を分類し、後続の分岐に使う
+    intent = await classify(input.text)
+
+    # 意図ごとに応答の組み立て方を変える
+    if intent == "question":
+        # 質問: 履歴を文脈に含めて LLM に投げる
+        messages = _build_messages(input.text, input.history)
+        reply = await chat(messages)
+    elif intent == "smalltalk":
+        # 雑談: 履歴は使わず軽量プロンプトで短く返す（コスト削減）
+        reply = await chat(_smalltalk_messages(input.text))
+    else:
+        # 未分類: LLM を呼ばず定型文でフォールバック
+        reply = FALLBACK_REPLY
+
+    # 応答を永続化（分析・再学習用）
+    await save_log(user_id=input.user_id, text=input.text, reply=reply)
+
+    return PersonalChatOutput(reply=reply, intent=intent)
+```
+
+`logger.info(...)` の行には**コメントを付けていない** — `logger` と書いてある時点で何をしているか自明だから。一方で `if` / `elif` / `else` の各分岐には、**条件の意味とその分岐で何をするか**を 1 行コメントで付けている。
+
+### 条件分岐
+
+条件で分岐するときは、各分岐に「何の条件か」「その中で何が起きるか」をラベル付けする。読み手がコメントだけで判断ツリーを追えるようにする。
+
+```python
+# 在庫が残っているか
+if stock.remaining > 0:
+    # あり: 通常購入フロー
+    order = _place_order(stock, qty)
+elif stock.restock_eta is not None:
+    # 切れているが再入荷予定あり: 予約として受け付ける
+    order = _reserve(stock, qty)
+else:
+    # 完全な在庫切れ: 購入不可エラー
+    raise OutOfStockError(stock.id)
+```
+
+分岐が自明なとき（例: `if x is None: return`）だけ、分岐ごとのコメントを省略してよい。
+
 ---
 
 ## パターン 4: 変更履歴コメント
@@ -214,6 +283,10 @@ user_id = user.id
 # ❌ 自明な動作
 # state を更新する
 is_open = True
+
+# ❌ ログ出力への説明（logger と書いてあれば自明）
+# 処理開始をログに出す
+logger.info("start")
 ```
 
 ```python
@@ -235,6 +308,9 @@ def select_family_quests(*, db: Db, family_id: FamilyId, page: int) -> list[Ques
 - 公開関数 / 型 / DTO には 1 行 docstring 必須
 - Pydantic / dataclass の設計上重要なフィールドには説明必須
 - 長い関数の論理ブロックは `# ` ラベル推奨
+- **高レイヤー / オーケストレーション（サービス）関数はコメント濃いめに** — マーカー + 各ステップの意図（ラベルだけにしない）
+- **高レイヤーコードの条件分岐**: 各分岐に「条件の意味 + 何をするか」をラベル付け
+- **ログ出力のみの行にはコメントを付けない** — `logger.*` は自明
 - 変更履歴コメントは非自明な変更のみ、日本語 1 行、PR 番号付き
 - TODO / FIXME は issue / PR 番号必須
 - `@param` / `@returns` / `@type` は書かない（型ヒントに任せる）
