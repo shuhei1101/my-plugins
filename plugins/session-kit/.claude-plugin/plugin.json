@@ -1,5 +1,5 @@
 {
   "name": "session-kit",
-  "description": "Maintains a per-session context-generation marker (bumped on /compact and /clear) so other plugins can detect context resets and re-inject when needed",
-  "version": "1.0.0"
+  "description": "Manages injection-token lifetime for other plugins: deletes the session's tokens each UserPromptSubmit (per-turn cache) and GCs stale tokens (1-day TTL) on SessionStart",
+  "version": "1.1.0"
 }

@@ -1,8 +1,12 @@
 # session-kit Plugin Developer Guide
 
-session-kit maintains a single **context-generation marker** per Claude Code
-session so that other plugins can detect when the context was reset by
-`/compact` or `/clear` and re-inject anything that was lost.
+session-kit manages the lifetime of the **injection tokens** that other plugins
+(py-kit / next-kit) drop under `~/.claude/tokens/{plugin}/`. It deletes the
+current session's tokens on every user prompt (so references re-inject each
+conversation turn) and garbage-collects stale tokens on session start.
+
+It has **no marker file** and consumers do not depend on it: they just create and
+check their own tokens; session-kit deletes those tokens externally.
 
 ---
 
@@ -10,55 +14,60 @@ session so that other plugins can detect when the context was reset by
 
 | Hook | Action |
 |---|---|
-| `PreCompact` | Touch the marker (compaction is about to drop context) |
-| `SessionStart` (source=`clear`) | Touch the marker (`/clear` wiped the context) |
+| `UserPromptSubmit` | Delete the **current session's** injection tokens (`~/.claude/tokens/*/{session_id}-*`) |
+| `SessionStart` | **TTL cleanup**: delete injection tokens (`~/.claude/tokens/*/*`) older than 1 day |
 
-It does **nothing else** — no prompt injection, no blocking, no output. The hook
-only updates the marker's mtime.
+It does **nothing else** — no prompt injection, no blocking, no output.
 
-`startup` and `resume` are intentionally NOT touched:
-- `startup`: a fresh session has a new `session_id`; there are no stale tokens to invalidate.
-- `resume`: the conversation is restored, so previously injected content is back in context.
+### Why delete tokens on UserPromptSubmit (per-turn cache)
+
+An injection token means "this rule's references were already injected." Keeping
+it for the whole **session** is too long: in a long conversation the injected
+guidance ends up buried far above and Claude may forget it. Deleting the session's
+tokens on every `UserPromptSubmit` makes the cache **per conversation turn** — the
+references re-inject the next time Claude touches a matching file in a new turn,
+while still de-duplicating repeated touches *within* a single turn.
+
+`/compact` and `/clear` need no special handling: after `/compact` the next user
+prompt clears the tokens (re-inject), and `/clear` changes the `session_id` so a
+fresh session re-injects naturally.
 
 ---
 
-## The marker contract (shared with other plugins)
+## The injection-token convention (shared with other plugins)
 
 | | Value |
 |---|---|
-| Path | `/tmp/claude-session-ctx-gen-{session_id}` (via `tempfile.gettempdir()`) |
-| Meaning | mtime = time of the last context reset (compact / clear) for this session |
-| Producer | session-kit (`hooks/ctx_marker.py`) |
-| Consumers | Any plugin with a "once per session" injection token — e.g. py-kit / next-kit `inject_references.py` |
+| Path | `~/.claude/tokens/{plugin}/{session_id}-{patternhash}` (via `Path.home()`) — one subfolder per plugin |
+| Meaning | empty file = "this rule's references were already injected this turn" |
+| Key | per matched **injection_rules pattern** (not per file), so all files matching a pattern share it |
+| Producer / reader | py-kit / next-kit `inject_references.py` (create on inject, skip the pattern if its token exists) |
+| Lifecycle manager | session-kit (delete-on-`UserPromptSubmit`, TTL-GC-on-`SessionStart`) |
+| Swept globs | `~/.claude/tokens/*/{session_id}-*` (per-turn) and `~/.claude/tokens/*/*` (TTL) |
 
-### How consumers use it
+**Graceful fallback**: if session-kit is not installed, tokens are simply never
+deleted per turn (consumers behave as once-per-pattern for the whole session) and
+accumulate under `~/.claude/tokens/`. session-kit is an **optional companion**;
+consumers must not depend on it.
 
-A consumer that writes a per-file "already injected" token compares mtimes:
+The TTL is 1 day: no session lasts that long, so an active session's tokens are
+recent and never swept; parallel sessions are protected for the same reason. The
+worst case of an over-eager sweep is a harmless re-injection.
 
-```python
-marker = pathlib.Path(tempfile.gettempdir()) / f"claude-session-ctx-gen-{session_id}"
-if token.exists():
-    # re-inject only if a reset happened after the last injection
-    if not (marker.exists() and marker.stat().st_mtime_ns > token.stat().st_mtime_ns):
-        return  # still valid → skip
-token.touch()  # (re)inject and refresh the token mtime
-```
-
-**Graceful fallback**: if session-kit is not installed the marker never exists,
-so consumers behave as plain once-per-session (the pre-session-kit behavior).
-session-kit is an **optional companion** — consumers must not hard-fail when it
-is absent.
+> **WSL / Windows note**: tokens live under `Path.home()`, which resolves
+> differently between WSL and a native Windows run. That is accepted — switching
+> is infrequent, and a different location only causes a harmless re-injection.
 
 ---
 
 ## Why a separate plugin (not centralized hook logic)
 
-The cross-plugin contract here is a **file path convention only** — consumers
-`stat()` the marker, they never execute session-kit's script. This avoids the
-`${CLAUDE_PLUGIN_ROOT}` cross-plugin path-resolution problem that caused
-`refs-inject-kit` to be rejected (see incident `premature-cross-plugin-centralization`).
-The context-generation fact is genuinely **session-global** (one fact per session),
-so a single producer is the natural design.
+The cross-plugin contract here is a **path convention only** — session-kit globs
+`~/.claude/tokens/`, it never executes another plugin's code, and consumers never
+call session-kit. This avoids the `${CLAUDE_PLUGIN_ROOT}` cross-plugin path-resolution
+problem that caused `refs-inject-kit` to be rejected (see incident
+`premature-cross-plugin-centralization`). Token lifetime is a session-global
+concern, so a single manager is the natural design.
 
 ---
 
@@ -66,4 +75,5 @@ so a single producer is the natural design.
 
 | Version | Main change |
 |---|---|
-| 1.0.0 | Initial: PreCompact + SessionStart(clear) context-generation marker (PR150) |
+| 1.1.0 | Pivot to token-deletion: UserPromptSubmit deletes the session's injection tokens each turn (no marker file); SessionStart GCs stale tokens (1-day TTL). Tokens live under `~/.claude/tokens/{plugin}/` (PR151) |
+| 1.0.0 | Initial: PreCompact + SessionStart(clear) context-generation marker (PR150, superseded) |

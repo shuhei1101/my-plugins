@@ -363,20 +363,26 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 
 #### PreToolUse(Edit/Write/MultiEdit/Read) — reference 自動注入（j2 テンプレート）
 
-より高度なパターン: 固定のプロンプトファイルではなく、**これから触るファイルに応じた
-ドキュメント**を注入する。対象パスを glob ルールと照合し、Jinja2 テンプレートを
-`decision: block` の reason に整形して出す。代表実装は py-kit / next-kit
-（`hooks/inject_references.py`）。
+**これが reference 自動注入フックの標準構造** — 作るときはこれに従う。固定のプロンプト
+ファイルではなく、**これから触るファイルに応じたドキュメント**を注入する。対象パスを glob
+ルールと照合し、Jinja2 テンプレートを `decision: block` の reason に整形して出す。代表実装
+（すべてこのパターンに従う）は py-kit / next-kit（`hooks/inject_references.py`）で、トークンの
+寿命は `session-kit` が管理する。
 
-このパターンを作るときは 3 つの注意点を守る（詳細は `references/hooks.md`）:
+このパターンを作るときは以下の標準ルールを守る（詳細は `references/hooks.md`）:
 
 1. **本文ではなくポインタを注入** — `path + 1 行 description` だけを出し、reference の
    本文全体は出さない。フックはマッチする操作のたびに発火するので、本文全量注入は
    コンテキストを圧迫する。本文は Claude に `Read` させる。
 2. **絶対パスを使う** — `${CLAUDE_PLUGIN_ROOT}` は hooks.json でのみ展開され、注入される
    reason テキストでは展開されない。スクリプト自身が絶対パスを出す必要がある。
-3. **1 セッション 1 ファイル 1 回だけブロック** — セッション + ファイルハッシュトークンを
-   作成するが消費しないことで、同一ファイルを同一セッションで再注入しない。
+3. **パターン単位トークンで重複排除** — トークンをマッチしたルールの*パターン*単位（ファイル
+   単位ではない）にし、`~/.claude/tokens/{plugin}/{session_id}-{patternhash}` に置く。未注入
+   （トークンが無い）パターンのみ注入する。
+4. **トークンの寿命は `session-kit` に委譲** — companion として導入する。session-kit が毎
+   `UserPromptSubmit` でセッションのトークンを削除（ターン単位キャッシュ）し、古いトークンを
+   1 日 TTL で掃除する。利用側は無自覚でよく、session-kit 未インストール時は once-per-pattern に
+   フォールバック。
 
 ---
 

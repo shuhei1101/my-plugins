@@ -113,39 +113,46 @@ reason テキスト内では展開されない。`references/foo.md` のよう�
 abs_path = (refs_dir / rel_path).as_posix()   # refs_dir は CLAUDE_PLUGIN_ROOT から導出
 ```
 
-### 注意 3 — 1 セッション 1 ファイル 1 回だけブロック
+### 注意 3 — パターン単位トークンで注入を重複排除
 
-セッション + ファイルハッシュトークンで、同一ファイルへの注入を 1 セッション 1 回に
-限定する（さもないと同じファイルを編集するたびに再注入される）:
-
-```python
-file_hash = hashlib.sha1(file_path.encode('utf-8')).hexdigest()[:12]
-token = pathlib.Path(tempfile.gettempdir()) / f'my-injection-{session_id}-{file_hash}'
-if token.exists():
-    sys.exit(0)        # このセッションで注入済み → スキップ
-token.touch()          # 初回 → 注入（トークンは消費しない）
-```
-
-> 毎回確認型のトークン（再試行時に*消費*する）と違い、このトークンは残したままにして
-> 同一セッション中はそのファイルを二度と再注入しないようにする。
-
-> ⚠️ **制約 — コンテキストのリセット。** このトークンは「一度注入した＝まだコンテキストに
-> ある」を前提にする。しかし `/compact` と `/clear` はコンテキストを消す / 要約する一方で
-> **`session_id` は同じまま**なので、トークンが残り、Claude が内容を失っても再注入されない。
-> トークンを **コンテキスト世代マーカー**（`session-kit` プラグインが
-> `/tmp/claude-session-ctx-gen-{session_id}` に提供。`PreCompact` と
-> `SessionStart(source=clear)` で更新）と組み合わせ、マーカーがトークンより新しければ
-> 再注入する。マーカーが無い場合（session-kit 未インストール）は素の once-per-session に
-> フォールバックする。
+重複排除しないとマッチするファイル操作のたびに再注入される。トークンを**マッチした
+ルールのパターン単位**（ファイルパスではない）にすると、同じパターンにマッチする全ファイルで
+共有され、未注入（トークンが無い）パターンの reference だけを注入できる:
 
 ```python
-marker = pathlib.Path(tempfile.gettempdir()) / f'claude-session-ctx-gen-{session_id}'
-if token.exists():
-    reset_after = marker.exists() and marker.stat().st_mtime_ns > token.stat().st_mtime_ns
-    if not reset_after:
-        sys.exit(0)    # 注入済みでリセットも無い → スキップ
-token.touch()          # 初回、または直近の注入後にリセットがあった → （再）注入
+token_dir = pathlib.Path.home() / '.claude' / 'tokens' / 'my-kit'   # プラグインごとにサブフォルダ
+required, optional, new_tokens = [], [], []
+for rule in matched_rules:
+    pat_hash = hashlib.sha1(rule['pattern'].encode('utf-8')).hexdigest()[:12]
+    token = token_dir / f'{session_id}-{pat_hash}'
+    if token.exists():
+        continue                      # このパターンは注入済み → reference をスキップ
+    new_tokens.append(token)
+    required += rule.get('required', [])
+    optional += rule.get('optional', [])
+if not required and not optional:
+    sys.exit(0)                       # 新たに注入するものなし
+token_dir.mkdir(parents=True, exist_ok=True)
+for token in new_tokens:
+    token.touch()                     # これらのパターンを注入済みにする（消費しない）
 ```
+
+> トークンは `~/.claude/tokens/{plugin}/`（プラグインごとにサブフォルダ）に置く。こうすると
+> session-kit が `~/.claude/tokens/*/...` の単一 glob でまとめて管理できる。
+
+> パターン単位（ファイル単位ではない）の意味: あるパターンの reference がどれかのファイル
+> 経由で一度注入されたら、同じパターンにマッチする他のファイルはそれをスキップする。
+> *追加の*パターンにマッチするファイルは、その追加パターンの reference だけを注入する。
+
+> ⚠️ **制約 — コンテキストのリセットとトークンの寿命。** トークンは「注入済み＝まだ
+> コンテキストにある」を前提にするが、`/compact` は `session_id` を保ったままコンテキストを
+> 要約する。また、トークンをセッション全体で持つと長すぎることが多い — 長い会話だと注入した
+> 案内がずっと上に埋もれる。任意の `session-kit` プラグインは両方を解決する: **毎
+> `UserPromptSubmit` でセッションのトークンを削除**し（キャッシュを会話*ターン*単位にする —
+> `/compact` 後も含めターンごとに再注入）、`SessionStart` で古いトークンを 1 日 TTL で掃除する。
+> 利用側は無自覚でよい: トークンを作って存在チェックするだけで、session-kit が外部から削除する。
+> session-kit が無い場合はトークンがセッション全体で生きる（once-per-pattern）。`/clear` は
+> 対応不要 — `session_id` が変わるので新セッションが自然に再注入する。
 
 | 配置場所 | ファイル | 共有 |
 |---|---|---|

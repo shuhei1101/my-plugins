@@ -363,20 +363,27 @@ How it works:
 
 #### PreToolUse(Edit/Write/MultiEdit/Read) — reference auto-injection (j2 template)
 
-A more advanced pattern: instead of a fixed prompt file, the hook injects the
+**This is the standard structure for reference auto-injection hooks** — follow it
+when building one. Instead of a fixed prompt file, the hook injects the
 **documentation relevant to the file being touched**. It matches the target path
 against glob rules, then renders a Jinja2 template into the `decision: block`
-reason. Canonical implementation: py-kit / next-kit (`hooks/inject_references.py`).
+reason. Canonical implementations (all follow this pattern): py-kit / next-kit
+(`hooks/inject_references.py`), with token lifetime managed by `session-kit`.
 
-When building this pattern, follow three cautions (full detail in `references/hooks.md`):
+When building this pattern, follow these standard rules (full detail in `references/hooks.md`):
 
 1. **Inject pointers, not full bodies** — render only `path + one-line description`,
    never the whole reference file. The hook fires on every matching operation, so
    full-body injection bloats the context. Let Claude `Read` what it needs.
 2. **Use absolute paths** — `${CLAUDE_PLUGIN_ROOT}` is expanded only in hooks.json,
    not in injected reason text. The script must emit an absolute path itself.
-3. **Block once per file per session** — use a session + file-hash token that is
-   created but NOT consumed, so the same file is never re-injected in one session.
+3. **De-dupe with a per-pattern token** — key the token by the matched rule's
+   *pattern* (not the file), stored at `~/.claude/tokens/{plugin}/{session_id}-{patternhash}`.
+   Inject only patterns whose token does not yet exist.
+4. **Delegate token lifetime to `session-kit`** — install it as a companion. It
+   deletes the session's tokens each `UserPromptSubmit` (per-turn cache) and GCs
+   stale tokens (1-day TTL). Consumers stay oblivious; fall back to once-per-pattern
+   when session-kit is absent.
 
 ---
 
