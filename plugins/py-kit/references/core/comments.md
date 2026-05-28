@@ -27,7 +27,10 @@ Identifiers (variable / function / type names) stay in English.
 | **Design-significant** fields of Pydantic / dataclass | Required | `Field(description=...)` or `# ` inline comment |
 | Ordinary (self-evident) fields | Not needed | — |
 | Related statement blocks | Recommended | `# ` single-line label |
+| **Steps inside a multi-step function** (any layer) | Required | `# ` per-step intent (not just the block marker) |
+| **Conditional branches** (any layer) | Required | `# ` inline label per branch (condition meaning + what it does) |
 | Self-evident single lines | Not needed | — |
+| Logging-only lines (`logger.*`) | Not needed | — |
 | Change history (PR number + intent) | Allowed | `# PR{N}: {what changed / why}` |
 | TODO / FIXME | Allowed | Issue number required (`# TODO(#123): ...`) |
 
@@ -143,6 +146,66 @@ async def handle_chat(input: ChatInput, *, chat: AsyncChatFn) -> ChatOutput:
     return ChatOutput(text=text[:MAX_RESPONSE_LEN])
 ```
 
+### Comment the content, not just the markers
+
+Block markers alone are not enough: also add a short comment on **what each step does and why**, especially anything non-obvious. This applies **regardless of layer** — a service that wires a use case together, a feature-internal helper, and a leaf utility are all commented the same way. Don't reserve heavier comments for "high-level" code; comment density follows how non-obvious the code is, not which layer it sits in.
+
+The example below happens to be a service function, but write internal helpers and utilities exactly the same way.
+
+```python
+async def handle_personal_chat(
+    input: PersonalChatInput,
+    *,
+    classify: ClassifyIntent,
+    chat: AsyncChatFn,
+    save_log: SaveChatLog,
+) -> PersonalChatOutput:
+    """個人チャットを処理する。意図分類 → 応答生成 → ログ保存までを束ねる。"""
+
+    logger.info("personal chat start: user=%s", input.user_id)
+
+    # ユーザー発話の意図を分類し、後続の分岐に使う
+    intent = await classify(input.text)
+
+    # 意図ごとに応答の組み立て方を変える
+    if intent == "question":
+        # 質問: 履歴を文脈に含めて LLM に投げる
+        messages = _build_messages(input.text, input.history)
+        reply = await chat(messages)
+    elif intent == "smalltalk":
+        # 雑談: 履歴は使わず軽量プロンプトで短く返す（コスト削減）
+        reply = await chat(_smalltalk_messages(input.text))
+    else:
+        # 未分類: LLM を呼ばず定型文でフォールバック
+        reply = FALLBACK_REPLY
+
+    # 応答を永続化（分析・再学習用）
+    await save_log(user_id=input.user_id, text=input.text, reply=reply)
+
+    return PersonalChatOutput(reply=reply, intent=intent)
+```
+
+The `logger.info(...)` line has **no** comment — `logger` already says what it is. But every `if` / `elif` / `else` branch has a one-line comment stating **the condition's meaning and what that branch does**.
+
+### Conditional branches
+
+When a function branches on a condition, label each branch with what the condition means and what happens in it. The reader should be able to follow the decision tree from the comments alone.
+
+```python
+# 在庫が残っているか
+if stock.remaining > 0:
+    # あり: 通常購入フロー
+    order = _place_order(stock, qty)
+elif stock.restock_eta is not None:
+    # 切れているが再入荷予定あり: 予約として受け付ける
+    order = _reserve(stock, qty)
+else:
+    # 完全な在庫切れ: 購入不可エラー
+    raise OutOfStockError(stock.id)
+```
+
+Skip per-branch comments only when a branch is trivially self-evident (e.g. `if x is None: return`).
+
 ---
 
 ## Pattern 4: Change History Comments
@@ -210,6 +273,10 @@ user_id = user.id
 # ❌ 自明な動作
 # state を更新する
 is_open = True
+
+# ❌ ログ出力への説明（logger と書いてあれば自明）
+# 処理開始をログに出す
+logger.info("start")
 ```
 
 ```python
@@ -231,6 +298,9 @@ def select_family_quests(*, db: Db, family_id: FamilyId, page: int) -> list[Ques
 - Public functions / types / DTOs must have a 1-line docstring
 - Design-significant fields on Pydantic / dataclass must be described
 - Logical blocks of long functions should be labeled with `# `
+- **Comment the content of multi-step functions, not just block markers** — per-step intent, regardless of layer
+- **Conditional branches**: label each branch with its condition meaning + what it does, regardless of layer
+- **Do not comment logging-only lines** — `logger.*` is self-evident
 - Change history comments only for non-obvious changes, 1 line in Japanese, with PR number
 - TODO / FIXME require an issue / PR number
 - Do not write `@param` / `@returns` / `@type` (leave to type hints)

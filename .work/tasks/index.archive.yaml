@@ -520,3 +520,10 @@ prs:
   summary: /compact 直前に conversation-to-claude を実行する PreCompact フックを claude-kit に追加
   task: 20260528_add-pre-compact-conversation-hook
   completed: true
+- id: 154
+  title: PR154 — py-kit comments orchestration guidance
+  type: docs
+  tags: []
+  summary: py-kit core/comments.md にサービス層オーケストレーション関数のコメント方針（マーカー内部・分岐条件のインラインコメント、ログは不要）とサンプル例を追記
+  task: 20260528_py-kit-orchestration-comments
+  completed: true
