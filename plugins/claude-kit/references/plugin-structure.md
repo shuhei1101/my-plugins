@@ -140,7 +140,6 @@ structural updates they must apply on their end.
 ## Environment variables
 
 A plugin's hooks/scripts can be made configurable via environment variables set in `settings.json`'s
-`env` block and read with `os.environ` (full guide: `hooks.md` → "Environment variables"). When a
-plugin reads any env var, **document it in the plugin's own `CLAUDE.md`** — name, effect, and default
-— so users know what is configurable without reading the source. Namespace the key with the plugin
-name (e.g. `PY_KIT_INJECTION_TTL`).
+`env` block and read with `os.environ` (full guide: `environment.md`). When a plugin reads any env var,
+**document it in the plugin's own `CLAUDE.md`** — name, effect, and default — so users know what is
+configurable without reading the source. Namespace the key with the plugin name (e.g. `PY_KIT_INJECTION_TTL`).

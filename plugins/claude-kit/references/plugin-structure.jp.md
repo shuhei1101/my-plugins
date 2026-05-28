@@ -140,6 +140,6 @@ claude --plugin-dir ./plugins/<plugin-name>
 ## 環境変数
 
 プラグインのフック/スクリプトは、`settings.json` の `env` ブロックで設定し `os.environ` で読む
-環境変数によって設定可能にできる（詳細は `hooks.md` の「環境変数」）。プラグインが env 変数を読む場合は、
+環境変数によって設定可能にできる（詳細は `environment.md`）。プラグインが env 変数を読む場合は、
 **そのプラグイン自身の `CLAUDE.md` に記載する**（名前・効果・デフォルト） — ソースを読まずとも何が
 設定可能か分かるように。キーはプラグイン名で名前空間化する（例: `PY_KIT_INJECTION_TTL`）。

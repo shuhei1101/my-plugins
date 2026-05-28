@@ -36,14 +36,17 @@ rules:
       - provenance.md
 
   # ---- Hooks: plugin hooks.json, project settings (JSON — no stamp), prompt files (.md — stamped) ----
+  # settings.json / hooks.json also carry the env block, so environment.md rides along.
   - pattern: "**/hooks/hooks.json"
     required:
       - common.md
       - hooks.md
+      - environment.md
   - pattern: "**/.claude/settings{.local,}.json"
     required:
       - common.md
       - hooks.md
+      - environment.md
   - pattern: "**/hooks/prompts/*.md"
     required:
       - hooks.md

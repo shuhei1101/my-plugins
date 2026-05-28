@@ -17,6 +17,9 @@ references:
   - path: hooks.md
     description: プロンプト注入フックの作り方。フックイベント、注入メカニズム、使用時機、ループ防止（stop_hook_active / ワンタイムトークン）、すぐ使える hooks.json スニペット、プロンプトファイル配置、パス変数。
 
+  - path: environment.md
+    description: プラグインのフック/スクリプトを環境変数で設定可能にする方法 — settings.json の env ブロックで設定（ユーザー/プロジェクト/ローカルのスコープ）、os.environ で読む、デフォルト/検証、{PREFIX}_INJECTION_TTL / _INJECTION_LANG の実例、env とパス変数の区別。Markdown は env を読めない。
+
   - path: claude-md.md
     description: CLAUDE.md（ルート / サブフォルダ）の作り方。読み込みタイミング、薄肉原則、抽出先ガイド、他ファイル種別との照合、JP ミラー先行ワークフロー、必須セクション、行数ガイドライン。
 

@@ -286,57 +286,9 @@ Claude がこれから触るファイルに関連する規約/ドキュメント
 
 ---
 
-## 環境変数（`settings.json` の `env`）
+## 環境変数
 
-プラグインのフックやスクリプトは、環境変数で**設定可能**にできる。Claude Code は `settings.json` の
-`env` ブロックのキー/値を、すべてのフック・ツールのサブプロセス環境にエクスポートする。フック/スクリプトは
-`os.environ` で読む。
-
-### 設定する — `settings.json` の `env` ブロック
-
-`env` はユーザースコープ（`~/.claude/settings.json`）、プロジェクトスコープ（`.claude/settings.json`、
-コミット対象）、ローカルスコープ（`.claude/settings.local.json`、gitignore）で有効。後のスコープが先を上書きする:
-
-```json
-{
-  "env": {
-    "MY_KIT_INJECTION_TTL": "7200",
-    "MY_KIT_INJECTION_LANG": "jp"
-  }
-}
-```
-
-### 読む — フック/スクリプト内の `os.environ`
-
-適切なデフォルトを用意し検証する。未設定を前提にしない:
-
-```python
-import os
-
-raw = os.environ.get("MY_KIT_INJECTION_TTL")     # 未設定なら None
-ttl = int(raw) if raw and raw.isdigit() else 3600  # デフォルトにフォールバック
-
-lang = os.environ.get("MY_KIT_INJECTION_LANG", "en").lower()
-```
-
-### 実例（このリポジトリ）
-
-`*-kit` のリファレンス注入フック（py-kit / next-kit / claude-kit の `hooks/inject_references.py`）は
-この方式で調整できる:
-
-| 環境変数 | 効果 | デフォルト |
-|---|---|---|
-| `{PREFIX}_INJECTION_TTL` | reference が再注入されるまでの秒数 | `3600` |
-| `{PREFIX}_INJECTION_LANG` | `jp` → 日本語の description/テンプレを注入 | `en` |
-
-`{PREFIX}` はプラグイン名を大文字化し非英数字を `_` にしたもの（例: `py-kit` → `PY_KIT`）。
-
-### 慣習
-
-- プラグイン名で**キーを名前空間化**する（`{PREFIX}_...`）。プラグイン同士の衝突を防ぐ。
-- 読み取り側で**必ずデフォルトを用意**する — env ブロックは任意。未設定でもフックは動くこと。
-- **プラグインが読む env 変数は、そのプラグイン自身の `CLAUDE.md` に記載する**（名前・効果・デフォルト）。
-  フックのソースを読まずとも何が設定可能か分かるように。
-- `env` の値はただの文字列 — 読み取り側で parse/検証する（`int(...)`, `.lower()`, allow-list 等）。
-- 秘密情報をコミット対象の `.claude/settings.json` に置かない。マシン固有・機微な値は
-  `settings.local.json`（gitignore）に置く。
+フックを設定可能にするには、`settings.json` の `env` ブロックで設定した環境変数を `os.environ` で読む
+（例: `*-kit` 注入フックは `{PREFIX}_INJECTION_TTL` / `{PREFIX}_INJECTION_LANG` を読む）。設定・読み取り・
+スコープ・デフォルト・慣習の完全なガイドは **`environment.md`**（`hooks.json` / `settings.json` 編集時に
+このガイドと一緒に注入される）。

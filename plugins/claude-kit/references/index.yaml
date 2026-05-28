@@ -19,6 +19,9 @@ references:
   - path: hooks.md
     description: How to author a prompt-injection hook. Hook events, the injection mechanism, when to use hooks, loop prevention (stop_hook_active / one-time token), ready-to-use hooks.json snippets, prompt-file placement, and path variables.
 
+  - path: environment.md
+    description: How to make a plugin's hooks/scripts configurable via environment variables — set in settings.json's env block (user/project/local scopes), read with os.environ, defaults/validation, the {PREFIX}_INJECTION_TTL / _INJECTION_LANG example, and env-vs-path-variable distinction. Markdown files cannot read env.
+
   - path: claude-md.md
     description: How to author a CLAUDE.md (root or subfolder). When it loads, the thinness principle, extraction-destination guide, validation against other file types, the JP-mirror-first workflow, required sections, and the line-count guideline.
 

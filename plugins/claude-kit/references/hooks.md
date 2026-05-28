@@ -283,57 +283,9 @@ reference docs (1 reference = 1 use case). Canonical adopters: `py-kit`, `next-k
 
 ---
 
-## Environment variables (`settings.json` `env`)
+## Environment variables
 
-A plugin's hooks and scripts can be made **configurable** through environment variables. Claude Code
-exports the key/value pairs in a `settings.json` `env` block into the environment of every hook and
-tool subprocess; the hook/script reads them with `os.environ`.
-
-### Set — `settings.json` `env` block
-
-`env` is honored at user scope (`~/.claude/settings.json`), project scope (`.claude/settings.json`,
-committed), and local scope (`.claude/settings.local.json`, gitignored). Later scopes override earlier:
-
-```json
-{
-  "env": {
-    "MY_KIT_INJECTION_TTL": "7200",
-    "MY_KIT_INJECTION_LANG": "jp"
-  }
-}
-```
-
-### Read — `os.environ` in the hook/script
-
-Read with a sensible default and validate; never assume the var is set:
-
-```python
-import os
-
-raw = os.environ.get("MY_KIT_INJECTION_TTL")     # None if unset
-ttl = int(raw) if raw and raw.isdigit() else 3600  # fall back to a default
-
-lang = os.environ.get("MY_KIT_INJECTION_LANG", "en").lower()
-```
-
-### Worked example (this repo)
-
-The `*-kit` reference-injection hooks (`hooks/inject_references.py` in py-kit / next-kit / claude-kit)
-are tuned this way:
-
-| Env var | Effect | Default |
-|---|---|---|
-| `{PREFIX}_INJECTION_TTL` | Seconds before a reference is re-injected | `3600` |
-| `{PREFIX}_INJECTION_LANG` | `jp` → inject the Japanese descriptions/template | `en` |
-
-`{PREFIX}` is the plugin name upper-cased with non-alphanumerics → `_` (e.g. `py-kit` → `PY_KIT`).
-
-### Conventions
-
-- **Namespace the key** with the plugin name (`{PREFIX}_...`) so plugins don't collide.
-- **Always provide a default** in the reader — the env block is optional; the hook must work without it.
-- **Document each env var your plugin reads in the plugin's own `CLAUDE.md`** (name, effect, default),
-  so users know what is configurable without reading the hook source.
-- `env` values are plain strings — parse/validate (`int(...)`, `.lower()`, allow-list) in the reader.
-- Do not put secrets in a committed `.claude/settings.json`; use `settings.local.json` (gitignored)
-  for machine-specific or sensitive values.
+To make a hook configurable, read environment variables set in `settings.json`'s `env` block via
+`os.environ` (e.g. the `*-kit` injection hooks read `{PREFIX}_INJECTION_TTL` / `{PREFIX}_INJECTION_LANG`).
+Full guide — set/read, scopes, defaults, conventions — in **`environment.md`** (injected alongside this
+guide when you edit `hooks.json` / `settings.json`).
