@@ -21,14 +21,14 @@ session-kit のセッションマーカー・注入トークンは /tmp に取�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260528_session-kit-token-ttl-cleanup/PR151/QA.md` |
-| - | ctx_marker.py: SessionStart を TTL 掃除に変更（clear バンプ廃止、PreCompact は維持） | - `plugins/session-kit/hooks/ctx_marker.py` |
-| - | session-kit CLAUDE.md/jp を新挙動に更新 + 版上げ(1.1.0) | - `plugins/session-kit/CLAUDE.md`, `CLAUDE.jp.md`, `plugins/session-kit/.claude-plugin/plugin.json` |
-| - | hooks.md/jp の Caution 3 を「PreCompact のみ」+ TTL 掃除に更新 + claude-kit 版上げ | - `plugins/claude-kit/references/hooks.{md,jp.md}`, `plugins/claude-kit/.claude-plugin/plugin.json` |
-| - | py-kit CLAUDE.md/jp の companion note を正確化（/compact、clear は session_id 変化で自己修復）+ 版上げ | - `plugins/py-kit/CLAUDE.md`, `CLAUDE.jp.md`, `plugins/py-kit/.claude-plugin/plugin.json` |
-| - | glossary の session-kit エントリを新挙動に更新 | - `.claude/rules/core/glossary.md`, `.claude/rules-jp/core/glossary.md` |
-| - | marketplace.json に各版を反映 | - `.claude-plugin/marketplace.json` |
-| - | TTL 掃除と PreCompact マーカーの動作を検証 | - session-kit |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260528_session-kit-token-ttl-cleanup/PR151/QA.md` |
+| 済 | ctx_marker.py: SessionStart を TTL 掃除に変更（clear バンプ廃止、PreCompact は維持） | - `plugins/session-kit/hooks/ctx_marker.py` |
+| 済 | session-kit CLAUDE.md/jp を新挙動に更新 + 版上げ(1.1.0) | - `plugins/session-kit/CLAUDE.md`, `CLAUDE.jp.md`, `plugins/session-kit/.claude-plugin/plugin.json` |
+| 済 | hooks.md/jp の Caution 3 を「PreCompact のみ」+ TTL 掃除に更新 + claude-kit 版上げ | - `plugins/claude-kit/references/hooks.{md,jp.md}`, `plugins/claude-kit/.claude-plugin/plugin.json` |
+| 済 | py-kit CLAUDE.md/jp の companion note を正確化（/compact、clear は session_id 変化で自己修復）+ 版上げ | - `plugins/py-kit/CLAUDE.md`, `CLAUDE.jp.md`, `plugins/py-kit/.claude-plugin/plugin.json` |
+| 済 | glossary の session-kit エントリを新挙動に更新 | - `.claude/rules/core/glossary.md`, `.claude/rules-jp/core/glossary.md` |
+| 済 | marketplace.json に各版を反映 | - `.claude-plugin/marketplace.json` |
+| 済 | TTL 掃除と PreCompact マーカーの動作を検証 | - session-kit |
 
 ## 参考ドキュメント
 
