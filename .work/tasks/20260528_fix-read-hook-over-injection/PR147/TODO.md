@@ -23,6 +23,7 @@ py-kit と next-kit の注入フックが、マッチした reference の**本�
 | 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260528_fix-read-hook-over-injection/PR147/QA.md` |
 | 済 | `.work/notes/` のノートを更新する | - `.work/notes/fix-read-hook.md` |
 | 済 | py-kit/next-kit テンプレートから body 注入を削除（path+description のみに） | - `plugins/py-kit/hooks/templates/injection.{md,jp.md}.j2`, `plugins/next-kit/hooks/templates/injection.{md,jp.md}.j2` |
+| 済 | 注入する reference パスを絶対パスに変更（${CLAUDE_PLUGIN_ROOT} は注入テキストで展開されないため） | - `plugins/py-kit/hooks/inject_references.py`, `plugins/next-kit/hooks/inject_references.py`, 各テンプレート |
 | 済 | py-kit バージョンを PATCH バンプ | - `plugins/py-kit/.claude-plugin/plugin.json` |
 | 済 | next-kit バージョンを PATCH バンプ | - `plugins/next-kit/.claude-plugin/plugin.json` |
 | 済 | marketplace.json バージョンを更新 | - `.claude-plugin/marketplace.json` |
