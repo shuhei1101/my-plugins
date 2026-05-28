@@ -130,13 +130,15 @@ token.touch()          # 初回 → 注入（トークンは消費しない）
 > 同一セッション中はそのファイルを二度と再注入しないようにする。
 
 > ⚠️ **制約 — コンテキストのリセット。** このトークンは「一度注入した＝まだコンテキストに
-> ある」を前提にする。しかし `/compact` と `/clear` はコンテキストを消す / 要約する一方で
+> ある」を前提にする。しかし `/compact` はコンテキストを消す / 要約する一方で
 > **`session_id` は同じまま**なので、トークンが残り、Claude が内容を失っても再注入されない。
-> トークンを **コンテキスト世代マーカー**（`session-kit` プラグインが
-> `/tmp/claude-session-ctx-gen-{session_id}` に提供。`PreCompact` と
-> `SessionStart(source=clear)` で更新）と組み合わせ、マーカーがトークンより新しければ
-> 再注入する。マーカーが無い場合（session-kit 未インストール）は素の once-per-session に
-> フォールバックする。
+> トークンを **セッションマーカー**（`session-kit` プラグインが
+> `/tmp/claude-session-ctx-gen-{session_id}` に提供。`PreCompact` で更新）と組み合わせ、
+> マーカーがトークンより新しければ再注入する。マーカーが無い場合（session-kit 未インストール）
+> は素の once-per-session にフォールバックする。
+> （`/clear` はマーカー不要 — `session_id` が変わるので新セッションが自然に再注入する。）
+> session-kit は古いトークン/マーカーを `SessionStart` で 1 日 TTL で掃除し、`/tmp` に
+> 溜まらないようにする。
 
 ```python
 marker = pathlib.Path(tempfile.gettempdir()) / f'claude-session-ctx-gen-{session_id}'

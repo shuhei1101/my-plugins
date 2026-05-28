@@ -124,13 +124,15 @@ token.touch()          # first time → inject (do NOT consume the token)
 > is left in place so the file is never re-injected within the same session.
 
 > ⚠️ **Limitation — context resets.** This token assumes "injected once ⇒ still in
-> context." But `/compact` and `/clear` wipe or summarize the context while the
-> **`session_id` stays the same**, so the token survives and the reference is never
-> re-injected even though Claude lost it. Pair the token with a **context-generation
-> marker** (provided by the `session-kit` plugin at
-> `/tmp/claude-session-ctx-gen-{session_id}`, bumped on `PreCompact` and
-> `SessionStart(source=clear)`): re-inject when the marker is newer than the token.
-> Fall back to plain once-per-session when the marker is absent (session-kit not installed).
+> context." But `/compact` wipes/summarizes the context while the **`session_id`
+> stays the same**, so the token survives and the reference is never re-injected
+> even though Claude lost it. Pair the token with a **session marker** (provided by
+> the `session-kit` plugin at `/tmp/claude-session-ctx-gen-{session_id}`, bumped on
+> `PreCompact`): re-inject when the marker is newer than the token. Fall back to
+> plain once-per-session when the marker is absent (session-kit not installed).
+> (`/clear` needs no marker — it changes the `session_id`, so a fresh session
+> re-injects naturally.) session-kit also GCs stale tokens/markers (1-day TTL) on
+> `SessionStart` so `/tmp` does not accumulate them.
 
 ```python
 marker = pathlib.Path(tempfile.gettempdir()) / f'claude-session-ctx-gen-{session_id}'
