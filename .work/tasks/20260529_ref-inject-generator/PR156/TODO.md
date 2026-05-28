@@ -11,7 +11,7 @@
 - **トークン**: `~/.claude/tokens/{plugin}/{session_id}.yaml`。pattern をキーにした拡張可能 YAML マップ（値は `injected_at` 等）
 - **TTL**: デフォルト3600秒、env `{PLUGIN}_INJECTION_TTL`（秒）で上書き可。`now - injected_at < TTL` ならスキップ
 - **クリーンアップ**: 発火のたびに全 `{session_id}.yaml` を走査し期限切れキーを削除 → 空ファイルは削除
-- **/compact 後リフレッシュ**: `PreCompact` フックでそのセッションの `{session_id}.yaml` を削除 → 次の編集で再注入
+- **/compact**: PreCompact フックは作らない（TTL 経過で再注入されるため不要・無駄と判断）
 - 言語切替 `{PLUGIN}_INJECTION_LANG=jp` は維持
 
 ### 実施条件
@@ -36,8 +36,8 @@
 | 済 | apply スキル（create→apply にリネーム。注入部分の付与に責務限定。marketplace 登録なし） | - `plugins/ref-inject/skills/apply/SKILL.md` (+jp) |
 | 済 | scripts/generate.py は作成後に削除（Claude 主導生成に方針変更） | - （削除済み） |
 | 済 | templates: inject_references.py 雛形（新設計） | - `plugins/ref-inject/templates/hooks/inject_references.py` |
-| 済 | templates: PreCompact リフレッシュスクリプト雛形 | - `plugins/ref-inject/templates/hooks/refresh_on_compact.py` |
-| 済 | templates: hooks.json 雛形（PreToolUse + PreCompact） | - `plugins/ref-inject/templates/hooks/hooks.json` |
+| 済 | PreCompact リフレッシュは不要と判断し廃止（refresh_on_compact.py 削除） | - （削除済み） |
+| 済 | templates: hooks.json 雛形（PreToolUse のみ） | - `plugins/ref-inject/templates/hooks/hooks.json` |
 | 済 | templates: injection.md.j2 + jp 雛形 | - `plugins/ref-inject/templates/hooks/templates/injection.md.j2` (+jp) |
 | 済 | templates: references 雛形（index.yaml+jp / injection_rules.yaml / CLAUDE.md+jp / example） | - `plugins/ref-inject/templates/references/*` |
 | 済 | templates: プラグインレベル雛形（plugin.json/ルートCLAUDE.md）は責務外として削除 | - （削除済み） |

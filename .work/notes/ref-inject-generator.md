@@ -51,9 +51,11 @@ PR147 で「本文全量を毎操作で注入してコンテキストが膨ら�
 - 値を map にすることで将来フィールド追加（injected_count 等）が可能。
 - 旧方式（pattern ハッシュごとの空ファイル乱立、自動削除なし）を置き換える。
 
-### /compact 後リフレッシュ
+### /compact について（PreCompact フックは持たない）
 
-`PreCompact` フックでそのセッションの `{session_id}.yaml` を削除 → 次の Edit/Write/Read で全 pattern 再注入。session-kit（ターンごとリセット、PR155 で削除）の役割を TTL + PreCompact で代替する。
+当初は `PreCompact` フックでセッショントークンを削除して即再注入する案だったが、**不要と判断して廃止**。
+`/compact` で注入済み本文がコンテキストから消えても、トークンは TTL 経過で再注入されるだけで足りる。
+そのためだけにフックを増やすのは無駄、という判断（PR156）。session-kit（PR155 で削除）の役割は TTL だけで代替する。
 
 ## ジェネレータの構成
 
@@ -65,8 +67,7 @@ plugins/ref-inject/
 └── templates/                      # 対象プラグインにコピーする注入ファイル（注入部分のみ）
     ├── hooks/
     │   ├── inject_references.py     # 新注入設計（再利用される注入スクリプトのお手本）
-    │   ├── refresh_on_compact.py    # PreCompact ハンドラ
-    │   ├── hooks.json               # PreToolUse(Edit/Write/MultiEdit/Read) + PreCompact
+    │   ├── hooks.json               # PreToolUse(Edit/Write/MultiEdit/Read)
     │   └── templates/injection.md.j2 (+jp)
     └── references/
         ├── index.yaml (+jp) 雛形
