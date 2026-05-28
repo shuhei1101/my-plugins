@@ -1,0 +1,5 @@
+{
+  "name": "ref-inject",
+  "description": "Generator for reference auto-injection plugins. Scaffolds a new plugin with a PreToolUse hook that injects edit-path-matched references (required full-body, optional pointer) using a TTL-based per-session YAML token and PreCompact refresh.",
+  "version": "1.0.0"
+}
