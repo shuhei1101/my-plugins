@@ -29,18 +29,20 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR156/QA.md` |
-| - | `.work/notes/` のノートを作成する | - `.work/notes/ref-inject-generator.md` |
-| - | plugin.json + marketplace.json 登録 | - `plugins/ref-inject/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
-| - | プラグイン CLAUDE.md / CLAUDE.jp.md | - `plugins/ref-inject/CLAUDE.md` (+jp) |
-| - | create スキル（雛形をコピー&置換して新プラグイン生成） | - `plugins/ref-inject/skills/create/SKILL.md` (+jp) |
-| - | templates: inject_references.py 雛形（新設計） | - `plugins/ref-inject/templates/hooks/inject_references.py` |
-| - | templates: PreCompact リフレッシュスクリプト雛形 | - `plugins/ref-inject/templates/hooks/refresh_on_compact.py` |
-| - | templates: hooks.json 雛形（PreToolUse + PreCompact） | - `plugins/ref-inject/templates/hooks/hooks.json` |
-| - | templates: injection.md.j2 + jp 雛形 | - `plugins/ref-inject/templates/hooks/templates/injection.md.j2` (+jp) |
-| - | templates: references 雛形（index.yaml+jp / injection_rules.yaml / CLAUDE.md+jp） | - `plugins/ref-inject/templates/references/*` |
-| - | templates: 生成先 plugin.json / CLAUDE.md(+jp) 雛形 | - `plugins/ref-inject/templates/plugin.json` 他 |
-| - | ルール・CLAUDE.md を整備する | - ルートCLAUDE.md / glossary / kit-hooks-index-sync 等 |
+| 済 | QA.md に未決定事項を記録する（未決定なし） | - `.work/tasks/.../PR156/QA.md` |
+| 済 | `.work/notes/` のノートを作成する | - `.work/notes/ref-inject-generator.md` |
+| 済 | plugin.json + marketplace.json 登録 | - `plugins/ref-inject/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
+| 済 | プラグイン CLAUDE.md / CLAUDE.jp.md | - `plugins/ref-inject/CLAUDE.md` (+jp) |
+| 済 | create スキル（雛形をコピー&置換して新プラグイン生成） | - `plugins/ref-inject/skills/create/SKILL.md` (+jp) |
+| 済 | scripts/generate.py（テンプレ展開 + プレースホルダ置換 + marketplace 登録） | - `plugins/ref-inject/scripts/generate.py` |
+| 済 | templates: inject_references.py 雛形（新設計） | - `plugins/ref-inject/templates/hooks/inject_references.py` |
+| 済 | templates: PreCompact リフレッシュスクリプト雛形 | - `plugins/ref-inject/templates/hooks/refresh_on_compact.py` |
+| 済 | templates: hooks.json 雛形（PreToolUse + PreCompact） | - `plugins/ref-inject/templates/hooks/hooks.json` |
+| 済 | templates: injection.md.j2 + jp 雛形 | - `plugins/ref-inject/templates/hooks/templates/injection.md.j2` (+jp) |
+| 済 | templates: references 雛形（index.yaml+jp / injection_rules.yaml / CLAUDE.md+jp / example） | - `plugins/ref-inject/templates/references/*` |
+| 済 | templates: 生成先 plugin.json / CLAUDE.md(+jp) 雛形 | - `plugins/ref-inject/templates/plugin.json` 他 |
+| 済 | 生成スクリプトの動作検証（注入/TTL/クリーンアップ/compact/jp） | - （一時dirでE2Eテスト実施） |
+| 済 | glossary（+JPミラー）に ref-inject 用語を追加 | - `.claude/rules/core/glossary.md` (+rules-jp) |
 
 ## 参考ドキュメント
 
