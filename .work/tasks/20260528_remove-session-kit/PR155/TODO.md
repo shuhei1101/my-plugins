@@ -24,16 +24,16 @@ session-kit は py-kit/next-kit の注入トークンを毎ターン削除して
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR155/QA.md` |
-| - | session-kit プラグインディレクトリを削除 | - `plugins/session-kit/` |
-| - | marketplace.json から session-kit エントリを削除 | - `.claude-plugin/marketplace.json` |
-| - | glossary の session-kit / 注入トークン / kit-hooks-index-sync 記述を整理 | - `.claude/rules/core/glossary.md`<br>- `.claude/rules-jp/core/glossary.md` |
-| - | py-kit inject_references.py のトークン挙動コメントから session-kit 言及を除去（once-per-session に修正） | - `plugins/py-kit/hooks/inject_references.py` |
-| - | next-kit inject_references.py の同コメント修正 | - `plugins/next-kit/hooks/inject_references.py` |
-| - | py-kit CLAUDE.md / CLAUDE.jp.md の session-kit companion 記述を整理 | - `plugins/py-kit/CLAUDE.md`<br>- `plugins/py-kit/CLAUDE.jp.md` |
-| - | hook-creator SKILL.md / .jp.md の session-kit 委譲記述を修正 | - `plugins/claude-kit/skills/hook-creator/SKILL.md`<br>- `.jp.md` |
-| - | claude-kit references/hooks.md / .jp.md の session-kit 記述を修正 | - `plugins/claude-kit/references/hooks.md`<br>- `.jp.md` |
-| - | 編集した各プラグインの version を bump（py-kit / next-kit / claude-kit） | - 各 `plugin.json`<br>- `.claude-plugin/marketplace.json`<br>- 各 `changelogs/` |
+| ✅ | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR155/QA.md` |
+| ✅ | session-kit プラグインディレクトリを削除 | - `plugins/session-kit/` |
+| ✅ | marketplace.json から session-kit エントリを削除 | - `.claude-plugin/marketplace.json` |
+| ✅ | glossary の session-kit 行を削除・注入トークン記述を once-per-session に修正 | - `.claude/rules/core/glossary.md`<br>- `.claude/rules-jp/core/glossary.md` |
+| ✅ | py-kit inject_references.py のトークン挙動コメントから session-kit 言及を除去（once-per-session に修正） | - `plugins/py-kit/hooks/inject_references.py` |
+| ✅ | next-kit inject_references.py の同コメント修正 | - `plugins/next-kit/hooks/inject_references.py` |
+| ✅ | py-kit CLAUDE.md / CLAUDE.jp.md の session-kit companion 記述を整理 + バージョン行追加 | - `plugins/py-kit/CLAUDE.md`<br>- `plugins/py-kit/CLAUDE.jp.md` |
+| ✅ | hook-creator SKILL.md / .jp.md の session-kit 委譲記述を修正 | - `plugins/claude-kit/skills/hook-creator/SKILL.md`<br>- `.jp.md` |
+| ✅ | claude-kit references/hooks.md / .jp.md の session-kit 記述を修正 | - `plugins/claude-kit/references/hooks.md`<br>- `.jp.md` |
+| ✅ | 各プラグインの version を bump（py-kit 2.3.1 / next-kit 3.5.1 / claude-kit 3.29.1）+ py-kit changelog | - 各 `plugin.json`<br>- `.claude-plugin/marketplace.json`<br>- `plugins/py-kit/changelogs/v2.3.1.md` |
 
 ## 参考ドキュメント
 
