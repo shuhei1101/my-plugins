@@ -72,6 +72,59 @@ token.touch()        # block + create token
 
 ---
 
+## Reference auto-injection pattern (j2 template)
+
+A `PreToolUse(Edit|Write|MultiEdit|Read)` hook that injects the conventions /
+documentation relevant to the file Claude is about to touch. Canonical
+implementation: py-kit / next-kit (`hooks/inject_references.py` +
+`hooks/templates/injection.md.j2` + `references/injection_rules.yaml`).
+
+### How it works
+
+1. On Edit/Write/MultiEdit/Read, read the target path from stdin (`tool_input.file_path`).
+2. Match it against glob patterns in `injection_rules.yaml` → collect the
+   `required` / `optional` reference files for that path.
+3. Render a Jinja2 template and emit it in the `decision: block` reason. Claude
+   reads/follows the guidance, then retries the tool call.
+4. Including `Read` lets read-only passes (e.g. code scans) receive guidance too.
+
+### Caution 1 — inject pointers, not full bodies
+
+Do **not** render the full body of each reference into the reason. The hook
+fires on **every** matching file operation, so full-body injection re-injects
+the entire content each time and bloats the context fast. Inject only
+**path + a one-line description**, and let Claude `Read` the files it actually
+needs. (Incident: `injection-hook-full-body-bloat`.)
+
+### Caution 2 — use absolute paths for the injected pointers
+
+`${CLAUDE_PLUGIN_ROOT}` is expanded **only inside hooks.json**, never in the
+reason text a hook prints. A relative path like `references/foo.md` resolves
+against the *edited project's* cwd (not the plugin cache) and fails. The hook
+script must compute and emit an **absolute path** itself, e.g.:
+
+```python
+abs_path = (refs_dir / rel_path).as_posix()   # refs_dir derived from CLAUDE_PLUGIN_ROOT
+```
+
+### Caution 3 — block once per file per session
+
+Use a session + file-hash token so the same file is injected only once per
+session (otherwise every edit of that file re-injects):
+
+```python
+file_hash = hashlib.sha1(file_path.encode('utf-8')).hexdigest()[:12]
+token = pathlib.Path(tempfile.gettempdir()) / f'my-injection-{session_id}-{file_hash}'
+if token.exists():
+    sys.exit(0)        # already injected this file this session → skip
+token.touch()          # first time → inject (do NOT consume the token)
+```
+
+> Unlike the confirm-each-time token (which is *consumed* on retry), this token
+> is left in place so the file is never re-injected within the same session.
+
+---
+
 ## Placement
 
 | Location | File | Shared |

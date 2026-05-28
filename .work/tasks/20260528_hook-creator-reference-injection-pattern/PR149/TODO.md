@@ -19,12 +19,12 @@ PR147 で扱った「j2 テンプレートによる reference 自動注入フッ
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260528_hook-creator-reference-injection-pattern/PR149/QA.md` |
-| - | hooks.md に reference 自動注入パターン + 3 注意点を追記 | - `plugins/claude-kit/references/hooks.md` |
-| - | hooks.jp.md に JP ミラーを反映 | - `plugins/claude-kit/references/hooks.jp.md` |
-| - | SKILL.md の Hook patterns にパターン参照を追記 | - `plugins/claude-kit/skills/hook-creator/SKILL.md` |
-| - | SKILL.jp.md に JP ミラーを反映 | - `plugins/claude-kit/skills/hook-creator/SKILL.jp.md` |
-| - | claude-kit バージョンを MINOR バンプ | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260528_hook-creator-reference-injection-pattern/PR149/QA.md` |
+| 済 | hooks.md に reference 自動注入パターン + 3 注意点を追記 | - `plugins/claude-kit/references/hooks.md` |
+| 済 | hooks.jp.md に JP ミラーを反映 | - `plugins/claude-kit/references/hooks.jp.md` |
+| 済 | SKILL.md の Hook patterns にパターン参照を追記 | - `plugins/claude-kit/skills/hook-creator/SKILL.md` |
+| 済 | SKILL.jp.md に JP ミラーを反映 | - `plugins/claude-kit/skills/hook-creator/SKILL.jp.md` |
+| 済 | claude-kit バージョンを MINOR バンプ | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 

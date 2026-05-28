@@ -79,6 +79,58 @@ token.touch()        # ブロック + トークン作成
 
 ---
 
+## reference 自動注入パターン（j2 テンプレート）
+
+Claude がこれから触るファイルに応じた規約・ドキュメントを注入する
+`PreToolUse(Edit|Write|MultiEdit|Read)` フック。代表実装は py-kit / next-kit
+（`hooks/inject_references.py` + `hooks/templates/injection.md.j2` +
+`references/injection_rules.yaml`）。
+
+### 仕組み
+
+1. Edit/Write/MultiEdit/Read で stdin の `tool_input.file_path` から対象パスを読む。
+2. `injection_rules.yaml` の glob パターンと照合し、そのパスの `required` /
+   `optional` reference を集める。
+3. Jinja2 テンプレートで整形し `decision: block` の reason に出す。Claude は
+   それを読んで従い、ツール呼び出しを再試行する。
+4. `Read` も対象にすると、読み取りのみの経路（コードスキャン等）でも案内が効く。
+
+### 注意 1 — 本文ではなくポインタを注入する
+
+各 reference の本文全体を reason に展開しては**いけない**。フックは**マッチする
+ファイル操作のたびに**発火するため、本文全量注入だと毎回全文が再注入され、
+すぐにコンテキストを圧迫する。**path + 1 行 description** だけを注入し、本文は
+Claude が必要なものを `Read` する。（incident: `injection-hook-full-body-bloat`）
+
+### 注意 2 — 注入するポインタは絶対パスにする
+
+`${CLAUDE_PLUGIN_ROOT}` は **hooks.json の中でのみ**展開される。フックが print する
+reason テキスト内では展開されない。`references/foo.md` のような相対パスは
+*編集対象プロジェクト* の cwd 基準で解決され（プラグインキャッシュではない）失敗する。
+フックスクリプト自身が**絶対パス**を生成して出す必要がある。例:
+
+```python
+abs_path = (refs_dir / rel_path).as_posix()   # refs_dir は CLAUDE_PLUGIN_ROOT から導出
+```
+
+### 注意 3 — 1 セッション 1 ファイル 1 回だけブロック
+
+セッション + ファイルハッシュトークンで、同一ファイルへの注入を 1 セッション 1 回に
+限定する（さもないと同じファイルを編集するたびに再注入される）:
+
+```python
+file_hash = hashlib.sha1(file_path.encode('utf-8')).hexdigest()[:12]
+token = pathlib.Path(tempfile.gettempdir()) / f'my-injection-{session_id}-{file_hash}'
+if token.exists():
+    sys.exit(0)        # このセッションで注入済み → スキップ
+token.touch()          # 初回 → 注入（トークンは消費しない）
+```
+
+> 毎回確認型のトークン（再試行時に*消費*する）と違い、このトークンは残したままにして
+> 同一セッション中はそのファイルを二度と再注入しないようにする。
+
+---
+
 ## 配置場所
 
 | 配置場所 | ファイル | 共有 |

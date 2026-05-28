@@ -361,6 +361,23 @@ How it works:
 > ⚠️ Use a unique token filename per hook. Shared names cause cross-hook interference.
 > ✅ Including `session_id` in the token name isolates tokens per Claude Code session — prevents Session B from consuming Session A's token. Retrieve it with `d.get('session_id', 'default')` from the stdin JSON.
 
+#### PreToolUse(Edit/Write/MultiEdit/Read) — reference auto-injection (j2 template)
+
+A more advanced pattern: instead of a fixed prompt file, the hook injects the
+**documentation relevant to the file being touched**. It matches the target path
+against glob rules, then renders a Jinja2 template into the `decision: block`
+reason. Canonical implementation: py-kit / next-kit (`hooks/inject_references.py`).
+
+When building this pattern, follow three cautions (full detail in `references/hooks.md`):
+
+1. **Inject pointers, not full bodies** — render only `path + one-line description`,
+   never the whole reference file. The hook fires on every matching operation, so
+   full-body injection bloats the context. Let Claude `Read` what it needs.
+2. **Use absolute paths** — `${CLAUDE_PLUGIN_ROOT}` is expanded only in hooks.json,
+   not in injected reason text. The script must emit an absolute path itself.
+3. **Block once per file per session** — use a session + file-hash token that is
+   created but NOT consumed, so the same file is never re-injected in one session.
+
 ---
 
 ### Preventing Infinite Loops
