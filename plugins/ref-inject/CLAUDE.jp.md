@@ -68,7 +68,7 @@ ref-inject/
 ## 注入設計（フックに組み込み済み）
 
 - `required` は**本文全量**注入 / `optional` は**パス + description のみ**
-- トークン: `~/.claude/tokens/{plugin}/{session_id}.yaml`。pattern をキーにした YAML マップで各エントリに `injected_at`（epoch）。`now - injected_at >= TTL` で再注入。拡張可能（後でフィールド追加可）。
+- トークン: `~/.claude/tokens/{plugin}/{session_id}.yaml`。pattern をキーにした YAML マップで各エントリに `expires_at`（epoch、= 注入時刻 + TTL）。`now < expires_at` の間は再注入をスキップ、`now >= expires_at` で再注入。拡張可能（後でフィールド追加可）。期限が注入時に確定するため、TTL の env var を変えても既存エントリには遡及しない。
 - TTL: デフォルト `3600` 秒、`settings.json` の `env` → `{PREFIX}_INJECTION_TTL` で上書き
 - クリーンアップ: 発火のたびに全 `{session_id}.yaml` を走査し期限切れエントリを削除、空ファイルは削除
 - 言語: `{PREFIX}_INJECTION_LANG=jp` で description/テンプレートを日本語に切替
