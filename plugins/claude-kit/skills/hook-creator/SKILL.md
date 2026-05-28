@@ -368,7 +368,7 @@ when building one. Instead of a fixed prompt file, the hook injects the
 **documentation relevant to the file being touched**. It matches the target path
 against glob rules, then renders a Jinja2 template into the `decision: block`
 reason. Canonical implementations (all follow this pattern): py-kit / next-kit
-(`hooks/inject_references.py`), with token lifetime managed by `session-kit`.
+(`hooks/inject_references.py`).
 
 When building this pattern, follow these standard rules (full detail in `references/hooks.md`):
 
@@ -379,11 +379,9 @@ When building this pattern, follow these standard rules (full detail in `referen
    not in injected reason text. The script must emit an absolute path itself.
 3. **De-dupe with a per-pattern token** — key the token by the matched rule's
    *pattern* (not the file), stored at `~/.claude/tokens/{plugin}/{session_id}-{patternhash}`.
-   Inject only patterns whose token does not yet exist.
-4. **Delegate token lifetime to `session-kit`** — install it as a companion. It
-   deletes the session's tokens each `UserPromptSubmit` (per-turn cache) and GCs
-   stale tokens (1-day TTL). Consumers stay oblivious; fall back to once-per-pattern
-   when session-kit is absent.
+   Inject only patterns whose token does not yet exist. The token lives for the
+   whole session, so each pattern injects once-per-session. Tokens are empty marker
+   files and are not auto-cleaned.
 
 ---
 

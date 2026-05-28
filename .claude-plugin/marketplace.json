@@ -17,7 +17,7 @@
       "name": "py-kit",
       "source": "./plugins/py-kit",
       "description": "Python coding conventions and scaffolding — feature-folder layout, function-first design, TypeScript-style typing, standards references with auto-injection metadata",
-      "version": "2.3.0"
+      "version": "2.3.1"
     },
     {
       "name": "html-kit",
@@ -29,7 +29,7 @@
       "name": "claude-kit",
       "source": "./plugins/claude-kit",
       "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
-      "version": "3.29.0"
+      "version": "3.29.1"
     },
     {
       "name": "work-kit",
@@ -53,13 +53,7 @@
       "name": "next-kit",
       "source": "./plugins/next-kit",
       "description": "Next.js 16 App Router implementation conventions split per file-type (1 file = 1 use case) — shadcn/ui + Tailwind + Drizzle + TanStack Query + Server Actions + Better Auth, with PreToolUse hook auto-injection (index.yaml + injection_rules.yaml) and PostToolUse TypeScript type-check",
-      "version": "3.5.0"
-    },
-    {
-      "name": "session-kit",
-      "source": "./plugins/session-kit",
-      "description": "Manages injection-token lifetime for other plugins: deletes the session's tokens each UserPromptSubmit (per-turn cache) and GCs stale tokens (1-day TTL) on SessionStart",
-      "version": "1.1.0"
+      "version": "3.5.1"
     }
   ]
 }
