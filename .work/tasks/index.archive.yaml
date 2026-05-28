@@ -543,3 +543,11 @@ prs:
     キー付き拡張可能YAMLトークン、TTL+env上書き、PreCompactリフレッシュ）の雛形を templates/ に持つ
   task: 20260529_ref-inject-generator
   completed: true
+- id: 157
+  title: PR157 — migrate-py-kit-to-ref-inject
+  type: refactor
+  tags: []
+  summary: 既存 py-kit のフック・references 構造を ref-inject の注入形式（/ref-inject:apply 適用形）へ移行。required本文全量/optionalパスのみ、pattern
+    キー付き拡張可能YAMLトークン+TTL、PreCompactなし
+  task: 20260529_migrate-py-kit-to-ref-inject
+  completed: true
