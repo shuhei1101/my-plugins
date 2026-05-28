@@ -485,3 +485,10 @@ prs:
   summary: py-kit CLAUDE.md changelog の不正確な記述（Read matcher removed）を修正
   task: 20260528_fix-py-kit-changelog-read-matcher
   completed: true
+- id: 149
+  title: PR149 — hook-creator-reference-injection-pattern
+  type: docs
+  tags: []
+  summary: hook-creator に j2 reference 自動注入パターンと注意点を追記
+  task: 20260528_hook-creator-reference-injection-pattern
+  completed: true
