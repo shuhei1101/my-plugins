@@ -28,10 +28,11 @@ Claude Code プラグインで環境変数を使う方法（`settings.json` の 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | QA.md に未決定事項を記録する（無し） | - `PR162/QA.md` |
-| 済 | hooks.md(+jp) に「環境変数（settings.json の env）」セクションを新設（設定→os.environ で読む。実例 `{PREFIX}_INJECTION_TTL` / `_INJECTION_LANG`。スコープ優先順位・デフォルト・慣習も記載） | - `plugins/claude-kit/references/hooks.md` (+jp) |
-| 済 | plugin-structure.md(+jp) に「プラグインは自分の env 変数を自身の CLAUDE.md に記載する」慣習を一言追記 | - `plugins/claude-kit/references/plugin-structure.md` (+jp) |
+| 済 | env ガイドを専用 reference `environment.md`(+jp) に新設（impl-review でのユーザー指摘を反映。env は hooks 固有でなく共通の関心事＝実行コード hooks/scripts のみが使う）。index.yaml(+jp) 追加 + injection_rules で hooks.json/settings.json に紐付け | - `plugins/claude-kit/references/environment.md` (+jp), `index.yaml`(+jp), `injection_rules.yaml` |
+| 済 | hooks.md(+jp) の env 節を environment.md への短いポインタに | - `plugins/claude-kit/references/hooks.md` (+jp) |
+| 済 | plugin-structure.md(+jp) に「env 変数はプラグイン自身の CLAUDE.md に記載」慣習を追記（ポインタは environment.md） | - `plugins/claude-kit/references/plugin-structure.md` (+jp) |
 | 済 | claude-kit 版バンプ(3.33.0) + marketplace 同期 + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `changelogs/v3.33.0.md` |
-| 済 | 検証（YAML/JSON） | - |
+| 済 | 検証（orphan/YAML/JSON/注入スモークテスト） | - |
 
 ## 参考ドキュメント
 
