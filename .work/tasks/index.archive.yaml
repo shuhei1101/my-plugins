@@ -559,3 +559,11 @@ prs:
     移行(PR157)と構造を揃える
   task: 20260529_migrate-next-kit-to-ref-inject
   completed: true
+- id: 159
+  title: PR159 — migrate-claude-kit-to-ref-inject
+  type: refactor
+  tags: []
+  summary: claude-kit を ref-inject の注入形式へ寄せる。ただし claude-kit は creator スキル群と creator-dispatch
+    フックの本拠で references 注入ユースケースが無い可能性があり、適用可否の評価と分解検討から始める
+  task: 20260529_migrate-claude-kit-to-ref-inject
+  completed: true
