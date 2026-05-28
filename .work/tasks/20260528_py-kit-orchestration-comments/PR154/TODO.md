@@ -28,11 +28,12 @@ aituber でのリファクタリング中に「サービス的なオーケスト
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR154/QA.md` |
-| - | `comments.md` にオーケストレーション層のコメント方針セクションを追記 | - `plugins/py-kit/references/core/comments.md` |
-| - | `comments.jp.md` に同内容を日本語で反映 | - `plugins/py-kit/references/core/comments.jp.md` |
-| - | plugin.json / marketplace.json のバージョンを bump | - `plugins/py-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | changelog を追加 | - `plugins/py-kit/changelogs/v{version}.md` |
+| ✅ | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR154/QA.md` |
+| ✅ | `comments.md` にオーケストレーション層のコメント方針セクションを追記 | - `plugins/py-kit/references/core/comments.md` |
+| ✅ | `comments.jp.md` に同内容を日本語で反映 | - `plugins/py-kit/references/core/comments.jp.md` |
+| ✅ | plugin.json / marketplace.json のバージョンを bump（2.3.0） | - `plugins/py-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| ✅ | changelog を追加 | - `plugins/py-kit/changelogs/v2.3.0.md` |
+| ✅ | py-kit CLAUDE.md / CLAUDE.jp.md のバージョン表を更新 | - `plugins/py-kit/CLAUDE.md`<br>- `plugins/py-kit/CLAUDE.jp.md` |
 
 ## 参考ドキュメント
 
