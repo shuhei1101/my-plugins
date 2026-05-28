@@ -8,4 +8,21 @@
 
 ---
 
-（未決定事項なし）
+## QA-001: hook-creator / plugin-creator dispatch を PreToolUse として配線するか
+
+**状況**:
+- `prompts/hook-creator-dispatch.{md,jp.md}` と `prompts/plugin-creator-dispatch.{md,jp.md}` は存在するが、現在 hooks.json に未配線（オーファン）。
+- git 履歴上、これらは元々 **UserPromptSubmit のキーワード検出フック**だった（「プロンプトが hooks ファイル/plugins 配下のパスに言及したら」）。PreToolUse のファイルパスブロックへ移行した際、skill/rule/claude/j2 だけ PreToolUse 版が作られ、この 2 つは作られなかった。
+- そのため prompt 本文の文言も "the user's prompt mentions one" という UserPromptSubmit 前提の言い回しのまま。
+
+**論点**:
+- **plugin-creator-dispatch**: PreToolUse で `plugins/**` を対象にすると、このリポジトリの**全ファイル編集**にマッチしてしまい、より具体的な skill/rule/j2 dispatch と全面的に重複・ノイズ化する。→ 配線は不適切と判断。
+- **hook-creator-dispatch**: `hooks.json` / `settings(.local).json` の編集を hook-creator に通す、は方針として筋は通る。ただし hooks.json を触るたびにブロックが入る摩擦が増える。文言も PreToolUse 用に書き直しが必要。
+
+**決定（候補）**:
+- 案A（推奨）: 両方 PreToolUse 化せず、オーファンな 4 ファイル（hook-creator-dispatch / plugin-creator-dispatch の md+jp.md）を削除して整理する。
+- 案B: hook-creator-dispatch のみ `hooks.json`/`settings.json` 限定で配線（文言も書き直し）。plugin-creator-dispatch は削除。
+- 案C: 現状維持（オーファンのまま残す）。
+
+→ ユーザー判断待ち。
+

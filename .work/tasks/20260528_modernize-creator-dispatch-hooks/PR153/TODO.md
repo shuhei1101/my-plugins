@@ -39,10 +39,10 @@ PR147〜151 で reference 自動注入フックの「標準パターン」を確
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260528_modernize-creator-dispatch-hooks/PR153/QA.md` |
-| - | creator-dispatch の inline `-c` をスクリプト抽出・統一形式に | - `plugins/claude-kit/hooks/hooks.json`, `plugins/claude-kit/hooks/**` |
-| - | Edit/Write のみ発火（Read 不発火）を維持 | - `plugins/claude-kit/hooks/hooks.json` |
-| - | hook-creator / plugin-creator dispatch の追加要否を判断・実装 | - `plugins/claude-kit/hooks/**` |
+| 済 | QA.md に未決定事項を記録する（QA-001） | - `.work/tasks/20260528_modernize-creator-dispatch-hooks/PR153/QA.md` |
+| 済 | creator-dispatch の inline `-c` をスクリプト抽出・統一形式に | - `plugins/claude-kit/hooks/creator_dispatch.py`, `jp_mirror_check.py`, `hooks.json` |
+| 済 | Edit/Write のみ発火（Read 不発火）を維持 | - `plugins/claude-kit/hooks/hooks.json` |
+| - | hook-creator / plugin-creator dispatch の追加要否を判断・実装（QA-001 で判断待ち） | - `plugins/claude-kit/hooks/**` |
 | - | claude-kit バージョン bump | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
 | - | ルール・CLAUDE.md を整備する | - `plugins/claude-kit/CLAUDE.md` 等（必要時） |
 
