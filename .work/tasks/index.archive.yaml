@@ -527,3 +527,11 @@ prs:
   summary: py-kit core/comments.md にサービス層オーケストレーション関数のコメント方針（マーカー内部・分岐条件のインラインコメント、ログは不要）とサンプル例を追記
   task: 20260528_py-kit-orchestration-comments
   completed: true
+- id: 155
+  title: PR155 — remove session-kit plugin
+  type: chore
+  tags: []
+  summary: session-kit プラグインを削除。py-kit/next-kit は once-per-session 注入挙動にフォールバック。glossary・CLAUDE.md・inject_references.py
+    コメント・hook-creator・hooks references・marketplace.json の session-kit 参照を整理
+  task: 20260528_remove-session-kit
+  completed: true
