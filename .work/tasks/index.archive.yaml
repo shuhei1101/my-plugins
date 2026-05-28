@@ -478,3 +478,10 @@ prs:
   summary: py-kit/next-kit の hooks.json から Read マッチャーを削除してコンテキスト過剰注入を修正
   task: 20260528_fix-read-hook-over-injection
   completed: true
+- id: 148
+  title: PR148 — fix-py-kit-changelog-read-matcher
+  type: fix
+  tags: []
+  summary: py-kit CLAUDE.md changelog の不正確な記述（Read matcher removed）を修正
+  task: 20260528_fix-py-kit-changelog-read-matcher
+  completed: true

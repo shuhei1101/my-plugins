@@ -89,7 +89,7 @@ The **references auto-injection hook** (`py-references-injection`) follows this 
 
 | Version | Main change |
 |---|---|
-| 2.1.1 | Injection hook: path+description only (no body), Read matcher removed (PR147) |
+| 2.1.1 | Injection hook: inject path+description only (no body) as absolute paths; Read matcher kept (PR147) |
 | 2.0.0 | Complete overhaul to feature-folder layout + function-first + TypeScript-style (policy fixed in PR138, implemented in PR140) |
 | 1.0.0 | Pure DDD base (discontinued) |
 
