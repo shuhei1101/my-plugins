@@ -3,7 +3,7 @@
 
 ## 概要
 
-py-kit と next-kit の `hooks.json` に `Read` マッチャーが誤って含まれており、Read ツール呼び出しのたびに参照ブロックが注入されてコンテキストを圧迫していた。設計上の対象は `Edit|Write|MultiEdit` のみのため、`Read` エントリを削除する。
+py-kit と next-kit の注入フックが、マッチした reference の**本文全体**を `decision: block` の reason に注入していたため、ファイルを読むたびにコンテキストを大きく圧迫していた。テンプレートと `inject_references.py` を修正し、**path + description のみ**を注入する軽量な設計に変更する。reference の本文は Claude が必要なものを `Read` で自分で読む。`Read` マッチャーは issue-scan などの読み取り経路のために維持する。
 
 ### 実施条件
 
