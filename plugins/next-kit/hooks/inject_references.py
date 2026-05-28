@@ -336,7 +336,7 @@ def main() -> int:
             "abs_path": p.as_posix(),
             "description": descriptions.get(rel_path, ""),
             "body": body,
-            "cached": cached,
+            "cached": cached, # pyright: ignore[reportReturnType]
         }
 
     def _optional_ref(rel_path: str) -> dict[str, str]:
