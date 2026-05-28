@@ -19,13 +19,13 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260528_add-pre-compact-conversation-hook/PR152/QA.md` |
-| - | `.work/notes/` のノートを更新する | - `.work/notes/pre-compact-hook.md` |
-| - | PreCompact フック用プロンプトファイルを作成する | - `plugins/claude-kit/hooks/prompts/pre-compact.md` |
-| - | プロンプトの JP ミラーを作成する | - `plugins/claude-kit/hooks/prompts/pre-compact.jp.md` |
-| - | hooks.json に PreCompact エントリを追加する | - `plugins/claude-kit/hooks/hooks.json` |
-| - | claude-kit のバージョンを bump する | - `plugins/claude-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json のバージョンを更新する | - `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260528_add-pre-compact-conversation-hook/PR152/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/pre-compact-hook.md` |
+| 済 | PreCompact フック用プロンプトファイルを作成する | - `plugins/claude-kit/hooks/prompts/pre-compact.md` |
+| 済 | プロンプトの JP ミラーを作成する | - `plugins/claude-kit/hooks/prompts/pre-compact.jp.md` |
+| 済 | hooks.json に PreCompact エントリを追加する | - `plugins/claude-kit/hooks/hooks.json` |
+| 済 | claude-kit のバージョンを bump する | - `plugins/claude-kit/.claude-plugin/plugin.json` |
+| 済 | marketplace.json のバージョンを更新する | - `.claude-plugin/marketplace.json` |
 
 ## 参考ドキュメント
 
