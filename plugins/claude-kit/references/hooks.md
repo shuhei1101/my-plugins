@@ -123,6 +123,24 @@ token.touch()          # first time → inject (do NOT consume the token)
 > Unlike the confirm-each-time token (which is *consumed* on retry), this token
 > is left in place so the file is never re-injected within the same session.
 
+> ⚠️ **Limitation — context resets.** This token assumes "injected once ⇒ still in
+> context." But `/compact` and `/clear` wipe or summarize the context while the
+> **`session_id` stays the same**, so the token survives and the reference is never
+> re-injected even though Claude lost it. Pair the token with a **context-generation
+> marker** (provided by the `session-kit` plugin at
+> `/tmp/claude-session-ctx-gen-{session_id}`, bumped on `PreCompact` and
+> `SessionStart(source=clear)`): re-inject when the marker is newer than the token.
+> Fall back to plain once-per-session when the marker is absent (session-kit not installed).
+
+```python
+marker = pathlib.Path(tempfile.gettempdir()) / f'claude-session-ctx-gen-{session_id}'
+if token.exists():
+    reset_after = marker.exists() and marker.stat().st_mtime_ns > token.stat().st_mtime_ns
+    if not reset_after:
+        sys.exit(0)    # injected and no reset since → skip
+token.touch()          # first time, or context reset since last injection → (re)inject
+```
+
 ---
 
 ## Placement

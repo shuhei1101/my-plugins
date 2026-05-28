@@ -188,12 +188,21 @@ def main() -> int:
         return 0
 
     # ----- セッション + ファイル単位のトークン (1 ファイル 1 回だけ block) -----
+    # session-kit のコンテキスト世代マーカーがあれば、直近の注入後に compact / clear が
+    # 起きた場合は再注入する。マーカーが無ければ (session-kit 未インストール) once-per-session。
     session_id: str = data.get("session_id", "default")
     file_hash = hashlib.sha1(file_path.encode("utf-8")).hexdigest()[:12]
-    token = pathlib.Path(tempfile.gettempdir()) / f"py-references-injection-{session_id}-{file_hash}"
+    tmp = pathlib.Path(tempfile.gettempdir())
+    token = tmp / f"py-references-injection-{session_id}-{file_hash}"
+    marker = tmp / f"claude-session-ctx-gen-{session_id}"
     if token.exists():
-        return 0
-    token.touch()
+        try:
+            reset_after = marker.exists() and marker.stat().st_mtime_ns > token.stat().st_mtime_ns
+        except OSError:
+            reset_after = False
+        if not reset_after:
+            return 0
+    token.touch()  # 初回、またはリセット後の再注入 → mtime を現在に更新
 
     # ----- reference の path (絶対) + description を集める -----
     # 注入テキスト内では ${CLAUDE_PLUGIN_ROOT} は展開されないため、Claude が Read できる
