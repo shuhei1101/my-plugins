@@ -35,14 +35,14 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| ✅ | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR157/QA.md` |
-| - | `.work/notes/` のノートを作成する（PR156 の `ref-inject-generator.md` を流用、新規作成不要） | - `.work/notes/ref-inject-generator.md` |
-| ✅ | ref-inject:apply で py-kit に注入の仕組みを再生成（hooks + injection テンプレ） | - `plugins/py-kit/hooks/inject_references.py` / `templates/injection.md.j2` / `injection.jp.md.j2`（hooks.json は新旧同一で変更なし） |
-| ✅ | references 構造は新形式と互換（実コンテンツ保持、スキーマ未変更） | - `plugins/py-kit/references/CLAUDE.md` (+jp) のみ更新 |
-| ✅ | py-kit 版バンプ + marketplace.json 同期（2.3.1 → 2.4.0、changelog 追加） | - `plugins/py-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` / `changelogs/v2.4.0.md` |
-| ✅ | py-kit CLAUDE.md を新注入設計に合わせて更新 | - `plugins/py-kit/CLAUDE.md` (+jp) |
-| ✅ | kit-hooks-index-sync ルールとの整合確認（スキーマ契約は不変。next-kit との一時乖離は PR158 で解消、ルール編集不要） | - `.claude/rules/feature/kit-hooks-index-sync.md` |
-| ✅ | トークンフィールドを `injected_at` → `expires_at` に変更（正本の ref-inject テンプレ → py-kit 再適用）。判定を `now >= expires_at` に。ref-inject 1.0.0→1.1.0 + glossary(+jp) / note / changelog 追従。スモークテスト済み | - `plugins/ref-inject/templates/hooks/inject_references.py` / `plugins/py-kit/hooks/inject_references.py` / `plugins/ref-inject/CLAUDE.md` (+jp) / `plugins/py-kit/CLAUDE.md` (+jp) / `.claude/rules/core/glossary.md` (+jp) / `.work/notes/ref-inject-generator.md` / 各 changelog / plugin.json / marketplace.json |
+| 済 | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR157/QA.md` |
+| 済 | `.work/notes/` のノートを更新（PR156 の `ref-inject-generator.md` を流用、expires_at 変更を反映） | - `.work/notes/ref-inject-generator.md` |
+| 済 | ref-inject:apply で py-kit に注入の仕組みを再生成（hooks + injection テンプレ） | - `plugins/py-kit/hooks/inject_references.py` / `templates/injection.md.j2` / `injection.jp.md.j2`（hooks.json は新旧同一で変更なし） |
+| 済 | references 構造は新形式と互換（実コンテンツ保持、スキーマ未変更） | - `plugins/py-kit/references/CLAUDE.md` (+jp) のみ更新 |
+| 済 | py-kit 版バンプ + marketplace.json 同期（2.3.1 → 2.4.0、changelog 追加） | - `plugins/py-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` / `changelogs/v2.4.0.md` |
+| 済 | py-kit CLAUDE.md を新注入設計に合わせて更新 | - `plugins/py-kit/CLAUDE.md` (+jp) |
+| 済 | kit-hooks-index-sync ルールとの整合確認（スキーマ契約は不変。next-kit との一時乖離は PR158 で解消、ルール編集不要） | - `.claude/rules/feature/kit-hooks-index-sync.md` |
+| 済 | トークンフィールドを `injected_at` → `expires_at` に変更（正本の ref-inject テンプレ → py-kit 再適用）。判定を `now >= expires_at` に。ref-inject 1.0.0→1.1.0 + glossary(+jp) / note / changelog 追従。スモークテスト済み | - `plugins/ref-inject/templates/hooks/inject_references.py` / `plugins/py-kit/hooks/inject_references.py` / `plugins/ref-inject/CLAUDE.md` (+jp) / `plugins/py-kit/CLAUDE.md` (+jp) / `.claude/rules/core/glossary.md` (+jp) / `.work/notes/ref-inject-generator.md` / 各 changelog / plugin.json / marketplace.json |
 
 ## 参考ドキュメント
 
