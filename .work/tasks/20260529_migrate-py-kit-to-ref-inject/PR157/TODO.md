@@ -35,13 +35,13 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR157/QA.md` |
-| - | `.work/notes/` のノートを作成する | - `.work/notes/{note}.md` |
-| - | ref-inject:apply で py-kit に注入の仕組みを再生成（hooks + injection テンプレ） | - `plugins/py-kit/hooks/*` |
-| - | references 構造を新形式に合わせる（実コンテンツは保持） | - `plugins/py-kit/references/*` |
-| - | py-kit 版バンプ + marketplace.json 同期 | - `plugins/py-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
-| - | py-kit CLAUDE.md を新注入設計に合わせて更新 | - `plugins/py-kit/CLAUDE.md` (+jp) |
-| - | kit-hooks-index-sync ルールとの整合確認 | - `.claude/rules/feature/kit-hooks-index-sync.md` |
+| ✅ | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR157/QA.md` |
+| - | `.work/notes/` のノートを作成する（PR156 の `ref-inject-generator.md` を流用、新規作成不要） | - `.work/notes/ref-inject-generator.md` |
+| ✅ | ref-inject:apply で py-kit に注入の仕組みを再生成（hooks + injection テンプレ） | - `plugins/py-kit/hooks/inject_references.py` / `templates/injection.md.j2` / `injection.jp.md.j2`（hooks.json は新旧同一で変更なし） |
+| ✅ | references 構造は新形式と互換（実コンテンツ保持、スキーマ未変更） | - `plugins/py-kit/references/CLAUDE.md` (+jp) のみ更新 |
+| ✅ | py-kit 版バンプ + marketplace.json 同期（2.3.1 → 2.4.0、changelog 追加） | - `plugins/py-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` / `changelogs/v2.4.0.md` |
+| ✅ | py-kit CLAUDE.md を新注入設計に合わせて更新 | - `plugins/py-kit/CLAUDE.md` (+jp) |
+| ✅ | kit-hooks-index-sync ルールとの整合確認（スキーマ契約は不変。next-kit との一時乖離は PR158 で解消、ルール編集不要） | - `.claude/rules/feature/kit-hooks-index-sync.md` |
 
 ## 参考ドキュメント
 
