@@ -5,11 +5,16 @@
 
 `ref-inject` のリファレンス自動注入機構を各プラグインへ展開する取り組みの一環。py-kit は PR157 で移行済み、next-kit は PR158 で予約済み。本 PR は **claude-kit** を対象にする。
 
-**ただし「要分解検討」**: claude-kit は他の `*-kit` と性質が大きく異なる。
+**当初「要分解検討」だったが、QA-001 でユーザーが方針を再定義し「適用する（拡張版）」で確定。**
 
-- claude-kit は **creator スキル群（skill-creator / rule-creator / claude-creator / hook-creator / plugin-creator / version-sync / mark-generated 等）と creator-dispatch フックの本拠**であり、py-kit / next-kit のような「編集対象パスに応じて実装規約 reference を注入する」ユースケースが**そもそも存在しない可能性**が高い。
-- したがって本 PR はまず **ref-inject が claude-kit に適用可能か（= 注入すべき references があるか）を評価する**ことから始める。適用するとしても対象範囲を見極め、必要なら複数 PR に分解する。
-- 「とりあえず py-kit と同じ構造を貼る」ことはしない（注入ユースケースが無いなら適用しないのが正解）。
+### この PR でやること（再定義後）
+
+claude-kit の creator 系スキル（skill / rule / hook / claude / plugin-creator）の **ステップ形式の手順知識を references に資料化**し、ref-inject 注入フックで編集対象パスに応じて注入する方式へ全面移行する。
+
+- 既存 references（skills.md / rules.md / hooks.md / claude-md.md / plugin-structure.md / common.md）に creator スキル本文の「いつ / どう作るか」を吸収 → **編集時に読めば直接書ける自己完結ガイド**にする
+- `creator_dispatch.py` の **creator 系ルール（skill/rule/claude/hook/plugin）を廃止**し、ref-inject 注入フックに置換。`j2-stamp-check` ルールは存置
+- creator スキルは**薄いラッパーとして残す**（「対応 reference を読んで従え」）。完全削除はしない
+- 注入 required reference の末尾に「編集後 mark-generated でスタンプ」を明記し、直接編集フローでも出自スタンプを担保（QA-002）
 
 ### PR157 で確定した設計（引き継ぎ事項）
 
@@ -17,8 +22,8 @@
 - トークン: `~/.claude/tokens/{plugin}/{session_id}.yaml`。pattern をキーにした YAML マップで各エントリ `expires_at`（= 注入時刻 + TTL）。`now < expires_at` の間スキップ、`now >= expires_at` で再注入
 - TTL: デフォルト3600秒、env `{PREFIX}_INJECTION_TTL` で上書き。`PreCompact` フックは作らない
 - `ref-inject` は現在 **v1.1.0**（expires_at 採用済み）
-- `kit-hooks-index-sync` ルールが `*-kit` 間の注入構造一致を強制する（claude-kit を対象に含めるかはこの PR の判断次第）
-- incident `ref-inject-reapply-dispatch-false-positive`: ref-inject 管理ファイルの再生成時に creator-dispatch の catchall が誤検知で発火する。所有機構は `/ref-inject:apply` なので plugin-creator へ寄り道せずブロックを通す
+- `kit-hooks-index-sync` ルールが `*-kit` 間の注入構造一致を強制する → claude-kit も対象に含める
+- incident `ref-inject-reapply-dispatch-false-positive`: ref-inject 管理ファイル再生成時に creator-dispatch の catchall が誤検知で発火する。所有機構は `/ref-inject:apply` なので plugin-creator へ寄り道せずブロックを通す
 
 ### 実施条件
 
@@ -36,13 +41,16 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md の未決定事項（claude-kit に注入ユースケースがあるか）を解消する | - `.work/tasks/.../PR159/QA.md` |
-| - | **適用可否の評価**: claude-kit に「編集対象パスに応じて注入すべき references」が存在するか調査（creator スキルの実装規約等が候補になりうるか） | - `plugins/claude-kit/**` |
-| - | 評価結果に応じて分解計画を決める（適用する / 一部だけ適用 / 適用しない を判断し、必要なら次PR候補へ分割） | - 本 TODO の `## 次PR候補` |
-| - | （適用する場合のみ）`/ref-inject:apply` で claude-kit に注入機構を付与し references を整備 | - `plugins/claude-kit/hooks/*` / `references/*` |
-| - | （適用する場合のみ）claude-kit 版バンプ + marketplace 同期 + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
-| - | `.work/notes/ref-inject-generator.md` に claude-kit 適用可否の結論を追記 | - `.work/notes/ref-inject-generator.md` |
-| - | ルール・CLAUDE.md を整備する（必要なら kit-hooks-index-sync の対象記述を更新） | - `.claude/rules/feature/kit-hooks-index-sync.md` |
+| 済 | QA.md の未決定事項を解消（適用可否・出自スタンプ・上位スキル影響） | `PR159/QA.md` |
+| - | `/ref-inject:apply claude-kit` で注入機構（inject_references.py / hooks.json / templates / references/index.yaml / injection_rules.yaml）を claude-kit へ付与 | `plugins/claude-kit/hooks/*`, `plugins/claude-kit/references/index.yaml` 他 |
+| - | creator スキル本文の手順知識を references へ吸収（skills.md / rules.md / hooks.md / claude-md.md / plugin-structure.md を「編集時に読めば直接書ける自己完結ガイド」へ拡充） | `plugins/claude-kit/references/*.md` (+jp) |
+| - | injection_rules.yaml を整備（SKILL.md→skills.md / rule→rules.md / CLAUDE.md→claude-md.md / hooks.json→hooks.md / plugins/→plugin-structure.md。共通は common.md を required に） | `plugins/claude-kit/references/injection_rules.yaml` |
+| - | 各 required reference 末尾に「編集後 mark-generated でスタンプ」を明記（QA-002） | `plugins/claude-kit/references/*.md` |
+| - | `creator_dispatch.py` の creator 系ルール（skill/rule/claude/hook/plugin）を廃止し j2-stamp-check のみ残す。hooks.json から該当エントリ整理。creator 系 dispatch prompt（4 ファイル）削除 | `plugins/claude-kit/hooks/creator_dispatch.py`, `hooks/hooks.json`, `hooks/prompts/*-creator-dispatch.md` |
+| - | creator スキル（skill/rule/hook/claude/plugin-creator）を薄ラッパー化（対応 reference を読んで従え + mark-generated スタンプ。詳細手順は reference へ移譲） | `plugins/claude-kit/skills/*-creator/SKILL.md` (+jp) |
+| - | claude-kit 版バンプ + marketplace 同期 + changelog | `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `plugins/claude-kit/changelogs/*` |
+| - | `.work/notes/ref-inject-generator.md` に claude-kit 移行の結論を追記 | `.work/notes/ref-inject-generator.md` |
+| - | ルール・CLAUDE.md・glossary・incidents を整備（kit-hooks-index-sync に claude-kit を含める／creator-dispatch 廃止を反映） | `.claude/rules/feature/kit-hooks-index-sync.md`, `.claude/rules/core/glossary.md`, CLAUDE.md 他 |
 
 ## 参考ドキュメント
 
@@ -54,4 +62,4 @@
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| {評価結果次第で分解。適用するなら sub-PR を本欄に追記する} | {PR159 の調査で確定} | - |
+| {移行で判明した課題があれば追記} | - | - |
