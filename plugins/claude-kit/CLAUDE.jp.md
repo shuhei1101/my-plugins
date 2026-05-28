@@ -23,4 +23,6 @@
 
 - **クリエイタールーティング用の `UserPromptSubmit` ディスパッチフックを追加しないこと。** ユーザーのプロンプトごとに発火して不要なオーバーヘッドになる — `PreToolUse` だけで十分な強制力がある。
 
-このパターンは `skill-creator-dispatch`（claude-kit/dev-kit/ui-kit/work-kit）および `python-skill-dispatch`（py-kit）/ `yaml-skill-dispatch`（dev-kit）で採用されている。
+- **ディスパッチのロジックはインライン `-c` ワンライナーではなくスクリプトファイルに抽出すること。** インライン python はクォートのネストで壊れやすい（incident `statusline-python-quote-nesting`）。claude-kit のディスパッチャは `hooks/creator_dispatch.py` にあり、設定テーブル `RULES`（`name` / `pattern` / `exclude_jp` / `prompt`）を上から順に評価して**最初にマッチした 1 件**を処理する。順序＝優先度: 具体的なルール（SKILL.md / `.claude/rules` / CLAUDE.md / フック設定 / `.j2`）を先に、最も広い `plugins/` 全体の `plugin-creator-dispatch` を最後のキャッチオールに置く。`hooks.json` はそのスクリプトを呼ぶだけ。（PR153）
+
+このパターンは claude-kit の `creator_dispatch.py`（skill / rule / claude / hook / plugin / j2 ディスパッチ）および `python-skill-dispatch`（py-kit）/ `yaml-skill-dispatch`（dev-kit）で採用されている。

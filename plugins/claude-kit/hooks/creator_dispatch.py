@@ -12,8 +12,15 @@ PreToolUse(Edit | Write) で発火し、編集対象ファイルパスを下表�
 インライン `-c` ワンライナーから本スクリプトへ抽出した（PR153）。インライン python は
 クォートのネストで壊れやすい（incident `statusline-python-quote-nesting` 参照）。
 
-RULES の pattern は相互排他（SKILL.md / .claude/rules / CLAUDE.md / .j2）なので
-最初にマッチした 1 件だけを処理する。
+RULES は上から順に評価し**最初にマッチした 1 件だけ**を処理する。順序が優先度になる:
+具体的なもの（SKILL.md / .claude/rules / CLAUDE.md / hook 設定 / .j2）を先に置き、
+最も広い plugin-creator（`plugins/` 配下）を最後のキャッチオールにする。これにより
+`plugins/foo/skills/bar/SKILL.md` は skill-creator が先取りし、どの具体ルールにも
+当たらない `plugins/foo/references/x.md` だけが plugin-creator に回る。
+
+hook-creator / plugin-creator dispatch は元々 UserPromptSubmit のキーワード検出
+フックだったが、他 dispatch と揃えて PreToolUse(Edit/Write) のファイルパス方式に
+作り変えた（PR153）。
 """
 from __future__ import annotations
 
@@ -45,10 +52,23 @@ RULES: list[dict[str, object]] = [
         "prompt": "claude-creator-dispatch.md",
     },
     {
+        "name": "hook-creator-dispatch",
+        "pattern": r"(?:^|/)(?:hooks\.json|settings(?:\.local)?\.json)$",
+        "exclude_jp": False,
+        "prompt": "hook-creator-dispatch.md",
+    },
+    {
         "name": "j2-stamp-check",
         "pattern": r"\.j2$",
         "exclude_jp": False,
         "prompt": "j2-stamp-check.md",
+    },
+    # キャッチオール（最低優先度）: 上のどの具体ルールにも当たらない plugins/ 配下のみ
+    {
+        "name": "plugin-creator-dispatch",
+        "pattern": r"(?:^|/)plugins/",
+        "exclude_jp": False,
+        "prompt": "plugin-creator-dispatch.md",
     },
 ]
 
