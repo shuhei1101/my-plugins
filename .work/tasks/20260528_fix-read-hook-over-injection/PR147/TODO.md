@@ -20,13 +20,13 @@ py-kit と next-kit の `hooks.json` に `Read` マッチャーが誤って含�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260528_fix-read-hook-over-injection/PR147/QA.md` |
-| - | `.work/notes/` のノートを更新する | - `.work/notes/fix-read-hook.md` |
-| - | py-kit/next-kit テンプレートから body 注入を削除（path+description のみに） | - `plugins/py-kit/hooks/templates/injection.{md,jp.md}.j2`, `plugins/next-kit/hooks/templates/injection.{md,jp.md}.j2` |
-| - | py-kit バージョンを PATCH バンプ | - `plugins/py-kit/.claude-plugin/plugin.json` |
-| - | next-kit バージョンを PATCH バンプ | - `plugins/next-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json バージョンを更新 | - `.claude-plugin/marketplace.json` |
-| - | CLAUDE.md フック設計方針を修正 | - `plugins/py-kit/CLAUDE.md`, `plugins/next-kit/CLAUDE.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260528_fix-read-hook-over-injection/PR147/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/fix-read-hook.md` |
+| 済 | py-kit/next-kit テンプレートから body 注入を削除（path+description のみに） | - `plugins/py-kit/hooks/templates/injection.{md,jp.md}.j2`, `plugins/next-kit/hooks/templates/injection.{md,jp.md}.j2` |
+| 済 | py-kit バージョンを PATCH バンプ | - `plugins/py-kit/.claude-plugin/plugin.json` |
+| 済 | next-kit バージョンを PATCH バンプ | - `plugins/next-kit/.claude-plugin/plugin.json` |
+| 済 | marketplace.json バージョンを更新 | - `.claude-plugin/marketplace.json` |
+| 済 | CLAUDE.md フック設計方針を修正 | - `plugins/py-kit/CLAUDE.md`, `plugins/py-kit/CLAUDE.jp.md` |
 
 ## 参考ドキュメント
 
