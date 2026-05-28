@@ -11,7 +11,7 @@ py-kit の注入フックが `{{ file_path }}` を `references/injection_rules.y
 ## 必読 reference
 
 {% for ref in required %}
-- `references/{{ ref.path }}` — {{ ref.description }}
+- `{{ ref.abs_path }}` — {{ ref.description }}
 {% endfor %}
 {% endif %}
 {% if optional %}
@@ -21,7 +21,7 @@ py-kit の注入フックが `{{ file_path }}` を `references/injection_rules.y
 ## 参考 reference（必要に応じて `Read` してください）
 
 {% for ref in optional %}
-- `references/{{ ref.path }}` — {{ ref.description }}
+- `{{ ref.abs_path }}` — {{ ref.description }}
 {% endfor %}
 {% endif %}
 

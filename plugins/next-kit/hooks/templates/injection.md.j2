@@ -10,7 +10,7 @@ The next-kit injection hook matched `{{ file_path }}` against `references/inject
 ## Required references
 
 {% for ref in required %}
-- `references/{{ ref.path }}` — {{ ref.description }}
+- `{{ ref.abs_path }}` — {{ ref.description }}
 {% endfor %}
 {% endif %}
 {% if optional %}
@@ -20,7 +20,7 @@ The next-kit injection hook matched `{{ file_path }}` against `references/inject
 ## Optional references (read if you need them)
 
 {% for ref in optional %}
-- `references/{{ ref.path }}` — {{ ref.description }}
+- `{{ ref.abs_path }}` — {{ ref.description }}
 {% endfor %}
 {% endif %}
 

@@ -195,10 +195,13 @@ def main() -> int:
         return 0
     token.touch()
 
-    # ----- reference 本文 + description を集める -----
+    # ----- reference の path (絶対) + description を集める -----
+    # 注入テキスト内では ${CLAUDE_PLUGIN_ROOT} は展開されないため、Claude が Read できる
+    # 絶対パスを出す (1行参照パターン)。
     def _read_ref(rel_path: str) -> dict[str, str]:
         return {
             "path": rel_path,
+            "abs_path": (refs_dir / rel_path).as_posix(),
             "description": descriptions.get(rel_path, ""),
         }
 
@@ -225,7 +228,7 @@ def main() -> int:
         _eprint(f"template render error ({template_filename}): {e}")
         lines = [f"# py-kit references (template error: {e})", "", f"target: {file_path}", ""]
         for r in required_data:
-            lines.append(f"- references/{r['path']} — {r['description']}")
+            lines.append(f"- {r['abs_path']} — {r['description']}")
         reason = "\n".join(lines)
 
     sys.stdout.buffer.write(
