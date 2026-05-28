@@ -23,16 +23,16 @@ work-kit ← worktree-kit の片方向依存しかないため、別プラグイ
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR163/QA.md` |
-| - | `.work/notes/` のノートを更新する | - `.work/notes/work-kit-skills.md` |
-| - | `work-add` スキルを work-kit へ移動（ネームスペース更新） | - `plugins/work-kit/skills/work-add/SKILL.md` / `.jp.md` |
-| - | `vscode-workspace-sync` スキルを work-kit へ移動（ネームスペース更新） | - `plugins/work-kit/skills/vscode-workspace-sync/SKILL.md` / `.jp.md` |
-| - | worktree-kit プラグインを削除 | - `plugins/worktree-kit/` |
-| - | marketplace.json から worktree-kit エントリを削除 | - `.claude-plugin/marketplace.json` |
-| - | work-start Step 4 を env var ゲートに書き換え（`/work-kit:work-add` 呼び出しに変更） | - `plugins/work-kit/skills/work-start/SKILL.md` / `.jp.md` |
-| - | 依存ルールを統合後の構成に更新（リネーム検討） | - `.claude/rules/feature/worktree-kit-dependency.md` / `rules-jp/` |
-| - | work-kit のバージョンを bump（MINOR）+ changelog 追加 | - `plugins/work-kit/.claude-plugin/plugin.json` / `marketplace.json` / `changelogs/v2.37.0.md` |
-| - | ルール・CLAUDE.md・glossary を整備する | - `.claude/rules/core/glossary.md` ほか |
+| 済 | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR163/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/work-kit-skills.md` |
+| 済 | `work-add` スキルを work-kit へ移動（ネームスペース更新） | - `plugins/work-kit/skills/work-add/SKILL.md` / `.jp.md` |
+| 済 | `vscode-workspace-sync` スキルを work-kit へ移動（ネームスペース更新） | - `plugins/work-kit/skills/vscode-workspace-sync/SKILL.md` / `.jp.md` |
+| 済 | worktree-kit プラグインを削除 | - `plugins/worktree-kit/` |
+| 済 | marketplace.json から worktree-kit エントリを削除 | - `.claude-plugin/marketplace.json` |
+| 済 | work-start Step 4 を env var ゲートに書き換え（`/work-kit:work-add` 呼び出しに変更） | - `plugins/work-kit/skills/work-start/SKILL.md` / `.jp.md` |
+| 済 | 依存ルールを統合後の構成に更新（`work-start-worktree-link` にリネーム） | - `.claude/rules/feature/work-start-worktree-link.md` / `rules-jp/` |
+| 済 | work-kit のバージョンを bump（MINOR）+ changelog 追加 | - `plugins/work-kit/.claude-plugin/plugin.json` / `marketplace.json` / `changelogs/v2.37.0.md` |
+| 済 | glossary を整備する（worktree-kit 統合 / WORK_KIT_USE_WORKTREE） | - `.claude/rules/core/glossary.md` / `rules-jp/` |
 
 ## 参考ドキュメント
 
