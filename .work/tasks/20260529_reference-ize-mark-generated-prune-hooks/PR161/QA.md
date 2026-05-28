@@ -10,7 +10,29 @@
 
 ## QA-001: スクリプト生成ファイル / 非マッチ型ファイルの出自スタンプをどう担保するか
 
-**状態**: 未決定（着手前に要判断）
+**状態**: 解決（2026-05-29、ユーザー判断）
+
+**決定**: **mark-generated スキルは「薄いラッパー」として残す**（廃止しない）。
+
+- スタンプ書式の正本は `references/provenance.md`（+jp）に一本化する。
+- **主経路（フック注入）**: claude-kit のオーサリングファイル（SKILL.md / rule / CLAUDE.md / plugin.json /
+  hooks / `.j2`）を Claude が Write/Edit すると、フックが `provenance.md` を注入 → Claude が直接スタンプ。
+  これらの claude-kit 自身の呼び出し元（creator 5本 / version-sync / common.md / skills.md / CLAUDE.md）からは
+  `/claude-kit:mark-generated` の明示呼び出しを除去する。
+- **フォールバック（薄ラッパー呼び出し）**: フックが発火しないケース — work-kit のスクリプト生成物
+  （`setup-task.py` の TODO/QA 等）、html-kit debug-fab の非マッチ型（.js/.css/.html）— は、引き続き
+  `/claude-kit:mark-generated`（薄ラッパー）を呼ぶ。薄ラッパーは `provenance.md` の書式に従ってスタンプ文字列を返す。
+- 結果: **work-kit / html-kit の呼び出し元は無変更**（薄ラッパーをそのまま呼べる）。本 PR は **claude-kit 単独**で完結し、
+  3プラグイン横断のバージョンバンプは不要。
+
+**却下**: 当初の (A)/(B)/(C) 単独案および「mark-generated 完全削除」。完全削除は work-kit/html-kit の
+スクリプト生成・非マッチ型をカバーできず横断改修が必要になるため、薄ラッパー存置が最小コスト。
+
+---
+
+## （以下は旧・検討メモ。上の決定で解消済み）
+
+**背景**: 「mark-generated を廃止し、ファイル編集時にフックが provenance リファレンスを自動注入する」方針だが、
 
 **背景**: 「mark-generated を廃止し、ファイル編集時にフックが provenance リファレンスを自動注入する」方針だが、
 claude-kit の注入フック（`inject_references.py`）は **Claude の Write/Edit/Read ツール呼び出し**で発火する。
