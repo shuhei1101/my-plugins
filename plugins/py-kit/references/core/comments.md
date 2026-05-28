@@ -27,8 +27,8 @@ Identifiers (variable / function / type names) stay in English.
 | **Design-significant** fields of Pydantic / dataclass | Required | `Field(description=...)` or `# ` inline comment |
 | Ordinary (self-evident) fields | Not needed | — |
 | Related statement blocks | Recommended | `# ` single-line label |
-| **Steps inside a high-layer / orchestration function** | Required | `# ` per-step intent (not just the block marker) |
-| **Conditional branches in high-layer code** | Required | `# ` inline label per branch (condition meaning + what it does) |
+| **Steps inside a multi-step function** (any layer) | Required | `# ` per-step intent (not just the block marker) |
+| **Conditional branches** (any layer) | Required | `# ` inline label per branch (condition meaning + what it does) |
 | Self-evident single lines | Not needed | — |
 | Logging-only lines (`logger.*`) | Not needed | — |
 | Change history (PR number + intent) | Allowed | `# PR{N}: {what changed / why}` |
@@ -146,17 +146,11 @@ async def handle_chat(input: ChatInput, *, chat: AsyncChatFn) -> ChatOutput:
     return ChatOutput(text=text[:MAX_RESPONSE_LEN])
 ```
 
-### High-layer / orchestration functions: comment the content, not just the markers
+### Comment the content, not just the markers
 
-Service-layer and other **orchestration functions** — the ones that wire a use case together (route → service → branches → result) — are read often by humans because they are the highest-level description of *what the feature does*. For these, block markers alone are not enough: also add a short comment on **what each step does and why**, especially anything non-obvious.
+Block markers alone are not enough: also add a short comment on **what each step does and why**, especially anything non-obvious. This applies **regardless of layer** — a service that wires a use case together, a feature-internal helper, and a leaf utility are all commented the same way. Don't reserve heavier comments for "high-level" code; comment density follows how non-obvious the code is, not which layer it sits in.
 
-Comment density by layer:
-
-| Layer | Comment density |
-|---|---|
-| Service / use-case orchestration (high-layer, user-facing) | **Heavy** — markers + per-step intent + per-branch labels |
-| Feature internals / helpers (`_`-prefixed) | Medium — markers where they help |
-| Pure leaf utilities (string ops, math) | Light — docstring only |
+The example below happens to be a service function, but write internal helpers and utilities exactly the same way.
 
 ```python
 async def handle_personal_chat(
@@ -304,8 +298,8 @@ def select_family_quests(*, db: Db, family_id: FamilyId, page: int) -> list[Ques
 - Public functions / types / DTOs must have a 1-line docstring
 - Design-significant fields on Pydantic / dataclass must be described
 - Logical blocks of long functions should be labeled with `# `
-- **High-layer / orchestration (service) functions get heavier comments** — markers + per-step intent, not just block labels
-- **Conditional branches in high-layer code**: label each branch with its condition meaning + what it does
+- **Comment the content of multi-step functions, not just block markers** — per-step intent, regardless of layer
+- **Conditional branches**: label each branch with its condition meaning + what it does, regardless of layer
 - **Do not comment logging-only lines** — `logger.*` is self-evident
 - Change history comments only for non-obvious changes, 1 line in Japanese, with PR number
 - TODO / FIXME require an issue / PR number

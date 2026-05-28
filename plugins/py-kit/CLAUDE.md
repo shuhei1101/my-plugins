@@ -90,7 +90,7 @@ The **references auto-injection hook** (`py-references-injection`) follows this 
 
 | Version | Main change |
 |---|---|
-| 2.3.0 | `core/comments.md`: layer-aware comment density — orchestration/service functions get heavier comments (markers + per-step intent + per-branch labels), branch-comment pattern, "no comments on logging-only lines", worked service example (PR154) |
+| 2.3.0 | `core/comments.md`: comment the content of multi-step functions, not just block markers — per-step intent + per-branch labels, applied regardless of layer; "no comments on logging-only lines"; worked example (PR154) |
 | 2.2.0 | Injection token is now per-pattern (was per-file); session-kit (optional) resets tokens per turn via UserPromptSubmit. Drops the PR150 marker/mtime approach (PR151) |
 | 2.1.2 | Injection token honors session-kit's context-generation marker → re-inject after /compact and /clear (PR150) |
 | 2.1.1 | Injection hook: inject path+description only (no body) as absolute paths; Read matcher kept (PR147) |
