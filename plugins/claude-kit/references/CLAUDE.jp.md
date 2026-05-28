@@ -20,8 +20,11 @@ Claude Code 指示ファイル（skill / rule / CLAUDE.md / hook / plugin）の�
 
 1. 編集対象ファイルパスを `injection_rules.yaml` のパターンと照合
 2. マッチした `required` reference は **本文全量**、`optional` は **パス + description のみ** を注入
-3. `~/.claude/tokens/claude-kit/{session_id}.yaml` のパターン単位 TTL トークンで重複排除
-   （`CLAUDE_KIT_INJECTION_TTL` 秒経過で再注入。デフォルト 3600）
+3. `~/.claude/tokens/claude-kit/{session_id}.yaml` の二層 TTL トークンで重複排除
+   （`CLAUDE_KIT_INJECTION_TTL` 秒経過で再注入。デフォルト 3600）:
+   - `patterns`: そのパターンが期限内なら丸ごとスキップ
+   - `references`: 本セッションで（どのパターン経由であれ）既に本文注入済みの `required` は
+     **パスのみ**表示。これで複数パターンで共有されるリファレンス本文の二重注入を防ぐ
 
 `CLAUDE_KIT_INJECTION_LANG=jp` で日本語 description を注入（`index.jp.yaml` + `injection.jp.md.j2`）。
 

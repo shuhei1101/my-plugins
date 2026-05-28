@@ -29,6 +29,8 @@ ref-inject の注入重複抑制を、現状の「パターン単位 TTL トー�
 | #156 | ref-inject プラグイン新設（TTL トークン注入設計の確立） |
 | #157 | py-kit を ref-inject へ移行（expires_at ベースのトークン） |
 | #158 | next-kit を ref-inject へ移行 |
+| #159 | claude-kit を ref-inject へ移行（本 PR が二層同期する 4 つ目の consumer。master 取り込みで本ブランチに合流） |
+| #161 | mark-generated を provenance 化 + claude-kit のフック削減（master 取り込みで合流） |
 
 ## 作業内容
 
@@ -46,6 +48,9 @@ ref-inject の注入重複抑制を、現状の「パターン単位 TTL トー�
 | ✅ | py-kit / next-kit の version bump | - 各 `plugin.json` / `marketplace.json` |
 | ✅ | glossary の `ref-inject 注入設計` エントリを二層キャッシュに更新 | - `.claude/rules/core/glossary.md`（+jp ミラー） |
 | ✅ | フックの動作検証（二層キャッシュ・TTL 期限切れ再注入・旧 schema クリーンアップ） | - 一時環境で検証済み |
+| ✅ | master 取り込み（PR159 の claude-kit 移行 + PR161 を本ブランチへ合流、コンフリクトなし） | - merge commit |
+| ✅ | claude-kit のフックコピーを二層キャッシュへ同期（4 つ目の consumer） | - `plugins/claude-kit/hooks/inject_references.py` ほか |
+| ✅ | claude-kit の references/CLAUDE.md（+jp）・version bump・changelog | - `plugins/claude-kit/...`, `plugin.json`, `marketplace.json` |
 
 ## 参考ドキュメント
 
