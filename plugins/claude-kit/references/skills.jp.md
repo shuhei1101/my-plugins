@@ -142,4 +142,4 @@ description: |
 - [ ] `SKILL.md`（英語、Claude がロード）と `SKILL.jp.md`（JP ミラー）の両方が、構造を一致させて存在する
 - [ ] `description` frontmatter に精密なトリガー条件がある。設定は `name` + `description` のみ
 - [ ] 共有内容は `## References` にある。単一ステップの内容はそのステップに留まる
-- [ ] 両ファイルとも `mark-generated` でスタンプ済み（`common.md` 参照）
+- [ ] 両ファイルとも `provenance.md` に従ってスタンプ済み（ファイルを書く際に自動注入される）

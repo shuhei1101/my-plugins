@@ -4,6 +4,7 @@ updates:
   - 2026-05-29 — 初版（PR156 設計メモ）
   - 2026-05-29 — PR157: py-kit を移行。トークンフィールドを injected_at → expires_at に変更
   - 2026-05-29 — PR159: claude-kit を移行（creator スキル → reference 自動注入の拡張版）
+  - 2026-05-29 — PR161: mark-generated を provenance.md 化（薄ラッパー存置）、claude-refactor 薄化、j2/jp-mirror チェックフック削除
 related_specs:
   - dev-kit-hooks.md
   - fix-read-hook.md
@@ -131,3 +132,14 @@ claude-kit は py-kit / next-kit のような「コーディング規約注入�
 - injection_rules: SKILL.md→skills.md / rule→rules.md / CLAUDE.md→claude-md.md / hooks.json・settings→hooks.md / plugin.json・marketplace→plugin-structure.md / glossary・incidents→各フォーマットガイド。common.md は creator 系パターンに required で同梱。
 - claude-kit は `*-kit` グロブに一致するため `kit-hooks-index-sync` の対象に自動で含まれる（Overview に明記）。
 - 注意: 既存の `jp_mirror_check.py`（PostToolUse）と `pre-compact.md`（PreCompact）は維持。inject_references.py は Edit/Write/MultiEdit/**Read** で発火（issue-scan 等の読み取り経路もカバー）。
+
+## PR161: mark-generated の provenance 化 + フック削減（claude-kit 単独）
+
+「AI がスキルを呼ぶのを減らし、フック注入や reference に寄せる」方針の続き。
+
+- **出自スタンプの正本を `references/provenance.md`(+jp) に一本化**。書式テーブル・version 取得・配置・JP ミラー警告・`.json` スキップ・既存行置換を記載。`common.md` からスタンプ節は撤去（provenance.md へ移管）。
+- **mark-generated は薄ラッパーとして存置**（廃止しない）。主経路は注入フックによる provenance.md 配信（Claude が Write/Edit する authoring ファイル）。フォールバックは薄ラッパー呼び出し（フック非発火 = work-kit の `setup-task.py` スクリプト生成物、html-kit debug-fab の `.js`/`.css`/`.html` 非マッチ型）。**判断の決め手**: フック注入は Write/Edit 経路でしか発火しない。スクリプト生成・非マッチ型は薄ラッパー経由が要るため完全削除しない。
+- 結果、**work-kit / html-kit は無変更**（薄ラッパーをそのまま呼ぶ）。本 PR は claude-kit 単独で完結。
+- injection_rules に `provenance.md` を全 stampable パターン（SKILL.md / rule / CLAUDE.md / prompts / glossary / incidents / `**/*.j2`）の required へ追加。JSON のみのパターン（hooks.json / settings / plugin / marketplace）は `.json` がコメント不可なので provenance を付けない。
+- **claude-refactor 薄化**: Step ごとのインライン重複基準表を削除し references 参照へ（407→約160行）。実行ステップも「creator スキルを呼べ」→「直接編集（ガイドは注入される）」へ。
+- **j2-stamp-check / jp-mirror-check フック削除**。claude-kit のフックは inject_references + PreCompact のみに。`.j2` 出自は注入で、JP ミラー同期は `*-jp-mirror-sync` ルールで担保。
