@@ -1,27 +1,34 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
-# hooks.jp.md — フック設計ガイド（日本語ミラー）
+# フック作成ガイド
 
-> このファイルは `references/hooks.md` の日本語ミラーです。
-> 変更する場合は JP ミラーを先に更新し、その後英語版にも反映してください。
-
----
-
-# フック設計ガイド
-
-`.claude/hooks/` と `settings.json` のフック設計・作成に使う知識をまとめたドキュメント。
-プロンプト注入型フック（stdout にプロンプトを出力して Claude のコンテキストへ注入するタイプ）を対象とする。
+**プロンプト注入型フック**の設計・作成の方法 — イベント発火時に Claude のコンテキストへ
+テキストプロンプトを注入するフック（副作用のために外部プロセスを実行するアクションフックではない）。
+本ガイドは自己完結している: （`hooks.json`、プロジェクトの `settings.json`、または
+`hooks/prompts/*.md` を編集しているため）注入されたら、これに従ってフックを直接執筆すること。
+英語原本: `references/hooks.md`
 
 ---
 
-## フックイベント一覧
+## フックイベント
 
-| イベント | 発火タイミング | 用途 |
+| イベント | 発火タイミング | 目的 |
 |---|---|---|
-| `UserPromptSubmit` | ユーザーがプロンプトを送信するたびに | 毎回確認させたいルール・チェックリスト |
-| `Stop` | Claude が応答を止めるたびに | 作業完了後のチェック・後処理の強制 |
-| `PreToolUse` | ツール実行前 | 危険な操作のブロック・確認 |
-| `PostToolUse` | ツール実行後 | 編集後の通知・検証 |
-| `SessionStart` | セッション開始時 | 初期コンテキストの注入 |
+| `UserPromptSubmit` | ユーザーがプロンプトを送信するたび | リクエストごとに検証するルール/チェックリスト |
+| `Stop` | Claude が応答を止めるたび | 作業後チェック、強制フォローアップ |
+| `PreToolUse` | ツール実行前 | 危険な操作のブロック/確認、コンテキスト注入 |
+| `PostToolUse` | ツール実行後 | 編集後の通知や検証 |
+| `SessionStart` | セッション開始時 | 初期コンテキスト注入 |
+| `PreCompact` | コンテキスト圧縮前 | 圧縮で失われる内容の再注入 |
+
+### イベントマッピング（ユーザーの記述から）
+
+| ユーザーの記述 | イベント |
+|---|---|
+| 「ユーザーが送信するたび」/「Claude が処理する前」 | `UserPromptSubmit` |
+| 「Claude が終わったら」/「各応答の後」/「停止時」 | `Stop` |
+| 「ツール実行前」/「Bash の前」 | `PreToolUse` |
+| 「ツール実行後」/「ファイル編集後」 | `PostToolUse` |
+| 「セッション開始時」 | `SessionStart` |
 
 ---
 
@@ -29,140 +36,250 @@
 
 | フック | stdout の形式 | Claude への影響 |
 |---|---|---|
-| `UserPromptSubmit` | テキストをそのまま出力 | `<system-reminder>` として注入 |
-| `Stop` | `{"decision":"block","reason":"<プロンプト>"}` | Claude が作業を継続する |
-| `PreToolUse` | `{"decision":"block","reason":"<プロンプト>"}` | ツール実行をブロックして指示注入 |
+| `UserPromptSubmit` | プレーンテキスト（ファイル内容） | Claude がプロンプトを処理する前に `<system-reminder>` として注入 |
+| `Stop` | `{"decision":"block","reason":"<content>"}` | Claude が継続し、指示に従う |
+| `PreToolUse` | `{"decision":"block","reason":"<content>"}` | ツールをブロックし、指示を注入 |
+
+フックは実行時にプロンプトファイルを読み、その内容を直接埋め込む — プロンプトファイルが
+指示テキストの真実の源（source of truth）である。
 
 ---
 
-## フックを使うべきケース
+## フックを使うべきとき（および入れてはいけないもの）
 
-以下の性質があれば、rules / CLAUDE.md よりフックの方が適切:
+以下の性質があるとき、内容を rules / CLAUDE.md からフックへ移す:
 
-- 「プロンプト送信のたびに確認する」「毎回チェックする」 → `UserPromptSubmit`
-- 「Claude が止まるたびに〜する」「作業完了後に確認する」 → `Stop`
+- 「プロンプト送信のたびにチェック」 → `UserPromptSubmit`
+- 「Claude が止まるたびに X する」 → `Stop`
 - 「ツール実行前に確認する」 → `PreToolUse`
 - 「ファイル編集後に通知する」 → `PostToolUse`
 
+フックに入れては**いけない**もの:
+- 一度だけ確認すればよい内容 — フックは毎回発火する
+- `Stop` フックの `reason` の長文プロンプト（ユーザーに表示される） — 短く保つ
+- ループ防止のないブロック型フック — 必ずループガードを付ける（下記）
+
 ---
 
-## NG パターン
+## 作成ワークフロー
 
-- 一度だけ確認すればよい内容 → フックは毎回発火するため過剰
-- 長文プロンプト → `Stop` フックの `reason` はユーザー画面に表示されるため極力短くする
-- ループ対策なしのブロック系フック → `Stop` は `stop_hook_active`、`PreToolUse` はワンタイムトークンで防止する
+1. 上記のマッピングから**イベントを選ぶ**。
+2. **配置を決める**:
+
+   | 配置 | ファイル | 共有 |
+   |---|---|---|
+   | プラグイン | `plugins/{name}/hooks/hooks.json` | ✅ プラグインに同梱 |
+   | プロジェクト（チーム） | `.claude/settings.json` の `hooks` セクション | ✅ git にコミット |
+   | プロジェクト（ローカル限定） | `.claude/settings.local.json` の `hooks` セクション | ❌ `.gitignore` に追加 |
+
+3. 指示テキストを持つ**プロンプトファイルを作成する**:
+   - プラグイン: `plugins/{name}/hooks/prompts/{event-name}.md`（+ `.jp.md` ミラー）
+   - プロジェクト: `.claude/hooks/{event-name}.md`
+4. 下記のスニペットを使って **`hooks.json` / `settings.json` に組み込む**。
+5. `Stop` / `PreToolUse` ブロック型フックには**ループ防止を追加する**。
+6. Claude Code の再起動をユーザーに伝え、イベントをトリガーして `<system-reminder>` が出ることを検証する。
+
+---
+
+## すぐ使えるスニペット
+
+> プラグインの `hooks/hooks.json` では `${CLAUDE_PLUGIN_ROOT}` を使い、プロジェクトの
+> `settings.json` では `${CLAUDE_PROJECT_DIR}` を使う。`${CLAUDE_PLUGIN_ROOT}` は
+> **hooks.json の中でのみ**展開され、注入される reason テキスト内では決して展開されない。
+
+### UserPromptSubmit — 毎プロンプトで注入
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else None",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/user-prompt-submit.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**キーワードフィルタリング**（プロンプトがマッチしたときだけ注入）: `-c` の文字列を次に置き換える:
+
+```
+import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(q.read_bytes()) if q.exists() and any(k in p for k in ['html','css','js']) else None
+```
+
+### Stop — プロンプトを注入し Claude を継続させる（ループ安全）
+
+`stop_hook_active` ガードが無限ループを防ぐ。
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### PreToolUse — 無条件ブロック
+
+`matcher` は特定のツールを対象にする。マッチする**すべての**呼び出しをブロックする。
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/pre-tool-use.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### PreToolUse — ワンタイムトークン付き条件ブロック（ループ安全）
+
+「毎回確認を要求するが、確認後は一度だけ通す」。ガードが無いと、承認後の Claude の再試行が
+再びフックにヒットし → 無限ループ。トークンがサイクルを断ち切る。
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/f'my-guard-token-{d.get(\"session_id\",\"default\")}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/pre-tool-use.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+> ⚠️ フックごとに一意のトークンファイル名を使う。名前を共有するとフック間で干渉する。
+> ✅ トークン名に `session_id` を含め、並行セッションが互いのトークンを消費できないようにする。
+>
+> クォートのネストに注意: `-c "..."` ワンライナー内では内側に単一クォートを使い（`d.get('x')`）、
+> ネストした二重クォートは決して使わない — 外側のシェル文字列が壊れる。非自明なものは、インラインの
+> `-c` ワンライナーではなくロジックを `hooks/*.py` スクリプトに外出しすること。
 
 ---
 
 ## ループ防止
 
-### Stop フック
-
-`stdin JSON` に `stop_hook_active: true` が含まれる場合は再発火中なので `exit(0)` で抜ける:
+| フック | 問題 | 修正 |
+|---|---|---|
+| `Stop` | Claude が継続 → 停止 → フック発火 → ループ | `stop_hook_active` フラグ — 再発火時はスキップ |
+| `PreToolUse` | Claude が再試行 → フックが再ブロック → ループ | ワンタイムトークン — ブロックごとに再試行を 1 回だけ許す |
 
 ```python
+# Stop: skip on re-fire
 d = json.loads(sys.stdin.read())
 if d.get('stop_hook_active'):
-    sys.exit(0)  # 再発火 → スルー
+    sys.exit(0)
 ```
 
-### PreToolUse フック（ワンタイムトークン）
-
 ```python
+# PreToolUse: one-time token (stop_hook_active does not exist here)
 session_id = d.get('session_id', 'default')
 token = pathlib.Path(tempfile.gettempdir()) / f'my-guard-token-{session_id}'
 if token.exists():
-    token.unlink()   # トークンを消費して通過
+    token.unlink()   # consume → allow this execution
     sys.exit(0)
-token.touch()        # ブロック + トークン作成
+token.touch()        # no token → block + create
 ```
+
+### セッションフラグ型ブロック（最初の編集をブロック、以降は通す）
+
+dispatch フックが使う変種: 最初のブロックでフラグを touch し、同一セッションの**後続呼び出しでは
+0 を返す**（消費しない）。「セッション中に一度だけリマインドし、以降は黙る」フックに
+`f'{rule-name}-{session_id}'` をキーとして使う。
 
 ---
 
-## reference 自動注入パターン（j2 テンプレート）
+## reference 自動注入フック — `ref-inject` を使う
 
-Claude がこれから触るファイルに応じた規約・ドキュメントを注入する
-`PreToolUse(Edit|Write|MultiEdit|Read)` フック。代表実装は py-kit / next-kit
-（`hooks/inject_references.py` + `hooks/templates/injection.md.j2` +
-`references/injection_rules.yaml`）。
+Claude がこれから触るファイルに関連する規約/ドキュメントを注入する
+`PreToolUse(Edit | Write | MultiEdit | Read)` フック。**手作業で組み立てない** — `ref-inject`
+プラグインを使う:
 
-### 仕組み
-
-1. Edit/Write/MultiEdit/Read で stdin の `tool_input.file_path` から対象パスを読む。
-2. `injection_rules.yaml` の glob パターンと照合し、そのパスの `required` /
-   `optional` reference を集める。
-3. Jinja2 テンプレートで整形し `decision: block` の reason に出す。Claude は
-   それを読んで従い、ツール呼び出しを再試行する。
-4. `Read` も対象にすると、読み取りのみの経路（コードスキャン等）でも案内が効く。
-
-### 注意 1 — 本文ではなくポインタを注入する
-
-各 reference の本文全体を reason に展開しては**いけない**。フックは**マッチする
-ファイル操作のたびに**発火するため、本文全量注入だと毎回全文が再注入され、
-すぐにコンテキストを圧迫する。**path + 1 行 description** だけを注入し、本文は
-Claude が必要なものを `Read` する。（incident: `injection-hook-full-body-bloat`）
-
-### 注意 2 — 注入するポインタは絶対パスにする
-
-`${CLAUDE_PLUGIN_ROOT}` は **hooks.json の中でのみ**展開される。フックが print する
-reason テキスト内では展開されない。`references/foo.md` のような相対パスは
-*編集対象プロジェクト* の cwd 基準で解決され（プラグインキャッシュではない）失敗する。
-フックスクリプト自身が**絶対パス**を生成して出す必要がある。例:
-
-```python
-abs_path = (refs_dir / rel_path).as_posix()   # refs_dir は CLAUDE_PLUGIN_ROOT から導出
+```
+/ref-inject:apply <target-plugin>
 ```
 
-### 注意 3 — パターン単位トークンで注入を重複排除
+これは注入フック（`hooks/inject_references.py` + `hooks/hooks.json`）、Jinja2 テンプレート、
+`references/` スケルトンをコピーし、プラグインごとのプレースホルダを置換する。その後、
+`references/index.yaml`（path + description）を埋め、`references/injection_rules.yaml` で
+編集パスのパターンを束ね、reference ドキュメントを書く（1 reference = 1 ユースケース）。
+代表的な採用例: `py-kit`, `next-kit`, `claude-kit`。
 
-重複排除しないとマッチするファイル操作のたびに再注入される。トークンを**マッチした
-ルールのパターン単位**（ファイルパスではない）にすると、同じパターンにマッチする全ファイルで
-共有され、未注入（トークンが無い）パターンの reference だけを注入できる:
+### 注入設計（生成されるフックの動作）
 
-```python
-token_dir = pathlib.Path.home() / '.claude' / 'tokens' / 'my-kit'   # プラグインごとにサブフォルダ
-required, optional, new_tokens = [], [], []
-for rule in matched_rules:
-    pat_hash = hashlib.sha1(rule['pattern'].encode('utf-8')).hexdigest()[:12]
-    token = token_dir / f'{session_id}-{pat_hash}'
-    if token.exists():
-        continue                      # このパターンは注入済み → reference をスキップ
-    new_tokens.append(token)
-    required += rule.get('required', [])
-    optional += rule.get('optional', [])
-if not required and not optional:
-    sys.exit(0)                       # 新たに注入するものなし
-token_dir.mkdir(parents=True, exist_ok=True)
-for token in new_tokens:
-    token.touch()                     # これらのパターンを注入済みにする（消費しない）
-```
+1. Edit/Write/MultiEdit/Read で、対象パスを `injection_rules.yaml` の glob パターンと照合する。
+2. マッチした各 `required` reference を**本文全量**、各 `optional` を **path + description のみ**で注入する。
+3. `~/.claude/tokens/{plugin}/{session_id}.yaml` の**パターン単位 TTL トークン**で重複排除する —
+   マッチしたパターンをキーとする YAML マップで、各エントリが `expires_at`（= 注入時刻 + TTL）を持つ。
+   `now < expires_at` の間はスキップし、経過したら再注入する（TTL デフォルト 3600 秒、
+   `{PREFIX}_INJECTION_TTL` で上書き）。毎回の発火で期限切れエントリを掃除し、空になったトークンファイルを削除する。
+4. `${CLAUDE_PLUGIN_ROOT}` は注入される reason テキスト内では**展開されない** — スクリプト自身が絶対パスを出す。
 
-> トークンは `~/.claude/tokens/{plugin}/`（プラグインごとにサブフォルダ）に置く。プロジェクト
-> ツリー外に逃がし、プラグインごとに名前空間を分けるため。
-
-> パターン単位（ファイル単位ではない）の意味: あるパターンの reference がどれかのファイル
-> 経由で一度注入されたら、同じパターンにマッチする他のファイルはそれをスキップする。
-> *追加の*パターンにマッチするファイルは、その追加パターンの reference だけを注入する。
-
-> ⚠️ **制約 — once-per-session のスコープ。** トークンはセッション全体で生きるため、各パターンは
-> セッション中1回だけ注入される: 最初に該当ファイルを触ったときに注入され、以降そのセッションでは
-> 再注入されない。`/clear` は `session_id` が変わるので新セッションが自然に再注入する。`/compact`
-> は `session_id` を保つため、`/compact` で要約され消えた案内は再注入されない。トークンは空マーカー
-> ファイルで `~/.claude/tokens/{plugin}/` に溜まり続け、自動削除はされない。（以前は `session-kit`
-> companion がトークンを毎ターンリセットし掃除していたが、PR155 で削除した — ポインタのみ注入に
-> 対してターンごとの再注入は専用のプラグイン横断プラグインに見合わなかった。）
-
-| 配置場所 | ファイル | 共有 |
-|---|---|---|
-| プラグイン | `plugins/{name}/hooks/hooks.json` | ✅ プラグインに同梱 |
-| プロジェクト（チーム共有） | `.claude/settings.json` の `hooks` セクション | ✅ git にコミット |
-| プロジェクト（ローカル限定） | `.claude/settings.local.json` の `hooks` セクション | ❌ `.gitignore` 推奨 |
+> 経緯: 以前の設計はコンテキスト肥大を避けるためポインタのみ（path+description、本文なし）を
+> 注入し（incident `injection-hook-full-body-bloat`）、掃除のないパターン単位の空マーカーファイルを
+> 使っていた。現在の設計は `required` の本文全量を復活させた — TTL トークンが再注入を TTL
+> ウィンドウごとに 1 回へ抑制するため。**`PreCompact` リフレッシュフックは無い** — `/compact` の後、
+> TTL が経過すれば本文が再注入される。
 
 ---
 
-## パス変数
+## 配置とパス変数
 
 | 変数 | 使える場所 | 意味 |
 |---|---|---|
 | `${CLAUDE_PLUGIN_ROOT}` | プラグインの hooks.json のみ | プラグインのインストール先ルート |
 | `${CLAUDE_PROJECT_DIR}` | settings.json / settings.local.json | プロジェクトルート |
+| `${CLAUDE_PLUGIN_DATA}` | プラグインの hooks.json のみ | プラグインの永続データディレクトリ |
+
+> ⚠️ `${CLAUDE_PLUGIN_ROOT}` はプラグインとしてインストールされたときのみ機能する。プロジェクトの
+> `settings.json` では何もしない — 代わりに `${CLAUDE_PROJECT_DIR}` を使う。

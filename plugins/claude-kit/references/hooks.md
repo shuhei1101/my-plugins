@@ -1,7 +1,9 @@
-# Hooks Design Guide
+# Hooks Authoring Guide
 
-Reference for designing and creating prompt-injection hooks.
-Targets hooks that inject a text prompt into Claude's context (not action hooks that run external processes).
+How to design and create **prompt-injection hooks** — hooks that inject a text prompt into Claude's
+context when an event fires (not action hooks that run external processes for their side effects).
+This guide is self-contained: when injected (because you are editing `hooks.json`, a project
+`settings.json`, or a `hooks/prompts/*.md`), follow it to author the hook directly.
 Japanese mirror: `references/hooks.jp.md`
 
 ---
@@ -10,11 +12,22 @@ Japanese mirror: `references/hooks.jp.md`
 
 | Event | When it fires | Purpose |
 |---|---|---|
-| `UserPromptSubmit` | Every time the user submits a prompt | Rules or checklists to verify on every request |
+| `UserPromptSubmit` | Every time the user submits a prompt | Rules/checklists to verify on every request |
 | `Stop` | Every time Claude stops responding | Post-work checks, forced follow-up |
-| `PreToolUse` | Before a tool is executed | Block or confirm dangerous operations |
+| `PreToolUse` | Before a tool is executed | Block or confirm dangerous operations; inject context |
 | `PostToolUse` | After a tool is executed | Post-edit notifications or validation |
 | `SessionStart` | At session start | Initial context injection |
+| `PreCompact` | Before context is compacted | Re-inject content that compaction would drop |
+
+### Event mapping (from the user's description)
+
+| User's description | Event |
+|---|---|
+| "every time the user submits" / "before Claude processes" | `UserPromptSubmit` |
+| "when Claude finishes" / "after each response" / "on stop" | `Stop` |
+| "before a tool runs" / "before Bash" | `PreToolUse` |
+| "after a tool runs" / "after file edit" | `PostToolUse` |
+| "at session start" | `SessionStart` |
 
 ---
 
@@ -22,148 +35,248 @@ Japanese mirror: `references/hooks.jp.md`
 
 | Hook | stdout format | Effect on Claude |
 |---|---|---|
-| `UserPromptSubmit` | Plain text | Injected as `<system-reminder>` |
-| `Stop` | `{"decision":"block","reason":"<prompt>"}` | Claude continues with that instruction |
-| `PreToolUse` | `{"decision":"block","reason":"<prompt>"}` | Blocks tool execution and injects instruction |
+| `UserPromptSubmit` | Plain text (file content) | Injected as `<system-reminder>` before Claude processes the prompt |
+| `Stop` | `{"decision":"block","reason":"<content>"}` | Claude continues and follows the instruction |
+| `PreToolUse` | `{"decision":"block","reason":"<content>"}` | Blocks the tool and injects the instruction |
+
+The hook reads the prompt file at runtime and embeds its content directly — the prompt file is the
+source of truth for the instruction text.
 
 ---
 
-## When to use hooks
+## When to use hooks (and what not to put in them)
 
-Migrate content from rules / CLAUDE.md to hooks when it has these properties:
+Migrate content from rules / CLAUDE.md to a hook when it has these properties:
 
-- "Check every time a prompt is submitted", "verify on every request" → `UserPromptSubmit`
-- "Do X every time Claude stops", "confirm after work is complete" → `Stop`
+- "Check every time a prompt is submitted" → `UserPromptSubmit`
+- "Do X every time Claude stops" → `Stop`
 - "Confirm before running a tool" → `PreToolUse`
 - "Notify after editing a file" → `PostToolUse`
 
+Do **not** put in hooks:
+- Content that only needs to be confirmed once — hooks fire every time
+- Long-form prompts in a `Stop` hook's `reason` (it is shown to the user) — keep it brief
+- Block-type hooks without loop prevention — always add a loop guard (below)
+
 ---
 
-## What NOT to put in hooks
+## Authoring workflow
 
-- Content that only needs to be confirmed once — hooks fire every time
-- Long-form prompts — `Stop` hook's `reason` is shown directly to the user; keep it brief
-- Block-type hooks without loop prevention → always add loop guards
+1. **Pick the event** from the mapping above.
+2. **Decide placement**:
+
+   | Placement | File | Shared |
+   |---|---|---|
+   | Plugin | `plugins/{name}/hooks/hooks.json` | ✅ Bundled with plugin |
+   | Project (team) | `hooks` section of `.claude/settings.json` | ✅ Committed to git |
+   | Project (local only) | `hooks` section of `.claude/settings.local.json` | ❌ Add to `.gitignore` |
+
+3. **Create the prompt file** with the instruction text:
+   - Plugin: `plugins/{name}/hooks/prompts/{event-name}.md` (+ `.jp.md` mirror)
+   - Project: `.claude/hooks/{event-name}.md`
+4. **Wire it in `hooks.json` / `settings.json`** using a snippet below.
+5. **Add loop prevention** for `Stop` / `PreToolUse` block-type hooks.
+6. Tell the user to restart Claude Code, then trigger the event to verify the `<system-reminder>` appears.
+
+---
+
+## Ready-to-use snippets
+
+> Use `${CLAUDE_PLUGIN_ROOT}` in plugin `hooks/hooks.json`; use `${CLAUDE_PROJECT_DIR}` in project
+> `settings.json`. `${CLAUDE_PLUGIN_ROOT}` is expanded **only in hooks.json**, never in the injected
+> reason text.
+
+### UserPromptSubmit — inject on every prompt
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(p.read_bytes()) if p.exists() else None",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/user-prompt-submit.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Keyword filtering** (inject only when the prompt matches): replace the `-c` string with:
+
+```
+import sys,json,pathlib; d=json.loads(sys.stdin.read()); p=d.get('prompt','').lower(); q=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(q.read_bytes()) if q.exists() and any(k in p for k in ['html','css','js']) else None
+```
+
+### Stop — inject a prompt and make Claude continue (loop-safe)
+
+The `stop_hook_active` guard prevents infinite loops.
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib; d=json.loads(sys.stdin.read()); sys.exit(0) if d.get('stop_hook_active') else None; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### PreToolUse — unconditional block
+
+`matcher` targets specific tools. Blocks **every** matching call.
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib; p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/pre-tool-use.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### PreToolUse — conditional block with one-time token (loop-safe)
+
+"Require confirmation each time, but let through once after confirming." Without a guard, Claude's
+retry after approval hits the hook again → infinite loop. The token breaks the cycle.
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import sys,json,pathlib,re,tempfile; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if not re.search(r'\\bgit\\s+(push|merge)\\b',cmd) else None; token=pathlib.Path(tempfile.gettempdir())/f'my-guard-token-{d.get(\"session_id\",\"default\")}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else sys.exit(0)",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/pre-tool-use.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+> ⚠️ Use a unique token filename per hook; shared names cause cross-hook interference.
+> ✅ Include `session_id` in the token name so parallel sessions cannot consume each other's token.
+>
+> Quote-nesting caution: inside a `-c "..."` one-liner, use single quotes internally (`d.get('x')`),
+> never nested double quotes — they break the outer shell string. For anything non-trivial, extract
+> the logic into a `hooks/*.py` script instead of an inline `-c` one-liner.
 
 ---
 
 ## Loop prevention
 
-### Stop hook
-
-Check `stop_hook_active` in stdin JSON to skip re-fires:
+| Hook | Problem | Fix |
+|---|---|---|
+| `Stop` | Claude continues → stops → hook fires → loop | `stop_hook_active` flag — skip on re-fire |
+| `PreToolUse` | Claude retries → hook blocks again → loop | One-time token — allow exactly one retry per block |
 
 ```python
+# Stop: skip on re-fire
 d = json.loads(sys.stdin.read())
 if d.get('stop_hook_active'):
-    sys.exit(0)  # re-fire → skip
+    sys.exit(0)
 ```
 
-### PreToolUse hook (one-time token)
-
 ```python
+# PreToolUse: one-time token (stop_hook_active does not exist here)
 session_id = d.get('session_id', 'default')
 token = pathlib.Path(tempfile.gettempdir()) / f'my-guard-token-{session_id}'
 if token.exists():
-    token.unlink()   # consume token → pass through
+    token.unlink()   # consume → allow this execution
     sys.exit(0)
-token.touch()        # block + create token
+token.touch()        # no token → block + create
 ```
+
+### Session-flag block (block first edit, pass after)
+
+A variant used by dispatch hooks: touch the flag on the first block and **return 0 on subsequent
+calls** in the same session (do not consume). Use it for "remind once per session, then stop nagging"
+hooks keyed by `f'{rule-name}-{session_id}'`.
 
 ---
 
-## Reference auto-injection pattern (j2 template)
+## Reference auto-injection hooks — use `ref-inject`
 
-A `PreToolUse(Edit|Write|MultiEdit|Read)` hook that injects the conventions /
-documentation relevant to the file Claude is about to touch. Canonical
-implementation: py-kit / next-kit (`hooks/inject_references.py` +
-`hooks/templates/injection.md.j2` + `references/injection_rules.yaml`).
+A `PreToolUse(Edit | Write | MultiEdit | Read)` hook that injects the conventions/docs relevant to
+the file Claude is about to touch. **Do not hand-build this** — use the `ref-inject` plugin:
 
-### How it works
-
-1. On Edit/Write/MultiEdit/Read, read the target path from stdin (`tool_input.file_path`).
-2. Match it against glob patterns in `injection_rules.yaml` → collect the
-   `required` / `optional` reference files for that path.
-3. Render a Jinja2 template and emit it in the `decision: block` reason. Claude
-   reads/follows the guidance, then retries the tool call.
-4. Including `Read` lets read-only passes (e.g. code scans) receive guidance too.
-
-### Caution 1 — inject pointers, not full bodies
-
-Do **not** render the full body of each reference into the reason. The hook
-fires on **every** matching file operation, so full-body injection re-injects
-the entire content each time and bloats the context fast. Inject only
-**path + a one-line description**, and let Claude `Read` the files it actually
-needs. (Incident: `injection-hook-full-body-bloat`.)
-
-### Caution 2 — use absolute paths for the injected pointers
-
-`${CLAUDE_PLUGIN_ROOT}` is expanded **only inside hooks.json**, never in the
-reason text a hook prints. A relative path like `references/foo.md` resolves
-against the *edited project's* cwd (not the plugin cache) and fails. The hook
-script must compute and emit an **absolute path** itself, e.g.:
-
-```python
-abs_path = (refs_dir / rel_path).as_posix()   # refs_dir derived from CLAUDE_PLUGIN_ROOT
+```
+/ref-inject:apply <target-plugin>
 ```
 
-### Caution 3 — de-dupe injection with a per-pattern token
+It copies the injection hook (`hooks/inject_references.py` + `hooks/hooks.json`), the Jinja2 templates,
+and a `references/` skeleton, substituting per-plugin placeholders. Then you fill `references/index.yaml`
+(path + description), bind edit-path patterns in `references/injection_rules.yaml`, and write the
+reference docs (1 reference = 1 use case). Canonical adopters: `py-kit`, `next-kit`, `claude-kit`.
 
-Without de-duplication, every matching file operation re-injects. Use a token
-keyed by the **matched rule's pattern** (not the file path) so all files matching
-the same pattern share it, and inject only the references of patterns whose token
-does not yet exist:
+### Injection design (what the generated hook does)
 
-```python
-token_dir = pathlib.Path.home() / '.claude' / 'tokens' / 'my-kit'   # one subfolder per plugin
-required, optional, new_tokens = [], [], []
-for rule in matched_rules:
-    pat_hash = hashlib.sha1(rule['pattern'].encode('utf-8')).hexdigest()[:12]
-    token = token_dir / f'{session_id}-{pat_hash}'
-    if token.exists():
-        continue                      # this pattern already injected → skip its refs
-    new_tokens.append(token)
-    required += rule.get('required', [])
-    optional += rule.get('optional', [])
-if not required and not optional:
-    sys.exit(0)                       # nothing new to inject
-token_dir.mkdir(parents=True, exist_ok=True)
-for token in new_tokens:
-    token.touch()                     # mark these patterns injected (do NOT consume)
-```
+1. On Edit/Write/MultiEdit/Read, match the target path against `injection_rules.yaml` glob patterns.
+2. Inject each matched `required` reference **in full body**, each `optional` as **path + description only**.
+3. De-dupe with a **per-pattern TTL token** at `~/.claude/tokens/{plugin}/{session_id}.yaml` — a
+   YAML map keyed by the matched pattern, each entry holding `expires_at` (= injection time + TTL).
+   Skip while `now < expires_at`; re-inject once it elapses (TTL default 3600s, override via
+   `{PREFIX}_INJECTION_TTL`). Every fire cleans expired entries and deletes emptied token files.
+4. `${CLAUDE_PLUGIN_ROOT}` is **not** expanded in injected reason text — the script emits absolute paths itself.
 
-> Store tokens under `~/.claude/tokens/{plugin}/` (one subfolder per plugin) to keep
-> them out of the project tree and namespaced per plugin.
-
-> Per-pattern (vs per-file) means: once a pattern's references are injected via
-> any matching file, other files matching the same pattern skip them. A file that
-> matches an *additional* pattern injects only that pattern's references.
-
-> ⚠️ **Limitation — once-per-session scope.** The token lives for the whole session,
-> so each pattern injects once-per-session: references inject the first time a
-> matching file is touched and not again that session. `/clear` changes the
-> `session_id`, so a fresh session re-injects naturally; `/compact` does **not**
-> change it, so guidance summarized away by `/compact` is not re-injected. Tokens
-> are empty marker files and accumulate under `~/.claude/tokens/{plugin}/` with no
-> automatic cleanup. (A `session-kit` companion plugin once reset tokens per turn and
-> GC'd them, but it was removed in PR155 — per-turn refresh wasn't worth a dedicated
-> cross-plugin plugin for pointer-only injection.)
+> History: an earlier design injected pointers only (path+description, no bodies) to avoid context
+> bloat (incident `injection-hook-full-body-bloat`), and used per-pattern empty marker files with no
+> cleanup. The current design restores full bodies for `required` because the TTL token throttles
+> re-injection to once per TTL window. There is **no `PreCompact` refresh hook** — after `/compact`
+> the body re-injects once the TTL elapses.
 
 ---
 
-## Placement
-
-| Location | File | Shared |
-|---|---|---|
-| Plugin | `plugins/{name}/hooks/hooks.json` | ✅ Bundled with plugin |
-| Project (team-shared) | `hooks` section of `.claude/settings.json` | ✅ Committed to git |
-| Project (local only) | `hooks` section of `.claude/settings.local.json` | ❌ Add to `.gitignore` |
-
----
-
-## Path variables
+## Placement and path variables
 
 | Variable | Where usable | Meaning |
 |---|---|---|
 | `${CLAUDE_PLUGIN_ROOT}` | Plugin hooks.json only | Plugin installation root |
 | `${CLAUDE_PROJECT_DIR}` | settings.json / settings.local.json | Project root |
+| `${CLAUDE_PLUGIN_DATA}` | Plugin hooks.json only | Plugin persistent data directory |
+
+> ⚠️ `${CLAUDE_PLUGIN_ROOT}` only works when installed as a plugin. In project `settings.json` it does
+> nothing — use `${CLAUDE_PROJECT_DIR}` instead.

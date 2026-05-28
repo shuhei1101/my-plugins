@@ -76,4 +76,20 @@ Every file requires a corresponding JP mirror:
 | `CLAUDE.md` (any folder) | `CLAUDE.jp.md` in the same folder |
 | `.claude/references/<name>.md` | `.claude/references/<name>.jp.md` |
 
-**Update procedure**: update the JP mirror first, then apply the same change to the English version.
+**Workflow — write the JP mirror first, then the English original.** Author the `.jp.md`
+in Japanese, then produce the English version from it. In this repo the English original is
+the file Claude actually loads, so the two must never drift. Every JP mirror must start with
+the warning comment `<!-- This file is a Japanese mirror. ... -->` (see `provenance.md`).
+
+> The repo bundles a `jp-mirror-translator` agent (`subagent_type: "claude-kit:jp-mirror-translator"`):
+> pass a `.md` path to generate/update its `.jp.md`, or a `.jp.md` path to update the English original.
+> Useful when authoring both sides, but writing them by hand is equally valid.
+
+---
+
+## Provenance stamping
+
+After creating or editing an instruction file, stamp it with provenance metadata so
+`claude-kit:version-sync` can detect outdated artifacts. The full spec (per-extension format,
+version source, placement, JP-mirror warning) lives in **`provenance.md`**, which is injected
+alongside this guide whenever you edit a stampable file — follow it to write the stamp directly.

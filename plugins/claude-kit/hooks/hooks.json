@@ -8,7 +8,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/creator_dispatch.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/inject_references.py"
             ]
           }
         ]
@@ -20,7 +20,31 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/creator_dispatch.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/inject_references.py"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/inject_references.py"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/inject_references.py"
             ]
           }
         ]
@@ -36,20 +60,6 @@
               "-c",
               "import sys,json,pathlib,tempfile; d=json.loads(sys.stdin.read()); sid=d.get('session_id','default'); token=pathlib.Path(tempfile.gettempdir())/f'pre-compact-once-{sid}'; token.unlink() or sys.exit(0) if token.exists() else None; token.touch(); p=pathlib.Path(sys.argv[1]); sys.stdout.buffer.write(json.dumps({'decision':'block','reason':p.read_text('utf-8')},ensure_ascii=False).encode('utf-8')) if p.exists() else None",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/pre-compact.md"
-            ]
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/jp_mirror_check.py"
             ]
           }
         ]
