@@ -1,0 +1,100 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# ref-inject プラグイン開発ガイド
+
+`ref-inject` は**プラグインにリファレンス自動注入の仕組みを付与する**プラグイン。`py-kit` /
+`next-kit` で使われている `*-kit` 形式の、編集対象パスを `injection_rules.yaml` と照合して
+関連リファレンスを注入する `PreToolUse` フックを付ける。対象プラグインは新規でも既存でもよく、
+`/ref-inject:apply` は**注入部分だけ**を提供する。
+
+共通ランタイムの共有はしない（そのやり方は却下済み —
+`premature-cross-plugin-centralization` 参照）。代わりに `templates/` から**独立したファイル**を
+コピーし、インシデントログが「コピペの方が安い」と認めたやり方を自動化する。
+
+**生成スクリプトは持たない。** `/ref-inject:apply` は Claude が各テンプレートを読んで出力先
+ファイルを自分で書き、その過程でプレースホルダを置換する。こうすることで構造がコンテキストに
+残り、プラグインごとに調整しやすい。
+
+### 責務範囲（このプラグインが所有しないもの）
+
+`apply` スキルは**注入の仕組みだけ**に責務を絞る。プラグインレベルの関心事は `plugin-creator`
+の領分でここには含まない:
+
+- 対象プラグインの `plugin.json` を作成・編集しない
+- 対象プラグインのルート `CLAUDE.md` を作成・所有しない
+- `marketplace.json` を触らない
+
+---
+
+## 構成
+
+```
+ref-inject/
+├── .claude-plugin/plugin.json
+├── CLAUDE.md / CLAUDE.jp.md
+├── skills/apply/SKILL.md (+ .jp.md)    # /ref-inject:apply — Claude がテンプレを読んで対象プラグインへ書く
+└── templates/                           # 対象プラグインにコピーする注入ファイル（注入部分のみ）
+    ├── hooks/
+    │   ├── inject_references.py          # PreToolUse: パス照合 → リファレンス注入（再利用される注入スクリプト）
+    │   ├── hooks.json
+    │   └── templates/injection.md.j2 (+ .jp.md.j2)
+    └── references/
+        ├── index.yaml (+ index.jp.yaml)
+        ├── injection_rules.yaml
+        ├── CLAUDE.md (+ CLAUDE.jp.md)
+        └── example/getting-started.md
+```
+
+`plugin.json` / ルート `CLAUDE.md` のテンプレートは無い — それらはプラグインレベル
+（`plugin-creator` の所有）であり、注入の仕組みの一部ではない。
+
+---
+
+## プレースホルダ
+
+`apply` スキルが、各テキストテンプレートを書き出す際に Claude に置換させる
+（対象プラグインのディレクトリ名から導出）:
+
+| プレースホルダ | 置換内容 | 例 |
+|---|---|---|
+| `__PLUGIN_NAME__` | プラグイン名（kebab） | `vue-kit` |
+| `__ENV_PREFIX__` | 名前を大文字化、英数以外を `_` | `VUE_KIT` |
+| `__LOG_TAG__` | `{name}-references-injection` | `vue-kit-references-injection` |
+| `__DEFAULT_TTL__` | デフォルト TTL 秒 | `3600` |
+
+パスはテンプレートをそのまま反映 — 移動なし。
+
+---
+
+## 注入設計（フックに組み込み済み）
+
+- `required` は**本文全量**注入 / `optional` は**パス + description のみ**
+- トークン: `~/.claude/tokens/{plugin}/{session_id}.yaml`。pattern をキーにした YAML マップで各エントリに `injected_at`（epoch）。`now - injected_at >= TTL` で再注入。拡張可能（後でフィールド追加可）。
+- TTL: デフォルト `3600` 秒、`settings.json` の `env` → `{PREFIX}_INJECTION_TTL` で上書き
+- クリーンアップ: 発火のたびに全 `{session_id}.yaml` を走査し期限切れエントリを削除、空ファイルは削除
+- 言語: `{PREFIX}_INJECTION_LANG=jp` で description/テンプレートを日本語に切替
+
+`PreCompact` フックは持たない: `/compact` 後は注入済み本文がコンテキストから消えるが、
+トークンは TTL 経過後に再注入されるだけ。compact 専用のリフレッシュフックは無駄と判断（PR156）。
+
+これは旧方式（パターン単位の空ファイルトークン PR150/151、ポインタのみ注入 PR147）を
+置き換える。TTL トークンが再注入を throttle するため `required` の本文注入を復活させた。
+
+---
+
+## 使い方
+
+対象プラグイン（新規でも既存でも）に `/ref-inject:apply` を実行する。その後 `references/` を
+実際の doc で埋め、`injection_rules.yaml` で紐付ける。
+
+全 consumer の**仕組み**を変えるときは、ここの `templates/` を編集し、変更後のテンプレを各
+consumer の `hooks/` に再適用する（references はそのまま。`ref-inject` 由来なのはフック・
+テンプレートファイルのみ）。
+
+---
+
+## 関連プラグイン
+
+| プラグイン | 関係 |
+|---|---|
+| `py-kit` / `next-kit` | リファレンス注入の consumer。ref-inject テンプレートへ移行予定 |
+| `claude-kit` | `plugin-creator`（プラグインレベルのファイルを所有）と共通フックポリシーの出所 |
