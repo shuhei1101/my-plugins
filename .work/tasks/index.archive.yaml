@@ -583,3 +583,10 @@ prs:
     のコピーも同期。
   task: 20260529_ref-inject-two-tier-injection-cache
   completed: true
+- id: 163
+  title: PR163 — merge-worktree-kit-into-work-kit
+  type: refactor
+  tags: []
+  summary: worktree-kit を work-kit に統合し、環境変数 WORK_KIT_USE_WORKTREE でゲートする
+  task: 20260529_merge-worktree-kit-into-work-kit
+  completed: true
