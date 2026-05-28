@@ -37,13 +37,13 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR158/QA.md` |
-| - | `.work/notes/` のノートを作成する | - `.work/notes/{note}.md` |
-| - | ref-inject:apply で next-kit に注入の仕組みを再生成（PostToolUse ts_check は残す） | - `plugins/next-kit/hooks/*` |
-| - | references 構造を新形式に合わせる（実コンテンツは保持） | - `plugins/next-kit/references/*` |
-| - | next-kit 版バンプ + marketplace.json 同期 | - `plugins/next-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
-| - | next-kit CLAUDE.md を新注入設計に合わせて更新 | - `plugins/next-kit/CLAUDE.md` (+jp) |
-| - | kit-hooks-index-sync ルールとの整合確認（py-kit と同形に） | - `.claude/rules/feature/kit-hooks-index-sync.md` |
+| 済 | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR158/QA.md` |
+| 済 | `.work/notes/` のノートを更新する（ref-inject-generator.md に PR158 追記） | - `.work/notes/ref-inject-generator.md` |
+| 済 | ref-inject:apply 相当で next-kit に注入の仕組みを再生成（PostToolUse ts_check は残す） | - `plugins/next-kit/hooks/inject_references.py` / `templates/*.j2` |
+| 済 | references 構造を新形式に合わせる（実コンテンツは保持、`references/CLAUDE.md`+jp の注入説明を更新） | - `plugins/next-kit/references/CLAUDE.md` (+jp) |
+| 済 | next-kit 版バンプ(3.5.1→3.6.0) + marketplace.json 同期 + changelog | - `plugins/next-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` / `changelogs/v3.6.0.md` |
+| 済 | glossary の next-references-injection を新設計に更新（+jp ミラー） | - `.claude/rules/core/glossary.md` (+rules-jp) |
+| 済 | kit-hooks-index-sync ルールとの整合確認（py-kit と同形：差分はプラグイン名のみ） | - `.claude/rules/feature/kit-hooks-index-sync.md` |
 
 ## 参考ドキュメント
 
