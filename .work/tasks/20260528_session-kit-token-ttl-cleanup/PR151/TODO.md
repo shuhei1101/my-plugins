@@ -3,9 +3,12 @@
 
 ## 概要
 
-session-kit のセッションマーカー・注入トークンは /tmp に取り残されて溜まり続ける。これを掃除する。`/clear` は session_id が変わるので（テスト確認済み）clear バンプは不要 → session-kit の `SessionStart` ハンドラを「clear バンプ」から「**1日 TTL の一時ファイル掃除**」へ役割変更する。`PreCompact` のマーカー touch は維持。掃除対象は `/tmp/claude-session-ctx-gen-*`（セッションマーカー）と `/tmp/*-references-injection-*`（注入トークン）。空ファイル + mtime のロックフリー設計は維持（YAML 化はしない）。
+**方針ピボット（PR150 のマーカー方式を撤回）**: セッションマーカー + mtime 比較は不要。
 
-用語: **セッションマーカー** = `/tmp/claude-session-ctx-gen-{session_id}`（session-kit、セッションに1個、最終リセット時刻）。**注入トークン** = `/tmp/*-references-injection-{session_id}-{filehash}`（py-kit/next-kit、ファイルごと）。
+1. **会話ターン単位キャッシュ**: session-kit が **UserPromptSubmit で現セッションの注入トークンを削除**する。セッション単位だと長い会話で注入情報が下に埋もれるため、毎ターン削除して再注入させる。`SessionStart` では 1日 TTL で古いトークンを掃除（溜まり防止）。PreCompact / マーカーは廃止。
+2. **パターン単位トークン**: py-kit/next-kit の注入トークンを**ファイル単位から injection_rules のパターン単位**に変更。同じパターンにマッチする別ファイルを開いても、そのパターンの reference は再注入しない。ファイルが複数パターンにマッチする場合、未トークンのパターンの reference のみ注入する。
+
+用語: **注入トークン** = `/tmp/{plugin}-references-injection-{session_id}-{patternhash}`（py-kit/next-kit がマッチしたパターンごとに作る空ファイル）。マーカー（`claude-session-ctx-gen-*`）の概念は廃止。session-kit は利用側のトークンを外部から削除するだけで、利用側は session-kit を知らない。
 
 ### 実施条件
 
@@ -15,24 +18,25 @@ session-kit のセッションマーカー・注入トークンは /tmp に取�
 
 | PR番号 | 概要 |
 |---|---|
-| #150 | session-kit 新設（この PR で SessionStart を役割変更） |
+| #150 | session-kit 新設（この PR でマーカー方式 → トークン削除方式にピボット） |
 
 ## 作業内容
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260528_session-kit-token-ttl-cleanup/PR151/QA.md` |
-| 済 | ctx_marker.py: SessionStart を TTL 掃除に変更（clear バンプ廃止、PreCompact は維持） | - `plugins/session-kit/hooks/ctx_marker.py` |
-| 済 | session-kit CLAUDE.md/jp を新挙動に更新 + 版上げ(1.1.0) | - `plugins/session-kit/CLAUDE.md`, `CLAUDE.jp.md`, `plugins/session-kit/.claude-plugin/plugin.json` |
-| 済 | hooks.md/jp の Caution 3 を「PreCompact のみ」+ TTL 掃除に更新 + claude-kit 版上げ | - `plugins/claude-kit/references/hooks.{md,jp.md}`, `plugins/claude-kit/.claude-plugin/plugin.json` |
-| 済 | py-kit CLAUDE.md/jp の companion note を正確化（/compact、clear は session_id 変化で自己修復）+ 版上げ | - `plugins/py-kit/CLAUDE.md`, `CLAUDE.jp.md`, `plugins/py-kit/.claude-plugin/plugin.json` |
-| 済 | glossary の session-kit エントリを新挙動に更新 | - `.claude/rules/core/glossary.md`, `.claude/rules-jp/core/glossary.md` |
+| 済 | session-kit フック: UserPromptSubmit=現セッションのトークン削除、SessionStart=1日 TTL 掃除（ctx_marker.py → session_gc.py リネーム、PreCompact/マーカー廃止） | - `plugins/session-kit/hooks/session_gc.py`, `plugins/session-kit/hooks/hooks.json` |
+| 済 | session-kit CLAUDE.md/jp を新挙動に書き換え（マーカー削除、UserPromptSubmit）+ 版/description | - `plugins/session-kit/CLAUDE.md`, `CLAUDE.jp.md`, `plugins/session-kit/.claude-plugin/plugin.json` |
+| 済 | py-kit/next-kit inject_references.py をパターン単位トークンに変更（未トークンのパターンのみ注入）+ 版上げ(py 2.2.0 / next 3.5.0) | - `plugins/py-kit/hooks/inject_references.py`, `plugins/next-kit/hooks/inject_references.py`, 各 plugin.json |
+| 済 | hooks.md/jp の Caution 3 を「パターン単位トークン + UserPromptSubmit でターン毎リセット」に書き換え | - `plugins/claude-kit/references/hooks.{md,jp.md}` |
+| 済 | py-kit CLAUDE.md/jp の token/companion 記述を新挙動に更新 | - `plugins/py-kit/CLAUDE.md`, `CLAUDE.jp.md` |
+| 済 | glossary から「セッションマーカー」を削除、session-kit/注入トークンを新挙動に更新 | - `.claude/rules/core/glossary.md`, `.claude/rules-jp/core/glossary.md` |
 | 済 | marketplace.json に各版を反映 | - `.claude-plugin/marketplace.json` |
-| 済 | TTL 掃除と PreCompact マーカーの動作を検証 | - session-kit |
+| 済 | UserPromptSubmit トークン削除・SessionStart TTL 掃除・パターン単位トークンの動作を検証 | - session-kit / py-kit / next-kit |
 
 ## 参考ドキュメント
 
-- `plugins/session-kit/CLAUDE.md`: マーカー規約
+- `plugins/session-kit/CLAUDE.md`: トークン管理規約
 - `.claude/references/incidents/injection-hook-full-body-bloat.md`: 設計教訓
 
 ## 次PR候補
