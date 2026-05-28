@@ -20,13 +20,14 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260528_add-session-kit-ctx-marker/PR150/QA.md` |
-| - | session-kit プラグイン新設（plugin.json / hooks.json / ctx_marker.py / CLAUDE.md / CLAUDE.jp.md） | - `plugins/session-kit/**` |
-| - | py-kit inject_references.py をマーカー比較ロジックに改修 + 版上げ | - `plugins/py-kit/hooks/inject_references.py`, `plugins/py-kit/.claude-plugin/plugin.json` |
-| - | next-kit inject_references.py をマーカー比較ロジックに改修 + 版上げ | - `plugins/next-kit/hooks/inject_references.py`, `plugins/next-kit/.claude-plugin/plugin.json` |
-| - | hooks.md / hooks.jp.md の Caution 3 を世代マーカー方式に更新 + claude-kit 版上げ | - `plugins/claude-kit/references/hooks.{md,jp.md}`, `plugins/claude-kit/.claude-plugin/plugin.json` |
-| - | py-kit CLAUDE.md/jp に session-kit 連携を追記 | - `plugins/py-kit/CLAUDE.md`, `plugins/py-kit/CLAUDE.jp.md` |
-| - | marketplace.json に session-kit 追加 + 各版反映 | - `.claude-plugin/marketplace.json` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260528_add-session-kit-ctx-marker/PR150/QA.md` |
+| 済 | session-kit プラグイン新設（plugin.json / hooks.json / ctx_marker.py / CLAUDE.md / CLAUDE.jp.md） | - `plugins/session-kit/**` |
+| 済 | py-kit inject_references.py をマーカー比較ロジックに改修 + 版上げ | - `plugins/py-kit/hooks/inject_references.py`, `plugins/py-kit/.claude-plugin/plugin.json` |
+| 済 | next-kit inject_references.py をマーカー比較ロジックに改修 + 版上げ | - `plugins/next-kit/hooks/inject_references.py`, `plugins/next-kit/.claude-plugin/plugin.json` |
+| 済 | hooks.md / hooks.jp.md の Caution 3 を世代マーカー方式に更新 + claude-kit 版上げ | - `plugins/claude-kit/references/hooks.{md,jp.md}`, `plugins/claude-kit/.claude-plugin/plugin.json` |
+| 済 | py-kit CLAUDE.md/jp に session-kit 連携を追記 | - `plugins/py-kit/CLAUDE.md`, `plugins/py-kit/CLAUDE.jp.md` |
+| 済 | marketplace.json に session-kit 追加 + 各版反映 | - `.claude-plugin/marketplace.json` |
+| 済 | フック動作を検証（once-per-session / compact 後再注入 / clear 後再注入 / フォールバック） | - py-kit・next-kit 両方で確認 |
 
 ## 参考ドキュメント
 
