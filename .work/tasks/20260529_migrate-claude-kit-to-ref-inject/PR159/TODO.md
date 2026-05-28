@@ -42,15 +42,16 @@ claude-kit の creator 系スキル（skill / rule / hook / claude / plugin-crea
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | QA.md の未決定事項を解消（適用可否・出自スタンプ・上位スキル影響） | `PR159/QA.md` |
-| - | `/ref-inject:apply claude-kit` で注入機構（inject_references.py / hooks.json / templates / references/index.yaml / injection_rules.yaml）を claude-kit へ付与 | `plugins/claude-kit/hooks/*`, `plugins/claude-kit/references/index.yaml` 他 |
-| - | creator スキル本文の手順知識を references へ吸収（skills.md / rules.md / hooks.md / claude-md.md / plugin-structure.md を「編集時に読めば直接書ける自己完結ガイド」へ拡充） | `plugins/claude-kit/references/*.md` (+jp) |
-| - | injection_rules.yaml を整備（SKILL.md→skills.md / rule→rules.md / CLAUDE.md→claude-md.md / hooks.json→hooks.md / plugins/→plugin-structure.md。共通は common.md を required に） | `plugins/claude-kit/references/injection_rules.yaml` |
-| - | 各 required reference 末尾に「編集後 mark-generated でスタンプ」を明記（QA-002） | `plugins/claude-kit/references/*.md` |
-| - | `creator_dispatch.py` の creator 系ルール（skill/rule/claude/hook/plugin）を廃止し j2-stamp-check のみ残す。hooks.json から該当エントリ整理。creator 系 dispatch prompt（4 ファイル）削除 | `plugins/claude-kit/hooks/creator_dispatch.py`, `hooks/hooks.json`, `hooks/prompts/*-creator-dispatch.md` |
-| - | creator スキル（skill/rule/hook/claude/plugin-creator）を薄ラッパー化（対応 reference を読んで従え + mark-generated スタンプ。詳細手順は reference へ移譲） | `plugins/claude-kit/skills/*-creator/SKILL.md` (+jp) |
-| - | claude-kit 版バンプ + marketplace 同期 + changelog | `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `plugins/claude-kit/changelogs/*` |
-| - | `.work/notes/ref-inject-generator.md` に claude-kit 移行の結論を追記 | `.work/notes/ref-inject-generator.md` |
-| - | ルール・CLAUDE.md・glossary・incidents を整備（kit-hooks-index-sync に claude-kit を含める／creator-dispatch 廃止を反映） | `.claude/rules/feature/kit-hooks-index-sync.md`, `.claude/rules/core/glossary.md`, CLAUDE.md 他 |
+| 済 | `/ref-inject:apply claude-kit` 相当で注入機構（inject_references.py / hooks.json マージ / templates / references/index.yaml / index.jp.yaml / injection_rules.yaml / references/CLAUDE.md(+jp)）を claude-kit へ付与 | `plugins/claude-kit/hooks/*`, `plugins/claude-kit/references/*` |
+| 済 | creator スキル本文の手順知識を references へ吸収（skills.md / rules.md / hooks.md / claude-md.md / plugin-structure.md を自己完結ガイドへ拡充。plugin-structure.jp.md 新規。hooks.md の注入記述を ref-inject 現行設計に更新） | `plugins/claude-kit/references/*.md` (+jp) |
+| 済 | injection_rules.yaml を整備（SKILL.md→skills.md / rule→rules.md / CLAUDE.md→claude-md.md / hooks.json・settings→hooks.md / plugin.json・marketplace→plugin-structure.md / glossary・incidents→各ガイド。common.md を creator 系 required に） | `plugins/claude-kit/references/injection_rules.yaml` |
+| 済 | 出自スタンプ手順（mark-generated）を common.md に明記（QA-002） | `plugins/claude-kit/references/common.md` |
+| 済 | `creator_dispatch.py` の creator 系ルール（skill/rule/claude/hook/plugin）を廃止。j2-stamp-check を `j2_stamp_check.py` に切り出して存置。hooks.json 差し替え。creator 系 dispatch prompt（10 ファイル）削除 | `hooks/creator_dispatch.py`(削除), `hooks/j2_stamp_check.py`(新規), `hooks/hooks.json`, `hooks/prompts/*-creator-dispatch.*`(削除) |
+| 済 | creator スキル（skill/rule/hook/claude/plugin-creator）を薄ラッパー化 | `plugins/claude-kit/skills/*-creator/SKILL.md` (+jp) |
+| 済 | claude-kit 版バンプ(3.30.0) + marketplace 同期 + changelog | `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `changelogs/v3.30.0.md` |
+| 済 | `.work/notes/ref-inject-generator.md` に claude-kit 移行の結論を追記 | `.work/notes/ref-inject-generator.md` |
+| 済 | ルール・CLAUDE.md・glossary を整備（kit-hooks-index-sync に claude-kit 明記／glossary に移行エントリ追加・creator-dispatch エントリ更新（EN+JP）／claude-kit の CLAUDE.md(+jp) 刷新） | `.claude/rules/feature/kit-hooks-index-sync.md`, `.claude/rules/core/glossary.md`(+rules-jp), `plugins/claude-kit/CLAUDE.md`(+jp) |
+| 済 | 検証（orphan/構文/JSON/フックスモークテスト） | - |
 
 ## 参考ドキュメント
 

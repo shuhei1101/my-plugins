@@ -3,6 +3,7 @@ created_at: 2026-05-29
 updates:
   - 2026-05-29 — 初版（PR156 設計メモ）
   - 2026-05-29 — PR157: py-kit を移行。トークンフィールドを injected_at → expires_at に変更
+  - 2026-05-29 — PR159: claude-kit を移行（creator スキル → reference 自動注入の拡張版）
 related_specs:
   - dev-kit-hooks.md
   - fix-read-hook.md
@@ -104,5 +105,18 @@ references 雛形）だけ**に絞り、プラグインレベルの関心事（`
 
 ## スコープ
 
-- このPR = ref-inject 本体（apply スキル + 注入テンプレ）のみ。
-- 次PR候補: py-kit / next-kit / claude-kit に `/ref-inject:apply` を適用して注入部分を統一。
+- PR156 = ref-inject 本体（apply スキル + 注入テンプレ）のみ。
+- 次PR候補: py-kit（PR157 完了）/ next-kit（PR158 予約）/ claude-kit（PR159 完了）に `/ref-inject:apply` を適用して注入部分を統一。
+
+## PR159: claude-kit 移行（拡張版）の結論
+
+claude-kit は py-kit / next-kit のような「コーディング規約注入」プラグインではなく、**creator スキル群の本拠**。
+当初は「creator-dispatch があるので ref-inject 不要」と評価したが、ユーザー判断で**方針を拡張**:
+
+- creator スキル（skill / rule / hook / claude / plugin-creator）の**ステップ形式の手順を `references/` の自己完結ガイドに資料化**し、編集対象ファイルに応じて注入する。
+- 旧 `creator_dispatch.py`（「creator スキルを使え」とブロック）の **creator 系ルールを廃止**し、ref-inject 注入で置換。非 creator 系の `j2-stamp-check` だけ `j2_stamp_check.py` に切り出して存置。
+- creator スキルは**薄ラッパー化**して残す（明示起動 + 呼び出し元互換）。
+- 出自スタンプ（mark-generated）は注入される `references/common.md` に明記し、直接編集フローでも担保。
+- injection_rules: SKILL.md→skills.md / rule→rules.md / CLAUDE.md→claude-md.md / hooks.json・settings→hooks.md / plugin.json・marketplace→plugin-structure.md / glossary・incidents→各フォーマットガイド。common.md は creator 系パターンに required で同梱。
+- claude-kit は `*-kit` グロブに一致するため `kit-hooks-index-sync` の対象に自動で含まれる（Overview に明記）。
+- 注意: 既存の `jp_mirror_check.py`（PostToolUse）と `pre-compact.md`（PreCompact）は維持。inject_references.py は Edit/Write/MultiEdit/**Read** で発火（issue-scan 等の読み取り経路もカバー）。
