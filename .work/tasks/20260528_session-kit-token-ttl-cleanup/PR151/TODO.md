@@ -44,4 +44,5 @@
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| - | - | - |
+| modernize-creator-dispatch-hooks | `claude-kit/hooks/hooks.json` の creator-dispatch フック（現状 skill-creator / rule-creator / claude-creator / j2-stamp-check / jp-mirror-check）が巨大なインライン `-c` ワンライナーで古い形式。session_gc.py / inject_references.py のように**スクリプトファイルに抽出**して可読性・一貫性を上げる。発火は **Edit/Write のみ（Read では発火させない）** を維持（現状すでに満たしているが明示）。あわせて hook-creator / plugin-creator の dispatch フックが無い点も要検討。実装元の参照: ユーザー指定パス `plugins/claude-kit/skills/{claude,skill,rule,plugin,hook}-creator` と `plugins/claude-kit/hooks/hooks.json`。 | 即時実施可 |
+| verify-next-kit-injection-consistency | next-kit の inject_references / session-kit 連携が py-kit と同一形式か再確認（PR151 で両方更新済みのはずだが、ユーザー要望により明示確認）。`kit-hooks-index-sync` ルールの観点でチェック。 | 即時実施可 |
