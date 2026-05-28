@@ -3,9 +3,11 @@ created_at: 2026-05-23
 updates:
   - 2026-05-23 — PR91: pr-handoff スキルの追加
   - 2026-05-24 — PR109: pr-show スキルを merge Step 12 から切り出し
+  - 2026-05-29 — PR163: worktree-kit を統合（work-add / vscode-workspace-sync を取り込み）
 related_prs:
   - PR91
   - PR109
+  - PR163
 ---
 
 # work-kit スキル群 — 設計メモ
@@ -25,6 +27,20 @@ work-kit プラグインに含まれるスキルの設計・目的・相互関�
 | `branch-index-cleanup` | 古いブランチとindex.yamlエントリをクリーンアップ |
 | `pr-handoff` | 次のセッション向け引き継ぎ指示書を会話内に出力（PR91で追加） |
 | `pr-show` | 予約済みPRの状況を3カテゴリ（着手可能・進行中・条件あり）で一覧表示（PR109で追加） |
+| `work-add` | git worktree とブランチを作成（PR163 で worktree-kit から統合） |
+| `vscode-workspace-sync` | VS Code `.code-workspace` の `folders` を worktree と同期する PostToolUse フックを設定（PR163 で worktree-kit から統合） |
+
+## worktree-kit 統合（PR163）
+
+worktree-kit プラグインを廃止し、`work-add` / `vscode-workspace-sync` を work-kit に取り込んだ。
+work-kit ← worktree-kit の片方向依存しかなく、別プラグインに分ける利点がなかったため。
+
+ワークツリーの利用可否は環境変数 `WORK_KIT_USE_WORKTREE` で切り替える:
+
+- 未設定 / `true` 等 → ワークツリーを使用（デフォルト）
+- `false` / `0` / `no` → ワークツリー作成をスキップし `.work/` 管理のみで継続
+
+work-start Step 4 がこの env var を読んで分岐する（従来の「worktree-kit インストール有無」判定を置き換え）。
 
 ## pr-handoff スキルの設計
 

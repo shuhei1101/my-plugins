@@ -99,7 +99,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### ステップ4: ワークツリーとブランチを作成する（worktree-kit に委譲）
+### ステップ4: ワークツリーとブランチを作成する（有効時のみ）
 
 #### 条件
 
@@ -107,22 +107,29 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### 処理内容
 
-1. **`worktree-kit` がインストール済みの場合**: `/worktree-kit:work-add` を呼び出す:
+1. ワークツリー利用が有効かを確認する。**デフォルトで有効**であり、環境変数
+   `WORK_KIT_USE_WORKTREE` を falsy 値（`false` / `0` / `no` / `off`）に設定したときのみ無効になる:
 
-   > `/worktree-kit:work-add PR{N} {type}/{title}`
+   ```bash
+   v="${WORK_KIT_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
+   ```
 
-2. **`worktree-kit` がインストールされていない場合**: ワークツリー作成をスキップし、ユーザーに通知する:
+2. **有効の場合**: `/work-kit:work-add` を PR 番号・ブランチ付きで呼び出す:
 
-   > ⚠️ worktree-kit がインストールされていないため、ワークツリーの作成をスキップします。  
+   > `/work-kit:work-add PR{N} {type}/{title}`
+
+3. **無効の場合**: ワークツリー作成をスキップし、ユーザーに通知する:
+
+   > ⚠️ `WORK_KIT_USE_WORKTREE` が無効のため、ワークツリーの作成をスキップします。  
    > `.work/` フォルダ管理のみで作業を続けます。  
-   > ワークツリーを使用したい場合は `worktree-kit` プラグインをインストールしてください。
+   > ワークツリーを使用したい場合は `settings.json` の `env` から `WORK_KIT_USE_WORKTREE` を外すか `true` に設定してください。
 
 → ステップ5へ進む
 
 #### 出力
 
-- (worktree-kit あり) ワークツリーが `../repo-wt-PR{N}` に作成済み、ブランチ `PR{N}/{type}/{title}` が存在する
-- (worktree-kit なし) ワークツリーなし。`.work/` フォルダ管理のみで継続する
+- (worktree 有効) ワークツリーが `../repo-wt-PR{N}` に作成済み、ブランチ `PR{N}/{type}/{title}` が存在する
+- (worktree 無効) ワークツリーなし。`.work/` フォルダ管理のみで継続する
 
 #### 補足
 

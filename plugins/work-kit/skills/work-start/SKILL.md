@@ -94,7 +94,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### Step 4: Create the worktree and branch (via worktree-kit)
+### Step 4: Create the worktree and branch (if enabled)
 
 #### Condition
 
@@ -102,22 +102,29 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Process
 
-1. **If `worktree-kit` is installed**: invoke `/worktree-kit:work-add` with the PR number and branch:
+1. Check whether worktree usage is enabled. It is **enabled by default**; disabled only when the
+   `WORK_KIT_USE_WORKTREE` env var is set to a falsy value (`false` / `0` / `no` / `off`):
 
-   > `/worktree-kit:work-add PR{N} {type}/{title}`
+   ```bash
+   v="${WORK_KIT_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
+   ```
 
-2. **If `worktree-kit` is NOT installed**: skip worktree creation and notify the user:
+2. **If enabled**: invoke `/work-kit:work-add` with the PR number and branch:
 
-   > ⚠️ worktree-kit がインストールされていないため、ワークツリーの作成をスキップします。  
+   > `/work-kit:work-add PR{N} {type}/{title}`
+
+3. **If disabled**: skip worktree creation and notify the user:
+
+   > ⚠️ `WORK_KIT_USE_WORKTREE` が無効のため、ワークツリーの作成をスキップします。  
    > `.work/` フォルダ管理のみで作業を続けます。  
-   > ワークツリーを使用したい場合は `worktree-kit` プラグインをインストールしてください。
+   > ワークツリーを使用したい場合は `settings.json` の `env` から `WORK_KIT_USE_WORKTREE` を外すか `true` に設定してください。
 
 → Proceed to Step 5
 
 #### Output
 
-- (worktree-kit present) Worktree created at `../repo-wt-PR{N}`, branch `PR{N}/{type}/{title}` exists
-- (worktree-kit absent) No worktree; proceed with `.work/` folder management only
+- (worktree enabled) Worktree created at `../repo-wt-PR{N}`, branch `PR{N}/{type}/{title}` exists
+- (worktree disabled) No worktree; proceed with `.work/` folder management only
 
 #### Notes
 

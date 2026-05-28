@@ -1,5 +1,0 @@
-{
-  "name": "worktree-kit",
-  "description": "Git worktree lifecycle management — create worktrees for PRs and keep VS Code workspaces in sync",
-  "version": "1.0.0"
-}
