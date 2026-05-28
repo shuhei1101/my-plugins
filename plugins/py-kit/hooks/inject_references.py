@@ -2,8 +2,9 @@
 """py-kit references auto-injection hook.
 
 PreToolUse(Edit | Write | MultiEdit | Read) で発火し、対象ファイルパスを
-references/injection_rules.yaml の rules と照合する。マッチした reference の本文を
-Jinja2 で整形して `decision: block` の reason に注入する。
+references/injection_rules.yaml の rules と照合する。マッチした reference の
+path と description を Jinja2 で整形して `decision: block` の reason に注入する。
+本文は注入せず、Claude Code が `Read` で必要なファイルを読む設計。
 Read は issue-scan などの読み取り経路でも reference を入手できるよう許可している。
 
 description は references/index.yaml（英語）から path → description として取得する。
@@ -194,19 +195,14 @@ def main() -> int:
         return 0
     token.touch()
 
-    # ----- reference 本文 + description を集める -----
+    # ----- reference の path (絶対) + description を集める -----
+    # 注入テキスト内では ${CLAUDE_PLUGIN_ROOT} は展開されないため、Claude が Read できる
+    # 絶対パスを出す (1行参照パターン)。
     def _read_ref(rel_path: str) -> dict[str, str]:
-        body = ""
-        full = refs_dir / rel_path
-        if full.exists():
-            try:
-                body = full.read_text(encoding="utf-8")
-            except Exception as e:
-                _eprint(f"read failed {full}: {e}")
         return {
             "path": rel_path,
+            "abs_path": (refs_dir / rel_path).as_posix(),
             "description": descriptions.get(rel_path, ""),
-            "body": body,
         }
 
     required_data = [_read_ref(p) for p in required]
@@ -230,13 +226,9 @@ def main() -> int:
         )
     except Exception as e:
         _eprint(f"template render error ({template_filename}): {e}")
-        # フォールバック: 最小限の本文だけ流す
         lines = [f"# py-kit references (template error: {e})", "", f"target: {file_path}", ""]
         for r in required_data:
-            lines.append(f"## {r['path']}")
-            lines.append("")
-            lines.append(r["body"])
-            lines.append("")
+            lines.append(f"- {r['abs_path']} — {r['description']}")
         reason = "\n".join(lines)
 
     sys.stdout.buffer.write(

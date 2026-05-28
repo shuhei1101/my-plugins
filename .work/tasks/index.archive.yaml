@@ -471,3 +471,10 @@ prs:
   summary: work-kit merge スキルにイシュークローズ処理を統合
   task: 20260528_integrate-issue-close-to-merge
   completed: true
+- id: 147
+  title: PR147 — fix-read-hook-over-injection
+  type: fix
+  tags: []
+  summary: py-kit/next-kit の hooks.json から Read マッチャーを削除してコンテキスト過剰注入を修正
+  task: 20260528_fix-read-hook-over-injection
+  completed: true

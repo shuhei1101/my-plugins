@@ -82,12 +82,13 @@ py-kit のフックは `claude-kit` の方針に従う:
 - セッションフラグ型ブロック（`/tmp/{hook-name}-{session_id}`）で 1 セッション 1 回だけブロック
 - ディスパッチ用 `UserPromptSubmit` は追加しない
 
-**references 自動注入フック** (`py-references-injection`、同 PR で実装済み) も上記方針に従う:
-- `PreToolUse(Edit|Write|MultiEdit)` で `references/injection_rules.yaml` を読み、`references/index.yaml` から description を引く
-- 編集対象ファイルパスを `rules[].pattern` と glob 照合
-- マッチした `required` / `optional` を Jinja2 テンプレ（`hooks/templates/injection.md.j2`、または `PY_KIT_INJECTION_LANG=jp` で `.jp.md.j2`）で整形
-- `decision: block` で reason に注入
-- セッション + ファイルハッシュ単位のトークンで同一ファイルへの 2 回目以降の編集はスキップ
+**references 自動注入フック** (`py-references-injection`) も上記方針に従う:
+- `PreToolUse(Edit|Write|MultiEdit|Read)` で `references/injection_rules.yaml` を読み、`references/index.yaml` から description を引く
+- 対象ファイルパスを `rules[].pattern` と glob 照合
+- マッチした `required` / `optional` を **path + description のみ**（本文なし）で Jinja2 テンプレ経由に `decision: block` の reason へ注入
+- reference の本文は Claude が `Read` で必要なものだけ読む設計
+- Read も対象にすることで issue-scan など読み取り経路でも reference の案内を受けられる
+- セッション + ファイルハッシュ単位のトークンで同一ファイルへの 2 回目以降の操作はスキップ
 
 ---
 
@@ -95,6 +96,7 @@ py-kit のフックは `claude-kit` の方針に従う:
 
 | バージョン | 主な変更 |
 |---|---|
+| 2.1.1 | 注入フック: path+description のみに変更、Read マッチャー削除（PR147） |
 | 2.0.0 | 機能フォルダ型 + 関数ファースト + TypeScript 風へ全面刷新（PR138 で方針確定、PR140 で実装） |
 | 1.0.0 | 純 DDD ベース（廃止） |
 

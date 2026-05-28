@@ -75,11 +75,12 @@ py-kit hooks follow the `claude-kit` policy:
 - Session-flag-style blocking (`/tmp/{hook-name}-{session_id}`) — block only once per session
 - Do not add dispatch-purpose `UserPromptSubmit` hooks
 
-The **references auto-injection hook** (`py-references-injection`, implemented in the same PR) follows this policy:
-- On `PreToolUse(Edit|Write|MultiEdit)`, read `references/injection_rules.yaml` and look up descriptions in `references/index.yaml`
-- Match the file path being edited against `rules[].pattern` (glob)
-- Render the matched `required` / `optional` via the Jinja2 template (`hooks/templates/injection.md.j2`, or `.jp.md.j2` when `PY_KIT_INJECTION_LANG=jp`)
-- Inject into the `reason` field via `decision: block`
+The **references auto-injection hook** (`py-references-injection`) follows this policy:
+- On `PreToolUse(Edit|Write|MultiEdit|Read)`, read `references/injection_rules.yaml` and look up descriptions in `references/index.yaml`
+- Match the file path against `rules[].pattern` (glob)
+- Inject matched `required` / `optional` as **path + description only** (no body) via the Jinja2 template into `decision: block` reason
+- Claude reads reference file bodies itself via `Read` as needed
+- Read fires so that issue-scan and other read paths also receive reference guidance
 - A session + file-hash token prevents the hook from blocking the same file twice in one session
 
 ---
@@ -88,6 +89,7 @@ The **references auto-injection hook** (`py-references-injection`, implemented i
 
 | Version | Main change |
 |---|---|
+| 2.1.1 | Injection hook: path+description only (no body), Read matcher removed (PR147) |
 | 2.0.0 | Complete overhaul to feature-folder layout + function-first + TypeScript-style (policy fixed in PR138, implemented in PR140) |
 | 1.0.0 | Pure DDD base (discontinued) |
 
