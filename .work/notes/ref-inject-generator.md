@@ -61,22 +61,34 @@ PR147 で「本文全量を毎操作で注入してコンテキストが膨ら�
 plugins/ref-inject/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md / CLAUDE.jp.md
-├── skills/create/SKILL.md (+jp)   # 雛形をコピー&置換して新プラグインを生成
+├── skills/create/SKILL.md (+jp)   # Claude がテンプレを読んで新プラグインを書く手順
 └── templates/                      # プレースホルダ入りの生成元雛形
     ├── plugin.json
     ├── CLAUDE.md (+jp)
     ├── hooks/
-    │   ├── inject_references.py     # 新注入設計
+    │   ├── inject_references.py     # 新注入設計（再利用される注入スクリプトのお手本）
     │   ├── refresh_on_compact.py    # PreCompact ハンドラ
     │   ├── hooks.json               # PreToolUse(Edit/Write/MultiEdit/Read) + PreCompact
     │   └── templates/injection.md.j2 (+jp)
     └── references/
         ├── index.yaml (+jp) 雛形
         ├── injection_rules.yaml 雛形
-        └── CLAUDE.md (+jp) 雛形
+        ├── CLAUDE.md (+jp) 雛形
+        └── example/getting-started.md
 ```
 
-create スキルは、プラグイン名・env接頭辞・ログtag のプレースホルダ（例 `__PLUGIN__` / `__ENV_PREFIX__` / `__LOG_TAG__`）を置換しながら `plugins/{new}/` へ展開し、marketplace.json に登録する。references 中身は雛形（空）のまま、利用者が後から埋める。
+**生成スクリプトは持たない**（当初 `scripts/generate.py` を作ったが、ユーザー判断で削除）。
+create スキルは、Claude が各テンプレートを `Read` → プレースホルダ（`__PLUGIN_NAME__` /
+`__ENV_PREFIX__` / `__LOG_TAG__` / `__DEFAULT_TTL__` / `__PLUGIN_DESCRIPTION__`）を置換しながら
+`plugins/{new}/` へ `Write` し、marketplace.json に登録する。決定論的スクリプトよりこの方が
+構造がコンテキストに残り、プラグインごとに調整しやすい。references 中身は雛形のまま利用者が埋める。
+
+### なぜスクリプトをやめたか
+
+ジェネレータをスクリプト化すると「ただのコピー」がブラックボックス化してコンテキストに残らない。
+Claude が読みながら書く方式なら、生成過程そのものが会話に乗るため、その場で構造を理解・調整できる。
+ユーザーが言っていた「スクリプト」は、`templates/hooks/inject_references.py`（各 kit で再利用する
+注入スクリプトのお手本）を指していた。
 
 ## スコープ
 
