@@ -106,7 +106,18 @@ references 雛形）だけ**に絞り、プラグインレベルの関心事（`
 ## スコープ
 
 - PR156 = ref-inject 本体（apply スキル + 注入テンプレ）のみ。
-- 次PR候補: py-kit（PR157 完了）/ next-kit（PR158 予約）/ claude-kit（PR159 完了）に `/ref-inject:apply` を適用して注入部分を統一。
+- 次PR候補: py-kit（PR157 完了）/ next-kit（PR158 完了）/ claude-kit（PR159 完了）に `/ref-inject:apply` を適用して注入部分を統一。
+
+## PR158: next-kit 移行
+
+py-kit（PR157）に続き next-kit を ref-inject 注入形式へ移行（3.5.1→3.6.0）。
+ref-inject テンプレートを `next-kit` / `NEXT_KIT` / `next-kit-references-injection` / `3600` で置換し、
+`hooks/inject_references.py` と `hooks/templates/injection.{md,jp.md}.j2` を再生成。
+結果は py-kit と完全一致（差分はプラグイン名のみ）。
+- 旧トークン（パターンハッシュ空ファイル）→ pattern キーの YAML マップ（`expires_at` = 注入時刻 + TTL）
+- 注入: required は本文全量 / optional は path + description のみ
+- `hooks.json` は変更なし（PreToolUse はテンプレと同一、PostToolUse の `ts_check.py`(next-ts-check) はそのまま併設）
+- references の実コンテンツ（index.yaml / injection_rules.yaml / 各本文）は保持。`references/CLAUDE.md`+jp の注入説明のみ更新。
 
 ## PR159: claude-kit 移行（拡張版）の結論
 
