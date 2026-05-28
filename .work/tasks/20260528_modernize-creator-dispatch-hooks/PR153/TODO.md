@@ -42,9 +42,9 @@ PR147〜151 で reference 自動注入フックの「標準パターン」を確
 | 済 | QA.md に未決定事項を記録する（QA-001） | - `.work/tasks/20260528_modernize-creator-dispatch-hooks/PR153/QA.md` |
 | 済 | creator-dispatch の inline `-c` をスクリプト抽出・統一形式に | - `plugins/claude-kit/hooks/creator_dispatch.py`, `jp_mirror_check.py`, `hooks.json` |
 | 済 | Edit/Write のみ発火（Read 不発火）を維持 | - `plugins/claude-kit/hooks/hooks.json` |
-| - | hook-creator / plugin-creator dispatch の追加要否を判断・実装（QA-001 で判断待ち） | - `plugins/claude-kit/hooks/**` |
-| - | claude-kit バージョン bump | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | ルール・CLAUDE.md を整備する | - `plugins/claude-kit/CLAUDE.md` 等（必要時） |
+| 済 | hook-creator / plugin-creator dispatch を Edit/Write 化して配線（QA-001 決定） | - `creator_dispatch.py`, `prompts/hook-creator-dispatch.{md,jp.md}`, `prompts/plugin-creator-dispatch.{md,jp.md}` |
+| 済 | claude-kit バージョン bump（3.27.2 → 3.28.0） | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| 済 | ルール・CLAUDE.md を整備する（glossary・claude-kit CLAUDE.md + JP ミラー） | - `plugins/claude-kit/CLAUDE.md`, `.claude/rules/core/glossary.md` 他 |
 
 ## 参考ドキュメント
 
