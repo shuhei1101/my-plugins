@@ -88,8 +88,8 @@ py-kit のフックは `claude-kit` の方針に従う:
 - マッチした `required` / `optional` を **path + description のみ**（本文なし）で Jinja2 テンプレ経由に `decision: block` の reason へ注入
 - reference の本文は Claude が `Read` で必要なものだけ読む設計
 - Read も対象にすることで issue-scan など読み取り経路でも reference の案内を受けられる
-- セッション + ファイルハッシュ単位のトークンで同一ファイルへの 2 回目以降の操作はスキップ
-- **任意の companion `session-kit`**: インストールされていれば、そのセッションマーカー（`/tmp/claude-session-ctx-gen-{session_id}`、`/compact` 時に更新）により compaction 後に再注入できる。未インストール時は素の once-per-session にフォールバック。（`/clear` は session_id が変わるのでマーカー無しでも再注入される。）
+- **パターン単位**トークン（`py-references-injection-{session_id}-{patternhash}`）で注入を重複排除。あるルールのパターンがどれかのファイル経由で注入されたら、同じパターンにマッチする他ファイルはスキップ。追加パターンにマッチするファイルはその追加パターンの reference だけ注入
+- **任意の companion `session-kit`**: インストールされていれば、毎 `UserPromptSubmit` でこのセッションのトークンを削除し、キャッシュを会話*ターン*単位にする（`/compact` 後も含めターンごとに再注入）。古いトークンは 1 日 TTL で掃除。未インストール時はトークンがセッション全体で生きる（once-per-pattern）。利用側は無自覚で、session-kit が外部から削除する
 
 ---
 
@@ -97,7 +97,7 @@ py-kit のフックは `claude-kit` の方針に従う:
 
 | バージョン | 主な変更 |
 |---|---|
-| 2.1.3 | ドキュメント: session-kit companion の記述を正確化（マーカーは /compact 時更新、/clear は session_id 変化で自己修復）（PR151） |
+| 2.2.0 | 注入トークンをパターン単位に変更（旧: ファイル単位）。session-kit（任意）が UserPromptSubmit でターンごとにリセット。PR150 のマーカー/mtime 方式を撤回（PR151） |
 | 2.1.2 | 注入トークンが session-kit のコンテキスト世代マーカーを参照 → /compact・/clear 後に再注入（PR150） |
 | 2.1.1 | 注入フック: path+description のみを絶対パスで注入（本文なし）、Read マッチャーは維持（PR147） |
 | 2.0.0 | 機能フォルダ型 + 関数ファースト + TypeScript 風へ全面刷新（PR138 で方針確定、PR140 で実装） |

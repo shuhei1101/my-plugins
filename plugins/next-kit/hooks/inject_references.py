@@ -160,17 +160,6 @@ def main() -> int:
     except (ValueError, OSError):
         pass
 
-    # ----- injection_rules を照合 -----
-    required: list[str] = []
-    optional: list[str] = []
-    for rule in rules:
-        pat = rule.get("pattern", "")
-        if not pat:
-            continue
-        if _match_any(pat, norm):
-            required.extend(rule.get("required") or [])
-            optional.extend(rule.get("optional") or [])
-
     # 重複を除く (順序は保持)
     def _dedup(xs: list[str]) -> list[str]:
         seen: set[str] = set()
@@ -181,28 +170,38 @@ def main() -> int:
                 out.append(x)
         return out
 
+    # ----- injection_rules を照合し、パターン単位の注入トークンで未注入のものだけ集める -----
+    # トークンはファイル単位ではなく injection_rules の「パターン単位」。同じパターンにマッチ
+    # する別ファイルを開いても、そのパターンの reference は再注入しない。ファイルが複数パターン
+    # にマッチする場合は、未注入 (トークンが無い) パターンの reference のみ注入する。
+    # session-kit (任意) が UserPromptSubmit でこのトークンを削除するのでキャッシュは会話ターン
+    # 単位。session-kit 未インストール時はセッション単位 (once-per-pattern)。
+    session_id: str = data.get("session_id", "default")
+    tmp = pathlib.Path(tempfile.gettempdir())
+    required: list[str] = []
+    optional: list[str] = []
+    new_pattern_tokens: list[pathlib.Path] = []
+    for rule in rules:
+        pat = rule.get("pattern", "")
+        if not pat or not _match_any(pat, norm):
+            continue
+        pat_hash = hashlib.sha1(pat.encode("utf-8")).hexdigest()[:12]
+        token = tmp / f"next-references-injection-{session_id}-{pat_hash}"
+        if token.exists():
+            continue  # このパターンの reference はこのターンで注入済み → スキップ
+        new_pattern_tokens.append(token)
+        required.extend(rule.get("required") or [])
+        optional.extend(rule.get("optional") or [])
+
     required = _dedup(required)
     optional = _dedup([p for p in optional if p not in set(required)])
 
     if not required and not optional:
-        return 0
+        return 0  # マッチ無し、または全マッチパターンが注入済み
 
-    # ----- セッション + ファイル単位のトークン (1 ファイル 1 回だけ block) -----
-    # session-kit のコンテキスト世代マーカーがあれば、直近の注入後に compact / clear が
-    # 起きた場合は再注入する。マーカーが無ければ (session-kit 未インストール) once-per-session。
-    session_id: str = data.get("session_id", "default")
-    file_hash = hashlib.sha1(file_path.encode("utf-8")).hexdigest()[:12]
-    tmp = pathlib.Path(tempfile.gettempdir())
-    token = tmp / f"next-references-injection-{session_id}-{file_hash}"
-    marker = tmp / f"claude-session-ctx-gen-{session_id}"
-    if token.exists():
-        try:
-            reset_after = marker.exists() and marker.stat().st_mtime_ns > token.stat().st_mtime_ns
-        except OSError:
-            reset_after = False
-        if not reset_after:
-            return 0
-    token.touch()  # 初回、またはリセット後の再注入 → mtime を現在に更新
+    # 注入するパターンのトークンを作成 (同一ターン内の重複注入を防ぐ)
+    for token in new_pattern_tokens:
+        token.touch()
 
     # ----- reference の path (絶対) + description を集める -----
     # 注入テキスト内では ${CLAUDE_PLUGIN_ROOT} は展開されないため、Claude が Read できる

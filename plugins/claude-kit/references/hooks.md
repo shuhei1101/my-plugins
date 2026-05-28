@@ -107,41 +107,44 @@ script must compute and emit an **absolute path** itself, e.g.:
 abs_path = (refs_dir / rel_path).as_posix()   # refs_dir derived from CLAUDE_PLUGIN_ROOT
 ```
 
-### Caution 3 — block once per file per session
+### Caution 3 — de-dupe injection with a per-pattern token
 
-Use a session + file-hash token so the same file is injected only once per
-session (otherwise every edit of that file re-injects):
-
-```python
-file_hash = hashlib.sha1(file_path.encode('utf-8')).hexdigest()[:12]
-token = pathlib.Path(tempfile.gettempdir()) / f'my-injection-{session_id}-{file_hash}'
-if token.exists():
-    sys.exit(0)        # already injected this file this session → skip
-token.touch()          # first time → inject (do NOT consume the token)
-```
-
-> Unlike the confirm-each-time token (which is *consumed* on retry), this token
-> is left in place so the file is never re-injected within the same session.
-
-> ⚠️ **Limitation — context resets.** This token assumes "injected once ⇒ still in
-> context." But `/compact` wipes/summarizes the context while the **`session_id`
-> stays the same**, so the token survives and the reference is never re-injected
-> even though Claude lost it. Pair the token with a **session marker** (provided by
-> the `session-kit` plugin at `/tmp/claude-session-ctx-gen-{session_id}`, bumped on
-> `PreCompact`): re-inject when the marker is newer than the token. Fall back to
-> plain once-per-session when the marker is absent (session-kit not installed).
-> (`/clear` needs no marker — it changes the `session_id`, so a fresh session
-> re-injects naturally.) session-kit also GCs stale tokens/markers (1-day TTL) on
-> `SessionStart` so `/tmp` does not accumulate them.
+Without de-duplication, every matching file operation re-injects. Use a token
+keyed by the **matched rule's pattern** (not the file path) so all files matching
+the same pattern share it, and inject only the references of patterns whose token
+does not yet exist:
 
 ```python
-marker = pathlib.Path(tempfile.gettempdir()) / f'claude-session-ctx-gen-{session_id}'
-if token.exists():
-    reset_after = marker.exists() and marker.stat().st_mtime_ns > token.stat().st_mtime_ns
-    if not reset_after:
-        sys.exit(0)    # injected and no reset since → skip
-token.touch()          # first time, or context reset since last injection → (re)inject
+required, optional, new_tokens = [], [], []
+for rule in matched_rules:
+    pat_hash = hashlib.sha1(rule['pattern'].encode('utf-8')).hexdigest()[:12]
+    token = pathlib.Path(tempfile.gettempdir()) / f'my-injection-{session_id}-{pat_hash}'
+    if token.exists():
+        continue                      # this pattern already injected → skip its refs
+    new_tokens.append(token)
+    required += rule.get('required', [])
+    optional += rule.get('optional', [])
+if not required and not optional:
+    sys.exit(0)                       # nothing new to inject
+for token in new_tokens:
+    token.touch()                     # mark these patterns injected (do NOT consume)
 ```
+
+> Per-pattern (vs per-file) means: once a pattern's references are injected via
+> any matching file, other files matching the same pattern skip them. A file that
+> matches an *additional* pattern injects only that pattern's references.
+
+> ⚠️ **Limitation — context resets, and token scope.** The token assumes
+> "injected ⇒ still in context", but `/compact` summarizes the context while the
+> **`session_id` stays the same**. Also, keeping a token for the whole session is
+> often too long — in a long conversation the injected guidance gets buried far up.
+> The optional `session-kit` plugin solves both by **deleting the session's tokens
+> on every `UserPromptSubmit`** (so the cache is per conversation *turn* — fresh
+> re-injection each turn, including after `/compact`), and GC-ing stale tokens
+> (1-day TTL) on `SessionStart`. Consumers stay oblivious: they just create/check
+> their tokens; session-kit deletes them externally. When session-kit is absent the
+> token simply lives for the whole session (once-per-pattern). `/clear` needs no
+> handling — it changes the `session_id`, so a fresh session re-injects naturally.
 
 ---
 
