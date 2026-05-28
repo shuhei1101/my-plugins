@@ -16,8 +16,9 @@ stays in context.
 
 The injected mechanism: a `PreToolUse(Edit | Write | MultiEdit | Read)` hook matches the edited
 file path against `references/injection_rules.yaml` and injects matched references —
-`required` → **full body**, `optional` → **path + description only** — de-duped by a per-pattern
-TTL token (re-injected once the TTL elapses).
+`required` → **full body**, `optional` → **path + description only** — de-duped by a two-tier
+TTL token (per-pattern + per-reference; a reference already injected this session is shown by path
+only, re-injected once the TTL elapses).
 
 ---
 

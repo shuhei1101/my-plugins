@@ -66,18 +66,23 @@ Paths mirror the template — no relocation.
 
 ## Injection design (baked into the hook)
 
-- `required` references → **full body** injected; `optional` → **path + description only**
-- Token: `~/.claude/tokens/{plugin}/{session_id}.yaml`, a pattern-keyed YAML map; each entry has `expires_at` (epoch, = injection time + TTL). Skip re-injection while `now < expires_at`; re-inject once `now >= expires_at`. Extensible (add fields later). Because the expiry is baked in at injection time, changing the TTL env var does not retroactively affect already-written entries.
-- TTL: default `3600`s, overridable via `settings.json` `env` → `{PREFIX}_INJECTION_TTL`
-- Cleanup: every hook fire scans all `{session_id}.yaml`, drops expired entries, deletes emptied files
+- `required` references → **full body** injected (first time this session); `optional` → **path + description only**
+- Token: `~/.claude/tokens/{plugin}/{session_id}.yaml`, a **two-tier** YAML map with two namespaces — `patterns` and `references` — each keyed entry has `expires_at` (epoch, = injection time + TTL). Skip while `now < expires_at`; re-inject once `now >= expires_at`. Because the expiry is baked in at injection time, changing the TTL env var does not retroactively affect already-written entries.
+  - **`patterns`** throttle whether a matched pattern's reference-set is re-injected at all (a still-fresh pattern is skipped entirely)
+  - **`references`** throttle whether a `required` reference's **body** is injected. If a reference was already injected this session via any pattern (still fresh), it is shown by **path only** — so a reference bound to multiple patterns is never re-injected as full body
+- TTL: default `3600`s, overridable via `settings.json` `env` → `{PREFIX}_INJECTION_TTL` (shared by both tiers)
+- Cleanup: every hook fire scans all `{session_id}.yaml`, drops expired entries from both namespaces, deletes emptied files (and purges stale top-level keys from the old single-tier schema)
 - Language: `{PREFIX}_INJECTION_LANG=jp` switches descriptions/template to Japanese
 
 No `PreCompact` hook: after `/compact` the reference body is dropped from context, but the
 token simply re-injects once its TTL elapses — a dedicated compact-refresh hook was judged
 unnecessary overhead (PR156).
 
-This replaces the old per-pattern empty-file token (PR150/151) and the pointer-only
-injection (PR147) — `required` bodies are back because the TTL token throttles re-injection.
+The reference-tier cache (PR160) extends the original single-tier (pattern-only) token (PR156/157):
+it solves the case where the same reference is bound to multiple patterns, so editing files that
+match different patterns no longer re-injects the shared document body. This whole scheme replaces
+the old per-pattern empty-file token (PR150/151) and the pointer-only injection (PR147) — `required`
+bodies are back because the TTL token throttles re-injection.
 
 ---
 

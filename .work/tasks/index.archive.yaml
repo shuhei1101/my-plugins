@@ -575,3 +575,11 @@ prs:
     を provenance reference 化してスキル廃止（3プラグイン横断）/ j2-stamp-check・jp-mirror-check フック削除'
   task: 20260529_reference-ize-mark-generated-prune-hooks
   completed: true
+- id: 160
+  title: PR160 — ref-inject-two-tier-injection-cache
+  type: feat
+  tags: []
+  summary: 注入キャッシュをパターン単位+リファレンスファイル単位の二層構造にし、複数パターン共有リファレンスの本文二重注入を防止。py-kit/next-kit
+    のコピーも同期。
+  task: 20260529_ref-inject-two-tier-injection-cache
+  completed: true

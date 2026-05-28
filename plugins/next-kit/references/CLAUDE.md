@@ -31,7 +31,7 @@ The `next-references-injection` hook (PreToolUse) does this on every `Edit` / `W
 4. Renders the Jinja2 template (`hooks/templates/injection.md.j2`)
 5. Injects the result via `decision: block` in the `reason` field
 
-A per-pattern TTL token (`~/.claude/tokens/next-kit/{session_id}.yaml`) prevents re-injecting the same pattern within the TTL window (default 3600s, env `NEXT_KIT_INJECTION_TTL`).
+A two-tier TTL token (`~/.claude/tokens/next-kit/{session_id}.yaml`) throttles re-injection within the TTL window (default 3600s, env `NEXT_KIT_INJECTION_TTL`): the `patterns` map skips an already-injected pattern, and the `references` map shows a `required` reference already injected this session (via any pattern) by **path only**, so a reference shared across patterns is never re-injected.
 
 Switch the injection language by setting `NEXT_KIT_INJECTION_LANG=jp` (default is `en`).
 

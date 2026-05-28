@@ -6,13 +6,22 @@ references/injection_rules.yaml の rules と照合する。マッチしたパ�
 required reference は **本文全量** を、optional reference は **パス + description のみ** を
 Jinja2 で整形して `decision: block` の reason に注入する。
 
-注入の重複は「パターン単位の TTL トークン」で制御する:
+注入の重複は「パターン単位 + リファレンスファイル単位」の二層 TTL トークンで制御する:
     ~/.claude/tokens/next-kit/{session_id}.yaml
-は pattern をキーにした YAML マップで、各エントリに expires_at (epoch 秒) を持つ。
-expires_at は注入時に now + TTL で決まり、`now < expires_at` の間は再注入しない。
-TTL はデフォルト 3600 秒、環境変数 NEXT_KIT_INJECTION_TTL (秒) で上書きできる。
-フック発火のたびに全セッションのトークンを走査し、期限切れエントリ (now >= expires_at) を
-削除する (空になったファイルは削除)。期限切れ後に再びマッチすれば再注入される。
+は `patterns` と `references` の 2 つの名前空間を持つ YAML マップで、各エントリに
+expires_at (epoch 秒) を持つ。expires_at は注入時に now + TTL で決まる。
+
+  - patterns: そのパターンのリファレンス集合を再注入するかの判定。`now < expires_at` の間は
+    そのパターンを丸ごとスキップする。
+  - references: required リファレンスの **本文** を再注入するかの判定。あるリファレンスが
+    別パターン経由で既にキャッシュ済み (`now < expires_at`) なら、required 欄には
+    **パス + description のみ** を出し本文は流さない。未キャッシュなら本文全量を注入し
+    キャッシュする。これにより複数パターンで共有される同一リファレンス本文の二重注入を防ぐ。
+
+TTL はデフォルト 3600 秒、環境変数 NEXT_KIT_INJECTION_TTL (秒) で上書きできる
+(patterns / references 共通)。フック発火のたびに全セッションのトークンを走査し、期限切れ
+エントリ (now >= expires_at) を削除する (空になったファイルは削除)。期限切れ後に再びマッチ
+すれば再注入される。
 
 description は references/index.yaml (英語) から path -> description として取得する。
 環境変数 NEXT_KIT_INJECTION_LANG=jp で index.jp.yaml + injection.jp.md.j2 に切替。
@@ -106,8 +115,12 @@ def _match_any(pattern: str, candidates: list[str]) -> bool:
 
 
 # --------------------------------------------------------------------------- #
-# トークン (pattern をキーにしたセッション単位 YAML マップ)
+# トークン (patterns / references の 2 名前空間を持つセッション単位 YAML マップ)
+#   { "patterns": {pattern: {expires_at}}, "references": {ref_path: {expires_at}} }
 # --------------------------------------------------------------------------- #
+TOKEN_NAMESPACES = ("patterns", "references")
+
+
 def _load_token(path: pathlib.Path, yaml) -> dict[str, dict]:
     if not path.exists():
         return {}
@@ -129,8 +142,10 @@ def _save_token(path: pathlib.Path, data: dict[str, dict], yaml) -> None:
 def _cleanup_expired(token_dir: pathlib.Path, now: float, yaml) -> None:
     """全セッションのトークンを走査し、期限切れエントリ (now >= expires_at) を削除する。
 
-    空になったファイルは削除する。異常終了したセッションのトークンも
-    期限切れ後にどこかでフックが発火した時点で自然に消える。
+    patterns / references の 2 名前空間それぞれについて掃除する。空になった名前空間は
+    削除し、両方空になったファイルは削除する。未知のトップレベルキー (旧 schema の名残)
+    も除去する。異常終了したセッションのトークンも期限切れ後にどこかでフックが発火した
+    時点で自然に消える。
     """
     if not token_dir.exists():
         return
@@ -141,9 +156,22 @@ def _cleanup_expired(token_dir: pathlib.Path, now: float, yaml) -> None:
             continue
         changed = False
         for key in list(data):
-            entry = data.get(key) or {}
-            exp = entry.get("expires_at") if isinstance(entry, dict) else None
-            if not isinstance(exp, (int, float)) or now >= exp:
+            if key not in TOKEN_NAMESPACES:
+                del data[key]  # 旧 schema (pattern をトップレベルキーにした名残) を除去
+                changed = True
+                continue
+            ns = data.get(key)
+            if not isinstance(ns, dict):
+                del data[key]
+                changed = True
+                continue
+            for sub_key in list(ns):
+                entry = ns.get(sub_key) or {}
+                exp = entry.get("expires_at") if isinstance(entry, dict) else None
+                if not isinstance(exp, (int, float)) or now >= exp:
+                    del ns[sub_key]
+                    changed = True
+            if not ns:
                 del data[key]
                 changed = True
         if not data:
@@ -242,6 +270,17 @@ def main() -> int:
 
     token_path = token_dir / f"{session_id}.yaml"
     token_data = _load_token(token_path, yaml)
+    pattern_map = token_data.get("patterns")
+    if not isinstance(pattern_map, dict):
+        pattern_map = {}
+    ref_map = token_data.get("references")
+    if not isinstance(ref_map, dict):
+        ref_map = {}
+
+    def _is_fresh(entry_map: dict, key: str) -> bool:
+        entry = entry_map.get(key) or {}
+        exp = entry.get("expires_at") if isinstance(entry, dict) else None
+        return isinstance(exp, (int, float)) and now < exp
 
     # ----- injection_rules を照合し、未注入 or 期限切れパターンの reference を集める -----
     required: list[str] = []
@@ -251,10 +290,8 @@ def main() -> int:
         pat = rule.get("pattern", "")
         if not pat or not _match_any(pat, norm):
             continue
-        entry = token_data.get(pat) or {}
-        exp = entry.get("expires_at") if isinstance(entry, dict) else None
-        if isinstance(exp, (int, float)) and now < exp:
-            continue  # まだ期限内 → 再注入しない
+        if _is_fresh(pattern_map, pat):
+            continue  # パターンがまだ期限内 → そのパターンは丸ごとスキップ
         patterns_to_mark.append(pat)
         required.extend(rule.get("required") or [])
         optional.extend(rule.get("optional") or [])
@@ -265,26 +302,41 @@ def main() -> int:
     if not required and not optional:
         return 0  # マッチ無し、または全マッチパターンが TTL 内
 
-    # 注入するパターンの expires_at (= now + TTL) を更新して保存
+    # ----- required をリファレンス単位キャッシュで「本文全量」と「パスのみ」に振り分け -----
+    #   未キャッシュ (or 期限切れ) → 本文全量を注入し、このリファレンスをキャッシュ
+    #   既にキャッシュ済み (期限内) → パス + description のみ (本文は流さない)
+    refs_to_mark: list[str] = [p for p in required if not _is_fresh(ref_map, p)]
+
+    # 注入するパターン / 本文注入するリファレンスの expires_at (= now + TTL) を保存
     token_dir.mkdir(parents=True, exist_ok=True)
+    expiry = int(now) + ttl
     for pat in patterns_to_mark:
-        token_data[pat] = {"expires_at": int(now) + ttl}
+        pattern_map[pat] = {"expires_at": expiry}
+    for p in refs_to_mark:
+        ref_map[p] = {"expires_at": expiry}
+    token_data["patterns"] = pattern_map
+    token_data["references"] = ref_map
     _save_token(token_path, token_data, yaml)
 
-    # ----- required = 本文全量 / optional = パス + description -----
+    # ----- required = (未キャッシュ) 本文全量 / (キャッシュ済み) パスのみ / optional = パス + description -----
     # 注入テキスト内では ${CLAUDE_PLUGIN_ROOT} は展開されないため絶対パスを出す。
+    fresh_refs = set(refs_to_mark)
+
     def _required_ref(rel_path: str) -> dict[str, str]:
         p = refs_dir / rel_path
-        try:
-            body = p.read_text(encoding="utf-8")
-        except Exception as e:
-            _eprint(f"reference read error ({rel_path}): {e}")
-            body = ""
+        cached = rel_path not in fresh_refs  # このセッションで既に本文注入済み
+        body = ""
+        if not cached:
+            try:
+                body = p.read_text(encoding="utf-8")
+            except Exception as e:
+                _eprint(f"reference read error ({rel_path}): {e}")
         return {
             "path": rel_path,
             "abs_path": p.as_posix(),
             "description": descriptions.get(rel_path, ""),
             "body": body,
+            "cached": cached,
         }
 
     def _optional_ref(rel_path: str) -> dict[str, str]:

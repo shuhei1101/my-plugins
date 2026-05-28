@@ -83,8 +83,8 @@ The **references auto-injection hook** (`py-kit-references-injection`) was migra
 - Inject matched `required` as **full body**, `optional` as **path + description only**, via the Jinja2 template into `decision: block` reason
 - Claude reads `optional` reference bodies itself via `Read` as needed
 - Read fires so that issue-scan and other read paths also receive reference guidance
-- A **per-pattern TTL token** (`~/.claude/tokens/py-kit/{session_id}.yaml`) de-dupes injection: a pattern-keyed YAML map where each entry carries `expires_at` (epoch seconds, = injection time + TTL). A pattern is skipped while `now < expires_at` and re-injected once `now >= expires_at`
-- TTL defaults to **3600s**, overridable via `settings.json` `env` `PY_KIT_INJECTION_TTL` (seconds). Every fire scans all session tokens, drops expired entries, and deletes emptied token files
+- A **two-tier TTL token** (`~/.claude/tokens/py-kit/{session_id}.yaml`) de-dupes injection: a YAML map with `patterns` and `references` namespaces, each entry carrying `expires_at` (epoch seconds, = injection time + TTL). The `patterns` tier skips an already-injected pattern while `now < expires_at`; the `references` tier shows a `required` reference already injected this session (via any pattern) by **path only** — so a reference bound to multiple patterns is never re-injected as full body. Both re-inject once `now >= expires_at`
+- TTL defaults to **3600s**, overridable via `settings.json` `env` `PY_KIT_INJECTION_TTL` (seconds, shared by both tiers). Every fire scans all session tokens, drops expired entries from both namespaces, and deletes emptied token files
 - **No `PreCompact` hook** — after `/compact` the bodies re-inject once the TTL elapses; a dedicated compact-refresh hook was judged unnecessary (decided in PR156)
 
 ---
@@ -93,6 +93,7 @@ The **references auto-injection hook** (`py-kit-references-injection`) was migra
 
 | Version | Main change |
 |---|---|
+| 2.5.0 | Injection token is now **two-tier** (`patterns` + `references` namespaces). A `required` reference shared across multiple patterns is injected full body only once per session; subsequent patterns show it by path only (regenerated from ref-inject templates; PR160) |
 | 2.4.0 | Migrated the injection hook to the `ref-inject` mechanism (regenerate via `/ref-inject:apply`). `required` references are injected **full body** again, `optional` as path + description; per-pattern **TTL token** (`{session_id}.yaml` map with `expires_at`, default 3600s, env `PY_KIT_INJECTION_TTL`) replaces the empty marker files; no `PreCompact` hook (PR157) |
 | 2.3.1 | Removed the optional `session-kit` companion (deleted as a plugin). Injection tokens now always live for the whole session (once-per-pattern); doc/comment cleanup only, no code-behavior change (PR155) |
 | 2.3.0 | `core/comments.md`: comment the content of multi-step functions, not just block markers — per-step intent + per-branch labels, applied regardless of layer; "no comments on logging-only lines"; worked example (PR154) |

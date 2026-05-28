@@ -16,8 +16,9 @@ description: |
 
 付与される仕組み: `PreToolUse(Edit | Write | MultiEdit | Read)` フックが編集対象パスを
 `references/injection_rules.yaml` と照合し、マッチした reference を注入する —
-`required` → **本文全量**、`optional` → **パス + description のみ** — パターン単位の TTL
-トークンで重複抑制する（TTL 経過後に再注入）。
+`required` → **本文全量**、`optional` → **パス + description のみ** — 二層 TTL
+トークン（パターン単位 + リファレンス単位）で重複抑制する。本セッションに既に注入済みの
+リファレンスはパスのみ表示し、TTL 経過後に再注入する。
 
 ---
 

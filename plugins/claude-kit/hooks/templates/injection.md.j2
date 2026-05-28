@@ -2,7 +2,9 @@
 # claude-kit references — auto-injected
 
 The injection hook matched `{{ file_path }}` against `references/injection_rules.yaml`.
-The **required** references are inlined in full below — follow them when working with this file.
+The **required** references must be followed when working with this file. Ones not yet seen this
+session are inlined in full; ones already injected earlier are listed by path only (re-`Read` if
+they have scrolled out of context).
 
 {% if required %}
 {% for ref in required %}
@@ -10,7 +12,11 @@ The **required** references are inlined in full below — follow them when worki
 
 ## {{ ref.path }} — {{ ref.description }}
 
+{% if ref.cached %}
+_(Already injected earlier this session — re-`Read` `{{ ref.abs_path }}` if you need it again.)_
+{% else %}
 {{ ref.body }}
+{% endif %}
 {% endfor %}
 {% endif %}
 {% if optional %}
