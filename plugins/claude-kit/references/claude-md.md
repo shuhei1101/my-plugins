@@ -1,6 +1,8 @@
-# CLAUDE.md Design Guide
+# CLAUDE.md Authoring Guide
 
-Reference for designing, creating, and evaluating `CLAUDE.md` and `CLAUDE.jp.md` files.
+How to design, create, and evaluate `CLAUDE.md` (and its `CLAUDE.jp.md` mirror) for a project or
+subfolder. This guide is self-contained: when injected (because you are editing a `CLAUDE.md`),
+follow it to author the file directly. Read `common.md` alongside it.
 Japanese mirror: `references/claude-md.jp.md`
 
 ---
@@ -12,11 +14,15 @@ Japanese mirror: `references/claude-md.jp.md`
 | Project root | At every session start — always loaded |
 | Subfolder | Lazily, when Claude reads any file in that folder or its subfolders |
 
+**Root** CLAUDE.md defines the overall project workflow, commit rules, server management, and the
+folder-scoped rule table. **Subfolder** CLAUDE.md describes that folder's contents and local
+conventions, giving Claude context without loading it every session.
+
 ---
 
 ## Important: keep it thin
 
-The root CLAUDE.md is **loaded on every session** — the more content it has, the more context it consumes.
+The root CLAUDE.md is loaded on **every** session — the more content, the more context it consumes.
 
 ### Extraction destination guide
 
@@ -25,14 +31,46 @@ The root CLAUDE.md is **loaded on every session** — the more content it has, t
 | Needed only when specific files are edited | Move to `.claude/rules/` |
 | Multi-step workflow or procedure | Move to `.claude/skills/` |
 | Relevant only to a specific folder | Move to that subfolder's `CLAUDE.md` |
-| Detailed explanation or reference (read occasionally) | Move to `.claude/references/`; write only the path in CLAUDE.md |
-| Spec or doc already in the project | Write only the path; do not duplicate content |
+| Detailed explanation/reference (read occasionally) | Move to `.claude/references/`; write only the path in CLAUDE.md |
+| Spec/doc already in the project | Write only the path; do not duplicate content |
+
+### Line count guideline
+
+- Target under 200 lines for the root CLAUDE.md
+- If it exceeds 200 lines, extract domain-specific content to `.claude/rules/`
+
+---
+
+## Authoring workflow
+
+### Step 1 — Gather details
+
+- **Location** — project root (`CLAUDE.md`) or a subfolder (e.g. `src/CLAUDE.md`)?
+- **For root**: overall workflow steps, prohibitions, folder-scoped rule table entries
+- **For subfolder**: what files are in the folder, their roles, local conventions
+- **Content overview** — what instructions/descriptions to include
+
+### Step 2 — Validate that CLAUDE.md is the right type
+
+| If the content is… | Verdict |
+|---|---|
+| Project-wide workflow or global conventions | ✅ CLAUDE.md (root) — correct |
+| Single-folder conventions/descriptions | ✅ CLAUDE.md (subfolder) for co-location; `.claude/rules/` if auditability matters more |
+| Cross-path file sync ("edit X → also update Y, Z elsewhere") | ⚠️ `.claude/rules/` |
+| A multi-step workflow with user interaction | ⚠️ `.claude/skills/` |
+| Mix | ⚠️ Split across file types |
+
+### Step 3 — Write `CLAUDE.jp.md` first, then translate
+
+CLAUDE.md uses a **description format, not a step format**. Author `CLAUDE.jp.md` in Japanese first,
+keep it under ~200 lines (extract domain content to `.claude/rules/` if longer), then produce the
+English `CLAUDE.md` (by hand or via the `jp-mirror-translator` agent). Stamp both (see `common.md`).
 
 ---
 
 ## About `.claude/references/`
 
-A place for content that belongs in CLAUDE.md conceptually but does not need to be loaded every session.
+For content that conceptually belongs in CLAUDE.md but does not need loading every session.
 Write only the file path in CLAUDE.md — Claude reads the file when it actually needs it.
 
 ---
@@ -42,9 +80,10 @@ Write only the file path in CLAUDE.md — Claude reads the file when it actually
 | Section | Content | Required |
 |---|---|---|
 | Title | H1 heading | Required |
-| `## Overview` | Project or folder description | Required |
+| `## Overview` | Project/folder description | Required |
 | `## Folder structure` | Path-to-summary table | Recommended |
 | `## Constraints` | Rules and prohibitions Claude must always follow | Recommended |
+| (Other sections) | Add freely as needed | Optional |
 
 ---
 
@@ -80,10 +119,3 @@ Description of this project or folder.
 | **See all active rules in one place** (auditability) | `.claude/rules/<name>.md` |
 
 Cross-path linking always belongs in `.claude/rules/`.
-
----
-
-## Line count guideline
-
-- Target under 200 lines for root CLAUDE.md
-- If it exceeds 200 lines, extract domain-specific content to `.claude/rules/`

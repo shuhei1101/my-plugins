@@ -1,6 +1,13 @@
-# Plugin Structure Reference
+# Plugin Authoring Guide
 
-## Standard Directory Layout
+How to create or update a Claude Code plugin. This guide is self-contained: when injected (because
+you are editing a `plugin.json` or `marketplace.json`), follow it to author the change directly.
+Read `common.md` alongside it.
+Japanese mirror: `references/plugin-structure.jp.md`
+
+---
+
+## Standard directory layout
 
 ```
 plugins/<plugin-name>/
@@ -9,7 +16,7 @@ plugins/<plugin-name>/
 ├── skills/
 │   └── <skill-name>/
 │       ├── SKILL.md         # Skill definition (English, auto-loaded)
-│       └── SKILL.jp.md      # Japanese translation (reference only)
+│       └── SKILL.jp.md      # Japanese mirror (reference only)
 ├── agents/
 │   └── <agent-name>.md      # Agent definitions (optional)
 ├── hooks/
@@ -17,21 +24,74 @@ plugins/<plugin-name>/
 ├── references/              # Shared reference docs (optional)
 │   └── <topic>.md
 ├── .mcp.json                # MCP server config (optional)
-└── changelogs/              # Version history (required by plugin-kit)
+└── changelogs/              # Version history (required)
     ├── v1.0.0.md            # Initial release
     └── v1.1.0.md            # Subsequent versions
 ```
 
-## plugin.json Fields
+---
+
+## Authoring workflow
+
+### Step 1 — Determine mode: create or update
+
+- **Mode**: new plugin, or updating an existing one?
+- **Plugin name**: kebab-case (e.g. `code-reviewer`, `claude-kit`)
+- If **updating**: read the existing `plugins/<name>/.claude-plugin/plugin.json` for the current version.
+
+### Step 2 — Gather change details
+
+**Creating**: description (one line), skills to include (name + purpose, at least one), other
+components (agents/hooks/MCP).
+
+**Updating**: what changed (skills added/modified/removed, structural changes, fixes), and the
+**change type** to determine the version bump.
+
+### Step 3 — Apply file changes
+
+- **Creating**: generate the directory structure above. Add agents/hooks/MCP dirs only if requested.
+- **Updating**: edit only the changed files; do not touch unrelated files.
+
+### Step 4 — plugin.json + marketplace.json + changelog (keep versions identical)
+
+See the field/format/version sections below. **The version in `plugin.json`, the
+`.claude-plugin/marketplace.json` entry, and the changelog filename (`changelogs/v{X.Y.Z}.md`) must
+always be identical.** Never let these three drift.
+
+> If two parallel PRs bump the same plugin and one merges first, rebump the other to the next
+> version on its branch before merging (incident `parallel-pr-version-bump-collision`).
+
+### Step 5 — Report
+
+Report mode (created/updated), new version, files changed, and how to test locally:
+
+```bash
+claude --plugin-dir ./plugins/<plugin-name>
+/<skill-name>
+```
+
+---
+
+## plugin.json fields
 
 | Field | Required | Description |
 |---|---|---|
-| `name` | Yes | Plugin identifier (kebab-case). Used as skill namespace. |
+| `name` | Yes | Plugin identifier (kebab-case). Used as the skill namespace. |
 | `description` | Yes | Plugin description |
 | `version` | Yes | Semantic versioning (e.g. `1.0.0`) |
 | `author` | No | Author info |
 
-## marketplace.json Entry
+```json
+{
+  "name": "<plugin-name>",
+  "description": "<description>",
+  "version": "1.0.0"
+}
+```
+
+---
+
+## marketplace.json entry
 
 Add to `.claude-plugin/marketplace.json` → `plugins` array:
 
@@ -44,7 +104,9 @@ Add to `.claude-plugin/marketplace.json` → `plugins` array:
 }
 ```
 
-## Version Bump Rules
+---
+
+## Version bump rules
 
 | Change type | Bump |
 |---|---|
@@ -52,9 +114,11 @@ Add to `.claude-plugin/marketplace.json` → `plugins` array:
 | New skill or behavior change | MINOR (`1.x.0` → `1.x+1.0`) |
 | Complete redesign | MAJOR (`1.0.0` → `2.0.0`) |
 
-## Changelog File Format
+---
 
-File: `changelogs/v{X.Y.Z}.md`
+## Changelog file format
+
+File: `changelogs/v{X.Y.Z}.md` — **same version as `plugin.json`**.
 
 ```markdown
 # v{X.Y.Z} — {YYYY-MM-DD}
@@ -65,7 +129,8 @@ File: `changelogs/v{X.Y.Z}.md`
 
 ## 構造の変更
 
-{ディレクトリ構造や設定ファイルの変更があれば記載。なければ省略。}
+{ディレクトリ構造や設定ファイルの変更があれば記載。なければ「なし」と書く。}
 ```
 
-The "構造の変更" section is critical — it lets other projects that depend on this plugin know what structural updates they need to apply.
+The "構造の変更" section is critical — it lets other projects that depend on this plugin know what
+structural updates they must apply on their end.
