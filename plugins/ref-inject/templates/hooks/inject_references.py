@@ -12,8 +12,7 @@ Jinja2 で整形して `decision: block` の reason に注入する。
 `now - injected_at < TTL` の間は再注入しない。TTL はデフォルト __DEFAULT_TTL__ 秒、
 環境変数 __ENV_PREFIX___INJECTION_TTL (秒) で上書きできる。
 フック発火のたびに全セッションのトークンを走査し、期限切れエントリを削除する
-(空になったファイルは削除)。/compact 後は refresh_on_compact.py がトークンを消すため
-次の編集で再注入される。
+(空になったファイルは削除)。TTL 経過後に再びマッチすれば再注入される。
 
 description は references/index.yaml (英語) から path -> description として取得する。
 環境変数 __ENV_PREFIX___INJECTION_LANG=jp で index.jp.yaml + injection.jp.md.j2 に切替。

@@ -34,7 +34,6 @@ ref-inject/
 └── templates/                           # the injection files copied into a target plugin (injection part only)
     ├── hooks/
     │   ├── inject_references.py          # PreToolUse: match path → inject references (the reusable injection script)
-    │   ├── refresh_on_compact.py         # PreCompact: clear session token → re-inject after /compact
     │   ├── hooks.json
     │   └── templates/injection.md.j2 (+ .jp.md.j2)
     └── references/
@@ -71,8 +70,11 @@ Paths mirror the template — no relocation.
 - Token: `~/.claude/tokens/{plugin}/{session_id}.yaml`, a pattern-keyed YAML map; each entry has `injected_at` (epoch). Re-inject when `now - injected_at >= TTL`. Extensible (add fields later).
 - TTL: default `3600`s, overridable via `settings.json` `env` → `{PREFIX}_INJECTION_TTL`
 - Cleanup: every hook fire scans all `{session_id}.yaml`, drops expired entries, deletes emptied files
-- `/compact`: `refresh_on_compact.py` deletes the session token so references re-inject
 - Language: `{PREFIX}_INJECTION_LANG=jp` switches descriptions/template to Japanese
+
+No `PreCompact` hook: after `/compact` the reference body is dropped from context, but the
+token simply re-injects once its TTL elapses — a dedicated compact-refresh hook was judged
+unnecessary overhead (PR156).
 
 This replaces the old per-pattern empty-file token (PR150/151) and the pointer-only
 injection (PR147) — `required` bodies are back because the TTL token throttles re-injection.

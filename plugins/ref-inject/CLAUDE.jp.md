@@ -35,7 +35,6 @@ ref-inject/
 └── templates/                           # 対象プラグインにコピーする注入ファイル（注入部分のみ）
     ├── hooks/
     │   ├── inject_references.py          # PreToolUse: パス照合 → リファレンス注入（再利用される注入スクリプト）
-    │   ├── refresh_on_compact.py         # PreCompact: セッショントークン削除 → /compact 後に再注入
     │   ├── hooks.json
     │   └── templates/injection.md.j2 (+ .jp.md.j2)
     └── references/
@@ -72,8 +71,10 @@ ref-inject/
 - トークン: `~/.claude/tokens/{plugin}/{session_id}.yaml`。pattern をキーにした YAML マップで各エントリに `injected_at`（epoch）。`now - injected_at >= TTL` で再注入。拡張可能（後でフィールド追加可）。
 - TTL: デフォルト `3600` 秒、`settings.json` の `env` → `{PREFIX}_INJECTION_TTL` で上書き
 - クリーンアップ: 発火のたびに全 `{session_id}.yaml` を走査し期限切れエントリを削除、空ファイルは削除
-- `/compact`: `refresh_on_compact.py` がセッショントークンを削除し再注入させる
 - 言語: `{PREFIX}_INJECTION_LANG=jp` で description/テンプレートを日本語に切替
+
+`PreCompact` フックは持たない: `/compact` 後は注入済み本文がコンテキストから消えるが、
+トークンは TTL 経過後に再注入されるだけ。compact 専用のリフレッシュフックは無駄と判断（PR156）。
 
 これは旧方式（パターン単位の空ファイルトークン PR150/151、ポインタのみ注入 PR147）を
 置き換える。TTL トークンが再注入を throttle するため `required` の本文注入を復活させた。

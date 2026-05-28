@@ -14,8 +14,7 @@ On `PreToolUse(Edit | Write | MultiEdit | Read)`, `hooks/inject_references.py`:
 1. Matches the edited file path against `injection_rules.yaml` patterns
 2. Injects each matched `required` reference **in full body**, and each `optional` as **path + description only**
 3. De-dupes via a per-pattern TTL token at `~/.claude/tokens/__PLUGIN_NAME__/{session_id}.yaml`
-   (re-injects after `__ENV_PREFIX___INJECTION_TTL` seconds, default __DEFAULT_TTL__)
-4. `hooks/refresh_on_compact.py` clears the token on `PreCompact` so references re-inject after `/compact`
+   (re-injects once `__ENV_PREFIX___INJECTION_TTL` seconds elapse, default __DEFAULT_TTL__)
 
 Set `__ENV_PREFIX___INJECTION_LANG=jp` to inject Japanese descriptions (`index.jp.yaml` + `injection.jp.md.j2`).
 

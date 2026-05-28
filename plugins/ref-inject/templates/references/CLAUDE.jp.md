@@ -15,8 +15,7 @@
 1. 編集対象パスを `injection_rules.yaml` のパターンと照合
 2. マッチした `required` を**本文全量**、`optional` を**パス + description のみ**で注入
 3. `~/.claude/tokens/__PLUGIN_NAME__/{session_id}.yaml` のパターン単位 TTL トークンで重複注入を抑制
-   （`__ENV_PREFIX___INJECTION_TTL` 秒、デフォルト __DEFAULT_TTL__ 秒で再注入）
-4. `hooks/refresh_on_compact.py` が `PreCompact` でトークンを消し、`/compact` 後に再注入させる
+   （`__ENV_PREFIX___INJECTION_TTL` 秒、デフォルト __DEFAULT_TTL__ 秒経過で再注入）
 
 `__ENV_PREFIX___INJECTION_LANG=jp` で日本語 description を注入（`index.jp.yaml` + `injection.jp.md.j2`）。
 
