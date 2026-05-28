@@ -31,18 +31,18 @@
 |---|---|---|
 | 済 | QA.md に未決定事項を記録する（未決定なし） | - `.work/tasks/.../PR156/QA.md` |
 | 済 | `.work/notes/` のノートを作成する | - `.work/notes/ref-inject-generator.md` |
-| 済 | plugin.json + marketplace.json 登録 | - `plugins/ref-inject/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
-| 済 | プラグイン CLAUDE.md / CLAUDE.jp.md | - `plugins/ref-inject/CLAUDE.md` (+jp) |
-| 済 | create スキル（Claude がテンプレを読んで書く手順。生成スクリプトは持たない） | - `plugins/ref-inject/skills/create/SKILL.md` (+jp) |
+| 済 | plugin.json + marketplace.json 登録（ref-inject 自身。説明は注入付与に修正） | - `plugins/ref-inject/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
+| 済 | プラグイン CLAUDE.md / CLAUDE.jp.md（責務限定を明記） | - `plugins/ref-inject/CLAUDE.md` (+jp) |
+| 済 | apply スキル（create→apply にリネーム。注入部分の付与に責務限定。marketplace 登録なし） | - `plugins/ref-inject/skills/apply/SKILL.md` (+jp) |
 | 済 | scripts/generate.py は作成後に削除（Claude 主導生成に方針変更） | - （削除済み） |
 | 済 | templates: inject_references.py 雛形（新設計） | - `plugins/ref-inject/templates/hooks/inject_references.py` |
 | 済 | templates: PreCompact リフレッシュスクリプト雛形 | - `plugins/ref-inject/templates/hooks/refresh_on_compact.py` |
 | 済 | templates: hooks.json 雛形（PreToolUse + PreCompact） | - `plugins/ref-inject/templates/hooks/hooks.json` |
 | 済 | templates: injection.md.j2 + jp 雛形 | - `plugins/ref-inject/templates/hooks/templates/injection.md.j2` (+jp) |
 | 済 | templates: references 雛形（index.yaml+jp / injection_rules.yaml / CLAUDE.md+jp / example） | - `plugins/ref-inject/templates/references/*` |
-| 済 | templates: 生成先 plugin.json / CLAUDE.md(+jp) 雛形 | - `plugins/ref-inject/templates/plugin.json` 他 |
+| 済 | templates: プラグインレベル雛形（plugin.json/ルートCLAUDE.md）は責務外として削除 | - （削除済み） |
 | 済 | 注入フック雛形の動作検証（本文注入/TTL/クリーンアップ/compact/jp） | - （一時dirでE2Eテスト実施） |
-| 済 | glossary（+JPミラー）に ref-inject 用語を追加 | - `.claude/rules/core/glossary.md` (+rules-jp) |
+| 済 | glossary（+JPミラー）に ref-inject 用語を追加・apply 方針に更新 | - `.claude/rules/core/glossary.md` (+rules-jp) |
 
 ## 参考ドキュメント
 

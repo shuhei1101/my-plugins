@@ -21,7 +21,7 @@ py-kit / next-kit が手作業でコピペ共有していた「PreToolUse フッ
 ## 命名の経緯
 
 - `*-kit` 命名から脱却（脳死で付けていたため）。
-- `ref-inject`（creator 抜き）に決定。生成スキルは `/ref-inject:create`。
+- `ref-inject`（creator 抜き）に決定。付与スキルは `/ref-inject:apply`（当初 `create` → 責務限定に伴い `apply` へリネーム）。
 
 ## 注入設計（生成される雛形に組み込む内容）
 
@@ -61,10 +61,8 @@ PR147 で「本文全量を毎操作で注入してコンテキストが膨ら�
 plugins/ref-inject/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md / CLAUDE.jp.md
-├── skills/create/SKILL.md (+jp)   # Claude がテンプレを読んで新プラグインを書く手順
-└── templates/                      # プレースホルダ入りの生成元雛形
-    ├── plugin.json
-    ├── CLAUDE.md (+jp)
+├── skills/apply/SKILL.md (+jp)    # Claude がテンプレを読んで対象プラグインへ注入部分を書く手順
+└── templates/                      # 対象プラグインにコピーする注入ファイル（注入部分のみ）
     ├── hooks/
     │   ├── inject_references.py     # 新注入設計（再利用される注入スクリプトのお手本）
     │   ├── refresh_on_compact.py    # PreCompact ハンドラ
@@ -78,10 +76,10 @@ plugins/ref-inject/
 ```
 
 **生成スクリプトは持たない**（当初 `scripts/generate.py` を作ったが、ユーザー判断で削除）。
-create スキルは、Claude が各テンプレートを `Read` → プレースホルダ（`__PLUGIN_NAME__` /
-`__ENV_PREFIX__` / `__LOG_TAG__` / `__DEFAULT_TTL__` / `__PLUGIN_DESCRIPTION__`）を置換しながら
-`plugins/{new}/` へ `Write` し、marketplace.json に登録する。決定論的スクリプトよりこの方が
-構造がコンテキストに残り、プラグインごとに調整しやすい。references 中身は雛形のまま利用者が埋める。
+apply スキルは、Claude が各テンプレートを `Read` → プレースホルダ（`__PLUGIN_NAME__` /
+`__ENV_PREFIX__` / `__LOG_TAG__` / `__DEFAULT_TTL__`）を置換しながら対象プラグインへ `Write` する。
+決定論的スクリプトよりこの方が構造がコンテキストに残り、プラグインごとに調整しやすい。
+references 中身は雛形のまま利用者が埋める。
 
 ### なぜスクリプトをやめたか
 
@@ -90,7 +88,16 @@ Claude が読みながら書く方式なら、生成過程そのものが会話�
 ユーザーが言っていた「スクリプト」は、`templates/hooks/inject_references.py`（各 kit で再利用する
 注入スクリプトのお手本）を指していた。
 
+### スキル名 create → apply、責務の限定
+
+このスキルは「新規プラグインを作る」専用ではなく、**既存プラグインに注入部分を後付け**する
+ケースもある。そのため名前を `create` → `apply` にリネーム。責務は**注入の仕組み（hooks +
+references 雛形）だけ**に絞り、プラグインレベルの関心事（`plugin.json` / プラグインの
+ルート `CLAUDE.md` / `marketplace.json`）は扱わない（それらは plugin-creator の領分）。
+このため `templates/` から `plugin.json` と ルート `CLAUDE.md` 雛形を削除し、marketplace 登録
+ステップも skill から外した。`__PLUGIN_DESCRIPTION__` プレースホルダも不要になり削除。
+
 ## スコープ
 
-- このPR = ジェネレータ本体のみ。
-- 次PR候補: py-kit / next-kit / claude-kit を ref-inject 生成形式へ移行。
+- このPR = ref-inject 本体（apply スキル + 注入テンプレ）のみ。
+- 次PR候補: py-kit / next-kit / claude-kit に `/ref-inject:apply` を適用して注入部分を統一。
