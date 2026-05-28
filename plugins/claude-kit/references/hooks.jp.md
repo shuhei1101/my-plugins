@@ -129,9 +129,23 @@ token.touch()          # 初回 → 注入（トークンは消費しない）
 > 毎回確認型のトークン（再試行時に*消費*する）と違い、このトークンは残したままにして
 > 同一セッション中はそのファイルを二度と再注入しないようにする。
 
----
+> ⚠️ **制約 — コンテキストのリセット。** このトークンは「一度注入した＝まだコンテキストに
+> ある」を前提にする。しかし `/compact` と `/clear` はコンテキストを消す / 要約する一方で
+> **`session_id` は同じまま**なので、トークンが残り、Claude が内容を失っても再注入されない。
+> トークンを **コンテキスト世代マーカー**（`session-kit` プラグインが
+> `/tmp/claude-session-ctx-gen-{session_id}` に提供。`PreCompact` と
+> `SessionStart(source=clear)` で更新）と組み合わせ、マーカーがトークンより新しければ
+> 再注入する。マーカーが無い場合（session-kit 未インストール）は素の once-per-session に
+> フォールバックする。
 
-## 配置場所
+```python
+marker = pathlib.Path(tempfile.gettempdir()) / f'claude-session-ctx-gen-{session_id}'
+if token.exists():
+    reset_after = marker.exists() and marker.stat().st_mtime_ns > token.stat().st_mtime_ns
+    if not reset_after:
+        sys.exit(0)    # 注入済みでリセットも無い → スキップ
+token.touch()          # 初回、または直近の注入後にリセットがあった → （再）注入
+```
 
 | 配置場所 | ファイル | 共有 |
 |---|---|---|

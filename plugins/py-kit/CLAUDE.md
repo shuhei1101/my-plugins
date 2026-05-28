@@ -82,6 +82,7 @@ The **references auto-injection hook** (`py-references-injection`) follows this 
 - Claude reads reference file bodies itself via `Read` as needed
 - Read fires so that issue-scan and other read paths also receive reference guidance
 - A session + file-hash token prevents the hook from blocking the same file twice in one session
+- **Optional companion `session-kit`**: if installed, its context-generation marker (`/tmp/claude-session-ctx-gen-{session_id}`) lets the hook re-inject after `/compact` or `/clear`. When absent, the hook falls back to plain once-per-session.
 
 ---
 
@@ -89,6 +90,7 @@ The **references auto-injection hook** (`py-references-injection`) follows this 
 
 | Version | Main change |
 |---|---|
+| 2.1.2 | Injection token honors session-kit's context-generation marker → re-inject after /compact and /clear (PR150) |
 | 2.1.1 | Injection hook: inject path+description only (no body) as absolute paths; Read matcher kept (PR147) |
 | 2.0.0 | Complete overhaul to feature-folder layout + function-first + TypeScript-style (policy fixed in PR138, implemented in PR140) |
 | 1.0.0 | Pure DDD base (discontinued) |
