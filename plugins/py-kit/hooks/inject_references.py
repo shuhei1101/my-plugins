@@ -173,9 +173,9 @@ def main() -> int:
     # トークンはファイル単位ではなく injection_rules の「パターン単位」。同じパターンにマッチ
     # する別ファイルを開いても、そのパターンの reference は再注入しない。ファイルが複数パターン
     # にマッチする場合は、未注入 (トークンが無い) パターンの reference のみ注入する。
-    # session-kit (任意) が UserPromptSubmit でこのトークンを削除するのでキャッシュは会話ターン
-    # 単位。session-kit 未インストール時はセッション単位 (once-per-pattern)。
-    # トークンは ~/.claude/tokens/py-kit/{session_id}-{patternhash} に置く。
+    # キャッシュはセッション単位 (once-per-pattern): 同一パターンの reference はそのセッションで
+    # 一度だけ注入する。トークンは ~/.claude/tokens/py-kit/{session_id}-{patternhash} に置く
+    # (空ファイルとして溜まるが自動削除はしない)。
     session_id: str = data.get("session_id", "default")
     token_dir = pathlib.Path.home() / ".claude" / "tokens" / "py-kit"
     required: list[str] = []
@@ -188,7 +188,7 @@ def main() -> int:
         pat_hash = hashlib.sha1(pat.encode("utf-8")).hexdigest()[:12]
         token = token_dir / f"{session_id}-{pat_hash}"
         if token.exists():
-            continue  # このパターンの reference はこのターンで注入済み → スキップ
+            continue  # このパターンの reference はこのセッションで注入済み → スキップ
         new_pattern_tokens.append(token)
         required.extend(rule.get("required") or [])
         optional.extend(rule.get("optional") or [])
@@ -199,7 +199,7 @@ def main() -> int:
     if not required and not optional:
         return 0  # マッチ無し、または全マッチパターンが注入済み
 
-    # 注入するパターンのトークンを作成 (同一ターン内の重複注入を防ぐ)
+    # 注入するパターンのトークンを作成 (セッション内の重複注入を防ぐ)
     token_dir.mkdir(parents=True, exist_ok=True)
     for token in new_pattern_tokens:
         token.touch()

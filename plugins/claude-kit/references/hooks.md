@@ -132,24 +132,22 @@ for token in new_tokens:
     token.touch()                     # mark these patterns injected (do NOT consume)
 ```
 
-> Store tokens under `~/.claude/tokens/{plugin}/` (one subfolder per plugin) so
-> session-kit can manage them with a single `~/.claude/tokens/*/...` glob.
+> Store tokens under `~/.claude/tokens/{plugin}/` (one subfolder per plugin) to keep
+> them out of the project tree and namespaced per plugin.
 
 > Per-pattern (vs per-file) means: once a pattern's references are injected via
 > any matching file, other files matching the same pattern skip them. A file that
 > matches an *additional* pattern injects only that pattern's references.
 
-> ⚠️ **Limitation — context resets, and token scope.** The token assumes
-> "injected ⇒ still in context", but `/compact` summarizes the context while the
-> **`session_id` stays the same**. Also, keeping a token for the whole session is
-> often too long — in a long conversation the injected guidance gets buried far up.
-> The optional `session-kit` plugin solves both by **deleting the session's tokens
-> on every `UserPromptSubmit`** (so the cache is per conversation *turn* — fresh
-> re-injection each turn, including after `/compact`), and GC-ing stale tokens
-> (1-day TTL) on `SessionStart`. Consumers stay oblivious: they just create/check
-> their tokens; session-kit deletes them externally. When session-kit is absent the
-> token simply lives for the whole session (once-per-pattern). `/clear` needs no
-> handling — it changes the `session_id`, so a fresh session re-injects naturally.
+> ⚠️ **Limitation — once-per-session scope.** The token lives for the whole session,
+> so each pattern injects once-per-session: references inject the first time a
+> matching file is touched and not again that session. `/clear` changes the
+> `session_id`, so a fresh session re-injects naturally; `/compact` does **not**
+> change it, so guidance summarized away by `/compact` is not re-injected. Tokens
+> are empty marker files and accumulate under `~/.claude/tokens/{plugin}/` with no
+> automatic cleanup. (A `session-kit` companion plugin once reset tokens per turn and
+> GC'd them, but it was removed in PR155 — per-turn refresh wasn't worth a dedicated
+> cross-plugin plugin for pointer-only injection.)
 
 ---
 

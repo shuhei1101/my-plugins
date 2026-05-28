@@ -366,8 +366,7 @@ Claude Code のフックは、セッション中の特定タイミングで自�
 **これが reference 自動注入フックの標準構造** — 作るときはこれに従う。固定のプロンプト
 ファイルではなく、**これから触るファイルに応じたドキュメント**を注入する。対象パスを glob
 ルールと照合し、Jinja2 テンプレートを `decision: block` の reason に整形して出す。代表実装
-（すべてこのパターンに従う）は py-kit / next-kit（`hooks/inject_references.py`）で、トークンの
-寿命は `session-kit` が管理する。
+（すべてこのパターンに従う）は py-kit / next-kit（`hooks/inject_references.py`）。
 
 このパターンを作るときは以下の標準ルールを守る（詳細は `references/hooks.md`）:
 
@@ -378,11 +377,9 @@ Claude Code のフックは、セッション中の特定タイミングで自�
    reason テキストでは展開されない。スクリプト自身が絶対パスを出す必要がある。
 3. **パターン単位トークンで重複排除** — トークンをマッチしたルールの*パターン*単位（ファイル
    単位ではない）にし、`~/.claude/tokens/{plugin}/{session_id}-{patternhash}` に置く。未注入
-   （トークンが無い）パターンのみ注入する。
-4. **トークンの寿命は `session-kit` に委譲** — companion として導入する。session-kit が毎
-   `UserPromptSubmit` でセッションのトークンを削除（ターン単位キャッシュ）し、古いトークンを
-   1 日 TTL で掃除する。利用側は無自覚でよく、session-kit 未インストール時は once-per-pattern に
-   フォールバック。
+   （トークンが無い）パターンのみ注入する。トークンはセッション全体で生きるため、各パターンは
+   セッション中1回だけ注入される（once-per-pattern）。トークンは空マーカーファイルで自動削除は
+   されない。
 
 ---
 

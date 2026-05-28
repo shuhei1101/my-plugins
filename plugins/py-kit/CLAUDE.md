@@ -82,7 +82,7 @@ The **references auto-injection hook** (`py-references-injection`) follows this 
 - Claude reads reference file bodies itself via `Read` as needed
 - Read fires so that issue-scan and other read paths also receive reference guidance
 - A **per-pattern** token (`~/.claude/tokens/py-kit/{session_id}-{patternhash}`) de-dupes injection: once a rule's pattern is injected via any matching file, other files matching that pattern skip it; a file matching an additional pattern injects only that pattern's references
-- **Optional companion `session-kit`**: if installed, it deletes this session's tokens on every `UserPromptSubmit`, making the cache per conversation *turn* (fresh re-injection each turn, including after `/compact`), and GCs stale tokens (1-day TTL). When absent, tokens live for the whole session (once-per-pattern). Consumers stay oblivious — session-kit deletes the tokens externally.
+- The token lives for the whole session, so each pattern's references are injected **once per session** (once-per-pattern). Tokens are empty marker files under `~/.claude/tokens/py-kit/` and are not auto-cleaned.
 
 ---
 
@@ -90,6 +90,7 @@ The **references auto-injection hook** (`py-references-injection`) follows this 
 
 | Version | Main change |
 |---|---|
+| 2.3.1 | Removed the optional `session-kit` companion (deleted as a plugin). Injection tokens now always live for the whole session (once-per-pattern); doc/comment cleanup only, no code-behavior change (PR155) |
 | 2.3.0 | `core/comments.md`: comment the content of multi-step functions, not just block markers — per-step intent + per-branch labels, applied regardless of layer; "no comments on logging-only lines"; worked example (PR154) |
 | 2.2.0 | Injection token is now per-pattern (was per-file); session-kit (optional) resets tokens per turn via UserPromptSubmit. Drops the PR150 marker/mtime approach (PR151) |
 | 2.1.2 | Injection token honors session-kit's context-generation marker → re-inject after /compact and /clear (PR150) |

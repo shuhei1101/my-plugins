@@ -1,5 +1,0 @@
-{
-  "name": "session-kit",
-  "description": "Manages injection-token lifetime for other plugins: deletes the session's tokens each UserPromptSubmit (per-turn cache) and GCs stale tokens (1-day TTL) on SessionStart",
-  "version": "1.1.0"
-}
