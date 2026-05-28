@@ -2,11 +2,13 @@
 created_at: 2026-05-29
 updates:
   - 2026-05-29 — 初版（PR156 設計メモ）
+  - 2026-05-29 — PR157: py-kit を移行。トークンフィールドを injected_at → expires_at に変更
 related_specs:
   - dev-kit-hooks.md
   - fix-read-hook.md
 related_prs:
   - PR156
+  - PR157
   - PR147
   - PR155
 ---
@@ -40,16 +42,18 @@ PR147 で「本文全量を毎操作で注入してコンテキストが膨ら�
 
 ```yaml
 # key = injection_rules の pattern（マッチしたパスglob）
+# 値 = expires_at（注入時刻 + TTL の epoch 秒）
 "src/**/route.ts":
-  injected_at: 1716800000
+  expires_at: 1716803600
 "src/**/query.ts":
-  injected_at: 1716800100
+  expires_at: 1716803700
 ```
 
-- 判定: 該当 pattern キーがあり `now - injected_at < TTL` ならスキップ / それ以外は注入して `injected_at` を更新。
-- クリーンアップ: 発火のたびに全 `{session_id}.yaml` を走査し期限切れキーを削除 → 空になったファイルごと削除（異常終了セッションも自然消滅）。
+- 判定: 該当 pattern キーがあり `now < expires_at` ならスキップ / それ以外は注入して `expires_at = now + TTL` を書く。
+- クリーンアップ: 発火のたびに全 `{session_id}.yaml` を走査し期限切れキー（`now >= expires_at`）を削除 → 空になったファイルごと削除（異常終了セッションも自然消滅）。
 - 値を map にすることで将来フィールド追加（injected_count 等）が可能。
 - 旧方式（pattern ハッシュごとの空ファイル乱立、自動削除なし）を置き換える。
+- `injected_at` でなく `expires_at` を保存する（PR157 で変更）。判定が `now >= expires_at` で自明になる代わりに、TTL の env var 変更は既存エントリに遡及しない（注入時に期限が確定するため）。
 
 ### /compact について（PreCompact フックは持たない）
 
