@@ -23,15 +23,15 @@ Management is split across two files:
 
 ## Reading automatically
 
-The `next-references-injection` hook (PreToolUse, implemented in the same plugin) does this on every `Edit` / `Write` / `MultiEdit`:
+The `next-references-injection` hook (PreToolUse) does this on every `Edit` / `Write` / `MultiEdit` / `Read`:
 
 1. Reads `injection_rules.yaml` and collects matching rules
 2. Looks up each reference's description from `index.yaml`
-3. Reads each reference body
+3. Reads each `required` reference body in full (`optional` stays path + description only)
 4. Renders the Jinja2 template (`hooks/templates/injection.md.j2`)
 5. Injects the result via `decision: block` in the `reason` field
 
-A session + file-hash token prevents the hook from blocking the same file twice in one session.
+A per-pattern TTL token (`~/.claude/tokens/next-kit/{session_id}.yaml`) prevents re-injecting the same pattern within the TTL window (default 3600s, env `NEXT_KIT_INJECTION_TTL`).
 
 Switch the injection language by setting `NEXT_KIT_INJECTION_LANG=jp` (default is `en`).
 

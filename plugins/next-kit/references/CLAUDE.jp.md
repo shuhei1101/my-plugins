@@ -24,15 +24,15 @@ next-kit の規約は **1 ファイル = 1 ユースケース** の reference �
 
 ## 自動で読む
 
-`next-references-injection` フック（PreToolUse、同 plugin 内）が `Edit` / `Write` / `MultiEdit` ごとに以下を実行する:
+`next-references-injection` フック（PreToolUse）が `Edit` / `Write` / `MultiEdit` / `Read` ごとに以下を実行する:
 
 1. `injection_rules.yaml` を読み、マッチした rule を収集
 2. 各 reference の description を `index.yaml` から取得
-3. 各 reference 本文を読み込み
+3. `required` reference の本文を全量読み込む（`optional` は path + description のみ）
 4. Jinja2 テンプレ（`hooks/templates/injection.md.j2`）でレンダリング
 5. `decision: block` の `reason` で注入
 
-セッション + ファイルハッシュ単位のトークンで、同一セッション中に同じファイルを 2 回以上ブロックしない。
+パターン単位の TTL トークン（`~/.claude/tokens/next-kit/{session_id}.yaml`）で、TTL 期間内（デフォルト 3600 秒、env `NEXT_KIT_INJECTION_TTL`）は同じパターンを再注入しない。
 
 注入言語切替: `NEXT_KIT_INJECTION_LANG=jp` で日本語版（デフォルトは英語）。
 
