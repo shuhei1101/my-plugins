@@ -42,4 +42,6 @@ work-kit ← worktree-kit の片方向依存しかないため、別プラグイ
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| {次にやること} | {背景・目的} | {例: 即時実施可 / 「{他候補タイトル}」が完了したら} |
+| add-env-toggles-for-hooks-and-steps | 常時発火フック／スキルステップを env で opt-out 可能にする（全てデフォルトは現挙動維持）。①`WORK_KIT_PR_ENFORCEMENT`（work-kit UserPromptSubmit の work-start 強制, default 有効）②`WORK_KIT_STOP_REMINDER`（work-kit Stop の TODO/QA/merge 提案, default 有効）③`{PREFIX}_INJECTION_DISABLE`（ref-inject 注入の完全 OFF スイッチ。ref-inject テンプレ側に実装し claude-kit/py-kit/next-kit へ波及, default 注入有効）④`NEXT_KIT_TS_CHECK`（next-kit PostToolUse の tsc, default 有効）⑤`WORK_KIT_MERGE_CONV2CLAUDE`（merge Step4 の conversation-to-claude 実行可否）⑥`WORK_KIT_AUTO_HANDOFF`（merge 末尾の pr-handoff 自動呼び出し, default 有効）⑦`AITUBER_NOTIFY`（ユーザー settings.json の notify-aituber Stop フック。サーバー未起動環境で OFF）。実装パターン: フックはスクリプト先頭で `os.environ.get` 早期 return（インライン python はガード式1つ追加）、スキルステップは PR163 の Step4 と同じく bash で env 判定。 | 即時実施可 |
+| add-plugin-config-skill | 全プラグイン共通の設定スキル／コマンド（`/config` 的）。AskUserQuestion の選択肢経由で上記 env 変数群を `settings.json` の `env` に書き込む UI。どのトグルが ON/OFF か一覧表示し、まとめて設定できるようにする。env 変数が出揃っている前提。 | 「add-env-toggles-for-hooks-and-steps」が完了したら |
+| merge-language-plugins-into-dev-kit | py-kit / html-kit / next-kit を dev-kit に統合し、使用する言語規約を env 変数で切り替える方式にする（worktree-kit→work-kit 統合と同じ発想）。注入フックも統合し、有効言語だけ注入する。大規模リファクタのため要設計（QA/notes 必須）。env 切替の土台ができてから着手。 | 「add-env-toggles-for-hooks-and-steps」が完了したら |
