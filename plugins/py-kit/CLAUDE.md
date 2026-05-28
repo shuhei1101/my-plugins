@@ -81,7 +81,7 @@ The **references auto-injection hook** (`py-references-injection`) follows this 
 - Inject matched `required` / `optional` as **path + description only** (no body) via the Jinja2 template into `decision: block` reason
 - Claude reads reference file bodies itself via `Read` as needed
 - Read fires so that issue-scan and other read paths also receive reference guidance
-- A **per-pattern** token (`py-references-injection-{session_id}-{patternhash}`) de-dupes injection: once a rule's pattern is injected via any matching file, other files matching that pattern skip it; a file matching an additional pattern injects only that pattern's references
+- A **per-pattern** token (`~/.claude/tokens/py-kit/{session_id}-{patternhash}`) de-dupes injection: once a rule's pattern is injected via any matching file, other files matching that pattern skip it; a file matching an additional pattern injects only that pattern's references
 - **Optional companion `session-kit`**: if installed, it deletes this session's tokens on every `UserPromptSubmit`, making the cache per conversation *turn* (fresh re-injection each turn, including after `/compact`), and GCs stale tokens (1-day TTL). When absent, tokens live for the whole session (once-per-pattern). Consumers stay oblivious — session-kit deletes the tokens externally.
 
 ---

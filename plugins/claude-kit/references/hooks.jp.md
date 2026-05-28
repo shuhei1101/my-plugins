@@ -120,10 +120,11 @@ abs_path = (refs_dir / rel_path).as_posix()   # refs_dir は CLAUDE_PLUGIN_ROOT 
 共有され、未注入（トークンが無い）パターンの reference だけを注入できる:
 
 ```python
+token_dir = pathlib.Path.home() / '.claude' / 'tokens' / 'my-kit'   # プラグインごとにサブフォルダ
 required, optional, new_tokens = [], [], []
 for rule in matched_rules:
     pat_hash = hashlib.sha1(rule['pattern'].encode('utf-8')).hexdigest()[:12]
-    token = pathlib.Path(tempfile.gettempdir()) / f'my-injection-{session_id}-{pat_hash}'
+    token = token_dir / f'{session_id}-{pat_hash}'
     if token.exists():
         continue                      # このパターンは注入済み → reference をスキップ
     new_tokens.append(token)
@@ -131,9 +132,13 @@ for rule in matched_rules:
     optional += rule.get('optional', [])
 if not required and not optional:
     sys.exit(0)                       # 新たに注入するものなし
+token_dir.mkdir(parents=True, exist_ok=True)
 for token in new_tokens:
     token.touch()                     # これらのパターンを注入済みにする（消費しない）
 ```
+
+> トークンは `~/.claude/tokens/{plugin}/`（プラグインごとにサブフォルダ）に置く。こうすると
+> session-kit が `~/.claude/tokens/*/...` の単一 glob でまとめて管理できる。
 
 > パターン単位（ファイル単位ではない）の意味: あるパターンの reference がどれかのファイル
 > 経由で一度注入されたら、同じパターンにマッチする他のファイルはそれをスキップする。

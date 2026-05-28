@@ -26,7 +26,6 @@ import os
 import pathlib
 import re
 import sys
-import tempfile
 
 
 def _eprint(msg: str) -> None:
@@ -176,8 +175,9 @@ def main() -> int:
     # にマッチする場合は、未注入 (トークンが無い) パターンの reference のみ注入する。
     # session-kit (任意) が UserPromptSubmit でこのトークンを削除するのでキャッシュは会話ターン
     # 単位。session-kit 未インストール時はセッション単位 (once-per-pattern)。
+    # トークンは ~/.claude/tokens/py-kit/{session_id}-{patternhash} に置く。
     session_id: str = data.get("session_id", "default")
-    tmp = pathlib.Path(tempfile.gettempdir())
+    token_dir = pathlib.Path.home() / ".claude" / "tokens" / "py-kit"
     required: list[str] = []
     optional: list[str] = []
     new_pattern_tokens: list[pathlib.Path] = []
@@ -186,7 +186,7 @@ def main() -> int:
         if not pat or not _match_any(pat, norm):
             continue
         pat_hash = hashlib.sha1(pat.encode("utf-8")).hexdigest()[:12]
-        token = tmp / f"py-references-injection-{session_id}-{pat_hash}"
+        token = token_dir / f"{session_id}-{pat_hash}"
         if token.exists():
             continue  # このパターンの reference はこのターンで注入済み → スキップ
         new_pattern_tokens.append(token)
@@ -200,6 +200,7 @@ def main() -> int:
         return 0  # マッチ無し、または全マッチパターンが注入済み
 
     # 注入するパターンのトークンを作成 (同一ターン内の重複注入を防ぐ)
+    token_dir.mkdir(parents=True, exist_ok=True)
     for token in new_pattern_tokens:
         token.touch()
 

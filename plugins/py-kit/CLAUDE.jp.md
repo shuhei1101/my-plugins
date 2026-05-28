@@ -88,7 +88,7 @@ py-kit のフックは `claude-kit` の方針に従う:
 - マッチした `required` / `optional` を **path + description のみ**（本文なし）で Jinja2 テンプレ経由に `decision: block` の reason へ注入
 - reference の本文は Claude が `Read` で必要なものだけ読む設計
 - Read も対象にすることで issue-scan など読み取り経路でも reference の案内を受けられる
-- **パターン単位**トークン（`py-references-injection-{session_id}-{patternhash}`）で注入を重複排除。あるルールのパターンがどれかのファイル経由で注入されたら、同じパターンにマッチする他ファイルはスキップ。追加パターンにマッチするファイルはその追加パターンの reference だけ注入
+- **パターン単位**トークン（`~/.claude/tokens/py-kit/{session_id}-{patternhash}`）で注入を重複排除。あるルールのパターンがどれかのファイル経由で注入されたら、同じパターンにマッチする他ファイルはスキップ。追加パターンにマッチするファイルはその追加パターンの reference だけ注入
 - **任意の companion `session-kit`**: インストールされていれば、毎 `UserPromptSubmit` でこのセッションのトークンを削除し、キャッシュを会話*ターン*単位にする（`/compact` 後も含めターンごとに再注入）。古いトークンは 1 日 TTL で掃除。未インストール時はトークンがセッション全体で生きる（once-per-pattern）。利用側は無自覚で、session-kit が外部から削除する
 
 ---

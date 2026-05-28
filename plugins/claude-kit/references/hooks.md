@@ -115,10 +115,11 @@ the same pattern share it, and inject only the references of patterns whose toke
 does not yet exist:
 
 ```python
+token_dir = pathlib.Path.home() / '.claude' / 'tokens' / 'my-kit'   # one subfolder per plugin
 required, optional, new_tokens = [], [], []
 for rule in matched_rules:
     pat_hash = hashlib.sha1(rule['pattern'].encode('utf-8')).hexdigest()[:12]
-    token = pathlib.Path(tempfile.gettempdir()) / f'my-injection-{session_id}-{pat_hash}'
+    token = token_dir / f'{session_id}-{pat_hash}'
     if token.exists():
         continue                      # this pattern already injected → skip its refs
     new_tokens.append(token)
@@ -126,9 +127,13 @@ for rule in matched_rules:
     optional += rule.get('optional', [])
 if not required and not optional:
     sys.exit(0)                       # nothing new to inject
+token_dir.mkdir(parents=True, exist_ok=True)
 for token in new_tokens:
     token.touch()                     # mark these patterns injected (do NOT consume)
 ```
+
+> Store tokens under `~/.claude/tokens/{plugin}/` (one subfolder per plugin) so
+> session-kit can manage them with a single `~/.claude/tokens/*/...` glob.
 
 > Per-pattern (vs per-file) means: once a pattern's references are injected via
 > any matching file, other files matching the same pattern skip them. A file that
