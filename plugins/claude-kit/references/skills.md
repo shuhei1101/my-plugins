@@ -141,4 +141,4 @@ For large skills, extract heavy reference material to `references/` and link by 
 - [ ] `SKILL.md` (English, loaded by Claude) and `SKILL.jp.md` (JP mirror) both exist with matching structure
 - [ ] `description` frontmatter has precise trigger conditions; only `name` + `description` set
 - [ ] Shared content is in `## References`; single-step content stays in its step
-- [ ] Both files stamped via `mark-generated` (see `common.md`)
+- [ ] Both files stamped per `provenance.md` (auto-injected when you write the file)

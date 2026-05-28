@@ -3,7 +3,10 @@
 # index.yaml（英語・正本）と injection_rules.yaml に常に同期させること。
 references:
   - path: common.md
-    description: 全 Claude 設定オーサリングの共通ベース。ファイル種別の判定基準（rule / skill / CLAUDE.md / hook / reference）、増殖防止ガード、JP/EN ミラー規則、出自スタンプ（mark-generated）手順。
+    description: 全 Claude 設定オーサリングの共通ベース。ファイル種別の判定基準（rule / skill / CLAUDE.md / hook / reference）、増殖防止ガード、JP/EN ミラー規則。
+
+  - path: provenance.md
+    description: 生成・編集したファイルへの出自メタデータ（Generated-by コメント）の刻み方。拡張子別のコメント書式、version は plugin.json から、frontmatter 直後への配置、JP ミラー警告行、既存行の置換ルール。mark-generated 薄ラッパーの正本。
 
   - path: skills.md
     description: .claude/skills/<name>/SKILL.md の作り方。skill が適切な種別かの判定、既存類似スキルの確認、JP ミラー先行ワークフロー、ステップ構造テンプレ、description フロントマター規約。

@@ -5,32 +5,37 @@
 #   required : reference paths injected in FULL BODY (the must-read authoring guide)
 #   optional : reference paths injected as POINTER ONLY (path + description); Claude reads on demand
 # Every matching rule contributes its references (de-duplicated). common.md is the shared
-# base (file-type decision, JP/EN mirror rules, provenance stamping) and rides along with
-# each creator-type pattern.
+# base (file-type decision, JP/EN mirror rules); provenance.md (how to stamp) rides along with
+# every stampable (text-comment-capable) pattern. JSON files cannot carry comments, so the
+# JSON-only patterns (hooks.json / settings.json / plugin.json / marketplace.json) omit provenance.
 rules:
   # ---- Skills: editing a SKILL.md (or its JP mirror) ----
   - pattern: "**/skills/*/SKILL{.jp,}.md"
     required:
       - common.md
       - skills.md
+      - provenance.md
 
   # ---- Rules: editing a path-scoped rule (or its rules-jp mirror) ----
   - pattern: "**/.claude/rules/**/*.md"
     required:
       - common.md
       - rules.md
+      - provenance.md
   - pattern: "**/.claude/rules-jp/**/*.md"
     required:
       - common.md
       - rules.md
+      - provenance.md
 
   # ---- CLAUDE.md: project / subfolder memory file ----
   - pattern: "**/CLAUDE{.local,.jp,}.md"
     required:
       - common.md
       - claude-md.md
+      - provenance.md
 
-  # ---- Hooks: plugin hooks.json, project settings, prompt files ----
+  # ---- Hooks: plugin hooks.json, project settings (JSON — no stamp), prompt files (.md — stamped) ----
   - pattern: "**/hooks/hooks.json"
     required:
       - common.md
@@ -42,8 +47,9 @@ rules:
   - pattern: "**/hooks/prompts/*.md"
     required:
       - hooks.md
+      - provenance.md
 
-  # ---- Plugins: manifest / marketplace ----
+  # ---- Plugins: manifest / marketplace (JSON — no stamp) ----
   - pattern: "**/.claude-plugin/{plugin,marketplace}.json"
     required:
       - common.md
@@ -53,6 +59,13 @@ rules:
   - pattern: "**/rules/**/glossary.md"
     required:
       - glossary.md
+      - provenance.md
   - pattern: "**/rules/**/incidents.md"
     required:
       - incidents.md
+      - provenance.md
+
+  # ---- Jinja2 templates: stamp guidance (replaces the removed j2-stamp-check hook) ----
+  - pattern: "**/*.j2"
+    required:
+      - provenance.md
