@@ -9,6 +9,10 @@
 `premature-cross-plugin-centralization` 参照）。代わりに `templates/` から**独立コピー**を
 吐き出し、インシデントログが「コピペの方が安い」と認めたやり方を自動化する。
 
+**生成スクリプトは持たない。** `/ref-inject:create` は Claude が各テンプレートを読んで
+出力先ファイルを自分で書き、その過程でプレースホルダを置換する。こうすることで構造が
+コンテキストに残り、プラグインごとに調整しやすい。
+
 ---
 
 ## 構成
@@ -17,13 +21,12 @@
 ref-inject/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md / CLAUDE.jp.md
-├── skills/create/SKILL.md (+ .jp.md)   # /ref-inject:create — 入力収集 → ジェネレータ実行
-├── scripts/generate.py                  # テンプレコピー + プレースホルダ置換 + marketplace 登録
+├── skills/create/SKILL.md (+ .jp.md)   # /ref-inject:create — Claude がテンプレを読んで新プラグインを書く
 └── templates/                           # 新プラグインに展開される雛形
     ├── plugin.json                       # → {new}/.claude-plugin/plugin.json
     ├── CLAUDE.md (+ .jp.md)              # → {new}/CLAUDE.md
     ├── hooks/
-    │   ├── inject_references.py          # PreToolUse: パス照合 → リファレンス注入
+    │   ├── inject_references.py          # PreToolUse: パス照合 → リファレンス注入（再利用される注入スクリプト）
     │   ├── refresh_on_compact.py         # PreCompact: セッショントークン削除 → /compact 後に再注入
     │   ├── hooks.json
     │   └── templates/injection.md.j2 (+ .jp.md.j2)
@@ -38,7 +41,7 @@ ref-inject/
 
 ## プレースホルダ
 
-`scripts/generate.py` が全テキストテンプレートで置換する:
+`create` スキルが、各テキストテンプレートを書き出す際に Claude に置換させる:
 
 | プレースホルダ | 置換内容 | 例 |
 |---|---|---|
@@ -47,6 +50,8 @@ ref-inject/
 | `__LOG_TAG__` | `{name}-references-injection` | `vue-kit-references-injection` |
 | `__DEFAULT_TTL__` | デフォルト TTL 秒 | `3600` |
 | `__PLUGIN_DESCRIPTION__` | 1行説明 | … |
+
+パス移動は `plugin.json` → `.claude-plugin/plugin.json` のみ。他はテンプレートのパスをそのまま反映。
 
 ---
 
@@ -69,9 +74,9 @@ ref-inject/
 `/ref-inject:create`（または「リファレンス注入プラグインを作って」）。その後 `references/` を
 実際の doc で埋め、`injection_rules.yaml` で紐付ける。
 
-全生成プラグインの**仕組み**を変えるときは、ここの `templates/` を編集して各 consumer を
-`/ref-inject:create --force` で再生成する（references 雛形を上書きするため、references を
-再生成できるプラグインに限るか、hooks/ を手動コピーする）。
+全生成プラグインの**仕組み**を変えるときは、ここの `templates/` を編集し、変更後のテンプレを
+各 consumer の `hooks/` に Claude が再適用する（references はそのまま。`ref-inject` 由来なのは
+フック・テンプレートファイルのみ）。
 
 ---
 

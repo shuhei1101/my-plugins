@@ -8,6 +8,10 @@ It does **not** centralize a shared runtime (that approach was rejected — see
 `premature-cross-plugin-centralization`). Instead it emits **independent copies** from
 `templates/`, automating the copy-paste that the incident log blessed as the cheaper path.
 
+There is **no generator script**. `/ref-inject:create` has Claude read each template and
+write the destination file itself, substituting placeholders as it goes — so the structure
+stays in context and can be adapted per plugin.
+
 ---
 
 ## Structure
@@ -16,13 +20,12 @@ It does **not** centralize a shared runtime (that approach was rejected — see
 ref-inject/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md / CLAUDE.jp.md
-├── skills/create/SKILL.md (+ .jp.md)   # /ref-inject:create — gathers inputs, runs the generator
-├── scripts/generate.py                  # copies templates + substitutes placeholders + registers marketplace
+├── skills/create/SKILL.md (+ .jp.md)   # /ref-inject:create — Claude reads templates & writes the new plugin
 └── templates/                           # the seed files emitted into a new plugin
     ├── plugin.json                       # → {new}/.claude-plugin/plugin.json
     ├── CLAUDE.md (+ .jp.md)              # → {new}/CLAUDE.md
     ├── hooks/
-    │   ├── inject_references.py          # PreToolUse: match path → inject references
+    │   ├── inject_references.py          # PreToolUse: match path → inject references (the reusable injection script)
     │   ├── refresh_on_compact.py         # PreCompact: clear session token → re-inject after /compact
     │   ├── hooks.json
     │   └── templates/injection.md.j2 (+ .jp.md.j2)
@@ -37,7 +40,7 @@ ref-inject/
 
 ## Placeholders
 
-`scripts/generate.py` substitutes these in every text template:
+The `create` skill has Claude substitute these in every text template while writing it out:
 
 | Placeholder | Replaced with | Example |
 |---|---|---|
@@ -46,6 +49,9 @@ ref-inject/
 | `__LOG_TAG__` | `{name}-references-injection` | `vue-kit-references-injection` |
 | `__DEFAULT_TTL__` | default TTL seconds | `3600` |
 | `__PLUGIN_DESCRIPTION__` | one-line description | … |
+
+The only path relocation is `plugin.json` → `.claude-plugin/plugin.json`; everything else
+mirrors the template path.
 
 ---
 
@@ -68,9 +74,9 @@ injection (PR147) — `required` bodies are back because the TTL token throttles
 `/ref-inject:create` (or "create a reference injection plugin"). Then fill `references/`
 with real docs and bind them in `injection_rules.yaml`.
 
-To change the **mechanism** for all generated plugins, edit `templates/` here and regenerate
-each consumer with `/ref-inject:create --force` (overwrites references skeleton — use the
-mechanism only on plugins whose references you can re-derive, or copy hooks/ manually).
+To change the **mechanism** for all generated plugins, edit `templates/` here, then have
+Claude re-apply the changed templates to each consumer's `hooks/` (the references stay as-is —
+only the hook/template files come from `ref-inject`).
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: create
 description: |
-  リファレンス自動注入プラグイン（PreToolUse フックで編集パスにマッチしたリファレンスを注入する "*-kit" 形式のプラグイン）を新規生成する。フック（inject_references.py + refresh_on_compact.py + hooks.json）、Jinja2 テンプレート、references/ 雛形（index.yaml / injection_rules.yaml）を展開し、marketplace.json に登録する。
+  リファレンス自動注入プラグイン（PreToolUse フックで編集パスにマッチしたリファレンスを注入する "*-kit" 形式のプラグイン）を新規生成する。Claude が ref-inject のテンプレートを読み、新プラグインのファイルを自分で書き出す（フック: inject_references.py + refresh_on_compact.py + hooks.json、Jinja2 テンプレート、references/ 雛形）。最後に marketplace.json に登録する。
   トリガー: 「リファレンス注入プラグインを作って」「ref-inject で新しいプラグインを作って」「create a reference injection plugin」「make an auto-injection kit」、または /ref-inject:create の明示呼び出し。
 ---
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
@@ -9,9 +9,12 @@ description: |
 
 # ref-inject:create — リファレンス注入プラグインを生成
 
-`ref-inject` テンプレートから新規プラグインを展開する。生成されるプラグインは
-`PreToolUse(Edit | Write | MultiEdit | Read)` フックを同梱し、編集対象パスを
-`references/injection_rules.yaml` と照合してマッチしたリファレンスを注入する:
+`ref-inject` テンプレートから新規プラグインを展開する。**Claude が各テンプレートを読み、
+プレースホルダを置換しながら自分で出力先ファイルを書く**（生成スクリプトは持たない）。
+こうすることで構造がコンテキストに残り、プラグインごとに微調整しやすい。
+
+生成されるプラグインは `PreToolUse(Edit | Write | MultiEdit | Read)` フックを同梱し、編集対象
+パスを `references/injection_rules.yaml` と照合してマッチしたリファレンスを注入する:
 
 - `required` → **本文全量**を `decision: block` の reason に注入
 - `optional` → **パス + description のみ**（Claude が必要時に Read）
@@ -23,7 +26,7 @@ description: |
 
 ## Tasks
 
-### Step 1: 入力を集める
+### Step 1: 入力を集めて値を導出
 
 #### Condition
 
@@ -31,21 +34,27 @@ description: |
 
 #### Process
 
-以下を確定する（不足分のみユーザーに尋ねる）:
+確定する（不足分のみユーザーに尋ねる）:
 
-- **name**: kebab-case のプラグイン名（例 `vue-kit`、`django-kit`）。スキル名前空間・トークンdir・`{NAME}` env 接頭辞になる。
-- **description**: プラグインの1行説明（`plugin.json` と `marketplace.json` に入る）。
-- **ttl**（任意）: 再注入間隔（秒）。デフォルト `3600`。
+- **name**: kebab-case のプラグイン名（例 `vue-kit`、`django-kit`）
+- **description**: プラグインの1行説明
+- **ttl**（任意）: 再注入間隔（秒）。デフォルト `3600`
+
+プレースホルダ値を導出:
+
+| プレースホルダ | 値 | 例（`vue-kit`） |
+|---|---|---|
+| `__PLUGIN_NAME__` | `name` | `vue-kit` |
+| `__ENV_PREFIX__` | `name` を大文字化し、英数以外の連続を `_` に | `VUE_KIT` |
+| `__LOG_TAG__` | `{name}-references-injection` | `vue-kit-references-injection` |
+| `__DEFAULT_TTL__` | `ttl`（数値） | `3600` |
+| `__PLUGIN_DESCRIPTION__` | `description` | … |
 
 → Step 2 へ
 
-#### Output
-
-- `name`、`description`、`ttl` 確定
-
 ---
 
-### Step 2: ジェネレータを実行
+### Step 2: 各テンプレートをコピーしプレースホルダ置換
 
 #### Condition
 
@@ -53,36 +62,60 @@ description: |
 
 #### Process
 
-`.claude-plugin/marketplace.json` がある**リポジトリルート**から実行:
+`${CLAUDE_PLUGIN_ROOT}/templates/` 配下の**全ファイル**を `Read` し、下表の出力先に `Write` する。
+その際 5 つのプレースホルダを導出値で置換する。テキストファイル（`.py` `.json` `.md` `.yaml`
+`.yml` `.j2`）は置換し、バイナリはそのままコピーする。
 
-```bash
-python "${CLAUDE_PLUGIN_ROOT}/scripts/generate.py" \
-  --name {name} \
-  --description "{description}" \
-  --plugins-dir plugins \
-  --marketplace .claude-plugin/marketplace.json \
-  --ttl {ttl}
-```
+| テンプレート（`templates/` 配下） | 出力先（`plugins/{name}/` 配下） |
+|---|---|
+| `plugin.json` | `.claude-plugin/plugin.json` |
+| `CLAUDE.md` / `CLAUDE.jp.md` | `CLAUDE.md` / `CLAUDE.jp.md` |
+| `hooks/inject_references.py` | `hooks/inject_references.py` |
+| `hooks/refresh_on_compact.py` | `hooks/refresh_on_compact.py` |
+| `hooks/hooks.json` | `hooks/hooks.json` |
+| `hooks/templates/injection.md.j2` / `injection.jp.md.j2` | `hooks/templates/…`（同名） |
+| `references/index.yaml` / `index.jp.yaml` | `references/…`（同名） |
+| `references/injection_rules.yaml` | `references/injection_rules.yaml` |
+| `references/CLAUDE.md` / `CLAUDE.jp.md` | `references/…`（同名） |
+| `references/example/getting-started.md` | `references/example/getting-started.md` |
 
-スクリプトは `templates/*` を `plugins/{name}/` にコピーし、プレースホルダ
-（`__PLUGIN_NAME__` / `__ENV_PREFIX__` / `__LOG_TAG__` / `__DEFAULT_TTL__` /
-`__PLUGIN_DESCRIPTION__`）を置換、marketplace エントリを追加する。既存プラグインの
-再生成時のみ `--force` を渡す（references が雛形で上書きされる）。
+メモ:
+- パス移動は `plugin.json` → `.claude-plugin/plugin.json` のみ。他はテンプレートのパスをそのまま反映。
+- `hooks.json` 内の `${CLAUDE_PLUGIN_ROOT}` はそのまま残す（Claude Code が実行時に展開）。
+- 書き込み後、`__PLACEHOLDER__` トークンが残っていないか新プラグインdirを grep で確認する。
 
 → Step 3 へ
 
-#### Output
-
-- `plugins/{name}/` が hooks・templates・references 雛形付きで生成
-- `marketplace.json` 更新
-
 ---
 
-### Step 3: 報告と引き継ぎ
+### Step 3: marketplace.json に登録
 
 #### Condition
 
 - Step 2 完了
+
+#### Process
+
+`.claude-plugin/marketplace.json` の `plugins` 配列にエントリを追加する（`name` が既にあればスキップ）:
+
+```json
+{
+  "name": "{name}",
+  "source": "./plugins/{name}",
+  "description": "{description}",
+  "version": "0.1.0"
+}
+```
+
+→ Step 4 へ
+
+---
+
+### Step 4: 報告と引き継ぎ
+
+#### Condition
+
+- Step 3 完了
 
 #### Process
 
@@ -91,8 +124,8 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/generate.py" \
    - `references/example/` を実際のリファレンス doc に置き換える（1 リファレンス = 1 ユースケース）
    - `references/index.yaml`（+ `index.jp.yaml`）に各 doc の path + description を記入
    - `references/injection_rules.yaml` で編集パスパターンをリファレンスに紐付け
-   - 必要なら `settings.json` の `env` に `{NAME}_INJECTION_TTL` を設定
-3. フックの**仕組み**を手で編集しない — `ref-inject` テンプレートを変えて再生成する。
+   - 必要なら `settings.json` の `env` に `{ENV_PREFIX}_INJECTION_TTL` を設定
+3. フックの**仕組み**をプラグインごとに手編集しない — `ref-inject` テンプレートを変えて `/ref-inject:create` を再実行する。
 
 #### Notes
 
