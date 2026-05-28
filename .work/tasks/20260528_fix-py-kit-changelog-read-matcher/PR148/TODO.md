@@ -19,9 +19,9 @@ PR147 の changelog 記述ミスを修正する。`plugins/py-kit/CLAUDE.md` お
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260528_fix-py-kit-changelog-read-matcher/PR148/QA.md` |
-| - | CLAUDE.md の v2.1.1 changelog 記述を修正 | - `plugins/py-kit/CLAUDE.md` |
-| - | CLAUDE.jp.md の v2.1.1 changelog 記述を修正 | - `plugins/py-kit/CLAUDE.jp.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260528_fix-py-kit-changelog-read-matcher/PR148/QA.md` |
+| 済 | CLAUDE.md の v2.1.1 changelog 記述を修正 | - `plugins/py-kit/CLAUDE.md` |
+| 済 | CLAUDE.jp.md の v2.1.1 changelog 記述を修正 | - `plugins/py-kit/CLAUDE.jp.md` |
 
 ## 参考ドキュメント
 
