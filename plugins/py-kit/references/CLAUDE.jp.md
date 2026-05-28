@@ -25,16 +25,16 @@ py-kit の Python 規約は **トピック軸に分割された複数の referen
 
 ## 読み方（自動の場合）
 
-`add-py-kit-references-injection-hook`（既に同 PR で実装済み）の **PreToolUse フック** が、
-`Edit` / `Write` / `MultiEdit` のたびに自動で:
+`py-kit-references-injection` **PreToolUse フック** が、
+`Edit` / `Write` / `MultiEdit` / `Read` のたびに自動で:
 
 1. `injection_rules.yaml` を読んで該当 rule を集める
 2. `index.yaml` から各 reference の description を引く
-3. 各 reference 本文を読む
+3. `required` reference の本文を全量読む（`optional` は path + description のみ）
 4. Jinja2 テンプレ (`hooks/templates/injection.md.j2`) で整形
 5. `decision: block` の reason に注入
 
-セッション + ファイルハッシュ単位のトークンで、同一ファイルへの 2 回目以降はスキップ。
+パターン単位の TTL トークン（`~/.claude/tokens/py-kit/{session_id}.yaml`）で、TTL 内（デフォルト 3600 秒、env `PY_KIT_INJECTION_TTL`）の同一パターン再注入をスキップ。
 
 注入言語の切替は環境変数 `PY_KIT_INJECTION_LANG=jp` で（デフォルトは `en`）。
 

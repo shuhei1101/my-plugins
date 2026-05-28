@@ -53,7 +53,7 @@ references/
 | `index.jp.yaml` | JP mirror (for humans browsing) | Japanese |
 | `injection_rules.yaml` | Star chart mapping edit-target file-path patterns to `required` / `optional` references | Language-independent |
 
-The `py-references-injection` hook (PreToolUse, implemented in the same PR) reads these on every `Edit` / `Write` / `MultiEdit` and auto-injects matched references into Claude's context via `decision: block`.
+The `py-kit-references-injection` hook (PreToolUse) reads these on every `Edit` / `Write` / `MultiEdit` / `Read` and auto-injects matched references into Claude's context via `decision: block`.
 
 ---
 
@@ -75,14 +75,17 @@ py-kit hooks follow the `claude-kit` policy:
 - Session-flag-style blocking (`/tmp/{hook-name}-{session_id}`) — block only once per session
 - Do not add dispatch-purpose `UserPromptSubmit` hooks
 
-The **references auto-injection hook** (`py-references-injection`) follows this policy:
+The **references auto-injection hook** (`py-kit-references-injection`) was migrated to the
+`ref-inject` mechanism in v2.4.0 (PR157). Regenerate it via `/ref-inject:apply`, never hand-edit
+`hooks/inject_references.py` per plugin. It follows this policy:
 - On `PreToolUse(Edit|Write|MultiEdit|Read)`, read `references/injection_rules.yaml` and look up descriptions in `references/index.yaml`
 - Match the file path against `rules[].pattern` (glob)
-- Inject matched `required` / `optional` as **path + description only** (no body) via the Jinja2 template into `decision: block` reason
-- Claude reads reference file bodies itself via `Read` as needed
+- Inject matched `required` as **full body**, `optional` as **path + description only**, via the Jinja2 template into `decision: block` reason
+- Claude reads `optional` reference bodies itself via `Read` as needed
 - Read fires so that issue-scan and other read paths also receive reference guidance
-- A **per-pattern** token (`~/.claude/tokens/py-kit/{session_id}-{patternhash}`) de-dupes injection: once a rule's pattern is injected via any matching file, other files matching that pattern skip it; a file matching an additional pattern injects only that pattern's references
-- The token lives for the whole session, so each pattern's references are injected **once per session** (once-per-pattern). Tokens are empty marker files under `~/.claude/tokens/py-kit/` and are not auto-cleaned.
+- A **per-pattern TTL token** (`~/.claude/tokens/py-kit/{session_id}.yaml`) de-dupes injection: a pattern-keyed YAML map where each entry carries `expires_at` (epoch seconds, = injection time + TTL). A pattern is skipped while `now < expires_at` and re-injected once `now >= expires_at`
+- TTL defaults to **3600s**, overridable via `settings.json` `env` `PY_KIT_INJECTION_TTL` (seconds). Every fire scans all session tokens, drops expired entries, and deletes emptied token files
+- **No `PreCompact` hook** — after `/compact` the bodies re-inject once the TTL elapses; a dedicated compact-refresh hook was judged unnecessary (decided in PR156)
 
 ---
 
@@ -90,6 +93,7 @@ The **references auto-injection hook** (`py-references-injection`) follows this 
 
 | Version | Main change |
 |---|---|
+| 2.4.0 | Migrated the injection hook to the `ref-inject` mechanism (regenerate via `/ref-inject:apply`). `required` references are injected **full body** again, `optional` as path + description; per-pattern **TTL token** (`{session_id}.yaml` map with `expires_at`, default 3600s, env `PY_KIT_INJECTION_TTL`) replaces the empty marker files; no `PreCompact` hook (PR157) |
 | 2.3.1 | Removed the optional `session-kit` companion (deleted as a plugin). Injection tokens now always live for the whole session (once-per-pattern); doc/comment cleanup only, no code-behavior change (PR155) |
 | 2.3.0 | `core/comments.md`: comment the content of multi-step functions, not just block markers — per-step intent + per-branch labels, applied regardless of layer; "no comments on logging-only lines"; worked example (PR154) |
 | 2.2.0 | Injection token is now per-pattern (was per-file); session-kit (optional) resets tokens per turn via UserPromptSubmit. Drops the PR150 marker/mtime approach (PR151) |

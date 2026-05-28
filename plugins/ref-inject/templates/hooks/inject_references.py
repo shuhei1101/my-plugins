@@ -8,11 +8,11 @@ Jinja2 で整形して `decision: block` の reason に注入する。
 
 注入の重複は「パターン単位の TTL トークン」で制御する:
     ~/.claude/tokens/__PLUGIN_NAME__/{session_id}.yaml
-は pattern をキーにした YAML マップで、各エントリに injected_at (epoch 秒) を持つ。
-`now - injected_at < TTL` の間は再注入しない。TTL はデフォルト __DEFAULT_TTL__ 秒、
-環境変数 __ENV_PREFIX___INJECTION_TTL (秒) で上書きできる。
-フック発火のたびに全セッションのトークンを走査し、期限切れエントリを削除する
-(空になったファイルは削除)。TTL 経過後に再びマッチすれば再注入される。
+は pattern をキーにした YAML マップで、各エントリに expires_at (epoch 秒) を持つ。
+expires_at は注入時に now + TTL で決まり、`now < expires_at` の間は再注入しない。
+TTL はデフォルト __DEFAULT_TTL__ 秒、環境変数 __ENV_PREFIX___INJECTION_TTL (秒) で上書きできる。
+フック発火のたびに全セッションのトークンを走査し、期限切れエントリ (now >= expires_at) を
+削除する (空になったファイルは削除)。期限切れ後に再びマッチすれば再注入される。
 
 description は references/index.yaml (英語) から path -> description として取得する。
 環境変数 __ENV_PREFIX___INJECTION_LANG=jp で index.jp.yaml + injection.jp.md.j2 に切替。
@@ -126,11 +126,11 @@ def _save_token(path: pathlib.Path, data: dict[str, dict], yaml) -> None:
         _eprint(f"token write error ({path.name}): {e}")
 
 
-def _cleanup_expired(token_dir: pathlib.Path, ttl: int, now: float, yaml) -> None:
-    """全セッションのトークンを走査し、期限切れエントリを削除する。
+def _cleanup_expired(token_dir: pathlib.Path, now: float, yaml) -> None:
+    """全セッションのトークンを走査し、期限切れエントリ (now >= expires_at) を削除する。
 
     空になったファイルは削除する。異常終了したセッションのトークンも
-    TTL 経過後にどこかでフックが発火した時点で自然に消える。
+    期限切れ後にどこかでフックが発火した時点で自然に消える。
     """
     if not token_dir.exists():
         return
@@ -142,8 +142,8 @@ def _cleanup_expired(token_dir: pathlib.Path, ttl: int, now: float, yaml) -> Non
         changed = False
         for key in list(data):
             entry = data.get(key) or {}
-            ts = entry.get("injected_at") if isinstance(entry, dict) else None
-            if not isinstance(ts, (int, float)) or now - ts > ttl:
+            exp = entry.get("expires_at") if isinstance(entry, dict) else None
+            if not isinstance(exp, (int, float)) or now >= exp:
                 del data[key]
                 changed = True
         if not data:
@@ -238,7 +238,7 @@ def main() -> int:
     token_dir = pathlib.Path.home() / ".claude" / "tokens" / PLUGIN_NAME
     ttl = _ttl()
     now = time.time()
-    _cleanup_expired(token_dir, ttl, now, yaml)
+    _cleanup_expired(token_dir, now, yaml)
 
     token_path = token_dir / f"{session_id}.yaml"
     token_data = _load_token(token_path, yaml)
@@ -252,9 +252,9 @@ def main() -> int:
         if not pat or not _match_any(pat, norm):
             continue
         entry = token_data.get(pat) or {}
-        ts = entry.get("injected_at") if isinstance(entry, dict) else None
-        if isinstance(ts, (int, float)) and now - ts < ttl:
-            continue  # まだ TTL 内 → 再注入しない
+        exp = entry.get("expires_at") if isinstance(entry, dict) else None
+        if isinstance(exp, (int, float)) and now < exp:
+            continue  # まだ期限内 → 再注入しない
         patterns_to_mark.append(pat)
         required.extend(rule.get("required") or [])
         optional.extend(rule.get("optional") or [])
@@ -265,10 +265,10 @@ def main() -> int:
     if not required and not optional:
         return 0  # マッチ無し、または全マッチパターンが TTL 内
 
-    # 注入するパターンの injected_at を更新して保存
+    # 注入するパターンの expires_at (= now + TTL) を更新して保存
     token_dir.mkdir(parents=True, exist_ok=True)
     for pat in patterns_to_mark:
-        token_data[pat] = {"injected_at": int(now)}
+        token_data[pat] = {"expires_at": int(now) + ttl}
     _save_token(token_path, token_data, yaml)
 
     # ----- required = 本文全量 / optional = パス + description -----
