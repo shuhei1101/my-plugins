@@ -535,3 +535,11 @@ prs:
     コメント・hook-creator・hooks references・marketplace.json の session-kit 参照を整理
   task: 20260528_remove-session-kit
   completed: true
+- id: 156
+  title: PR156 — ref-inject-generator
+  type: feat
+  tags: []
+  summary: リファレンス自動注入プラグインを生成するジェネレータ ref-inject を新規作成（本体のみ）。新注入設計（required本文全量/optionalパスのみ、pattern
+    キー付き拡張可能YAMLトークン、TTL+env上書き、PreCompactリフレッシュ）の雛形を templates/ に持つ
+  task: 20260529_ref-inject-generator
+  completed: true
