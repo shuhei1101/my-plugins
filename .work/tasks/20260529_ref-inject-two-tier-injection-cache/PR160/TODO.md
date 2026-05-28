@@ -34,17 +34,18 @@ ref-inject の注入重複抑制を、現状の「パターン単位 TTL トー�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR160/QA.md` |
-| - | フック本体を二層キャッシュへ改修（トークン schema を patterns/references の2名前空間に） | - `plugins/ref-inject/templates/hooks/inject_references.py` |
-| - | required のキャッシュ済み分をパス+説明のみ表示するよう j2 テンプレを更新 | - `plugins/ref-inject/templates/hooks/templates/injection.md.j2` / `injection.jp.md.j2` |
-| - | references/CLAUDE.md（+jp）のキャッシュ説明を二層構造に更新 | - `plugins/ref-inject/templates/references/CLAUDE.md` / `CLAUDE.jp.md` |
-| - | ref-inject の CLAUDE.md（+jp）Injection design セクションを更新 | - `plugins/ref-inject/CLAUDE.md` / `CLAUDE.jp.md` |
-| - | SKILL.md（+jp）の注入機構説明を更新 | - `plugins/ref-inject/skills/apply/SKILL.md` / `SKILL.jp.md` |
-| - | changelog 追加・version bump | - `plugins/ref-inject/changelogs/`, `plugin.json`, `marketplace.json` |
-| - | py-kit のフックコピーを同期更新（テンプレと完全一致を確認済み） | - `plugins/py-kit/hooks/inject_references.py` ほか |
-| - | next-kit のフックコピーを同期更新 | - `plugins/next-kit/hooks/inject_references.py` ほか |
-| - | py-kit / next-kit の version bump | - 各 `plugin.json` / `marketplace.json` |
-| - | glossary の `ref-inject 注入設計` エントリを二層キャッシュに更新 | - `.claude/rules/core/glossary.md`（+jp ミラー） |
+| ✅ | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR160/QA.md` |
+| ✅ | フック本体を二層キャッシュへ改修（トークン schema を patterns/references の2名前空間に） | - `plugins/ref-inject/templates/hooks/inject_references.py` |
+| ✅ | required のキャッシュ済み分をパス+説明のみ表示するよう j2 テンプレを更新 | - `plugins/ref-inject/templates/hooks/templates/injection.md.j2` / `injection.jp.md.j2` |
+| ✅ | references/CLAUDE.md（+jp）のキャッシュ説明を二層構造に更新 | - `plugins/ref-inject/templates/references/CLAUDE.md` / `CLAUDE.jp.md` |
+| ✅ | ref-inject の CLAUDE.md（+jp）Injection design セクションを更新 | - `plugins/ref-inject/CLAUDE.md` / `CLAUDE.jp.md` |
+| ✅ | SKILL.md（+jp）の注入機構説明を更新 | - `plugins/ref-inject/skills/apply/SKILL.md` / `SKILL.jp.md` |
+| ✅ | changelog 追加・version bump | - `plugins/ref-inject/changelogs/`, `plugin.json`, `marketplace.json` |
+| ✅ | py-kit のフックコピーを同期更新（テンプレと完全一致を確認済み） | - `plugins/py-kit/hooks/inject_references.py` ほか |
+| ✅ | next-kit のフックコピーを同期更新 | - `plugins/next-kit/hooks/inject_references.py` ほか |
+| ✅ | py-kit / next-kit の version bump | - 各 `plugin.json` / `marketplace.json` |
+| ✅ | glossary の `ref-inject 注入設計` エントリを二層キャッシュに更新 | - `.claude/rules/core/glossary.md`（+jp ミラー） |
+| ✅ | フックの動作検証（二層キャッシュ・TTL 期限切れ再注入・旧 schema クリーンアップ） | - 一時環境で検証済み |
 
 ## 参考ドキュメント
 
