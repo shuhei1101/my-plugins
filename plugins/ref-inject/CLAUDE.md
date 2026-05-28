@@ -1,16 +1,26 @@
 # ref-inject Plugin Developer Guide
 
-`ref-inject` is a **generator** plugin. It scaffolds new reference auto-injection plugins
-(the `*-kit` style used by `py-kit` / `next-kit`): a `PreToolUse` hook that matches the
-edited file path against `injection_rules.yaml` and injects the relevant references.
+`ref-inject` **attaches the reference auto-injection mechanism to a plugin** (the `*-kit`
+style used by `py-kit` / `next-kit`): a `PreToolUse` hook that matches the edited file path
+against `injection_rules.yaml` and injects the relevant references. The target plugin can be
+new or existing — `/ref-inject:apply` only contributes the **injection part**.
 
 It does **not** centralize a shared runtime (that approach was rejected — see
-`premature-cross-plugin-centralization`). Instead it emits **independent copies** from
+`premature-cross-plugin-centralization`). Instead it copies **independent files** from
 `templates/`, automating the copy-paste that the incident log blessed as the cheaper path.
 
-There is **no generator script**. `/ref-inject:create` has Claude read each template and
-write the destination file itself, substituting placeholders as it goes — so the structure
-stays in context and can be adapted per plugin.
+There is **no generator script**. `/ref-inject:apply` has Claude read each template and write
+the destination file itself, substituting placeholders as it goes — so the structure stays in
+context and can be adapted per plugin.
+
+### Scope (what this plugin does NOT own)
+
+The `apply` skill is scoped to the **injection machinery only**. Plugin-level concerns belong
+to `plugin-creator`, not here:
+
+- It does not create/edit the target plugin's `plugin.json`
+- It does not create/own the target plugin's root `CLAUDE.md`
+- It does not touch `marketplace.json`
 
 ---
 
@@ -20,10 +30,8 @@ stays in context and can be adapted per plugin.
 ref-inject/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md / CLAUDE.jp.md
-├── skills/create/SKILL.md (+ .jp.md)   # /ref-inject:create — Claude reads templates & writes the new plugin
-└── templates/                           # the seed files emitted into a new plugin
-    ├── plugin.json                       # → {new}/.claude-plugin/plugin.json
-    ├── CLAUDE.md (+ .jp.md)              # → {new}/CLAUDE.md
+├── skills/apply/SKILL.md (+ .jp.md)    # /ref-inject:apply — Claude reads templates & writes them into the target plugin
+└── templates/                           # the injection files copied into a target plugin (injection part only)
     ├── hooks/
     │   ├── inject_references.py          # PreToolUse: match path → inject references (the reusable injection script)
     │   ├── refresh_on_compact.py         # PreCompact: clear session token → re-inject after /compact
@@ -36,11 +44,15 @@ ref-inject/
         └── example/getting-started.md
 ```
 
+There are no `plugin.json` / root-`CLAUDE.md` templates — those are plugin-level (owned by
+`plugin-creator`), not part of the injection mechanism.
+
 ---
 
 ## Placeholders
 
-The `create` skill has Claude substitute these in every text template while writing it out:
+The `apply` skill has Claude substitute these in every text template while writing it out
+(derived from the target plugin's directory name):
 
 | Placeholder | Replaced with | Example |
 |---|---|---|
@@ -48,14 +60,12 @@ The `create` skill has Claude substitute these in every text template while writ
 | `__ENV_PREFIX__` | name upper-cased, non-alnum → `_` | `VUE_KIT` |
 | `__LOG_TAG__` | `{name}-references-injection` | `vue-kit-references-injection` |
 | `__DEFAULT_TTL__` | default TTL seconds | `3600` |
-| `__PLUGIN_DESCRIPTION__` | one-line description | … |
 
-The only path relocation is `plugin.json` → `.claude-plugin/plugin.json`; everything else
-mirrors the template path.
+Paths mirror the template — no relocation.
 
 ---
 
-## Injection design (baked into the generated hook)
+## Injection design (baked into the hook)
 
 - `required` references → **full body** injected; `optional` → **path + description only**
 - Token: `~/.claude/tokens/{plugin}/{session_id}.yaml`, a pattern-keyed YAML map; each entry has `injected_at` (epoch). Re-inject when `now - injected_at >= TTL`. Extensible (add fields later).
@@ -71,12 +81,12 @@ injection (PR147) — `required` bodies are back because the TTL token throttles
 
 ## Usage
 
-`/ref-inject:create` (or "create a reference injection plugin"). Then fill `references/`
-with real docs and bind them in `injection_rules.yaml`.
+`/ref-inject:apply` against a target plugin (new or existing). Then fill `references/` with
+real docs and bind them in `injection_rules.yaml`.
 
-To change the **mechanism** for all generated plugins, edit `templates/` here, then have
-Claude re-apply the changed templates to each consumer's `hooks/` (the references stay as-is —
-only the hook/template files come from `ref-inject`).
+To change the **mechanism** for all consumers, edit `templates/` here, then re-apply the
+changed templates to each consumer's `hooks/` (the references stay as-is — only the
+hook/template files come from `ref-inject`).
 
 ---
 
@@ -84,5 +94,5 @@ only the hook/template files come from `ref-inject`).
 
 | Plugin | Relationship |
 |---|---|
-| `py-kit` / `next-kit` | Reference-injection consumers; to be migrated onto ref-inject's generated form |
-| `claude-kit` | Source of `plugin-creator` / creator skills and the common hook policy |
+| `py-kit` / `next-kit` | Reference-injection consumers; to be migrated onto ref-inject's templates |
+| `claude-kit` | Source of `plugin-creator` (owns plugin-level files) and the common hook policy |

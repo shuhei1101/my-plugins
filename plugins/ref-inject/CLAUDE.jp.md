@@ -1,17 +1,27 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # ref-inject プラグイン開発ガイド
 
-`ref-inject` は**ジェネレータ**プラグイン。`py-kit` / `next-kit` で使われている
-リファレンス自動注入プラグイン（`*-kit` 形式）を新規生成する。生成物は、編集対象パスを
-`injection_rules.yaml` と照合して関連リファレンスを注入する `PreToolUse` フックを持つ。
+`ref-inject` は**プラグインにリファレンス自動注入の仕組みを付与する**プラグイン。`py-kit` /
+`next-kit` で使われている `*-kit` 形式の、編集対象パスを `injection_rules.yaml` と照合して
+関連リファレンスを注入する `PreToolUse` フックを付ける。対象プラグインは新規でも既存でもよく、
+`/ref-inject:apply` は**注入部分だけ**を提供する。
 
 共通ランタイムの共有はしない（そのやり方は却下済み —
-`premature-cross-plugin-centralization` 参照）。代わりに `templates/` から**独立コピー**を
-吐き出し、インシデントログが「コピペの方が安い」と認めたやり方を自動化する。
+`premature-cross-plugin-centralization` 参照）。代わりに `templates/` から**独立したファイル**を
+コピーし、インシデントログが「コピペの方が安い」と認めたやり方を自動化する。
 
-**生成スクリプトは持たない。** `/ref-inject:create` は Claude が各テンプレートを読んで
-出力先ファイルを自分で書き、その過程でプレースホルダを置換する。こうすることで構造が
-コンテキストに残り、プラグインごとに調整しやすい。
+**生成スクリプトは持たない。** `/ref-inject:apply` は Claude が各テンプレートを読んで出力先
+ファイルを自分で書き、その過程でプレースホルダを置換する。こうすることで構造がコンテキストに
+残り、プラグインごとに調整しやすい。
+
+### 責務範囲（このプラグインが所有しないもの）
+
+`apply` スキルは**注入の仕組みだけ**に責務を絞る。プラグインレベルの関心事は `plugin-creator`
+の領分でここには含まない:
+
+- 対象プラグインの `plugin.json` を作成・編集しない
+- 対象プラグインのルート `CLAUDE.md` を作成・所有しない
+- `marketplace.json` を触らない
 
 ---
 
@@ -21,10 +31,8 @@
 ref-inject/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md / CLAUDE.jp.md
-├── skills/create/SKILL.md (+ .jp.md)   # /ref-inject:create — Claude がテンプレを読んで新プラグインを書く
-└── templates/                           # 新プラグインに展開される雛形
-    ├── plugin.json                       # → {new}/.claude-plugin/plugin.json
-    ├── CLAUDE.md (+ .jp.md)              # → {new}/CLAUDE.md
+├── skills/apply/SKILL.md (+ .jp.md)    # /ref-inject:apply — Claude がテンプレを読んで対象プラグインへ書く
+└── templates/                           # 対象プラグインにコピーする注入ファイル（注入部分のみ）
     ├── hooks/
     │   ├── inject_references.py          # PreToolUse: パス照合 → リファレンス注入（再利用される注入スクリプト）
     │   ├── refresh_on_compact.py         # PreCompact: セッショントークン削除 → /compact 後に再注入
@@ -37,11 +45,15 @@ ref-inject/
         └── example/getting-started.md
 ```
 
+`plugin.json` / ルート `CLAUDE.md` のテンプレートは無い — それらはプラグインレベル
+（`plugin-creator` の所有）であり、注入の仕組みの一部ではない。
+
 ---
 
 ## プレースホルダ
 
-`create` スキルが、各テキストテンプレートを書き出す際に Claude に置換させる:
+`apply` スキルが、各テキストテンプレートを書き出す際に Claude に置換させる
+（対象プラグインのディレクトリ名から導出）:
 
 | プレースホルダ | 置換内容 | 例 |
 |---|---|---|
@@ -49,13 +61,12 @@ ref-inject/
 | `__ENV_PREFIX__` | 名前を大文字化、英数以外を `_` | `VUE_KIT` |
 | `__LOG_TAG__` | `{name}-references-injection` | `vue-kit-references-injection` |
 | `__DEFAULT_TTL__` | デフォルト TTL 秒 | `3600` |
-| `__PLUGIN_DESCRIPTION__` | 1行説明 | … |
 
-パス移動は `plugin.json` → `.claude-plugin/plugin.json` のみ。他はテンプレートのパスをそのまま反映。
+パスはテンプレートをそのまま反映 — 移動なし。
 
 ---
 
-## 注入設計（生成フックに組み込み済み）
+## 注入設計（フックに組み込み済み）
 
 - `required` は**本文全量**注入 / `optional` は**パス + description のみ**
 - トークン: `~/.claude/tokens/{plugin}/{session_id}.yaml`。pattern をキーにした YAML マップで各エントリに `injected_at`（epoch）。`now - injected_at >= TTL` で再注入。拡張可能（後でフィールド追加可）。
@@ -71,12 +82,12 @@ ref-inject/
 
 ## 使い方
 
-`/ref-inject:create`（または「リファレンス注入プラグインを作って」）。その後 `references/` を
+対象プラグイン（新規でも既存でも）に `/ref-inject:apply` を実行する。その後 `references/` を
 実際の doc で埋め、`injection_rules.yaml` で紐付ける。
 
-全生成プラグインの**仕組み**を変えるときは、ここの `templates/` を編集し、変更後のテンプレを
-各 consumer の `hooks/` に Claude が再適用する（references はそのまま。`ref-inject` 由来なのは
-フック・テンプレートファイルのみ）。
+全 consumer の**仕組み**を変えるときは、ここの `templates/` を編集し、変更後のテンプレを各
+consumer の `hooks/` に再適用する（references はそのまま。`ref-inject` 由来なのはフック・
+テンプレートファイルのみ）。
 
 ---
 
@@ -84,5 +95,5 @@ ref-inject/
 
 | プラグイン | 関係 |
 |---|---|
-| `py-kit` / `next-kit` | リファレンス注入の consumer。ref-inject 生成形式へ移行予定 |
-| `claude-kit` | `plugin-creator` / creator スキルと共通フックポリシーの出所 |
+| `py-kit` / `next-kit` | リファレンス注入の consumer。ref-inject テンプレートへ移行予定 |
+| `claude-kit` | `plugin-creator`（プラグインレベルのファイルを所有）と共通フックポリシーの出所 |
