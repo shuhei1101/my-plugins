@@ -28,10 +28,10 @@ Claude Code プラグインで環境変数を使う方法（`settings.json` の 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | QA.md に未決定事項を記録する（無し） | - `PR162/QA.md` |
-| - | hooks.md(+jp) に「環境変数（settings.json の env）」セクションを新設（設定→os.environ で読む。実例 `{PREFIX}_INJECTION_TTL` / `_INJECTION_LANG`。プラグインフックは `${CLAUDE_PROJECT_DIR}` 経由のプロジェクト settings、ユーザー settings の双方で効く） | - `plugins/claude-kit/references/hooks.md` (+jp) |
-| - | plugin-structure.md(+jp) に「プラグインは自分の env 変数を自身の CLAUDE.md に記載する」慣習を一言追記 | - `plugins/claude-kit/references/plugin-structure.md` (+jp) |
-| - | claude-kit 版バンプ(3.33.0) + marketplace 同期 + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `changelogs/v3.33.0.md` |
-| - | ルール・CLAUDE.md 整備（必要なら）。検証（YAML/JSON） | - 必要に応じて |
+| 済 | hooks.md(+jp) に「環境変数（settings.json の env）」セクションを新設（設定→os.environ で読む。実例 `{PREFIX}_INJECTION_TTL` / `_INJECTION_LANG`。スコープ優先順位・デフォルト・慣習も記載） | - `plugins/claude-kit/references/hooks.md` (+jp) |
+| 済 | plugin-structure.md(+jp) に「プラグインは自分の env 変数を自身の CLAUDE.md に記載する」慣習を一言追記 | - `plugins/claude-kit/references/plugin-structure.md` (+jp) |
+| 済 | claude-kit 版バンプ(3.33.0) + marketplace 同期 + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `changelogs/v3.33.0.md` |
+| 済 | 検証（YAML/JSON） | - |
 
 ## 参考ドキュメント
 
