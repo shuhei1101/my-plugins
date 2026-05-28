@@ -57,8 +57,8 @@ references/
 | `index.jp.yaml` | 上の日本語ミラー（人間が一覧確認するため） | 日本語 |
 | `injection_rules.yaml` | 編集対象ファイルパスの pattern に対して `required` / `optional` reference を割り当てる星取り表 | 言語非依存 |
 
-このマッピングは `py-references-injection` フック（PreToolUse、同 PR で実装済み）が
-`Edit` / `Write` / `MultiEdit` 時に自動で読み、マッチした reference を `decision: block` で
+このマッピングは `py-kit-references-injection` フック（PreToolUse）が
+`Edit` / `Write` / `MultiEdit` / `Read` 時に自動で読み、マッチした reference を `decision: block` で
 Claude のコンテキストへ注入する。
 
 ---
@@ -82,14 +82,17 @@ py-kit のフックは `claude-kit` の方針に従う:
 - セッションフラグ型ブロック（`/tmp/{hook-name}-{session_id}`）で 1 セッション 1 回だけブロック
 - ディスパッチ用 `UserPromptSubmit` は追加しない
 
-**references 自動注入フック** (`py-references-injection`) も上記方針に従う:
+**references 自動注入フック** (`py-kit-references-injection`) は v2.4.0（PR157）で `ref-inject` の
+仕組みへ移行した。再生成は `/ref-inject:apply` で行い、`hooks/inject_references.py` をプラグインごとに
+手書きしない。方針:
 - `PreToolUse(Edit|Write|MultiEdit|Read)` で `references/injection_rules.yaml` を読み、`references/index.yaml` から description を引く
 - 対象ファイルパスを `rules[].pattern` と glob 照合
-- マッチした `required` / `optional` を **path + description のみ**（本文なし）で Jinja2 テンプレ経由に `decision: block` の reason へ注入
-- reference の本文は Claude が `Read` で必要なものだけ読む設計
+- マッチした `required` は **本文全量**、`optional` は **path + description のみ** を Jinja2 テンプレ経由で `decision: block` の reason へ注入
+- `optional` の本文は Claude が `Read` で必要なものだけ読む設計
 - Read も対象にすることで issue-scan など読み取り経路でも reference の案内を受けられる
-- **パターン単位**トークン（`~/.claude/tokens/py-kit/{session_id}-{patternhash}`）で注入を重複排除。あるルールのパターンがどれかのファイル経由で注入されたら、同じパターンにマッチする他ファイルはスキップ。追加パターンにマッチするファイルはその追加パターンの reference だけ注入
-- トークンはセッション全体で生きるため、各パターンの reference は**セッション中1回だけ**注入される（once-per-pattern）。トークンは `~/.claude/tokens/py-kit/` 配下の空マーカーファイルで、自動削除はされない
+- **パターン単位 TTL トークン**（`~/.claude/tokens/py-kit/{session_id}.yaml`）で注入を重複排除。pattern をキーにした YAML マップで、各エントリは `injected_at`（epoch 秒）を持つ。`now - injected_at >= TTL` になって初めて再注入する
+- TTL はデフォルト **3600 秒**、`settings.json` の `env` `PY_KIT_INJECTION_TTL`（秒）で上書き可。発火のたびに全セッションのトークンを走査し、期限切れエントリを削除（空になったファイルは削除）
+- **`PreCompact` フックはなし** — `/compact` 後は TTL 経過で本文が再注入される。専用の compact リフレッシュフックは不要と判断（PR156 で決定）
 
 ---
 
@@ -97,6 +100,7 @@ py-kit のフックは `claude-kit` の方針に従う:
 
 | バージョン | 主な変更 |
 |---|---|
+| 2.4.0 | 注入フックを `ref-inject` の仕組みへ移行（再生成は `/ref-inject:apply`）。`required` reference を再び **本文全量** で注入、`optional` は path + description。空マーカーファイルに代わり、パターン単位の **TTL トークン**（`{session_id}.yaml` マップ + `injected_at`、デフォルト 3600 秒、env `PY_KIT_INJECTION_TTL`）を導入。`PreCompact` フックなし（PR157） |
 | 2.3.1 | 任意 companion の `session-kit`（プラグイン自体を削除）への言及を除去。注入トークンは常にセッション全体で生きる（once-per-pattern）。ドキュメント/コメントのみの修正でコード挙動の変更なし（PR155） |
 | 2.3.0 | `core/comments.md`: マーカーだけでなく複数ステップ関数の中身にもコメント — 各ステップの意図 + 分岐ごとのラベルを、レイヤーに関係なく適用。「ログ出力のみの行はコメント不要」、サンプル例を追加（PR154） |
 | 2.2.0 | 注入トークンをパターン単位に変更（旧: ファイル単位）。session-kit（任意）が UserPromptSubmit でターンごとにリセット。PR150 のマーカー/mtime 方式を撤回（PR151） |

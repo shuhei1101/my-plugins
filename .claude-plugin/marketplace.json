@@ -17,7 +17,7 @@
       "name": "py-kit",
       "source": "./plugins/py-kit",
       "description": "Python coding conventions and scaffolding — feature-folder layout, function-first design, TypeScript-style typing, standards references with auto-injection metadata",
-      "version": "2.3.1"
+      "version": "2.4.0"
     },
     {
       "name": "html-kit",
