@@ -34,7 +34,7 @@ py-kit の Python 規約は **トピック軸に分割された複数の referen
 4. Jinja2 テンプレ (`hooks/templates/injection.md.j2`) で整形
 5. `decision: block` の reason に注入
 
-パターン単位の TTL トークン（`~/.claude/tokens/py-kit/{session_id}.yaml`）で、TTL 内（デフォルト 3600 秒、env `PY_KIT_INJECTION_TTL`）の同一パターン再注入をスキップ。
+二層 TTL トークン（`~/.claude/tokens/py-kit/{session_id}.yaml`）で TTL 内（デフォルト 3600 秒、env `PY_KIT_INJECTION_TTL`）の再注入を抑制: `patterns` マップで注入済みパターンをスキップし、`references` マップで本セッションに（どのパターン経由であれ）既に本文注入済みの `required` を**パスのみ**表示する。これで複数パターンで共有されるリファレンス本文の二重注入を防ぐ。
 
 注入言語の切替は環境変数 `PY_KIT_INJECTION_LANG=jp` で（デフォルトは `en`）。
 

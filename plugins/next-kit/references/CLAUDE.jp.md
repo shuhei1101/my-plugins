@@ -32,7 +32,7 @@ next-kit の規約は **1 ファイル = 1 ユースケース** の reference �
 4. Jinja2 テンプレ（`hooks/templates/injection.md.j2`）でレンダリング
 5. `decision: block` の `reason` で注入
 
-パターン単位の TTL トークン（`~/.claude/tokens/next-kit/{session_id}.yaml`）で、TTL 期間内（デフォルト 3600 秒、env `NEXT_KIT_INJECTION_TTL`）は同じパターンを再注入しない。
+二層 TTL トークン（`~/.claude/tokens/next-kit/{session_id}.yaml`）で TTL 期間内（デフォルト 3600 秒、env `NEXT_KIT_INJECTION_TTL`）の再注入を抑制: `patterns` マップで注入済みパターンをスキップし、`references` マップで本セッションに（どのパターン経由であれ）既に本文注入済みの `required` を**パスのみ**表示する。これで複数パターンで共有されるリファレンス本文の二重注入を防ぐ。
 
 注入言語切替: `NEXT_KIT_INJECTION_LANG=jp` で日本語版（デフォルトは英語）。
 

@@ -67,17 +67,22 @@ ref-inject/
 
 ## 注入設計（フックに組み込み済み）
 
-- `required` は**本文全量**注入 / `optional` は**パス + description のみ**
-- トークン: `~/.claude/tokens/{plugin}/{session_id}.yaml`。pattern をキーにした YAML マップで各エントリに `expires_at`（epoch、= 注入時刻 + TTL）。`now < expires_at` の間は再注入をスキップ、`now >= expires_at` で再注入。拡張可能（後でフィールド追加可）。期限が注入時に確定するため、TTL の env var を変えても既存エントリには遡及しない。
-- TTL: デフォルト `3600` 秒、`settings.json` の `env` → `{PREFIX}_INJECTION_TTL` で上書き
-- クリーンアップ: 発火のたびに全 `{session_id}.yaml` を走査し期限切れエントリを削除、空ファイルは削除
+- `required` は（本セッション初回のみ）**本文全量**注入 / `optional` は**パス + description のみ**
+- トークン: `~/.claude/tokens/{plugin}/{session_id}.yaml`。`patterns` と `references` の 2 名前空間を持つ**二層** YAML マップで、各エントリに `expires_at`（epoch、= 注入時刻 + TTL）。`now < expires_at` の間はスキップ、`now >= expires_at` で再注入。期限が注入時に確定するため、TTL の env var を変えても既存エントリには遡及しない。
+  - **`patterns`**: そのパターンのリファレンス集合を再注入するかの判定（期限内のパターンは丸ごとスキップ）
+  - **`references`**: `required` リファレンスの**本文**を注入するかの判定。本セッションに（どのパターン経由であれ）既に注入済み（期限内）なら**パスのみ**表示する。これで複数パターンに紐づくリファレンスの本文二重注入を防ぐ
+- TTL: デフォルト `3600` 秒、`settings.json` の `env` → `{PREFIX}_INJECTION_TTL` で上書き（両層共通）
+- クリーンアップ: 発火のたびに全 `{session_id}.yaml` を走査し両名前空間の期限切れエントリを削除、空ファイルは削除（旧 single-tier schema のトップレベルキーも除去）
 - 言語: `{PREFIX}_INJECTION_LANG=jp` で description/テンプレートを日本語に切替
 
 `PreCompact` フックは持たない: `/compact` 後は注入済み本文がコンテキストから消えるが、
 トークンは TTL 経過後に再注入されるだけ。compact 専用のリフレッシュフックは無駄と判断（PR156）。
 
-これは旧方式（パターン単位の空ファイルトークン PR150/151、ポインタのみ注入 PR147）を
-置き換える。TTL トークンが再注入を throttle するため `required` の本文注入を復活させた。
+リファレンス層キャッシュ（PR160）は当初の single-tier（パターンのみ）トークン（PR156/157）を
+拡張したもの。同一リファレンスが複数パターンに紐づくケースを解決し、別パターンにマッチする
+ファイルを編集しても共有ドキュメント本文を再注入しなくなった。この仕組み全体は旧方式（パターン
+単位の空ファイルトークン PR150/151、ポインタのみ注入 PR147）を置き換える。TTL トークンが
+再注入を throttle するため `required` の本文注入を復活させた。
 
 ---
 
