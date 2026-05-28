@@ -28,17 +28,17 @@ PR159 で claude-kit の creator スキルを reference 自動注入へ移行し
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | QA.md の未決定事項（QA-001）を解消する | - `PR161/QA.md` |
-| - | `references/provenance.md`(+jp) を作成（mark-generated の書式仕様を移管・自己完結化） | - `plugins/claude-kit/references/provenance.md` (+jp) |
-| - | injection_rules / index に provenance を紐付け（全 authoring パターン + `**/*.j2`）。common.md の出自スタンプ節は provenance.md へ移し撤去 | - `plugins/claude-kit/references/injection_rules.yaml`, `index.yaml`(+jp), `common.md`(+jp) |
-| - | mark-generated を薄ラッパー化（provenance.md に従ってスタンプ文字列を返す。フォールバック用に存置） | - `plugins/claude-kit/skills/mark-generated/SKILL.md` (+jp) |
-| - | claude-kit 自身の Write/Edit 経路の呼び出し元から mark-generated 明示呼び出しを除去（provenance 注入に委譲） | - creator 5本(+jp)/version-sync(+jp)/skills.md(+jp)/CLAUDE.md(+jp) |
-| - | claude-refactor を薄化（インライン重複基準を削除し references 参照へ） | - `plugins/claude-kit/skills/claude-refactor/SKILL.md` (+jp) |
-| - | j2-stamp-check フック削除 | - `plugins/claude-kit/hooks/j2_stamp_check.py`, `hooks/hooks.json`, `hooks/prompts/j2-stamp-check.{md,jp.md}` |
-| - | jp-mirror-check フック削除 | - `plugins/claude-kit/hooks/jp_mirror_check.py`, `hooks/hooks.json`, `hooks/prompts/jp-mirror-check.{md,jp.md}` |
-| - | claude-kit 版バンプ(3.31.0) + marketplace 同期 + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `changelogs/v3.31.0.md` |
-| - | `.work/notes/ref-inject-generator.md` に結論を追記 | - `.work/notes/ref-inject-generator.md` |
-| - | ルール・glossary・CLAUDE.md を整備（mark-generated 薄ラッパー化 / フック2件削除を反映） | - `.claude/rules/core/glossary.md`(+rules-jp), `plugins/claude-kit/CLAUDE.md`(+jp) |
-| - | 検証（orphan/構文/JSON/フックスモークテスト） | - |
+| 済 | `references/provenance.md`(+jp) を作成（mark-generated の書式仕様を移管・自己完結化） | - `plugins/claude-kit/references/provenance.md` (+jp) |
+| 済 | injection_rules / index に provenance を紐付け（全 authoring パターン + `**/*.j2`）。common.md の出自スタンプ節は provenance.md へ移し撤去 | - `plugins/claude-kit/references/injection_rules.yaml`, `index.yaml`(+jp), `common.md`(+jp) |
+| 済 | mark-generated を薄ラッパー化（provenance.md に従ってスタンプ文字列を返す。フォールバック用に存置） | - `plugins/claude-kit/skills/mark-generated/SKILL.md` (+jp) |
+| 済 | claude-kit 自身の Write/Edit 経路の呼び出し元から mark-generated 明示呼び出しを除去（provenance 注入に委譲） | - creator 5本(+jp)/skills.md(+jp)/CLAUDE.md(+jp)。version-sync は記述参照のみ（呼び出し無し）で据え置き |
+| 済 | claude-refactor を薄化（インライン重複基準を削除し references 参照へ。407→約160行） | - `plugins/claude-kit/skills/claude-refactor/SKILL.md` (+jp) |
+| 済 | j2-stamp-check フック削除 | - `plugins/claude-kit/hooks/j2_stamp_check.py`, `hooks/hooks.json`, `hooks/prompts/j2-stamp-check.{md,jp.md}` |
+| 済 | jp-mirror-check フック削除 | - `plugins/claude-kit/hooks/jp_mirror_check.py`, `hooks/hooks.json`, `hooks/prompts/jp-mirror-check.{md,jp.md}` |
+| 済 | claude-kit 版バンプ(3.31.0) + marketplace 同期 + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `changelogs/v3.31.0.md` |
+| 済 | `.work/notes/ref-inject-generator.md` に結論を追記 | - `.work/notes/ref-inject-generator.md` |
+| 済 | ルール・glossary・CLAUDE.md を整備（mark-generated 薄ラッパー化 / フック2件削除を反映） | - `.claude/rules/core/glossary.md`(+rules-jp), `plugins/claude-kit/CLAUDE.md`(+jp) |
+| 済 | 検証（orphan/構文/JSON/フックスモークテスト） | - |
 
 ## 参考ドキュメント
 
