@@ -1,13 +1,13 @@
 {
   "hooks": {
-    "PreCompact": [
+    "UserPromptSubmit": [
       {
         "hooks": [
           {
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/ctx_marker.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/session_gc.py"
             ]
           }
         ]
@@ -20,7 +20,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/ctx_marker.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/session_gc.py"
             ]
           }
         ]

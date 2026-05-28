@@ -22,4 +22,6 @@ When a hook should enforce "use creator skill X before editing file type Y":
 
 - **Do NOT add `UserPromptSubmit` dispatch hooks for creator routing.** They fire on every user prompt and add unnecessary overhead — `PreToolUse` is sufficient as the sole enforcement.
 
-This pattern is used by `skill-creator-dispatch` (claude-kit/dev-kit/ui-kit/work-kit) and by `python-skill-dispatch` (py-kit) / `yaml-skill-dispatch` (dev-kit).
+- **Extract the dispatch logic into a script file, not an inline `-c` one-liner.** Inline python breaks on quote-nesting (incident `statusline-python-quote-nesting`). claude-kit's dispatchers live in `hooks/creator_dispatch.py` — a config-driven `RULES` table (`name` / `pattern` / `exclude_jp` / `prompt`) evaluated in order, **first match wins**. Order = priority: put specific rules (SKILL.md / `.claude/rules` / CLAUDE.md / hook config / `.j2`) first and the broad `plugins/`-wide `plugin-creator-dispatch` last as a catch-all. `hooks.json` just invokes the script. (PR153)
+
+This pattern is used by claude-kit's `creator_dispatch.py` (skill / rule / claude / hook / plugin / j2 dispatch) and by `python-skill-dispatch` (py-kit) / `yaml-skill-dispatch` (dev-kit).

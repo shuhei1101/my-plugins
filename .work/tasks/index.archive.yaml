@@ -499,3 +499,17 @@ prs:
   summary: session-kit プラグイン新設（コンテキスト世代マーカー）と py-kit/next-kit の再注入判定改修
   task: 20260528_add-session-kit-ctx-marker
   completed: true
+- id: 151
+  title: PR151 — session-kit-token-ttl-cleanup
+  type: feat
+  tags: []
+  summary: session-kit の SessionStart を 1日 TTL の一時ファイル掃除に役割変更（clear バンプ廃止）
+  task: 20260528_session-kit-token-ttl-cleanup
+  completed: true
+- id: 153
+  title: PR153 — modernize-creator-dispatch-hooks
+  type: refactor
+  tags: []
+  summary: claude-kit の creator-dispatch フックをインライン -c からスクリプト抽出して統一形式に
+  task: 20260528_modernize-creator-dispatch-hooks
+  completed: true

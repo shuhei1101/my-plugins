@@ -1,9 +1,12 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # session-kit プラグイン開発ガイド
 
-session-kit は Claude Code のセッションごとに **コンテキスト世代マーカー** を 1 つ維持し、
-`/compact` や `/clear` でコンテキストがリセットされたことを他プラグインが検知して、
-消えた内容を再注入できるようにする。
+session-kit は、他プラグイン（py-kit / next-kit）が `~/.claude/tokens/{plugin}/` 配下に置く
+**注入トークン** の寿命を管理する。ユーザーのプロンプトごとに現セッションのトークンを削除し
+（会話ターンごとに reference を再注入させる）、セッション開始時に古いトークンを掃除する。
+
+**マーカーファイルは持たず**、利用側は session-kit に依存しない: 利用側は自分のトークンを
+作って存在チェックするだけで、session-kit が外部から削除する。
 
 ---
 
@@ -11,54 +14,56 @@ session-kit は Claude Code のセッションごとに **コンテキスト世�
 
 | フック | 動作 |
 |---|---|
-| `PreCompact` | マーカーを touch（compact 直前にコンテキストが落ちる） |
-| `SessionStart`（source=`clear`） | マーカーを touch（`/clear` でコンテキストが消えた） |
+| `UserPromptSubmit` | **現セッションの**注入トークン（`~/.claude/tokens/*/{session_id}-*`）を削除 |
+| `SessionStart` | **TTL 掃除**: 1 日以上前の注入トークン（`~/.claude/tokens/*/*`）を削除 |
 
-それ以外は **何もしない** — プロンプト注入もブロックも出力もなし。フックはマーカーの
-mtime を更新するだけ。
+それ以外は **何もしない** — プロンプト注入もブロックも出力もなし。
 
-`startup` と `resume` はあえて touch しない:
-- `startup`: 新規セッションは `session_id` が新しく、無効化すべき古いトークンが無い。
-- `resume`: 会話が復元されるため、注入済み内容もコンテキストに戻る。
+### なぜ UserPromptSubmit で削除するか（会話ターン単位キャッシュ）
+
+注入トークンは「このルールの reference は注入済み」の印。これを **セッション** 全体で持つと
+長すぎる: 長い会話だと注入した案内がコンテキストのずっと上に埋もれ、Claude が忘れてしまう。
+`UserPromptSubmit` ごとにセッションのトークンを削除することで、キャッシュを **会話ターン単位**
+にする。新しいターンで Claude が再びマッチするファイルを触ったら reference は再注入され、
+かつ同一ターン内の繰り返しアクセスは重複注入しない。
+
+`/compact` と `/clear` は個別対応不要: `/compact` 後は次の UserPromptSubmit でトークンが
+消えて再注入され、`/clear` は session_id が変わるので新セッションが自然に再注入する。
 
 ---
 
-## マーカー規約（他プラグインとの共有契約）
+## 注入トークン規約（他プラグインとの共有契約）
 
 | | 値 |
 |---|---|
-| パス | `/tmp/claude-session-ctx-gen-{session_id}`（`tempfile.gettempdir()` 経由） |
-| 意味 | mtime = このセッションで最後にコンテキストがリセットされた時刻（compact / clear） |
-| 生成側 | session-kit（`hooks/ctx_marker.py`） |
-| 利用側 | 「1 セッション 1 回」注入トークンを持つプラグイン — 例: py-kit / next-kit の `inject_references.py` |
+| パス | `~/.claude/tokens/{plugin}/{session_id}-{patternhash}`（`Path.home()` 経由）— プラグインごとにサブフォルダ |
+| 意味 | 空ファイル = 「このルールの reference はこのターンで注入済み」 |
+| キー | マッチした **injection_rules のパターン単位**（ファイル単位ではない）。同じパターンにマッチする全ファイルで共有 |
+| 生成/参照側 | py-kit / next-kit の `inject_references.py`（注入時に作成、トークンがあればそのパターンはスキップ） |
+| 寿命管理 | session-kit（`UserPromptSubmit` で削除、`SessionStart` で TTL-GC） |
+| 掃除 glob | `~/.claude/tokens/*/{session_id}-*`（ターン単位）と `~/.claude/tokens/*/*`（TTL） |
 
-### 利用側の使い方
+**グレースフルフォールバック**: session-kit が未インストールなら、トークンはターンごとに
+削除されないだけ（利用側はセッション全体で once-per-pattern 挙動）で、`~/.claude/tokens/` に
+溜まる。session-kit は **任意の companion** であり、利用側は依存してはならない。
 
-per-file の「注入済み」トークンを書くプラグインは mtime を比較する:
+TTL は 1 日: それほど長いセッションは無いので、アクティブなセッションのトークンは新しく
+消されない。並行セッションも同様に守られる。掃除が早すぎた場合の最悪でも無害な再注入が
+走るだけ。
 
-```python
-marker = pathlib.Path(tempfile.gettempdir()) / f"claude-session-ctx-gen-{session_id}"
-if token.exists():
-    # 直近の注入後にリセットが起きた場合だけ再注入
-    if not (marker.exists() and marker.stat().st_mtime_ns > token.stat().st_mtime_ns):
-        return  # まだ有効 → スキップ
-token.touch()  # （再）注入してトークンの mtime を更新
-```
-
-**グレースフルフォールバック**: session-kit が未インストールならマーカーは存在しないので、
-利用側は素の once-per-session として動く（session-kit 導入前の挙動）。session-kit は
-**任意の companion** であり、利用側は未インストール時にハードフェイルしてはならない。
+> **WSL / Windows 注意**: トークンは `Path.home()` 配下に置くため、WSL と Windows ネイティブ
+> 実行で解決先が変わる。これは許容する — 切替頻度は低く、別ロケーションになっても無害な
+> 再注入が走るだけ。
 
 ---
 
 ## なぜ専用プラグインか（フックロジックの集約ではない）
 
-ここでのクロスプラグイン契約は **ファイルパス規約のみ** — 利用側はマーカーを `stat()` する
-だけで、session-kit のスクリプトを実行しない。これにより `refs-inject-kit` が却下された
-`${CLAUDE_PLUGIN_ROOT}` のクロスプラグイン・パス解決問題（incident
-`premature-cross-plugin-centralization`）を回避できる。コンテキスト世代という事実は
-本質的に **セッション単位の単一の事実**（セッションにつき 1 つ）なので、生成側を 1 つに
-する設計が自然。
+ここでのクロスプラグイン契約は **パス規約のみ** — session-kit は `~/.claude/tokens/` を glob
+するだけで他プラグインのコードを実行せず、利用側も session-kit を呼ばない。これにより
+`refs-inject-kit` が却下された `${CLAUDE_PLUGIN_ROOT}` のクロスプラグイン・パス解決問題
+（incident `premature-cross-plugin-centralization`）を回避できる。トークン寿命はセッション
+単位の関心事なので、管理者を 1 つにする設計が自然。
 
 ---
 
@@ -66,4 +71,5 @@ token.touch()  # （再）注入してトークンの mtime を更新
 
 | バージョン | 主な変更 |
 |---|---|
-| 1.0.0 | 初版: PreCompact + SessionStart(clear) のコンテキスト世代マーカー（PR150） |
+| 1.1.0 | トークン削除方式へピボット: UserPromptSubmit で会話ターンごとにセッションの注入トークンを削除（マーカーファイル廃止）、SessionStart で古いトークンを 1 日 TTL で掃除。トークンは `~/.claude/tokens/{plugin}/` 配下（PR151） |
+| 1.0.0 | 初版: PreCompact + SessionStart(clear) のコンテキスト世代マーカー（PR150、置き換え済み） |
