@@ -32,6 +32,7 @@ Claude Code プラグインで環境変数を使う方法（`settings.json` の 
 | 済 | hooks.md(+jp) の env 節を environment.md への短いポインタに | - `plugins/claude-kit/references/hooks.md` (+jp) |
 | 済 | plugin-structure.md(+jp) に「env 変数はプラグイン自身の CLAUDE.md に記載」慣習を追記（ポインタは environment.md） | - `plugins/claude-kit/references/plugin-structure.md` (+jp) |
 | 済 | claude-kit 版バンプ(3.33.0) + marketplace 同期 + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `changelogs/v3.33.0.md` |
+| 済 | environment.md を全 claude アーティファクトに共通注入（ユーザー指示）。hooks.json/settings.json は required、他の全 authoring パターンは optional（ポインタ）。matcher は既存の Edit/Write/MultiEdit/Read 維持 | - `plugins/claude-kit/references/injection_rules.yaml` |
 | 済 | 検証（orphan/YAML/JSON/注入スモークテスト） | - |
 
 ## 参考ドキュメント

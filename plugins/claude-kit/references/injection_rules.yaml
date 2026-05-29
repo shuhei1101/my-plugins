@@ -8,6 +8,9 @@
 # base (file-type decision, JP/EN mirror rules); provenance.md (how to stamp) rides along with
 # every stampable (text-comment-capable) pattern. JSON files cannot carry comments, so the
 # JSON-only patterns (hooks.json / settings.json / plugin.json / marketplace.json) omit provenance.
+# environment.md (env-var configurability) is surfaced on EVERY claude artifact (Write/Edit) so the
+# author is aware configurable behavior is possible — full body where env is actually set
+# (hooks.json / settings.json), pointer-only (optional) elsewhere.
 rules:
   # ---- Skills: editing a SKILL.md (or its JP mirror) ----
   - pattern: "**/skills/*/SKILL{.jp,}.md"
@@ -15,6 +18,8 @@ rules:
       - common.md
       - skills.md
       - provenance.md
+    optional:
+      - environment.md
 
   # ---- Rules: editing a path-scoped rule (or its rules-jp mirror) ----
   - pattern: "**/.claude/rules/**/*.md"
@@ -22,11 +27,15 @@ rules:
       - common.md
       - rules.md
       - provenance.md
+    optional:
+      - environment.md
   - pattern: "**/.claude/rules-jp/**/*.md"
     required:
       - common.md
       - rules.md
       - provenance.md
+    optional:
+      - environment.md
 
   # ---- CLAUDE.md: project / subfolder memory file ----
   - pattern: "**/CLAUDE{.local,.jp,}.md"
@@ -34,9 +43,11 @@ rules:
       - common.md
       - claude-md.md
       - provenance.md
+    optional:
+      - environment.md
 
   # ---- Hooks: plugin hooks.json, project settings (JSON — no stamp), prompt files (.md — stamped) ----
-  # settings.json / hooks.json also carry the env block, so environment.md rides along.
+  # settings.json / hooks.json carry the env block, so environment.md is injected in FULL here.
   - pattern: "**/hooks/hooks.json"
     required:
       - common.md
@@ -51,24 +62,34 @@ rules:
     required:
       - hooks.md
       - provenance.md
+    optional:
+      - environment.md
 
   # ---- Plugins: manifest / marketplace (JSON — no stamp) ----
   - pattern: "**/.claude-plugin/{plugin,marketplace}.json"
     required:
       - common.md
       - plugin-structure.md
+    optional:
+      - environment.md
 
   # ---- Glossary / incidents: format guides for the fixed rule files ----
   - pattern: "**/rules/**/glossary.md"
     required:
       - glossary.md
       - provenance.md
+    optional:
+      - environment.md
   - pattern: "**/rules/**/incidents.md"
     required:
       - incidents.md
       - provenance.md
+    optional:
+      - environment.md
 
   # ---- Jinja2 templates: stamp guidance (replaces the removed j2-stamp-check hook) ----
   - pattern: "**/*.j2"
     required:
       - provenance.md
+    optional:
+      - environment.md
