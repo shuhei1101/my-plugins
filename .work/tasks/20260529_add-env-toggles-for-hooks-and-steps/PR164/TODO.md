@@ -42,17 +42,17 @@ env 値の判定パターンは PR163 の work-start Step 4 と同じ:
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR164/QA.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR164/QA.md` |
 | - | `.work/notes/` のノートを更新する | - `.work/notes/{note}.md` |
-| - | #1 WORK_KIT_PR_ENFORCEMENT | - `plugins/work-kit/hooks/scripts/user-prompt-submit.py` |
-| - | #2 WORK_KIT_STOP_REMINDER | - `plugins/work-kit/hooks/hooks.json` |
-| - | #3 {PREFIX}_INJECTION_DISABLE（ref-inject テンプレ→3プラグイン波及） | - `plugins/ref-inject/templates/hooks/inject_references.py` ほか |
-| - | #4 NEXT_KIT_TS_CHECK | - `plugins/next-kit/hooks/ts_check.py` |
-| - | #5 WORK_KIT_MERGE_CONV2CLAUDE | - `plugins/work-kit/skills/merge/SKILL.md` / `.jp.md` |
-| - | #6 WORK_KIT_AUTO_HANDOFF | - `plugins/work-kit/skills/merge/SKILL.md` / `.jp.md` |
-| - | #7 AITUBER_NOTIFY（スコープ確認後） | - リポジトリ外 |
-| - | 各プラグインの version bump + changelog | - `plugins/*/.claude-plugin/plugin.json` / `marketplace.json` / `changelogs/` |
-| - | ルール・CLAUDE.md・glossary を整備する | - `.claude/rules/core/glossary.md` ほか |
+| 済 | #1 WORK_KIT_PR_ENFORCEMENT | - `plugins/work-kit/hooks/scripts/user-prompt-submit.py` |
+| 済 | #2 WORK_KIT_STOP_REMINDER | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | #3 {PREFIX}_INJECTION_DISABLE（ref-inject テンプレのみ・波及は次 PR） | - `plugins/ref-inject/templates/hooks/inject_references.py` |
+| 済 | #4 NEXT_KIT_TS_CHECK | - `plugins/next-kit/hooks/ts_check.py` |
+| 済 | #5 WORK_KIT_MERGE_CONV2CLAUDE | - `plugins/work-kit/skills/merge/SKILL.md` / `.jp.md` |
+| 済 | #6 WORK_KIT_MERGE_AUTO_HANDOFF | - `plugins/work-kit/skills/merge/SKILL.md` / `.jp.md` |
+| 済 | #7 AITUBER_NOTIFY（~/.claude/settings.json 直接変更） | - `~/.claude/settings.json`（リポジトリ外） |
+| 済 | 各プラグインの version bump + changelog | - `plugins/*/.claude-plugin/plugin.json` / `marketplace.json` / `changelogs/` |
+| 済 | ルール・CLAUDE.md・glossary を整備する | - `.claude/rules/core/glossary.md` ほか |
 
 ## 参考ドキュメント
 
