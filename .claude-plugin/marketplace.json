@@ -34,14 +34,8 @@
     {
       "name": "work-kit",
       "source": "./plugins/work-kit",
-      "description": "Hook-based project lifecycle management — injects PR task context on every prompt and reminds task updates on stop",
-      "version": "2.36.0"
-    },
-    {
-      "name": "worktree-kit",
-      "source": "./plugins/worktree-kit",
-      "description": "Git worktree lifecycle management — create worktrees for PRs and keep VS Code workspaces in sync",
-      "version": "1.0.0"
+      "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, and manages git worktrees (toggle via WORK_KIT_USE_WORKTREE)",
+      "version": "2.37.0"
     },
     {
       "name": "guard-kit",
