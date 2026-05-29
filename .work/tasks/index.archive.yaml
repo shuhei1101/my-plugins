@@ -590,3 +590,11 @@ prs:
   summary: worktree-kit を work-kit に統合し、環境変数 WORK_KIT_USE_WORKTREE でゲートする
   task: 20260529_merge-worktree-kit-into-work-kit
   completed: true
+- id: 162
+  title: PR162 — document-plugin-env-vars
+  type: docs
+  tags: []
+  summary: プラグインの環境変数の使い方を references に追記（hooks.md に settings.json env セクション、plugin-structure.md
+    に CLAUDE.md 記載慣習）
+  task: 20260529_document-plugin-env-vars
+  completed: true

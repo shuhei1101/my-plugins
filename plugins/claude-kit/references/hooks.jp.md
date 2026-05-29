@@ -283,3 +283,12 @@ Claude がこれから触るファイルに関連する規約/ドキュメント
 
 > ⚠️ `${CLAUDE_PLUGIN_ROOT}` はプラグインとしてインストールされたときのみ機能する。プロジェクトの
 > `settings.json` では何もしない — 代わりに `${CLAUDE_PROJECT_DIR}` を使う。
+
+---
+
+## 環境変数
+
+フックを設定可能にするには、`settings.json` の `env` ブロックで設定した環境変数を `os.environ` で読む
+（例: `*-kit` 注入フックは `{PREFIX}_INJECTION_TTL` / `{PREFIX}_INJECTION_LANG` を読む）。設定・読み取り・
+スコープ・デフォルト・慣習の完全なガイドは **`environment.md`**（`hooks.json` / `settings.json` 編集時に
+このガイドと一緒に注入される）。

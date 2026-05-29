@@ -134,3 +134,12 @@ File: `changelogs/v{X.Y.Z}.md` — **same version as `plugin.json`**.
 
 The "構造の変更" section is critical — it lets other projects that depend on this plugin know what
 structural updates they must apply on their end.
+
+---
+
+## Environment variables
+
+A plugin's hooks/scripts can be made configurable via environment variables set in `settings.json`'s
+`env` block and read with `os.environ` (full guide: `environment.md`). When a plugin reads any env var,
+**document it in the plugin's own `CLAUDE.md`** — name, effect, and default — so users know what is
+configurable without reading the source. Namespace the key with the plugin name (e.g. `PY_KIT_INJECTION_TTL`).

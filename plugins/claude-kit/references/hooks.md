@@ -280,3 +280,12 @@ reference docs (1 reference = 1 use case). Canonical adopters: `py-kit`, `next-k
 
 > ⚠️ `${CLAUDE_PLUGIN_ROOT}` only works when installed as a plugin. In project `settings.json` it does
 > nothing — use `${CLAUDE_PROJECT_DIR}` instead.
+
+---
+
+## Environment variables
+
+To make a hook configurable, read environment variables set in `settings.json`'s `env` block via
+`os.environ` (e.g. the `*-kit` injection hooks read `{PREFIX}_INJECTION_TTL` / `{PREFIX}_INJECTION_LANG`).
+Full guide — set/read, scopes, defaults, conventions — in **`environment.md`** (injected alongside this
+guide when you edit `hooks.json` / `settings.json`).
