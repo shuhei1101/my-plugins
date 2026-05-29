@@ -17,14 +17,14 @@ ref-inject の注入 OFF スイッチは `plugins/ref-inject/templates/hooks/inj
 - 案A: テンプレonly 変更 + 各プラグインを `/ref-inject:apply` で再生成
 - 案B: この PR 内で 3 プラグインの `inject_references.py` も手編集して同期（kit-hooks-index-sync ルール準拠）
 
-**状態**: 未決定（実装着手前に決める）
+**状態**: 解決済み — テンプレートのみ変更。claude-kit / py-kit / next-kit への反映は次 PR に委ねる。
 
 ## QA-002: #7 AITUBER_NOTIFY のスコープ
 
 notify-aituber はこのリポジトリではなくユーザーの `~/.claude/skills/notify-aituber` 配下にある。
 この PR の対象に含めるか、別作業（リポジトリ外）として切り離すか。
 
-**状態**: 未決定
+**状態**: 解決済み — この PR に含める。`~/.claude/settings.json` は git 管理外のため直接変更してよい。
 
 ## QA-003: env 変数の命名規則
 
@@ -32,4 +32,4 @@ merge 関連トグル（#5 #6）を `WORK_KIT_MERGE_CONV2CLAUDE` / `WORK_KIT_AUT
 ように `WORK_KIT_` プレフィックスで統一するか、`WORK_KIT_MERGE_*` でさらに名前空間を切るか。
 全体の命名一貫性を着手前に確定する。
 
-**状態**: 未決定
+**状態**: 解決済み — `WORK_KIT_MERGE_` で名前空間を切る。例: `WORK_KIT_MERGE_CONV2CLAUDE` / `WORK_KIT_MERGE_AUTO_HANDOFF`。

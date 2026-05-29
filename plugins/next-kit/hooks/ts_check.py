@@ -10,6 +10,7 @@ decision: block は使わず、作業フローを止めない。
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -39,6 +40,8 @@ def _find_tsconfig(start: pathlib.Path) -> pathlib.Path | None:
 
 
 def main() -> int:
+    if os.environ.get("NEXT_KIT_TS_CHECK", "true").lower() in ("false", "0", "no", "off"):
+        return 0
     try:
         data = json.loads(sys.stdin.read())
     except Exception as e:

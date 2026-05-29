@@ -13,11 +13,14 @@ Args:
 
 from __future__ import annotations
 
+import os
 import pathlib
 import sys
 
 
 def main() -> None:
+    if os.environ.get("WORK_KIT_PR_ENFORCEMENT", "true").lower() in ("false", "0", "no", "off"):
+        return
     prompt_path = pathlib.Path(sys.argv[1])
     if not prompt_path.exists():
         return

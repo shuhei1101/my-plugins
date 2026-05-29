@@ -137,6 +137,7 @@ git merge master
 #### Condition
 
 - Step 3 complete
+- `WORK_KIT_MERGE_CONV2CLAUDE` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip silently to Step 5
 
 #### Process
 
@@ -368,6 +369,10 @@ git commit -m "docs: post-merge update for PR{N}"
 ---
 
 ### Step 12: Delegate next PR candidates to pr-handoff
+
+#### Condition
+
+- `WORK_KIT_MERGE_AUTO_HANDOFF` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip this step and proceed to Step 13
 
 #### Process
 

@@ -143,6 +143,7 @@ git merge master
 #### 条件
 
 - ステップ3が完了していること
+- `WORK_KIT_MERGE_CONV2CLAUDE` が `false`/`0`/`no`/`off` でないこと（デフォルト: 有効）; 無効の場合 → ステップ5へスキップ
 
 #### 処理内容
 
@@ -375,6 +376,10 @@ git commit -m "docs: PR{N} マージ後ドキュメント更新"
 ---
 
 ### ステップ12: 次PR候補を pr-handoff に委譲
+
+#### 条件
+
+- `WORK_KIT_MERGE_AUTO_HANDOFF` が `false`/`0`/`no`/`off` でないこと（デフォルト: 有効）; 無効の場合 → このステップをスキップしてステップ13へ進む
 
 #### 処理内容
 

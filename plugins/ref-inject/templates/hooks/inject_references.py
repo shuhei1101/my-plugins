@@ -192,6 +192,10 @@ def main() -> int:
         _eprint(f"missing dependency: {e}. install with: uv add --dev pyyaml jinja2")
         return 0
 
+    # 注入完全 OFF (truthy = 無効化)
+    if os.environ.get(f"{ENV_PREFIX}_INJECTION_DISABLE", "").lower() in ("true", "1", "yes", "on"):
+        return 0
+
     try:
         data = json.loads(sys.stdin.read())
     except Exception as e:
