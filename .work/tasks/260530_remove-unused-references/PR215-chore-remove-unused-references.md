@@ -15,13 +15,13 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QAを `## QA` に記録する | - |
-| - | `.work/notes/` のノートドキュメントを更新する | - |
-| - | `glossary.md` / `incidents.md` とJPミラーを削除 | - `plugins/claude-kit/references/glossary.md`<br>- `plugins/claude-kit/references/glossary.jp.md`<br>- `plugins/claude-kit/references/incidents.md`<br>- `plugins/claude-kit/references/incidents.jp.md` |
-| - | `_index.yaml` / `_index.jp.yaml` から該当エントリを削除 | - `plugins/claude-kit/references/_index.yaml`<br>- `plugins/claude-kit/references/_index.jp.yaml` |
-| - | `references/CLAUDE.md` / `CLAUDE.jp.md` のインジェクションルールテーブルから該当行を削除 | - `plugins/claude-kit/references/CLAUDE.md`<br>- `plugins/claude-kit/references/CLAUDE.jp.md` |
-| - | `skills/plugin-update/SKILL.md` / `SKILL.jp.md` から参照を削除 | - `plugins/claude-kit/skills/plugin-update/SKILL.md`<br>- `plugins/claude-kit/skills/plugin-update/SKILL.jp.md` |
-| - | ルール / CLAUDE.md を更新する | - |
+| 済 | QAを `## QA` に記録する | - |
+| 済 | `.work/notes/` のノートドキュメントを更新する | - |
+| 済 | `glossary.md` / `incidents.md` とJPミラーを削除 | - `plugins/claude-kit/references/glossary.md`<br>- `plugins/claude-kit/references/glossary.jp.md`<br>- `plugins/claude-kit/references/incidents.md`<br>- `plugins/claude-kit/references/incidents.jp.md` |
+| 済 | `_index.yaml` / `_index.jp.yaml` から該当エントリを削除 | - `plugins/claude-kit/references/_index.yaml`<br>- `plugins/claude-kit/references/_index.jp.yaml` |
+| 済 | `references/CLAUDE.md` / `CLAUDE.jp.md` のインジェクションルールテーブルから該当行を削除 | - `plugins/claude-kit/references/CLAUDE.md`<br>- `plugins/claude-kit/references/CLAUDE.jp.md` |
+| 済 | `skills/plugin-update/SKILL.md` / `SKILL.jp.md` から参照を削除 | - `plugins/claude-kit/skills/plugin-update/SKILL.md`<br>- `plugins/claude-kit/skills/plugin-update/SKILL.jp.md` |
+| 済 | ルール / CLAUDE.md を更新する | - |
 
 ## 変更内容
 
