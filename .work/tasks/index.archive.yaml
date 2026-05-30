@@ -695,3 +695,11 @@ prs:
   summary: conversation-to-claude スキルと、それに伴う glossary/incidents 系ファイルを削除
   task: 20260530_remove-conversation-to-claude
   completed: true
+- id: 183
+  title: PR183 — dev-kit-py-script-pattern-brace-expansion
+  type: refactor
+  tags: []
+  summary: dev-kit injection_rules.yaml の python-script 注入パターンを単数形 tool/script もカバーするよう
+    **/{tool,tools,script,scripts}/**/*.py に統合
+  task: 260530_dev-kit-py-script-pattern-brace-expansion
+  completed: true
