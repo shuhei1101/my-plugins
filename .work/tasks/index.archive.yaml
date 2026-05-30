@@ -922,3 +922,11 @@ branches:
   summary: ノート新規作成・更新時に _index.md への追記を促すルールを追加
   task: 260531_notes-sync-rule
   completed: true
+- id: 219
+  title: feat/migrate-existing-plugins-to-have-config-skill
+  type: feat
+  tags: []
+  summary: py-kit / next-kit / html-kit / dev-kit などの既存プラグインに config スキルを追加する（PR175
+    のガイドに従って）
+  task: 260531_migrate-existing-plugins-to-have-config-skill
+  completed: true
