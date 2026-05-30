@@ -1,4 +1,4 @@
-# claude-kit リファレンス構造整理メモ — PR223
+# claude-kit リファレンス構造整理メモ — #231
 
 ## 概要
 
@@ -76,3 +76,26 @@ injection rule 追加案:
 - JP ミラー（*.jp.md）も同じサブフォルダに移動する
 - 移動後は _index.yaml / _injection_rules.yaml の全パスを更新する
 - claude-kit の inject_references.py は相対パスでリファレンスを読むため、パス更新が必須
+
+## 実装結果（#231 完了）
+
+### 最終的なフォルダ構成
+
+```
+references/
+├── .ref-injects/      # メタファイル（CLAUDE.md / _index.yaml / _injection_rules.yaml）
+├── common/            # 横断的: common.md, environment.md, references-sync.md, subagents.md, askuserquestion.md
+├── skill/             # skill: skills.md
+├── hook/              # hook: hooks.md, kit-hooks-sync.md, jinja2/
+├── claude-md/         # CLAUDE.md/rules: claude-md.md, rules.md
+└── plugin/            # plugin: plugin-structure.md, plugin-claude-md.md, plugin-config.md, setup-wizard.md, version-sync.md（新規）
+```
+
+### version-sync.md について
+
+`plugin-structure.md` の Step 4 から「三点セット同期チェックリスト」を抽出し `plugin/version-sync.md` として独立化。
+injection rule で `plugins/*/CLAUDE.md` 編集時に required 注入するよう設定（逆方向欠陥を修正）。
+
+### バージョン
+
+v3.47.0 → v3.48.0

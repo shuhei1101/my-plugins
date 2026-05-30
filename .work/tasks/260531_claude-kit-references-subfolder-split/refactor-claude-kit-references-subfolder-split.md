@@ -28,23 +28,34 @@ claude-kit の `references/` はすべてのファイルがフラットに並ん
 
 | # | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|---|
-| 1 | - | `## QA` に未決定事項を記録する | - `refactor-claude-kit-references-subfolder-split.md` |
+| 1 | x | `## QA` に未決定事項を記録する | - `refactor-claude-kit-references-subfolder-split.md` |
 | 2 | - | `.work/notes/` のノートを更新する | - `.work/notes/claude-kit-references-structure.md` |
-| 3 | - | 現在の `references/` ファイル一覧とトピック別グルーピングを設計する（QA 先決） | - |
-| 4 | - | サブフォルダを作成しファイルを移動する | - `plugins/claude-kit/references/{plugin,skills,hooks,claude-md,...}/` |
-| 5 | - | `_index.yaml` / `_index.jp.yaml` のパスを更新する | - `plugins/claude-kit/references/_index.yaml`<br>- `plugins/claude-kit/references/_index.jp.yaml` |
-| 6 | - | `_injection_rules.yaml` のパスを更新する | - `plugins/claude-kit/references/_injection_rules.yaml` |
-| 7 | - | plugin バージョン同期チェックを独立ファイルに分離する | - `plugins/claude-kit/references/plugin/version-sync.md`（仮） |
-| 8 | - | `plugins/*/CLAUDE.md` 編集時にバージョン同期 reminder が注入されるよう injection rule を追加 | - `plugins/claude-kit/references/_injection_rules.yaml` |
-| 9 | - | claude-kit バージョンバンプ + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `plugins/claude-kit/CLAUDE.md` |
+| 3 | x | 現在の `references/` ファイル一覧とトピック別グルーピングを設計する（QA 先決） | - |
+| 4 | x | サブフォルダを作成しファイルを移動する | - `plugins/claude-kit/references/{plugin,skill,hook,claude-md,common}/` |
+| 5 | x | `_index.yaml` / `_index.jp.yaml` のパスを更新する | - `plugins/claude-kit/references/.ref-injects/_index.yaml`<br>- `plugins/claude-kit/references/.ref-injects/_index.jp.yaml` |
+| 6 | x | `_injection_rules.yaml` のパスを更新する | - `plugins/claude-kit/references/.ref-injects/_injection_rules.yaml` |
+| 7 | x | plugin バージョン同期チェックを独立ファイルに分離する | - `plugins/claude-kit/references/plugin/version-sync.md` |
+| 8 | x | `plugins/*/CLAUDE.md` 編集時にバージョン同期 reminder が注入されるよう injection rule を追加 | - `plugins/claude-kit/references/.ref-injects/_injection_rules.yaml` |
+| 9 | x | claude-kit バージョンバンプ + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `plugins/claude-kit/CLAUDE.md` |
 
 ## 変更内容
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | `plugins/claude-kit/references/{topic}/` | 新規（サブフォルダ） | トピック別ディレクトリ | 設計後に確定 |
-| 2 | `plugins/claude-kit/references/_index.yaml` | 編集 | 移動後パスに更新 | - |
-| 3 | `plugins/claude-kit/references/_injection_rules.yaml` | 編集 | 新パス + 追加ルール | - |
+| 1 | `plugins/claude-kit/references/common/` | 新規（サブフォルダ） | common.md / environment.md / references-sync.md / subagents.md / askuserquestion.md を移動 | - |
+| 2 | `plugins/claude-kit/references/skill/` | 新規（サブフォルダ） | skills.md を移動 | - |
+| 3 | `plugins/claude-kit/references/hook/` | 新規（サブフォルダ） | hooks.md / kit-hooks-sync.md / jinja2/ を移動 | - |
+| 4 | `plugins/claude-kit/references/claude-md/` | 新規（サブフォルダ） | claude-md.md / rules.md を移動 | - |
+| 5 | `plugins/claude-kit/references/plugin/` | 新規（サブフォルダ） | plugin-structure.md / plugin-claude-md.md / plugin-config.md / setup-wizard.md を移動 | - |
+| 6 | `plugins/claude-kit/references/plugin/version-sync.md` | 新規 | plugin バージョン同期不変条件（plugin-structure.md から分離） | `.jp.md` ミラーも作成 |
+| 7 | `plugins/claude-kit/references/.ref-injects/_index.yaml` | 編集 | 新パスに更新・incidents.md stale エントリ削除・version-sync.md 追加 | - |
+| 8 | `plugins/claude-kit/references/.ref-injects/_index.jp.yaml` | 編集 | 〃（JP 版） | - |
+| 9 | `plugins/claude-kit/references/.ref-injects/_injection_rules.yaml` | 編集 | 新パス更新・plugins/*/CLAUDE.md に version-sync.md 注入ルール追加 | - |
+| 10 | `plugins/claude-kit/references/.ref-injects/CLAUDE{.jp,}.md` | 編集 | パスマップを新構造に更新 | - |
+| 11 | `plugins/claude-kit/skills/plugin-update/SKILL{.jp,}.md` | 編集 | リファレンスマップを新パスに更新 | - |
+| 12 | `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | v3.47.0 → v3.48.0 | - |
+| 13 | `.claude-plugin/marketplace.json` | 編集 | 〃 | - |
+| 14 | `plugins/claude-kit/CLAUDE{.jp,}.md` | 編集 | changelog に v3.48.0 行を追加 | - |
 
 ## テスト
 
