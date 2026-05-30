@@ -22,9 +22,9 @@
 |---|---|---|
 | 済 | QA を `## QA` に記録する | - |
 | 済 | ノートドキュメントを更新する（対象なし） | `.work/notes/` |
-| - | `setup-wizard.jp.md` の `plugin-config` をすべて `config` に変更（`plugin-update` は除く） | `plugins/claude-kit/references/setup-wizard.jp.md` |
-| - | `setup-wizard.jp.md` の skeleton セクションを日本語化 | `plugins/claude-kit/references/setup-wizard.jp.md` |
-| - | `setup-wizard.md` の `plugin-config` をすべて `config` に変更（`plugin-update` は除く） | `plugins/claude-kit/references/setup-wizard.md` |
+| 済 | `setup-wizard.jp.md` の `plugin-config` をすべて `config` に変更（`plugin-update` は除く） | `plugins/claude-kit/references/setup-wizard.jp.md` |
+| 済 | `setup-wizard.jp.md` の skeleton セクションを日本語化 | `plugins/claude-kit/references/setup-wizard.jp.md` |
+| 済 | `setup-wizard.md` の `plugin-config` をすべて `config` に変更（`plugin-update` は除く） | `plugins/claude-kit/references/setup-wizard.md` |
 | - | ルール / CLAUDE.md を更新する（対象なし） | - |
 
 ## 変更内容
