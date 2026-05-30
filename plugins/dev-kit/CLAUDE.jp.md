@@ -20,11 +20,14 @@ Python / HTML-CSS-JS / Next.js 16 App Router / YAML を 1 プラグインに統�
 
 ## フック
 
+フックスクリプトは `hooks/scripts/` 配下に集約し、共通ヘルパは plugin 内 `_common.py` に置く。
+
 | フック | トリガー | 用途 |
 |---|---|---|
-| `inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | 言語ごとのリファレンス自動注入 |
-| `ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
-| `yaml-skill-dispatch` | PreToolUse(Edit/Write) | YAML 編集時に `dev-kit:yaml` 起動をリマインド |
+| `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | 言語ごとのリファレンス自動注入 |
+| `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
+| `scripts/yaml_skill_dispatch.py` | PreToolUse(Edit/Write) | YAML 編集時に `dev-kit:yaml` 起動をリマインド |
+| `scripts/_common.py` | — （ライブラリ） | stdin 読み・env truthy 判定・once-per-session トークン・block 理由出力 |
 
 ## env トグル
 

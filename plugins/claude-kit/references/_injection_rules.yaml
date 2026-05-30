@@ -66,6 +66,14 @@ rules:
     optional:
       - environment.md
 
+  # ---- Plugin CLAUDE.md: root CLAUDE.md in a plugin directory ----
+  # Supplements the generic **/CLAUDE.md pattern above with the plugin-specific authoring guide.
+  - pattern: "plugins/*/CLAUDE{.jp,}.md"
+    required:
+      - plugin-claude-md.md
+    optional:
+      - environment.md
+
   # ---- Glossary / incidents: format guides for the fixed rule files ----
   - pattern: "**/rules/**/glossary.md"
     required:
@@ -77,3 +85,8 @@ rules:
       - incidents.md
     optional:
       - environment.md
+
+  # ---- Markdown (general): table formatting conventions ----
+  - pattern: "**/*.md"
+    required:
+      - markdown-table.md

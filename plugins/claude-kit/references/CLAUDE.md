@@ -15,7 +15,7 @@ guide directly, so you can write the file without invoking a skill.
 
 ## Reading automatically
 
-On `PreToolUse(Edit | Write | MultiEdit | Read)`, `hooks/inject_references.py`:
+On `PreToolUse(Edit | Write | MultiEdit | Read)`, `hooks/scripts/inject_references.py`:
 
 1. Matches the edited file path against `_injection_rules.yaml` patterns
 2. Injects each matched `required` reference **in full body**, and each `optional` as **path + description only**

@@ -80,7 +80,8 @@ Substitute placeholders in text files; copy binaries verbatim.
 
 | Template (under `templates/`) | Destination (under the target plugin) |
 |---|---|
-| `hooks/inject_references.py` | `hooks/inject_references.py` |
+| `hooks/scripts/inject_references.py` | `hooks/scripts/inject_references.py` |
+| `hooks/scripts/_common.py` | `hooks/scripts/_common.py` |
 | `hooks/hooks.json` | `hooks/hooks.json` |
 | `hooks/templates/injection.md.j2` / `injection.jp.md.j2` | `hooks/templates/…` (same names) |
 | `references/_index.yaml` / `_index.jp.yaml` | `references/…` (same names) |

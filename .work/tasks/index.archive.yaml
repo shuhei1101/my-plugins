@@ -667,3 +667,47 @@ prs:
   summary: workspace の Stop フックでマージ提案するかどうかを WORKSPACE_MERGE_PROPOSAL env で制御できるようにする
   task: 20260530_add-merge-proposal-toggle
   completed: true
+- id: 168
+  title: PR168 — refactor-task-doc-structure
+  type: refactor
+  tags: []
+  summary: 'タスクドキュメント構造をリファクタ: 日付YYMMDD化・PR単一ファイル化・TODO+QA統合・変更内容/テストセクション追加'
+  task: 260530_refactor-task-doc-structure
+  completed: true
+- id: 171
+  title: PR171 — add-plugin-claude-md-standard
+  type: feat
+  tags: []
+  summary: プラグインの CLAUDE.md 標準セクション構成を定義し、changelogs/ を廃止してテンプレートを references/ に追加
+  task: 20260530_add-plugin-claude-md-standard
+  completed: true
+- id: 178
+  title: PR178 — add-markdown-table-reference
+  type: feat
+  tags: []
+  summary: claude-kitにMarkdownテーブル記法のリファレンスを追加し、繰り返し値の省略ルールを注入
+  task: 20260530_add-markdown-table-reference
+  completed: true
+- id: 181
+  title: PR181 — remove-conversation-to-claude
+  type: chore
+  tags: []
+  summary: conversation-to-claude スキルと、それに伴う glossary/incidents 系ファイルを削除
+  task: 20260530_remove-conversation-to-claude
+  completed: true
+- id: 183
+  title: PR183 — dev-kit-py-script-pattern-brace-expansion
+  type: refactor
+  tags: []
+  summary: dev-kit injection_rules.yaml の python-script 注入パターンを単数形 tool/script もカバーするよう
+    **/{tool,tools,script,scripts}/**/*.py に統合
+  task: 260530_dev-kit-py-script-pattern-brace-expansion
+  completed: true
+- id: 180
+  title: PR180 — split-hook-inline-python-to-scripts
+  type: refactor
+  tags: []
+  summary: hooks.json のインライン python -c を各プラグイン hooks/scripts/ に切り出し、共通処理を _common.py
+    に集約
+  task: 20260530_split-hook-inline-python-to-scripts
+  completed: true

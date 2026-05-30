@@ -51,7 +51,7 @@ lang = os.environ.get("MY_KIT_INJECTION_LANG", "en").lower()
 
 ## 実例（このリポジトリ）
 
-`*-kit` のリファレンス注入フック（dev-kit / claude-kit の `hooks/inject_references.py`）は
+`*-kit` のリファレンス注入フック（dev-kit / claude-kit の `hooks/scripts/inject_references.py`）は
 この方式で調整できる:
 
 | 環境変数 | 効果 | デフォルト |

@@ -23,10 +23,16 @@ references:
     description: How to author a CLAUDE.md (root or subfolder). When it loads, the thinness principle, extraction-destination guide, validation against other file types, the JP-mirror-first workflow, required sections, and the line-count guideline.
 
   - path: plugin-structure.md
-    description: How to author or update a plugin. Standard directory layout, plugin.json fields, marketplace.json entry, create-vs-update mode, version bump rules, the plugin.json/marketplace.json/changelog version-sync invariant, and changelog format.
+    description: How to author or update a plugin. Standard directory layout, plugin.json fields, marketplace.json entry, create-vs-update mode, version bump rules, and the plugin.json/marketplace.json/CLAUDE.md changelog version-sync invariant.
+
+  - path: plugin-claude-md.md
+    description: How to write a plugin's root CLAUDE.md. Required sections (Skills / Hooks / Environment Variables / Dependencies / Changelog), table formats for each section, and the full copy-paste template.
 
   - path: glossary.md
     description: Format guide for .claude/rules/glossary.md. Single-file category-organized terminology table, writing discipline (always-loaded → keep terse), and how terms get added.
 
   - path: incidents.md
     description: Format guide for .claude/rules/incidents.md. Two-layer index + detail-file structure for recurrence-prevention logs, and how incidents get recorded.
+
+  - path: markdown-table.md
+    description: "Markdown table formatting conventions. Key rule: when consecutive rows share the same column value, write it only in the first row and leave subsequent cells blank."

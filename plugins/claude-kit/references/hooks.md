@@ -247,7 +247,7 @@ the file Claude is about to touch. **Do not hand-build this** — use the `ref-i
 /ref-inject:apply <target-plugin>
 ```
 
-It copies the injection hook (`hooks/inject_references.py` + `hooks/hooks.json`), the Jinja2 templates,
+It copies the injection hook (`hooks/scripts/inject_references.py` + `hooks/hooks.json`), the Jinja2 templates,
 and a `references/` skeleton, substituting per-plugin placeholders. Then you fill `references/_index.yaml`
 (path + description), bind edit-path patterns in `references/_injection_rules.yaml`, and write the
 reference docs (1 reference = 1 use case). Canonical adopters: `dev-kit`, `claude-kit`.

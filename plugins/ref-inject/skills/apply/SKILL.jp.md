@@ -78,7 +78,8 @@ description: |
 
 | テンプレート（`templates/` 配下） | 出力先（対象プラグイン配下） |
 |---|---|
-| `hooks/inject_references.py` | `hooks/inject_references.py` |
+| `hooks/scripts/inject_references.py` | `hooks/scripts/inject_references.py` |
+| `hooks/scripts/_common.py` | `hooks/scripts/_common.py` |
 | `hooks/hooks.json` | `hooks/hooks.json` |
 | `hooks/templates/injection.md.j2` / `injection.jp.md.j2` | `hooks/templates/…`（同名） |
 | `references/_index.yaml` / `_index.jp.yaml` | `references/…`（同名） |

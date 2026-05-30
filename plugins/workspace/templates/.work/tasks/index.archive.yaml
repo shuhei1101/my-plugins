@@ -6,7 +6,7 @@
 #   type      : feat / fix / docs / refactor / chore / test
 #   tags      : 自由形式タグ（省略可）
 #   summary   : 一行説明
-#   task      : タスクフォルダ名（YYYYMMDD_{title}）
+#   task      : タスクフォルダ名（YYMMDD_{title}）
 #   archived  : アーカイブ日（YYYY-MM-DD）
 #   resolution: merged / abandoned
 

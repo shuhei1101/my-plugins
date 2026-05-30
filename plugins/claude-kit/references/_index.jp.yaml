@@ -21,10 +21,16 @@ references:
     description: CLAUDE.md（ルート / サブフォルダ）の作り方。読み込みタイミング、薄肉原則、抽出先ガイド、他ファイル種別との照合、JP ミラー先行ワークフロー、必須セクション、行数ガイドライン。
 
   - path: plugin-structure.md
-    description: プラグインの作成 / 更新の仕方。標準ディレクトリ構成、plugin.json フィールド、marketplace.json エントリ、新規 / 更新モード、バージョンバンプ規則、plugin.json / marketplace.json / changelog のバージョン一致不変条件、changelog フォーマット。
+    description: プラグインの作成 / 更新の仕方。標準ディレクトリ構成、plugin.json フィールド、marketplace.json エントリ、新規 / 更新モード、バージョンバンプ規則、plugin.json / marketplace.json / CLAUDE.md Changelog のバージョン一致不変条件。
+
+  - path: plugin-claude-md.md
+    description: プラグインのルート CLAUDE.md の書き方。必須セクション（Skills / Hooks / Environment Variables / Dependencies / Changelog）、各セクションのテーブル形式、コピペ用フルテンプレート。
 
   - path: glossary.md
     description: .claude/rules/glossary.md のフォーマットガイド。単一ファイル・カテゴリ分けの用語表、記述規律（常時ロード → 簡潔に）、用語の追加方法。
 
   - path: incidents.md
     description: .claude/rules/incidents.md のフォーマットガイド。再発防止ログの 2 層（索引 + 詳細ファイル）構造、インシデントの記録方法。
+
+  - path: markdown-table.md
+    description: Markdown テーブルの記法規約。主要ルール：連続する行で同じ列の値が同じ場合、最初の行にのみ書き、以降のセルは空白にする。
