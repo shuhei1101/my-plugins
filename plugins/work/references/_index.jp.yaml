@@ -13,3 +13,6 @@ references:
 
   - path: work-todo-template-sync.md
     description: work TODO テンプレートと work-start SKILL.md の同期ルール。テンプレートのセクション構成は work-start SKILL.md Step 7 の記入ガイドと一致させること。
+
+  - path: work-dot-work-dir.md
+    description: .work/ 配下のファイルを編集する際のガイド — ディレクトリ構成・ブランチドキュメントのセクション構成・notes のライフサイクル・コミット規約（.work/ 配下の変更は実装コードと別コミットにすること）。
