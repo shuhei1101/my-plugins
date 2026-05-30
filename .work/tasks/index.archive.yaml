@@ -853,3 +853,10 @@ branches:
   summary: claude-kit references/ に「プラグイン config スキルの設計ガイド」を追加 + PreToolUse フック追加
   task: 20260530_claude-kit-plugin-config-reference
   completed: true
+- id: 219
+  title: feat/merge-skill-force-master-sync
+  type: feat
+  tags: []
+  summary: マージ前にmaster取り込みを必須化し、コンフリクト確認ステップを追加
+  task: 260531_merge-skill-force-master-sync
+  completed: true
