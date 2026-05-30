@@ -173,7 +173,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 - Do not ask the user — decide autonomously based on content
 - When in doubt, create a new folder (folders can be consolidated later)
-- Legacy folders may still use the 8-digit `YYYYMMDD` prefix — leave them as-is; only new folders use `YYMMDD`
+- New folders must use the 6-digit `YYMMDD` prefix and a **Japanese title** (e.g. `260530_タスクフォルダ命名統一`)
 
 ---
 

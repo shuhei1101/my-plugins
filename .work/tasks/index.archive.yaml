@@ -799,6 +799,13 @@ branches:
   summary: index.yamlとindex.archive.yamlのprs:キーをbranches:に改名し、index-tool.pyを更新する
   task: 260530_index-yamlのprs:キーをbranches:に改名
   completed: true
+- id: 191
+  title: PR191 — unify-task-folder-naming
+  type: chore
+  tags: []
+  summary: 8桁YYYYMMDDのタスクフォルダを6桁YYMMDD形式に一括リネームし、新規フォルダは日本語名を使う規約を追記する
+  task: 260530_unify-task-folder-naming
+  completed: true
 - id: 198
   title: PR198 — dev-kit-markdown-frontmatter-rule
   type: feat
