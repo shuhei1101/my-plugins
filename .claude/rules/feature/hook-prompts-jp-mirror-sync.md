@@ -34,8 +34,7 @@ globs:
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 ```
 
-このコメントは `/claude-kit:mark-generated` が自動付与する。
-手書きで JP ミラーを作成・編集する際は、このコメントが残っていることを必ず確認すること。
+JP ミラーを作成・編集する際は、このコメントが残っていることを必ず確認すること。
 
 ## Why
 
