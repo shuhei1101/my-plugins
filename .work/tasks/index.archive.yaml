@@ -605,3 +605,10 @@ prs:
   summary: 常時発火フック／スキルステップを env で opt-out 可能にする（全てデフォルト現挙動維持）
   task: 20260529_add-env-toggles-for-hooks-and-steps
   completed: true
+- id: 165
+  title: PR165 — remove-mark-generated
+  type: refactor
+  tags: []
+  summary: mark-generated スキルとその全呼び出し箇所・バージョンマーカーを削除
+  task: 20260530_remove-mark-generated
+  completed: true
