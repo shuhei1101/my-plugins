@@ -3,6 +3,16 @@ rules:
 - pattern: "**/*.md"
   required:
     - markdown/markdown-table.md
+# ---- YAML asset/config conventions: inject when editing the canonical asset/config YAMLs ----
+- pattern: "**/index.yaml"
+  required:
+    - yaml/yaml.md
+- pattern: "**/settings.yaml"
+  required:
+    - yaml/yaml.md
+- pattern: "**/settings.yaml.sample"
+  required:
+    - yaml/yaml.md
 - pattern: '**/*.py'
   lang: python
   required:

@@ -23,6 +23,8 @@ PR196 の次PR候補として記録済みの作業。
 | 済 | `yaml/` サブフォルダを作成して yaml.md / yaml.jp.md を移動する | - `plugins/dev-kit/references/yaml/yaml.md`（新規）<br>- `plugins/dev-kit/references/yaml/yaml.jp.md`（新規）<br>- `plugins/dev-kit/references/yaml.md`（削除）<br>- `plugins/dev-kit/references/yaml.jp.md`（削除） |
 | 済 | `_injection_rules.yaml` のパスを更新する（対象エントリなし — 変更不要） | `plugins/dev-kit/references/_injection_rules.yaml` |
 | 済 | `_index.yaml` / `_index.jp.yaml` のパスを更新する（対象エントリなし — 変更不要） | - `plugins/dev-kit/references/_index.yaml`<br>- `plugins/dev-kit/references/_index.jp.yaml` |
+| 済 | （ユーザー指摘）yaml/yaml.md を `_index.yaml` / `_index.jp.yaml` に新規登録（他 references と揃える） | - `plugins/dev-kit/references/_index.yaml`<br>- `plugins/dev-kit/references/_index.jp.yaml` |
+| 済 | （ユーザー指摘）`_injection_rules.yaml` に index.yaml / settings.yaml(.sample) 編集時の注入ルールを追加 | `plugins/dev-kit/references/_injection_rules.yaml` |
 | 済 | dev-kit CLAUDE.md の Reference structure と Changelog を更新する | `plugins/dev-kit/CLAUDE.md` |
 | 済 | プラグインバージョンをバンプする | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 | 済 | ルール / CLAUDE.md を更新する（対象なし） | - |
@@ -66,4 +68,4 @@ PR196 の次PR候補として記録済みの作業。
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| - | - | - |
+| ref-inject-references-edit-guard | ref-inject に「references/ 配下のファイルが追加・編集された際に、対応する `_index.yaml` / `_injection_rules.yaml` のパス登録を忘れていないかリマインドする」フックを追加。ref-inject を導入したプラグインのみで発火する。今回 yaml/yaml.md の登録漏れと同種の事故を自動検知するため | 即時実施可 |
