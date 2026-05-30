@@ -929,4 +929,10 @@ branches:
   summary: py-kit / next-kit / html-kit / dev-kit などの既存プラグインに config スキルを追加する（PR175
     のガイドに従って）
   task: 260531_migrate-existing-plugins-to-have-config-skill
+- id: 221
+  title: chore/claude-kit-markdown-env-var-audit
+  type: chore
+  tags: []
+  summary: 他のマークダウンファイルで env var を直接読もうとする誤った指示がないか全量調査し修正する
+  task: 260531_claude-kit-markdown-env-var-audit
   completed: true
