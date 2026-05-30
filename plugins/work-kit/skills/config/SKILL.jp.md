@@ -22,6 +22,7 @@ env トグル変数を `AskUserQuestion` を使って対話的に設定します
 | `WORK_KIT_PR_ENFORCEMENT` | UserPromptSubmit work-start 強制注入 | 有効 |
 | `WORK_KIT_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
 | `WORK_KIT_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
+| `WORK_KIT_MERGE_PROPOSAL` | Stop フックでの `/work-kit:merge` 提案 | 有効 |
 | `WORK_KIT_MERGE_CONV2CLAUDE` | merge Step 4 conversation-to-claude | 有効 |
 | `WORK_KIT_MERGE_AUTO_HANDOFF` | merge Step 12 auto pr-handoff | 有効 |
 | `NEXT_KIT_TS_CHECK` | PostToolUse tsc 型チェック | 有効 |
@@ -78,7 +79,7 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 **`AskUserQuestion` ツールを呼び出します** `multiSelect: false` で：
 
-- question: `"設定する env 変数を選択（MERGE_CONV2CLAUDE / MERGE_AUTO_HANDOFF / NEXT_KIT_TS_CHECK / AITUBER_NOTIFY は「その他」に入力）"`
+- question: `"設定する env 変数を選択（MERGE_PROPOSAL / MERGE_CONV2CLAUDE / MERGE_AUTO_HANDOFF / NEXT_KIT_TS_CHECK / AITUBER_NOTIFY は「その他」に入力）"`
 - header: `"env 変数"`
 - options（各ラベルに現在の状態を含める）:
   1. `"[{state}] WORK_KIT_PR_ENFORCEMENT"` — description: `"UserPromptSubmit work-start 強制注入"`
@@ -87,7 +88,7 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
   4. `"完了（設定を終了）"` — description: `"ループを終了して変更結果を表示"`
 
 option 4（完了）が選ばれた場合 → Step 5（レポート）に飛びます
-「その他」（自由入力）の場合 → 入力されたテキストを対象変数として使用; 進める前に 7 つの管理対象変数のいずれかであることを検証します
+「その他」（自由入力）の場合 → 入力されたテキストを対象変数として使用; 進める前に 8 つの管理対象変数のいずれかであることを検証します
 その他の場合 → 選択されたオプションの変数名を使用します
 
 → Step 3 に進みます
