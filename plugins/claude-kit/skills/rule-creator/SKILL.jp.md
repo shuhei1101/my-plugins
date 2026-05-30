@@ -9,8 +9,7 @@ description: |
 # rule-creator — パススコープルール作成（薄ラッパー）
 
 ルールのオーサリング手順は本プラグインの references に移り、`.claude/rules/` 配下のファイルを
-編集すると `claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動と
-呼び出し元（例: `notes-to-claude`）のために残している薄いラッパー。
+編集すると `claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動のために残している薄いラッパー。
 
 ## やること
 

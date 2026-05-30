@@ -1,4 +1,0 @@
-<!-- This file is a Japanese mirror of yaml-skill-dispatch.md. When updating the English original, update this file too. -->
-YAML ファイルを編集しようとしています。dev-kit プラグインには **dev-kit:yaml** スキルがあります。index.yaml・settings.yaml・settings.yaml.sample・アセットカタログ・プロジェクト設定などの YAML ファイル管理規約をカバーしています。
-
-このファイルがそれらの規約に該当する場合は /dev-kit:yaml を呼び出してください。

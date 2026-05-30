@@ -28,7 +28,7 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ 1: 対象ファイルを特定し、対応する reference を読む
 
@@ -36,7 +36,7 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 - 必ず最初に実行
 
-#### 処理内容
+#### 処理
 
 1. 編集対象のファイル種別を特定（`*.tsx`, `route.ts`, `query.ts`, `actions.ts` 等）
 2. `references/CLAUDE.md` の「ファイル種別 → reference マッピング」を参照
@@ -83,7 +83,7 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 - ステップ 1 完了
 
-#### 処理内容
+#### 処理
 
 1. `frontend/feature-folder.md`、`frontend/route-groups.md`、`frontend/id-routing.md` で配置先を確認
 2. 命名規約は `frontend/conventions/naming.md`
@@ -108,7 +108,7 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 - ステップ 2 完了
 
-#### 処理内容
+#### 処理
 
 1. 該当 reference の必須テンプレに従って実装
 2. ルール・禁止事項を厳守

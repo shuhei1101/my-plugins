@@ -25,7 +25,7 @@ disable-model-invocation: true
 
 ## タスク
 
-### Step 1: マージするブランチを特定
+### ステップ 1: マージするブランチを特定
 
 #### 条件
 
@@ -50,7 +50,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
      リテラル `PR{N}/{type}/{title}` と `{repo}-wt-PR{N}` を使用
    - 不明な場合は `git worktree list` と `git branch --list` とクロスチェック
 
-→ Step 2 に進む
+→ ステップ 2 へ
 
 #### 出力
 
@@ -58,7 +58,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 2: タスクチェックリストを検証
+### ステップ 2: タスクチェックリストを検証
 
 #### 条件
 
@@ -80,7 +80,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 3: master との互換性を確認
+### ステップ 3: master との互換性を確認
 
 #### 条件
 
@@ -144,7 +144,7 @@ git merge master
    - **引き分け**: 判断が均等にバランスしている場合は、安全な側を選択 — master を組み込む
      （`git merge master`）その後、ブランチの意図を上に再度適用
 
-→ Step 4 に進む
+→ ステップ 4 へ
 
 #### 注記
 
@@ -155,7 +155,7 @@ git merge master
 3. ブランチ目的 — ブランチがこの変更を修正する場合、ブランチを優先
 4. 安全デフォルト — master を組み込み、その後ブランチに適応
 
-### Step 4: 関連イシューをクローズ（ワークツリー内）
+### ステップ 4: 関連イシューをクローズ（ワークツリー内）
 
 #### 条件
 
@@ -190,7 +190,7 @@ git -C {WORKTREE_PATH} add .work/issues/
 git -C {WORKTREE_PATH} commit -m "chore: close related issues for #{N}"
 ```
 
-→ Step 5 に進む
+→ ステップ 5 へ
 
 #### 注記
 
@@ -206,7 +206,7 @@ git -C {WORKTREE_PATH} commit -m "chore: close related issues for #{N}"
 
 ---
 
-### Step 5: ブランチを index.yaml で完了とマーク
+### ステップ 5: ブランチを index.yaml で完了とマーク
 
 #### 条件
 
@@ -222,7 +222,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
   .work/tasks/index.yaml --id {N}
 ```
 
-→ Step 6 に進む
+→ ステップ 6 へ
 
 #### 注記
 
@@ -232,7 +232,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
 
 ---
 
-### Step 6: 完了したインデックスエントリをアーカイブ
+### ステップ 6: 完了したインデックスエントリをアーカイブ
 
 #### 条件
 
@@ -259,7 +259,7 @@ git -C {WORKTREE_PATH} add .work/tasks/index.archive.yaml
 git -C {WORKTREE_PATH} commit -m "chore: archive #{N} to index.archive.yaml"
 ```
 
-→ Step 7 に進む
+→ ステップ 7 へ
 
 #### 注記
 
@@ -271,7 +271,7 @@ git -C {WORKTREE_PATH} commit -m "chore: archive #{N} to index.archive.yaml"
 
 ---
 
-### Step 7: マージを実行
+### ステップ 7: マージを実行
 
 #### 条件
 
@@ -305,11 +305,11 @@ git merge --no-ff -m "{type}: {title} #{N}" {BRANCH_NAME}
    ここで `{BRANCH_NAME}` は実際のブランチ名です（新形式：`{type}/{title}`、
    レガシー：`PR{N}/{type}/{title}`）。
 
-→ Step 8 に進む
+→ ステップ 8 へ
 
 ---
 
-### Step 8: ワークツリーとブランチを削除
+### ステップ 8: ワークツリーとブランチを削除
 
 #### 処理
 
@@ -320,7 +320,7 @@ git worktree remove {WORKTREE_PATH}
 git branch -d {BRANCH_NAME}
 ```
 
-→ Step 9 に進む
+→ ステップ 9 へ
 
 #### 注記
 
@@ -330,7 +330,7 @@ git branch -d {BRANCH_NAME}
 
 ---
 
-### Step 9: 残存 QA エントリを確認
+### ステップ 9: 残存 QA エントリを確認
 
 #### 処理
 
@@ -344,22 +344,22 @@ git add .work/
 git commit -m "docs: post-merge update for #{N}"
 ```
 
-→ Step 10 に進む
+→ ステップ 10 へ
 
 ---
 
-### Step 10: マージ完了を報告
+### ステップ 10: マージ完了を報告
 
 #### 処理
 
 1. ユーザーにマージが完了したことを報告
    - マージされたブランチ名、内部 ID、タスクフォルダを含める
 
-→ Step 11 に進む
+→ ステップ 11 へ
 
 ---
 
-### Step 11: 次ブランチ候補を pr-handoff に委譲
+### ステップ 11: 次ブランチ候補を pr-handoff に委譲
 
 #### 条件
 
@@ -373,11 +373,11 @@ git commit -m "docs: post-merge update for #{N}"
    （ユーザー確認は不要）。すべての分類と予約ロジックをそのスキルに委譲
 3. **次ブランチ候補が空の場合**: pr-handoff をスキップ
 
-→ Step 12 に進む
+→ ステップ 12 へ
 
 ---
 
-### Step 12: 次ブランチ候補を 3 カテゴリで提示
+### ステップ 12: 次ブランチ候補を 3 カテゴリで提示
 
 #### 処理
 

@@ -38,7 +38,7 @@ dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: 現在のブランチを確認する
 
@@ -46,7 +46,7 @@ dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱
 
 - 常に — 最初に実行
 
-#### 処理内容
+#### 処理
 
 1. `git rev-parse --abbrev-ref HEAD` で現在のブランチを取得する
 2. **master / main の場合** → 「master / main では実行できません。作業用ブランチを切ってから再実行してください」と伝えて終了する
@@ -62,7 +62,7 @@ dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱
 
 - プロジェクトに `uidev.css` が存在する（html-debug-fab 導入済みと判定）
 
-#### 処理内容
+#### 処理
 
 1. `find . -name 'uidev.css' -not -path '*/node_modules/*' -not -path '*/.git/*'` で検索
 2. 見つからなければ未導入としてステップ3 へスキップ
@@ -81,7 +81,7 @@ dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱
 
 - `settings.json` の env で `DEV_KIT_PYTHON` が truthy
 
-#### 処理内容
+#### 処理
 
 1. プロジェクト内の Python ファイルを列挙する
    ```bash
@@ -107,7 +107,7 @@ injection hook が `Read` 時に自動注入した Python リファレンス群�
 
 - `settings.json` の env で `DEV_KIT_HTML` が truthy
 
-#### 処理内容
+#### 処理
 
 1. HTML / CSS / JS ファイルを列挙する
    ```bash
@@ -127,7 +127,7 @@ injection hook が `Read` 時に自動注入した Python リファレンス群�
 
 - `settings.json` の env で `DEV_KIT_NEXT` が truthy
 
-#### 処理内容
+#### 処理
 
 1. TS / TSX ファイルを列挙する
    ```bash
@@ -143,7 +143,7 @@ injection hook が `Read` 時に自動注入した Python リファレンス群�
 
 ### ステップ6: 完了報告
 
-#### 処理内容
+#### 処理
 
 1. 再コピーした静的テンプレファイル一覧を表示
 2. 規約検査で修正したファイルと修正内容の一覧を表示
