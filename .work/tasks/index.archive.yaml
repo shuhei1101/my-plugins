@@ -1005,3 +1005,10 @@ branches:
   summary: claude-kit に config スキルを追加（INJECTION_LANG / JP_MIRROR / TTL が対象候補）
   task: 260531_claude-kitへのconfigスキル追加
   completed: true
+- id: 235
+  title: feat/branch-author-env
+  type: feat
+  tags: []
+  summary: ブランチ名に作者名を含める環境変数 WORK_BRANCH_AUTHOR を追加
+  task: 260531_branch-author-env
+  completed: true
