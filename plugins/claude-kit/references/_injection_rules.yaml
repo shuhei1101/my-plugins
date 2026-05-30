@@ -19,6 +19,7 @@ rules:
       - subagents.md
       - environment.md
       - plugin-config.md
+      - askuserquestion.md
 
   # ---- References: プラグインのリファレンスファイルを編集する場合 ----
   - pattern: "plugins/*/references/**/*.md"

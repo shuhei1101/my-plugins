@@ -936,3 +936,11 @@ branches:
   summary: 他のマークダウンファイルで env var を直接読もうとする誤った指示がないか全量調査し修正する
   task: 260531_claude-kit-markdown-env-var-audit
   completed: true
+- id: 211
+  title: PR211 — document-askuserquestion-limits
+  type: feat
+  tags: []
+  summary: AskUserQuestion の制約（options 2〜4個、Other自動付与、multiSelect、preview）を claude-kit
+    リファレンスに汎用ドキュメントとして追加
+  task: 260530_document-askuserquestion-limits
+  completed: true
