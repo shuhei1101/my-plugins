@@ -15,7 +15,7 @@ Runs the full merge flow: TODO checklist verification → master compatibility c
 > `{repo}-wt-{type}-{title}`. Legacy branches still on `PR{N}/{type}/{title}` with worktrees at
 > `{repo}-wt-PR{N}` are handled with their literal recorded names — read the actual branch / worktree
 > path from `index.yaml` and `git worktree list` rather than reconstructing from `{N}`.
-> `{N}` below refers to the internal numeric ID tracked in `index.yaml` (used in commit cross-references).
+> `{N}` below refers to the internal numeric ID tracked in `index.yaml` 
 
 ---
 
@@ -146,7 +146,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
 
 ```bash
 git -C {WORKTREE_PATH} add .work/issues/
-git -C {WORKTREE_PATH} commit -m "chore: close related issues for #{N}"
+git -C {WORKTREE_PATH} commit -m "chore: close related issues"
 ```
 
 → Proceed to Step 5
@@ -209,7 +209,7 @@ The command prints the number of entries moved. If it prints `0`, skip the rest 
 
 ```bash
 git -C {WORKTREE_PATH} add .work/tasks/index.archive.yaml
-git -C {WORKTREE_PATH} commit -m "chore: archive #{N} to index.archive.yaml"
+git -C {WORKTREE_PATH} commit -m "chore: archive to index.archive.yaml"
 ```
 
 → Proceed to Step 7
@@ -245,7 +245,7 @@ git -C {WORKTREE_PATH} commit -m "chore: archive #{N} to index.archive.yaml"
 2. Merge with `--no-ff`:
 
 ```bash
-git merge --no-ff -m "{type}: {title} #{N}" {BRANCH_NAME}
+git merge --no-ff -m "{type}: {title}" {BRANCH_NAME}
 ```
 
    Where `{BRANCH_NAME}` is the actual branch name (new format: `{type}/{title}`; legacy: `PR{N}/{type}/{title}`).
@@ -284,7 +284,7 @@ git branch -d {BRANCH_NAME}
 
 ```bash
 git add .work/
-git commit -m "docs: post-merge update for #{N}"
+git commit -m "docs: post-merge update"
 ```
 
 → Proceed to Step 10

@@ -36,7 +36,13 @@ rules:
     required:
       - kit-hooks-sync.md
     optional: []
-  - pattern: "plugins/*-kit/references/{_index,_injection_rules,CLAUDE}{.jp,}.{yaml,md}"
+
+  # ---- Jinja2 テンプレート（任意プラグインの hooks/templates/*.j2）：Markdown 出力時の落とし穴 ----
+  - pattern: "**/hooks/templates/*.j2"
+    required:
+      - jinja2/templates.md
+    optional: []
+  - pattern: "plugins/*-kit/references/.ref-injects/{_index,_injection_rules,CLAUDE}{.jp,}.{yaml,md}"
     required:
       - kit-hooks-sync.md
     optional: []

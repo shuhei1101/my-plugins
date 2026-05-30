@@ -6,6 +6,7 @@ updates:
   - 2026-05-29 — PR163: worktree-kit を統合（work-add / vscode-workspace-sync を取り込み）
   - 2026-05-30 — PR172: プラグインを work-kit → workspace にリネーム、env var も WORK_KIT_* → WORKSPACE_* に変更
   - 2026-05-31 — #219: merge スキル Step 3 を master 取り込み必須フローに変更
+  - 2026-05-31 — #226: タスクドキュメントのファイル名に日付プレフィックスを追加、作業内容テーブル構造を改訂
 related_prs:
   - PR91
   - PR109
@@ -83,3 +84,23 @@ work-start Step 4 がこの env var を読んで分岐する（従来の「workt
 2. 新しいコミットがある → 必ず `git merge master` を実行
 3. コンフリクトなし → Step 4 へ進む
 4. コンフリクトあり → ユーザーに報告して停止（手動解消を待つ）
+
+## タスクドキュメントのファイル命名規則（#226）
+
+### 変更前
+
+- ファイル名: `{type}-{title}.md`（例: `chore-work-template-update.md`）
+- `## 作業内容` テーブル: `| 完了 | 作業内容 | 対象ファイル |`
+
+### 変更後
+
+- ファイル名: `{YYMMDD}-{type}-{title}.md`（例: `260531-chore-work-template-update.md`）
+  - 日付は `--date` 引数、またはタスクフォルダ名（`YYMMDD_xxx`）から自動抽出
+- `## 作業内容` テーブル: `| # | 完了 | 作業内容 |`（`対象ファイル` 列を廃止、`#` 番号列を追加）
+- 全テーブルに `#` 番号列（最左列）を標準装備
+
+### 変更ファイル
+
+- `plugins/work/templates/.work/tasks/yymmdd_xxx/type-title.md` → `yymmdd-branch-name.md` にリネーム
+- `plugins/work/scripts/setup-task.py`: ファイル名生成ロジックと参照テンプレートパスを更新
+- `plugins/work/skills/start/SKILL.md` / `SKILL.jp.md`: 命名規則説明とテーブル仕様を更新

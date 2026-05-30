@@ -18,3 +18,6 @@ references:
 
   - path: work-dot-work-dir.md
     description: Guide for editing files under .work/ — directory structure, branch document sections, notes lifecycle, and commit conventions (keep .work/ changes in a separate commit from implementation code).
+
+  - path: notes-naming-rules.md
+    description: Naming and index rules for .work/notes/ files. File names and H1 titles must be in Japanese (technical identifiers stay as-is). Always update _index.md in the same commit when creating, renaming, or deleting a note.
