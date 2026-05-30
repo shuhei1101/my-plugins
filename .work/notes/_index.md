@@ -17,6 +17,7 @@
 | [PreCompactフック.md](PreCompactフック.md) | PreCompact フック — conversation-to-claude 自動実行 |
 | [フックインラインPython切り出し.md](フックインラインPython切り出し.md) | フックインライン Python 切り出し — hooks.json スクリプト分離 |
 | [TypeScript型チェックフック.md](TypeScript型チェックフック.md) | TypeScript 型チェックフック (PR143) |
+| [Jinja2テンプレート記法メモ.md](Jinja2テンプレート記法メモ.md) | Jinja2 テンプレート記法メモ — .j2 ファイル記述時の既知の罠と対処法 |
 
 ---
 
