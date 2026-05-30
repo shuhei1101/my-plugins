@@ -33,3 +33,6 @@ references:
 
   - path: incidents.md
     description: Format guide for .claude/rules/incidents.md. Two-layer index + detail-file structure for recurrence-prevention logs, and how incidents get recorded.
+
+  - path: plugin-config.md
+    description: How to add a config skill to a plugin. The AskUserQuestion loop pattern, managed-toggle convention (absent = ON, "false" = OFF), scope selection, and a minimal SKILL.md template.

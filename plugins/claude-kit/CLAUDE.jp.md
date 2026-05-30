@@ -4,7 +4,8 @@
 ## オーサリング知識は `references/` にあり、自動注入される
 
 各指示ファイル種別のオーサリングガイドは `references/`（`common.md`, `skills.md`,
-`rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`）にある。
+`rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`, `glossary.md` /
+`incidents.md` / `plugin-config.md`）にある。
 `claude-kit-references-injection` フック（`hooks/scripts/inject_references.py`）が、対応するファイル
 （`SKILL.md` / ルール / `CLAUDE.md` / `hooks.json` / `plugin.json` …）を編集したとき、該当ガイドを
 **本文全量**で注入する。パス → reference の対応は `references/_injection_rules.yaml` 参照。

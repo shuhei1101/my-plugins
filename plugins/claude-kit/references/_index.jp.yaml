@@ -31,3 +31,6 @@ references:
 
   - path: incidents.md
     description: .claude/rules/incidents.md のフォーマットガイド。再発防止ログの 2 層（索引 + 詳細ファイル）構造、インシデントの記録方法。
+
+  - path: plugin-config.md
+    description: プラグインに config スキルを追加する方法。AskUserQuestion ループパターン、管理トグルの規約（キーなし = ON / "false" = OFF）、スコープ選択、最小 SKILL.md テンプレート。
