@@ -1,9 +1,7 @@
-> Japanese mirror: `CLAUDE.jp.md` (human reference only — not auto-loaded by Claude Code)
-> When editing: update the JP mirror first, then apply the same change here.
+# .work/ Directory Guide
 
-# .work/ — work Task Management Directory
-
-Managed by the work plugin. Claude reads and writes files here to track task and branch lifecycle state.
+Reference for editing files under `.work/` — directory structure, file roles, and commit conventions.
+Japanese mirror: `references/work-dot-work-dir.jp.md`
 
 ---
 
@@ -58,17 +56,4 @@ Content that doesn't need promotion (temporary comparisons, scratchpad investiga
 - Promote valuable notes to permanent knowledge using `/work:notes-to-claude`
 - Append unresolved questions to the branch document's `## QA` section
 - Confirm all rows in the task table are `済` before merging
-- Bundle branch document updates (`済` marks in `## 作業内容`, file entries in `## 変更内容`) into the implementation commit — never create a separate commit for document-only updates
-
----
-
-## work Skills
-
-| Skill | Purpose |
-|---|---|
-| `/work:setup` | Initialize `.work/` (run once per project) |
-| `/work:start` | Create task folder, branch document, and index.yaml entry |
-| `/work:merge` | Verify task checklist, merge, update index.yaml, and clean up worktree |
-| `/work:pr-handoff` | Reserve next branches from the `## 次ブランチ候補` section using the work:start flow, and record background context in each new branch document |
-| `/work:notes-to-claude` | Promote `notes/` content to rules, CLAUDE.md, or references |
-| `/work:plugin-update` | Bring the current project's plugin-generated artifacts (.work/ templates and other plugin static files) in line with the currently installed plugin versions |
+- **Commit `.work/` folder changes separately from implementation code** — `.work/`-only changes (branch document updates, notes, etc.) may be bundled together in a single commit
