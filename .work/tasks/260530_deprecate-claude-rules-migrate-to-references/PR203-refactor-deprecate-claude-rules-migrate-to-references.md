@@ -37,14 +37,14 @@ PR197 でプラグインの整合性チェックを追加する際、`.claude/ru
 |---|---|---|
 | - | `## QA` に未決定事項を記録する | - |
 | - | `.work/notes/` のノートを更新 | - |
-| x | 各ルールの移行先プラグインを決定する | - |
-| x | `core/plugin-work.md` の内容を `claude-kit/references/` に統合 | PR197 で統合済み |
-| x | `feature/` 配下の JP ミラー同期ルールを `claude-kit/references/` に統合 | claude-md.md / skills.md / hooks.md に追記、references-sync.md 新規作成 |
-| x | `feature/kit-hooks-index-sync.md` を `claude-kit/references/` に統合 | kit-hooks-sync.md 新規作成 |
-| x | `feature/debug-fab-template-sync.md` を `dev-kit/references/` に統合 | html/debug-fab-sync.md 新規作成 |
-| x | `feature/` 配下の `work-*` ルールを `work/references/` に統合 | work/references/ 新規作成、注入インフラ追加 |
-| x | `.claude/rules/` と `.claude/rules-jp/` フォルダを削除 | - |
-| x | `_injection_rules.yaml` の paths: 設定をリファレンス注入方式に変換 | claude-kit/dev-kit の injection_rules.yaml 更新 |
+| 済 | 各ルールの移行先プラグインを決定する | - |
+| 済 | `core/plugin-work.md` の内容を `claude-kit/references/` に統合 | PR197 で統合済み |
+| 済 | `feature/` 配下の JP ミラー同期ルールを `claude-kit/references/` に統合 | claude-md.md / skills.md / hooks.md に追記、references-sync.md 新規作成 |
+| 済 | `feature/kit-hooks-index-sync.md` を `claude-kit/references/` に統合 | kit-hooks-sync.md 新規作成 |
+| 済 | `feature/debug-fab-template-sync.md` を `dev-kit/references/` に統合 | html/debug-fab-sync.md 新規作成 |
+| 済 | `feature/` 配下の `work-*` ルールを `work/references/` に統合 | work/references/ 新規作成、注入インフラ追加 |
+| 済 | `.claude/rules/` と `.claude/rules-jp/` フォルダを削除 | - |
+| 済 | `_injection_rules.yaml` の paths: 設定をリファレンス注入方式に変換 | claude-kit/dev-kit の injection_rules.yaml 更新 |
 | - | CLAUDE.md を更新 | 変更不要（CLAUDE.md はルールを参照していない） |
 
 ## 変更内容

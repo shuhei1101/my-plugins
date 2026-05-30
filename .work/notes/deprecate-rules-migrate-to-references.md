@@ -45,3 +45,30 @@ PR197（plugin-work-rule-add-claude-md-check）でプラグインの整合性チ
 2. 移行先に対応する injection_rules.yaml（`_injection_rules.yaml`）でリファレンス注入を設定
 3. 元のルールファイルと `.claude/rules-jp/` の対応ファイルを削除
 4. CLAUDE.md からルール参照を削除
+
+## PR203 実施結果
+
+### 移行完了
+
+| 旧ルールファイル | 移行先 | 方法 |
+|---|---|---|
+| `core/plugin-work.md` | `claude-kit/references/plugin-structure.md` | PR197 で完了済み |
+| `feature/claude-md-jp-mirror-sync.md` | `claude-kit/references/claude-md.md` | 追記 |
+| `feature/skill-jp-mirror-sync.md` | `claude-kit/references/skills.md` | 追記 |
+| `feature/hook-prompts-jp-mirror-sync.md` | `claude-kit/references/hooks.md` | 追記 |
+| `feature/references-jp-mirror-sync.md` | `claude-kit/references/references-sync.md` | 新規ファイル |
+| `feature/kit-hooks-index-sync.md` | `claude-kit/references/kit-hooks-sync.md` | 新規ファイル |
+| `feature/debug-fab-template-sync.md` | `dev-kit/references/html/debug-fab-sync.md` | 新規ファイル |
+| `feature/work-kit-stop-prompt-sync.md` | `work/references/work-stop-prompt-sync.md` | 新規ファイル |
+| `feature/work-merge-skill-spec-sync.md` | `work/references/work-merge-skill-sync.md` | 新規ファイル |
+| `feature/work-start-worktree-link.md` | `work/references/work-start-skill-sync.md` | 新規ファイル |
+| `feature/work-todo-template-sync.md` | `work/references/work-todo-template-sync.md` | 新規ファイル |
+| `feature/incidents-glossary-jp-mirror-sync.md` | （削除のみ） | 参照先ファイルが存在しないため移行不要 |
+
+### work プラグインへの注入インフラ追加
+
+`work/references/` 新設に伴い、以下を追加:
+- `hooks/scripts/inject_references.py`（claude-kit から fork、WORK prefix で置換）
+- `hooks/scripts/_common.py`（ENV_PREFIX: WORKSPACE → WORK に更新）
+- `hooks/templates/injection.md.j2` / `injection.jp.md.j2`
+- `hooks/hooks.json` に Edit/Write/MultiEdit/Read フックを追加
