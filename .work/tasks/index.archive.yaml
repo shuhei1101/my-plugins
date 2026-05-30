@@ -619,3 +619,10 @@ prs:
   summary: プラグイン env トグルを AskUserQuestion 経由で settings.json に書き込む設定スキルを追加する
   task: 20260530_add-plugin-config-skill
   completed: true
+- id: 170
+  title: PR170 — remove-version-sync
+  type: chore
+  tags: []
+  summary: mark-generated 削除後に不要になった version-sync スキルを削除
+  task: 20260530_remove-version-sync
+  completed: true
