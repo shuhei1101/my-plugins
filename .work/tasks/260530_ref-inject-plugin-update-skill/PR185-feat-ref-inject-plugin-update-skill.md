@@ -11,13 +11,14 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 ### 何をするか
 
 - `plugins/ref-inject/skills/plugin-update/SKILL.md` (+ `.jp.md`) を新規作成
-- ref-inject は `/ref-inject:apply` でターゲットプラグインに展開する templates（injection hook / 各種 references / hooks.json テンプレ等）を持つ。これらのターゲットプラグイン側コピーを最新の ref-inject バージョンに合わせて更新するロジックを提供する
-- workspace の `plugin-update` SKILL.md (`plugins/workspace/skills/plugin-update/SKILL.md`) を参考実装として参照する
+- ref-inject の「プラグイン関連成果物」の構造:
+  - **静的テンプレ**: ref-inject が `/ref-inject:apply` でターゲットプラグインに展開した injection hook スクリプト（`inject_references.py`）・`hooks.json` 更新・Jinja2 テンプレ（`injection.md.j2` / `.jp.md.j2`）・`references/` スケルトン
+  - **規約遵守ファイル**: ref-inject が直接作成するファイルは injection 機構のみなので、規約遵守ファイルの検査対象は injection hook を導入済みの各プラグインの injection 構成（injection_rules.yaml / inject_references.py のバージョン整合性）
+- **plugin-update の主要動作**:
+  1. `plugins/*/hooks/inject_references.py` を検索し、ref-inject が apply 済みのプラグインを列挙
+  2. 各プラグインの injection hook を現在の ref-inject バージョンのテンプレートと照合
+  3. 差分があれば再 apply 相当の更新を提案（ユーザー確認必須）
 - ref-inject の plugin.json と `.claude-plugin/marketplace.json` を MINOR bump、changelog 追加
-
-### 留意点
-
-ref-inject は「他プラグインに展開するためのテンプレート集」なので、`plugin-update` の責務が少し変わる。「自プロジェクト側の `.work/` を更新する」ではなく「`/ref-inject:apply` が以前展開した先のプラグインの注入関連ファイルを ref-inject の現在バージョンに揃える」という形になる可能性がある。スコープは PR 開始時に再確認する。
 
 ### 実施条件
 
@@ -27,11 +28,10 @@ ref-inject は「他プラグインに展開するためのテンプレート集
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | ref-inject のスコープ確認（apply 先プラグインへの再注入か、ref-inject 自身の静的成果物か） | - 設計検討 |
-| - | `plugins/ref-inject/skills/plugin-update/SKILL.md` (+ jp) を作成（workspace 版を参考に） | - 新規 |
+| - | `plugins/ref-inject/skills/plugin-update/SKILL.md` (+ jp) を作成 | - 新規 |
+|  | スコープ: apply 済みプラグイン列挙 → 各 inject_references.py を現バージョンテンプレと照合 → 差分あればユーザー確認後に更新 | - |
 | - | ref-inject を MINOR bump | - `plugins/ref-inject/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | changelog を追加 | - `plugins/ref-inject/changelogs/v{X.Y.Z}.md` |
-| - | glossary / CLAUDE.md を必要に応じて更新 | - 該当箇所 |
+| - | CLAUDE.md の Changelog 表に追記 | - `plugins/ref-inject/CLAUDE.md` / `.jp.md` |
 | - | コミット | - |
 
 ## 変更内容
@@ -47,20 +47,7 @@ ref-inject は「他プラグインに展開するためのテンプレート集
 
 ## QA
 
-### QA-001: ref-inject の plugin-update が更新する対象
-
-**背景**: workspace / dev-kit / claude-kit は自プロジェクトの `.work/` 等を更新する。ref-inject は他プラグインへ apply するテンプレートしか持っていない。
-
-| 案 | 内容 |
-|---|---|
-| A | apply 先のプラグインの注入ファイル（hook script + references skeleton + templates）を ref-inject 現バージョンに揃える |
-| B | ref-inject 自身が project に展開する静的ファイルはほぼ無いので、no-op スキルに近い形（参考実装の最小コピーのみ） |
-
-**推奨方式**: 着手時にユーザーと相談して確定。A 案が筋として正しいが、再 apply の挙動と区別が必要。
-
-**状態**: 未解決
-
-**決定したら反映先**: SKILL.md 本文
+特になし。（QA-001 は概要「何をするか」にて 案A で決着済み）
 
 ## 参考ドキュメント
 
