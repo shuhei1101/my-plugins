@@ -18,12 +18,12 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録する | - |
-| - | `.work/notes/` の関連ノートを確認・更新する | - |
-| - | `CLAUDE_KIT_JP_MIRROR` の動作説明を JP/EN mirror rules セクションに追記する | - `references/common.md`<br>- `references/common.jp.md` |
-| - | 環境変数テーブルに `CLAUDE_KIT_JP_MIRROR` を追加する | - `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md` |
-| - | バージョンをバンプする | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | ルール・CLAUDE.md を更新する | - |
+| 済 | QA を `## QA` に記録する | - |
+| 済 | `.work/notes/` の関連ノートを確認・更新する | - |
+| 済 | `CLAUDE_KIT_JP_MIRROR` の動作説明を JP/EN mirror rules セクションに追記する | - `references/common.md`<br>- `references/common.jp.md` |
+| 済 | 環境変数テーブルに `CLAUDE_KIT_JP_MIRROR` を追加する | - `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md` |
+| 済 | バージョンをバンプする | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | ルール・CLAUDE.md を更新する | - |
 
 ## 変更内容
 
