@@ -14,7 +14,7 @@ description: |
 ファイルを自分で書き**、プレースホルダを置換するので構造がコンテキストに残る。
 
 付与される仕組み: `PreToolUse(Edit | Write | MultiEdit | Read)` フックが編集対象パスを
-`references/injection_rules.yaml` と照合し、マッチした reference を注入する —
+`references/_injection_rules.yaml` と照合し、マッチした reference を注入する —
 `required` → **本文全量**、`optional` → **パス + description のみ** — 二層 TTL
 トークン（パターン単位 + リファレンス単位）で重複抑制する。本セッションに既に注入済みの
 リファレンスはパスのみ表示し、TTL 経過後に再注入する。
@@ -81,8 +81,8 @@ description: |
 | `hooks/inject_references.py` | `hooks/inject_references.py` |
 | `hooks/hooks.json` | `hooks/hooks.json` |
 | `hooks/templates/injection.md.j2` / `injection.jp.md.j2` | `hooks/templates/…`（同名） |
-| `references/index.yaml` / `index.jp.yaml` | `references/…`（同名） |
-| `references/injection_rules.yaml` | `references/injection_rules.yaml` |
+| `references/_index.yaml` / `_index.jp.yaml` | `references/…`（同名） |
+| `references/_injection_rules.yaml` | `references/_injection_rules.yaml` |
 | `references/CLAUDE.md` / `CLAUDE.jp.md` | `references/…`（同名） |
 | `references/example/getting-started.md` | `references/example/getting-started.md` |
 
@@ -90,7 +90,7 @@ description: |
 - パスはテンプレートをそのまま反映 — 移動なし。
 - `hooks.json` 内の `${CLAUDE_PLUGIN_ROOT}` はそのまま残す（Claude Code が実行時に展開）。
 - **対象に既に `hooks/hooks.json` がある場合**（他のフックがある）: 上書きせず、`PreToolUse`（Edit/Write/MultiEdit/Read）エントリを既存ファイルにマージする。
-- **対象に既に注入ファイルがある場合**（再適用 / 仕組み更新）: `hooks/*` は上書きするが、既存の `references/` の中身（index.yaml / injection_rules.yaml / 実 doc）はそのまま残し、欠けている雛形だけ補う。
+- **対象に既に注入ファイルがある場合**（再適用 / 仕組み更新）: `hooks/*` は上書きするが、既存の `references/` の中身（_index.yaml / _injection_rules.yaml / 実 doc）はそのまま残し、欠けている雛形だけ補う。
 - 書き込み後、対象プラグインの `hooks/` を grep して `__PLACEHOLDER__` が残っていないか確認する。
 
 → ステップ3へ
@@ -112,8 +112,8 @@ description: |
 1. 対象プラグインに書き込んだファイルを報告する。
 2. 残りの手順（すべてプラグイン所有、このスキルの責務外）をユーザーに伝える:
    - `references/` を実際の doc で埋める（1 リファレンス = 1 ユースケース）。`references/example/` を置き換える
-   - 各 doc の path + description を `references/index.yaml`（+ `index.jp.yaml`）に記入
-   - `references/injection_rules.yaml` で編集パスパターンを紐付け
+   - 各 doc の path + description を `references/_index.yaml`（+ `_index.jp.yaml`）に記入
+   - `references/_injection_rules.yaml` で編集パスパターンを紐付け
    - 必要なら `settings.json` の `env` に `{ENV_PREFIX}_INJECTION_TTL` を設定
    - 新規プラグインなら `plugin.json` / `marketplace.json` を（`plugin-creator` で）用意し、プラグインの `CLAUDE.md` に注入フックの存在を記載
 3. 仕組みをプラグインごとに手編集しない — `ref-inject` テンプレートを変えて再適用する。

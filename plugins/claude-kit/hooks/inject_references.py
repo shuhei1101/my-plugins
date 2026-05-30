@@ -2,7 +2,7 @@
 """claude-kit references auto-injection hook.
 
 PreToolUse(Edit | Write | MultiEdit | Read) で発火し、対象ファイルパスを
-references/injection_rules.yaml の rules と照合する。マッチしたパターンの
+references/_injection_rules.yaml の rules と照合する。マッチしたパターンの
 required reference は **本文全量** を、optional reference は **パス + description のみ** を
 Jinja2 で整形して `decision: block` の reason に注入する。
 
@@ -23,8 +23,8 @@ TTL はデフォルト 3600 秒、環境変数 CLAUDE_KIT_INJECTION_TTL (秒) �
 エントリ (now >= expires_at) を削除する (空になったファイルは削除)。期限切れ後に再びマッチ
 すれば再注入される。
 
-description は references/index.yaml (英語) から path -> description として取得する。
-環境変数 CLAUDE_KIT_INJECTION_LANG=jp で index.jp.yaml + injection.jp.md.j2 に切替。
+description は references/_index.yaml (英語) から path -> description として取得する。
+環境変数 CLAUDE_KIT_INJECTION_LANG=jp で _index.jp.yaml + injection.jp.md.j2 に切替。
 
 依存:
     - PyYAML  (uv/pip install pyyaml)
@@ -211,27 +211,27 @@ def main() -> int:
 
     # 言語選択: 環境変数 CLAUDE_KIT_INJECTION_LANG=jp で日本語版
     lang = os.environ.get(f"{ENV_PREFIX}_INJECTION_LANG", "en").lower()
-    index_filename = "index.jp.yaml" if lang == "jp" else "index.yaml"
+    index_filename = "_index.jp.yaml" if lang == "jp" else "_index.yaml"
     template_filename = "injection.jp.md.j2" if lang == "jp" else "injection.md.j2"
 
-    rules_yaml = refs_dir / "injection_rules.yaml"
+    rules_yaml = refs_dir / "_injection_rules.yaml"
     index_yaml = refs_dir / index_filename
     if not rules_yaml.exists():
-        _eprint(f"injection_rules.yaml not found at {rules_yaml}")
+        _eprint(f"_injection_rules.yaml not found at {rules_yaml}")
         return 0
     if not index_yaml.exists():
         _eprint(f"{index_filename} not found at {index_yaml}")
         return 0
 
-    # ----- injection_rules.yaml をロード -----
+    # ----- _injection_rules.yaml をロード -----
     try:
         rules_doc = yaml.safe_load(rules_yaml.read_text(encoding="utf-8")) or {}
     except Exception as e:
-        _eprint(f"injection_rules.yaml parse error: {e}")
+        _eprint(f"_injection_rules.yaml parse error: {e}")
         return 0
     rules = rules_doc.get("rules") or []
 
-    # ----- index.yaml から path -> description -----
+    # ----- _index.yaml から path -> description -----
     descriptions: dict[str, str] = {}
     try:
         idx_doc = yaml.safe_load(index_yaml.read_text(encoding="utf-8")) or {}

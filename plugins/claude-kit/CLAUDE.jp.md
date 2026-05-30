@@ -7,7 +7,7 @@
 `rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`、加えて `glossary.md` / `incidents.md`）に
 ある。`claude-kit-references-injection` フック（`hooks/inject_references.py`）が、対応するファイル
 （`SKILL.md` / ルール / `CLAUDE.md` / `hooks.json` / `plugin.json` …）を編集したとき、該当ガイドを
-**本文全量**で注入する。パス → reference の対応は `references/injection_rules.yaml` 参照。
+**本文全量**で注入する。パス → reference の対応は `references/_injection_rules.yaml` 参照。
 
 - creator スキル（`skill-creator` / `rule-creator` / `hook-creator` / `claude-creator` /
   `plugin-creator`）は references に委譲する**薄いラッパー**。対象ファイルを直接編集すれば

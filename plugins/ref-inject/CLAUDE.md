@@ -2,7 +2,7 @@
 
 `ref-inject` **attaches the reference auto-injection mechanism to a plugin** (the `*-kit`
 style used by `py-kit` / `next-kit`): a `PreToolUse` hook that matches the edited file path
-against `injection_rules.yaml` and injects the relevant references. The target plugin can be
+against `_injection_rules.yaml` and injects the relevant references. The target plugin can be
 new or existing — `/ref-inject:apply` only contributes the **injection part**.
 
 It does **not** centralize a shared runtime (that approach was rejected — see
@@ -37,8 +37,8 @@ ref-inject/
     │   ├── hooks.json
     │   └── templates/injection.md.j2 (+ .jp.md.j2)
     └── references/
-        ├── index.yaml (+ index.jp.yaml)
-        ├── injection_rules.yaml
+        ├── _index.yaml (+ _index.jp.yaml)
+        ├── _injection_rules.yaml
         ├── CLAUDE.md (+ CLAUDE.jp.md)
         └── example/getting-started.md
 ```
@@ -89,7 +89,7 @@ bodies are back because the TTL token throttles re-injection.
 ## Usage
 
 `/ref-inject:apply` against a target plugin (new or existing). Then fill `references/` with
-real docs and bind them in `injection_rules.yaml`.
+real docs and bind them in `_injection_rules.yaml`.
 
 To change the **mechanism** for all consumers, edit `templates/` here, then re-apply the
 changed templates to each consumer's `hooks/` (the references stay as-is — only the

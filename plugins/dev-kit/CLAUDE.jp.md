@@ -58,10 +58,10 @@ references/
 ├── html/        # HTML/CSS/JS 原則（principles.md, ui-design.md）
 ├── next/        # Next.js 規約（90ファイル: backend/, frontend/, testing/ など）
 ├── yaml.md      # YAML 規約
-├── index.yaml   # 各リファレンスの path + lang + description
-├── injection_rules.yaml   # 各ルールの pattern + lang + required/optional
+├── _index.yaml   # 各リファレンスの path + lang + description
+├── _injection_rules.yaml   # 各ルールの pattern + lang + required/optional
 └── ...
 ```
 
-`injection_rules.yaml` の各ルールは `lang: python|html|next` を持つ。env で OFF の lang のルールは
+`_injection_rules.yaml` の各ルールは `lang: python|html|next` を持つ。env で OFF の lang のルールは
 フックがスキップする。`~/.claude/tokens/dev-kit/{session_id}.yaml` の TTL トークンで二重注入を防ぐ。

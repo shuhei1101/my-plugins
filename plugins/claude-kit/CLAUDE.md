@@ -6,7 +6,7 @@ The authoring guides for each instruction-file type live in `references/` (`comm
 `skills.md`, `rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`, plus `glossary.md` /
 `incidents.md`). The `claude-kit-references-injection` hook (`hooks/inject_references.py`) injects the
 matching guide **in full body** when you edit the corresponding file (a `SKILL.md`, a rule, a
-`CLAUDE.md`, a `hooks.json`, a `plugin.json`, …) — see `references/injection_rules.yaml` for the
+`CLAUDE.md`, a `hooks.json`, a `plugin.json`, …) — see `references/_injection_rules.yaml` for the
 path→reference map.
 
 - The creator skills (`skill-creator` / `rule-creator` / `hook-creator` / `claude-creator` /

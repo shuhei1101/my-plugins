@@ -251,13 +251,13 @@ Claude がこれから触るファイルに関連する規約/ドキュメント
 
 これは注入フック（`hooks/inject_references.py` + `hooks/hooks.json`）、Jinja2 テンプレート、
 `references/` スケルトンをコピーし、プラグインごとのプレースホルダを置換する。その後、
-`references/index.yaml`（path + description）を埋め、`references/injection_rules.yaml` で
+`references/_index.yaml`（path + description）を埋め、`references/_injection_rules.yaml` で
 編集パスのパターンを束ね、reference ドキュメントを書く（1 reference = 1 ユースケース）。
 代表的な採用例: `py-kit`, `next-kit`, `claude-kit`。
 
 ### 注入設計（生成されるフックの動作）
 
-1. Edit/Write/MultiEdit/Read で、対象パスを `injection_rules.yaml` の glob パターンと照合する。
+1. Edit/Write/MultiEdit/Read で、対象パスを `_injection_rules.yaml` の glob パターンと照合する。
 2. マッチした各 `required` reference を**本文全量**、各 `optional` を **path + description のみ**で注入する。
 3. `~/.claude/tokens/{plugin}/{session_id}.yaml` の**パターン単位 TTL トークン**で重複排除する —
    マッチしたパターンをキーとする YAML マップで、各エントリが `expires_at`（= 注入時刻 + TTL）を持つ。

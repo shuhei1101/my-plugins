@@ -2,7 +2,7 @@
 # inject_references.py は __ENV_PREFIX___INJECTION_LANG=jp のときこちらを読む。
 #   path        : この references/ からの相対パス
 #   description : 注入ポインタ（およびセクション見出し）に表示される説明
-# index.yaml（英語）と injection_rules.yaml と同期させること。
+# _index.yaml（英語）と _injection_rules.yaml と同期させること。
 references:
   - path: example/getting-started.md
     description: サンプルリファレンス。実際の規約に置き換えてください。
