@@ -21,8 +21,8 @@ GitHubのPR概念に縛られた命名（`PR{N}/type/title` 形式のブラン�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を確認・記録する | - |
-| - | `.work/notes/` の作業メモを更新 | - |
+| 済 | QA を確認・記録する | - |
+| 済 | `.work/notes/` の作業メモを更新 | - |
 | - | work-start SKILL.md の Step 1 を「ブランチ名決定」に変更（`next-id` 廃止） | - `plugins/workspace/skills/work-start/SKILL.md` |
 | - | work-start SKILL.md のブランチ名形式を `type/title` に変更（PR番号除去） | - 同上 |
 | - | work-start SKILL.md 全体の「PR」用語を「ブランチ」に統一 | - 同上 |
