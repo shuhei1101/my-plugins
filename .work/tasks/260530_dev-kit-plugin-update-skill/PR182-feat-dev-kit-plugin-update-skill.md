@@ -23,12 +23,12 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| ✓ | dev-kit が展開する静的成果物を洗い出す | - dev-kit のソース全体 |
-| ✓ | `plugins/dev-kit/skills/plugin-update/SKILL.md` (+ jp) を作成（workspace 版を参考に） | - 新規 |
-| ✓ | dev-kit を MINOR bump (4.0.0 → 4.1.0) | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| ✓ | changelog を CLAUDE.md の `## Changelog` 表に追記 (PR171 で `changelogs/` 廃止のため) | - `plugins/dev-kit/CLAUDE.md`<br>- `plugins/dev-kit/CLAUDE.jp.md` |
-| ✓ | Skills 表に `plugin-update` 行を追加 | - `plugins/dev-kit/CLAUDE.md`<br>- `plugins/dev-kit/CLAUDE.jp.md` |
-| - | コミット | - |
+| 済 | dev-kit が展開する静的成果物を洗い出す | - dev-kit のソース全体 |
+| 済 | `plugins/dev-kit/skills/plugin-update/SKILL.md` (+ jp) を作成（workspace 版を参考に） | - 新規 |
+| 済 | dev-kit を MINOR bump (4.0.0 → 4.1.0) | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | changelog を CLAUDE.md の `## Changelog` 表に追記 (PR171 で `changelogs/` 廃止のため) | - `plugins/dev-kit/CLAUDE.md`<br>- `plugins/dev-kit/CLAUDE.jp.md` |
+| 済 | Skills 表に `plugin-update` 行を追加 | - `plugins/dev-kit/CLAUDE.md`<br>- `plugins/dev-kit/CLAUDE.jp.md` |
+| 済 | コミット | - 70069d9 |
 
 ## 変更内容
 
