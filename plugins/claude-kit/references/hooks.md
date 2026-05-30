@@ -289,3 +289,19 @@ To make a hook configurable, read environment variables set in `settings.json`'s
 `os.environ` (e.g. the `*-kit` injection hooks read `{PREFIX}_INJECTION_TTL` / `{PREFIX}_INJECTION_LANG`).
 Full guide — set/read, scopes, defaults, conventions — in **`environment.md`** (injected alongside this
 guide when you edit `hooks.json` / `settings.json`).
+
+---
+
+## JP Mirror Sync (Hook Prompts)
+
+When editing `plugins/**/hooks/prompts/*.md`, **update the paired `*.jp.md` in the same commit**.
+
+| Edited file | Must also update |
+|---|---|
+| `plugins/{name}/hooks/prompts/{prompt}.md` | `plugins/{name}/hooks/prompts/{prompt}.jp.md` |
+
+### Checklist before committing
+
+- [ ] Changes in `*.md` are reflected in `*.jp.md` in Japanese
+- [ ] Section structure in `*.jp.md` matches the English `*.md`
+- [ ] `*.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror... -->`)

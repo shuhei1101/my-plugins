@@ -134,13 +134,19 @@ grep -rn "CLAUDE_PLUGIN_ROOT.*\.\." plugins/<name>/hooks/
 
 - **作成**: 上記のディレクトリ構成を生成する。agents/hooks/MCP ディレクトリは要求された場合のみ追加する。
   `CLAUDE.md` と `CLAUDE.jp.md` は `plugin-claude-md.md` に従って作成する — 全プラグインで必須。
-- **更新**: 変更したファイルだけを編集する。無関係なファイルには触れない。
+- **更新**: 変更したファイルだけを編集する。無関係なファイルには触れない。追加・変更したスキル・
+  フック・環境変数を `plugins/<name>/CLAUDE.md` に反映することも忘れずに。
 
-### ステップ 4 — plugin.json + marketplace.json + changelog（バージョンを一致させる）
+### ステップ 4 — plugin.json + marketplace.json + CLAUDE.md（バージョンと内容を一致させる）
 
-下記のフィールド/形式/バージョンのセクションを参照。**`plugin.json` のバージョン、
-`.claude-plugin/marketplace.json` のエントリ、`CLAUDE.md` の `## Changelog` テーブルは
-常に一致していなければならない。** この 3 つを決して乖離させないこと。
+下記のフィールド/形式/バージョンのセクションを参照。コミット前に以下の 3 つがすべて更新されていることを確認する:
+
+- [ ] `plugins/<name>/CLAUDE.md` — 追加・変更したスキル・フック・環境変数・動作を反映し `## Changelog` をバンプ
+- [ ] `plugins/<name>/.claude-plugin/plugin.json` — `version` をバンプ
+- [ ] `.claude-plugin/marketplace.json` — 対応するプラグインの `version` をバンプ
+
+**`plugin.json` のバージョン、`.claude-plugin/marketplace.json` のエントリ、`CLAUDE.md` の
+`## Changelog` テーブルは常に一致していなければならない。** この 3 つを決して乖離させないこと。
 
 > 2 つの並行 PR が同じプラグインをバンプし、一方が先にマージされたら、マージ前にもう一方を
 > ブランチ上で次のバージョンに再バンプすること（incident `parallel-pr-version-bump-collision`）。

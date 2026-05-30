@@ -170,40 +170,11 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 3. 画面固有コンポジットは `p-{画面名}` 層(`p-userList`、`p-loginForm`)
 4. JS の DOM セレクタは CSS のクラス名と一致(FLOCSS プレフィックス維持)
 
-→ ステップ7へ
-
-#### 出力
-
-- 実装が共通化ルールに従って配置されている
-
----
-
-### ステップ7: ルールを導入してファイル間を紐付ける(必須)
-
-#### 処理内容
-
-この画面で生成した JS/CSS/HTML が散らからないよう、英語版と日本語版の両ミラーをコピー
-(コピー先が既に存在するペアはスキップ):
-
-| コピー元(プラグイン) | コピー先(プロジェクト) |
-|---|---|
-| `{plugin_root}/templates/html/rules/css-js-link.md`              | `.claude/rules/css-js-link.md` |
-| `{plugin_root}/templates/html/rules/css-js-link.jp.md`           | `.claude/rules-jp/css-js-link.md`(`.jp` サフィックスは落とす) |
-| `{plugin_root}/templates/html/rules/common-component-first.md`   | `.claude/rules/common-component-first.md` |
-| `{plugin_root}/templates/html/rules/common-component-first.jp.md`| `.claude/rules-jp/common-component-first.md` |
-
-`.claude/rules/*.md` は Claude が対象ファイルを読むときに自動ロード、
-`.claude/rules-jp/*.md` は人間用ミラー(Claude は読まない)。
-
-プロジェクト固有の追加ルール(例: 特定の設定ファイル ↔ 特定の画面の紐付け)が必要なら、
-`/rule-creator` で作成する。
-
 → 完了
 
 #### 出力
 
-- 紐付けルールが配置済み
-- 次回この画面を編集すると、関連ルールが発火しクロスファイルチェックを促す
+- 実装が共通化ルールに従って配置されている
 
 ---
 
