@@ -1,5 +1,5 @@
 {
   "name": "work",
-  "description": "Hook-based project lifecycle management — injects branch context on every prompt, reminds task updates on stop, manages worktrees (toggle via WORK_USE_WORKTREE), and guards force-operations (toggle via WORK_GUARD). Protected branches customizable via WORK_PROTECTED_BRANCHES (comma-separated, default master,main,develop). v2.47.0: branches are named `{type}/{title}` (no PR-number prefix); internal IDs continue in index.yaml for cross-reference only. Section names renamed: 関連PR → 関連ブランチ, 次PR候補 → 次ブランチ候補.",
-  "version": "2.47.1"
+  "description": "Hook-based project lifecycle management — injects branch context on every prompt, reminds task updates on stop, manages worktrees (toggle via WORK_USE_WORKTREE), and guards force-operations (toggle via WORK_GUARD). Protected branches customizable via WORK_PROTECTED_BRANCHES (comma-separated, default master,main,develop). v2.47.0: branches are named `{type}/{title}` (no PR-number prefix); internal IDs continue in index.yaml for cross-reference only. Section names renamed: 関連PR → 関連ブランチ, 次PR候補 → 次ブランチ候補. v2.48.0: notes-to-claude skill removed (inter-plugin dependency eliminated).",
+  "version": "2.48.0"
 }

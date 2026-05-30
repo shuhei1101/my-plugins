@@ -9,8 +9,7 @@ description: |
 # skill-creator — 新規スキル雛形（薄ラッパー）
 
 スキルのオーサリング手順は本プラグインの references に移り、`SKILL.md` を編集すると
-`claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動と呼び出し元
-（例: `notes-to-claude`）のために残している薄いラッパー。
+`claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動のために残している薄いラッパー。
 
 ## やること
 

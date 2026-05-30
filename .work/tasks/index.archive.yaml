@@ -894,3 +894,10 @@ branches:
   summary: 既存スキル全件見直し：JP ミラーのセクション名を新テンプレートに合わせて統一し、サブエージェント委譲候補を洗い出す
   task: 260531_existing-skills-review-and-normalize
   completed: true
+- id: 213
+  title: PR213 — existing-inter-plugin-dependency-audit-and-zero-out
+  type: chore
+  tags: []
+  summary: 全プラグインの skills/hooks/references を grep して他プラグインへの依存箇所をリストアップし、プラグイン内自己完結へ順次書き換える
+  task: 260530_existing-inter-plugin-dependency-audit-and-zero-out
+  completed: true
