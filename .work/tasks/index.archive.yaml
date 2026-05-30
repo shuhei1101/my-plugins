@@ -797,9 +797,6 @@ prs:
   title: PR182 — dev-kit-plugin-update-skill
   type: feat
   tags: []
-  summary: dev-kit に plugin-update スキルを追加 (v4.3.0)、claude-kit plugin-structure.md
-    の plugin-update 標準仕様を改訂 (v3.43.1)
-  task: 260530_dev-kit-plugin-update-skill
   summary: plugin-work.mdにプラグインCLAUDE.md更新の整合性チェックを追加
   task: 260530_plugin-work-rule-add-claude-md-check
   completed: true
@@ -810,4 +807,11 @@ prs:
   summary: html-implement の .claude/rules/ 静的配布をやめ、css-js-link.md / common-component-first.md
     を references/html/ に移して injection_rules.yaml の html パターンに紐付ける
   task: 260530_dev-kit-html-rules-to-injection
+  completed: true
+- id: 203
+  title: PR203 — deprecate-claude-rules-migrate-to-references
+  type: refactor
+  tags: []
+  summary: .claude/rules/ 配下のルールを全廃止し、各プラグインの references/ へ移行する
+  task: 260530_deprecate-claude-rules-migrate-to-references
   completed: true
