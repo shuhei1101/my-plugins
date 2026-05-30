@@ -2,7 +2,7 @@
 # Each entry maps a reference file to a one-line description.
 #   path        : path relative to this references/ directory
 #   description : shown in the injected pointer (and as the section heading)
-# Keep this in sync with index.jp.yaml (JP mirror) and injection_rules.yaml.
+# Keep this in sync with _index.jp.yaml (JP mirror) and injection_rules.yaml.
 references:
   - path: common.md
     description: Shared base for all Claude config authoring. File-type decision criteria (rule vs skill vs CLAUDE.md vs hook vs reference), anti-proliferation guard, and JP/EN mirror rules.

@@ -740,3 +740,40 @@ prs:
   summary: 各プラグインの injection_rules.yaml 内のコメントを日本語に統一
   task: 260530_translate-injection-rules-comments
   completed: true
+- id: 189
+  title: PR189 — add-japanese-comment-log-rule
+  type: docs
+  tags: []
+  summary: python-script.md にコメント・ログは日本語で書くルールを追加
+  task: 260530_add-japanese-comment-log-rule
+  completed: true
+- id: 184
+  title: PR184 — claude-kit-plugin-update-skill
+  type: feat
+  tags: []
+  summary: claude-kit に plugin-update スキルを追加（PR168 の plugin authoring guide 必須化に追従）
+  task: 260530_claude-kit-plugin-update-skill
+  completed: true
+- id: 174
+  title: PR174 — propagate-injection-disable-to-plugins
+  type: feat
+  tags: []
+  summary: ref-inject テンプレに追加した {PREFIX}_INJECTION_DISABLE を claude-kit / py-kit /
+    next-kit の inject_references.py に手動同期
+  task: 20260530_propagate-injection-disable-to-plugins
+  completed: true
+- id: 179
+  title: PR179 — prefix-underscore-injection-config
+  type: chore
+  tags: []
+  summary: ref-inject/dev-kit/claude-kit の references 配下にある index.yaml / index.jp.yaml
+    / injection_rules.yaml をアンダースコア接頭辞付きにリネームし、ファイル一覧の上部に固定する。依存 Python フックとドキュメントも追従。
+  task: 260530_prefix-underscore-injection-config
+  completed: true
+- id: 182
+  title: PR182 — dev-kit-plugin-update-skill
+  type: feat
+  tags: []
+  summary: dev-kit に plugin-update スキルを追加 (v4.3.0)、claude-kit plugin-structure.md の plugin-update 標準仕様を改訂 (v3.43.1)
+  task: 260530_dev-kit-plugin-update-skill
+  completed: true

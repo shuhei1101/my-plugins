@@ -1,6 +1,6 @@
 # claude-kit リファレンス索引（日本語ミラー；人間用）。
 # CLAUDE_KIT_INJECTION_LANG=jp のとき inject_references.py が description をここから取る。
-# index.yaml（英語・正本）と injection_rules.yaml に常に同期させること。
+# _index.yaml（英語・正本）と _injection_rules.yaml に常に同期させること。
 references:
   - path: common.md
     description: 全 Claude 設定オーサリングの共通ベース。ファイル種別の判定基準（rule / skill / CLAUDE.md / hook / reference）、増殖防止ガード、JP/EN ミラー規則。

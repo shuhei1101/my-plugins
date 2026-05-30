@@ -248,13 +248,13 @@ the file Claude is about to touch. **Do not hand-build this** — use the `ref-i
 ```
 
 It copies the injection hook (`hooks/scripts/inject_references.py` + `hooks/hooks.json`), the Jinja2 templates,
-and a `references/` skeleton, substituting per-plugin placeholders. Then you fill `references/index.yaml`
-(path + description), bind edit-path patterns in `references/injection_rules.yaml`, and write the
-reference docs (1 reference = 1 use case). Canonical adopters: `py-kit`, `next-kit`, `claude-kit`.
+and a `references/` skeleton, substituting per-plugin placeholders. Then you fill `references/_index.yaml`
+(path + description), bind edit-path patterns in `references/_injection_rules.yaml`, and write the
+reference docs (1 reference = 1 use case). Canonical adopters: `dev-kit`, `claude-kit`.
 
 ### Injection design (what the generated hook does)
 
-1. On Edit/Write/MultiEdit/Read, match the target path against `injection_rules.yaml` glob patterns.
+1. On Edit/Write/MultiEdit/Read, match the target path against `_injection_rules.yaml` glob patterns.
 2. Inject each matched `required` reference **in full body**, each `optional` as **path + description only**.
 3. De-dupe with a **per-pattern TTL token** at `~/.claude/tokens/{plugin}/{session_id}.yaml` — a
    YAML map keyed by the matched pattern, each entry holding `expires_at` (= injection time + TTL).

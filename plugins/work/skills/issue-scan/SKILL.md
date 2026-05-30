@@ -22,12 +22,12 @@ the file against those references and records discovered problems via `/work:iss
 **Prerequisites**:
 - `.work/issues/` must exist (run `/work:setup` if it doesn't)
 - At least one `*-kit` plugin with a `PreToolUse(Read)` reference auto-injection hook
-  (py-kit, next-kit, etc.) must be installed
+  (dev-kit, etc.) must be installed
 
 **Approach**:
 - The `*-kit` `PreToolUse(Read)` hooks resolve and inject the relevant references based on file type
 - This skill therefore only needs to pick one target file and Read it
-- The hook reads `injection_rules.yaml` to decide which references apply; the skill does not
+- The hook reads `_injection_rules.yaml` to decide which references apply; the skill does not
   re-implement pattern matching or YAML parsing
 - The hook's session+file-hash token ensures each file is injected once per session
 
