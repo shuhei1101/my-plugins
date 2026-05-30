@@ -867,3 +867,10 @@ branches:
   summary: CLAUDE_KIT_JP_MIRROR 環境変数を追加し、false の場合は JP ミラーを作らず本体ファイルを日本語で書く
   task: 260530_claude-kit-jp-mirror-env
   completed: true
+- id: 202
+  title: PR202 — fix-pr179-merge-fallout
+  type: fix
+  tags: []
+  summary: PR179 merge fallout 修正 + dev-kit:yaml スキル一式削除
+  task: 260531_fix-pr179-merge-fallout
+  completed: true
