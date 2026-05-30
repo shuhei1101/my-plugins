@@ -998,3 +998,10 @@ branches:
   summary: 既存プラグインに config スキルを追加する（dev-kit:config を新規作成・work:config を整理）
   task: 260531_migrate-existing-plugins-to-have-config-skill
   completed: true
+- id: 234
+  title: refactor/rename-config-skill-to-plugin-config
+  type: refactor
+  tags: []
+  summary: 全プラグインの config スキルを plugin-config にリネーム
+  task: 260531_configスキルリネーム
+  completed: true
