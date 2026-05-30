@@ -75,51 +75,61 @@ description: |
 各ステップは以下のパターンに従う。ステップが必要とするサブセクションのみ使う:
 
 ```markdown
-### Step N: (Action name)
+### ステップ N: (アクション名)
 
-#### Condition
-(Prerequisites for entering this step)
+#### 条件
+(このステップに入るための前提条件)
 
-#### Input
-(Data, files, prior step output, or user input used here)
+#### 入力
+(ここで使うデータ・ファイル・前ステップの出力・ユーザー入力)
 
-#### Process
-1. Do X
-→ Proceed to Step N+1
+#### 処理
+1. X を実行する
+→ ステップ N+1 へ
 
-#### Output
-(What exists when this step is complete)
+#### 出力
+(このステップ完了時点で存在するもの)
 
-#### Notes
-##### Checklist
-##### Branching
-##### Prohibitions
+#### 注意事項
+##### チェックリスト
+##### 分岐
+##### 禁止事項
 ```
 
-### SKILL.md の完全な雛形
+処理をサブエージェントに委譲する場合は委譲マーカーを付ける（詳細は `subagents.jp.md` 参照）:
+
+```markdown
+#### 処理
+1. [サブエージェントで並列実行・完了を待つ] 既存スキルを Glob し description を収集する
+   （戻り値: `[{name, description}]`）
+→ ステップ 2 へ
+```
+
+### SKILL.jp.md の完全な雛形
 
 ```markdown
 ---
-name: <skill-name>
+name: <スキル名>
 description: |
-  Precise trigger conditions. "When the user says X", "when editing Y".
+  正確なトリガー条件。「ユーザーが X と言ったとき」「Y を編集するとき」。
 ---
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
-# <skill-name> — one-line summary
+# <スキル名> — 一行要約
 
-<1–2 sentences: what this skill does.>
-
----
-
-## Overview
-
-<Background, purpose, why this skill exists.>
+<このスキルが何をするか 1〜2 文で書く>
 
 ---
 
-## Tasks
+## 概要
 
-### Step 1: <action>
+<背景・目的・なぜこのスキルが必要か>
+
+---
+
+## タスク
+
+### ステップ 1: <アクション>
 ...
 ```
 
@@ -127,7 +137,7 @@ description: |
 
 ## 参考資料の配置
 
-- **複数ステップから使われる** → 末尾の `## References` セクションに置く
+- **複数ステップから使われる** → 末尾の `## 参照` セクションに置く
 - **1 ステップだけで使われる** → そのステップに直接埋め込む
 
 大規模なスキルの場合、重い参考資料は `references/` に外出しし、スキルからパスでリンクする。
@@ -141,5 +151,21 @@ description: |
 
 - [ ] `SKILL.md`（英語、Claude がロード）と `SKILL.jp.md`（JP ミラー）の両方が、構造を一致させて存在する
 - [ ] `description` frontmatter に精密なトリガー条件がある。設定は `name` + `description` のみ
-- [ ] 共有内容は `## References` にある。単一ステップの内容はそのステップに留まる
+- [ ] 共有内容は `## 参照` にある。単一ステップの内容はそのステップに留まる
 - [ ] 両ファイルとも `provenance.md` に従ってスタンプ済み（ファイルを書く際に自動注入される）
+
+---
+
+## JP ミラー同期
+
+`SKILL.md` を編集したら、**必ず同じコミットで `SKILL.jp.md` も更新する**。
+
+| 編集したファイル | 必ず同時に更新するファイル |
+|---|---|
+| `plugins/{name}/skills/{skill}/SKILL.md` | `plugins/{name}/skills/{skill}/SKILL.jp.md` |
+
+### コミット前チェックリスト
+
+- [ ] `SKILL.md` の変更内容が `SKILL.jp.md` に日本語で反映されている
+- [ ] `SKILL.jp.md` のセクション構成が `SKILL.md` と一致している
+- [ ] `SKILL.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror... -->`）が含まれている

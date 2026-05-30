@@ -1,0 +1,420 @@
+references:
+- path: markdown/markdown-table.md
+  description: "Markdown テーブルの記法規約。最左カラムに必ず # カラムを設け、すべての行に通し番号を書く。連続する行で同じ列の値が同じ場合、最初の行にのみ書き、以降のセルは 〃（ダイトーマーク）を使う。"
+- path: python/core/naming.md
+  lang: python
+  description: 命名規約。関数 snake_case、型エイリアス UpperCamel、ファイル/モジュール snake_case。feature フォルダ内の標準ファイル名（types/service/query/route/client/db）対応表
+- path: python/core/comments.md
+  lang: python
+  description: コメントルール。exported 関数/型に 1 行 docstring 必須、Pydantic/dataclass の設計上重要フィールドの description 必須、PR 番号付き変更履歴、TODO は issue 番号必須
+- path: python/core/type-hints.md
+  lang: python
+  description: 型ヒント本体。PEP 695 ジェネリクス、Self、@typing.override、Annotated、TYPE_CHECKING、type 文、NewType、assert_never、Literal+match
+- path: python/core/decorators.md
+  lang: python
+  description: 推奨デコレータ（@dataclass / @final / @cache / @cached_property / @override / @contextmanager）と、横断関心事を吸収するハンドラーデコレータ（@catch_and_log / @catch_and_map / @with_retry / @with_timeout）、@overload の限定使用
+- path: python/core/language-rules.md
+  lang: python
+  description: 言語ルール。コメントは日本語、print/logger/bat は英語、文字列フォーマット f-string、import 順、例外階層（AppError 基底クラス）
+- path: python/core/style.md
+  lang: python
+  description: スタイル設定。ruff/mypy/pyright の推奨設定、行長 100、ダブルクォート、セクションマーカー
+- path: python/architecture/layout.md
+  lang: python
+  description: トップレベルレイアウト。必須は shared/ と main.py のみ、任意で features/integrations/runtime/server。feature フォルダ内の標準構成（types.py / service.py / query.py / route.py / client.py）
+- path: python/architecture/ts-style.md
+  lang: python
+  description: TypeScript 風 Python の中心ドキュメント。type エイリアスで関数の型を定義 + Callable で DI、Protocol で構造的型付け、@dataclass/Pydantic/TypedDict の使い分け表
+- path: python/architecture/composition-root.md
+  lang: python
+  description: main.py の責務。build_handlers(settings) で関数を functools.partial で配線、Handlers dataclass で型安全に保持。FastAPI/CLI 等ライブラリ標準クラスはそのまま使う
+- path: python/architecture/dependencies.md
+  lang: python
+  description: 依存方向ルール。features/server -> integrations -> shared の一方向。同層内相互参照は禁止。逆依存（DIP）は関数の型エイリアスで実現
+- path: python/architecture/design-principles.md
+  lang: python
+  description: 設計原則の優先順位。DRY > SOLID > 拡張性意識。関数ファーストでクラスは DTO とライブラリ要求のみ
+- path: python/architecture/refactoring-judgement.md
+  lang: python
+  description: リファクタ判断基準。何回書いたら共通化、いつ抽象化、いつ設定外出し、いつファイル分割するか
+- path: python/shared/logger.md
+  lang: python
+  description: JSON Lines 形式の logger 標準実装。get_logger(__name__)、構造化ログ、ログレベル運用
+- path: python/shared/settings.md
+  lang: python
+  description: pydantic_settings.BaseSettings 標準パターン。.env / .env.sample 運用、SecretStr、ネストした設定
+- path: python/shared/secrets-and-env.md
+  lang: python
+  description: シークレット / 環境 / 構造 / アセット / ランタイム状態の保管先の分離方針。.env / settings.yaml / コード / index.yaml / data/ の使い分け
+- path: python/shared/errors.md
+  lang: python
+  description: 例外階層。AppError 基底クラス、ドメイン別サブクラス、HTTP エラーとのマッピング
+- path: python/shared/types.md
+  lang: python
+  description: 共通型エイリアス。NewType と type 文の使い分け、識別子型（UserId 等）の標準
+- path: python/shared/constants.md
+  lang: python
+  description: constants.py の役割境界。PROJECT_ROOT, LOG_DIR 等の計算済みパス置き場。実行時可変値は settings へ
+- path: python/scripts/python-script.md
+  lang: python
+  description: 単一ファイル Python スクリプトの構造。docstring、argparse、main() 返り値 int、セクションマーカー
+- path: python/scripts/launchers-windows.md
+  lang: python
+  description: Windows 用 bat ランチャー。chcp 65001、setlocal、PowerShell 時刻、log/ ディレクトリ出力。bat 内に日本語を書かない（絶対）
+- path: python/scripts/launchers-unix.md
+  lang: python
+  description: UNIX 用 shell スクリプト。set -euo pipefail、tee でログ、.venv activate
+- path: python/scripts/tkinter.md
+  lang: python
+  description: tkinter GUI 規約。標準スタイル、設定ダイアログ、アクセントカラー（blue）
+- path: python/testing/strategy.md
+  lang: python
+  description: テスト方針。単体テストは書かない、結合テスト + スモークテストのみ。スモークは外部接続用でユーザー手動実行限定（AI 自動実行禁止）
+- path: python/testing/pytest.md
+  lang: python
+  description: pytest 規約。conftest.py、fixtures、parametrize、pytest-asyncio、tests/ レイアウト
+- path: python/testing/mocks.md
+  lang: python
+  description: 結合テストの Mock パターン。LLM Mock、HTTP Mock、時刻 Mock、関数の型エイリアスを利用した注入差し替え
+- path: python/concurrency/async.md
+  lang: python
+  description: asyncio 規約。TaskGroup、asyncio.timeout、sync/async 境界、async generator/context manager
+- path: python/concurrency/parallelism.md
+  lang: python
+  description: 並列処理。multiprocessing / threading / subinterpreter の使い分け、GIL、CPU bound vs IO bound
+- path: python/packaging/pyproject.md
+  lang: python
+  description: pyproject.toml 完全サンプル。[project] / [tool.ruff] / [tool.mypy] / [tool.pyright] / [tool.pytest]
+- path: python/packaging/dependencies.md
+  lang: python
+  description: 依存管理。uv 標準、optional-dependencies.dev 必須、.venv 統一、lock ファイル運用
+- path: python/packaging/distribution.md
+  lang: python
+  description: 配布。wheel/sdist、PyPI publish、entry_points で CLI 公開
+- path: python/packaging/python-versions.md
+  lang: python
+  description: Python バージョン方針。極力高いバージョンを採用、3.12 以降の機能対応表
+- path: python/performance/cheatsheet.md
+  lang: python
+  description: パフォーマンスチート集。プロファイラ（cProfile / snakeviz / line_profiler / py-spy / scalene / memray）の使い分け、ホットパスのチェックリスト
+- path: python/llm/providers.md
+  lang: python
+  description: LLM プロバイダ実装。Claude / OpenAI / Gemini を関数で抽象化、vendor 例外をドメイン例外にラップ、token usage ログ
+- path: python/llm/instructor.md
+  lang: python
+  description: Instructor + Pydantic で構造化出力。task-specific クライアント関数の作り方
+- path: python/llm/prompts-authoring.md
+  lang: python
+  description: プロンプトファイルの書き方と組み立て。プロジェクトルート直下 prompts/、H3 セクション単位で部品化、static (.md) と dynamic (.j2)、index.yaml で SoT 管理、includes で組み立て
+- path: python/llm/prompts-loader.md
+  lang: python
+  description: プロンプトのローダー実装。src/{pkg}/integrations/llm/prompts/ 配下に index_loader / builder / types を置く、Jinja2 + StrictUndefined、build_prompt / build_bundle
+- path: python/llm/cost-cache.md
+  lang: python
+  description: コスト管理。プロンプトキャッシュの設計考え方（上から積む / 固定値は上 / 動的値は下）、Anthropic cache_control、OpenAI 自動キャッシュ、max_tokens、Batch API、ストリーミング
+- path: python/llm/exceptions-retry.md
+  lang: python
+  description: LLM 例外階層。rate-limit / server / bad-request / auth / timeout / content-filter、リトライ戦略、Retry-After 尊重
+- path: python/fastapi/app.md
+  lang: python
+  description: FastAPI アプリ構成。build_app パターン、lifespan、middleware、CORS
+- path: python/fastapi/routes.md
+  lang: python
+  description: ルーター実装。Annotated[Type, Depends/Path/Query]、route 関数は thin、service.py に処理本体
+- path: python/fastapi/schemas.md
+  lang: python
+  description: 入出力 Pydantic スキーマ。Field 制約、to_domain/from_domain メソッドで feature 内 DTO と分離
+- path: python/fastapi/auth-and-errors.md
+  lang: python
+  description: 認証 Depends + SecretStr の取り扱い + exception_handler によるエラーハンドリング
+- path: python/fastapi/health.md
+  lang: python
+  description: ヘルスチェック。/healthz で 200 を返すだけのシンプル実装
+- path: next/backend/api-folder-overview.md
+  lang: next
+  description: app/api/v1/{resource}/ の 6 ファイル (route/client/service/db/query/dbHelper) の責務分離と呼び出し階層。Server Actions との使い分け。
+- path: next/backend/route-ts.md
+  lang: next
+  description: app/api/v1/{resource}/route.ts — HTTP ハンドラ。withRouteErrorHandling でラップし、getAuthContext + Zod パース + service 呼び出し。レスポンス封筒 {data,meta?} / {error}。
+- path: next/backend/client-ts.md
+  lang: next
+  description: app/api/v1/{resource}/client.ts — クライアント側 fetch ヘルパー。route.ts と query.ts から型を import、URL は endpoints.ts、AppError.fromResponse でラップ。
+- path: next/backend/service-ts.md
+  lang: next
+  description: app/api/v1/{resource}/service.ts — ビジネスロジック + トランザクション境界。db.transaction(tx => ...) で db.ts と query.ts を組み合わせる。
+- path: next/backend/db-ts.md
+  lang: next
+  description: app/api/v1/{resource}/db.ts — 書き込み (INSERT/UPDATE/DELETE) 専用。楽観的ロック付き update、DatabaseError でラップ、SQL Builder 使用。
+- path: next/backend/query-ts.md
+  lang: next
+  description: app/api/v1/{resource}/query.ts — 読み取り (SELECT) 専用。フィルタ Zod スキーマ + fetchXxx 関数 + 戻り値型を集約。QueryError でラップ。
+- path: next/backend/db-helper-ts.md
+  lang: next
+  description: app/api/v1/{resource}/dbHelper.ts — リソース内に閉じる共通ヘルパー (ページング計算等)。複数リソース横断のものは (shared)/lib/ に。
+- path: next/backend/actions-ts.md
+  lang: next
+  description: app/(authenticated)/{feature}/actions.ts — Server Action 群。'use server' 開始、ActionResult<T> 戻り値、Zod パース、revalidateTag + cacheLife プロファイル。
+- path: next/backend/auth-context.md
+  lang: next
+  description: app/(shared)/auth/index.ts — getAuthContext() の実装。route/Server Action/Server Component の統一エントリポイント。プロバイダ抽象化。
+- path: next/backend/auth-setup.md
+  lang: next
+  description: lib/auth.ts — Better Auth セットアップ。drizzleAdapter、emailAndPassword、socialProviders、session 設定。
+- path: next/backend/auth-schema.md
+  lang: next
+  description: drizzle/schema.ts の認証関連テーブル (user/session/account/verification) と profiles。Better Auth 公式 schema 厳守。
+- path: next/backend/auth-actions.md
+  lang: next
+  description: app/(shared)/actions/auth.ts — loginAction / signupAction / signOutAction。Better Auth API + Zod + redirect。
+- path: next/backend/auth-client.md
+  lang: next
+  description: app/(shared)/auth/client.ts — クライアント側 createAuthClient + useSession。
+- path: next/backend/db-id.md
+  lang: next
+  description: drizzle/schema.ts の主キー設計。マスター = integer().generatedAlwaysAsIdentity()、データ = uuid().default(sql`gen_random_uuid()`)、認証 = text。
+- path: next/backend/db-timestamps.md
+  lang: next
+  description: drizzle/schema.ts の共通カラム timestamps (createdAt/updatedAt, mode "string") と auditFields (createdBy/updatedBy)。
+- path: next/backend/db-enum.md
+  lang: next
+  description: drizzle/schema.ts の pgEnum 定義。命名は camelCase 単数、Enum 接尾辞なし。値追加マイグレーション。
+- path: next/backend/db-relations.md
+  lang: next
+  description: drizzle/schema.ts の外部キー + relations() + index 設計。onDelete = cascade/restrict/set null の選び方。
+- path: next/backend/db-transaction.md
+  lang: next
+  description: Drizzle トランザクション規約。service.ts が境界、db.transaction(async tx => ...) で囲み、tx を引数で渡す。Promise.all 禁止、外部 API 禁止。
+- path: next/backend/db-optimistic-lock.md
+  lang: next
+  description: 楽観的ロック (updatedAt 比較、必要に応じ version 列)。db.ts の update で and(eq(id), eq(updatedAt))、VersionConflictError を投げる。
+- path: next/backend/db-history.md
+  lang: next
+  description: ハードデリート + history テーブルパターン。本番テーブルは軽く保ち、削除前に snapshot を histories テーブルに退避。
+- path: next/backend/drizzle-style.md
+  lang: next
+  description: Drizzle の SQL Builder (標準) vs Relational Queries (オプション) の使い分け。エイリアス、重複排除 (groupBy)、Promise.all 並列。
+- path: next/backend/db-migration.md
+  lang: next
+  description: drizzle-kit によるマイグレーション運用。drizzle generate/migrate、production 自動適用 NG、破壊的変更の手順、Enum 値追加。
+- path: next/backend/proxy.md
+  lang: next
+  description: proxy.ts — Next.js 16 で旧 middleware.ts からリネーム。認証ガード、A/B testing、ヘッダ書き換え。nodejs ランタイム固定。
+- path: next/backend/caching.md
+  lang: next
+  description: Next.js 16 のキャッシュ API。"use cache" + cacheLife/cacheTag、revalidateTag (第2引数の cacheLife プロファイル必須)、updateTag (read-your-writes)、refresh。
+- path: next/backend/webhooks.md
+  lang: next
+  description: app/api/v1/webhooks/{provider}/route.ts — Webhook 受信。署名検証 (raw body)、idempotency、重い処理は jobs に enqueue。
+- path: next/backend/jobs.md
+  lang: next
+  description: バックグラウンドジョブ / Cron。Vercel Cron (vercel.json)、Next.js after()、Inngest / QStash の選択肢、Resend でのメール送信。
+- path: next/backend/realtime.md
+  lang: next
+  description: リアルタイム機能。SSE (text/event-stream) を第一選択、Pusher (WebSocket 代替)、Supabase Realtime、Polling フォールバック。
+- path: next/backend/rate-limit.md
+  lang: next
+  description: Upstash Ratelimit によるレート制限。proxy.ts で API 全体、route.ts で個別 (認証・重い処理)、429 + Retry-After。
+- path: next/backend/idempotency.md
+  lang: next
+  description: 課金・通知・在庫減算等の重要 POST に Idempotency-Key ヘッダ。DB 保存 (key + request hash + response) で二重実行防止。
+- path: next/frontend/app-folder-overview.md
+  lang: next
+  description: app/ フォルダ全体図。Route Group は (authenticated)/(auth)/(shared) の 3 つ、api/v1/、proxy.ts はプロジェクト直下。
+- path: next/frontend/route-groups.md
+  lang: next
+  description: Route Groups。(authenticated) (auth) (shared) の役割と認証ガード layout.tsx。
+- path: next/frontend/feature-folder.md
+  lang: next
+  description: app/(authenticated)/{feature}/ のフォルダ構成 (page/Screen/form/actions/components/hooks/new/[id]/edit)。
+- path: next/frontend/id-routing.md
+  lang: next
+  description: '[id]/ のルーティング。[id]/page.tsx を View 画面そのものにし (PR135 で view/ サブルート廃止)、[id]/edit/page.tsx を編集に。'
+- path: next/frontend/list-page-tsx.md
+  lang: next
+  description: app/(authenticated)/{feature}/page.tsx — 一覧 Server Component。query.ts の fetchResources を直接呼び、Client Screen に initial を渡す。
+- path: next/frontend/list-screen-tsx.md
+  lang: next
+  description: '{Feature}ListScreen.tsx — 一覧 Client Component。''use client''、URL state + TanStack Query、Skeleton/EmptyState/Pagination。'
+- path: next/frontend/view-page-tsx.md
+  lang: next
+  description: app/(authenticated)/{feature}/[id]/page.tsx — View Server Component。fetchResource + notFound() + ViewScreen render。generateMetadata で SEO。
+- path: next/frontend/view-screen-tsx.md
+  lang: next
+  description: '{Feature}ViewScreen.tsx — View Client Component。読み取り専用、canEdit でボタン出し分け、編集遷移は RESOURCE_URL.edit(id)。'
+- path: next/frontend/edit-page-tsx.md
+  lang: next
+  description: app/(authenticated)/{feature}/[id]/edit/page.tsx — Edit Server Component。fetchResource + 権限ガード (canEdit なら redirect)。
+- path: next/frontend/edit-screen-tsx.md
+  lang: next
+  description: '{Feature}EditScreen.tsx / {Feature}NewScreen.tsx — Edit Client Component。shadcn <Form> + RHF + Zod + Server Action、削除のみ確認ダイアログ。'
+- path: next/frontend/form-ts.md
+  lang: next
+  description: app/(authenticated)/{feature}/form.ts — Zod schema + Type。new/edit で共用、エラー文言は日本語、共通プリミティブは (shared)/schema.ts。
+- path: next/frontend/form-component.md
+  lang: next
+  description: shadcn <Form> + <FormField> + <FormItem> + <FormControl> + <FormMessage> でフォームを書く。入力タイプ別パターン (Text/Number/Select/Checkbox/Date/Tag)。
+- path: next/frontend/autosave.md
+  lang: next
+  description: フォーム自動保存パターン。debounce + Server Action + 楽観 UI + 離脱検知 + localStorage draft 退避。useAutosave hook 実装。
+- path: next/frontend/dialog.md
+  lang: next
+  description: shadcn <Dialog> <AlertDialog> <Sheet> <Drawer> <Popover> パターン。open + onOpenChange API、useDisclosure 不要、useConfirmDialog で確認系。
+- path: next/frontend/components-catalog.md
+  lang: next
+  description: app/(shared)/components/ 共通コンポーネントカタログ。新規作成前にチェック、自前ラッパーと shadcn primitive の使い分け。
+- path: next/frontend/screen-wrapper.md
+  lang: next
+  description: <ScreenWrapper> — 全 Screen の最外殻。relative + max-w-screen-xl + padding + isLoading オーバーレイ。
+- path: next/frontend/page-header.md
+  lang: next
+  description: <PageHeader> — title + description + actions のページヘッダー。<h1> 必須、1 画面 1 つ。
+- path: next/frontend/loading-button.md
+  lang: next
+  description: <LoadingButton> — 非同期 onClick 用ボタン。Loader2 spinner + disable で重複クリック防止。
+- path: next/frontend/tag-input.md
+  lang: next
+  description: <TagInput> — IME 対応タグ入力。Enter で確定、IME 入力中の Enter 無視、Badge 削除、shadcn <FormField> 内で使用。
+- path: next/frontend/empty-state.md
+  lang: next
+  description: <EmptyState> — 空状態 UI (rows.length === 0 && !isFetching)。message + description + action (フィルタクリア or 新規作成)。
+- path: next/frontend/required-mark.md
+  lang: next
+  description: <RequiredMark /> — <FormLabel> 内に挟む赤い *。Zod で必須にしたフィールドに必ず付ける。
+- path: next/frontend/confirm-dialog.md
+  lang: next
+  description: useConfirmDialog() — shadcn <AlertDialog> ベースの確認ダイアログ。await confirm({...}) で Promise<boolean>。削除のみ確認 (PR135 QA-027)。
+- path: next/frontend/autosave-indicator.md
+  lang: next
+  description: <AutosaveIndicator> — autosave 状態表示 (idle/saving/saved/error)。エラー時に retry ボタン。useAutosave とセット。
+- path: next/frontend/error-tsx.md
+  lang: next
+  description: error.tsx / global-error.tsx — Client Component のエラーバウンダリ。digest でサーバーエラー ID 追跡、reset() で再 render。
+- path: next/frontend/not-found-tsx.md
+  lang: next
+  description: not-found.tsx — Server Component の 404 ページ。notFound() で自動表示、戻るリンク必須。
+- path: next/frontend/use-query-pattern.md
+  lang: next
+  description: hooks/use{Feature}.ts / use{Feature}s.ts — TanStack Query で読み取り。queryKey 設計、staleTime 0 (グローバル)、initialData で SSR hydrate。
+- path: next/frontend/use-mutation-pattern.md
+  lang: next
+  description: hooks/use{Verb}{Feature}.ts — useMutation。第一選択は Server Action 直接呼び。useMutation は楽観更新 (許可リスト) / 並列 / キャンセル時のみ。
+- path: next/frontend/use-form-pattern.md
+  lang: next
+  description: hooks/use{Feature}Form.ts — react-hook-form 内包。defaultValues か values でサーバー値を流す、formState.isDirty で dirty 判定。
+- path: next/frontend/use-url-state-pattern.md
+  lang: next
+  description: hooks/use{Feature}UrlState.ts — URL クエリ ↔ state。nuqs 推奨、フィルタ・ソート変更でページ 1 にリセット、router.push がデフォルト。
+- path: next/frontend/use-action-state.md
+  lang: next
+  description: Server Action をクライアントから呼ぶ React 19 Hook 群 (useTransition / useActionState / useFormStatus / useOptimistic) の使い分け。
+- path: next/frontend/state-decision.md
+  lang: next
+  description: 状態の置き場所の決定フロー。サーバーデータ → TanStack Query、シェア可能 → URL、複数ルート共有 → Context/Zustand、ローカル → useState、フォーム → RHF。
+- path: next/frontend/query-client-setup.md
+  lang: next
+  description: app/(shared)/providers/QueryProvider.tsx — TanStack QueryClient 設定。staleTime 0 (グローバル)、refetchOnWindowFocus false、retry false。
+- path: next/frontend/context-pattern.md
+  lang: next
+  description: React Context — 共有 UI state パターン。AppShellProvider 等の既存 Provider に追加、null チェックを hook 内で。
+- path: next/frontend/zustand-pattern.md
+  lang: next
+  description: Zustand — クロスルート state パターン。selector で部分購読、persist で localStorage 保存、サーバーデータ/フォームは入れない。
+- path: next/frontend/endpoints.md
+  lang: next
+  description: app/(shared)/endpoints.ts — URL 定数管理。フィーチャグループ (RESOURCE_URL = list,new,view,edit) + API URL ({FEATURE}_API_URL)。
+- path: next/frontend/url-state.md
+  lang: next
+  description: URL クエリ string ベースの state。タブ・フィルタ・ソート・ページを URL に置く、nuqs / 自前実装、Zod でバリデーション、PII 禁止。
+- path: next/frontend/streaming.md
+  lang: next
+  description: Next.js 16 の Streaming / Suspense / Cache Components (PPR)。"use cache" + cacheLife + cacheTag、use() フック、React 19.2 View Transitions。
+- path: next/frontend/seo.md
+  lang: next
+  description: Metadata API。静的 metadata、generateMetadata、sitemap.ts、robots.ts、manifest.ts、opengraph-image.tsx、JSON-LD 構造化データ。
+- path: next/frontend/assets.md
+  lang: next
+  description: next/image + next/font + 静的アセット。Next.js 16 の破壊的変更 (remotePatterns 必須、qualities [75]、minimumCacheTTL 4h)、priority、sizes、placeholder=blur。
+- path: next/frontend/pwa.md
+  lang: next
+  description: PWA / Service Worker / Push 通知。manifest.ts、apple PWA、serwist (推奨)、Push API + VAPID、オフライン UI。
+- path: next/frontend/conventions/naming.md
+  lang: next
+  description: 命名規約。フォルダ kebab-case、Screen は PascalCase + ListScreen/NewScreen/ViewScreen/EditScreen 接尾辞、hook は camelCase + use prefix、form.ts/actions.ts/page.tsx/proxy.ts は固定名。アンダースコア prefix 廃止。
+- path: next/frontend/conventions/comments.md
+  lang: next
+  description: コメント規約。日本語、exported に 1 行 JSDoc、Drizzle/Zod の設計上重要なカラム/フィールドのみ JSDoc 必須、PR 番号付き変更履歴 OK。
+- path: next/frontend/conventions/types.md
+  lang: next
+  description: 型定義。Zod から z.infer<> で推論、import type、type デフォルト、Drizzle $inferSelect/$inferInsert、PageProps/LayoutProps/RouteContext (Next.js 16)、generic は FieldValues 制約。
+- path: next/frontend/conventions/route-files.md
+  lang: next
+  description: Next.js App Router の標準ファイル (page/layout/template/loading/error/global-error/not-found/default/route/proxy) の役割と配置。
+- path: next/frontend/conventions/server-vs-client.md
+  lang: next
+  description: Server Component と Client Component の境界。page.tsx は Server、*Screen.tsx は Client、'use client' は深い葉に、データ受け渡しはシリアライズ可能な値のみ。
+- path: next/shared/environment.md
+  lang: next
+  description: 環境変数 (.env) + YAML 構造化設定 (config/settings.yaml) の使い分け。t3-env で型安全 env、Zod で YAML バリデーション、NEXT_PUBLIC_ 禁止 (シークレット)、機能フラグ。
+- path: next/shared/security.md
+  lang: next
+  description: セキュリティヘッダ (CSP/HSTS/X-Frame-Options/Referrer-Policy)、CSRF (Server Actions 自動)、XSS (DOMPurify)、SQL Injection (Drizzle)、Open Redirect、Mass Assignment、入力 Zod。
+- path: next/shared/error-classes.md
+  lang: next
+  description: app/(shared)/errors/appError.ts — エラークラス階層 (AppError → ClientValueError/ClientAuthError/VersionConflictError/QueryError/DatabaseError/RateLimitError)。AppError.fromResponse。
+- path: next/shared/error-route-handler.md
+  lang: next
+  description: app/(shared)/errors/handler/server.ts — withRouteErrorHandling。route.ts 用、Zod/AppError 派生を JSON レスポンスに変換、500 系は log + 汎用文言。
+- path: next/shared/error-action-handler.md
+  lang: next
+  description: app/(shared)/errors/handler/action.ts — handleActionError。Server Action 内 try/catch から呼ぶ、ActionResult<T> 形式、isRedirectError で redirect 除外。
+- path: next/shared/error-client-handler.md
+  lang: next
+  description: app/(shared)/errors/handler/client.ts — handleAppError。クライアント側の useQuery/useMutation エラー処理、認証エラーで /login 遷移、Conflict で router.refresh。
+- path: next/shared/logger-impl.md
+  lang: next
+  description: app/(shared)/logger.ts — JSON Lines ロガー実装。logger.create("tag")、production はクライアント warn 以上強制 (QA-055)、stack はサーバーのみ。
+- path: next/shared/logger-tags.md
+  lang: next
+  description: Logger の Component tag 命名規約。{layer}:{name} 形式 (page resources / api resources.POST / hook useResourceForm / action resources 等)。
+- path: next/testing/strategy.md
+  lang: next
+  description: テスト戦略全体。Vitest (Unit/Component) + Playwright (E2E) + Testing Library + MSW (任意)。画面単位フォルダ、Page Object、Fixtures Factory、CUJ 100% E2E カバー。
+- path: next/testing/unit.md
+  lang: next
+  description: Unit / Component test (Vitest)。vitest.config.ts、Schema test、Pure function test、Component test (Testing Library + userEvent)、service.ts integration、MSW。
+- path: next/testing/e2e.md
+  lang: next
+  description: E2E test (Playwright)。playwright.config.ts、画面単位フォルダ、Page Object Model、Storage State 認証、DB シード、視覚回帰 (Chromatic)、axe-core a11y。
+- path: next/testing/fixtures.md
+  lang: next
+  description: テストデータ Factory パターン。tests/fixtures/{resource,user,...}.ts、build*/seed*/clean*、nanoid で一意命名、DB cleanup (truncate)、テスト専用 API (NODE_ENV gate)。
+- path: next/devtools/storybook.md
+  lang: next
+  description: Storybook 8.x + @storybook/nextjs-vite。app/(shared)/components/ のカタログ可視化、addon-a11y、addon-themes、interaction tests (play 関数)、Chromatic 視覚回帰。
+- path: next/devtools/mock.md
+  lang: next
+  description: MSW セットアップ。mocks/handlers.ts に集約、dev は NEXT_PUBLIC_API_MOCKING=enabled で Service Worker、test は setupServer (Node)、Storybook は msw-storybook-addon。
+- path: next/devtools/lint-and-format.md
+  lang: next
+  description: ESLint v9 Flat Config + Prettier + tsconfig (strict + noUncheckedIndexedAccess)。next lint は Next.js 16 で廃止、prettier-plugin-tailwindcss、lint-staged + husky。
+- path: next/devops/deploy.md
+  lang: next
+  description: デプロイ。Vercel 第一選択 (Web サービス)、ローカル動作のみ (AITuber 等) はデプロイなし、self-host (Docker + Nginx) も選択肢。DB は Supabase/Neon。Vercel Cron。
+- path: html/principles.md
+  lang: html
+  description: HTML/CSS/JS 開発原則。DRY/集約、FLOCSS レイヤー構造、デザイントークン、JS 規約（// @ts-check、JSDoc 型、アロー関数、関数引数 DI）。
+- path: html/ui-design.md
+  lang: html
+  description: UX パターンと共有コンポーネント必須化。画面コードを書く前に共有リソース（constants/routes/components）を読み、再利用 > 拡張 > 新規追加 の順で判断する。
+- path: html/debug-fab-sync.md
+  lang: html
+  description: debug-fab テンプレート同期ルール。uidev.js / uidev.css を編集したら SKILL.md と templates/CLAUDE.md も更新する。テンプレートファイルを変更したら plugin.json と marketplace.json のバージョンをバンプする。
+- path: html/css-js-link.md
+  lang: html
+  description: CSS クラス ↔ JS DOM アクセス紐付け。CSS の FLOCSS クラス定義と JS/HTML の DOM アクセスを同期させる。存在確認・レイヤー妥当性・BEM サブ構造・死んだクラス・魔法文字列禁止を網羅。
+- path: html/common-component-first.md
+  lang: html
+  description: 共通コンポーネント先読み必須化。UI マークアップ・スタイル・DOM コードを追加する前に、共有の constants・routes・コンポーネント CSS/JS 層を先に読む。再利用 > 拡張 > 新規追加; インライン一発実装と値のハードコードを禁止。
+- path: markdown/markdown-editing.md
+  lang: markdown
+  description: Markdown フロントマター配置ルール。YAML フロントマターを持つファイルでは開き --- の前に何も置かない。HTML コメント等は閉じ --- の直後に移動する。

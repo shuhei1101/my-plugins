@@ -1,22 +1,28 @@
 ---
-name: work-start
+name: start
 description: |
-  Start a new PR: determine PR number, collect details, add index.yaml entry in main repo,
-  create worktree, then create the single per-PR task document INSIDE the worktree.
-  Trigger when the user says "新しい PR を作って", "新しい作業を始めたい", "work-start して",
-  "start new work", or "create a new PR".
+  Start a new branch: decide the branch name, collect details, add the index.yaml entry in the main
+  repo, create a worktree, then create the single per-branch task document INSIDE the worktree.
+  Trigger when the user says "新しいブランチを切って", "新しい作業を始めたい", "work-start して",
+  "start new work", or "create a new branch".
 ---
 
-# work:start — Start a New PR
+# work:start — Start a New Branch
 
-Creates the worktree first, then creates the single per-PR task document inside it.
+Creates the worktree first, then creates the single per-branch task document inside it.
 This prevents task documents from being created in the main repository.
+
+> **Naming**: branches use `{type}/{title}` (no `PR{N}/` prefix). The worktree mirrors the branch as
+> `{repo}-wt-{type}-{title}` (slashes → hyphens). The branch document filename is derived from the
+> branch by replacing slashes with hyphens (`refactor/foo-bar` → `refactor-foo-bar.md`).
+> An internal numeric ID is still tracked in `index.yaml` for cross-reference (commits, archive
+> metadata), but it does not appear in branch names, worktree paths, or branch document filenames.
 
 ---
 
 ## Tasks
 
-### Step 1: Determine the next PR number
+### Step 1: Decide the branch name
 
 #### Condition
 
@@ -24,8 +30,12 @@ This prevents task documents from being created in the main repository.
 
 #### Process
 
-1. If the user has already specified a PR number or branch name, use that value
-2. Otherwise run the following command and use the printed number:
+1. Determine the branch suffix from the requested work:
+   - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
+   - **Title**: short kebab-case label that describes the work
+2. The full branch name is `{type}/{title}` (for example `refactor/rename-pr-to-branch`).
+3. Reserve an internal ID for `index.yaml` bookkeeping (used in the archive and in commit
+   cross-references — it does not appear in the branch name itself):
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yaml
@@ -35,7 +45,8 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 #### Output
 
-- Next PR number confirmed
+- Branch name `{type}/{title}` decided
+- Internal ID `{N}` reserved
 
 ---
 
@@ -48,9 +59,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 #### Process
 
 1. Determine the following:
-   - **Title**: short kebab-case label used in the folder name
-   - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
-   - **TODO list**: what will be done this PR (becomes the checklist)
+   - **TODO list**: what will be done on this branch (becomes the checklist)
    - **Note**: does a related note exist in `.work/notes/`? Or does one need to be created?
    - **Open questions**: anything unclear or undecided
 
@@ -58,7 +67,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 #### Output
 
-- Title, type, TODO list, note info, and open questions confirmed
+- TODO list, note info, and open questions confirmed
 
 ---
 
@@ -70,12 +79,12 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 #### Process
 
-1. Run the following command to add the new PR entry:
+1. Run the following command to add the new branch entry:
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --id {N} \
-  --title "PR{N} — {title}" \
+  --title "{type}/{title}" \
   --type {type} \
   --summary "{summary}" \
   --task "{YYMMDD}_{title}"
@@ -85,12 +94,15 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Output
 
-- `.work/tasks/index.yaml` updated with the new PR entry and `last_id` (main repository)
+- `.work/tasks/index.yaml` updated with the new branch entry and `last_id` (main repository)
 
 #### Notes
 
 - `index.yaml` is excluded by `.work/tasks/.gitignore` — no commit to master is needed
 - Use a 6-digit `YYMMDD` (e.g. `260530`), not the 8-digit `YYYYMMDD` form
+- `--id {N}` is the internal numeric ID reserved in Step 1; it is recorded in the YAML row but
+  not embedded in the branch / worktree / filename
+- `--title` records the branch name as the row title (no `PR{N}` prefix)
 
 ---
 
@@ -109,9 +121,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
    ```
 
-2. **If enabled**: invoke `/work:worktree-create` with the PR number and branch:
+2. **If enabled**: invoke `/work:worktree-create` with the branch name:
 
-   > `/work:worktree-create PR{N} {type}/{title}`
+   > `/work:worktree-create {type}/{title}`
 
 3. **If disabled**: skip worktree creation and notify the user:
 
@@ -123,7 +135,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Output
 
-- (worktree enabled) Worktree created at `../repo-wt-PR{N}`, branch `PR{N}/{type}/{title}` exists
+- (worktree enabled) Worktree created at `../{repo}-wt-{type}-{title}`, branch `{type}/{title}` exists
 - (worktree disabled) No worktree; proceed with `.work/` folder management only
 
 #### Notes
@@ -143,9 +155,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### Process
 
 1. Read all folder names under `.work/tasks/` in the worktree
-2. Compare each folder name (`YYMMDD_title` format) against the purpose of this PR and decide:
-   - **Add to existing folder**: an existing folder covers the same goal or feature area, and this PR fits naturally as part of it
-     - Examples: splitting a feature across multiple PRs, a follow-up fix, related refactoring
+2. Compare each folder name (`YYMMDD_title` format) against the purpose of this branch and decide:
+   - **Add to existing folder**: an existing folder covers the same goal or feature area, and this branch fits naturally as part of it
+     - Examples: splitting a feature across multiple branches, a follow-up fix, related refactoring
    - **Create new folder**: no existing folder is closely related, or `.work/tasks/` is empty
 3. Confirm the argument to pass to the next step:
    - Adding to existing → use `--task-dir {folder_name}`
@@ -161,11 +173,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 - Do not ask the user — decide autonomously based on content
 - When in doubt, create a new folder (folders can be consolidated later)
-- Legacy folders may still use the 8-digit `YYYYMMDD` prefix — leave them as-is; only new folders use `YYMMDD`
+- New folders must use the 6-digit `YYMMDD` prefix and a **Japanese title** (e.g. `260530_タスクフォルダ命名統一`)
 
 ---
 
-### Step 6: Create the PR document (inside worktree)
+### Step 6: Create the branch document (inside worktree)
 
 #### Condition
 
@@ -173,17 +185,17 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Process
 
-Run one of the following depending on the choice in Step 5. The `--branch` argument is the full branch
-name (`PR{N}/{type}/{title}`); the script converts slashes to hyphens to form the file name
-(e.g. `PR168/refactor/refactor-task-doc-structure` → `PR168-refactor-refactor-task-doc-structure.md`):
+Run one of the following depending on the choice in Step 5. The `--branch` argument is the branch
+name (`{type}/{title}`); the script converts slashes to hyphens to form the file name
+(e.g. `refactor/rename-pr-to-branch` → `refactor-rename-pr-to-branch.md`):
 
 **New task folder:**
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
-  ../$(basename $(pwd))-wt-PR{N} \
-  --pr {N} \
-  --branch PR{N}/{type}/{title} \
+  ../$(basename $(pwd))-wt-{type}-{title} \
+  --id {N} \
+  --branch {type}/{title} \
   --title {title} \
   --date {YYMMDD} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -193,9 +205,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
-  ../$(basename $(pwd))-wt-PR{N} \
-  --pr {N} \
-  --branch PR{N}/{type}/{title} \
+  ../$(basename $(pwd))-wt-{type}-{title} \
+  --id {N} \
+  --branch {type}/{title} \
   --task-dir {existing_folder_name} \
   --title {title} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -205,11 +217,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Output
 
-- `../repo-wt-PR{N}/.work/tasks/{task_folder}/PR{N}-{type}-{title}.md` created
+- `../{repo}-wt-{type}-{title}/.work/tasks/{task_folder}/{type}-{title}.md` created
 
 ---
 
-### Step 7: Fill in the PR document with the work plan (inside worktree)
+### Step 7: Fill in the branch document with the work plan (inside worktree)
 
 #### Condition
 
@@ -217,14 +229,14 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Process
 
-Open the created `PR{N}-{type}-{title}.md` in the worktree and replace the template placeholder content with
-the actual plan. The document holds every section for this PR — TODO, variations, QA, and references — all
-in one file.
+Open the created `{type}-{title}.md` in the worktree and replace the template placeholder content
+with the actual plan. The document holds every section for this branch — TODO, variations, QA, and
+references — all in one file.
 
 **`## 概要`** — write the goal / background, plus the `### 実施条件` sub-section:
 
-- `### 実施条件`: when this PR can be started. `即時実施可`, or `「{other PR name}」が完了してから`.
-  Mirrors the `実施条件` column from the triggering PR's `## 次PR候補` row.
+- `### 実施条件`: when this branch can be started. `即時実施可`, or `「{other branch name}」が完了してから`.
+  Mirrors the `実施条件` column from the triggering branch's `## 次ブランチ候補` row.
 
 **`## 作業内容`** — task checklist. The following rows are mandatory and must not be removed or skipped:
 
@@ -232,29 +244,29 @@ in one file.
 |---|---|---|
 | - | Record open questions in `## QA` (this same document) | - |
 | - | Update the note document in `.work/notes/` | - |
-| - | (Implementation tasks: replace with PR-specific work) | - |
+| - | (Implementation tasks: replace with branch-specific work) | - |
 | - | Update rules / CLAUDE.md | - |
 
-**`## 変更内容`** — the implementation files this PR adds or modifies (excluding tests). Fill in once
-implementation starts — every file that lands in a commit goes here:
+**`## 変更内容`** — the implementation files this branch adds or modifies (excluding tests). Fill in
+once implementation starts — every file that lands in a commit goes here:
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 
 **`## テスト`** — test files added or modified alongside the implementation. Leave the placeholder row if
-this PR has no test changes; otherwise list each test file.
+this branch has no test changes; otherwise list each test file.
 
 **`## QA`** — record open questions from Step 2 as QA-XXX entries here (Step 9 below appends them).
 
 **`## 参考ドキュメント`** — links to related notes / specs (the note from Step 8 is appended here).
 
-**`## 関連イシュー`** — list `.work/issues/ISSUE-{N}` entries this PR resolves
+**`## 関連イシュー`** — list `.work/issues/ISSUE-{N}` entries this branch resolves
 (table format: `| ID | 概要 | resolution |`). `resolution` is `resolved` or `wontfix`.
 **If there are no related issues**: delete the `## 関連イシュー` heading and table entirely.
 
-**`## 関連PR`** — list PRs directly related to this one (predecessors, split siblings, follow-ups)
-(table format: `| PR番号 | 概要 |`). Leave the placeholder row if there are none.
+**`## 関連ブランチ`** — list branches directly related to this one (predecessors, split siblings,
+follow-ups) (table format: `| ブランチ | 概要 |`). Leave the placeholder row if there are none.
 
-**`## 次PR候補`** — list follow-up PRs mentioned during this session
+**`## 次ブランチ候補`** — list follow-up branches mentioned during this session
 (columns: title / summary / 実施条件):
 - `即時実施可` (or `-`) when the candidate has no dependency
 - `「{other candidate title}」が完了したら` when the candidate depends on another candidate in the same table
@@ -272,9 +284,14 @@ this PR has no test changes; otherwise list each test file.
 #### Process
 
 1. Check `.work/notes/` inside the worktree for a related note
-2. If found → update the relevant sections for this PR
+2. If found → update the relevant sections for this branch
 3. If not found → create a new note using the template at `${CLAUDE_PLUGIN_ROOT}/templates/note.md`
-4. Add a link to the note in the PR document's `## 参考ドキュメント` section
+   - The note H1 title must be written **entirely in Japanese** (e.g. `# 機能名 — 一行説明`)
+   - Technical identifiers (plugin names, command names, file paths) may remain in their original form
+4. Add a link to the note in the branch document's `## 参考ドキュメント` section
+5. Update (or create) `.work/notes/_index.md`:
+   - Add the new note to the appropriate category, or update the entry if the note already existed
+   - If `_index.md` does not exist, create it with all current notes grouped by category
 
 → Proceed to Step 9
 
@@ -288,7 +305,7 @@ this PR has no test changes; otherwise list each test file.
 
 #### Process
 
-1. Append any open questions from Step 2 to the `## QA` section of the PR document as QA-XXX entries
+1. Append any open questions from Step 2 to the `## QA` section of the branch document as QA-XXX entries
 2. Skip if there are no open questions
 
 → Proceed to Step 10
@@ -299,8 +316,8 @@ this PR has no test changes; otherwise list each test file.
 
 #### Process
 
-1. Commit all created files inside the worktree (branch: `PR{N}/{type}/{title}`)
-2. Report what was created: branch name, worktree path, PR document path, note path
+1. Commit all created files inside the worktree (branch: `{type}/{title}`)
+2. Report what was created: branch name, worktree path, branch document path, note path
 3. Start implementation:
    - **If QA entries exist** → ask the user for confirmation before starting
    - **If no QA entries** → proceed with implementation immediately
@@ -309,17 +326,17 @@ this PR has no test changes; otherwise list each test file.
 
 ##### Prohibitions
 
-- Never commit to anywhere other than the created worktree (`PR{N}/{type}/{title}` branch)
+- Never commit to anywhere other than the created worktree (`{type}/{title}` branch)
 
 ##### Commit granularity
 
 - Commit in meaningful units that are easy for the user to understand
 - Do not split commits too finely
-- Do not mix planning documents (PR document, notes, etc.) and implementation code in the same commit
+- Do not mix planning documents (branch document, notes, etc.) and implementation code in the same commit
 
 ##### Commit message language
 
 - All commit messages produced by this skill MUST be written in **Japanese**
 - Both subject and body are in Japanese (metadata lines like `Co-Authored-By:` may remain in English)
 - Conventional commit prefixes (`feat:` `fix:` `chore:` etc.) may stay in English
-- Example: `chore: PR{N} のタスクドキュメントを作成 #PR{N}`
+- Example: `chore: {type}/{title} のブランチドキュメントを作成`

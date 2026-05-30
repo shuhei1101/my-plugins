@@ -153,4 +153,3 @@ logger.info(f"key = {str(settings.api_key)}")   # → settings.api_key（SecretS
 - `shared/settings.md` — how to use `pydantic_settings`
 - `shared/constants.md` — where to put computed constants
 - `architecture/refactoring-judgement.md` — externalization judgment for settings
-- `dev-kit:yaml` (external) — general operation of index.yaml / settings.yaml

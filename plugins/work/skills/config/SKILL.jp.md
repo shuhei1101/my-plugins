@@ -25,8 +25,12 @@ env トグル変数を `AskUserQuestion` を使って対話的に設定します
 | `WORK_KIT_MERGE_AUTO_HANDOFF` | merge Step 11 auto pr-handoff | 有効 |
 | `NEXT_KIT_TS_CHECK` | PostToolUse tsc 型チェック | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
+| `CLAUDE_KIT_INJECTION_DISABLE` | claude-kit の全参照注入を無効化（逆極性） | 有効（注入 ON） |
+| `DEV_KIT_INJECTION_DISABLE` | dev-kit の全参照注入を無効化（逆極性） | 有効（注入 ON） |
 
-**ルール**：キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
+**通常極性**：キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
+
+**逆極性**（`INJECTION_DISABLE` 系）：キー不在 = ON（注入有効）。truthy（`"true"` など）に設定 = OFF（注入無効）。ON に戻すにはキーを削除する。
 
 ---
 
@@ -48,9 +52,16 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 ```
 
 管理対象の各トグルについて、該当の settings.json の `env` ブロックを確認します：
+
+**通常極性変数**（`INJECTION_DISABLE` 以外）:
 - キー不在 → **ON**（デフォルト有効）
 - 値が `("false", "0", "no", "off")` 内にある → **OFF**
 - その他 → **ON**（明示的に設定）
+
+**逆極性変数**（`CLAUDE_KIT_INJECTION_DISABLE`、`DEV_KIT_INJECTION_DISABLE`）:
+- キー不在 → **ON**（注入有効）
+- 値が `("true", "1", "yes", "on")` 内にある → **OFF**（注入無効）
+- その他 → **ON**（注入有効）
 
 状態テーブルをテキスト出力として表示します：
 
@@ -77,7 +88,7 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 **`AskUserQuestion` ツールを呼び出します** `multiSelect: false` で：
 
-- question: `"設定する env 変数を選択（MERGE_PROPOSAL / MERGE_AUTO_HANDOFF / NEXT_KIT_TS_CHECK / AITUBER_NOTIFY は「その他」に入力）"`
+- question: `"設定する env 変数を選択（MERGE_PROPOSAL / MERGE_AUTO_HANDOFF / NEXT_KIT_TS_CHECK / AITUBER_NOTIFY / CLAUDE_KIT_INJECTION_DISABLE / DEV_KIT_INJECTION_DISABLE は「その他」に入力）"`
 - header: `"env 変数"`
 - options（各ラベルに現在の状態を含める）:
   1. `"[{state}] WORK_KIT_PR_ENFORCEMENT"` — description: `"UserPromptSubmit work-start 強制注入"`
@@ -86,7 +97,7 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
   4. `"完了（設定を終了）"` — description: `"ループを終了して変更結果を表示"`
 
 option 4（完了）が選ばれた場合 → Step 5（レポート）に飛びます
-「その他」（自由入力）の場合 → 入力されたテキストを対象変数として使用; 進める前に 7 つの管理対象変数のいずれかであることを検証します
+「その他」（自由入力）の場合 → 入力されたテキストを対象変数として使用; 進める前に 9 つの管理対象変数のいずれかであることを検証します
 その他の場合 → 選択されたオプションの変数名を使用します
 
 → Step 3 に進みます
@@ -103,13 +114,21 @@ option 4（完了）が選ばれた場合 → Step 5（レポート）に飛び�
 
 **`AskUserQuestion` ツールを呼び出します** 1 回の呼び出しで 2 つの質問を含めて：
 
-**質問 1 — 値**:
+**質問 1 — 値**（選択した変数が逆極性かどうかで options を切り替える）:
+
 - question: `"{VAR_NAME} の値を設定"`
 - header: `"値"`
+- multiSelect: false
+
+*通常極性変数*（`INJECTION_DISABLE` 以外）:
 - options:
   1. `"デフォルトに戻す（キー削除 = ON）"` — description: `"env キーを削除し、デフォルト有効に戻す"`
   2. `"OFF（"false" に設定）"` — description: `"この機能を無効化する"`
-- multiSelect: false
+
+*逆極性変数*（`CLAUDE_KIT_INJECTION_DISABLE`、`DEV_KIT_INJECTION_DISABLE`）:
+- options:
+  1. `"デフォルトに戻す（キー削除 = 注入 ON）"` — description: `"env キーを削除し、注入有効に戻す"`
+  2. `"無効にする（"true" に設定 = 注入 OFF）"` — description: `"参照注入を無効化する"`
 
 **質問 2 — スコープ**:
 - question: `"どの settings.json に書き込みますか？"`
@@ -139,8 +158,12 @@ option 4（完了）が選ばれた場合 → Step 5（レポート）に飛び�
 2. ターゲットファイルから JSON を読み込みます（不在の場合は `{}` を使用）
 3. `env` オブジェクトが存在することを確認します
 4. 変更を適用します：
-   - 「デフォルトに戻す」 → `env.{VAR_NAME}` キーを削除します
-   - 「OFF」 → `env.{VAR_NAME}` を `"false"` に設定します
+   - *通常極性変数*:
+     - 「デフォルトに戻す」 → `env.{VAR_NAME}` キーを削除します
+     - 「OFF」 → `env.{VAR_NAME}` を `"false"` に設定します
+   - *逆極性変数*（`CLAUDE_KIT_INJECTION_DISABLE`、`DEV_KIT_INJECTION_DISABLE`）:
+     - 「デフォルトに戻す」 → `env.{VAR_NAME}` キーを削除します
+     - 「無効にする」 → `env.{VAR_NAME}` を `"true"` に設定します
 5. 2 スペースインデントで書き込みます
 
 最終レポート用に変更を記録します（変数名、変更前の状態 → 変更後の状態、ファイル）。
@@ -176,5 +199,4 @@ option 4（完了）が選ばれた場合 → Step 5（レポート）に飛び�
 ## 注釈
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
-- 本スキルは `{PREFIX}_INJECTION_DISABLE`（逆極性・kit 固有プレフィックス）を対象としない。直接 settings.json を手動編集すること
 - AITUBER_NOTIFY のデフォルトスコープは「ユーザー」だが、スコープはユーザーが毎回選択する
