@@ -667,3 +667,10 @@ prs:
   summary: workspace の Stop フックでマージ提案するかどうかを WORKSPACE_MERGE_PROPOSAL env で制御できるようにする
   task: 20260530_add-merge-proposal-toggle
   completed: true
+- id: 178
+  title: PR178 — add-markdown-table-reference
+  type: feat
+  tags: []
+  summary: claude-kitにMarkdownテーブル記法のリファレンスを追加し、繰り返し値の省略ルールを注入
+  task: 20260530_add-markdown-table-reference
+  completed: true
