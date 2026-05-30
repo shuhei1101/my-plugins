@@ -24,21 +24,56 @@ GitHubのPR概念に縛られた命名（`PR{N}/type/title` 形式のブラン�
 |---|---|---|
 | 済 | QA を確認・記録する | - |
 | 済 | `.work/notes/` の作業メモを更新 | - |
-| - | work-start SKILL.md の Step 1 を「ブランチ名決定」に変更（`next-id` 廃止） | - `plugins/workspace/skills/work-start/SKILL.md` |
-| - | work-start SKILL.md のブランチ名形式を `type/title` に変更（PR番号除去） | - 同上 |
-| - | work-start SKILL.md 全体の「PR」用語を「ブランチ」に統一 | - 同上 |
-| - | work-add SKILL.md をブランチ名のみ受け取る形に変更 | - `plugins/workspace/skills/work-add/SKILL.md` |
-| - | work-add SKILL.md でワークツリー名を `wt-{branch-name}` 形式に変更（既存は変えない） | - 同上 |
-| - | PRドキュメントテンプレートのセクション名を変更（関連PR→関連ブランチ、次PR候補→次ブランチ候補） | - `plugins/workspace/templates/.work/tasks/yymmdd_xxx/PRNNN-type-title.md` |
-| - | 他の workspace スキル（merge, pr-handoff 等）で PR番号に強く依存する箇所を調査・更新 | - 関連スキル全般 |
-| - | 各 SKILL.jp.md を同期 | - 対象の `.jp.md` ファイル |
-| - | ルール・CLAUDE.md を更新（必要なら） | - |
-| - | コミット | - |
+| 済 | work-start SKILL.md の Step 1 を「ブランチ名決定」に変更（内部 ID 採番は継続） | - `plugins/workspace/skills/work-start/SKILL.md` |
+| 済 | work-start SKILL.md のブランチ名形式を `type/title` に変更（PR番号除去） | - 同上 |
+| 済 | work-start SKILL.md 全体の「PR」用語を「ブランチ」に統一 | - 同上 |
+| 済 | work-add SKILL.md をブランチ名のみ受け取る形に変更（レガシー PR{N} は後方互換で破棄） | - `plugins/workspace/skills/work-add/SKILL.md` |
+| 済 | work-add SKILL.md でワークツリー名を `wt-{branch-name}` 形式に変更（既存は変えない） | - 同上 |
+| 済 | PRドキュメントテンプレートをリネーム + セクション名変更（関連PR→関連ブランチ、次PR候補→次ブランチ候補） | - `plugins/workspace/templates/.work/tasks/yymmdd_xxx/{PRNNN-type-title.md → type-title.md}` |
+| 済 | setup-task.py の `--pr` → `--id` 化、テンプレート参照を新ファイル名へ | - `plugins/workspace/scripts/setup-task.py` |
+| 済 | merge / pr-handoff / pr-show / impl-review / qa-review / plugin-update / branch-index-cleanup の PR 用語をブランチ用語に更新 | - 関連スキル全般 |
+| 済 | hook prompts (stop / stop-no-merge / user-prompt-submit) を更新 | - `plugins/workspace/hooks/prompts/*` |
+| 済 | templates/.work/CLAUDE.md（jp）と templates/note.md, templates/.work/notes/xxx.md を更新 | - `plugins/workspace/templates/**` |
+| 済 | 各 SKILL.jp.md / *.jp.md を同期 | - 対象の `.jp.md` ファイル |
+| 済 | plugin.json / marketplace.json を v3.0.0 にバージョンアップ | - 該当ファイル |
+| 済 | コミット | - |
 
 ## 変更内容
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
+| `plugins/workspace/skills/work-start/SKILL.md` | 編集 | Step 1 を「ブランチ名決定」に変更、ブランチ形式 `{type}/{title}`、ワークツリー `wt-{type}-{title}`、用語を全面「ブランチ」に。setup-task.py 引数を `--id` 化 | 内部 ID は採番継続 |
+| `plugins/workspace/skills/work-start/SKILL.jp.md` | 編集 | 英語版に追随した JP ミラー | jp-mirror-translator 出力 |
+| `plugins/workspace/skills/work-add/SKILL.md` | 編集 | 引数を `{type}/{title}` 単体に、ワークツリー `../{repo}-wt-{type}-{title}`、レガシー `PR{N}` は後方互換で破棄 | - |
+| `plugins/workspace/skills/work-add/SKILL.jp.md` | 編集 | 英語版に追随した JP ミラー | - |
+| `plugins/workspace/scripts/setup-task.py` | 編集 | `--pr` → `--id` (alias `--pr` 残し)、テンプレートパスを `type-title.md` に。`{N}/{タイトル}/{ブランチ名}` プレースホルダ展開 | - |
+| `plugins/workspace/templates/.work/tasks/yymmdd_xxx/type-title.md` | 新規（リネーム） | 旧 `PRNNN-type-title.md` を rename。本文を `# {ブランチ名}` 形式に再構成、`## 関連ブランチ` / `## 次ブランチ候補` セクションへ | git mv |
+| `plugins/workspace/skills/merge/SKILL.md` | 編集 | branch 用語に統一、`{WORKTREE_PATH}` `{BRANCH_NAME}` 変数化、コミット cross-ref `#PR{N}` → `#{N}`、レガシー対応の注記 | - |
+| `plugins/workspace/skills/merge/SKILL.jp.md` | 編集 | JP ミラー | - |
+| `plugins/workspace/skills/pr-handoff/SKILL.md` | 編集 | `次PR候補` → `次ブランチ候補` 等。スキル名は互換維持 | - |
+| `plugins/workspace/skills/pr-handoff/SKILL.jp.md` | 編集 | JP ミラー | - |
+| `plugins/workspace/skills/pr-show/SKILL.md` | 編集 | `次PR候補` → `次ブランチ候補`、表ヘッダ PR → Branch、find パターン更新 | - |
+| `plugins/workspace/skills/pr-show/SKILL.jp.md` | 編集 | JP ミラー | - |
+| `plugins/workspace/skills/impl-review/SKILL.md` | 編集 | PR → working branch 用語統一、引数説明を更新 | - |
+| `plugins/workspace/skills/impl-review/SKILL.jp.md` | 編集 | JP ミラー（手動更新） | - |
+| `plugins/workspace/skills/qa-review/SKILL.md` | 編集 | PR document → branch document、find パターン更新 | - |
+| `plugins/workspace/skills/qa-review/SKILL.jp.md` | 編集 | JP ミラー（手動更新） | - |
+| `plugins/workspace/skills/plugin-update/SKILL.md` | 編集 | PR branch → working branch、コミットメッセージテンプレ更新 | - |
+| `plugins/workspace/skills/plugin-update/SKILL.jp.md` | 編集 | JP ミラー | - |
+| `plugins/workspace/skills/branch-index-cleanup/SKILL.md` | 編集 | 新形式/レガシー両対応の照合ロジックに更新 | - |
+| `plugins/workspace/skills/branch-index-cleanup/SKILL.jp.md` | 編集 | JP ミラー | - |
+| `plugins/workspace/hooks/prompts/stop.md` | 編集 | PR → ブランチ用語統一、merge 候補表示を branch 名で | - |
+| `plugins/workspace/hooks/prompts/stop.jp.md` | 編集 | JP ミラー | - |
+| `plugins/workspace/hooks/prompts/stop-no-merge.md` | 編集 | PR → ブランチ用語統一、`[work-kit]` → `[workspace]` | - |
+| `plugins/workspace/hooks/prompts/stop-no-merge.jp.md` | 編集 | JP ミラー | - |
+| `plugins/workspace/hooks/prompts/user-prompt-submit.md` | 編集 | 「PR が進行中」→「ブランチが進行中」等 | - |
+| `plugins/workspace/hooks/prompts/user-prompt-submit.jp.md` | 編集 | JP ミラー | - |
+| `plugins/workspace/templates/.work/CLAUDE.md` | 編集 | ディレクトリ説明・セクション名を branch 用語に統一 | - |
+| `plugins/workspace/templates/.work/CLAUDE.jp.md` | 編集 | JP ミラー | - |
+| `plugins/workspace/templates/note.md` | 編集 | `related_prs` → `related_branches` | - |
+| `plugins/workspace/templates/.work/notes/xxx.md` | 編集 | `related_prs` → `related_branches` | - |
+| `plugins/workspace/.claude-plugin/plugin.json` | 編集 | version 2.44.0 → 3.0.0、description 更新 | breaking |
+| `.claude-plugin/marketplace.json` | 編集 | workspace 行 version 2.44.0 → 3.0.0、description 更新 | breaking |
 
 ## テスト
 
