@@ -12,7 +12,7 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | 繰り返し値を空白から `〃` に変更する | - `plugins/dev-kit/references/markdown/markdown-table.md`<br>- `plugins/dev-kit/references/markdown/markdown-table.jp.md`<br>- `plugins/dev-kit/references/index.yaml`<br>- `plugins/dev-kit/references/index.jp.yaml` |
+| 済 | 繰り返し値を空白から `〃` に変更する | - `plugins/dev-kit/references/markdown/markdown-table.md`<br>- `plugins/dev-kit/references/markdown/markdown-table.jp.md`<br>- `plugins/dev-kit/references/index.yaml`<br>- `plugins/dev-kit/references/index.jp.yaml` |
 
 ## 変更内容
 
