@@ -4,78 +4,80 @@
 
 ## 概要
 
-{このブランチの目的・背景を書く}
+各プラグイン（claude-kit / dev-kit / work / ref-inject テンプレート）の `references/` 配下にある
+ref-inject 内部ファイル（`_index.yaml`, `_index.jp.yaml`, `_injection_rules.yaml`, `CLAUDE.md`, `CLAUDE.jp.md`）を
+`references/.ref-injects/` サブディレクトリに移動する。
+あわせて、新しく `references/_index.md`（人間向けの日本語インデックス）を各プラグインに追加する。
+`inject_references.py` のパス解決も `.ref-injects/` に対応させる。
 
 ### 実施条件
 
-{例: 即時実施可 / 「{他ブランチ名}」が完了してから}
+即時実施可
 
 ## 作業内容
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| 済 | {何をするか（サンプル行 — 実際の作業に書き換える）} | - `{file/path}` |
-| - | {何をするか} | - `{file/path1}`<br>- `{file/path2}` |
+| 済 | QA を `## QA` に記録する | - |
+| - | `.work/notes/` のノートを更新 | - |
+| 済 | `inject_references.py` テンプレートの参照パスを `.ref-injects/` に変更 | `plugins/ref-inject/templates/hooks/scripts/inject_references.py` |
+| 済 | 各プラグインの ref-inject 内部ファイルを `.ref-injects/` に移動 | `plugins/*/references/{_index*,_injection_rules*,CLAUDE*}` |
+| 済 | 各プラグインに `references/_index.md` を新規作成（日本語インデックス） | `plugins/*/references/_index.md` |
+| 済 | CLAUDE.md 内のパス参照を更新（`.ref-injects/` への移動を反映） | 各 `.ref-injects/CLAUDE.md` |
 
 ## 変更内容
 
-実装したファイル（テスト以外）。コミットに積まれる全ファイルを列挙する。
-
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| `{file/path}` | 新規 | {このファイルで何を実装したか} | {補足あれば} |
-| `{file/path2}` | 編集 | {何を変更したか} | - |
+| `plugins/ref-inject/templates/hooks/scripts/inject_references.py` | 編集 | `_injection_rules.yaml` / `_index.yaml` の参照先を `.ref-injects/` に変更 | - |
+| `plugins/claude-kit/hooks/scripts/inject_references.py` | 編集 | 同上 | - |
+| `plugins/dev-kit/hooks/scripts/inject_references.py` | 編集 | 同上 | - |
+| `plugins/work/hooks/scripts/inject_references.py` | 編集 | 同上 | - |
+| `plugins/claude-kit/references/.ref-injects/_index.yaml` | 新規（移動） | 旧 `references/_index.yaml` | - |
+| `plugins/claude-kit/references/.ref-injects/_index.jp.yaml` | 新規（移動） | 旧 `references/_index.jp.yaml` | - |
+| `plugins/claude-kit/references/.ref-injects/_injection_rules.yaml` | 新規（移動） | パターンも `.ref-injects/` パスに更新 | - |
+| `plugins/claude-kit/references/.ref-injects/CLAUDE.md` | 新規（移動） | パス参照を更新 | - |
+| `plugins/claude-kit/references/.ref-injects/CLAUDE.jp.md` | 新規（移動） | - | - |
+| `plugins/claude-kit/references/_index.md` | 新規 | 日本語インデックス（14 ファイル、4 カテゴリ） | - |
+| `plugins/dev-kit/references/.ref-injects/_index.yaml` | 新規（移動） | - | - |
+| `plugins/dev-kit/references/.ref-injects/_index.jp.yaml` | 新規（移動） | - | - |
+| `plugins/dev-kit/references/.ref-injects/_injection_rules.yaml` | 新規（移動） | - | - |
+| `plugins/dev-kit/references/_index.md` | 新規 | 日本語インデックス（HTML/Python/Next.js の大規模インデックス） | - |
+| `plugins/work/references/.ref-injects/_index.yaml` | 新規（移動） | - | - |
+| `plugins/work/references/.ref-injects/_index.jp.yaml` | 新規（移動） | - | - |
+| `plugins/work/references/.ref-injects/_injection_rules.yaml` | 新規（移動） | - | - |
+| `plugins/work/references/.ref-injects/CLAUDE.md` | 新規（移動） | パス参照を更新 | - |
+| `plugins/work/references/.ref-injects/CLAUDE.jp.md` | 新規（移動） | - | - |
+| `plugins/work/references/_index.md` | 新規 | 日本語インデックス（5 ファイル、2 カテゴリ） | - |
+| `plugins/ref-inject/templates/references/.ref-injects/_index.yaml` | 新規（移動） | - | - |
+| `plugins/ref-inject/templates/references/.ref-injects/_index.jp.yaml` | 新規（移動） | - | - |
+| `plugins/ref-inject/templates/references/.ref-injects/_injection_rules.yaml` | 新規（移動） | - | - |
+| `plugins/ref-inject/templates/references/.ref-injects/CLAUDE.md` | 新規（移動） | パス参照を更新 | - |
+| `plugins/ref-inject/templates/references/.ref-injects/CLAUDE.jp.md` | 新規（移動） | - | - |
+| `plugins/ref-inject/templates/references/_index.md` | 新規 | テンプレート用の最小構成インデックス | - |
 
 ## テスト
 
-上記実装に伴って追加・変更したテストファイル。
-
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| `{test/path}` | 新規 | {このテストで何を検証するか} | {補足あれば} |
+| - | - | テスト変更なし | - |
 
 ## QA
 
-このブランチのスコープの未決定事項を QA-XXX として記録する。決定後は本文の該当箇所に反映する。
-
-### QA-001: references-dot-ref-injects
-
-**背景**: {なぜこれを判断する必要があるか}
-
-| 案 | 内容 |
-|---|---|
-| A | {案 A の説明} |
-| B | {案 B の説明} |
-
-**推奨方式**: {A/B のどちらか + 理由を 1〜2 行。「後で決める」は禁止}
-
-**状態**: 未解決
-
-**決定したら反映先**: {ドキュメントの該当セクション}
+（QA なし）
 
 ## 参考ドキュメント
 
-- `{path/to/spec.md}`: {何の資料か}
-
-## 関連イシュー
-
-このブランチが解決する `.work/issues/` のイシュー一覧。merge 実行時に自動でクローズされる。
-イシューがない場合は表ごと削除してよい。
-
-| ID | 概要 | resolution |
-|---|---|---|
-| ISSUE-224 | {イシューのタイトル} | resolved |
+- `.work/notes/_index.md`: 新規 _index.md のスタイル参考
 
 ## 関連ブランチ
 
-直接関連するブランチ（先行・分割兄弟・後続）を列挙する。
-
 | ブランチ | 概要 |
 |---|---|
-| {type/title} | {概要} |
+| - | - |
 
 ## 次ブランチ候補
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| {次にやること} | {背景・目的} | {例: 即時実施可 / 「{他候補タイトル}」が完了したら} |
+| - | - | - |
