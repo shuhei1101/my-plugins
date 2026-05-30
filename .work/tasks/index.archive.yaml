@@ -936,3 +936,11 @@ branches:
   summary: 他のマークダウンファイルで env var を直接読もうとする誤った指示がないか全量調査し修正する
   task: 260531_claude-kit-markdown-env-var-audit
   completed: true
+- id: 222
+  title: docs/claude-kit-jinja2-authoring-rules
+  type: docs
+  tags: []
+  summary: 'Jinja2 テンプレート作成時の注意事項（trim_blocks との相互作用、{% %} + --- バグ、{{ }} を ## に埋めない等）を
+    references/jinja2/ にドキュメント化'
+  task: 260531_claude-kit-jinja2-authoring-rules
+  completed: true
