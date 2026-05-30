@@ -74,7 +74,7 @@ prevents duplicate injection.
 
 | Version | Date | Summary |
 |---|---|---|
-| 4.11.0 | 2026-05-31 | Add `dev-kit:config` skill — interactively configures 6 env toggles (`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` default-on) via numbered-list loop (PR219) |
+| 4.11.0 | 2026-05-31 | Add `dev-kit:config` skill — interactively configures 6 env toggles (`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` default-on) via numbered-list loop (PR229) |
 | 4.10.0 | 2026-05-31 | Remove `markdown_frontmatter_check.py` hook; rule is already enforced via `references/markdown/markdown-editing.md` auto-injection on `**/*.md` (PR228) |
 | 4.9.0 | 2026-05-31 | Add `references-edit-guard` PreToolUse hook (via ref-inject v1.7.0) that reminds to update `_index.yaml` / `_injection_rules.yaml` **before** editing or creating files under `references/` (PR206) |
 | 4.8.0 | 2026-05-31 | Remove `dev-kit:yaml` skill, `references/yaml/`, and the `yaml_skill_dispatch.py` hook (+ prompts); drop `**/index.yaml` / `**/settings.yaml(.sample)` injection patterns; the YAML conventions are out of scope for dev-kit (PR202) |

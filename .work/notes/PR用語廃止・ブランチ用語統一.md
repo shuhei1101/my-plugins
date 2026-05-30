@@ -4,6 +4,7 @@ updates:
   - 2026-05-30 — 初版作成
   - 2026-05-30 — PR188: work-start の PR 用語をブランチ用語に統一
   - 2026-05-30 — PR190: index.yaml / index.archive.yaml の prs: キーを branches: に改名
+  - 2026-05-31 — #230: pr-handoff → branch-reserve、pr-show → branch-show にリネーム
 related_specs: []
 related_prs:
   - PR188
@@ -77,4 +78,6 @@ workspace の work-start スキルを中心に「PR（Pull Request）」とい�
 - `plugins/workspace/templates/.work/tasks/index.yaml`
 - `plugins/workspace/templates/.work/tasks/index.archive.yaml`
 - 各 SKILL.jp.md ミラー
-- merge, pr-handoff, pr-show など PR番号に依存するスキル群
+- merge スキル（#230 で更新済み）
+- pr-handoff → branch-reserve にリネーム済み（#230）
+- pr-show → branch-show にリネーム済み（#230）

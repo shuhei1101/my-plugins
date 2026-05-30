@@ -984,6 +984,13 @@ branches:
   summary: dev-kit フックが .jp.md ファイルに誤って advisory を出す条件バグを修正
   task: 260531_dev-kit-hook-jp-md
   completed: true
+- id: 230
+  title: refactor/rename-pr-to-branch
+  type: refactor
+  tags: []
+  summary: work プラグインのスキル名・説明から PR 概念を削除しブランチ概念に統一
+  task: 260531_PRをブランチに統一
+  completed: true
 - id: 229
   title: feat/migrate-existing-plugins-to-have-config-skill
   type: feat

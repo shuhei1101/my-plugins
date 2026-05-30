@@ -21,7 +21,7 @@ until the user chooses to finish.
 | `WORK_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
 | `WORK_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
 | `WORK_MERGE_PROPOSAL` | Stop フックでの `/work:merge` 提案 | 有効 |
-| `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto pr-handoff | 有効 |
+| `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto branch-reserve | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
 
 **Normal polarity**: キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
