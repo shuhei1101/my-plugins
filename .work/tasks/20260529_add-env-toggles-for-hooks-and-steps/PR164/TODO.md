@@ -43,7 +43,7 @@ env 値の判定パターンは PR163 の work-start Step 4 と同じ:
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR164/QA.md` |
-| - | `.work/notes/` のノートを更新する | - `.work/notes/{note}.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/env-toggles-for-hooks-and-steps.md` |
 | 済 | #1 WORK_KIT_PR_ENFORCEMENT | - `plugins/work-kit/hooks/scripts/user-prompt-submit.py` |
 | 済 | #2 WORK_KIT_STOP_REMINDER | - `plugins/work-kit/hooks/hooks.json` |
 | 済 | #3 {PREFIX}_INJECTION_DISABLE（ref-inject テンプレのみ・波及は次 PR） | - `plugins/ref-inject/templates/hooks/inject_references.py` |
