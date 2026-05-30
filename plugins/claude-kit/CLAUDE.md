@@ -16,7 +16,7 @@ path→reference map.
 - **Do not load other skills in a Step 0** — reading skills at startup costs 2500 × N tokens. The
   injection mechanism replaces the old "Step 0: read background materials" pattern.
 
-This injection structure is shared across all `*-kit` plugins (py-kit / next-kit / claude-kit) — see
+This injection structure is shared across all `*-kit` plugins (dev-kit / claude-kit) — see
 the `kit-hooks-index-sync` rule. Attach it to a plugin with `/ref-inject:apply <plugin>`; never
 hand-edit the mechanism per plugin (change the `ref-inject` templates and re-apply).
 

@@ -16,7 +16,7 @@
 - **Step 0 で他スキルを読み込まない** — スキルの起動時読み込みは 2500 × N トークンを消費する。
   注入機構が旧来の「Step 0: 背景資料を読む」パターンを置き換える。
 
-この注入構造は全 `*-kit` プラグイン（py-kit / next-kit / claude-kit）で共通 — `kit-hooks-index-sync`
+この注入構造は全 `*-kit` プラグイン（dev-kit / claude-kit）で共通 — `kit-hooks-index-sync`
 ルール参照。プラグインへの付与は `/ref-inject:apply <plugin>`。機構をプラグインごとに手編集しない
 （`ref-inject` テンプレを変えて再適用する）。
 

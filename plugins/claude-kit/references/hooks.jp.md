@@ -253,7 +253,7 @@ Claude がこれから触るファイルに関連する規約/ドキュメント
 `references/` スケルトンをコピーし、プラグインごとのプレースホルダを置換する。その後、
 `references/_index.yaml`（path + description）を埋め、`references/_injection_rules.yaml` で
 編集パスのパターンを束ね、reference ドキュメントを書く（1 reference = 1 ユースケース）。
-代表的な採用例: `py-kit`, `next-kit`, `claude-kit`。
+代表的な採用例: `dev-kit`, `claude-kit`。
 
 ### 注入設計（生成されるフックの動作）
 

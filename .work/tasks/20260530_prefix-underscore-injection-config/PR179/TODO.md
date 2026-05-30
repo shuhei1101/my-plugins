@@ -33,6 +33,8 @@
 | 済 | バージョンを bump し、`marketplace.json` も同期 + changelog 作成 | `plugins/{ref-inject,dev-kit,claude-kit}/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `plugins/*/changelogs/v*.md` |
 | 済 | `kit-hooks-index-sync` ルールも追従 | `.claude/rules/feature/kit-hooks-index-sync.md` (+ `rules-jp/`) |
 | 済 | スモークテスト: claude-kit / dev-kit のフックを実走（YAML パース確認） | — |
+| 済 | 触った active doc から PR166 で削除済みの `py-kit` / `next-kit` / `html-kit` への並列言及を整理 | `plugins/claude-kit/CLAUDE.md` (+ JP), `plugins/claude-kit/references/{environment,hooks}.md` (+ JP), `plugins/ref-inject/CLAUDE.md` (+ JP), `plugins/workspace/skills/issue-scan/SKILL.md` (+ JP) |
+| 済 | workspace v2.43.1 へ bump + changelog 追加 | `plugins/workspace/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `plugins/workspace/changelogs/v2.43.1.md` |
 
 ## 参考ドキュメント
 

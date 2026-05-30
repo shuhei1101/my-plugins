@@ -50,7 +50,7 @@ lang = os.environ.get("MY_KIT_INJECTION_LANG", "en").lower()
 
 ## Worked example (this repo)
 
-The `*-kit` reference-injection hooks (`hooks/inject_references.py` in py-kit / next-kit / claude-kit)
+The `*-kit` reference-injection hooks (`hooks/inject_references.py` in dev-kit / claude-kit)
 are tuned this way:
 
 | Env var | Effect | Default |
@@ -58,7 +58,7 @@ are tuned this way:
 | `{PREFIX}_INJECTION_TTL` | Seconds before a reference is re-injected | `3600` |
 | `{PREFIX}_INJECTION_LANG` | `jp` → inject the Japanese descriptions/template | `en` |
 
-`{PREFIX}` is the plugin name upper-cased with non-alphanumerics → `_` (e.g. `py-kit` → `PY_KIT`).
+`{PREFIX}` is the plugin name upper-cased with non-alphanumerics → `_` (e.g. `dev-kit` → `DEV_KIT`).
 
 ---
 

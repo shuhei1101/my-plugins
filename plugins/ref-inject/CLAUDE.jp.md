@@ -1,8 +1,8 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # ref-inject プラグイン開発ガイド
 
-`ref-inject` は**プラグインにリファレンス自動注入の仕組みを付与する**プラグイン。`py-kit` /
-`next-kit` で使われている `*-kit` 形式の、編集対象パスを `_injection_rules.yaml` と照合して
+`ref-inject` は**プラグインにリファレンス自動注入の仕組みを付与する**プラグイン。`dev-kit` /
+`claude-kit` で使われている `*-kit` 形式の、編集対象パスを `_injection_rules.yaml` と照合して
 関連リファレンスを注入する `PreToolUse` フックを付ける。対象プラグインは新規でも既存でもよく、
 `/ref-inject:apply` は**注入部分だけ**を提供する。
 
@@ -101,5 +101,5 @@ consumer の `hooks/` に再適用する（references はそのまま。`ref-inj
 
 | プラグイン | 関係 |
 |---|---|
-| `py-kit` / `next-kit` | リファレンス注入の consumer。ref-inject テンプレートへ移行予定 |
+| `dev-kit` / `claude-kit` | リファレンス注入の consumer。ref-inject テンプレートを採用済み |
 | `claude-kit` | `plugin-creator`（プラグインレベルのファイルを所有）と共通フックポリシーの出所 |

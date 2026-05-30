@@ -1,7 +1,7 @@
 # ref-inject Plugin Developer Guide
 
 `ref-inject` **attaches the reference auto-injection mechanism to a plugin** (the `*-kit`
-style used by `py-kit` / `next-kit`): a `PreToolUse` hook that matches the edited file path
+style used by `dev-kit` / `claude-kit`): a `PreToolUse` hook that matches the edited file path
 against `_injection_rules.yaml` and injects the relevant references. The target plugin can be
 new or existing — `/ref-inject:apply` only contributes the **injection part**.
 
@@ -101,5 +101,5 @@ hook/template files come from `ref-inject`).
 
 | Plugin | Relationship |
 |---|---|
-| `py-kit` / `next-kit` | Reference-injection consumers; to be migrated onto ref-inject's templates |
+| `dev-kit` / `claude-kit` | Reference-injection consumers; use ref-inject's templates |
 | `claude-kit` | Source of `plugin-creator` (owns plugin-level files) and the common hook policy |
