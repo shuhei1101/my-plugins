@@ -14,7 +14,7 @@ template and writes the destination file itself**, substituting placeholders, so
 stays in context.
 
 The injected mechanism: a `PreToolUse(Edit | Write | MultiEdit | Read)` hook matches the edited
-file path against `references/injection_rules.yaml` and injects matched references —
+file path against `references/_injection_rules.yaml` and injects matched references —
 `required` → **full body**, `optional` → **path + description only** — de-duped by a two-tier
 TTL token (per-pattern + per-reference; a reference already injected this session is shown by path
 only, re-injected once the TTL elapses).
@@ -84,8 +84,8 @@ Substitute placeholders in text files; copy binaries verbatim.
 | `hooks/scripts/_common.py` | `hooks/scripts/_common.py` |
 | `hooks/hooks.json` | `hooks/hooks.json` |
 | `hooks/templates/injection.md.j2` / `injection.jp.md.j2` | `hooks/templates/…` (same names) |
-| `references/index.yaml` / `index.jp.yaml` | `references/…` (same names) |
-| `references/injection_rules.yaml` | `references/injection_rules.yaml` |
+| `references/_index.yaml` / `_index.jp.yaml` | `references/…` (same names) |
+| `references/_injection_rules.yaml` | `references/_injection_rules.yaml` |
 | `references/CLAUDE.md` / `CLAUDE.jp.md` | `references/…` (same names) |
 | `references/example/getting-started.md` | `references/example/getting-started.md` |
 
@@ -93,7 +93,7 @@ Notes:
 - Paths mirror the template — no relocation.
 - Leave `${CLAUDE_PLUGIN_ROOT}` in `hooks.json` literal — Claude Code expands it at runtime.
 - **If the target already has `hooks/hooks.json`** (other hooks present): do not overwrite it — merge the `PreToolUse` (Edit/Write/MultiEdit/Read) entries into the existing file instead.
-- **If the target already has the injection files** (a re-apply / mechanism update): overwrite `hooks/*` but leave existing `references/` content (index.yaml / injection_rules.yaml / real docs) untouched — only add the skeleton files that are missing.
+- **If the target already has the injection files** (a re-apply / mechanism update): overwrite `hooks/*` but leave existing `references/` content (_index.yaml / _injection_rules.yaml / real docs) untouched — only add the skeleton files that are missing.
 - After writing, confirm no `__PLACEHOLDER__` token remains (grep the target plugin's `hooks/`).
 
 → Proceed to Step 3
@@ -115,8 +115,8 @@ Notes:
 1. Report which files were written to the target plugin.
 2. Tell the user the remaining steps (all plugin-owned, outside this skill):
    - Fill `references/` with real docs (1 reference = 1 use case); replace `references/example/`
-   - List each doc's path + description in `references/index.yaml` (+ `index.jp.yaml`)
-   - Bind edit-path patterns in `references/injection_rules.yaml`
+   - List each doc's path + description in `references/_index.yaml` (+ `_index.jp.yaml`)
+   - Bind edit-path patterns in `references/_injection_rules.yaml`
    - Optionally set `{ENV_PREFIX}_INJECTION_TTL` in `settings.json` `env`
    - If this is a brand-new plugin, ensure `plugin.json` and `marketplace.json` exist (via `plugin-creator`), and mention the injection hook in the plugin's `CLAUDE.md`
 3. Do **not** hand-edit the mechanism per plugin — change the `ref-inject` templates and re-apply.

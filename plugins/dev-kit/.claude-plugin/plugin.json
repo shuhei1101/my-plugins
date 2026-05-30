@@ -1,5 +1,5 @@
 {
   "name": "dev-kit",
   "description": "Development conventions toolkit — Python (py-script/py-project), HTML/CSS/JS (FLOCSS, debug-fab, logging, mock), Next.js 16 App Router (implement/plan), YAML, and Markdown. Reference auto-injection via PreToolUse(Edit/Write/MultiEdit/Read) gated by DEV_KIT_PYTHON / DEV_KIT_HTML / DEV_KIT_NEXT / DEV_KIT_MARKDOWN env opt-in; PostToolUse tsc check gated by DEV_KIT_NEXT_TS_CHECK.",
-  "version": "4.2.0"
+  "version": "4.7.0"
 }

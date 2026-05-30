@@ -31,25 +31,29 @@ each unregistered branch. Then executes delete / archive / index-add per classif
 git branch --format='%(refname:short)'
 ```
 
-2. Read registered PR IDs from both index files:
+2. Read registered branch identifiers from both index files (each entry has either an `id` and/or a
+   `title` matching `{type}/{title}`):
 
 ```bash
 python -c "
-import yaml, re, sys
-ids = set()
+import yaml
+ids, titles = set(), set()
 for path in ['.work/tasks/index.yaml', '.work/tasks/index.archive.yaml']:
     try:
         data = yaml.safe_load(open(path))
         for entry in (data.get('prs') or []):
-            ids.add(str(entry['id']))
+            if 'id' in entry: ids.add(str(entry['id']))
+            if 'title' in entry: titles.add(str(entry['title']))
     except: pass
-print(' '.join(sorted(ids)))
+print('IDS:', ' '.join(sorted(ids)))
+print('TITLES:', ' '.join(sorted(titles)))
 "
 ```
 
-3. For each branch (excluding `master` / `main`), check if its PR number appears in the registered IDs
-   - Branch name format: `PR{N}/{type}/{title}` → extract `N`
-   - Branches that cannot be parsed as `PR{N}/...` are also treated as unregistered
+3. For each branch (excluding `master` / `main`), check whether it is registered:
+   - **New format**: branch is `{type}/{title}` → match against `titles`
+   - **Legacy format**: branch is `PR{N}/{type}/{title}` → extract `{N}` and match against `ids`
+   - Branches that match neither are treated as unregistered
 4. Build the list of **unregistered branches**
 
 → Proceed to Step 2
@@ -70,14 +74,15 @@ print(' '.join(sorted(ids)))
 
 1. Display the unregistered branch list in a table:
 
-   | Branch | Inferred PR# | Inferred Title | Classification |
+   | Branch | Inferred ID | Inferred Title | Classification |
    |---|---|---|---|
-   | PR42/feat/some-feature | 42 | feat/some-feature | ? |
+   | feat/some-feature | (none) | feat/some-feature | ? |
+   | PR42/feat/legacy   | 42     | feat/legacy        | ? |
    | ... | | | |
 
 2. For each branch, auto-infer:
-   - `id` — PR number extracted from branch name (or `?` if unparseable)
-   - `title` — type/title portion of branch name
+   - `id` — only present when the branch name carries a legacy `PR{N}/` prefix
+   - `title` — full branch name (new format) or the `{type}/{title}` portion (legacy format)
    - `type` — type portion (feat/fix/refactor/docs/chore/test), default `chore` if absent
 
 3. Ask the user to assign A / B / C to each branch:

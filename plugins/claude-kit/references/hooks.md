@@ -248,13 +248,13 @@ the file Claude is about to touch. **Do not hand-build this** — use the `ref-i
 ```
 
 It copies the injection hook (`hooks/scripts/inject_references.py` + `hooks/hooks.json`), the Jinja2 templates,
-and a `references/` skeleton, substituting per-plugin placeholders. Then you fill `references/index.yaml`
-(path + description), bind edit-path patterns in `references/injection_rules.yaml`, and write the
-reference docs (1 reference = 1 use case). Canonical adopters: `py-kit`, `next-kit`, `claude-kit`.
+and a `references/` skeleton, substituting per-plugin placeholders. Then you fill `references/_index.yaml`
+(path + description), bind edit-path patterns in `references/_injection_rules.yaml`, and write the
+reference docs (1 reference = 1 use case). Canonical adopters: `dev-kit`, `claude-kit`.
 
 ### Injection design (what the generated hook does)
 
-1. On Edit/Write/MultiEdit/Read, match the target path against `injection_rules.yaml` glob patterns.
+1. On Edit/Write/MultiEdit/Read, match the target path against `_injection_rules.yaml` glob patterns.
 2. Inject each matched `required` reference **in full body**, each `optional` as **path + description only**.
 3. De-dupe with a **per-pattern TTL token** at `~/.claude/tokens/{plugin}/{session_id}.yaml` — a
    YAML map keyed by the matched pattern, each entry holding `expires_at` (= injection time + TTL).
@@ -289,3 +289,19 @@ To make a hook configurable, read environment variables set in `settings.json`'s
 `os.environ` (e.g. the `*-kit` injection hooks read `{PREFIX}_INJECTION_TTL` / `{PREFIX}_INJECTION_LANG`).
 Full guide — set/read, scopes, defaults, conventions — in **`environment.md`** (injected alongside this
 guide when you edit `hooks.json` / `settings.json`).
+
+---
+
+## JP Mirror Sync (Hook Prompts)
+
+When editing `plugins/**/hooks/prompts/*.md`, **update the paired `*.jp.md` in the same commit**.
+
+| Edited file | Must also update |
+|---|---|
+| `plugins/{name}/hooks/prompts/{prompt}.md` | `plugins/{name}/hooks/prompts/{prompt}.jp.md` |
+
+### Checklist before committing
+
+- [ ] Changes in `*.md` are reflected in `*.jp.md` in Japanese
+- [ ] Section structure in `*.jp.md` matches the English `*.md`
+- [ ] `*.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror... -->`)

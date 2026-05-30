@@ -1,0 +1,39 @@
+# claude-kit リファレンス索引（日本語ミラー；人間用）。
+# CLAUDE_KIT_INJECTION_LANG=jp のとき inject_references.py が description をここから取る。
+# _index.yaml（英語・正本）と _injection_rules.yaml に常に同期させること。
+references:
+  - path: common.md
+    description: 全 Claude 設定オーサリングの共通ベース。ファイル種別の判定基準（rule / skill / CLAUDE.md / hook / reference）、増殖防止ガード、JP/EN ミラー規則。
+
+  - path: skills.md
+    description: .claude/skills/<name>/SKILL.md の作り方。skill が適切な種別かの判定、既存類似スキルの確認、JP ミラー先行ワークフロー、ステップ構造テンプレ、description フロントマター規約。
+
+  - path: rules.md
+    description: .claude/rules/<name>.md の作り方。ルールの読み込み条件、2 種類（リンク型 / コンテキスト型）、ユースケース指向の paths 設計、統合 / 分離基準、フォルダ構成、必須セクション、構造例。
+
+  - path: hooks.md
+    description: プロンプト注入フックの作り方。フックイベント、注入メカニズム、使用時機、ループ防止（stop_hook_active / ワンタイムトークン）、すぐ使える hooks.json スニペット、プロンプトファイル配置、パス変数。
+
+  - path: environment.md
+    description: プラグインのフック/スクリプトを環境変数で設定可能にする方法 — settings.json の env ブロックで設定（ユーザー/プロジェクト/ローカルのスコープ）、os.environ で読む、デフォルト/検証、{PREFIX}_INJECTION_TTL / _INJECTION_LANG の実例、env とパス変数の区別。Markdown は env を読めない。
+
+  - path: claude-md.md
+    description: CLAUDE.md（ルート / サブフォルダ）の作り方。読み込みタイミング、薄肉原則、抽出先ガイド、他ファイル種別との照合、JP ミラー先行ワークフロー、必須セクション、行数ガイドライン。
+
+  - path: plugin-structure.md
+    description: プラグインの作成 / 更新の仕方。標準ディレクトリ構成、plugin.json フィールド、marketplace.json エントリ、新規 / 更新モード、バージョンバンプ規則、plugin.json / marketplace.json / CLAUDE.md Changelog のバージョン一致不変条件。
+
+  - path: plugin-claude-md.md
+    description: プラグインのルート CLAUDE.md の書き方。必須セクション（Skills / Hooks / Environment Variables / Dependencies / Changelog）、各セクションのテーブル形式、コピペ用フルテンプレート。
+
+  - path: glossary.md
+    description: .claude/rules/glossary.md のフォーマットガイド。単一ファイル・カテゴリ分けの用語表、記述規律（常時ロード → 簡潔に）、用語の追加方法。
+
+  - path: incidents.md
+    description: .claude/rules/incidents.md のフォーマットガイド。再発防止ログの 2 層（索引 + 詳細ファイル）構造、インシデントの記録方法。
+
+  - path: references-sync.md
+    description: プラグインリファレンスファイルの JP ミラー同期ルール。plugins/*/references/**/*.md を編集したら、ペアの *.jp.md も同じコミットで更新する。
+
+  - path: kit-hooks-sync.md
+    description: dev-kit と claude-kit の注入インフラ構造同期ルール。inject_references.py・hooks.json・テンプレート・_index.yaml・_injection_rules.yaml の共有構造を片方の kit で変更したら、もう片方も同じコミットで更新する。

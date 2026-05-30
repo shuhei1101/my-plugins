@@ -251,13 +251,13 @@ Claude がこれから触るファイルに関連する規約/ドキュメント
 
 これは注入フック（`hooks/scripts/inject_references.py` + `hooks/hooks.json`）、Jinja2 テンプレート、
 `references/` スケルトンをコピーし、プラグインごとのプレースホルダを置換する。その後、
-`references/index.yaml`（path + description）を埋め、`references/injection_rules.yaml` で
+`references/_index.yaml`（path + description）を埋め、`references/_injection_rules.yaml` で
 編集パスのパターンを束ね、reference ドキュメントを書く（1 reference = 1 ユースケース）。
-代表的な採用例: `py-kit`, `next-kit`, `claude-kit`。
+代表的な採用例: `dev-kit`, `claude-kit`。
 
 ### 注入設計（生成されるフックの動作）
 
-1. Edit/Write/MultiEdit/Read で、対象パスを `injection_rules.yaml` の glob パターンと照合する。
+1. Edit/Write/MultiEdit/Read で、対象パスを `_injection_rules.yaml` の glob パターンと照合する。
 2. マッチした各 `required` reference を**本文全量**、各 `optional` を **path + description のみ**で注入する。
 3. `~/.claude/tokens/{plugin}/{session_id}.yaml` の**パターン単位 TTL トークン**で重複排除する —
    マッチしたパターンをキーとする YAML マップで、各エントリが `expires_at`（= 注入時刻 + TTL）を持つ。
@@ -292,3 +292,19 @@ Claude がこれから触るファイルに関連する規約/ドキュメント
 （例: `*-kit` 注入フックは `{PREFIX}_INJECTION_TTL` / `{PREFIX}_INJECTION_LANG` を読む）。設定・読み取り・
 スコープ・デフォルト・慣習の完全なガイドは **`environment.md`**（`hooks.json` / `settings.json` 編集時に
 このガイドと一緒に注入される）。
+
+---
+
+## JP ミラー同期（フックプロンプト）
+
+`plugins/**/hooks/prompts/*.md` を編集したら、**必ず同じコミットで `*.jp.md` も更新する**。
+
+| 編集したファイル | 必ず同時に更新するファイル |
+|---|---|
+| `plugins/{name}/hooks/prompts/{prompt}.md` | `plugins/{name}/hooks/prompts/{prompt}.jp.md` |
+
+### コミット前チェックリスト
+
+- [ ] `*.md` の変更内容が `*.jp.md` に日本語で反映されている
+- [ ] `*.jp.md` のセクション構成が英語版 `*.md` と一致している
+- [ ] `*.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror... -->`）が含まれている
