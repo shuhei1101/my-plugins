@@ -19,7 +19,7 @@ ref-inject 内部ファイル（`_index.yaml`, `_index.jp.yaml`, `_injection_rul
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | QA を `## QA` に記録する | - |
-| - | `.work/notes/` のノートを更新 | - |
+| 済 | `.work/notes/` のノートを更新（ref-injectジェネレータ.md に PR224 セクション追加） | `.work/notes/ref-injectジェネレータ.md` |
 | 済 | `inject_references.py` テンプレートの参照パスを `.ref-injects/` に変更 | `plugins/ref-inject/templates/hooks/scripts/inject_references.py` |
 | 済 | 各プラグインの ref-inject 内部ファイルを `.ref-injects/` に移動 | `plugins/*/references/{_index*,_injection_rules*,CLAUDE*}` |
 | 済 | 各プラグインに `references/_index.md` を新規作成（日本語インデックス） | `plugins/*/references/_index.md` |
