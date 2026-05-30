@@ -4,78 +4,65 @@
 
 ## 概要
 
-{このブランチの目的・背景を書く}
+`AskUserQuestion` の制約と正しい使い方を claude-kit リファレンスに汎用ドキュメントとして追加する。
+
+具体的には以下の制約を文書化する：
+- options は 2〜4 個（min 2 / max 4）
+- "Other" オプションは UI が自動付与するため手動追加禁止
+- `multiSelect: true` で複数選択可（排他でない選択肢に使用）
+- `preview` フィールドは視覚的比較用（single-select のみ対応）
+- スキル外での使用制限（Stop フックが発火しないため）
 
 ### 実施条件
 
-{例: 即時実施可 / 「{他ブランチ名}」が完了してから}
+即時実施可
 
 ## 作業内容
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| 済 | {何をするか（サンプル行 — 実際の作業に書き換える）} | - `{file/path}` |
-| - | {何をするか} | - `{file/path1}`<br>- `{file/path2}` |
+| 済 | QA を `## QA` に記録 | - |
+| 済 | ノートドキュメントを更新 | `.work/notes/AskUserQuestion制約リファレンス.md` |
+| 済 | `askuserquestion.jp.md` を新規作成（JP ミラー先行） | `plugins/claude-kit/references/askuserquestion.jp.md` |
+| 済 | `askuserquestion.md` を新規作成（英語版） | `plugins/claude-kit/references/askuserquestion.md` |
+| 済 | `_index.yaml` にエントリを追加 | `plugins/claude-kit/references/_index.yaml` |
+| 済 | `_index.jp.yaml` にエントリを追加 | `plugins/claude-kit/references/_index.jp.yaml` |
+| 済 | `_injection_rules.yaml` を更新（skills パターンに optional 追加） | `plugins/claude-kit/references/_injection_rules.yaml` |
 
 ## 変更内容
 
-実装したファイル（テスト以外）。コミットに積まれる全ファイルを列挙する。
-
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| `{file/path}` | 新規 | {このファイルで何を実装したか} | {補足あれば} |
-| `{file/path2}` | 編集 | {何を変更したか} | - |
+| `plugins/claude-kit/references/askuserquestion.md` | 新規 | AskUserQuestion の制約・使用ガイド（英語） | - |
+| `plugins/claude-kit/references/askuserquestion.jp.md` | 新規 | 同上の JP ミラー | - |
+| `plugins/claude-kit/references/_index.yaml` | 編集 | askuserquestion.md のエントリを追加 | - |
+| `plugins/claude-kit/references/_index.jp.yaml` | 編集 | 〃 | - |
+| `plugins/claude-kit/references/_injection_rules.yaml` | 編集 | skills パターンに optional: askuserquestion.md を追加 | - |
 
 ## テスト
 
-上記実装に伴って追加・変更したテストファイル。
-
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| `{test/path}` | 新規 | {このテストで何を検証するか} | {補足あれば} |
+| テスト変更なし | - | - | - |
 
 ## QA
 
-このブランチのスコープの未決定事項を QA-XXX として記録する。決定後は本文の該当箇所に反映する。
-
-### QA-001: document-askuserquestion-limits
-
-**背景**: {なぜこれを判断する必要があるか}
-
-| 案 | 内容 |
-|---|---|
-| A | {案 A の説明} |
-| B | {案 B の説明} |
-
-**推奨方式**: {A/B のどちらか + 理由を 1〜2 行。「後で決める」は禁止}
-
-**状態**: 未解決
-
-**決定したら反映先**: {ドキュメントの該当セクション}
+QA なし（制約はツールスキーマと CLAUDE.md から明確に取得可能）
 
 ## 参考ドキュメント
 
-- `{path/to/spec.md}`: {何の資料か}
-
-## 関連イシュー
-
-このブランチが解決する `.work/issues/` のイシュー一覧。merge 実行時に自動でクローズされる。
-イシューがない場合は表ごと削除してよい。
-
-| ID | 概要 | resolution |
-|---|---|---|
-| ISSUE-211 | {イシューのタイトル} | resolved |
+- `plugins/claude-kit/references/plugin-config.md`: AskUserQuestion の使用例（config スキルパターン）
+- `plugins/claude-kit/references/_injection_rules.yaml`: 注入ルール構造
+- `.work/notes/AskUserQuestion制約リファレンス.md`: 本ブランチのノート
 
 ## 関連ブランチ
 
-直接関連するブランチ（先行・分割兄弟・後続）を列挙する。
-
 | ブランチ | 概要 |
 |---|---|
-| {type/title} | {概要} |
+| - | - |
 
 ## 次ブランチ候補
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| {次にやること} | {背景・目的} | {例: 即時実施可 / 「{他候補タイトル}」が完了したら} |
+| - | - | - |
