@@ -29,6 +29,11 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 | 済 | changelog を CLAUDE.md の `## Changelog` 表に追記 (PR171 で `changelogs/` 廃止のため) | - `plugins/dev-kit/CLAUDE.md`<br>- `plugins/dev-kit/CLAUDE.jp.md` |
 | 済 | Skills 表に `plugin-update` 行を追加 | - `plugins/dev-kit/CLAUDE.md`<br>- `plugins/dev-kit/CLAUDE.jp.md` |
 | 済 | コミット | - 70069d9 |
+| 済 | レビュー指摘対応: dev-kit:plugin-update スキルから workspace 依存（`/workspace:work-start`, `/workspace:merge`, `.work/` 検出）を全削除し、master/main 拒否＋ユーザー責務コミット方式に書き換え | - `plugins/dev-kit/skills/plugin-update/SKILL.md`<br>- `plugins/dev-kit/skills/plugin-update/SKILL.jp.md` |
+| 済 | claude-kit リファレンス `plugin-structure.md` (+ jp) の `plugin-update` 標準仕様表から workspace 依存記述を除去し「プラグイン間依存ゼロ」を明文化 | - `plugins/claude-kit/references/plugin-structure.md`<br>- `plugins/claude-kit/references/plugin-structure.jp.md` |
+| 済 | claude-kit を PATCH bump (3.38.0 → 3.38.1) し Changelog 表を新設 | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json`<br>- `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md` |
+| 済 | dev-kit v4.1.0 の Changelog 記述を「自己完結設計」へ更新 | - `plugins/dev-kit/CLAUDE.md`<br>- `plugins/dev-kit/CLAUDE.jp.md` |
+| - | 追加コミット | - |
 
 ## 変更内容
 
@@ -38,8 +43,14 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 | `plugins/dev-kit/skills/plugin-update/SKILL.jp.md` | 新規 | JP ミラー | 先に jp を書いて英語版を生成 |
 | `plugins/dev-kit/.claude-plugin/plugin.json` | 編集 | version 4.0.0 → 4.1.0 | MINOR bump（新スキル追加） |
 | `.claude-plugin/marketplace.json` | 編集 | dev-kit エントリ version 4.0.0 → 4.1.0 | 3 箇所同期維持 |
-| `plugins/dev-kit/CLAUDE.md` | 編集 | Skills 表に `plugin-update` 行追加 / `## Changelog` 表を新設し v4.1.0 + v4.0.0 を追記 | PR171 で `changelogs/` ディレクトリ廃止のため表形式に移行 |
+| `plugins/dev-kit/CLAUDE.md` | 編集 | Skills 表に `plugin-update` 行追加 / `## Changelog` 表を新設し v4.1.0 + v4.0.0 を追記。v4.1.0 サマリに「自己完結設計」追記 | PR171 で `changelogs/` ディレクトリ廃止のため表形式に移行 |
 | `plugins/dev-kit/CLAUDE.jp.md` | 編集 | 同上の日本語ミラー | - |
+| `plugins/claude-kit/references/plugin-structure.md` | 編集 | `plugin-update` 標準仕様表から `/workspace:work-start` への依存記述を削除し、「master/main 拒否」「ブランチ管理しない」「プラグイン間依存なし」を仕様として明文化 | プラグイン間依存ゼロ化方針 |
+| `plugins/claude-kit/references/plugin-structure.jp.md` | 編集 | 上記の日本語ミラー | - |
+| `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | version 3.38.0 → 3.38.1 | PATCH bump（ドキュメント修正） |
+| `.claude-plugin/marketplace.json` | 編集 | claude-kit エントリ version 3.38.0 → 3.38.1 | 3 箇所同期 |
+| `plugins/claude-kit/CLAUDE.md` | 編集 | `## Changelog` 表を新設し v3.38.1 を記録 | claude-kit 初の Changelog 表 |
+| `plugins/claude-kit/CLAUDE.jp.md` | 編集 | 上記の日本語ミラー | - |
 
 ## テスト
 
@@ -66,3 +77,5 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
+| claude-kit リファレンスに「プラグイン間依存ゼロ原則」を追記 | claude-kit の plugin authoring guide（`plugins/claude-kit/references/plugin-structure.md` + jp）に、**新規・既存どちらのプラグイン設計でもプラグイン間依存は極力ゼロにする**という原則セクションを追加する。`plugin-update` 仕様で既に「inter-plugin dependency: None」と書いたが、原則自体を独立セクションとして格上げし、`Why`／許容される例外（例: 同プラグイン内のスキル呼び出しは OK 等）／違反検出方法を明記する。| 即時実施可（PR182 マージ後） |
+| 既存プラグイン間依存の棚卸とゼロ化対応 | `plugins/**/skills/**/SKILL.md` / `hooks/**` / `references/**` を全件 grep し、他プラグインのスキルやコマンドを呼び出している箇所をリストアップしてユーザーに提示する。レビュー後、可能なものから順次「プラグイン内自己完結」へ書き換え、最終的に依存件数ゼロを目標とする。例: workspace の skills 内に dev-kit/claude-kit への参照がないか、ref-inject の apply で他プラグインを操作していないか等を確認。 | 上記「プラグイン間依存ゼロ原則」PR のマージ後（原則を先に確立してから棚卸する方が判断軸が安定するため） |

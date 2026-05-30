@@ -50,12 +50,14 @@ templates and migration rules.
 |---|---|
 | Name | `plugin-update` (kebab-case literal — not `<plugin>-update`) |
 | Trigger | Manual only (no `description` auto-triggers; explicit `/<plugin>:plugin-update`) |
-| First action | Invoke the project's PR-branch skill (e.g. `/workspace:work-start`) so edits land on a reviewable branch |
+| First action | Refuse to run on `master` / `main` and ask the user to create a working branch first |
+| Branch management | Do **not** create branches, commit, or merge — leave all branch operations to the user |
+| Inter-plugin dependency | None — must not invoke skills or commands from other plugins |
 | Scope | Only this plugin's own static artifacts; never reach into other plugins |
-| Reference | See `plugins/workspace/skills/plugin-update/SKILL.md` for the canonical example |
 
-When creating a new plugin, generate `skills/plugin-update/SKILL.md` (and `.jp.md`) following the
-workspace example and adapt the template list to whatever static files your plugin ships.
+When creating a new plugin, generate `skills/plugin-update/SKILL.md` (and `.jp.md`) and adapt the
+template list to whatever static files your plugin ships. The skill must be self-contained: do
+not depend on workspace, worktree-kit, or any other plugin's command.
 
 ---
 

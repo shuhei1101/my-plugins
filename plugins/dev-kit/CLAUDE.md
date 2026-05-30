@@ -71,5 +71,5 @@ prevents duplicate injection.
 
 | Version | Date | Summary |
 |---|---|---|
-| 4.1.0 | 2026-05-30 | Add `dev-kit:plugin-update` skill — re-syncs html-implement rule templates and html-debug-fab widget into the project (PR182) |
+| 4.1.0 | 2026-05-30 | Add `dev-kit:plugin-update` skill — re-syncs html-implement rule templates and html-debug-fab widget into the project. Self-contained: no dependency on workspace or any other plugin; refuses to run on master/main; never commits on its own (PR182) |
 | 4.0.0 | 2026-05-30 | Merge `py-kit` / `html-kit` / `next-kit` into `dev-kit`; opt-in language toggles via `DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` (PR166) |

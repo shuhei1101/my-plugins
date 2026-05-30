@@ -23,7 +23,8 @@ that live only inside the plugin (`references/`, `injection_rules.yaml`, etc.) a
 out of scope.
 
 Per-plugin sync logic for *other* plugins is never touched here — each plugin owns its own
-`plugin-update` and ships its own.
+`plugin-update`. This skill depends on no other plugin. Branch management (creating a PR
+branch, committing, merging) is the user's responsibility.
 
 ---
 
@@ -46,7 +47,7 @@ Per-plugin sync logic for *other* plugins is never touched here — each plugin 
 
 ## Tasks
 
-### Step 1: Prepare a PR branch
+### Step 1: Check the current branch
 
 #### Condition
 
@@ -54,20 +55,22 @@ Per-plugin sync logic for *other* plugins is never touched here — each plugin 
 
 #### Process
 
-1. Check whether the workspace plugin's `.work/` directory exists in the current project
-2. **If present**:
-   - Invoke `/workspace:work-start` to create a PR branch dedicated to this sync
-   - Wait until the worktree and branch are created
-3. **If absent**:
-   - Ask the user: "workspace plugin is not installed — commit directly to the current branch?"
-     and proceed only after confirmation
+1. Get the current branch with `git rev-parse --abbrev-ref HEAD`
+2. **If on master / main** → tell the user "Cannot run on master / main. Create a working
+   branch first and re-run." and stop
+3. Any other branch → proceed
 
 → Proceed to Step 2
 
 #### Output
 
-- The branch where the following file edits and commit will land (a fresh PR branch or the
-  current branch) is decided
+- The branch where the following file edits will land is confirmed to be neither master nor main
+
+#### Notes
+
+##### Prohibitions
+
+- Running on master / main
 
 ---
 
@@ -126,7 +129,7 @@ Per-plugin sync logic for *other* plugins is never touched here — each plugin 
 
 ---
 
-### Step 4: Review and commit
+### Step 4: Report the diff
 
 #### Condition
 
@@ -136,32 +139,10 @@ Per-plugin sync logic for *other* plugins is never touched here — each plugin 
 
 1. Show the user `git status` and `git diff`
 2. If there are no changes, report "All dev-kit artifacts are already up to date" and stop
-3. If there are changes, commit them together:
-   - When routed through workspace: `chore: sync dev-kit templates to v{N} #PR{N}`
-   - Otherwise: `chore: sync dev-kit templates to v{N}`
-4. Read the current dev-kit version from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`
-
-→ Proceed to Step 5
-
-#### Notes
-
-##### Prohibitions
-
-- Never commit to master directly (use the PR branch if routed through workspace, or the
-  current non-master branch otherwise)
-
----
-
-### Step 5: Report completion
-
-#### Condition
-
-- Step 4 complete
-
-#### Process
-
-1. List every file that was overwritten
-2. If nothing changed, state explicitly "All artifacts already up to date"
-3. When routed through workspace, suggest running `/workspace:merge`
+3. If there are changes, list the overwritten files and present a suggested commit message
+   for the user to run themselves:
+   - Suggested message: `chore: sync dev-kit templates to v{N}`
+   - Read the current dev-kit version from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`
+4. This skill never commits on its own (commit/merge is the user's responsibility)
 
 → Done

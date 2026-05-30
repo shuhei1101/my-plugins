@@ -32,3 +32,9 @@ in PR161). JP-mirror sync is enforced by the project's `*-jp-mirror-sync` rules.
 > which only scans the user's text); use a per-session flag (`/tmp/{hook}-{session_id}`) so it fires
 > once per session; extract the logic into a script file, not an inline `-c` one-liner (inline python
 > breaks on quote-nesting — incident `statusline-python-quote-nesting`).
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 3.38.1 | 2026-05-30 | `plugin-structure.md` の `plugin-update` 標準仕様から workspace への依存記述を除去 — プラグイン間依存ゼロを明文化（PR182） |

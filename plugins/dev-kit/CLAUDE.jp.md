@@ -71,5 +71,5 @@ references/
 
 | Version | Date | Summary |
 |---|---|---|
-| 4.1.0 | 2026-05-30 | `dev-kit:plugin-update` スキルを追加 — html-implement のルールテンプレと html-debug-fab のウィジェットをプロジェクトに再同期する（PR182） |
+| 4.1.0 | 2026-05-30 | `dev-kit:plugin-update` スキルを追加 — html-implement のルールテンプレと html-debug-fab のウィジェットをプロジェクトに再同期する。自己完結設計: workspace 等の他プラグインに依存しない / master・main では実行を拒否 / スキル自身はコミットしない（PR182） |
 | 4.0.0 | 2026-05-30 | `py-kit` / `html-kit` / `next-kit` を `dev-kit` に統合。言語別の opt-in トグル `DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` を導入（PR166） |

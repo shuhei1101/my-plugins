@@ -32,3 +32,9 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 > `PreToolUse` を使う。セッション単位フラグ（`/tmp/{hook}-{session_id}`）でセッション 1 回だけ発火させる。
 > ロジックはインライン `-c` でなくスクリプトファイルに抽出する（インライン python はクォートのネストで
 > 壊れやすい — incident `statusline-python-quote-nesting`）。
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 3.38.1 | 2026-05-30 | `plugin-structure.md` の `plugin-update` 標準仕様から workspace への依存記述を除去 — プラグイン間依存ゼロを明文化（PR182） |
