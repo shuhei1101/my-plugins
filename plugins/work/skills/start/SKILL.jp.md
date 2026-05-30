@@ -7,7 +7,7 @@ description: |
   「create a new branch」などのトリガーキーワードで実行。
 ---
 
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:start — 新しいブランチを開始
 
@@ -16,16 +16,15 @@ description: |
 
 > **命名規則**: ブランチは `{type}/{title}` を使用します（`PR{N}/` プレフィックスなし）。
 > ワークツリーはブランチを反映して `{repo}-wt-{type}-{title}` となります（スラッシュ → ハイフン）。
-> ブランチドキュメントのファイル名はブランチから派生し、スラッシュをハイフンに置き換えます
-> （`refactor/foo-bar` → `refactor-foo-bar.md`）。
-> 内部 ID `{N}` は `index.yaml` 内で追跡されます（コミット、アーカイブメタデータのクロスリファレンス用）。
-> ただし、内部 ID はブランチ名、ワークツリーパス、またはブランチドキュメントファイル名には表示されません。
+> ブランチドキュメントのファイル名は `{YYMMDD}-{branch-hyphenated}.md` 形式です
+> （例：260531 に作成した `refactor/foo-bar` → `260531-refactor-foo-bar.md`）。
+> 内部 ID `{N}` は `index.yaml` 内でアーカイブメタデータとして追跡されます。ブランチ名、ワークツリーパス、ブランチドキュメントファイル名には表示されません。
 
 ---
 
 ## タスク
 
-### Step 1: ブランチ名を決定
+### ステップ 1: ブランチ名を決定
 
 #### 条件
 
@@ -44,7 +43,7 @@ description: |
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yaml
 ```
 
-→ Step 2 に進む
+→ ステップ 2 へ
 
 #### 出力
 
@@ -53,7 +52,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 ---
 
-### Step 2: リクエスト詳細を収集
+### ステップ 2: リクエスト詳細を収集
 
 #### 条件
 
@@ -66,7 +65,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
    - **ノート**: `.work/notes/` に関連するノートが存在しますか？または作成が必要ですか？
    - **未解決の質問**: 不明瞭な点や未決定の事項はありますか？
 
-→ Step 3 に進む
+→ ステップ 3 へ
 
 #### 出力
 
@@ -74,7 +73,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 ---
 
-### Step 3: index.yaml にエントリを追加（メインリポジトリ）
+### ステップ 3: index.yaml にエントリを追加（メインリポジトリ）
 
 #### 条件
 
@@ -93,7 +92,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --task "{YYMMDD}_{title}"
 ```
 
-→ Step 4 に進む
+→ ステップ 4 へ
 
 #### 出力
 
@@ -109,7 +108,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### Step 4: ワークツリーとブランチを作成（有効な場合）
+### ステップ 4: ワークツリーとブランチを作成（有効な場合）
 
 #### 条件
 
@@ -134,7 +133,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    > `.work/` フォルダ管理のみで作業を続けます。  
    > ワークツリーを使用したい場合は `settings.json` の `env` から `WORK_USE_WORKTREE` を外すか `true` に設定してください。
 
-→ Step 5 に進む
+→ ステップ 5 へ
 
 #### 出力
 
@@ -150,7 +149,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### Step 5: タスクフォルダを決定（自動判断）
+### ステップ 5: タスクフォルダを決定（自動判断）
 
 #### 条件
 
@@ -168,7 +167,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - 既存に追加 → `--task-dir {folder_name}` を使用
    - 新規作成 → `--date {YYMMDD} --title {title}` を使用
 
-→ Step 6 に進む
+→ ステップ 6 へ
 
 #### 出力
 
@@ -182,7 +181,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### Step 6: ブランチドキュメントを作成（ワークツリー内）
+### ステップ 6: ブランチドキュメントを作成（ワークツリー内）
 
 #### 条件
 
@@ -191,8 +190,8 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### 処理
 
 Step 5 での選択に応じて、以下のいずれかを実行してください。`--branch` 引数はブランチ名（`{type}/{title}`）です。
-スクリプトはスラッシュをハイフンに変換してファイル名を形成します
-（例：`refactor/rename-pr-to-branch` → `refactor-rename-pr-to-branch.md`）：
+スクリプトは日付プレフィックスを付加し、スラッシュをハイフンに変換してファイル名を形成します
+（例：260531 に作成した `refactor/rename-pr-to-branch` → `260531-refactor-rename-pr-to-branch.md`）：
 
 **新しいタスクフォルダ:**
 
@@ -218,15 +217,15 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
 ```
 
-→ Step 7 に進む
+→ ステップ 7 へ
 
 #### 出力
 
-- `../{repo}-wt-{type}-{title}/.work/tasks/{task_folder}/{type}-{title}.md` が作成されました
+- `../{repo}-wt-{type}-{title}/.work/tasks/{task_folder}/{YYMMDD}-{type}-{title}.md` が作成されました
 
 ---
 
-### Step 7: ブランチドキュメントに作業計画を入力（ワークツリー内）
+### ステップ 7: ブランチドキュメントに作業計画を入力（ワークツリー内）
 
 #### 条件
 
@@ -234,7 +233,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### 処理
 
-作成された `{type}-{title}.md` をワークツリーで開き、テンプレートプレースホルダーコンテンツを
+作成された `{YYMMDD}-{type}-{title}.md` をワークツリーで開き、テンプレートプレースホルダーコンテンツを
 実際の計画で置き換えます。このドキュメントはこのブランチのすべてのセクション
 — TODO、バリエーション、QA、参考資料 — を 1 つのファイルに保持します。
 
@@ -245,17 +244,17 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 **`## 作業内容`** — タスクチェックリスト。以下の行は必須で、削除またはスキップしてはいけません：
 
-| 完了 | 作業内容 | 対象ファイル |
+| # | 完了 | 作業内容 |
 |---|---|---|
-| - | 開いている質問を `## QA` に記録（このドキュメント） | - |
-| - | `.work/notes/` のノートドキュメントを更新 | - |
-| - | （実装タスク：ブランチ固有の作業に置き換え） | - |
-| - | ルール / CLAUDE.md を更新 | - |
+| 1 | - | 開いている質問を `## QA` に記録（このドキュメント） |
+| 2 | - | `.work/notes/` のノートドキュメントを更新 |
+| 3 | - | （実装タスク：ブランチ固有の作業に置き換え） |
+| 4 | - | ルール / CLAUDE.md を更新 |
 
 **`## 変更内容`** — このブランチが追加または修正する実装ファイル（テストを除く）。
 実装開始時に入力してください — コミットに含まれるすべてのファイルはここに記載されます：
 
-| ファイル名 | 新規/編集 | 内容 | 補足 |
+| # | ファイル名 | 新規/編集 | 内容 | 補足 |
 
 **`## テスト`** — 実装と同時に追加または修正されたテストファイル。
 このブランチにテスト変更がない場合はプレースホルダー行を残します。
@@ -267,23 +266,23 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 **`## 参考ドキュメント`** — 関連ノート/スペックへのリンク（Step 8 のノートはここに追加されます）。
 
 **`## 関連イシュー`** — このブランチが解決する `.work/issues/ISSUE-{N}` エントリをリストアップ
-（テーブル形式：`| ID | 概要 | resolution |`）。`resolution` は `resolved` または `wontfix`。
+（テーブル形式：`| # | ID | 概要 | resolution |`）。`resolution` は `resolved` または `wontfix`。
 **関連イシューがない場合**: `## 関連イシュー` 見出しとテーブルを完全に削除してください。
 
 **`## 関連ブランチ`** — このブランチに直接関連するブランチをリストアップ
-（先行者、分割兄弟、フォローアップ）（テーブル形式：`| ブランチ | 概要 |`）。
+（先行者、分割兄弟、フォローアップ）（テーブル形式：`| # | ブランチ | 概要 |`）。
 関連ブランチがない場合はプレースホルダー行を残します。
 
 **`## 次ブランチ候補`** — このセッション中に言及されたフォローアップブランチをリストアップ
-（列：title / summary / 実施条件）：
+（列：`#` / title / summary / 実施条件）：
 - `即時実施可` （または `-`）候補に依存関係がない場合
 - `「{other candidate title}」が完了したら` 候補が同じテーブル内の別の候補に依存する場合
 
-→ Step 8 に進む
+→ ステップ 8 へ
 
 ---
 
-### Step 8: ノートドキュメントを保守（ワークツリー内）
+### ステップ 8: ノートドキュメントを保守（ワークツリー内）
 
 #### 条件
 
@@ -301,11 +300,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
    - 新しいノートを適切なカテゴリに追加、または既存エントリを更新する
    - `_index.md` が存在しない場合は、現在のノートを全てカテゴリ別にまとめて新規作成する
 
-→ Step 9 に進む
+→ ステップ 9 へ
 
 ---
 
-### Step 9: `## QA` セクションに開いている質問を記録（ワークツリー内）
+### ステップ 9: `## QA` セクションに開いている質問を記録（ワークツリー内）
 
 #### 条件
 
@@ -316,11 +315,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 1. Step 2 からの開いている質問をブランチドキュメントの `## QA` セクションに QA-XXX エントリとして追加
 2. 開いている質問がない場合はスキップ
 
-→ Step 10 に進む
+→ ステップ 10 へ
 
 ---
 
-### Step 10: 作成したコンテンツをコミット、ユーザーに報告、実装開始
+### ステップ 10: 作成したコンテンツをコミット、ユーザーに報告、実装開始
 
 #### 処理
 

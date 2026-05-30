@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of refactoring-judgement.md. When updating the English original, update this file too. -->
 # リファクタ判断基準
 
 > このファイルは `refactoring-judgement.md` の日本語ミラーです。

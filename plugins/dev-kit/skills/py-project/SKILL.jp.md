@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — dev-kit:py-project（日本語ミラー）
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
@@ -23,7 +23,7 @@ Python プロジェクトを扱う。
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: 規約を読み込む
 
@@ -60,7 +60,7 @@ Python プロジェクトを扱う。
 
 ### ステップ2: モードを判定する（新規 vs 既存）
 
-#### 処理内容
+#### 処理
 
 ユーザーが新規プロジェクトを作りたいのか、既存プロジェクトへの作業をしたいのかを判定する:
 

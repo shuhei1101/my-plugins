@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of secrets-and-env.md. When updating the English original, update this file too. -->
 # secrets-and-env — シークレット / 環境 / 構造 / アセットの分離
 
 > このファイルは `secrets-and-env.md` の日本語ミラーです。
@@ -156,4 +156,3 @@ logger.info(f"key = {str(settings.api_key)}")   # → settings.api_key（SecretS
 - `shared/settings.md` — `pydantic_settings` の使い方
 - `shared/constants.md` — 計算済み定数の置き場
 - `architecture/refactoring-judgement.md` — 設定外出し判断
-- `dev-kit:yaml`（外部） — index.yaml / settings.yaml の運用全般

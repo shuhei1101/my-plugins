@@ -4,13 +4,12 @@ description: |
   Create a new path-scoped rule under .claude/rules/ using the step-based structure.
   Trigger when the user says "新しいルール作って", "ルールを新規作成", "make a rule for X", or "create a rule for".
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # rule-creator — パススコープルール作成（薄ラッパー）
 
 ルールのオーサリング手順は本プラグインの references に移り、`.claude/rules/` 配下のファイルを
-編集すると `claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動と
-呼び出し元（例: `notes-to-claude`）のために残している薄いラッパー。
+編集すると `claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動のために残している薄いラッパー。
 
 ## やること
 

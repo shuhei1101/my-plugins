@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of work-todo-template-sync.md. When updating the English original, update this file too. -->
 # work TODO テンプレート同期
 
 タスクドキュメントのテンプレートを `work-start` SKILL.md の Step 7 記入ガイドと同期させる。

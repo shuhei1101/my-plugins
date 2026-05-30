@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of composition-root.md. When updating the English original, update this file too. -->
 # composition root — 関数の配線
 
 > このファイルは `composition-root.md` の日本語ミラーです。

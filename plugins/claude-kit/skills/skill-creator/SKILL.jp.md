@@ -4,13 +4,12 @@ description: |
   Create a new Claude Code skill under .claude/skills/ using the step-based structure.
   Trigger when the user says "スキルを作りたい", "新しいスキル作って", "create a skill", "make a skill for X", or claude-kit dispatches here.
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # skill-creator — 新規スキル雛形（薄ラッパー）
 
 スキルのオーサリング手順は本プラグインの references に移り、`SKILL.md` を編集すると
-`claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動と呼び出し元
-（例: `notes-to-claude`）のために残している薄いラッパー。
+`claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動のために残している薄いラッパー。
 
 ## やること
 

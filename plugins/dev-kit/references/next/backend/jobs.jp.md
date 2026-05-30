@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of jobs.md. When updating the English original, update this file too. -->
 # Next.js App Router — Background Jobs / Cron
 
 > **対象**: メール送信、画像処理、レポート生成、定期バッチなどの非同期処理。

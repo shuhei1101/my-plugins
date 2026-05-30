@@ -5,7 +5,7 @@ description: |
   ユーザーが「イシューを作って」「問題を登録して」「これをイシューにして」「issue-create」と言ったとき、
   または `/work:issue-create` を明示的に呼び出したときに起動する。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
@@ -34,7 +34,7 @@ description: |
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: 現在のイシュー状況を確認する
 
@@ -42,7 +42,7 @@ description: |
 
 - 常に — 最初に実行する
 
-#### 処理内容
+#### 処理
 
 1. `.work/issues/` が存在するか確認する:
    - 存在しない場合 → 先に `/work:setup` を実行するよう伝えて停止
@@ -63,7 +63,7 @@ description: |
 
 - 常に — ステップ1の後に実行する
 
-#### 処理内容
+#### 処理
 
 1. ユーザーの入力（引数またはプロンプト内の記述）を読み取る
 2. 説明を独立した問題単位に分割する:
@@ -93,7 +93,7 @@ description: |
 
 - 常に — ステップ2の後に実行する
 
-#### 処理内容
+#### 処理
 
 1. 確定したイシューごとに以下を呼び出す:
    ```
@@ -114,12 +114,12 @@ description: |
 
 - 常に — 最後に実行する
 
-#### 処理内容
+#### 処理
 
 1. 作成したイシューの一覧をレポートする:
    - 各イシューの ID・タイトル・優先度
 2. 優先度を変更したい場合は `_index.yaml` を直接編集するよう伝える
 
-#### 補足
+#### 注意事項
 
 - このスキルでは `git commit` を実行しない — ユーザーが確認した後にコミットする

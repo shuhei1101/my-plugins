@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of streaming.md. When updating the English original, update this file too. -->
 # Next.js App Router — Streaming, Suspense, Cache Components
 
 > **Next.js 16** の Cache Components / Partial Pre-Rendering（PPR）・React 19.2 の View Transitions / useEffectEvent を活用したストリーミング設計。

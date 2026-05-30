@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of auth-schema.md. When updating the English original, update this file too. -->
 # drizzle/schema.ts — 認証関連テーブル
 
 Better Auth が要求する 4 テーブル（user / session / account / verification）+ アプリ固有の profile。

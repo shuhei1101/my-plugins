@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of api-folder-overview.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/ — フォルダ構成
 
 `app/api/v1/{resource}/` 配下の 6 ファイルの責務分離（CQRS）。

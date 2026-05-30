@@ -1,0 +1,94 @@
+# claude-kit の注入ルール — 編集ファイルのパスパターン → リファレンス（言語非依存）
+#   pattern  : 編集ファイルのパスに対して glob でマッチさせる
+#              ** = 任意の深さ / * = 1 セグメント / ? = 1 文字 / {a,b} = 選択
+#              名前ベースのフォルダ指定は `**/` を前置してサブプロジェクトでもマッチさせる
+#   required : 本文ごとフル注入されるリファレンスのパス（必ず読むべき執筆ガイド）
+#   optional : パス＋説明のみが注入されるリファレンス（Claude が必要に応じて Read する）
+# マッチしたルールはすべて寄与する（重複排除あり）。common.md は共通ベース
+# （ファイル種別の判断、JP/EN ミラーのルール）。
+# environment.md（環境変数による設定方法）は、すべての Claude 用成果物（Write/Edit）に対して
+# 注入する — 設定可能な挙動が存在することを著者に意識させるため。実際に env を設定する場所
+# （hooks.json / settings.json）ではフル本文で、それ以外では pointer-only（optional）で出す。
+rules:
+  # ---- Skills: SKILL.md（あるいはその JP ミラー）を編集する場合 ----
+  - pattern: "**/skills/*/SKILL{.jp,}.md"
+    required:
+      - common.md
+      - skills.md
+    optional:
+      - subagents.md
+      - environment.md
+      - plugin-config.md
+      - askuserquestion.md
+
+  # ---- References: プラグインのリファレンスファイルを編集する場合 ----
+  - pattern: "plugins/*/references/**/*.md"
+    required:
+      - references-sync.md
+    optional: []
+
+  # ---- *-kit 注入構造ファイル: dev-kit / claude-kit の共有構造を編集する場合 ----
+  - pattern: "plugins/*-kit/hooks/scripts/*.py"
+    required:
+      - kit-hooks-sync.md
+    optional: []
+  - pattern: "plugins/*-kit/hooks/templates/*.j2"
+    required:
+      - kit-hooks-sync.md
+      - jinja2/authoring.md
+    optional: []
+
+  # ---- Jinja2 テンプレート（任意プラグインの hooks/templates/*.j2）：Markdown 出力時の落とし穴 ----
+  - pattern: "**/hooks/templates/*.j2"
+    required:
+      - jinja2/templates.md
+    optional: []
+  - pattern: "plugins/*-kit/references/.ref-injects/{_index,_injection_rules,CLAUDE}{.jp,}.{yaml,md}"
+    required:
+      - kit-hooks-sync.md
+    optional: []
+
+  # ---- CLAUDE.md: プロジェクト／サブフォルダのメモリファイル ----
+  - pattern: "**/CLAUDE{.local,.jp,}.md"
+    required:
+      - common.md
+      - claude-md.md
+    optional:
+      - environment.md
+
+  # ---- Hooks: プラグインの hooks.json、プロジェクト設定（JSON はスタンプなし）、プロンプトファイル（.md） ----
+  # settings.json / hooks.json は env ブロックを持つため、ここでは environment.md をフル注入する。
+  - pattern: "**/hooks/hooks.json"
+    required:
+      - common.md
+      - hooks.md
+      - environment.md
+  - pattern: "**/.claude/settings{.local,}.json"
+    required:
+      - common.md
+      - hooks.md
+      - environment.md
+  - pattern: "**/hooks/prompts/*.md"
+    required:
+      - hooks.md
+    optional:
+      - environment.md
+
+  # ---- Plugins: マニフェスト／マーケットプレイス（JSON はスタンプなし） ----
+  - pattern: "**/.claude-plugin/{plugin,marketplace}.json"
+    required:
+      - common.md
+      - plugin-structure.md
+      - setup-wizard.md
+    optional:
+      - environment.md
+      - plugin-config.md
+
+  # ---- プラグインの CLAUDE.md: プラグインディレクトリ直下の CLAUDE.md ----
+  # 上の汎用 **/CLAUDE.md パターンに、プラグイン固有の執筆ガイドを上乗せする。
+  - pattern: "plugins/*/CLAUDE{.jp,}.md"
+    required:
+      - plugin-claude-md.md
+    optional:
+      - environment.md
+

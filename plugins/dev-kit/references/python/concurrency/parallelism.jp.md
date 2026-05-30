@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of parallelism.md. When updating the English original, update this file too. -->
 # concurrency/parallelism — 並列処理
 
 > このファイルは `parallelism.md` の日本語ミラーです。

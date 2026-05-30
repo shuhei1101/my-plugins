@@ -124,4 +124,4 @@ When editing `CLAUDE.md`, **update `CLAUDE.jp.md` in the same commit**.
 
 - [ ] Changes in `CLAUDE.md` are reflected in `CLAUDE.jp.md` in Japanese
 - [ ] Section structure in `CLAUDE.jp.md` matches `CLAUDE.md`
-- [ ] `CLAUDE.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror... -->`)
+- [ ] `CLAUDE.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror of CLAUDE.md ... -->`)

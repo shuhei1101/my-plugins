@@ -6,7 +6,7 @@ description: |
   doc・_index.yaml・_injection_rules.yaml）は一切変更しない — hooks/ 配下の仕組みファイルだけを更新する。
   手動起動のみ — /ref-inject:plugin-update を使う。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # ref-inject:plugin-update — コンシューマープラグインの注入の仕組みを更新
 
@@ -37,7 +37,7 @@ description: |
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: コンシューマープラグインを列挙
 
@@ -45,7 +45,7 @@ description: |
 
 - 常に — 最初に実行
 
-#### 処理内容
+#### 処理
 
 1. 以下を実行する:
    ```bash
@@ -71,7 +71,7 @@ description: |
 
 - ステップ1完了
 
-#### 処理内容
+#### 処理
 
 各コンシューマーのプラグインルート（`{plugin_root}`）について、**ディレクトリ名**（`{name}` = パスの最後のセグメント）からプレースホルダ値を導出する:
 
@@ -96,9 +96,10 @@ description: |
 
 - ステップ2完了
 
-#### 処理内容
+#### 処理
 
-各コンシューマープラグインについて:
+[サブエージェントで並列実行・完了を待つ] 各コンシューマープラグインについて以下を実行する:
+（戻り値: `{consumer: string, updates: string[], needsMerge: boolean}`）
 
 1. `${CLAUDE_PLUGIN_ROOT}/templates/hooks/` から4つのテンプレートファイルを読む:
    - `scripts/inject_references.py`
@@ -136,7 +137,7 @@ description: |
 - ステップ3完了
 - 更新が必要なファイルを持つコンシューマーが1つ以上ある
 
-#### 処理内容
+#### 処理
 
 1. ステップ4 のコンシューマーごとのサマリーを表示する。
 2. ユーザーに確認する: 「全コンシューマーの仕組みファイルを更新しますか？（yes / スキップするプラグインを指定）」
@@ -165,7 +166,7 @@ description: |
 
 - ステップ4完了
 
-#### 処理内容
+#### 処理
 
 1. コンシューマーごとに更新したファイルを一覧表示する。
 2. `git diff` を表示する（大きい場合は省略）。

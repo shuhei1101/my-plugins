@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # dev-kit — 開発規約統合プラグイン
 
 Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown を 1 プラグインに統合。
@@ -16,7 +16,6 @@ Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown を 1 プラグ�
 | `dev-kit:html-debug-fab` | 開発用フローティングデバッグボタン（FAB） |
 | `dev-kit:next-implement` | Next.js 実装ワークフロー |
 | `dev-kit:next-plan` | Next.js 計画ドキュメント生成 |
-| `dev-kit:yaml` | YAML 規約 |
 | `dev-kit:plugin-update` | プロジェクトに展開済みの dev-kit 生成物（html-implement のルール / html-debug-fab のウィジェット）をインストール済み dev-kit のバージョンに同期する（手動 `/dev-kit:plugin-update` のみ） |
 
 ## フック
@@ -27,7 +26,6 @@ Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown を 1 プラグ�
 |---|---|---|
 | `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | 言語ごとのリファレンス自動注入 |
 | `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
-| `scripts/yaml_skill_dispatch.py` | PreToolUse(Edit/Write) | YAML 編集時に `dev-kit:yaml` 起動をリマインド |
 | `scripts/markdown_frontmatter_check.py` | PreToolUse(Edit/Write/MultiEdit) | `*.md` 書き込み時に YAML フロントマター前コンテンツの警告（アドバイザリ） |
 | `scripts/_common.py` | — （ライブラリ） | stdin 読み・env truthy 判定・once-per-session トークン・block 理由出力 |
 
@@ -65,7 +63,6 @@ references/
 ├── html/        # HTML/CSS/JS 原則（principles.md, ui-design.md）
 ├── next/        # Next.js 規約（90ファイル: backend/, frontend/, testing/ など）
 ├── markdown/    # Markdown 規約（markdown-table.md, markdown-editing.md）
-├── yaml/        # YAML 規約（yaml.md）
 ├── _index.yaml   # 各リファレンスの path + lang + description
 ├── _injection_rules.yaml   # 各ルールの pattern + lang + required/optional
 └── ...
@@ -78,7 +75,10 @@ references/
 
 | Version | Date | Summary |
 |---|---|---|
-| 4.8.0 | 2026-05-31 | `dev-kit:config` スキルを追加 — 6 つの env トグル（`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` デフォルト ON）を番号付きリストループで対話的に設定（PR219） |
+| 4.11.0 | 2026-05-31 | `dev-kit:config` スキルを追加 — 6 つの env トグル（`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` デフォルト ON）を番号付きリストループで対話的に設定（PR219） |
+| 4.10.0 | 2026-05-31 | `markdown_frontmatter_check.py` フックを削除。ルールはすでに `references/markdown/markdown-editing.md` の自動注入で強制されているため（PR228） |
+| 4.9.0 | 2026-05-31 | `references-edit-guard` PreToolUse フックを追加（ref-inject v1.7.0 経由）。`references/` 配下のファイルを **編集／作成する直前** に `_index.yaml` / `_injection_rules.yaml` の更新も忘れていないかリマインド（PR206） |
+| 4.8.0 | 2026-05-31 | `dev-kit:yaml` スキル・`references/yaml/`・`yaml_skill_dispatch.py` フック（+ プロンプト）を削除; `**/index.yaml` / `**/settings.yaml(.sample)` の注入パターンも削除; YAML 規約は dev-kit の対象外（PR202） |
 | 4.7.0 | 2026-05-31 | Markdown フロントマター配置チェックフックとリファレンスを追加; `markdown-editing.md` を `markdown/` サブフォルダへ移動; `markdown-table.md` と並んで `_injection_rules.yaml` に登録; `DEV_KIT_MARKDOWN` opt-in サポートを追加（PR198） |
 | 4.6.0 | 2026-05-30 | `yaml.md` / `yaml.jp.md` を `yaml/` サブフォルダへ移動し、`html/`・`next/`・`python/`・`markdown/` と構造を統一; `yaml/yaml.md` を `_index.yaml` に登録し `**/index.yaml` / `**/settings.yaml(.sample)` の注入ルールを追加（PR199） |
 | 4.5.0 | 2026-05-30 | `css-js-link.md` / `common-component-first.md` を `templates/html/rules/` から `references/html/` へ移動し `_injection_rules.yaml` の html パターンに紐付け; `html-implement`（ステップ7）と `plugin-update`（ステップ2）の静的コピー手順を削除（PR200） |

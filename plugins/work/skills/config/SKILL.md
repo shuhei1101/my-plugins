@@ -17,11 +17,11 @@ until the user chooses to finish.
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
-| `WORK_KIT_PR_ENFORCEMENT` | UserPromptSubmit work-start 強制注入 | 有効 |
-| `WORK_KIT_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
-| `WORK_KIT_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
-| `WORK_KIT_MERGE_PROPOSAL` | Stop フックでの `/work-kit:merge` 提案 | 有効 |
-| `WORK_KIT_MERGE_AUTO_HANDOFF` | merge Step 11 auto pr-handoff | 有効 |
+| `WORK_PR_ENFORCEMENT` | UserPromptSubmit work-start 強制注入 | 有効 |
+| `WORK_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
+| `WORK_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
+| `WORK_MERGE_PROPOSAL` | Stop フックでの `/work:merge` 提案 | 有効 |
+| `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto pr-handoff | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
 
 **Normal polarity**: キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
@@ -58,7 +58,7 @@ Display a state table as text output:
 
 | env 変数 | 状態 | 設定ファイル |
 |---|---|---|
-| WORK_KIT_PR_ENFORCEMENT | ON | .claude/settings.json |
+| WORK_PR_ENFORCEMENT | ON | .claude/settings.json |
 | ...（以下同様）| | |
 ```
 
@@ -79,11 +79,11 @@ Output a numbered list as plain text, then end the turn and wait for user input:
 ```
 設定する変数の番号を入力してください（0 で終了）:
 
-  1. [{state}] WORK_KIT_PR_ENFORCEMENT — UserPromptSubmit work-start 強制注入
-  2. [{state}] WORK_KIT_STOP_REMINDER — Stop TODO/QA リマインダー注入
-  3. [{state}] WORK_KIT_USE_WORKTREE — work-start での worktree 作成
-  4. [{state}] WORK_KIT_MERGE_PROPOSAL — Stop フックでの merge 提案
-  5. [{state}] WORK_KIT_MERGE_AUTO_HANDOFF — merge Step 11 auto pr-handoff
+  1. [{state}] WORK_PR_ENFORCEMENT — UserPromptSubmit work-start 強制注入
+  2. [{state}] WORK_STOP_REMINDER — Stop TODO/QA リマインダー注入
+  3. [{state}] WORK_USE_WORKTREE — work-start での worktree 作成
+  4. [{state}] WORK_MERGE_PROPOSAL — Stop フックでの merge 提案
+  5. [{state}] WORK_MERGE_AUTO_HANDOFF — merge Step 11 auto pr-handoff
   6. [{state}] AITUBER_NOTIFY — Stop notify-aituber 通知
   0. 完了（終了）
 ```
@@ -168,7 +168,7 @@ Output a summary of all changes made during this session:
 
 | env 変数 | 変更前 | 変更後 | 設定ファイル |
 |---|---|---|---|
-| WORK_KIT_STOP_REMINDER | ON | OFF | .claude/settings.json |
+| WORK_STOP_REMINDER | ON | OFF | .claude/settings.json |
 ```
 
 If no changes were made, report "変更なし".
@@ -181,4 +181,5 @@ If no changes were made, report "変更なし".
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
 - AITUBER_NOTIFY のデフォルトスコープは「ユーザー」だが、スコープはユーザーが毎回選択する
-- dev-kit の env トグル（`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN` / `DEV_KIT_NEXT_TS_CHECK` / `DEV_KIT_MARKDOWN_CHECK`）は `/dev-kit:config` で設定する
+- dev-kit の env トグル（`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN` / `DEV_KIT_NEXT_TS_CHECK`）は `/dev-kit:config` で設定する
+- `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` は逆極性のキルスイッチのためこのスキルでは管理しない（`plugin-config.md` 参照）

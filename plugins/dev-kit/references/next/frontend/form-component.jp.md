@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of form-component.md. When updating the English original, update this file too. -->
 # shadcn `<Form>` でフォームを書く
 
 react-hook-form + Zod + shadcn/ui の標準パターン。`{Feature}EditScreen.tsx` 等の中で使う。

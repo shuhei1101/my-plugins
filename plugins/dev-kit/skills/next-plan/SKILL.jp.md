@@ -9,7 +9,7 @@ description: |
   または `/dev-kit:next-plan` の明示的な呼び出し時にトリガー。
   実装タスクには使用しない — 代わりに `dev-kit:next-implement` を使う。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # dev-kit:next-plan — 実装計画書ジェネレーター
 
@@ -32,13 +32,13 @@ dev-kit Next.js references を読み込み、新規プロジェクト・機能�
 
 ## タスク
 
-### Step 1: リクエストを理解する
+### ステップ 1: リクエストを理解する
 
 #### 条件
 
 - 常に — 最初に実行
 
-#### プロセス
+#### 処理
 
 1. ユーザーが作りたいものを特定:
    - **リソース/フィーチャ名**（例: `users`, `products`, `orders`）
@@ -51,7 +51,7 @@ dev-kit Next.js references を読み込み、新規プロジェクト・機能�
    - `new-screens` — 画面のみ追加（APIは既存）
 3. 分類が曖昧な場合は、続行前にユーザーに確認する
 
-→ Step 2 へ
+→ ステップ 2 へ
 
 #### 出力
 
@@ -59,13 +59,13 @@ dev-kit Next.js references を読み込み、新規プロジェクト・機能�
 
 ---
 
-### Step 2: references を読み込む
+### ステップ 2: references を読み込む
 
 #### 条件
 
 - Step 1 完了
 
-#### プロセス
+#### 処理
 
 `{plugin_root}/references/` から以下を読み込む（plugin_root はこのスキルファイルから2レベル上）:
 
@@ -105,7 +105,7 @@ dev-kit Next.js references を読み込み、新規プロジェクト・機能�
 - `frontend/endpoints.md`
 - `frontend/query-client-setup.md`
 
-→ Step 3 へ
+→ ステップ 3 へ
 
 #### 出力
 
@@ -113,13 +113,13 @@ dev-kit Next.js references を読み込み、新規プロジェクト・機能�
 
 ---
 
-### Step 3: ファイル構造を設計する
+### ステップ 3: ファイル構造を設計する
 
 #### 条件
 
 - Step 2 完了
 
-#### プロセス
+#### 処理
 
 読み込んだ references とユーザーのリクエストに基づいて:
 
@@ -152,7 +152,7 @@ dev-kit Next.js references を読み込み、新規プロジェクト・機能�
 | DBヘルパー | `app/api/v1/{resource}/dbHelper.ts` |
 | DBスキーマ | `drizzle/schema.ts`（既存を拡張） |
 
-→ Step 4 へ
+→ ステップ 4 へ
 
 #### 出力
 
@@ -160,13 +160,13 @@ dev-kit Next.js references を読み込み、新規プロジェクト・機能�
 
 ---
 
-### Step 4: 計画書を出力する
+### ステップ 4: 計画書を出力する
 
 #### 条件
 
 - Step 3 完了
 
-#### プロセス
+#### 処理
 
 以下の構造化された計画書をMarkdownで出力する:
 
@@ -231,7 +231,7 @@ dev-kit Next.js references を読み込み、新規プロジェクト・機能�
 
 ---
 
-## References
+## 参照
 
 - `references/CLAUDE.md` — すべてのreferenceのファイル種別マッピング（インデックス）
 - `references/injection_rules.yaml` — ファイルパスパターン → referenceマッピング
