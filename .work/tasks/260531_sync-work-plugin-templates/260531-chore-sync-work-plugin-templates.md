@@ -22,8 +22,8 @@
 | 6 | 済 | `.work/issues/.gitignore` を最新テンプレートで追加 |
 | 7 | 済 | `index.yaml` に `last_id` がなければ追加（last_id: 232 で既存） |
 | 8 | 済 | 変更をコミット |
-| 9 | - | `.work/CLAUDE.md` と `.work/CLAUDE.jp.md` を削除（テンプレートから削除済み＝ref-inject に移行済み） |
-| 10 | - | `work:plugin-update` スキルに削除ステップを追加 |
+| 9 | 済 | `.work/CLAUDE.md` と `.work/CLAUDE.jp.md` を削除（テンプレートから削除済み＝ref-inject に移行済み） |
+| 10 | 済 | `work:plugin-update` スキルに削除ステップを追加 |
 
 ## 変更内容
 
@@ -32,6 +32,10 @@
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
 | 1 | `.work/issues/.gitignore` | 新規 | テンプレートより追加（`_index.yaml` を gitignore） | - |
+| 2 | `.work/CLAUDE.md` | 削除 | ref-inject 移行済みのため削除 | - |
+| 3 | `.work/CLAUDE.jp.md` | 削除 | 〃 | - |
+| 4 | `plugins/work/skills/plugin-update/SKILL.md` | 編集 | Step 2 を CLAUDE.md 削除 + .gitignore 同期に改訂 | - |
+| 5 | `plugins/work/skills/plugin-update/SKILL.jp.md` | 編集 | 〃 日本語版 | - |
 
 ## テスト
 
