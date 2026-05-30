@@ -178,6 +178,6 @@ JP ミラー `SKILL.jp.md` も同時に作成すること（`common.md` の JP/E
 
 - [ ] `skills/setup-wizard/SKILL.md` と `SKILL.jp.md` を作成した
 - [ ] `hooks/hooks.json` に `SessionStart` フックを追加し、`hooks/scripts/setup_check.py` を実装した
-- [ ] env を持つプラグインなら `skills/config/SKILL.md` (+ `.jp.md`) も合わせて実装した
+- [ ] env を持つプラグインなら `skills/plugin-config/SKILL.md` (+ `.jp.md`) も合わせて実装した
 - [ ] プラグインの `CLAUDE.md` に「初回起動時のセットアップフロー」を 1 行記載した
 - [ ] バージョンを bump し、changelog に "setup-wizard を追加" と記録した
