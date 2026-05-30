@@ -28,3 +28,6 @@ references:
 
   - path: incidents.md
     description: .claude/rules/incidents.md のフォーマットガイド。再発防止ログの 2 層（索引 + 詳細ファイル）構造、インシデントの記録方法。
+
+  - path: markdown-table.md
+    description: Markdown テーブルの記法規約。主要ルール：連続する行で同じ列の値が同じ場合、最初の行にのみ書き、以降のセルは空白にする。
