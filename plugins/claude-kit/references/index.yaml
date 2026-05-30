@@ -7,9 +7,6 @@ references:
   - path: common.md
     description: Shared base for all Claude config authoring. File-type decision criteria (rule vs skill vs CLAUDE.md vs hook vs reference), anti-proliferation guard, and JP/EN mirror rules.
 
-  - path: provenance.md
-    description: How to stamp a generated/edited file with provenance metadata (the Generated-by comment). Per-extension comment format, version from plugin.json, placement after frontmatter, JP-mirror warning line, and the replace-existing rule. Source of truth for the mark-generated thin wrapper.
-
   - path: skills.md
     description: How to author a .claude/skills/<name>/SKILL.md. When a skill is the right type, checking for existing similar skills, the JP-mirror-first workflow, the step-based structure template, and description frontmatter rules.
 
