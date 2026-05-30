@@ -36,10 +36,10 @@ PR166 で実際にこのバッチ方式が有効と確認された（8 項目を
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR176/QA.md` |
-| - | impl-review SKILL.md の Step 4 をバッチ方式に書き換える | - `plugins/workspace/skills/impl-review/SKILL.md`（PR172後の新パス想定） |
-| - | impl-review SKILL.jp.md の同箇所も更新 | - `plugins/workspace/skills/impl-review/SKILL.jp.md` |
-| - | バージョンバンプ + changelog | - `plugins/workspace/.claude-plugin/plugin.json` / `changelogs/v{X.Y.Z}.md` / `marketplace.json` |
+| ✓ | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR176/QA.md` |
+| ✓ | impl-review SKILL.md の Step 4 をバッチ方式に書き換える | - `plugins/workspace/skills/impl-review/SKILL.md` |
+| ✓ | impl-review SKILL.jp.md の同箇所も更新 | - `plugins/workspace/skills/impl-review/SKILL.jp.md` |
+| ✓ | バージョンバンプ + changelog | - `plugins/workspace/.claude-plugin/plugin.json` / `changelogs/v2.40.0.md` / `marketplace.json` |
 
 ## 参考ドキュメント
 
