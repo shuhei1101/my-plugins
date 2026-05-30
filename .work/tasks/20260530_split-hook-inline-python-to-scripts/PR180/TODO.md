@@ -3,7 +3,7 @@
 
 ## 概要
 
-`hooks.json` 内にインラインで書かれた `python -c "..."` スクリプトを、各プラグインの `hooks/scripts/` フォルダ配下の `.py` ファイルに切り出す。**既存 `hooks/*.py` も含めて全プラグインを `hooks/scripts/` 配下に統一する**（QA-001 解決）。共通処理（stdin 読み取り、env truthy 判定、`stop_hook_active` チェック、once-per-session トークン管理、`decision:block` JSON 出力）は各プラグイン内に閉じた `hooks/scripts/_common.py` に集約する（QA-002 解決）。ref-inject の templates 配下にも雛形を入れて、新規プラグインが最初から切り出し済み構造になるようにする（QA-003 解決）。
+`hooks.json` 内にインラインで書かれた `python -c "..."` スクリプトを、各プラグインの `hooks/scripts/` フォルダ配下の `.py` ファイルに切り出す。**既存 `hooks/*.py` も含めて全プラグインを `hooks/scripts/` 配下に統一**（QA-001 解決）。共通処理（stdin 読み取り、env truthy 判定、`stop_hook_active` チェック、once-per-session トークン管理、`decision:block` JSON 出力）はプラグイン内に閉じた `hooks/scripts/_common.py` に集約（QA-002 解決）。ref-inject の templates 配下にも雛形を入れて、新規プラグインが最初から切り出し済み構造になるようにした（QA-003 解決）。
 
 ### 実施条件
 
@@ -22,28 +22,29 @@
 | 済 | QA.md に未決定事項を記録する | - `.work/tasks/20260530_split-hook-inline-python-to-scripts/PR180/QA.md` |
 | 済 | `.work/notes/split-hook-inline-python-to-scripts.md` を作成する | - `.work/notes/split-hook-inline-python-to-scripts.md` |
 | 済 | QA を解決（QA-001 B / QA-002 A / QA-003 B） | - QA.md |
-| - | `workspace/hooks/scripts/_common.py` を作成し共通関数を実装 | - `plugins/workspace/hooks/scripts/_common.py` |
-| - | `workspace/hooks/scripts/stop.py` を作成（既存インライン Stop フックを移行） | - `plugins/workspace/hooks/scripts/stop.py` |
-| - | `workspace/hooks/hooks.json` の Stop エントリを `scripts/stop.py` 呼び出しに変更 | - `plugins/workspace/hooks/hooks.json` |
-| - | `claude-kit/hooks/inject_references.py` を `hooks/scripts/inject_references.py` へ移動 | - `plugins/claude-kit/hooks/{,scripts/}inject_references.py` |
-| - | `claude-kit/hooks/scripts/_common.py` を作成 | - `plugins/claude-kit/hooks/scripts/_common.py` |
-| - | `claude-kit/hooks/scripts/pre_compact.py` を作成（PreCompact インライン移行） | - `plugins/claude-kit/hooks/scripts/pre_compact.py` |
-| - | `claude-kit/hooks/hooks.json` の全エントリパスを `hooks/scripts/...` に更新 | - `plugins/claude-kit/hooks/hooks.json` |
-| - | `dev-kit/hooks/inject_references.py` と `ts_check.py` を `hooks/scripts/` へ移動 | - `plugins/dev-kit/hooks/{,scripts/}{inject_references,ts_check}.py` |
-| - | `dev-kit/hooks/scripts/_common.py` を作成 | - `plugins/dev-kit/hooks/scripts/_common.py` |
-| - | `dev-kit/hooks/scripts/yaml_skill_dispatch.py` を作成（Edit/Write 共通の yaml-skill-dispatch を移行） | - `plugins/dev-kit/hooks/scripts/yaml_skill_dispatch.py` |
-| - | `dev-kit/hooks/hooks.json` の全エントリパスを `hooks/scripts/...` に更新 | - `plugins/dev-kit/hooks/hooks.json` |
-| - | `ref-inject/templates/hooks/inject_references.py` を `templates/hooks/scripts/inject_references.py` へ移動 | - `plugins/ref-inject/templates/hooks/{,scripts/}inject_references.py` |
-| - | `ref-inject/templates/hooks/scripts/_common.py` 雛形を新規追加（プレースホルダ入り） | - `plugins/ref-inject/templates/hooks/scripts/_common.py` |
-| - | `ref-inject/templates/hooks/hooks.json` のパスを `hooks/scripts/...` に更新 | - `plugins/ref-inject/templates/hooks/hooks.json` |
-| - | `ref-inject/skills/apply/SKILL.md` (+ jp) の template→destination 表を更新 | - `plugins/ref-inject/skills/apply/SKILL.md`, `SKILL.jp.md` |
-| - | `kit-hooks-index-sync` ルールの `paths:` と Related Files 表を更新 | - `.claude/rules/feature/kit-hooks-index-sync.md`, `.claude/rules-jp/feature/kit-hooks-index-sync.md` |
-| - | 各プラグインの CLAUDE.md / references/CLAUDE.md / environment.md / hooks.md のパス記載を更新 | - `plugins/{claude-kit,dev-kit,ref-inject}/{CLAUDE,references/CLAUDE,references/environment,references/hooks}.{md,jp.md}` |
-| - | glossary.md の対象用語のパス記述を更新（歴史的 changelogs / incidents は変更しない） | - `.claude/rules/core/glossary.md`, `.claude/rules-jp/core/glossary.md` |
-| - | 各プラグインの `plugin.json` と `marketplace.json` の version を bump | - `plugins/{workspace,claude-kit,dev-kit,ref-inject}/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | 孤児チェック・hooks.json JSON validity チェック | - 自動 |
+| 済 | `workspace/hooks/scripts/_common.py` を作成し共通関数を実装 | - `plugins/workspace/hooks/scripts/_common.py` |
+| 済 | `workspace/hooks/scripts/stop.py` を作成（既存インライン Stop フックを移行） | - `plugins/workspace/hooks/scripts/stop.py` |
+| 済 | `workspace/hooks/hooks.json` の Stop エントリを `scripts/stop.py` 呼び出しに変更 | - `plugins/workspace/hooks/hooks.json` |
+| 済 | `claude-kit/hooks/inject_references.py` を `hooks/scripts/inject_references.py` へ移動 | - `plugins/claude-kit/hooks/{,scripts/}inject_references.py` |
+| 済 | `claude-kit/hooks/scripts/_common.py` を作成 | - `plugins/claude-kit/hooks/scripts/_common.py` |
+| 済 | `claude-kit/hooks/scripts/pre_compact.py` を作成（PreCompact インライン移行） | - `plugins/claude-kit/hooks/scripts/pre_compact.py` |
+| 済 | `claude-kit/hooks/hooks.json` の全エントリパスを `hooks/scripts/...` に更新 | - `plugins/claude-kit/hooks/hooks.json` |
+| 済 | `dev-kit/hooks/inject_references.py` と `ts_check.py` を `hooks/scripts/` へ移動 | - `plugins/dev-kit/hooks/{,scripts/}{inject_references,ts_check}.py` |
+| 済 | `dev-kit/hooks/scripts/_common.py` を作成 | - `plugins/dev-kit/hooks/scripts/_common.py` |
+| 済 | `dev-kit/hooks/scripts/yaml_skill_dispatch.py` を作成 | - `plugins/dev-kit/hooks/scripts/yaml_skill_dispatch.py` |
+| 済 | `dev-kit/hooks/hooks.json` の全エントリパスを `hooks/scripts/...` に更新 | - `plugins/dev-kit/hooks/hooks.json` |
+| 済 | `ref-inject/templates/hooks/inject_references.py` を `templates/hooks/scripts/inject_references.py` へ移動 | - `plugins/ref-inject/templates/hooks/{,scripts/}inject_references.py` |
+| 済 | `ref-inject/templates/hooks/scripts/_common.py` 雛形を新規追加（プレースホルダ入り） | - `plugins/ref-inject/templates/hooks/scripts/_common.py` |
+| 済 | `ref-inject/templates/hooks/hooks.json` のパスを `hooks/scripts/...` に更新 | - `plugins/ref-inject/templates/hooks/hooks.json` |
+| 済 | `ref-inject/skills/apply/SKILL.md` (+ jp) の template→destination 表を更新 | - `plugins/ref-inject/skills/apply/SKILL.md`, `SKILL.jp.md` |
+| 済 | `kit-hooks-index-sync` ルールの `paths:` と Related Files 表を更新 | - `.claude/rules/feature/kit-hooks-index-sync.md`, `.claude/rules-jp/feature/kit-hooks-index-sync.md` |
+| 済 | 各プラグインの CLAUDE.md / references/CLAUDE.md / environment.md / hooks.md のパス記載を更新 | - `plugins/{claude-kit,dev-kit,ref-inject}/{CLAUDE,references/CLAUDE,references/environment,references/hooks}.{md,jp.md}` |
+| 済 | glossary.md の対象用語のパス記述を更新（kit-hooks-index-sync / next-ts-check / DEV_KIT_PYTHON）＋ PR180 用エントリ追加 | - `.claude/rules/core/glossary.md`, `.claude/rules-jp/core/glossary.md` |
+| 済 | 各プラグインの `plugin.json` と `marketplace.json` の version を MINOR bump | - workspace 2.43→2.44 / claude-kit 3.35→3.36 / dev-kit 4.0→4.1 / ref-inject 1.3→1.4 |
+| 済 | 各プラグインの changelog 追加（v2.44.0 / v3.36.0 / v4.1.0 / v1.4.0） | - `plugins/{workspace,claude-kit,dev-kit,ref-inject}/changelogs/v*.md` |
+| 済 | 孤児チェック・hooks.json JSON validity チェック・全 script import チェック | - 自動 |
 | - | フック動作確認（Claude Code 再起動後にユーザーへ依頼） | - 動作確認 |
-| - | `.claude/rules/core/incidents.md` への追記要否を判断 | - `.claude/rules/core/incidents.md` |
+| 済 | `.claude/rules/core/incidents.md` への追記要否を判断 → 不要（インシデント由来でなくユーザー要望のリファクタ） | - 判断のみ |
 
 ## 参考ドキュメント
 
