@@ -34,6 +34,10 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 | 済 | claude-kit を PATCH bump (3.38.0 → 3.38.1) し Changelog 表を新設 | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json`<br>- `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md` |
 | 済 | dev-kit v4.1.0 の Changelog 記述を「自己完結設計」へ更新 | - `plugins/dev-kit/CLAUDE.md`<br>- `plugins/dev-kit/CLAUDE.jp.md` |
 | 済 | 追加コミット | - a5bfda6 |
+| - | 概念修正: plugin-update の本質を「静的ファイルのコピー」から「プロジェクト既存成果物が現行規約に逸脱していないかを検査・修正する」へ書き直し | - `plugins/dev-kit/skills/plugin-update/SKILL.md`<br>- `plugins/dev-kit/skills/plugin-update/SKILL.jp.md` |
+| - | claude-kit `plugin-structure.md` (+ jp) の `plugin-update` 概念説明も同様に修正 | - `plugins/claude-kit/references/plugin-structure.md`<br>- `plugins/claude-kit/references/plugin-structure.jp.md` |
+| - | PR184 / PR185 の事前仕様文書を正しい概念に合わせて更新 | - PR184 task doc<br>- PR185 task doc |
+| - | コミット | - |
 
 ## 変更内容
 
