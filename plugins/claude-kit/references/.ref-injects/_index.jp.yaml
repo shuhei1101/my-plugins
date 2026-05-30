@@ -41,6 +41,10 @@ references:
   - path: kit-hooks-sync.md
     description: dev-kit と claude-kit の注入インフラ構造同期ルール。inject_references.py・hooks.json・テンプレート・_index.yaml・_injection_rules.yaml の共有構造を片方の kit で変更したら、もう片方も同じコミットで更新する。
 
+
+  - path: jinja2/authoring.md
+    description: Jinja2 テンプレート記法の落とし穴。trim_blocks=True / lstrip_blocks=True 有効時の既知の罠 — ブロックタグ直下の dashes による setext 見出し、ATX 見出し内の {{ expr }} に必要な <!-- -->、ブロックタグ周りの空行要件、インデントの消失。
+
   - path: plugin-config.md
     description: プラグインに config スキルを追加する方法。AskUserQuestion ループパターン、管理トグルの規約（キーなし = ON / "false" = OFF）、スコープ選択、最小 SKILL.md テンプレート。
 
