@@ -901,3 +901,10 @@ branches:
   summary: 全プラグインの skills/hooks/references を grep して他プラグインへの依存箇所をリストアップし、プラグイン内自己完結へ順次書き換える
   task: 260530_existing-inter-plugin-dependency-audit-and-zero-out
   completed: true
+- id: 206
+  title: PR206 — ref-inject-references-edit-guard
+  type: feat
+  tags: []
+  summary: ref-inject に references/ 編集時の _index.yaml / _injection_rules.yaml 登録漏れ検知フックを追加
+  task: 260530_ref-inject-references-edit-guard
+  completed: true

@@ -79,7 +79,9 @@ description: |
 | テンプレート（`templates/` 配下） | 出力先（対象プラグイン配下） |
 |---|---|
 | `hooks/scripts/inject_references.py` | `hooks/scripts/inject_references.py` |
+| `hooks/scripts/references_edit_guard.py` | `hooks/scripts/references_edit_guard.py` |
 | `hooks/scripts/_common.py` | `hooks/scripts/_common.py` |
+| `hooks/prompts/references-edit-guard.md` / `.jp.md` | `hooks/prompts/…`（同名） |
 | `hooks/hooks.json` | `hooks/hooks.json` |
 | `hooks/templates/injection.md.j2` / `injection.jp.md.j2` | `hooks/templates/…`（同名） |
 | `references/_index.yaml` / `_index.jp.yaml` | `references/…`（同名） |
@@ -90,7 +92,7 @@ description: |
 メモ:
 - パスはテンプレートをそのまま反映 — 移動なし。
 - `hooks.json` 内の `${CLAUDE_PLUGIN_ROOT}` はそのまま残す（Claude Code が実行時に展開）。
-- **対象に既に `hooks/hooks.json` がある場合**（他のフックがある）: 上書きせず、`PreToolUse`（Edit/Write/MultiEdit/Read）エントリを既存ファイルにマージする。
+- **対象に既に `hooks/hooks.json` がある場合**（他のフックがある）: 上書きせず、`PreToolUse`（Edit/Write/MultiEdit/Read）エントリを既存ファイルにマージする。`inject_references.py` と `references_edit_guard.py` は同じ `PreToolUse` matcher 配下に並べる（1 つの matcher に複数の `hooks`）。
 - **対象に既に注入ファイルがある場合**（再適用 / 仕組み更新）: `hooks/*` は上書きするが、既存の `references/` の中身（_index.yaml / _injection_rules.yaml / 実 doc）はそのまま残し、欠けている雛形だけ補う。
 - 書き込み後、対象プラグインの `hooks/` を grep して `__PLACEHOLDER__` が残っていないか確認する。
 
