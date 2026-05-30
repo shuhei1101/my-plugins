@@ -15,13 +15,13 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | QA セクションに未決事項を記録する（このドキュメント） |
-| 2 | - | `.work/notes/` のノートドキュメントを更新する |
-| 3 | - | `plugins/work/skills/start/SKILL.md` — Step 1 に `WORK_BRANCH_AUTHOR` チェックを追加、Naming 注釈を更新 |
-| 4 | - | `plugins/work/skills/start/SKILL.jp.md` — JP ミラーを同期 |
-| 5 | - | `plugins/work/CLAUDE.md` — Environment Variables 表に追加、Changelog を更新 |
-| 6 | - | `plugins/work/CLAUDE.jp.md` — JP ミラーを同期 |
-| 7 | - | ルール / CLAUDE.md を更新する |
+| 1 | 済 | QA セクションに未決事項を記録する（このドキュメント） |
+| 2 | 済 | `.work/notes/` のノートドキュメントを更新する |
+| 3 | 済 | `plugins/work/skills/start/SKILL.md` — Step 1 に `WORK_BRANCH_AUTHOR` チェックを追加、Naming 注釈を更新 |
+| 4 | 済 | `plugins/work/skills/start/SKILL.jp.md` — JP ミラーを同期 |
+| 5 | 済 | `plugins/work/CLAUDE.md` — Environment Variables 表に追加、Changelog を更新 |
+| 6 | 済 | `plugins/work/CLAUDE.jp.md` — JP ミラーを同期 |
+| 7 | 済 | ルール / CLAUDE.md を更新する |
 
 ## 変更内容
 
