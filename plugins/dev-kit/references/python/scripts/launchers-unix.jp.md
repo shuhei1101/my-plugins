@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of launchers-unix.md. When updating the English original, update this file too. -->
 # launchers-unix — sh ランチャー
 
 > このファイルは `launchers-unix.md` の日本語ミラーです。

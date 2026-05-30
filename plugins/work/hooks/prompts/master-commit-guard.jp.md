@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of master-commit-guard.md. When updating the English original, update this file too. -->
 [master-commit-guard] master/main/develop ブランチへの直接コミットが検出されました。即座に停止してください。
 
 今すぐユーザーに明示的な確認を取ってから進めてください:

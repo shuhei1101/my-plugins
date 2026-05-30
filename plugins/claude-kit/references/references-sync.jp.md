@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of references-sync.md. When updating the English original, update this file too. -->
 # References JP ミラー同期
 
 `plugins/*/references/**/*.md` を編集したら、**必ず同じコミットで `*.jp.md` も更新する**。
@@ -22,14 +22,14 @@
 
 - [ ] `*.md` の変更内容が `*.jp.md` に日本語で反映されている
 - [ ] `*.jp.md` のセクション構成が英語版 `*.md` と一致している
-- [ ] すべての `*.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror... -->`）が含まれている
+- [ ] すべての `*.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror of {source}.md ... -->`）が含まれている
 
 ## JP ミラー警告コメント
 
 すべての JP ミラーファイル（`*.jp.md`）には、ファイル冒頭に以下の警告コメントが必須:
 
 ```
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of {source}.md. When updating the English original, update this file too. -->
 ```
 
 ## なぜ必要か

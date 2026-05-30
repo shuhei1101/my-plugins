@@ -7,7 +7,7 @@ description: |
   「create a new branch」などのトリガーキーワードで実行。
 ---
 
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:start — 新しいブランチを開始
 
@@ -25,7 +25,7 @@ description: |
 
 ## タスク
 
-### Step 1: ブランチ名を決定
+### ステップ 1: ブランチ名を決定
 
 #### 条件
 
@@ -44,7 +44,7 @@ description: |
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yaml
 ```
 
-→ Step 2 に進む
+→ ステップ 2 へ
 
 #### 出力
 
@@ -53,7 +53,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 ---
 
-### Step 2: リクエスト詳細を収集
+### ステップ 2: リクエスト詳細を収集
 
 #### 条件
 
@@ -66,7 +66,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
    - **ノート**: `.work/notes/` に関連するノートが存在しますか？または作成が必要ですか？
    - **未解決の質問**: 不明瞭な点や未決定の事項はありますか？
 
-→ Step 3 に進む
+→ ステップ 3 へ
 
 #### 出力
 
@@ -74,7 +74,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 ---
 
-### Step 3: index.yaml にエントリを追加（メインリポジトリ）
+### ステップ 3: index.yaml にエントリを追加（メインリポジトリ）
 
 #### 条件
 
@@ -93,7 +93,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --task "{YYMMDD}_{title}"
 ```
 
-→ Step 4 に進む
+→ ステップ 4 へ
 
 #### 出力
 
@@ -109,7 +109,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### Step 4: ワークツリーとブランチを作成（有効な場合）
+### ステップ 4: ワークツリーとブランチを作成（有効な場合）
 
 #### 条件
 
@@ -134,7 +134,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    > `.work/` フォルダ管理のみで作業を続けます。  
    > ワークツリーを使用したい場合は `settings.json` の `env` から `WORK_USE_WORKTREE` を外すか `true` に設定してください。
 
-→ Step 5 に進む
+→ ステップ 5 へ
 
 #### 出力
 
@@ -150,7 +150,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### Step 5: タスクフォルダを決定（自動判断）
+### ステップ 5: タスクフォルダを決定（自動判断）
 
 #### 条件
 
@@ -168,7 +168,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - 既存に追加 → `--task-dir {folder_name}` を使用
    - 新規作成 → `--date {YYMMDD} --title {title}` を使用
 
-→ Step 6 に進む
+→ ステップ 6 へ
 
 #### 出力
 
@@ -182,7 +182,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### Step 6: ブランチドキュメントを作成（ワークツリー内）
+### ステップ 6: ブランチドキュメントを作成（ワークツリー内）
 
 #### 条件
 
@@ -218,7 +218,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
 ```
 
-→ Step 7 に進む
+→ ステップ 7 へ
 
 #### 出力
 
@@ -226,7 +226,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 ---
 
-### Step 7: ブランチドキュメントに作業計画を入力（ワークツリー内）
+### ステップ 7: ブランチドキュメントに作業計画を入力（ワークツリー内）
 
 #### 条件
 
@@ -279,11 +279,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 - `即時実施可` （または `-`）候補に依存関係がない場合
 - `「{other candidate title}」が完了したら` 候補が同じテーブル内の別の候補に依存する場合
 
-→ Step 8 に進む
+→ ステップ 8 へ
 
 ---
 
-### Step 8: ノートドキュメントを保守（ワークツリー内）
+### ステップ 8: ノートドキュメントを保守（ワークツリー内）
 
 #### 条件
 
@@ -301,11 +301,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
    - 新しいノートを適切なカテゴリに追加、または既存エントリを更新する
    - `_index.md` が存在しない場合は、現在のノートを全てカテゴリ別にまとめて新規作成する
 
-→ Step 9 に進む
+→ ステップ 9 へ
 
 ---
 
-### Step 9: `## QA` セクションに開いている質問を記録（ワークツリー内）
+### ステップ 9: `## QA` セクションに開いている質問を記録（ワークツリー内）
 
 #### 条件
 
@@ -316,11 +316,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 1. Step 2 からの開いている質問をブランチドキュメントの `## QA` セクションに QA-XXX エントリとして追加
 2. 開いている質問がない場合はスキップ
 
-→ Step 10 に進む
+→ ステップ 10 へ
 
 ---
 
-### Step 10: 作成したコンテンツをコミット、ユーザーに報告、実装開始
+### ステップ 10: 作成したコンテンツをコミット、ユーザーに報告、実装開始
 
 #### 処理
 

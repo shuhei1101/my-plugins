@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of claude-md.md. When updating the English original, update this file too. -->
 # CLAUDE.md 作成ガイド
 
 プロジェクトまたはサブフォルダの `CLAUDE.md`（およびその `CLAUDE.jp.md` ミラー）の設計・作成・
@@ -125,4 +125,4 @@ Description of this project or folder.
 
 - [ ] `CLAUDE.md` の変更内容が `CLAUDE.jp.md` に日本語で反映されている
 - [ ] `CLAUDE.jp.md` のセクション構成が `CLAUDE.md` と一致している
-- [ ] `CLAUDE.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror... -->`）が含まれている
+- [ ] `CLAUDE.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror of CLAUDE.md ... -->`）が含まれている

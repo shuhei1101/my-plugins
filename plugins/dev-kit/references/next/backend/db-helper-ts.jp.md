@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of db-helper-ts.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/dbHelper.ts
 
 リソース内で複数の `query.ts` / `db.ts` 関数から共通利用するヘルパー。

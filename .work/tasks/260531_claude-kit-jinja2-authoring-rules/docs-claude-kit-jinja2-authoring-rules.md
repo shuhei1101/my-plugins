@@ -45,8 +45,8 @@ PR201 で `injection.md.j2` / `injection.jp.md.j2` を編集した際に
 | 済 | `references/jinja2/templates.md` (英語) と `.jp.md` を作成し、上記3パターン + その他の注意事項を記述する | - `plugins/claude-kit/references/jinja2/templates.md`<br>- `plugins/claude-kit/references/jinja2/templates.jp.md` |
 | 済 | `_index.yaml` / `_index.jp.yaml` に新リファレンスを登録する | - `plugins/claude-kit/references/_index.yaml`<br>- `plugins/claude-kit/references/_index.jp.yaml` |
 | 済 | `_injection_rules.yaml` に `**/hooks/templates/*.j2` パスを追加し新リファレンスを紐付ける | - `plugins/claude-kit/references/_injection_rules.yaml` |
-| 済 | バージョンをバンプする（3.44.0 → 3.45.0） | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| 済 | CLAUDE.md の Changelog を更新する／changelogs/v3.45.0.md を作成する | - `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md`<br>- `plugins/claude-kit/changelogs/v3.45.0.md` |
+| 済 | バージョンをバンプする（3.46.0 → 3.47.0） | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | CLAUDE.md の Changelog を更新する／changelogs/v3.47.0.md を作成する | - `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md`<br>- `plugins/claude-kit/changelogs/v3.47.0.md` |
 | 済 | ルール・CLAUDE.md を更新する（変更なし — `.claude/rules/` 配下に該当無し） | - |
 
 ## 変更内容
@@ -60,11 +60,11 @@ PR201 で `injection.md.j2` / `injection.jp.md.j2` を編集した際に
 | `plugins/claude-kit/references/_index.yaml` | 編集 | `jinja2/templates.md` エントリ追加 | - |
 | `plugins/claude-kit/references/_index.jp.yaml` | 編集 | 上記の JP ミラー | - |
 | `plugins/claude-kit/references/_injection_rules.yaml` | 編集 | `**/hooks/templates/*.j2` → `jinja2/templates.md` ルール追加 | - |
-| `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | version 3.44.0 → 3.45.0 | - |
-| `.claude-plugin/marketplace.json` | 編集 | claude-kit version 3.44.0 → 3.45.0 | - |
-| `plugins/claude-kit/CLAUDE.md` | 編集 | Changelog テーブルに 3.45.0 行を追加 | - |
+| `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | version 3.46.0 → 3.47.0 | - |
+| `.claude-plugin/marketplace.json` | 編集 | claude-kit version 3.46.0 → 3.47.0 | - |
+| `plugins/claude-kit/CLAUDE.md` | 編集 | Changelog テーブルに 3.47.0 行を追加 | - |
 | `plugins/claude-kit/CLAUDE.jp.md` | 編集 | 上記の JP ミラー | - |
-| `plugins/claude-kit/changelogs/v3.45.0.md` | 新規 | 3.45.0 の changelog 詳細 | - |
+| `plugins/claude-kit/changelogs/v3.47.0.md` | 新規 | 3.47.0 の changelog 詳細 | - |
 
 ## テスト
 

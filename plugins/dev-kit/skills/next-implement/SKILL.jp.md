@@ -4,7 +4,7 @@ description: |
   Next.js App Router でページ・コンポーネント・hook・API ルート・Server Action を新規作成・編集するとき。
   ユーザーが「画面を作って」「コンポーネントを実装して」「API を追加して」「Server Action を書いて」「Next.js の規約に従って」と言ったとき、または `/dev-kit:next-implement` を明示的に呼び出したとき。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # implement — Next.js 実装規約ガイド
 
 Next.js App Router のページ・コンポーネント・hook・API ルート・Server Action を実装する。Next.js 16 + shadcn/ui + Tailwind + Drizzle + TanStack Query 前提。
@@ -28,7 +28,7 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ 1: 対象ファイルを特定し、対応する reference を読む
 
@@ -36,7 +36,7 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 - 必ず最初に実行
 
-#### 処理内容
+#### 処理
 
 1. 編集対象のファイル種別を特定（`*.tsx`, `route.ts`, `query.ts`, `actions.ts` 等）
 2. `references/CLAUDE.md` の「ファイル種別 → reference マッピング」を参照
@@ -83,7 +83,7 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 - ステップ 1 完了
 
-#### 処理内容
+#### 処理
 
 1. `frontend/feature-folder.md`、`frontend/route-groups.md`、`frontend/id-routing.md` で配置先を確認
 2. 命名規約は `frontend/conventions/naming.md`
@@ -108,7 +108,7 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 - ステップ 2 完了
 
-#### 処理内容
+#### 処理
 
 1. 該当 reference の必須テンプレに従って実装
 2. ルール・禁止事項を厳守

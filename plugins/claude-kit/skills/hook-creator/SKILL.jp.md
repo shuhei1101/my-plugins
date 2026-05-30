@@ -6,7 +6,7 @@ description: |
   "create a hook that tells Claude to do X when Y happens", "hook でプロンプトを差し込みたい",
   "特定のタイミングで AI に指示を出したい", or invoked explicitly as `/claude-kit:hook-creator`.
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # hook-creator — プロンプト注入フック作成（薄ラッパー）
 

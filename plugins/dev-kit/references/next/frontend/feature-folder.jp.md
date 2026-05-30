@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of feature-folder.md. When updating the English original, update this file too. -->
 # app/(authenticated)/{feature}/ — フィーチャ単位フォルダ
 
 1 つのリソース（resources, posts, members 等）に対応するフォルダ構成。

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of errors.md. When updating the English original, update this file too. -->
 # errors — 例外階層
 
 > このファイルは `errors.md` の日本語ミラーです。

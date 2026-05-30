@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of query-client-setup.md. When updating the English original, update this file too. -->
 # app/(shared)/providers/QueryProvider.tsx — TanStack Query 設定
 
 QueryClient のグローバル設定。`app/layout.tsx` から wrap する。

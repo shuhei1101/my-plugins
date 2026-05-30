@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of launchers-windows.md. When updating the English original, update this file too. -->
 # launchers-windows — bat ランチャー
 
 > このファイルは `launchers-windows.md` の日本語ミラーです。

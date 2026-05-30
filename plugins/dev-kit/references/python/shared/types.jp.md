@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of types.md. When updating the English original, update this file too. -->
 # shared/types.py — 共通型エイリアス
 
 > このファイルは `types.md` の日本語ミラーです。

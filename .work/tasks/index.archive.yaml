@@ -867,3 +867,72 @@ branches:
   summary: CLAUDE_KIT_JP_MIRROR 環境変数を追加し、false の場合は JP ミラーを作らず本体ファイルを日本語で書く
   task: 260530_claude-kit-jp-mirror-env
   completed: true
+- id: 202
+  title: PR202 — fix-pr179-merge-fallout
+  type: fix
+  tags: []
+  summary: PR179 merge fallout 修正 + dev-kit:yaml スキル一式削除
+  task: 260531_fix-pr179-merge-fallout
+- id: 216
+  title: PR216 — fix-setup-wizard-config-naming
+  type: fix
+  tags: []
+  summary: setup-wizard.md/jp.md の plugin-config 命名を config に修正し、JP ミラーのスケルトンを日本語化する
+  task: 260531_fix-setup-wizard-config-naming
+  completed: true
+- id: 199
+  title: PR199 — dev-kit-references-yaml-subfolder
+  type: refactor
+  tags: []
+  summary: dev-kit references の yaml.md / yaml.jp.md を yaml/ サブフォルダへ移動し、他言語（html/next/python/markdown）と構造を揃える
+  task: 260530_dev-kit-references-yaml-subfolder
+  completed: true
+- id: 217
+  title: PR217 — existing-skills-review-and-normalize
+  type: chore
+  tags: []
+  summary: 既存スキル全件見直し：JP ミラーのセクション名を新テンプレートに合わせて統一し、サブエージェント委譲候補を洗い出す
+  task: 260531_existing-skills-review-and-normalize
+  completed: true
+- id: 213
+  title: PR213 — existing-inter-plugin-dependency-audit-and-zero-out
+  type: chore
+  tags: []
+  summary: 全プラグインの skills/hooks/references を grep して他プラグインへの依存箇所をリストアップし、プラグイン内自己完結へ順次書き換える
+  task: 260530_existing-inter-plugin-dependency-audit-and-zero-out
+  completed: true
+- id: 206
+  title: PR206 — ref-inject-references-edit-guard
+  type: feat
+  tags: []
+  summary: ref-inject に references/ 編集時の _index.yaml / _injection_rules.yaml 登録漏れ検知フックを追加
+  task: 260530_ref-inject-references-edit-guard
+  completed: true
+- id: 207
+  title: PR207 — jp-mirror-comment-add-source-filename
+  type: chore
+  tags: []
+  summary: JP ミラーコメント（<!-- This file is a Japanese mirror... -->）にソースの英語ファイル名を追加し、全
+    *.jp.md に一括適用する
+  task: 260530_jp-mirror-comment-add-source-filename
+- id: 218
+  title: feat/notes-sync-rule
+  type: feat
+  tags: []
+  summary: ノート新規作成・更新時に _index.md への追記を促すルールを追加
+  task: 260531_notes-sync-rule
+  completed: true
+- id: 219
+  title: feat/migrate-existing-plugins-to-have-config-skill
+  type: feat
+  tags: []
+  summary: py-kit / next-kit / html-kit / dev-kit などの既存プラグインに config スキルを追加する（PR175
+    のガイドに従って）
+  task: 260531_migrate-existing-plugins-to-have-config-skill
+- id: 221
+  title: chore/claude-kit-markdown-env-var-audit
+  type: chore
+  tags: []
+  summary: 他のマークダウンファイルで env var を直接読もうとする誤った指示がないか全量調査し修正する
+  task: 260531_claude-kit-markdown-env-var-audit
+  completed: true

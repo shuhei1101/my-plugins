@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of types.md. When updating the English original, update this file too. -->
 # Next.js App Router — Type Definitions
 
 スキーマ field のコメントは `comments.md`。本ファイルは型定義の **置き場所と表現** に集中する。

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of fixtures.md. When updating the English original, update this file too. -->
 # Next.js App Router — Test Fixtures (Data Factory)
 
 > **対象**: テストで使うデータ生成を集約して保守性を高める。

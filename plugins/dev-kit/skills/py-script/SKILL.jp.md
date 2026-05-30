@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — dev-kit:py-script（日本語ミラー）
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
@@ -19,7 +19,7 @@ dev-kit Python 規約に従った単一ファイル / 数ファイルのスク�
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: 規約を読み込む
 
@@ -54,7 +54,7 @@ tkinter GUI なら:
 
 ### ステップ2: 要件を確認する
 
-#### 処理内容
+#### 処理
 
 1. スクリプトの目的が不明な場合は確認する
 2. 必要なサードパーティパッケージを特定する
@@ -68,7 +68,7 @@ tkinter GUI なら:
 
 ### ステップ3: スクリプトを書く
 
-#### 処理内容
+#### 処理
 
 1. `scripts/python-script.md` の標準テンプレートに従ってファイルを作成:
    - モジュール docstring（1 行目で何をするか）
@@ -94,7 +94,7 @@ tkinter GUI なら:
 - dev-kit Python 規約に従ったスクリプトファイル
 - 必要なら bat / sh ランチャー
 
-#### 補足
+#### 注意事項
 
 ##### 禁止事項
 
