@@ -76,8 +76,10 @@ prevents duplicate injection.
 
 ## Changelog
 
+
 | Version | Date | Summary |
 |---|---|---|
+| 4.8.0 | 2026-05-31 | Add `dev-kit:config` skill — interactively configures 6 env toggles (`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` default-on) via numbered-list loop (PR219) |
 | 4.7.0 | 2026-05-31 | Add Markdown frontmatter placement check hook and reference; move `markdown-editing.md` into `markdown/` subfolder; wire into `_injection_rules.yaml` alongside `markdown-table.md`; add `DEV_KIT_MARKDOWN` opt-in support (PR198) |
 | 4.6.0 | 2026-05-30 | Move `yaml.md` / `yaml.jp.md` into `yaml/` subfolder to match `html/`, `next/`, `python/`, `markdown/` structure; register `yaml/yaml.md` in `_index.yaml` and add `**/index.yaml` / `**/settings.yaml(.sample)` injection rules (PR199) |
 | 4.5.0 | 2026-05-30 | Move `css-js-link.md` / `common-component-first.md` from `templates/html/rules/` to `references/html/`; wire them into `_injection_rules.yaml` html patterns; remove static-copy steps from `html-implement` (Step 7) and `plugin-update` (Step 2) (PR200) |

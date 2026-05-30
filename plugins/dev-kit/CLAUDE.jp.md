@@ -78,6 +78,7 @@ references/
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.8.0 | 2026-05-31 | `dev-kit:config` スキルを追加 — 6 つの env トグル（`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` デフォルト ON）を番号付きリストループで対話的に設定（PR219） |
 | 4.7.0 | 2026-05-31 | Markdown フロントマター配置チェックフックとリファレンスを追加; `markdown-editing.md` を `markdown/` サブフォルダへ移動; `markdown-table.md` と並んで `_injection_rules.yaml` に登録; `DEV_KIT_MARKDOWN` opt-in サポートを追加（PR198） |
 | 4.6.0 | 2026-05-30 | `yaml.md` / `yaml.jp.md` を `yaml/` サブフォルダへ移動し、`html/`・`next/`・`python/`・`markdown/` と構造を統一; `yaml/yaml.md` を `_index.yaml` に登録し `**/index.yaml` / `**/settings.yaml(.sample)` の注入ルールを追加（PR199） |
 | 4.5.0 | 2026-05-30 | `css-js-link.md` / `common-component-first.md` を `templates/html/rules/` から `references/html/` へ移動し `_injection_rules.yaml` の html パターンに紐付け; `html-implement`（ステップ7）と `plugin-update`（ステップ2）の静的コピー手順を削除（PR200） |
