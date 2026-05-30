@@ -11,7 +11,7 @@ description: >
 # dev-kit:yaml — YAML File Management
 
 Creates and manages `index.yaml`, `settings.yaml`, and `settings.yaml.sample` for asset catalogs
-and project configuration, following the conventions in `{plugin_root}/references/yaml.md`.
+and project configuration, following the conventions in `{plugin_root}/references/yaml/yaml.md`.
 
 ---
 
@@ -22,7 +22,7 @@ and project configuration, following the conventions in `{plugin_root}/reference
 Read the shared YAML conventions:
 
 ```
-{plugin_root}/references/yaml.md
+{plugin_root}/references/yaml/yaml.md
 ```
 
 The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/yaml` → plugin root is `.../{plugin-name}/`).
@@ -57,7 +57,7 @@ User wants to register assets or catalog files for a feature.
 
 #### Process
 
-1. Add entries to `{feature}/index.yaml` following the rules in `references/yaml.md` (section: index.yaml).
+1. Add entries to `{feature}/index.yaml` following the rules in `references/yaml/yaml.md` (section: index.yaml).
 2. When a new asset is added → add an entry to `index.yaml` AND add the corresponding key to `settings.yaml.sample`.
 3. When an asset is removed → mark inactive or remove the entry from `index.yaml` AND remove the key from `settings.yaml.sample`.
 
@@ -105,8 +105,8 @@ The project uses git worktrees AND a YAML file is written at runtime by the UI o
 
 #### Process
 
-1. Confirm the file is in scope per the table in `references/yaml.md` (section: Runtime-editable YAML in worktrees).
-2. Choose one of the two valid implementations from `references/yaml.md`:
+1. Confirm the file is in scope per the table in `references/yaml/yaml.md` (section: Runtime-editable YAML in worktrees).
+2. Choose one of the two valid implementations from `references/yaml/yaml.md`:
    - **A. Filesystem level**: symlink / junction in the worktree setup script.
    - **B. App level**: runtime path resolution via `git rev-parse --git-common-dir`.
 3. Document the choice in the matching `.claude/rules/<name>.md` (see Step 7):
@@ -133,7 +133,7 @@ A new feature introduces YAML files with domain-specific management conventions.
 #### Process
 
 1. Create `.claude/rules/<feature-name>.md` with `paths:` frontmatter targeting the relevant YAML files.
-2. Include in the rules file (per `references/yaml.md`, section: Rules file):
+2. Include in the rules file (per `references/yaml/yaml.md`, section: Rules file):
    - What each field means
    - Update procedure (when to update index.yaml vs settings.yaml.sample)
    - Runtime resolution method if applicable (from Step 6)
@@ -152,7 +152,7 @@ A new feature introduces YAML files with domain-specific management conventions.
 
 ## References
 
-See `{plugin_root}/references/yaml.md`:
+See `{plugin_root}/references/yaml/yaml.md`:
 - Three-file pattern
 - index.yaml conventions
 - settings.yaml.sample conventions

@@ -30,14 +30,10 @@ This skill depends on no other plugin. Committing and merging are the user's res
 
 ---
 
-## Static templates (re-copied in Steps 2 and 3)
+## Static templates (re-copied in Step 2)
 
 | Source (`${CLAUDE_PLUGIN_ROOT}/`) | Destination |
 |---|---|
-| `templates/html/rules/css-js-link.md` | `.claude/rules/css-js-link.md` |
-| `templates/html/rules/css-js-link.jp.md` | `.claude/rules-jp/css-js-link.md` |
-| `templates/html/rules/common-component-first.md` | `.claude/rules/common-component-first.md` |
-| `templates/html/rules/common-component-first.jp.md` | `.claude/rules-jp/common-component-first.md` |
 | `skills/html-debug-fab/templates/uidev.css` | Project static asset directory |
 |  | `uidev.js` in the same directory |
 |  | `CLAUDE.md` in the same directory |
@@ -64,24 +60,7 @@ This skill depends on no other plugin. Committing and merging are the user's res
 
 ---
 
-### Step 2: Re-copy html-implement rule templates
-
-#### Condition
-
-- `.claude/rules/css-js-link.md` exists (html-implement considered deployed)
-
-#### Process
-
-1. Check for existence. If absent, treat html-implement as unused and skip to Step 3
-2. Copy the 4 html-implement rows from the table above from
-   `${CLAUDE_PLUGIN_ROOT}/templates/html/rules/*` over the destinations
-3. Report which files were updated
-
-→ Proceed to Step 3
-
----
-
-### Step 3: Re-copy html-debug-fab widget
+### Step 2: Re-copy html-debug-fab widget
 
 #### Condition
 
@@ -90,18 +69,18 @@ This skill depends on no other plugin. Committing and merging are the user's res
 #### Process
 
 1. `find . -name 'uidev.css' -not -path '*/node_modules/*' -not -path '*/.git/*'`
-2. Not found → treat as not deployed; skip to Step 4
+2. Not found → treat as not deployed; skip to Step 3
 3. Exactly one match → that directory is the target
 4. Multiple matches → ask the user which to target
 5. Copy `uidev.css` / `uidev.js` / `CLAUDE.md` / `CLAUDE.jp.md` from
    `${CLAUDE_PLUGIN_ROOT}/skills/html-debug-fab/templates/` (skip `example.html`)
 6. Report which files were updated
 
-→ Proceed to Step 4
+→ Proceed to Step 3
 
 ---
 
-### Step 4: Inspect Python source files (if DEV_KIT_PYTHON is enabled)
+### Step 3: Inspect Python source files (if DEV_KIT_PYTHON is enabled)
 
 #### Condition
 
@@ -119,7 +98,7 @@ This skill depends on no other plugin. Committing and merging are the user's res
 4. For each file with deviations: show the deviation and proposed fix; get user confirmation before making changes
 5. Process in batches of ~10 files if the project is large
 
-→ Proceed to Step 5
+→ Proceed to Step 4
 
 #### Notes
 
@@ -128,7 +107,7 @@ Do not flag anything not explicitly stated in those references.
 
 ---
 
-### Step 5: Inspect HTML/CSS/JS source files (if DEV_KIT_HTML is enabled)
+### Step 4: Inspect HTML/CSS/JS source files (if DEV_KIT_HTML is enabled)
 
 #### Condition
 
@@ -144,11 +123,11 @@ Do not flag anything not explicitly stated in those references.
 3. Inspect against current conventions (FLOCSS, design tokens, DebugFAB usage, etc.)
 4. For each deviation: show and propose fix, confirm with user before applying
 
-→ Proceed to Step 6
+→ Proceed to Step 5
 
 ---
 
-### Step 6: Inspect TypeScript/TSX source files (if DEV_KIT_NEXT is enabled)
+### Step 5: Inspect TypeScript/TSX source files (if DEV_KIT_NEXT is enabled)
 
 #### Condition
 
@@ -164,11 +143,11 @@ Do not flag anything not explicitly stated in those references.
 3. Inspect against current conventions (file placement, Server Actions, auth, DB helpers, etc.)
 4. For each deviation: show and propose fix, confirm with user before applying
 
-→ Proceed to Step 7
+→ Proceed to Step 6
 
 ---
 
-### Step 7: Report completion
+### Step 6: Report completion
 
 #### Process
 

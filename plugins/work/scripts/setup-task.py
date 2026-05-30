@@ -1,30 +1,34 @@
 #!/usr/bin/env python3
 """
-setup-task.py -- Initialize task folder and document for a new PR.
+setup-task.py -- Initialize task folder and document for a new branch.
 
 Usage (new task folder):
     python setup-task.py <worktree_path> \\
-        --pr <N> \\
-        --branch <PR{N}/{type}/{title}> \\
+        --branch <{type}/{title}> \\
         --title <kebab-case-title> \\
         --date <YYMMDD> \\
-        --plugin-root <plugin_root_path>
+        --plugin-root <plugin_root_path> \\
+        [--id <N>]
 
 Usage (existing task folder):
     python setup-task.py <worktree_path> \\
-        --pr <N> \\
-        --branch <PR{N}/{type}/{title}> \\
+        --branch <{type}/{title}> \\
         --task-dir <YYMMDD_existing-title> \\
-        --plugin-root <plugin_root_path>
+        --plugin-root <plugin_root_path> \\
+        [--id <N>]
 
 Creates:
     <worktree>/.work/tasks/<task_dir>/<branch-hyphenated>.md
 
 The branch name is hyphenated by replacing every slash with a hyphen
-(e.g. PR168/refactor/refactor-task-doc-structure -> PR168-refactor-refactor-task-doc-structure).
+(e.g. refactor/rename-pr-to-branch -> refactor-rename-pr-to-branch).
 
 When --task-dir is omitted, the folder name is built from --date and --title.
 When --task-dir is provided, --date and --title are optional (used only in the document heading).
+
+--id is the internal numeric ID tracked in index.yaml. It is recorded in the document heading for
+cross-reference with commits and archive metadata; it is NOT embedded in the branch / worktree /
+filename. Legacy invocations with --pr are accepted as an alias for --id.
 """
 
 import argparse
@@ -34,14 +38,22 @@ import sys
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Create PR folder and initial document from template."
+        description="Create a branch task folder and initial document from template."
     )
     parser.add_argument("worktree", help="Path to the git worktree")
-    parser.add_argument("--pr", required=True, type=int, help="PR number")
+    parser.add_argument(
+        "--id",
+        "--pr",
+        dest="id",
+        default=None,
+        type=int,
+        help="Internal numeric ID tracked in index.yaml (used in the document heading only). "
+             "--pr is accepted as an alias for back-compat.",
+    )
     parser.add_argument(
         "--branch",
         required=True,
-        help="Full branch name (e.g. PR168/refactor/refactor-task-doc-structure). "
+        help="Full branch name (e.g. refactor/rename-pr-to-branch). "
              "Slashes are converted to hyphens to form the file name.",
     )
     parser.add_argument("--title", default="", help="Task title (kebab-case); used in the document heading")
@@ -91,12 +103,22 @@ def main() -> None:
     dest_path = task_dir / f"{file_stem}.md"
 
     template_path = (
-        plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "PRNNN-type-title.md"
+        plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "type-title.md"
     )
+    if not template_path.exists():
+        # Back-compat: fall back to the legacy template name if the new one is not yet deployed.
+        template_path = (
+            plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "PRNNN-type-title.md"
+        )
+    id_for_heading = str(args.id) if args.id is not None else ""
     _create_from_template(
         template_path,
         dest_path,
-        {"{N}": str(args.pr), "{タイトル}": title_for_heading},
+        {
+            "{N}": id_for_heading,
+            "{タイトル}": title_for_heading,
+            "{ブランチ名}": args.branch,
+        },
     )
 
     print(f"Task folder : {task_dir}")

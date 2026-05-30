@@ -292,3 +292,19 @@ Claude がこれから触るファイルに関連する規約/ドキュメント
 （例: `*-kit` 注入フックは `{PREFIX}_INJECTION_TTL` / `{PREFIX}_INJECTION_LANG` を読む）。設定・読み取り・
 スコープ・デフォルト・慣習の完全なガイドは **`environment.md`**（`hooks.json` / `settings.json` 編集時に
 このガイドと一緒に注入される）。
+
+---
+
+## JP ミラー同期（フックプロンプト）
+
+`plugins/**/hooks/prompts/*.md` を編集したら、**必ず同じコミットで `*.jp.md` も更新する**。
+
+| 編集したファイル | 必ず同時に更新するファイル |
+|---|---|
+| `plugins/{name}/hooks/prompts/{prompt}.md` | `plugins/{name}/hooks/prompts/{prompt}.jp.md` |
+
+### コミット前チェックリスト
+
+- [ ] `*.md` の変更内容が `*.jp.md` に日本語で反映されている
+- [ ] `*.jp.md` のセクション構成が英語版 `*.md` と一致している
+- [ ] `*.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror... -->`）が含まれている
