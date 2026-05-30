@@ -19,6 +19,7 @@ rules:
       - subagents.md
       - environment.md
       - plugin-config.md
+      - askuserquestion.md
 
   # ---- References: プラグインのリファレンスファイルを編集する場合 ----
   - pattern: "plugins/*/references/**/*.md"
@@ -34,6 +35,12 @@ rules:
   - pattern: "plugins/*-kit/hooks/templates/*.j2"
     required:
       - kit-hooks-sync.md
+    optional: []
+
+  # ---- Jinja2 テンプレート（任意プラグインの hooks/templates/*.j2）：Markdown 出力時の落とし穴 ----
+  - pattern: "**/hooks/templates/*.j2"
+    required:
+      - jinja2/templates.md
     optional: []
   - pattern: "plugins/*-kit/references/.ref-injects/{_index,_injection_rules,CLAUDE}{.jp,}.{yaml,md}"
     required:

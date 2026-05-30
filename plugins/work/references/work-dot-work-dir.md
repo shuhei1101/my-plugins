@@ -38,9 +38,15 @@ The branch document is the single source of truth for what a branch does. Create
 
 Flat structure (**no subfolders**). One note per topic. No duplication — use links instead.
 
+**`_index.md`**: The catalog of all notes under `.work/notes/`. Organized by category. **Always update `_index.md` when you create or rename a note** — add/update the entry in the relevant category section. Read `_index.md` to discover existing notes before creating new ones.
+
 **Lifecycle**:
 1. Write freely during planning and investigation (throwaway is fine)
-2. Review notes after work is done — keep what may be referenced again; delete the rest
+2. After work is done, promote valuable content to permanent knowledge via `/work:notes-to-claude`:
+   - Reusable procedures or file dependencies → rule (`.claude/rules/`)
+   - Project-wide conventions or prohibitions → `CLAUDE.md`
+   - Detailed reference material → `.claude/references/`
+3. Delete notes once promoted; remove the corresponding `_index.md` entry at the same time
 
 Content that doesn't need promotion (temporary comparisons, scratchpad investigations, rejected ideas) can stay as-is indefinitely.
 
@@ -49,6 +55,7 @@ Content that doesn't need promotion (temporary comparisons, scratchpad investiga
 ## Conventions
 
 - Mark completed rows in the `## 作業内容` table with `済` in the `完了` column
+- Promote valuable notes to permanent knowledge using `/work:notes-to-claude`
 - Append unresolved questions to the branch document's `## QA` section
 - Confirm all rows in the task table are `済` before merging
 - **Commit `.work/` folder changes separately from implementation code** — `.work/`-only changes (branch document updates, notes, etc.) may be bundled together in a single commit

@@ -15,6 +15,7 @@ Claude Code の設定ファイル（CLAUDE.md・rules・skills・hooks）を書�
 | 3 | [rules.md](rules.md) | `.claude/rules/<name>.md` の作り方。ルールの種類・paths 設計・必須セクション |
 | 4 | [skills.md](skills.md) | `.claude/skills/<name>/SKILL.md` の作り方。ステップ構造テンプレ・JP ミラー先行ワークフロー |
 | 5 | [hooks.md](hooks.md) | プロンプト注入フックの作り方。フックイベント・注入メカニズム・ループ防止 |
+| 6 | [askuserquestion.md](askuserquestion.md) | スキルから AskUserQuestion を呼ぶ条件と方法。使用制限（スキル/ユーザーの明示指示時のみ）・options 制約（2〜4 個・Other 自動付与）・multiSelect・preview |
 
 ---
 
@@ -39,6 +40,16 @@ Claude Code の設定ファイル（CLAUDE.md・rules・skills・hooks）を書�
 |---|---|---|
 | 1 | [subagents.md](subagents.md) | ステップ処理のサブエージェント委譲ガイド。委譲マーカー・委譲の判断基準・制約 |
 | 2 | [environment.md](environment.md) | フック/スクリプトを環境変数で設定可能にする方法。settings.json の env ブロック・デフォルト/検証 |
+
+---
+
+## テンプレート作成
+
+Jinja2 テンプレートのオーサリングに関するガイド。
+
+| # | ファイル | 内容 |
+|---|---|---|
+| 1 | [jinja2/templates.md](jinja2/templates.md) | Markdown を出力する Jinja2 テンプレート（injection.md.j2 等）のオーサリング規則。trim_blocks の改行食い・`{% endif %}{% if X %}` + `---` setext 見出しバグ・`}}` と Handlebars パーサ衝突（`<!-- -->` で回避）・チェックリスト |
 
 ---
 
