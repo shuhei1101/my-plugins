@@ -33,7 +33,9 @@ ref-inject/
 ├── skills/apply/SKILL.md (+ .jp.md)    # /ref-inject:apply — Claude reads templates & writes them into the target plugin
 └── templates/                           # the injection files copied into a target plugin (injection part only)
     ├── hooks/
-    │   ├── inject_references.py          # PreToolUse: match path → inject references (the reusable injection script)
+    │   ├── scripts/
+    │   │   ├── inject_references.py      # PreToolUse: match path → inject references (the reusable injection script)
+    │   │   └── _common.py                # Shared helpers for hook scripts (stdin, env truthy, once-per-session, block reason)
     │   ├── hooks.json
     │   └── templates/injection.md.j2 (+ .jp.md.j2)
     └── references/

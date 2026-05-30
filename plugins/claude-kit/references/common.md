@@ -84,12 +84,3 @@ the warning comment `<!-- This file is a Japanese mirror. ... -->` (see `provena
 > The repo bundles a `jp-mirror-translator` agent (`subagent_type: "claude-kit:jp-mirror-translator"`):
 > pass a `.md` path to generate/update its `.jp.md`, or a `.jp.md` path to update the English original.
 > Useful when authoring both sides, but writing them by hand is equally valid.
-
----
-
-## Provenance stamping
-
-After creating or editing an instruction file, stamp it with provenance metadata so
-`claude-kit:version-sync` can detect outdated artifacts. The full spec (per-extension format,
-version source, placement, JP-mirror warning) lives in **`provenance.md`**, which is injected
-alongside this guide whenever you edit a stampable file — follow it to write the stamp directly.

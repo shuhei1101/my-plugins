@@ -44,7 +44,7 @@ You will be called with a file path. Determine the direction:
 - Preserve all Markdown formatting exactly: headers, tables, code blocks, bullet lists, checkboxes, links
 - Keep the following in their original language without translation:
   - Code blocks and inline code (`` `like this` ``)
-  - File paths (e.g. `plugins/work-kit/agents/`)
+  - File paths (e.g. `plugins/workspace/agents/`)
   - Variable names, function names, class names
   - YAML frontmatter keys (only translate values if they are prose descriptions)
   - Shell commands

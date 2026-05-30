@@ -1,25 +1,25 @@
 ---
 paths:
-  - "plugins/work-kit/skills/work-start/SKILL.md"
-  - "plugins/work-kit/skills/work-add/SKILL.md"
-  - "plugins/work-kit/skills/vscode-workspace-sync/SKILL.md"
+  - "plugins/workspace/skills/work-start/SKILL.md"
+  - "plugins/workspace/skills/work-add/SKILL.md"
+  - "plugins/workspace/skills/vscode-workspace-sync/SKILL.md"
 ---
 
 # work-start ↔ worktree skills Link Rule
 
 ## Overview
 
-PR163 merged the worktree-kit plugin into work-kit. The two worktree-related skills
-(`work-add` / `vscode-workspace-sync`) now live under work-kit.
-`work-start` Step 4 delegates to `work-kit:work-add`, so their interfaces must stay aligned.
+PR163 merged the worktree-kit plugin into workspace. The two worktree-related skills
+(`work-add` / `vscode-workspace-sync`) now live under workspace.
+`work-start` Step 4 delegates to `workspace:work-add`, so their interfaces must stay aligned.
 
 ## File dependencies
 
 | Edited file | Also verify / update |
 |---|---|
-| `plugins/work-kit/skills/work-start/SKILL.md` | `plugins/work-kit/skills/work-add/SKILL.md` — confirm the interface (PR number / branch args) matches |
-| `plugins/work-kit/skills/work-add/SKILL.md` | `plugins/work-kit/skills/work-start/SKILL.md` — confirm the Step 4 call form matches |
-| `plugins/work-kit/skills/vscode-workspace-sync/SKILL.md` | confirm the namespace is `work-kit:` |
+| `plugins/workspace/skills/work-start/SKILL.md` | `plugins/workspace/skills/work-add/SKILL.md` — confirm the interface (PR number / branch args) matches |
+| `plugins/workspace/skills/work-add/SKILL.md` | `plugins/workspace/skills/work-start/SKILL.md` — confirm the Step 4 call form matches |
+| `plugins/workspace/skills/vscode-workspace-sync/SKILL.md` | confirm the namespace is `workspace:` |
 
 ## Toggling worktree usage
 

@@ -1,0 +1,203 @@
+---
+name: branch-index-cleanup
+description: |
+  Audit git branches against index.yaml / index.archive.yaml and clean up unregistered ones.
+  Classifies each unregistered branch as A (delete), B (archive + delete), or C (keep, add to index).
+  Trigger when the user says "ブランチを整理して", "未登録ブランチを片付けて", "branch-index-cleanup して",
+  or invoked explicitly as `/workspace:branch-index-cleanup`.
+disable-model-invocation: true
+---
+
+# workspace:branch-index-cleanup — Audit & Clean Up Unregistered Branches
+
+Compares local git branches with `index.yaml` / `index.archive.yaml` and interactively classifies
+each unregistered branch. Then executes delete / archive / index-add per classification.
+
+---
+
+## Tasks
+
+### Step 1: Collect unregistered branches
+
+#### Condition
+
+- Always — run first
+
+#### Process
+
+1. Get all local branches:
+
+```bash
+git branch --format='%(refname:short)'
+```
+
+2. Read registered PR IDs from both index files:
+
+```bash
+python -c "
+import yaml, re, sys
+ids = set()
+for path in ['.work/tasks/index.yaml', '.work/tasks/index.archive.yaml']:
+    try:
+        data = yaml.safe_load(open(path))
+        for entry in (data.get('prs') or []):
+            ids.add(str(entry['id']))
+    except: pass
+print(' '.join(sorted(ids)))
+"
+```
+
+3. For each branch (excluding `master` / `main`), check if its PR number appears in the registered IDs
+   - Branch name format: `PR{N}/{type}/{title}` → extract `N`
+   - Branches that cannot be parsed as `PR{N}/...` are also treated as unregistered
+4. Build the list of **unregistered branches**
+
+→ Proceed to Step 2
+
+#### Output
+
+- List of unregistered branch names
+
+---
+
+### Step 2: Classify each branch
+
+#### Condition
+
+- Step 1 complete — at least one unregistered branch found
+
+#### Process
+
+1. Display the unregistered branch list in a table:
+
+   | Branch | Inferred PR# | Inferred Title | Classification |
+   |---|---|---|---|
+   | PR42/feat/some-feature | 42 | feat/some-feature | ? |
+   | ... | | | |
+
+2. For each branch, auto-infer:
+   - `id` — PR number extracted from branch name (or `?` if unparseable)
+   - `title` — type/title portion of branch name
+   - `type` — type portion (feat/fix/refactor/docs/chore/test), default `chore` if absent
+
+3. Ask the user to assign A / B / C to each branch:
+
+   > 各ブランチを以下のいずれかに分類してください:
+   > - **A** — 完了済み・不要（削除のみ）
+   > - **B** — 完了済み・記録したい（archive に追記 → 削除）
+   > - **C** — 作業継続（index.yaml に追記）
+
+4. If the user wants to modify inferred metadata for B/C branches, accept corrections before proceeding
+
+→ Proceed to Step 3
+
+#### Output
+
+- Classification map: `{ branch: { class: A|B|C, id, title, type, summary? } }`
+
+---
+
+### Step 3: Execute per classification
+
+#### Condition
+
+- Step 2 complete — user has confirmed all classifications
+
+#### Process
+
+Execute in order: B → C → A
+
+**Class B — archive + delete**:
+
+For each B branch:
+1. Append entry to `.work/tasks/index.archive.yaml`:
+
+```bash
+python -c "
+import yaml, sys
+path = '.work/tasks/index.archive.yaml'
+try:
+    data = yaml.safe_load(open(path)) or {}
+except: data = {}
+prs = data.get('prs') or []
+prs.append({
+    'id': int(sys.argv[1]),
+    'title': sys.argv[2],
+    'type': sys.argv[3],
+    'summary': sys.argv[4] if sys.argv[4] else '',
+    'completed': True,
+})
+data['prs'] = prs
+yaml.dump(data, open(path, 'w'), allow_unicode=True, default_flow_style=False)
+" {id} {title} {type} "{summary}"
+```
+
+2. Delete the branch:
+
+```bash
+git branch -d {branch}   # use -D if not merged
+```
+
+**Class C — add to index.yaml**:
+
+```bash
+python {PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
+  --id {id} \
+  --title "{title}" \
+  --type {type} \
+  --summary "{summary}" \
+  --task "{task_dir}"
+```
+
+**Class A — delete only**:
+
+```bash
+git branch -d {branch}   # use -D if not merged
+```
+
+→ Proceed to Step 4
+
+#### Notes
+
+- If `git branch -d` fails (not fully merged), warn the user and ask whether to force-delete (`-D`)
+- `{PLUGIN_ROOT}` refers to the workspace plugin root path
+
+---
+
+### Step 4: Report results
+
+#### Condition
+
+- Step 3 complete
+
+#### Process
+
+Print a summary table:
+
+| 分類 | 件数 | ブランチ |
+|---|---|---|
+| A（削除） | N | branch1, branch2 |
+| B（archive → 削除） | N | branch3 |
+| C（index 追記） | N | branch4 |
+
+Confirm the final state:
+
+```bash
+git branch --format='%(refname:short)' | grep -v master | grep -v main
+```
+
+→ Done.
+
+---
+
+### Step 5: Nothing to do (all branches registered)
+
+#### Condition
+
+- Step 1 found zero unregistered branches
+
+#### Process
+
+Report:
+
+> すべてのブランチが index.yaml / index.archive.yaml に登録済みです。整理は不要です。
