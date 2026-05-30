@@ -24,19 +24,21 @@ GitHubのPR概念に縛られた命名（`PR{N}/type/title` 形式のブラン�
 |---|---|---|
 | 済 | QA を確認・記録する | - |
 | 済 | `.work/notes/` の作業メモを更新 | - |
-| 済 | work-start SKILL.md の Step 1 を「ブランチ名決定」に変更（内部 ID 採番は継続） | - `plugins/workspace/skills/work-start/SKILL.md` |
-| 済 | work-start SKILL.md のブランチ名形式を `type/title` に変更（PR番号除去） | - 同上 |
-| 済 | work-start SKILL.md 全体の「PR」用語を「ブランチ」に統一 | - 同上 |
-| 済 | work-add SKILL.md をブランチ名のみ受け取る形に変更（レガシー PR{N} は後方互換で破棄） | - `plugins/workspace/skills/work-add/SKILL.md` |
-| 済 | work-add SKILL.md でワークツリー名を `wt-{branch-name}` 形式に変更（既存は変えない） | - 同上 |
-| 済 | PRドキュメントテンプレートをリネーム + セクション名変更（関連PR→関連ブランチ、次PR候補→次ブランチ候補） | - `plugins/workspace/templates/.work/tasks/yymmdd_xxx/{PRNNN-type-title.md → type-title.md}` |
-| 済 | setup-task.py の `--pr` → `--id` 化、テンプレート参照を新ファイル名へ | - `plugins/workspace/scripts/setup-task.py` |
+| 済 | work:start SKILL.md の Step 1 を「ブランチ名決定」に変更（内部 ID 採番は継続） | - `plugins/work/skills/start/SKILL.md` |
+| 済 | ブランチ名形式を `type/title` に変更（PR番号除去） | - 同上 |
+| 済 | start SKILL.md 全体の「PR」用語を「ブランチ」に統一 | - 同上 |
+| 済 | worktree-create SKILL.md をブランチ名のみ受け取る形に変更（レガシー PR{N} は後方互換で破棄） | - `plugins/work/skills/worktree-create/SKILL.md` |
+| 済 | worktree-create SKILL.md でワークツリー名を `wt-{type}-{title}` 形式に変更（既存は変えない） | - 同上 |
+| 済 | PRドキュメントテンプレートをリネーム + セクション名変更（関連PR→関連ブランチ、次PR候補→次ブランチ候補） | - `plugins/work/templates/.work/tasks/yymmdd_xxx/{PRNNN-type-title.md → type-title.md}` |
+| 済 | setup-task.py の `--pr` → `--id` 化、テンプレート参照を新ファイル名へ | - `plugins/work/scripts/setup-task.py` |
 | 済 | merge / pr-handoff / pr-show / impl-review / qa-review / plugin-update / branch-index-cleanup の PR 用語をブランチ用語に更新 | - 関連スキル全般 |
-| 済 | hook prompts (stop / stop-no-merge / user-prompt-submit) を更新 | - `plugins/workspace/hooks/prompts/*` |
-| 済 | templates/.work/CLAUDE.md（jp）と templates/note.md, templates/.work/notes/xxx.md を更新 | - `plugins/workspace/templates/**` |
+| 済 | hook prompts (stop / stop-no-merge / user-prompt-submit) を更新 | - `plugins/work/hooks/prompts/*` |
+| 済 | templates/.work/CLAUDE.md（jp）と templates/note.md, templates/.work/notes/xxx.md を更新 | - `plugins/work/templates/**` |
 | 済 | 各 SKILL.jp.md / *.jp.md を同期 | - 対象の `.jp.md` ファイル |
-| 済 | plugin.json / marketplace.json を v3.0.0 にバージョンアップ | - 該当ファイル |
+| 済 | master 取り込み (workspace → work リネーム, PR181 conv2claude 削除等) | - `git merge master` で衝突解決 |
+| 済 | plugin.json / marketplace.json を v2.47.0 にバージョンアップ | - 該当ファイル |
 | 済 | コミット | - |
+
 
 ## 変更内容
 
