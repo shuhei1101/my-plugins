@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # claude-kit プラグイン開発者ガイド
 
 ## オーサリング知識は `references/` にあり、自動注入される

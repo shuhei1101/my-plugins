@@ -7,7 +7,7 @@ description: |
 disable-model-invocation: true
 ---
 
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:merge — ブランチをマージ
 

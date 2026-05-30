@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of auth-client.md. When updating the English original, update this file too. -->
 # app/(shared)/auth/client.ts — クライアント側 useSession
 
 ブラウザから Better Auth のセッションを参照・操作する hook。

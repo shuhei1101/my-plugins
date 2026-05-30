@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of tag-input.md. When updating the English original, update this file too. -->
 # `<TagInput>` — IME 対応タグ入力
 
 Enter でタグ確定、削除、IME 入力中の Enter を無視する共通コンポーネント。

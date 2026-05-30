@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of mark-generated-markers-not-swept-on-removal.md. When updating the English original, update this file too. -->
 
 # インシデント: mark-generated マーカー、スキル削除時に未掃除のまま残存
 

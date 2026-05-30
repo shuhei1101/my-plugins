@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of plugin-structure.md. When updating the English original, update this file too. -->
 # プラグイン作成ガイド
 
 Claude Code プラグインを作成または更新する方法。本ガイドは自己完結している: （`plugin.json` または

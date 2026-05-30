@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of debug-fab-sync.md. When updating the English original, update this file too. -->
 # debug-fab テンプレート同期ルール
 
 `plugins/dev-kit/skills/html-debug-fab/templates/` 配下のファイルを編集したら、

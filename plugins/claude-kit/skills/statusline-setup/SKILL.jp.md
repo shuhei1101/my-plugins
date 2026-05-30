@@ -4,7 +4,7 @@ description: |
   ユーザーが「ステータスラインを設定して」「statusline-setup を実行して」「ステータスラインをセットアップして」と言ったとき。
   または `/statusline-setup` で明示的に呼ばれたとき。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # statusline-setup — ステータスライン設定を適用する
 

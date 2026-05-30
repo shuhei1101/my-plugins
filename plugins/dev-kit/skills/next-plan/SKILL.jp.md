@@ -9,7 +9,7 @@ description: |
   または `/dev-kit:next-plan` の明示的な呼び出し時にトリガー。
   実装タスクには使用しない — 代わりに `dev-kit:next-implement` を使う。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # dev-kit:next-plan — 実装計画書ジェネレーター
 

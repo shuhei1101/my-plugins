@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of security.md. When updating the English original, update this file too. -->
 # Next.js App Router — Security
 
 > **対象**: セキュリティヘッダ・CSRF・XSS・SQL Injection・Open Redirect・Dependency vulnerabilities の防御。

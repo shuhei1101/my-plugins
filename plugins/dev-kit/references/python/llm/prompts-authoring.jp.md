@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of prompts-authoring.md. When updating the English original, update this file too. -->
 # llm/prompts-authoring — プロンプトファイルの書き方と組み立て
 
 > このファイルは `prompts-authoring.md` の日本語ミラーです。

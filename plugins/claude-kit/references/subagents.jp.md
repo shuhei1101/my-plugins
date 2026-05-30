@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of subagents.md. When updating the English original, update this file too. -->
 # サブエージェント委譲ガイド
 
 スキル内のステップ処理をサブエージェントに委譲する方法と判断基準。

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # claude-kit references
 
 Claude Code 指示ファイル（skill / rule / CLAUDE.md / hook / plugin）のオーサリングガイド集。

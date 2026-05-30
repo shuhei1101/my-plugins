@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of git-guard-false-positive-file-content.md. When updating the English original, update this file too. -->
 # git-guard フックがコマンド文字列テキストに誤反応
 
 **日付**: 2026-05-30

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of yaml.md. When updating the English original, update this file too. -->
 # YAML — dev-kit 共通リファレンス（日本語ミラー）
 
 > このファイルは `yaml.md` の日本語ミラーです。Claude Code には読み込まれません。

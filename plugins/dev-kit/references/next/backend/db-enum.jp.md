@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of db-enum.md. When updating the English original, update this file too. -->
 # drizzle/schema.ts — Enum
 
 固定セットの値を取るカラムは `pgEnum` で型安全に定義。

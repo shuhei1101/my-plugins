@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of secrets-and-env.md. When updating the English original, update this file too. -->
 # secrets-and-env — シークレット / 環境 / 構造 / アセットの分離
 
 > このファイルは `secrets-and-env.md` の日本語ミラーです。

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of auth-setup.md. When updating the English original, update this file too. -->
 # lib/auth.ts — Better Auth セットアップ
 
 採用認証プロバイダ: **Better Auth**（DB 非依存・TypeScript ファースト）。

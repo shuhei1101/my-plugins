@@ -27,7 +27,7 @@ You will be called with a file path. Determine the direction:
    - If the file has no frontmatter: insert at the very top of the file
 
 ```
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of {source_file.md}. When updating the English original, update this file too. -->
 ```
 
 ### JP mirror → English (source ends in `.jp.md`)

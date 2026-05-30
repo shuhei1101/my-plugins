@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # __PLUGIN_NAME__ references
 
 編集対象ファイルパスに応じて `__LOG_TAG__` フックが自動注入するリファレンス。

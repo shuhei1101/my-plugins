@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of edit-page-tsx.md. When updating the English original, update this file too. -->
 # app/(authenticated)/{feature}/[id]/edit/page.tsx — Edit Server Component
 
 編集画面のエントリポイント。データ取得 + 権限ガード + Client Screen render。

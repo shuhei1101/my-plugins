@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of dialog.md. When updating the English original, update this file too. -->
 # Next.js App Router — Dialog / Modal / Popup Pattern
 
 > **Stack**: shadcn/ui `<Dialog>` `<AlertDialog>` `<Sheet>` `<Popover>` `<Drawer>`。Radix UI ベースで a11y 対応済み。

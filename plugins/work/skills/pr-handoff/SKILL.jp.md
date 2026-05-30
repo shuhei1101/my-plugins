@@ -10,7 +10,7 @@ description: |
   「pr-handoff して」でトリガー、または `/work:pr-handoff` を明示的に呼び出し。
 ---
 
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:pr-handoff — 次ブランチをコンテキスト付きで予約
 

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of common.md. When updating the English original, update this file too. -->
 # Claude 設定 共通ガイド
 
 すべての creator スキルと `claude-refactor` のための共有リファレンス。
@@ -80,7 +80,7 @@
 **ワークフロー — まず JP ミラーを書き、次に英語原本を書く。** `.jp.md` を日本語で執筆し、
 それから英語版を作る。このリポジトリでは英語原本が Claude が実際にロードするファイルなので、
 両者が決して乖離してはならない。すべての JP ミラーは警告コメント
-`<!-- This file is a Japanese mirror. ... -->` で始める必要がある（`provenance.md` 参照）。
+`<!-- This file is a Japanese mirror of {source}.md. ... -->` で始める必要がある（`provenance.md` 参照）。
 
 > このリポジトリには `jp-mirror-translator` エージェント（`subagent_type: "claude-kit:jp-mirror-translator"`）が同梱されている:
 > `.md` パスを渡すとその `.jp.md` を生成/更新し、`.jp.md` パスを渡すと英語原本を更新する。

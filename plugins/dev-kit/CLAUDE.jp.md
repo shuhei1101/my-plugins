@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # dev-kit — 開発規約統合プラグイン
 
 Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown を 1 プラグインに統合。

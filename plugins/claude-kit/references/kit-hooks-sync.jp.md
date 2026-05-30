@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of kit-hooks-sync.md. When updating the English original, update this file too. -->
 # *-kit リファレンス注入構造の同期
 
 `dev-kit` と `claude-kit` はリファレンス自動注入構造を共有している。片方の構造を変更したら、

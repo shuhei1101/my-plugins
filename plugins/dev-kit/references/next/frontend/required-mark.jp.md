@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of required-mark.md. When updating the English original, update this file too. -->
 # `<RequiredMark />` — 必須フィールド表示
 
 `<FormLabel>` 内に挟む赤い `*`。

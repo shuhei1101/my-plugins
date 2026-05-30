@@ -3,7 +3,7 @@ name: pr-show
 description: 次ブランチ候補を 3 カテゴリで提示（開始準備完了 / 別で進行中 / 条件あり）。
 ---
 
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:pr-show — 次ブランチ候補を表示
 

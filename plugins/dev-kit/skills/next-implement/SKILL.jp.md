@@ -4,7 +4,7 @@ description: |
   Next.js App Router でページ・コンポーネント・hook・API ルート・Server Action を新規作成・編集するとき。
   ユーザーが「画面を作って」「コンポーネントを実装して」「API を追加して」「Server Action を書いて」「Next.js の規約に従って」と言ったとき、または `/dev-kit:next-implement` を明示的に呼び出したとき。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # implement — Next.js 実装規約ガイド
 
 Next.js App Router のページ・コンポーネント・hook・API ルート・Server Action を実装する。Next.js 16 + shadcn/ui + Tailwind + Drizzle + TanStack Query 前提。

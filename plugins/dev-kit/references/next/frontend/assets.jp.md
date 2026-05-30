@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of assets.md. When updating the English original, update this file too. -->
 # Next.js App Router — Assets (Image, Font, Static)
 
 > **Next.js 16 の破壊的変更を反映**: `images.domains` 廃止 → `remotePatterns` 必須、`minimumCacheTTL` default が 4h、`qualities: [75]` default、`maximumRedirects: 3` 上限、ローカル IP デフォルトブロック。
