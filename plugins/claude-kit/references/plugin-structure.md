@@ -79,13 +79,20 @@ components (agents/hooks/MCP).
 
 - **Creating**: generate the directory structure above. Add agents/hooks/MCP dirs only if requested.
   Create `CLAUDE.md` and `CLAUDE.jp.md` following `plugin-claude-md.md` — every plugin requires them.
-- **Updating**: edit only the changed files; do not touch unrelated files.
+- **Updating**: edit only the changed files; do not touch unrelated files. Also update
+  `plugins/<name>/CLAUDE.md` to reflect any added/changed skills, hooks, or environment variables.
 
-### Step 4 — plugin.json + marketplace.json + changelog (keep versions identical)
+### Step 4 — plugin.json + marketplace.json + CLAUDE.md (keep versions and content in sync)
 
-See the field/format/version sections below. **The version in `plugin.json`, the
-`.claude-plugin/marketplace.json` entry, and the `## Changelog` table in `CLAUDE.md` must
-always be identical.** Never let these three drift.
+See the field/format/version sections below. Before committing, verify all three of the following
+are updated:
+
+- [ ] `plugins/<name>/CLAUDE.md` — reflect added/changed skills, hooks, environment variables, or behavior; bump `## Changelog`
+- [ ] `plugins/<name>/.claude-plugin/plugin.json` — bump `version`
+- [ ] `.claude-plugin/marketplace.json` — bump the matching plugin's `version`
+
+**The version in `plugin.json`, the `.claude-plugin/marketplace.json` entry, and the `## Changelog`
+table in `CLAUDE.md` must always be identical.** Never let these three drift.
 
 > If two parallel PRs bump the same plugin and one merges first, rebump the other to the next
 > version on its branch before merging (incident `parallel-pr-version-bump-collision`).

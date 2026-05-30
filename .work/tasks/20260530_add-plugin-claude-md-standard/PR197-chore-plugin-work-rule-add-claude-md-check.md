@@ -2,9 +2,13 @@
 
 ## 概要
 
-`plugin-work.md` の "When Editing" チェックリストに、プラグイン配下の `CLAUDE.md` 更新チェックを追加する。
-各プラグインディレクトリには `CLAUDE.md` が存在し、プラグインのスキル・フック・環境変数などが記載されている。
-プラグインを編集した際にこのファイルも更新するよう、整合性ルールとして明文化する。
+`plugins/claude-kit/references/plugin-structure.md` の Authoring workflow に、プラグイン配下の
+`CLAUDE.md` 更新チェックを追加する。各プラグインディレクトリには `CLAUDE.md` が存在し、
+スキル・フック・環境変数などが記載されている。プラグインを編集した際にこのファイルも更新するよう、
+チェックリストとして明文化する。
+
+なお `.claude/rules/` は将来的に全廃止しプラグインリファレンスへ移行する予定のため、
+今回は既存のルールファイルは変更せず、リファレンス側にのみ追記する。
 
 ### 実施条件
 
@@ -16,16 +20,15 @@
 |---|---|---|
 | 済 | `## QA` に未決定事項を記録する | - |
 | 済 | `.work/notes/` のノートを更新 | - |
-| 済 | `plugin-work.md` の When Editing チェックリストに `plugins/{name}/CLAUDE.md` 更新チェックを追加 | - `.claude/rules/core/plugin-work.md` |
-| 済 | JP ミラーを更新 | - `.claude/rules-jp/core/plugin-work.md` |
-| 済 | ルールを更新 | - |
+| 済 | `plugin-structure.md` の Step 3/4 に CLAUDE.md 更新チェックを追加 | - `plugins/claude-kit/references/plugin-structure.md` |
+| 済 | JP ミラーを更新 | - `plugins/claude-kit/references/plugin-structure.jp.md` |
 
 ## 変更内容
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| `.claude/rules/core/plugin-work.md` | 編集 | When Editing に CLAUDE.md チェックを追加 | - |
-| `.claude/rules-jp/core/plugin-work.md` | 編集 | 同上の日本語ミラー | - |
+| `plugins/claude-kit/references/plugin-structure.md` | 編集 | Step 3/4 に CLAUDE.md 更新チェックリストを追加 | ルールファイルではなくリファレンス側に記載 |
+| `plugins/claude-kit/references/plugin-structure.jp.md` | 編集 | 同上の日本語ミラー | - |
 
 ## テスト
 
@@ -51,4 +54,4 @@
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| - | - | - |
+| deprecate-claude-rules-migrate-to-references | `.claude/rules/` 配下のルールファイルを全廃止し、内容を各プラグインの `references/` へ移行する | 即時実施可 |
