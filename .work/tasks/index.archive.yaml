@@ -822,3 +822,10 @@ prs:
   summary: .claude/rules/ 配下のルールを全廃止し、各プラグインの references/ へ移行する
   task: 260530_deprecate-claude-rules-migrate-to-references
   completed: true
+- id: 188
+  title: PR188 — rename-pr-to-branch
+  type: refactor
+  tags: []
+  summary: work-startスキルのPR用語をブランチ用語に統一し、ブランチ名からPR番号プレフィックスを除去する
+  task: 260530_PR用語をブランチ用語に統一
+  completed: true
