@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of python-versions.md. When updating the English original, update this file too. -->
 # packaging/python-versions — Python バージョン方針
 
 > このファイルは `python-versions.md` の日本語ミラーです。

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of page-header.md. When updating the English original, update this file too. -->
 # `<PageHeader>` — ページタイトル + actions
 
 各 Screen の冒頭で使うヘッダー。

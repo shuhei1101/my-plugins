@@ -18,10 +18,11 @@ Usage (existing task folder):
         [--id <N>]
 
 Creates:
-    <worktree>/.work/tasks/<task_dir>/<branch-hyphenated>.md
+    <worktree>/.work/tasks/<task_dir>/<YYMMDD>-<branch-hyphenated>.md
 
 The branch name is hyphenated by replacing every slash with a hyphen
 (e.g. refactor/rename-pr-to-branch -> refactor-rename-pr-to-branch).
+The date prefix is taken from --date, or extracted from --task-dir (the 6-digit YYMMDD prefix).
 
 When --task-dir is omitted, the folder name is built from --date and --title.
 When --task-dir is provided, --date and --title are optional (used only in the document heading).
@@ -99,14 +100,26 @@ def main() -> None:
 
     task_dir.mkdir(parents=True, exist_ok=True)
 
-    file_stem = args.branch.replace("/", "-")
+    # Determine date prefix: from --date, or extract from task folder name (YYMMDD_xxx format).
+    date_prefix = args.date
+    if not date_prefix and task_folder_name:
+        prefix = task_folder_name.split("_")[0]
+        if len(prefix) == 6 and prefix.isdigit():
+            date_prefix = prefix
+
+    branch_stem = args.branch.replace("/", "-")
+    file_stem = f"{date_prefix}-{branch_stem}" if date_prefix else branch_stem
     dest_path = task_dir / f"{file_stem}.md"
 
     template_path = (
-        plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "type-title.md"
+        plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "yymmdd-branch-name.md"
     )
     if not template_path.exists():
         # Back-compat: fall back to the legacy template name if the new one is not yet deployed.
+        template_path = (
+            plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "type-title.md"
+        )
+    if not template_path.exists():
         template_path = (
             plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "PRNNN-type-title.md"
         )

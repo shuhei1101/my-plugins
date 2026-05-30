@@ -6,6 +6,7 @@ updates:
   - 2026-05-29 — PR159: claude-kit を移行（creator スキル → reference 自動注入の拡張版）
   - 2026-05-29 — PR161: mark-generated を provenance.md 化（薄ラッパー存置）、claude-refactor 薄化、j2/jp-mirror チェックフック削除
   - 2026-05-30 — PR185: plugin-update スキルを追加（consumer 列挙 → フックファイル照合 → 更新）、1.5.0→1.6.0
+  - 2026-05-31 — PR224: references/ 配下の内部ファイル（_index*/_injection_rules*/CLAUDE*）を references/.ref-injects/ に移動。各プラグインに人間向け日本語インデックス references/_index.md を追加
 related_specs:
   - dev-kit-hooks.md
   - fix-read-hook.md
@@ -77,9 +78,11 @@ plugins/ref-inject/
     │   ├── hooks.json               # PreToolUse(Edit/Write/MultiEdit/Read)
     │   └── templates/injection.md.j2 (+jp)
     └── references/
-        ├── index.yaml (+jp) 雛形
-        ├── injection_rules.yaml 雛形
-        ├── CLAUDE.md (+jp) 雛形
+        ├── _index.md                    # 人間向け日本語インデックス（PR224 で追加）
+        ├── .ref-injects/                # ref-inject の内部ファイル（PR224 で集約）
+        │   ├── _index.yaml (+jp) 雛形
+        │   ├── _injection_rules.yaml 雛形
+        │   └── CLAUDE.md (+jp) 雛形
         └── example/getting-started.md
 ```
 
@@ -144,3 +147,23 @@ claude-kit は py-kit / next-kit のような「コーディング規約注入�
 - injection_rules に `provenance.md` を全 stampable パターン（SKILL.md / rule / CLAUDE.md / prompts / glossary / incidents / `**/*.j2`）の required へ追加。JSON のみのパターン（hooks.json / settings / plugin / marketplace）は `.json` がコメント不可なので provenance を付けない。
 - **claude-refactor 薄化**: Step ごとのインライン重複基準表を削除し references 参照へ（407→約160行）。実行ステップも「creator スキルを呼べ」→「直接編集（ガイドは注入される）」へ。
 - **j2-stamp-check / jp-mirror-check フック削除**。claude-kit のフックは inject_references + PreCompact のみに。`.j2` 出自は注入で、JP ミラー同期は `*-jp-mirror-sync` ルールで担保。
+
+## PR224: references/ 内部ファイルを .ref-injects/ に集約 + _index.md 追加
+
+ref-inject の内部メカニズムファイルとユーザー authoring の reference 本文が `references/` 直下に
+混在していたのを整理。
+
+- **移動**: `references/` 直下の `_index.yaml` / `_index.jp.yaml` / `_injection_rules.yaml` /
+  `CLAUDE.md` / `CLAUDE.jp.md` を `references/.ref-injects/` サブディレクトリに移動。
+  reference 本文（`*.md`）は `references/` 直下に残す。
+- **パス解決変更**: `inject_references.py` の `rules_yaml` / `index_yaml` 参照先を
+  `refs_dir` から `refs_dir / ".ref-injects"` に変更。reference 本文の読み込み（`refs_dir / rel_path`）は
+  従来どおり `references/` 基準なので不変。
+- **_index.md 追加**: 各プラグインの `references/_index.md` に、配下の reference ファイルの
+  概要とカテゴリを記した**人間向け日本語インデックス**を新規作成（`.work/notes/_index.md` と同じスタイル）。
+  機械可読の `.ref-injects/_index.yaml`（フックが parse）とは別物。
+- **適用範囲**: claude-kit / dev-kit / work の各 consumer プラグイン + ref-inject の `templates/references/` 雛形。
+  さらに claude-kit の `_injection_rules.yaml` 内 kit 構造ファイルパターンを
+  `plugins/*-kit/references/.ref-injects/{...}` に更新、移動先 CLAUDE.md 内のパス参照文も更新。
+- **将来 apply するプラグイン**: テンプレート（`templates/references/.ref-injects/` + `templates/references/_index.md`）が
+  この構造を持つため、`/ref-inject:apply` で自動的に新構造で展開される。

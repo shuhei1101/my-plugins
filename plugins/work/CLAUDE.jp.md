@@ -1,0 +1,71 @@
+# work — プロジェクトライフサイクル管理
+
+Claude Code 向けのフックベースのプロジェクトライフサイクル管理プラグイン。各プロンプト前にブランチコンテキストを注入し、Stop 時にタスク更新をリマインドし、ワークツリー管理と保護ブランチへの強制操作ガードを提供する。
+
+## スキル
+
+| # | スキル | 目的 |
+|---|---|---|
+| 1 | `work:start` | 新しいブランチと `.work/tasks/` 配下のブランチドキュメントを作成 |
+| 2 | `work:pr-handoff` | 現在のブランチ完了後に次のブランチを予約 |
+| 3 | `work:pr-show` | 次のブランチ候補を 3 カテゴリ（着手可能 / 進行中 / 条件あり）で表示 |
+| 4 | `work:merge` | 現在のブランチをマージし、関連イシューをクローズ、ブランチドキュメントをアーカイブ |
+| 5 | `work:qa-review` | 現在のブランチドキュメントの QA 項目をレビュー |
+| 6 | `work:config` | `settings.json` の work env トグルを対話的に設定 |
+| 7 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
+| 8 | `work:issue-scan` | ランダムなソースファイルをスキャンしてルール違反をイシューとして記録 |
+| 9 | `work:issue-save` | 会話中のイシューを保存 |
+| 10 | `work:impl-review` | ブランチドキュメントに照らして実装をレビュー |
+| 11 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
+| 12 | `work:plugin-update` | `.work/` 静的テンプレートを現在の work バージョンに更新 |
+| 13 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
+| 14 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
+| 15 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
+
+## フック
+
+| # | イベント | トリガー | スクリプト / プロンプト |
+|---|---|---|---|
+| 1 | `PreToolUse` | Edit / Write / MultiEdit / Read | `hooks/scripts/inject_references.py` — リファレンス自動注入 |
+| 2 | `PreToolUse` | Bash | `hooks/prompts/master-commit-guard.md` — 保護ブランチへのコミットをブロック |
+| 3 | `PreToolUse` | Bash | `hooks/prompts/git-guard.md` — `git push` / `git merge` を確認 |
+| 4 | `UserPromptSubmit` | — | `hooks/prompts/user-prompt-submit.md` — 各プロンプト前にブランチコンテキストを注入 |
+| 5 | `Stop` | — | `hooks/prompts/stop.md` — タスク更新リマインド / マージ提案 |
+
+## 環境変数
+
+| # | 変数 | デフォルト | 説明 |
+|---|---|---|---|
+| 1 | `WORK_USE_WORKTREE` | `true` | 新しいブランチに git ワークツリーを作成 |
+| 2 | `WORK_GUARD` | `true` | git-guard フックを有効化（push/merge を確認） |
+| 3 | `WORK_PROTECTED_BRANCHES` | `master,main,develop` | master-commit-guard で保護するブランチのカンマ区切りリスト |
+| 4 | `WORKSPACE_STOP_REMINDER` | `true` | Stop 時にタスク更新リマインドを表示 |
+| 5 | `WORKSPACE_MERGE_PROPOSAL` | `true` | Stop 時に `/work:merge` の実行を提案 |
+| 6 | `CLAUDE_KIT_INJECTION_DISABLE` | (off) | リファレンス注入を無効化（kill switch） |
+| 7 | `DEV_KIT_INJECTION_DISABLE` | (off) | dev-kit リファレンス注入を無効化 |
+
+## ブランチドキュメント構造
+
+各ブランチは `.work/tasks/{YYMMDD}_{title}/{branch-hyphenated}.md` の単一ファイルを使用し、以下のセクションを持つ：
+
+- `## 作業内容` — タスク説明とチェックリスト
+- `## QA` — 実装前に解決すべき質問
+- `## テスト` — テスト項目
+- `## 変更内容` — 実装メモ
+
+ブランチ名は `{type}/{title}`（PR 番号プレフィックスなし）。内部 ID は `index.yaml` で管理。
+
+## 変更履歴
+
+| # | バージョン | 日付 | 概要 |
+|---|---|---|---|
+| 1 | 2.48.0 | 2026-05-30 | `work:notes-to-claude` スキルを削除 — プラグイン間依存を排除 |
+| 2 | 2.47.0 | 2026-05-30 | `work:config` 管理対象トグルに `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` を追加 |
+| 3 | 2.46.2 | 2026-05-30 | `issue-scan` スキルの古い `py-kit`/`next-kit` 記述を削除、`_injection_rules.yaml` に更新 |
+| 4 | 2.46.0 | 2026-05-30 | Stop フックのインライン python を `hooks/scripts/stop.py` + `_common.py` に抽出 |
+| 5 | 2.44.0 | 2026-05-30 | ブランチドキュメントを単一ファイル（`{branch-hyphenated}.md`）に統合；`plugin-update` スキルにリネーム |
+| 6 | 2.43.0 | 2026-05-30 | `WORKSPACE_MERGE_PROPOSAL` env トグルを追加 |
+| 7 | 2.42.0 | 2026-05-30 | `WORKSPACE_PROTECTED_BRANCHES` env トグルを追加 |
+| 8 | 2.41.0 | 2026-05-30 | `impl-review` Step 4 をバッチ AskUserQuestion 方式に変更（最大 4 件/回） |
+| 9 | 2.40.0 | 2026-05-30 | `guard-kit` を work プラグインに統合 |
+| 10 | 2.39.0 | 2026-05-30 | env トグルを対話的に設定する `work:config` スキルを追加 |

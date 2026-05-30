@@ -6,7 +6,7 @@ description: |
   静的テンプレの再コピーと、既存プロジェクトファイルの規約逸脱の発見・修正が対象。
   手動起動のみ — `/dev-kit:plugin-update` を使う。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # dev-kit:plugin-update — dev-kit 生成物を現行規約に揃える
 

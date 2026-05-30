@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of skills.md. When updating the English original, update this file too. -->
 # スキル作成ガイド
 
 `.claude/skills/<name>/SKILL.md` ファイルの設計・作成・評価の方法。
@@ -113,7 +113,7 @@ name: <スキル名>
 description: |
   正確なトリガー条件。「ユーザーが X と言ったとき」「Y を編集するとき」。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of skills.md. When updating the English original, update this file too. -->
 
 # <スキル名> — 一行要約
 
@@ -168,4 +168,4 @@ description: |
 
 - [ ] `SKILL.md` の変更内容が `SKILL.jp.md` に日本語で反映されている
 - [ ] `SKILL.jp.md` のセクション構成が `SKILL.md` と一致している
-- [ ] `SKILL.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror... -->`）が含まれている
+- [ ] `SKILL.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror of SKILL.md ... -->`）が含まれている

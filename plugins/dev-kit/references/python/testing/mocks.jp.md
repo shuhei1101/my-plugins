@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of mocks.md. When updating the English original, update this file too. -->
 # testing/mocks — 結合テストの Mock パターン
 
 > このファイルは `mocks.md` の日本語ミラーです。

@@ -21,14 +21,14 @@ Japanese mirror: `references/references-sync.jp.md`
 
 - [ ] Changes in `*.md` are reflected in `*.jp.md` in Japanese
 - [ ] Section structure in `*.jp.md` matches the English `*.md`
-- [ ] The JP mirror warning comment (`<!-- This file is a Japanese mirror... -->`) is present at the top of every `*.jp.md`
+- [ ] The JP mirror warning comment (`<!-- This file is a Japanese mirror of {source}.md ... -->`) is present at the top of every `*.jp.md`
 
 ## JP mirror warning comment
 
 All JP mirror files (`*.jp.md`) must have the following warning comment at the top:
 
 ```
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of {source}.md. When updating the English original, update this file too. -->
 ```
 
 ## Why

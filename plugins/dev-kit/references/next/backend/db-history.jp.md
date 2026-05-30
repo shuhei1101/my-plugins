@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of db-history.md. When updating the English original, update this file too. -->
 # Drizzle — ハードデリート + 履歴テーブル
 
 ソフトデリート（`deletedAt`）は使わず、**削除前にスナップショットを履歴テーブルへ退避してハードデリート**。

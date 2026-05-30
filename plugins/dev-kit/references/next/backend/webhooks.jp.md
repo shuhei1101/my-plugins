@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of webhooks.md. When updating the English original, update this file too. -->
 # Next.js App Router — Webhook Receiver
 
 > **対象**: Stripe / GitHub / Slack 等の Webhook を受信するパターン。

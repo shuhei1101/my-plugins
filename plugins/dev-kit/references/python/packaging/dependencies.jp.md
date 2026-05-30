@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of dependencies.md. When updating the English original, update this file too. -->
 # packaging/dependencies — 依存管理
 
 > このファイルは `dependencies.md` の日本語ミラーです。

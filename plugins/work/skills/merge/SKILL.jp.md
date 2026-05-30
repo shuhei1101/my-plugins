@@ -7,19 +7,19 @@ description: |
 disable-model-invocation: true
 ---
 
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:merge — ブランチをマージ
 
 完全なマージフローを実行：TODO チェックリスト検証 → master 互換性確認 → 関連イシューのクローズ →
 インデックスアーカイブ → `--no-ff` マージ → ワークツリークリーンアップ →
-ブランチドキュメント内の残存 QA エントリ確認 → 次ブランチ候補用の pr-handoff 自動実行。
+ブランチドキュメント内の残存 QA エントリ確認 → 次ブランチ候補用の branch-reserve 自動実行。
 
 > **命名規則**: 新しいブランチは `{type}/{title}` を使用（`PR{N}/` プレフィックスなし）。
 > 新しいワークツリーは `{repo}-wt-{type}-{title}` を使用します。
 > レガシーブランチは引き続き `PR{N}/{type}/{title}` で記録されており、ワークツリーは `{repo}-wt-PR{N}` です。
 > これらの記録された名前で処理してください — `index.yaml` と `git worktree list` から実際のブランチ/ワークツリーパスを読み取り、
-> `{N}` から再構成しないでください。`{N}` は `index.yaml` で追跡される内部 ID です（コミット クロスリファレンスで使用）。
+> `{N}` から再構成しないでください。`{N}` は `index.yaml` で追跡される内部 ID です（
 
 ---
 
@@ -80,7 +80,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### ステップ 3: master との互換性を確認
+### ステップ 3: マージ先ブランチをこのブランチに取り込む
 
 #### 条件
 
@@ -88,72 +88,41 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 処理
 
-1. このブランチが分岐してから master に新しいコミットがあるかどうかを確認：
+1. マージ先ブランチ（`PARENT_BRANCH`）を特定する — このブランチがマージされる先のブランチ。
+   通常は `master`。`develop` ベースのブランチなら `develop`。
+   不明な場合は Step 7 を参照（Step 7 でマージ実行前に親ブランチを確認する）。
+
+2. マージ先ブランチに新しいコミットがあるかどうかを確認：
 
 ```bash
-git log HEAD..master --oneline
+git log HEAD..<PARENT_BRANCH> --oneline
 ```
 
-出力がない場合 → master は移動していません。Step 4 にスキップしてください。
+出力がない場合 → マージ先ブランチは移動していません。Step 4 にスキップしてください。
 
-2. このブランチの変更と master の変更の関連性を確認。git コマンドを開始点として使用し、
-   その後文脈的判断を適用します：
+3. マージ先ブランチをこのブランチに取り込む：
 
 ```bash
-# このブランチが何を変更したかを把握
-git diff master...HEAD --name-only
-
-# master のコミットをスキャンして、何が変更されたかを確認
-git log HEAD..master --oneline --stat
+git merge <PARENT_BRANCH>
 ```
 
-   ファイル名の一致だけに頼らないでください — 間接的な関係も考慮してください：
-   - master は、このブランチが修正するファイルの **呼び出し元またはインポーター** を変更しましたか？
-   - master は、このブランチが依存している **インターフェース、型、スキーマ、または設定** を変更しましたか？
-   - master は、このブランチのコードが起こっていないと仮定している **命名または構造的な変更** を導入しましたか？
-
-3. 関連する master 側のコミットコンテンツと背景を読み込みます：
+4. マージがクリーンに完了したか確認：
 
 ```bash
-git log -p HEAD..master -- {relevant file}
+git status
 ```
 
-4. 各関連する変更について、以下の側面を使用して優先度を自動判断します：
-   - **最新性**: どのコミットが新しいか？
-   - **影響範囲**: master の変更は中心的（多くの依存者）か局所的か？中心的な変更はより高い優先度
-   - **インターフェース変更**: master が関数シグネチャ、型、またはスキーマを変更した場合、
-     このブランチは古いインターフェースを使用している可能性があります → ブランチ側を更新
-   - **方向的調整**: master とこのブランチは同じ目標に向かっているか、反対方向か？
-     反対方向は往々にして片方が間違っていることを意味します
-   - **ブランチ目的**: このブランチが具体的に master の変更を修正または置き換えるために存在する場合、
-     ブランチが優先度
-
-5. 判断に基づいて、以下のいずれかのアクション を自動的に実行してください
-   （ユーザー確認は不要）：
-   - **アクションなし**: 変更は独立している → Step 4 に進む
-   - **master を組み込む**: master は関連する変更を持っており、このブランチはそれを反映すべき —
-     master をブランチにマージ：
-
-```bash
-git merge master
-```
-
-   競合を解決し、ブランチの実装を互換性にする。
-   - **ブランチが優先度**: このブランチは具体的に master を修正している、またはブランチアプローチが
-     明確に新しく正しい → アクションなしで Step 4 に進む
-   - **引き分け**: 判断が均等にバランスしている場合は、安全な側を選択 — master を組み込む
-     （`git merge master`）その後、ブランチの意図を上に再度適用
+   - **コンフリクトなし**（クリーンなマージ）→ Step 4 に進む
+   - **コンフリクトあり** → ここで停止。コンフリクトが発生しているファイルをユーザーに報告し、
+     手動での解消を待ってから続行
 
 → ステップ 4 へ
 
 #### 注記
 
-##### 自動タイブレーカー順序（判断が不明確な場合）
+##### 禁止事項
 
-1. 最新性 — 新しいコミットを優先
-2. 影響範囲 — より多くのものが依存している変更を優先
-3. ブランチ目的 — ブランチがこの変更を修正する場合、ブランチを優先
-4. 安全デフォルト — master を組み込み、その後ブランチに適応
+- このステップをスキップしない — マージ先に戻す前にマージ先ブランチの内容を取り込むことは必須
 
 ### ステップ 4: 関連イシューをクローズ（ワークツリー内）
 
@@ -187,7 +156,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
 
 ```bash
 git -C {WORKTREE_PATH} add .work/issues/
-git -C {WORKTREE_PATH} commit -m "chore: close related issues for #{N}"
+git -C {WORKTREE_PATH} commit -m "chore: close related issues"
 ```
 
 → ステップ 5 へ
@@ -256,7 +225,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" archive \
 
 ```bash
 git -C {WORKTREE_PATH} add .work/tasks/index.archive.yaml
-git -C {WORKTREE_PATH} commit -m "chore: archive #{N} to index.archive.yaml"
+git -C {WORKTREE_PATH} commit -m "chore: archive to index.archive.yaml"
 ```
 
 → ステップ 7 へ
@@ -299,7 +268,7 @@ git -C {WORKTREE_PATH} commit -m "chore: archive #{N} to index.archive.yaml"
 2. `--no-ff` でマージ：
 
 ```bash
-git merge --no-ff -m "{type}: {title} #{N}" {BRANCH_NAME}
+git merge --no-ff -m "{type}: {title}" {BRANCH_NAME}
 ```
 
    ここで `{BRANCH_NAME}` は実際のブランチ名です（新形式：`{type}/{title}`、
@@ -341,7 +310,7 @@ git branch -d {BRANCH_NAME}
 
 ```bash
 git add .work/
-git commit -m "docs: post-merge update for #{N}"
+git commit -m "docs: post-merge update"
 ```
 
 → ステップ 10 へ
@@ -359,7 +328,7 @@ git commit -m "docs: post-merge update for #{N}"
 
 ---
 
-### ステップ 11: 次ブランチ候補を pr-handoff に委譲
+### ステップ 11: 次ブランチ候補を branch-reserve に委譲
 
 #### 条件
 
@@ -369,9 +338,9 @@ git commit -m "docs: post-merge update for #{N}"
 #### 処理
 
 1. マージされたブランチドキュメントを読み込み、その `## 次ブランチ候補` セクションを検査
-2. **次ブランチ候補が存在する場合**：`/work:pr-handoff` を実行
+2. **次ブランチ候補が存在する場合**：`/work:branch-reserve` を実行
    （ユーザー確認は不要）。すべての分類と予約ロジックをそのスキルに委譲
-3. **次ブランチ候補が空の場合**: pr-handoff をスキップ
+3. **次ブランチ候補が空の場合**: branch-reserve をスキップ
 
 → ステップ 12 へ
 
@@ -381,9 +350,9 @@ git commit -m "docs: post-merge update for #{N}"
 
 #### 処理
 
-マージされたブランチドキュメントパスをデータソースとして `/work:pr-show` を実行します。
+マージされたブランチドキュメントパスをデータソースとして `/work:branch-show` を実行します。
 
 #### 注記
 
 完全なロジック（`## 次ブランチ候補` テーブル読み込み、各候補分類、
-タイトルでのブランチ検索）は `pr-show` スキルで定義されています。
+タイトルでのブランチ検索）は `branch-show` スキルで定義されています。

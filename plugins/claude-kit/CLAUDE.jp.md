@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # claude-kit プラグイン開発者ガイド
 
 ## オーサリング知識は `references/` にあり、自動注入される
@@ -45,7 +45,10 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 
 ## 変更履歴
 
-| バージョン | 概要 |
-|---|---|
-| `3.44.0` | `CLAUDE_KIT_JP_MIRROR` 環境変数を追加 — `false` の場合 `.jp.md` ミラーをスキップし本体ファイルを日本語で書く |
-| `3.43.1` | （それ以前の履歴は `changelogs/` を参照） |
+| # | バージョン | 概要 |
+|---|---|---|
+| 1 | `3.47.0` | `references/jinja2/templates.md` を追加 — Markdown を出力する Jinja2 テンプレートのオーサリングルール；`**/hooks/templates/*.j2` 編集時に自動注入 |
+| 2 | `3.46.0` | `references-edit-guard` PreToolUse フックを追加 — `references/` 編集前に `_index.yaml` / `_injection_rules.yaml` の更新漏れをリマインド |
+| 3 | `3.44.0` | `CLAUDE_KIT_JP_MIRROR` 環境変数を追加 — `false` の場合 `.jp.md` ミラーをスキップし本体ファイルを日本語で書く |
+| 4 | `3.43.0` | `references/` 配下のメタ YAML をアンダースコア接頭辞付きにリネーム；ドキュメントの plugin 名整理 (PR179) |
+| 5 | `3.42.0` | `CLAUDE_KIT_INJECTION_DISABLE` kill switch 環境変数を追加 |

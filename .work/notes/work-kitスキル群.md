@@ -5,6 +5,8 @@ updates:
   - 2026-05-24 — PR109: pr-show スキルを merge Step 12 から切り出し
   - 2026-05-29 — PR163: worktree-kit を統合（work-add / vscode-workspace-sync を取り込み）
   - 2026-05-30 — PR172: プラグインを work-kit → workspace にリネーム、env var も WORK_KIT_* → WORKSPACE_* に変更
+  - 2026-05-31 — #219: merge スキル Step 3 を master 取り込み必須フローに変更
+  - 2026-05-31 — #226: タスクドキュメントのファイル名に日付プレフィックスを追加、作業内容テーブル構造を改訂
 related_prs:
   - PR91
   - PR109
@@ -27,8 +29,8 @@ work-kit プラグインに含まれるスキルの設計・目的・相互関�
 | `update` | work-kit スキルを手動更新する |
 | `setup` | `.work/` ディレクトリを初期化する（プロジェクトに初回導入） |
 | `branch-index-cleanup` | 古いブランチとindex.yamlエントリをクリーンアップ |
-| `pr-handoff` | 次のセッション向け引き継ぎ指示書を会話内に出力（PR91で追加） |
-| `pr-show` | 予約済みPRの状況を3カテゴリ（着手可能・進行中・条件あり）で一覧表示（PR109で追加） |
+| `branch-reserve` | 次ブランチをコンテキスト付きで予約（PR91で追加、#230でリネーム） |
+| `branch-show` | 次ブランチ候補を3カテゴリ（着手可能・進行中・条件あり）で一覧表示（PR109で追加、#230でリネーム） |
 | `work-add` | git worktree とブランチを作成（PR163 で worktree-kit から統合） |
 | `vscode-workspace-sync` | VS Code `.code-workspace` の `folders` を worktree と同期する PostToolUse フックを設定（PR163 で worktree-kit から統合） |
 
@@ -44,7 +46,7 @@ work-kit ← worktree-kit の片方向依存しかなく、別プラグインに
 
 work-start Step 4 がこの env var を読んで分岐する（従来の「worktree-kit インストール有無」判定を置き換え）。
 
-## pr-handoff スキルの設計
+## branch-reserve スキルの設計（旧 pr-handoff）
 
 ### 目的
 
@@ -65,4 +67,40 @@ work-start Step 4 がこの env var を読んで分岐する（従来の「workt
 ### トリガー条件
 
 - ユーザーが「引き継ぎ書を作って」「次のPRの指示書を作って」「ハンドオフして」などと言ったとき
-- ユーザーが「pr-handoff して」と言ったとき
+- ユーザーが「branch-reserve して」「ブランチを予約して」と言ったとき
+
+## merge スキル — Step 3: master 取り込み必須化（#219）
+
+マージ前に master の新しいコミットがある場合、**必ず** `git merge master` を実行してコンフリクトを確認するよう変更。
+
+### 変更前（自律判断フロー）
+
+- 変更の関連性を分析し、「影響なし」「master 優先」「ブランチ優先」「引き分け」の4択で自律判断
+- 独立した変更と判断した場合は master 取り込みをスキップする可能性があった
+
+### 変更後（必須フロー）
+
+1. `git log HEAD..master --oneline` で master の進捗を確認
+2. 新しいコミットがある → 必ず `git merge master` を実行
+3. コンフリクトなし → Step 4 へ進む
+4. コンフリクトあり → ユーザーに報告して停止（手動解消を待つ）
+
+## タスクドキュメントのファイル命名規則（#226）
+
+### 変更前
+
+- ファイル名: `{type}-{title}.md`（例: `chore-work-template-update.md`）
+- `## 作業内容` テーブル: `| 完了 | 作業内容 | 対象ファイル |`
+
+### 変更後
+
+- ファイル名: `{YYMMDD}-{type}-{title}.md`（例: `260531-chore-work-template-update.md`）
+  - 日付は `--date` 引数、またはタスクフォルダ名（`YYMMDD_xxx`）から自動抽出
+- `## 作業内容` テーブル: `| # | 完了 | 作業内容 |`（`対象ファイル` 列を廃止、`#` 番号列を追加）
+- 全テーブルに `#` 番号列（最左列）を標準装備
+
+### 変更ファイル
+
+- `plugins/work/templates/.work/tasks/yymmdd_xxx/type-title.md` → `yymmdd-branch-name.md` にリネーム
+- `plugins/work/scripts/setup-task.py`: ファイル名生成ロジックと参照テンプレートパスを更新
+- `plugins/work/skills/start/SKILL.md` / `SKILL.jp.md`: 命名規則説明とテーブル仕様を更新

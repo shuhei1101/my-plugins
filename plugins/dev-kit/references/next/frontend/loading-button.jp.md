@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of loading-button.md. When updating the English original, update this file too. -->
 # `<LoadingButton>` — 非同期処理向けボタン
 
 クリックで非同期処理を起こすボタン。`loading` 中は disable + spinner 表示。

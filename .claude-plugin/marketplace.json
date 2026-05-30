@@ -10,20 +10,20 @@
     {
       "name": "dev-kit",
       "source": "./plugins/dev-kit",
-      "description": "Development conventions toolkit — Python (py-script/py-project), HTML/CSS/JS (FLOCSS, debug-fab, logging, mock), Next.js 16 App Router (implement/plan), and Markdown. Reference auto-injection via PreToolUse(Edit/Write/MultiEdit/Read) gated by DEV_KIT_PYTHON / DEV_KIT_HTML / DEV_KIT_NEXT / DEV_KIT_MARKDOWN env opt-in; PostToolUse tsc check gated by DEV_KIT_NEXT_TS_CHECK.",
-      "version": "4.9.0"
+      "description": "Development conventions toolkit — Python (py-script/py-project), HTML/CSS/JS (FLOCSS, debug-fab, logging, mock), Next.js 16 App Router (implement/plan), and Markdown. Reference auto-injection via PreToolUse(Edit/Write/MultiEdit/Read) gated by DEV_KIT_PYTHON / DEV_KIT_HTML / DEV_KIT_NEXT / DEV_KIT_MARKDOWN env opt-in; PostToolUse tsc check gated by DEV_KIT_NEXT_TS_CHECK. v4.11.0: add `dev-kit:config` skill.",
+      "version": "4.11.0"
     },
     {
       "name": "claude-kit",
       "source": "./plugins/claude-kit",
       "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
-      "version": "3.46.0"
+      "version": "3.47.0"
     },
     {
       "name": "work",
       "source": "./plugins/work",
-      "description": "Hook-based project lifecycle management — injects branch context on every prompt, reminds task updates on stop, manages worktrees (toggle via WORK_USE_WORKTREE), and guards force-operations (toggle via WORK_GUARD). Protected branches customizable via WORK_PROTECTED_BRANCHES (comma-separated, default master,main,develop). v2.47.0: branches are named `{type}/{title}` (no PR-number prefix); internal IDs continue in index.yaml for cross-reference only.",
-      "version": "2.48.0"
+      "description": "Hook-based project lifecycle management — injects branch context on every prompt, reminds task updates on stop, manages worktrees (toggle via WORK_USE_WORKTREE), and guards force-operations (toggle via WORK_GUARD). Protected branches customizable via WORK_PROTECTED_BRANCHES (comma-separated, default master,main,develop). v2.47.0: branches are named `{type}/{title}` (no PR-number prefix); internal IDs continue in index.yaml for cross-reference only. Section names renamed: 関連PR → 関連ブランチ, 次PR候補 → 次ブランチ候補. v2.48.0: notes-to-claude skill removed (inter-plugin dependency eliminated). v2.49.0: drop NEXT_KIT_TS_CHECK / INJECTION_DISABLE entries from work:config (managed by /dev-kit:config or excluded by policy); migrate Step 2 to numbered list.",
+      "version": "2.49.0"
     },
     {
       "name": "ref-inject",

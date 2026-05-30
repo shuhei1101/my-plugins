@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of use-mutation-pattern.md. When updating the English original, update this file too. -->
 # hooks/use{Verb}{Feature}.ts — useMutation パターン
 
 mutation 用 hook。**通常は Server Action 直接呼び**で済むが、**楽観更新・複雑な並列・キャンセル** が必要なときに使う。

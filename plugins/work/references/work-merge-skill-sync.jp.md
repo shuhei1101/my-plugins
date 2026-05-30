@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of work-merge-skill-sync.md. When updating the English original, update this file too. -->
 # マージスキル ↔ 仕様書ステップ番号同期
 
 `.work/specs/work-kit-merge-flow.md` はマージスキルのアーカイブフローをステップ番号で参照している。

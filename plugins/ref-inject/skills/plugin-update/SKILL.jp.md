@@ -6,7 +6,7 @@ description: |
   doc・_index.yaml・_injection_rules.yaml）は一切変更しない — hooks/ 配下の仕組みファイルだけを更新する。
   手動起動のみ — /ref-inject:plugin-update を使う。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # ref-inject:plugin-update — コンシューマープラグインの注入の仕組みを更新
 

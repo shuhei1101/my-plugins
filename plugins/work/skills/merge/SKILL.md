@@ -9,13 +9,13 @@ disable-model-invocation: true
 
 # work:merge — Merge a Branch
 
-Runs the full merge flow: TODO checklist verification → master compatibility check → close related issues → index archive → `--no-ff` merge → worktree cleanup → confirm remaining QA entries in the branch document → auto-invoke pr-handoff for any next branch candidates.
+Runs the full merge flow: TODO checklist verification → master compatibility check → close related issues → index archive → `--no-ff` merge → worktree cleanup → confirm remaining QA entries in the branch document → auto-invoke branch-reserve for any next branch candidates.
 
 > **Naming**: new branches use `{type}/{title}` (no `PR{N}/` prefix); new worktrees use
 > `{repo}-wt-{type}-{title}`. Legacy branches still on `PR{N}/{type}/{title}` with worktrees at
 > `{repo}-wt-PR{N}` are handled with their literal recorded names — read the actual branch / worktree
 > path from `index.yaml` and `git worktree list` rather than reconstructing from `{N}`.
-> `{N}` below refers to the internal numeric ID tracked in `index.yaml` (used in commit cross-references).
+> `{N}` below refers to the internal numeric ID tracked in `index.yaml` 
 
 ---
 
@@ -73,7 +73,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 3: Confirm compatibility with master
+### Step 3: Merge the target branch into this branch
 
 #### Condition
 
@@ -81,64 +81,41 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Process
 
-1. Check whether master has new commits since this branch diverged:
+1. Identify the merge target branch (`PARENT_BRANCH`) — the branch this branch will be merged into.
+   In most cases this is `master`; for feature branches off `develop` it is `develop`.
+   Cross-check with Step 7 if unsure (Step 7 confirms the current branch is the parent before running the merge).
+
+2. Check whether the target branch has new commits since this branch diverged:
 
 ```bash
-git log HEAD..master --oneline
+git log HEAD..<PARENT_BRANCH> --oneline
 ```
 
-If no output → master has not moved; skip to Step 4.
+If no output → the target branch has not moved; skip to Step 4.
 
-2. Check for relevant relationships between this branch's changes and master's changes. Use git commands as a starting point, then apply contextual judgment:
+3. Merge the target branch into this branch:
 
 ```bash
-# Get a picture of what this branch changed
-git diff master...HEAD --name-only
-
-# Scan master's commits for what changed and where
-git log HEAD..master --oneline --stat
+git merge <PARENT_BRANCH>
 ```
 
-   Do not rely on file-name matches alone — also consider indirect relationships:
-   - Did master change a **caller or importer** of a file this branch modifies?
-   - Did master change an **interface, type, schema, or config** that this branch depends on?
-   - Did master introduce **naming or structural changes** that this branch's code assumes haven't happened yet?
-
-3. Read the relevant master-side commit content and background:
+4. Check whether the merge completed cleanly:
 
 ```bash
-git log -p HEAD..master -- {relevant file}
+git status
 ```
 
-4. For each relevant change, judge priority autonomously using these dimensions:
-   - **Recency**: which commit is newer?
-   - **Blast radius**: is master's change central (many dependents) or local? Central changes take higher priority.
-   - **Interface changes**: if master changed a function signature, type, or schema, this branch may be using the old interface → update the branch side
-   - **Directional alignment**: are master and this branch heading toward the same goal, or opposite directions? Opposite directions often means one side has an error.
-   - **Branch purpose**: if this branch exists specifically to correct or supersede master's change, the branch takes priority.
-
-5. Based on the judgment, take one of the following actions autonomously (no user confirmation needed):
-   - **No action needed**: changes are independent → proceed to Step 4
-   - **Incorporate master**: master has a related change that this branch should reflect — merge master into the branch:
-
-```bash
-git merge master
-```
-
-   Resolve conflicts and update the branch's implementation to be compatible.
-   - **Branch takes priority**: this branch is specifically correcting master, or the branch approach is clearly the newer correct one → proceed without merging
-   - **Tie**: when the judgment is evenly balanced, choose the safe side — incorporate master (`git merge master`), then re-apply the branch's intent on top
+   - **No conflicts** (clean merge) → proceed to Step 4
+   - **Conflicts exist** → stop here; report the conflicting files to the user and wait for
+     manual resolution before continuing
 
 → Proceed to Step 4
 
 #### Notes
 
-##### Autonomous tiebreaker order (when judgment is unclear)
+##### Prohibitions
 
-1. Recency — prefer the newer commit
-2. Blast radius — prefer the change that more things depend on
-3. Branch purpose — if the branch corrects this change, prefer the branch
-4. Safe default — incorporate master, then adapt the branch
+- Do not skip this step — merging the target branch into this branch before merging back is required
 
 ### Step 4: Close related issues (inside the worktree)
 
@@ -169,7 +146,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
 
 ```bash
 git -C {WORKTREE_PATH} add .work/issues/
-git -C {WORKTREE_PATH} commit -m "chore: close related issues for #{N}"
+git -C {WORKTREE_PATH} commit -m "chore: close related issues"
 ```
 
 → Proceed to Step 5
@@ -232,7 +209,7 @@ The command prints the number of entries moved. If it prints `0`, skip the rest 
 
 ```bash
 git -C {WORKTREE_PATH} add .work/tasks/index.archive.yaml
-git -C {WORKTREE_PATH} commit -m "chore: archive #{N} to index.archive.yaml"
+git -C {WORKTREE_PATH} commit -m "chore: archive to index.archive.yaml"
 ```
 
 → Proceed to Step 7
@@ -268,7 +245,7 @@ git -C {WORKTREE_PATH} commit -m "chore: archive #{N} to index.archive.yaml"
 2. Merge with `--no-ff`:
 
 ```bash
-git merge --no-ff -m "{type}: {title} #{N}" {BRANCH_NAME}
+git merge --no-ff -m "{type}: {title}" {BRANCH_NAME}
 ```
 
    Where `{BRANCH_NAME}` is the actual branch name (new format: `{type}/{title}`; legacy: `PR{N}/{type}/{title}`).
@@ -307,7 +284,7 @@ git branch -d {BRANCH_NAME}
 
 ```bash
 git add .work/
-git commit -m "docs: post-merge update for #{N}"
+git commit -m "docs: post-merge update"
 ```
 
 → Proceed to Step 10
@@ -325,7 +302,7 @@ git commit -m "docs: post-merge update for #{N}"
 
 ---
 
-### Step 11: Delegate next branch candidates to pr-handoff
+### Step 11: Delegate next branch candidates to branch-reserve
 
 #### Condition
 
@@ -334,8 +311,8 @@ git commit -m "docs: post-merge update for #{N}"
 #### Process
 
 1. Read the merged branch document and inspect its `## 次ブランチ候補` section
-2. **If next branch candidates exist**: invoke `/work:pr-handoff` (no user confirmation needed). Delegate all classification and reservation logic to that skill
-3. **If next branch candidates are empty**: skip pr-handoff
+2. **If next branch candidates exist**: invoke `/work:branch-reserve` (no user confirmation needed). Delegate all classification and reservation logic to that skill
+3. **If next branch candidates are empty**: skip branch-reserve
 
 → Proceed to Step 12
 
@@ -345,8 +322,8 @@ git commit -m "docs: post-merge update for #{N}"
 
 #### Process
 
-Invoke `/work:pr-show` passing the merged branch document path as the data source.
+Invoke `/work:branch-show` passing the merged branch document path as the data source.
 
 #### Notes
 
-Full logic (reading `## 次ブランチ候補` table, classifying each candidate, branch lookup by title) is defined in the `pr-show` skill.
+Full logic (reading `## 次ブランチ候補` table, classifying each candidate, branch lookup by title) is defined in the `branch-show` skill.

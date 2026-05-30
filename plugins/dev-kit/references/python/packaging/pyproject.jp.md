@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of pyproject.md. When updating the English original, update this file too. -->
 # packaging/pyproject — pyproject.toml 完全サンプル
 
 > このファイルは `pyproject.md` の日本語ミラーです。

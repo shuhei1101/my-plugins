@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of providers.md. When updating the English original, update this file too. -->
 # llm/providers — LLM プロバイダ実装
 
 > このファイルは `providers.md` の日本語ミラーです。

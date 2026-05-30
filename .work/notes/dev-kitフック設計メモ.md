@@ -27,17 +27,12 @@ stdin の file_path が対象拡張子 → セッションフラグ確認
   フラグあり → exit 0（素通り）
 ```
 
-## 実装済み (PR198) — Markdown フロントマターチェック
+## ~~実装済み (PR198) — Markdown フロントマターチェック~~ (#228 で削除)
 
-| フック | トリガー | 動作 |
-|---|---|---|
-| markdown_frontmatter_check | Edit/Write/MultiEdit で `*.md` | フロントマター開き `---` より前に非空行がある場合に advisory 警告（block なし） |
+`markdown_frontmatter_check.py` フックは削除済み（v4.10.0 / #228）。
 
-### 設計判断
-
-- **block なし**: `decision: block` の reason で警告するが強制修正はしない（A案 = advisory）
-- **言語注入**: `DEV_KIT_MARKDOWN=true` で `markdown-editing.md` を auto-inject（A案 = 全注入）
-- **既存違反**: 調査したところフロントマター前コメントの真の違反ゼロを確認（全ファイルの `---` は水平線）
+`_injection_rules.yaml` の `**/*.md` パターンで `references/markdown/markdown-editing.md` が
+必須注入されているため、Python スクリプトによる重複チェックは不要と判断した。
 
 ## 関連ファイル
 

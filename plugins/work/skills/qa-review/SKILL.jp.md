@@ -4,7 +4,7 @@ description: |
   /work:qa-review が呼び出されたとき。
   またはユーザーが「QA をレビューしたい」「QA の内容を確認したい」「QA に回答したい」と言ったとき。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:qa-review — インタラクティブ QA レビュー
 

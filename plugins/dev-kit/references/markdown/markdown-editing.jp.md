@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of markdown-editing.md. When updating the English original, update this file too. -->
 
 # Markdown 編集 — フロントマターの配置
 

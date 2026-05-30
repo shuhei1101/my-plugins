@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of logger-impl.md. When updating the English original, update this file too. -->
 # app/(shared)/logger.ts — JSON Lines ロガー実装
 
 サーバー / クライアント両用。**JSON Lines（1 行 = 1 JSON）** 形式で出力。

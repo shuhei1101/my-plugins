@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of error-client-handler.md. When updating the English original, update this file too. -->
 # app/(shared)/errors/handler/client.ts — handleAppError
 
 クライアント側で `useQuery` / `useMutation` のエラーを処理する。
