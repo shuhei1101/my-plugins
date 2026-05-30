@@ -20,16 +20,17 @@ work-kit の merge スキルでマージを提案するかどうかを制御す�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/20260530_add-merge-proposal-toggle/PR173/QA.md` |
-| - | merge スキルに `WORK_KIT_MERGE_PROPOSAL` トグルを追加する | - `plugins/work-kit/skills/merge/SKILL.md` |
-| - | SKILL.jp.md を同期する | - `plugins/work-kit/skills/merge/SKILL.jp.md` |
-| - | `work-kit:config` スキルに新トグルを追加する | - `plugins/work-kit/skills/config/SKILL.md` |
-| - | `config` SKILL.jp.md を同期する | - `plugins/work-kit/skills/config/SKILL.jp.md` |
-| - | glossary.md に `WORK_KIT_MERGE_PROPOSAL` を追記する | - `.claude/rules/core/glossary.md` |
-| - | glossary JP ミラーを同期する | - `.claude/rules-jp/core/glossary.md` |
-| - | plugin.json バージョンを bump する | - `plugins/work-kit/.claude-plugin/plugin.json` |
-| - | marketplace.json を更新する | - `.claude-plugin/marketplace.json` |
-| - | changelog を書く | - `plugins/work-kit/changelogs/v{X}.md` |
+| 済 | QA.md を確認（未決定事項なし） | - `.work/tasks/20260530_add-merge-proposal-toggle/PR173/QA.md` |
+| 済 | Stop フックに `WORK_KIT_MERGE_PROPOSAL` トグルを追加する | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | `stop-no-merge.md` を作成（マージ提案なしプロンプト） | - `plugins/work-kit/hooks/prompts/stop-no-merge.md` |
+| 済 | `stop-no-merge.jp.md` JP ミラーを作成 | - `plugins/work-kit/hooks/prompts/stop-no-merge.jp.md` |
+| 済 | `work-kit:config` スキルに新トグルを追加する | - `plugins/work-kit/skills/config/SKILL.md` |
+| 済 | `config` SKILL.jp.md を同期する | - `plugins/work-kit/skills/config/SKILL.jp.md` |
+| 済 | glossary.md に `WORK_KIT_MERGE_PROPOSAL` を追記する | - `.claude/rules/core/glossary.md` |
+| 済 | glossary JP ミラーを同期する | - `.claude/rules-jp/core/glossary.md` |
+| 済 | plugin.json バージョンを bump する (2.39.0 → 2.40.0) | - `plugins/work-kit/.claude-plugin/plugin.json` |
+| 済 | marketplace.json を更新する | - `.claude-plugin/marketplace.json` |
+| 済 | changelog を書く | - `plugins/work-kit/changelogs/v2.40.0.md` |
 
 ## 参考ドキュメント
 
