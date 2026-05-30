@@ -40,13 +40,13 @@ PR205 で `skills.jp.md` の JP テンプレートを日本語化し、サブエ
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | QA を `## QA` に記録する | このドキュメント |
-| x | notes ドキュメントを更新する | `.work/notes/skill-template-standards.md` |
-| x | 全 `SKILL.jp.md` を Glob してセクション名一覧を収集する | `plugins/**/skills/*/SKILL.jp.md` |
-| x | 旧セクション名を新テンプレートに合わせて置換する | 各 `SKILL.jp.md` |
-| x | サブエージェント委譲に向いている処理ステップを洗い出す | 各 `SKILL.jp.md` |
-| x | 委譲候補ステップに `[サブエージェントで…]` マーカーを付ける | 各 `SKILL.jp.md` |
-| x | バージョンバンプ（変更したプラグイン分） | `plugin.json` / `marketplace.json` |
+| 済 | QA を `## QA` に記録する | このドキュメント |
+| 済 | notes ドキュメントを更新する | `.work/notes/skill-template-standards.md` |
+| 済 | 全 `SKILL.jp.md` を Glob してセクション名一覧を収集する | `plugins/**/skills/*/SKILL.jp.md` |
+| 済 | 旧セクション名を新テンプレートに合わせて置換する | 各 `SKILL.jp.md` |
+| 済 | サブエージェント委譲に向いている処理ステップを洗い出す | 各 `SKILL.jp.md` |
+| 済 | 委譲候補ステップに `[サブエージェントで…]` マーカーを付ける | 各 `SKILL.jp.md` |
+| 済 | バージョンバンプ（変更したプラグイン分） | `plugin.json` / `marketplace.json` |
 
 ## 変更内容
 
