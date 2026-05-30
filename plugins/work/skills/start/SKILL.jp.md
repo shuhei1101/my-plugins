@@ -15,7 +15,7 @@ description: |
 これにより、タスクドキュメントがメインリポに作成されるのを防ぎます。
 
 > **命名規則**: ブランチは `{type}/{title}` を使用します（`PR{N}/` プレフィックスなし）。
-> ワークツリーはブランチを反映して `{repo}-wt-{type}-{title}` となります（スラッシュ → ハイフン）。
+> ワークツリーはブランチを反映して `{repo}-wt-{branch-hyphenated}` となります（スラッシュ → ハイフン）。
 > ブランチドキュメントのファイル名は `{YYMMDD}-{branch-hyphenated}.md` 形式です
 > （例：260531 に作成した `refactor/foo-bar` → `260531-refactor-foo-bar.md`）。
 > 内部 ID `{N}` は `index.yaml` 内でアーカイブメタデータとして追跡されます。ブランチ名、ワークツリーパス、ブランチドキュメントファイル名には表示されません。
@@ -47,7 +47,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 #### 出力
 
-- ブランチ名 `{type}/{title}` が決定されました
+- ブランチ名 `{branch}` が決定されました
 - 内部 ID `{N}` が予約されました
 
 ---
@@ -86,7 +86,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --id {N} \
-  --title "{type}/{title}" \
+  --title "{branch}" \
   --type {type} \
   --summary "{summary}" \
   --task "{YYMMDD}_{title}"
@@ -125,7 +125,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 2. **有効な場合**: `/work:worktree-create` をブランチ名で実行します：
 
-   > `/work:worktree-create {type}/{title}`
+   > `/work:worktree-create {branch}`
 
 3. **無効な場合**: ワークツリー作成をスキップしてユーザーに通知します：
 
@@ -137,8 +137,8 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### 出力
 
-- （ワークツリー有効）ワークツリーが `../{repo}-wt-{type}-{title}` に作成され、
-  ブランチ `{type}/{title}` が存在します
+- （ワークツリー有効）ワークツリーが `../{repo}-wt-{branch-hyphenated}` に作成され、
+  ブランチ `{branch}` が存在します
 - （ワークツリー無効）ワークツリーなし。`.work/` フォルダ管理のみで続行します
 
 #### 注記
@@ -189,7 +189,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### 処理
 
-Step 5 での選択に応じて、以下のいずれかを実行してください。`--branch` 引数はブランチ名（`{type}/{title}`）です。
+Step 5 での選択に応じて、以下のいずれかを実行してください。`--branch` 引数はブランチ名（`{branch}`）です。
 スクリプトは日付プレフィックスを付加し、スラッシュをハイフンに変換してファイル名を形成します
 （例：260531 に作成した `refactor/rename-pr-to-branch` → `260531-refactor-rename-pr-to-branch.md`）：
 
@@ -197,9 +197,9 @@ Step 5 での選択に応じて、以下のいずれかを実行してくださ�
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
-  ../$(basename $(pwd))-wt-{type}-{title} \
+  ../$(basename $(pwd))-wt-{branch-hyphenated} \
   --id {N} \
-  --branch {type}/{title} \
+  --branch {branch} \
   --title {title} \
   --date {YYMMDD} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -209,9 +209,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
-  ../$(basename $(pwd))-wt-{type}-{title} \
+  ../$(basename $(pwd))-wt-{branch-hyphenated} \
   --id {N} \
-  --branch {type}/{title} \
+  --branch {branch} \
   --task-dir {existing_folder_name} \
   --title {title} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -221,7 +221,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### 出力
 
-- `../{repo}-wt-{type}-{title}/.work/tasks/{task_folder}/{YYMMDD}-{type}-{title}.md` が作成されました
+- `../{repo}-wt-{branch-hyphenated}/.work/tasks/{task_folder}/{YYMMDD}-{branch-hyphenated}.md` が作成されました
 
 ---
 
@@ -233,7 +233,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### 処理
 
-作成された `{YYMMDD}-{type}-{title}.md` をワークツリーで開き、テンプレートプレースホルダーコンテンツを
+作成された `{YYMMDD}-{branch-hyphenated}.md` をワークツリーで開き、テンプレートプレースホルダーコンテンツを
 実際の計画で置き換えます。このドキュメントはこのブランチのすべてのセクション
 — TODO、バリエーション、QA、参考資料 — を 1 つのファイルに保持します。
 
@@ -325,7 +325,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### 処理
 
-1. ワークツリー内のすべての作成ファイルをコミット（ブランチ：`{type}/{title}`）
+1. ワークツリー内のすべての作成ファイルをコミット（ブランチ：`{branch}`）
 2. 作成内容をレポート：ブランチ名、ワークツリーパス、ブランチドキュメントパス、ノートパス
 3. 実装開始：
    - **QA エントリが存在する場合** → 開始前にユーザーの確認を求める
@@ -335,7 +335,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 ##### 禁止事項
 
-- 作成されたワークツリー（`{type}/{title}` ブランチ）以外にコミットしないでください
+- 作成されたワークツリー（`{branch}` ブランチ）以外にコミットしないでください
 
 ##### コミット粒度
 
@@ -348,4 +348,4 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 - このスキルが生成するすべてのコミットメッセージは **日本語** で書かれなければなりません
 - サブジェクトとボディの両方が日本語です（`Co-Authored-By:` などのメタデータ行は英語のままでも可）
 - 従来のコミットプレフィックス（`feat:` `fix:` `chore:` など）は英語のままでもかまいません
-- 例：`chore: {type}/{title} のブランチドキュメントを作成`
+- 例：`chore: {branch} のブランチドキュメントを作成`

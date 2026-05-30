@@ -21,7 +21,7 @@
 | 4 | 済 | `setup-task.py` から `{ブランチ名}` 置換を削除 |
 | 5 | 済 | `work:start` の Step 7 に H1 記入指示を追記 |
 | 6 | 済 | ルール / CLAUDE.md の更新を確認 |
-| 7 | - | SKILL.md / SKILL.jp.md の `{type}-{title}` を `{branch-hyphenated}` に統一 |
+| 7 | 済 | SKILL.md / SKILL.jp.md の `{type}-{title}` を `{branch-hyphenated}` に統一 |
 
 ## 変更内容
 
