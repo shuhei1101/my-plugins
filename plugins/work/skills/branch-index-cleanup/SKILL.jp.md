@@ -19,7 +19,7 @@ disable-model-invocation: true
 
 ## タスク
 
-### Step 1: 未登録ブランチの収集
+### ステップ 1: 未登録ブランチの収集
 
 #### 条件
 
@@ -57,7 +57,7 @@ print('TITLES:', ' '.join(sorted(titles)))
    - どちらにも当てはまらないブランチは未登録として扱う
 4. **未登録ブランチ** のリストを作成
 
-→ Step 2 に進む
+→ ステップ 2 へ
 
 #### 出力
 
@@ -65,7 +65,7 @@ print('TITLES:', ' '.join(sorted(titles)))
 
 ---
 
-### Step 2: 各ブランチを分類
+### ステップ 2: 各ブランチを分類
 
 #### 条件
 
@@ -95,7 +95,7 @@ print('TITLES:', ' '.join(sorted(titles)))
 
 4. B/C ブランチの推定メタデータを修正したい場合は、進める前に受け入れる
 
-→ Step 3 に進む
+→ ステップ 3 へ
 
 #### 出力
 
@@ -103,7 +103,7 @@ print('TITLES:', ' '.join(sorted(titles)))
 
 ---
 
-### Step 3: 分類ごとに処置を実行
+### ステップ 3: 分類ごとに処置を実行
 
 #### 条件
 
@@ -161,7 +161,7 @@ python {PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 git branch -d {branch}   # 未マージの場合は -D を使う
 ```
 
-→ Step 4 に進む
+→ ステップ 4 へ
 
 #### 注記
 
@@ -170,7 +170,7 @@ git branch -d {branch}   # 未マージの場合は -D を使う
 
 ---
 
-### Step 4: 結果を報告
+### ステップ 4: 結果を報告
 
 #### 条件
 
@@ -196,7 +196,7 @@ git branch --format='%(refname:short)' | grep -v master | grep -v main
 
 ---
 
-### Step 5: 何もすることなし（すべてのブランチが登録済み）
+### ステップ 5: 何もすることなし（すべてのブランチが登録済み）
 
 #### 条件
 

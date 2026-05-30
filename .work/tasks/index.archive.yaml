@@ -1,5 +1,9 @@
 branches:
 - completed: true
+  id: 73
+  title: PR73 — skill-creator-references-cleanup
+  type: refactor
+- completed: true
   id: 81
   title: PR81 — debug-fab-copy-fix
   type: fix
@@ -774,7 +778,8 @@ branches:
   title: PR182 — dev-kit-plugin-update-skill
   type: feat
   tags: []
-  summary: dev-kit に plugin-update スキルを追加 (v4.3.0)、claude-kit plugin-structure.md の plugin-update 標準仕様を改訂 (v3.43.1)
+  summary: dev-kit に plugin-update スキルを追加 (v4.3.0)、claude-kit plugin-structure.md
+    の plugin-update 標準仕様を改訂 (v3.43.1)
   task: 260530_dev-kit-plugin-update-skill
   completed: true
 - id: 210
@@ -783,4 +788,109 @@ branches:
   tags: []
   summary: claude-kit の plugin authoring guide にプラグイン間依存ゼロ原則の独立セクションを追加（Why／許容例外／違反検出方法を明文化）
   task: 260530_claude-kit-zero-plugin-dependency-principle
+  completed: true
+- id: 185
+  title: PR185 — ref-inject-plugin-update-skill
+  type: feat
+  tags: []
+  summary: ref-inject に plugin-update スキルを追加（PR168 の plugin authoring guide 必須化に追従）
+  task: 260530_ref-inject-plugin-update-skill
+  completed: true
+- id: 190
+  title: PR190 — rename-index-prs-key
+  type: refactor
+  tags: []
+  summary: index.yamlとindex.archive.yamlのprs:キーをbranches:に改名し、index-tool.pyを更新する
+  task: 260530_index-yamlのprs:キーをbranches:に改名
+  completed: true
+- id: 191
+  title: PR191 — unify-task-folder-naming
+  type: chore
+  tags: []
+  summary: 8桁YYYYMMDDのタスクフォルダを6桁YYMMDD形式に一括リネームし、新規フォルダは日本語名を使う規約を追記する
+  task: 260530_unify-task-folder-naming
+  completed: true
+- id: 198
+  title: PR198 — dev-kit-markdown-frontmatter-rule
+  type: feat
+  tags: []
+  summary: dev-kit/references/ にフロントマター付き md の編集規約（フロントマター上に HTML コメント禁止）を追加し、PreToolUse
+    検出フックも同梱
+  task: 260530_dev-kit-markdown-frontmatter-rule
+  completed: true
+- id: 205
+  title: PR205 — skill-template-jp-and-subagent
+  type: docs
+  tags: []
+  summary: skills.jp.mdのテンプレート雛形を日本語化し、サブエージェント使用ガイドを追加する
+  task: 260530_skill-template-jp-and-subagent
+  completed: true
+- id: 209
+  title: PR209 — docs-commit-bundle-pr-doc
+  type: docs
+  tags: []
+  summary: PR ドキュメント更新はコミットと同じコミットにまとめる規約を .work/CLAUDE.md に追記
+  task: 260530_docs-commit-bundle-pr-doc
+  completed: true
+- id: 214
+  title: PR214 — notes-index-and-japanese-titles
+  type: feat
+  tags: []
+  summary: ノートの H1 タイトルを日本語に統一し、カテゴリ別 _index.md を追加
+  task: 260530_notes-index-and-japanese-titles
+  completed: true
+- id: 215
+  title: PR215 — remove-unused-references
+  type: chore
+  tags: []
+  summary: 不要になったclaud-kit references（incidents/glossary）を削除
+  task: 260530_remove-unused-references
+  completed: true
+- id: 175
+  title: PR175 — claude-kit-plugin-config-reference
+  type: feat
+  tags: []
+  summary: claude-kit references/ に「プラグイン config スキルの設計ガイド」を追加 + PreToolUse フック追加
+  task: 20260530_claude-kit-plugin-config-reference
+  completed: true
+- id: 220
+  title: fix/marketplace-json-duplicate-version
+  type: fix
+  tags: []
+  summary: PR175 マージ作業中の sed ミスで marketplace.json の claude-kit エントリに version 行が重複して入っていたのを修正
+  task: 260531_fix-marketplace-json-duplicate-version
+  completed: true
+- id: 201
+  title: PR201 — claude-kit-jp-mirror-env
+  type: feat
+  tags: []
+  summary: CLAUDE_KIT_JP_MIRROR 環境変数を追加し、false の場合は JP ミラーを作らず本体ファイルを日本語で書く
+  task: 260530_claude-kit-jp-mirror-env
+  completed: true
+- id: 202
+  title: PR202 — fix-pr179-merge-fallout
+  type: fix
+  tags: []
+  summary: PR179 merge fallout 修正 + dev-kit:yaml スキル一式削除
+  task: 260531_fix-pr179-merge-fallout
+- id: 216
+  title: PR216 — fix-setup-wizard-config-naming
+  type: fix
+  tags: []
+  summary: setup-wizard.md/jp.md の plugin-config 命名を config に修正し、JP ミラーのスケルトンを日本語化する
+  task: 260531_fix-setup-wizard-config-naming
+  completed: true
+- id: 199
+  title: PR199 — dev-kit-references-yaml-subfolder
+  type: refactor
+  tags: []
+  summary: dev-kit references の yaml.md / yaml.jp.md を yaml/ サブフォルダへ移動し、他言語（html/next/python/markdown）と構造を揃える
+  task: 260530_dev-kit-references-yaml-subfolder
+  completed: true
+- id: 217
+  title: PR217 — existing-skills-review-and-normalize
+  type: chore
+  tags: []
+  summary: 既存スキル全件見直し：JP ミラーのセクション名を新テンプレートに合わせて統一し、サブエージェント委譲候補を洗い出す
+  task: 260531_existing-skills-review-and-normalize
   completed: true

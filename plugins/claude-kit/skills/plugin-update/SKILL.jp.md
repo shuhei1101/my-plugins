@@ -37,8 +37,6 @@ claude-kit はテンプレを project に展開しない（各 creator スキル
 | `**/.claude/settings{.local,}.json` | `references/hooks.md` + `common.md` + `environment.md` |
 | `**/hooks/prompts/*.md` | `references/hooks.md` |
 | `**/.claude-plugin/{plugin,marketplace}.json` | `references/plugin-structure.md` + `common.md` |
-| `**/rules/**/glossary.md` | `references/glossary.md` |
-| `**/references/incidents/**/*.md` | `references/incidents.md` |
 | `~/.claude/settings.json` の `statusLine` ブロック | `scripts/apply-statusline.py` の定義 |
 
 `agents/` は claude-kit に対応リファレンスがないため、common.md の「ファイル種別判定 +
@@ -46,9 +44,9 @@ JP/EN ミラー規約」のみが適用される（agents.md は将来追加予�
 
 ---
 
-## Tasks
+## タスク
 
-### Step 1: カレントブランチを確認
+### ステップ 1: カレントブランチを確認
 
 #### 条件
 
@@ -60,21 +58,21 @@ JP/EN ミラー規約」のみが適用される（agents.md は将来追加予�
 2. `master` / `main` の場合 — 「master / main では実行不可。作業ブランチを切ってから再実行してください」と伝えて停止
 3. それ以外なら次へ
 
-→ Step 2
+→ ステップ 2 へ
 
-#### Output
+#### 出力
 
 - 編集を行うブランチが `master` / `main` でないことが確認済み
 
-#### Notes
+#### 注意事項
 
-##### Prohibitions
+##### 禁止事項
 
 - master / main 上での実行
 
 ---
 
-### Step 2: 各カテゴリを巡回し、規約逸脱を修正
+### ステップ 2: 各カテゴリを巡回し、規約逸脱を修正
 
 #### 条件
 
@@ -90,7 +88,6 @@ JP/EN ミラー規約」のみが適用される（agents.md は将来追加予�
 4. **Hooks (manifest)** — `find . -type f -name 'hooks.json' -not -path '*/node_modules/*' -not -path '*/.git/*'` および `.claude/settings.json` / `.claude/settings.local.json`
 5. **Hook prompts** — `find . -type f -path '*/hooks/prompts/*.md' -not -path '*/node_modules/*' -not -path '*/.git/*'`
 6. **Plugin manifests** — `find . -type f \( -name 'plugin.json' -o -name 'marketplace.json' \) -path '*/.claude-plugin/*' -not -path '*/node_modules/*' -not -path '*/.git/*'`（マーケットプレイスリポジトリのみ該当）
-7. **Glossary / Incidents** — `find . -type f -name 'glossary.md' -path '*/rules/*'`, `find . -type f -path '*/references/incidents/*.md'`
 
 各ファイルについて:
 
@@ -101,22 +98,22 @@ d. `Edit` で **最小限の差分** を適用（既存のユーザーコンテ�
 e. JP mirror（`*.jp.md` / `CLAUDE.jp.md` / `rules-jp/`）は英語版を直した後、対応箇所を同様に更新
 f. 既に規約準拠ならそのファイルはスキップ
 
-→ Step 3
+→ ステップ 3 へ
 
-#### Notes
+#### 注意事項
 
-##### Branching
+##### 分岐
 
 - カテゴリごとの巡回中に「内容が完全に陳腐化していて差分でなく再生成が妥当」と判断したら、ユーザーに「再生成を含めますか？」と確認してから進める（デフォルトは差分適用のみ）
 
-##### Prohibitions
+##### 禁止事項
 
 - ファイル全体の置き換え（差分マイグレーションでなくテンプレ展開になるため）
 - 他プラグインの成果物（例: `plugins/work/skills/*/SKILL.md`）への変更 — それらは各プラグインの `plugin-update` の責務
 
 ---
 
-### Step 3: statusline を必要に応じて再適用
+### ステップ 3: statusline を必要に応じて再適用
 
 #### 条件
 
@@ -129,11 +126,11 @@ f. 既に規約準拠ならそのファイルはスキップ
 3. 含まれている場合 → `python ${CLAUDE_PLUGIN_ROOT}/scripts/apply-statusline.py` を実行して最新定義で書き換え
 4. 含まれていない場合 → スキップ（claude-kit の statusline を使っていないユーザー）
 
-→ Step 4
+→ ステップ 4 へ
 
 ---
 
-### Step 4: 差分を報告
+### ステップ 4: 差分を報告
 
 #### 条件
 
@@ -148,10 +145,10 @@ f. 既に規約準拠ならそのファイルはスキップ
 4. `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` から現行バージョン `{N}` を読み取る
 5. **このスキルは自分でコミットしない**。コミット / マージ判断はユーザーの責任
 
-→ Done
+→ 完了
 
-#### Notes
+#### 注意事項
 
-##### Prohibitions
+##### 禁止事項
 
 - 自動コミット（dev-kit / work の plugin-update と同じ方針）

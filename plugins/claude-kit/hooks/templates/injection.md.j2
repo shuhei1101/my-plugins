@@ -5,11 +5,16 @@ The **required** references must be followed when working with this file. Ones n
 session are inlined in full; ones already injected earlier are listed by path only (re-`Read` if
 they have scrolled out of context).
 
+{% if not jp_mirror %}
+> `CLAUDE_KIT_JP_MIRROR=false` — Skip JP mirrors; write the main `.md` file in Japanese directly.
+
+{% endif %}
 {% if required %}
 {% for ref in required %}
+
 ---
 
-## {{ ref.path }} — {{ ref.description }}
+## {{ ref.path }} — {{ ref.description }}<!-- -->
 
 {% if ref.cached %}
 _(Already injected earlier this session — re-`Read` `{{ ref.abs_path }}` if you need it again.)_
@@ -19,6 +24,7 @@ _(Already injected earlier this session — re-`Read` `{{ ref.abs_path }}` if yo
 {% endfor %}
 {% endif %}
 {% if optional %}
+
 ---
 
 ## Optional references (read with `Read` if you need them)
