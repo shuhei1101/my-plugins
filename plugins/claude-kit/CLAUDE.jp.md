@@ -47,5 +47,6 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 
 | バージョン | 概要 |
 |---|---|
+| `3.47.0` | `references/jinja2/authoring.md` を追加 — Jinja2 テンプレート記法の落とし穴（trim_blocks による setext 見出し罠、見出し内の {{ expr }}、空行要件） |
 | `3.44.0` | `CLAUDE_KIT_JP_MIRROR` 環境変数を追加 — `false` の場合 `.jp.md` ミラーをスキップし本体ファイルを日本語で書く |
 | `3.43.1` | （それ以前の履歴は `changelogs/` を参照） |

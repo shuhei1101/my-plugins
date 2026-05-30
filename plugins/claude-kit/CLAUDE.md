@@ -47,5 +47,6 @@ enforced by the project's `*-jp-mirror-sync` rules.
 
 | Version | Summary |
 |---|---|
+| `3.47.0` | Add `references/jinja2/authoring.md` — Jinja2 template authoring pitfalls (trim_blocks setext heading trap, {{ expr }} in headings, blank-line rules) |
 | `3.44.0` | Add `CLAUDE_KIT_JP_MIRROR` env var — when `false`, skip `.jp.md` mirrors and write the main file in Japanese |
 | `3.43.1` | (see `changelogs/` for earlier history) |

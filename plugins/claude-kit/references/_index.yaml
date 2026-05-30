@@ -43,5 +43,9 @@ references:
   - path: kit-hooks-sync.md
     description: Structural sync rule for dev-kit and claude-kit injection infrastructure. When changing the shared injection structure (inject_references.py, hooks.json, templates, _index.yaml, _injection_rules.yaml) in one kit, the other must be updated in the same commit.
 
+
+  - path: jinja2/authoring.md
+    description: Jinja2 template authoring pitfalls. Known traps when writing .j2 files with trim_blocks=True and lstrip_blocks=True — setext heading from block-tag-above-dashes, {{ expr }} in ATX headings needing <!-- -->, blank-line requirements around block tags, and lost indentation.
+
   - path: plugin-config.md
     description: How to add a config skill to a plugin. The AskUserQuestion loop pattern, managed-toggle convention (absent = ON, "false" = OFF), scope selection, and a minimal SKILL.md template.

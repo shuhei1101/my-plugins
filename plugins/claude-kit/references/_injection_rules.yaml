@@ -34,6 +34,7 @@ rules:
   - pattern: "plugins/*-kit/hooks/templates/*.j2"
     required:
       - kit-hooks-sync.md
+      - jinja2/authoring.md
     optional: []
   - pattern: "plugins/*-kit/references/{_index,_injection_rules,CLAUDE}{.jp,}.{yaml,md}"
     required:

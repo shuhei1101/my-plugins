@@ -11,6 +11,9 @@ PR201 で発覚した setext heading バグや `##` ヘッダー内の `{{ }}` �
 
 テンプレートを新規作成・編集する際に Claude が参照できる注意事項集として機能させる。
 
+**dev-kit 同期不要**: kit-hooks-sync.md の規約に従い、content-only 変更（リファレンス追加・パターン追加）は
+クロスキット同期不要。
+
 ### 実施条件
 
 即時実施可
@@ -19,20 +22,18 @@ PR201 で発覚した setext heading バグや `##` ヘッダー内の `{{ }}` �
 
 | # | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|---|
-| 1 | - | QA に未決事項があれば記録する | - |
-| 2 | - | .work/notes/ の関連ノートを更新する | - |
-| 3 | - | references/jinja2/authoring.md を新規作成する（trim_blocks、setext heading、## ヘッダー内 {{ }} などの注意点） | plugins/claude-kit/references/jinja2/authoring.md |
-| 4 | - | references/jinja2/authoring.jp.md を新規作成する（JP ミラー） | plugins/claude-kit/references/jinja2/authoring.jp.md |
-| 5 | - | references/_index.yaml に jinja2/authoring.md を追加する | plugins/claude-kit/references/_index.yaml |
-| 6 | - | references/_index.jp.yaml にも同様に追加する | plugins/claude-kit/references/_index.jp.yaml |
-| 7 | - | references/_injection_rules.yaml に .j2 ファイルへのパターンを追加して自動注入を有効化する | plugins/claude-kit/references/_injection_rules.yaml |
-| 8 | - | dev-kit 側も同期する（kit-hooks-sync.md の規約に従い、構造変更を両 kit に適用） | plugins/dev-kit/references/jinja2/authoring.md, plugins/dev-kit/references/_index.yaml, plugins/dev-kit/references/_injection_rules.yaml |
-| 9 | - | CLAUDE.md / CLAUDE.jp.md を更新する | plugins/claude-kit/CLAUDE.md, plugins/claude-kit/CLAUDE.jp.md |
-| 10 | - | plugin.json のバージョンを上げる | plugins/claude-kit/.claude-plugin/plugin.json, .claude-plugin/marketplace.json |
+| 1 | 済 | QA に未決事項があれば記録する（なし） | - |
+| 2 | 済 | .work/notes/Jinja2テンプレート記法メモ.md を新規作成する | .work/notes/Jinja2テンプレート記法メモ.md |
+| 3 | 済 | references/jinja2/authoring.md を新規作成する | plugins/claude-kit/references/jinja2/authoring.md |
+| 4 | 済 | references/jinja2/authoring.jp.md を新規作成する（JP ミラー） | plugins/claude-kit/references/jinja2/authoring.jp.md |
+| 5 | 済 | references/_index.yaml に jinja2/authoring.md を追加する | plugins/claude-kit/references/_index.yaml |
+| 6 | 済 | references/_index.jp.yaml にも同様に追加する | plugins/claude-kit/references/_index.jp.yaml |
+| 7 | 済 | references/_injection_rules.yaml の .j2 パターンに jinja2/authoring.md を追加する | plugins/claude-kit/references/_injection_rules.yaml |
+| 8 | 済 | CLAUDE.md / CLAUDE.jp.md に Changelog を追記する | plugins/claude-kit/CLAUDE.md, plugins/claude-kit/CLAUDE.jp.md |
+| 9 | 済 | plugin.json のバージョンを 3.46.0 → 3.47.0 に上げる | plugins/claude-kit/.claude-plugin/plugin.json, .claude-plugin/marketplace.json |
+| 10 | 済 | changelogs/v3.47.0.md を作成する | plugins/claude-kit/changelogs/v3.47.0.md |
 
 ## 変更内容
-
-実装したファイル（テスト以外）。コミットに積まれる全ファイルを列挙する。
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
@@ -40,15 +41,12 @@ PR201 で発覚した setext heading バグや `##` ヘッダー内の `{{ }}` �
 | 2 | plugins/claude-kit/references/jinja2/authoring.jp.md | 新規 | 同上の JP ミラー | - |
 | 3 | plugins/claude-kit/references/_index.yaml | 編集 | jinja2/authoring.md エントリを追加 | - |
 | 4 | plugins/claude-kit/references/_index.jp.yaml | 編集 | 同上の JP ミラー | - |
-| 5 | plugins/claude-kit/references/_injection_rules.yaml | 編集 | .j2 ファイルパターンを追加 | - |
-| 6 | plugins/dev-kit/references/jinja2/authoring.md | 新規 | dev-kit 側に同期（claude-kit と同一内容） | kit-hooks-sync 規約 |
-| 7 | plugins/dev-kit/references/jinja2/authoring.jp.md | 新規 | 〃 JP ミラー | 〃 |
-| 8 | plugins/dev-kit/references/_index.yaml | 編集 | 〃 エントリ追加 | 〃 |
-| 9 | plugins/dev-kit/references/_injection_rules.yaml | 編集 | 〃 .j2 パターン追加 | 〃 |
-| 10 | plugins/claude-kit/CLAUDE.md | 編集 | Changelog 追加 | - |
-| 11 | plugins/claude-kit/CLAUDE.jp.md | 編集 | 同上の JP ミラー | - |
-| 12 | plugins/claude-kit/.claude-plugin/plugin.json | 編集 | バージョンアップ | MINOR |
-| 13 | .claude-plugin/marketplace.json | 編集 | バージョン同期 | - |
+| 5 | plugins/claude-kit/references/_injection_rules.yaml | 編集 | .j2 パターンに jinja2/authoring.md を追加 | - |
+| 6 | plugins/claude-kit/CLAUDE.md | 編集 | Changelog に 3.47.0 を追記 | - |
+| 7 | plugins/claude-kit/CLAUDE.jp.md | 編集 | 同上の JP ミラー | - |
+| 8 | plugins/claude-kit/.claude-plugin/plugin.json | 編集 | バージョン 3.46.0 → 3.47.0 | MINOR |
+| 9 | .claude-plugin/marketplace.json | 編集 | claude-kit バージョン同期 | - |
+| 10 | plugins/claude-kit/changelogs/v3.47.0.md | 新規 | バージョン変更記録 | - |
 
 ## テスト
 
