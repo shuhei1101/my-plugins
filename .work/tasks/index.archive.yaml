@@ -688,3 +688,10 @@ prs:
   summary: claude-kitにMarkdownテーブル記法のリファレンスを追加し、繰り返し値の省略ルールを注入
   task: 20260530_add-markdown-table-reference
   completed: true
+- id: 182
+  title: PR182 — dev-kit-plugin-update-skill
+  type: feat
+  tags: []
+  summary: dev-kit に plugin-update スキルを追加（PR168 の plugin authoring guide 必須化に追従）
+  task: 260530_dev-kit-plugin-update-skill
+  completed: true
