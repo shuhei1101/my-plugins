@@ -25,13 +25,13 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `## QA` の未解決事項をユーザーに確認 | - |
-| - | setup-wizard リファレンス本体を新規作成（テンプレート skeleton 付き） | - `plugins/claude-kit/references/setup-wizard.md`<br>- `plugins/claude-kit/references/setup-wizard.jp.md` |
-| - | `plugin-structure.md` の「Required skills」セクションに `setup-wizard` を追加（`plugin-update` と並べる） | - `plugins/claude-kit/references/plugin-structure.md`<br>- `plugins/claude-kit/references/plugin-structure.jp.md` |
-| - | references/index.yaml にエントリ追加（EN / JP 両方） | - `plugins/claude-kit/references/index.yaml`<br>- `plugins/claude-kit/references/index.jp.yaml` |
-| - | injection_rules.yaml で `plugin.json` / `marketplace.json` 編集時に setup-wizard.md を required 注入 | - `plugins/claude-kit/references/injection_rules.yaml` |
-| - | claude-kit バージョン bump（3.40.0 → 3.41.0）+ changelog 作成 | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json`<br>- `plugins/claude-kit/changelogs/v3.41.0.md` |
-| - | ノート作成（設計の経緯と決定事項を記録） | - `.work/notes/setup-wizard-pattern.md` |
+| 済 | `## QA` の未解決事項をユーザーに確認 | - |
+| 済 | setup-wizard リファレンス本体を新規作成（テンプレート skeleton 付き） | - `plugins/claude-kit/references/setup-wizard.md`<br>- `plugins/claude-kit/references/setup-wizard.jp.md` |
+| 済 | `plugin-structure.md` の「Required skills」セクションに `setup-wizard` + `plugin-config` を追加 | - `plugins/claude-kit/references/plugin-structure.md`<br>- `plugins/claude-kit/references/plugin-structure.jp.md` |
+| 済 | references/index.yaml にエントリ追加（EN / JP 両方） | - `plugins/claude-kit/references/index.yaml`<br>- `plugins/claude-kit/references/index.jp.yaml` |
+| 済 | injection_rules.yaml で `plugin.json` / `marketplace.json` 編集時に setup-wizard.md を required 注入 | - `plugins/claude-kit/references/injection_rules.yaml` |
+| 済 | claude-kit バージョン bump（3.40.0 → 3.41.0）+ changelog 作成 | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json`<br>- `plugins/claude-kit/changelogs/v3.41.0.md` |
+| 済 | ノート作成（設計の経緯と決定事項を記録） | - `.work/notes/setup-wizard-pattern.md` |
 
 ## 変更内容
 
@@ -60,34 +60,19 @@ PR スコープの未決定事項を QA-XXX として記録する。決定後は
 
 ### QA-001: setup-wizard 完了時に「セットアップ済み」マークをどこに記録するか
 
-**背景**: ユーザーは `.claude/{plugin}.local.md` の YAML frontmatter に `setup_done: true` を書き込む方針で合意済。ただし「再セットアップしたい」場合のフローも考える必要がある。
+**決定**: 案 A（`setup_done: true` のみ。version 情報は持たせない）
 
-| 案 | 内容 |
-|---|---|
-| A | `setup_done: true` のみ。再実行は `/{plugin}:setup-wizard` を明示的に呼べばいい |
-| B | `setup_done: true` + `setup_version: <plugin version>` を持たせ、バージョン更新時に自動再実行 |
+加えて、`plugin-structure.md` に「プラグインを更新する際は setup-wizard も必ず合わせて更新する」旨を明記する。バージョン追従は規約で人間に守らせる方針。
 
-**推奨方式**: A（最小構成）。バージョン更新時の再案内は別途 `plugin-update` 経由で対応すべきで、setup-wizard の責務を絞る。
-
-**状態**: 未解決
-
-**決定したら反映先**: `plugins/claude-kit/references/setup-wizard.md` の「Flag schema」セクション
+**反映先**: `plugins/claude-kit/references/setup-wizard.md` の Flag schema、`plugin-structure.md` の Required skills
 
 ### QA-002: setup-wizard が `plugin-config` を呼ぶ仕組み
 
-**背景**: setup-wizard は env 設定を `plugin-config` 系スキルに委譲する設計。ただし、各プラグインが `plugin-config` 同等スキルを持つわけではないので、フォールバックが必要。
+**決定**: 案 A（プラグインが env を持つなら、自身で `plugin-config` 相当のスキルを実装するのが必須。規約に明記）
 
-| 案 | 内容 |
-|---|---|
-| A | プラグインが env を持つなら、自身で `plugin-config` 相当のスキルを実装するのが必須（規約に明記） |
-| B | claude-kit が汎用的な env 設定スキルを 1 つ提供し、各プラグインの env を読んで設定するアプローチ |
-| C | `workspace/skills/config` が既に汎用的なので、setup-wizard からそれを呼ぶ前提にする |
+加えて、`workspace/skills/config` を `workspace/skills/plugin-config` にリネームする方針。これは別 PR として予約。
 
-**推奨方式**: C → A の二段。まずは `workspace/skills/config` が既存トグルを扱える前提で setup-wizard を書き、将来的に各プラグインが独自 config スキルを持つ余地を残す。
-
-**状態**: 未解決
-
-**決定したら反映先**: `plugins/claude-kit/references/setup-wizard.md` の「Env var setup delegation」セクション
+**反映先**: `plugins/claude-kit/references/setup-wizard.md` の Env var setup delegation、`plugin-structure.md` の Required skills（plugin-config も必須スキルに追加）
 
 ## 参考ドキュメント
 
@@ -106,4 +91,5 @@ PR スコープの未決定事項を QA-XXX として記録する。決定後は
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
 | document-askuserquestion-limits | AskUserQuestion の制約（options 2〜4 個、"Other" 自動付与、multiSelect、preview）を claude-kit リファレンスに正式に明記。本 PR では setup-wizard.md 内に最小限触れるが、汎用リファレンスとして独立させる | 即時実施可 |
-| rollout-setup-wizard-to-existing-plugins | 既存プラグイン（work, claude-kit, dev-kit, etc.）に setup-wizard スキルを遡及追加。各プラグインの env / 初期設定を整理し、SessionStart フックも合わせて整備 | 「add-setup-wizard-reference」が完了したら |
+| rename-workspace-config-to-plugin-config | `plugins/workspace/skills/config` を `plugins/workspace/skills/plugin-config` にリネーム。setup-wizard が委譲する命名を `plugin-config` に統一するため | 「add-setup-wizard-reference」が完了したら |
+| rollout-setup-wizard-to-existing-plugins | 既存プラグイン（work, claude-kit, dev-kit, etc.）に setup-wizard スキルを遡及追加。各プラグインの env / 初期設定を整理し、SessionStart フックも合わせて整備 | 「rename-workspace-config-to-plugin-config」が完了したら |

@@ -26,9 +26,10 @@ related_prs:
 | 要素 | 決定 | 理由 |
 |---|---|---|
 | フラグ保存先 | `.claude/{plugin}.local.md` の YAML frontmatter（`setup_done: true`） | 既存の `plugin-settings` の仕組みを再利用。env 変数より隔離されて衛生的 |
+|  | version 情報は持たせない | 規約で「プラグイン更新時に setup-wizard も更新」を必須化することで対応（QA-001 決定） |
 | フックタイミング | `SessionStart`（プラグインごとに個別） | `UserPromptSubmit` より早い。プラグイン横断の中央集権化は避け、各プラグインが自身の状態を所有 |
 | setup-wizard の責務 | ユースケース別オンボーディングの **目次** | 本文（使い方の詳細）は CLAUDE.md に書く。重複管理を避けるため目次役に徹する |
-| env 設定 | `workspace:config` 等の既存設定スキルへ委譲（再掲は不要） | 設定の単一責務を保つ |
+| env 設定 | 各プラグインが必須スキル `plugin-config` を持ち、setup-wizard はそれを呼ぶ | 単一プラグインで責務完結。`workspace:config` を共有しない（QA-002 決定） |
 | AskUserQuestion | options は 2〜4（公式 schema 上限） | tool schema で `minItems: 2`, `maxItems: 4` を確認済。"Other" は自動付与 |
 
 ## フロー（標準）
@@ -41,12 +42,13 @@ related_prs:
    4. **完了処理**: `.claude/{plugin}.local.md` の frontmatter に `setup_done: true` を書き込む
 3. 再セットアップは `/{plugin}:setup-wizard` を明示的に呼ぶ
 
-## QA で議論中
+## QA 決定事項
 
-- QA-001: フラグに version 情報を持たせるか（推奨: 持たせない、最小構成）
-- QA-002: env 設定の委譲先（推奨: `workspace:config` 既存 → 将来的に各プラグイン独自 config）
+- QA-001: version 情報は持たせない（規約でカバー）
+- QA-002: 各プラグインが独自 `plugin-config` を持つことを必須化
 
 ## 関連
 
 - **次 PR**: AskUserQuestion 制約の汎用リファレンス化
+- **次 PR**: `workspace:config` → `workspace:plugin-config` リネーム
 - **次 PR**: 既存プラグインへの setup-wizard 遡及追加
