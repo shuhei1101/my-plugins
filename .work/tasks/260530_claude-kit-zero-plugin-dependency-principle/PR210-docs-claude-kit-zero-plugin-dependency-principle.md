@@ -1,4 +1,4 @@
-# PR201 — claude-kit-zero-plugin-dependency-principle
+# PR210 — claude-kit-zero-plugin-dependency-principle
 
 ## 概要
 
@@ -79,4 +79,4 @@ PR182 で `plugin-update` 標準仕様表に "Inter-plugin dependency: None" を
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| existing-inter-plugin-dependency-audit-and-zero-out | `plugins/**/skills/**/SKILL.md` / `hooks/**` / `references/**` を全件 grep し、他プラグインのスキルやコマンドを呼び出している箇所をリストアップしてユーザーに提示する。レビュー後、可能なものから順次「プラグイン内自己完結」へ書き換え、最終的に依存件数ゼロを目標とする。例: work plugin の skills 内に dev-kit/claude-kit への参照がないか、ref-inject の apply で他プラグインを操作していないか等を確認。判断軸として PR201 で追記した原則セクションを参照する。 | 即時実施可（本 PR201 マージ後） |
+| existing-inter-plugin-dependency-audit-and-zero-out | `plugins/**/skills/**/SKILL.md` / `hooks/**` / `references/**` を全件 grep し、他プラグインのスキルやコマンドを呼び出している箇所をリストアップしてユーザーに提示する。レビュー後、可能なものから順次「プラグイン内自己完結」へ書き換え、最終的に依存件数ゼロを目標とする。例: work plugin の skills 内に dev-kit/claude-kit への参照がないか、ref-inject の apply で他プラグインを操作していないか等を確認。判断軸として PR210 で追記した原則セクションを参照する。 | 即時実施可（本 PR210 マージ後） |
