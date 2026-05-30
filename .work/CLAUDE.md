@@ -44,10 +44,10 @@ Update specs whenever implementation changes documented behavior.
 
 ---
 
-## work-kit Skills
+## work Skills
 
 | Skill | Purpose |
 |---|---|
 | `/work-kit:setup` | Initialize `.work/` (run once per project) |
-| `/work-kit:work-start` | Create task folder, PR folder, TODO.md, QA.md, and index.yaml entry |
+| `/work:start` | Create task folder, PR folder, TODO.md, QA.md, and index.yaml entry |
 | `/work-kit:merge` | Verify TODO, merge, update index.yaml, and clean up worktree |
