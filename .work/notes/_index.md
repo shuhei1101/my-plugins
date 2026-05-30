@@ -18,6 +18,7 @@
 | [フックインラインPython切り出し.md](フックインラインPython切り出し.md) | フックインライン Python 切り出し — hooks.json スクリプト分離 |
 | [TypeScript型チェックフック.md](TypeScript型チェックフック.md) | TypeScript 型チェックフック (PR143) |
 | [Jinja2テンプレート記法メモ.md](Jinja2テンプレート記法メモ.md) | Jinja2 テンプレート記法メモ — .j2 ファイル記述時の既知の罠と対処法 |
+| [Jinja2テンプレート執筆ルール.md](Jinja2テンプレート執筆ルール.md) | Jinja2 テンプレート執筆ルール — Markdown 出力時の注意事項 (PR222) |
 
 ---
 
@@ -34,6 +35,7 @@
 | [pr-showスキル.md](pr-showスキル.md) | pr-show スキル — 次 PR 候補一覧の状況表示 |
 | [ref-injectジェネレータ.md](ref-injectジェネレータ.md) | ref-inject — リファレンス自動注入プラグインのジェネレータ |
 | [work-kitスキル群.md](work-kitスキル群.md) | work-kit スキル群 — 設計メモ |
+| [AskUserQuestion制約リファレンス.md](AskUserQuestion制約リファレンス.md) | AskUserQuestion 制約リファレンス — スキルからの呼び出しガイド |
 
 ---
 

@@ -19,7 +19,7 @@ disable-model-invocation: true
 > 新しいワークツリーは `{repo}-wt-{type}-{title}` を使用します。
 > レガシーブランチは引き続き `PR{N}/{type}/{title}` で記録されており、ワークツリーは `{repo}-wt-PR{N}` です。
 > これらの記録された名前で処理してください — `index.yaml` と `git worktree list` から実際のブランチ/ワークツリーパスを読み取り、
-> `{N}` から再構成しないでください。`{N}` は `index.yaml` で追跡される内部 ID です（コミット クロスリファレンスで使用）。
+> `{N}` から再構成しないでください。`{N}` は `index.yaml` で追跡される内部 ID です（
 
 ---
 
@@ -156,7 +156,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
 
 ```bash
 git -C {WORKTREE_PATH} add .work/issues/
-git -C {WORKTREE_PATH} commit -m "chore: close related issues for #{N}"
+git -C {WORKTREE_PATH} commit -m "chore: close related issues"
 ```
 
 → ステップ 5 へ
@@ -225,7 +225,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" archive \
 
 ```bash
 git -C {WORKTREE_PATH} add .work/tasks/index.archive.yaml
-git -C {WORKTREE_PATH} commit -m "chore: archive #{N} to index.archive.yaml"
+git -C {WORKTREE_PATH} commit -m "chore: archive to index.archive.yaml"
 ```
 
 → ステップ 7 へ
@@ -268,7 +268,7 @@ git -C {WORKTREE_PATH} commit -m "chore: archive #{N} to index.archive.yaml"
 2. `--no-ff` でマージ：
 
 ```bash
-git merge --no-ff -m "{type}: {title} #{N}" {BRANCH_NAME}
+git merge --no-ff -m "{type}: {title}" {BRANCH_NAME}
 ```
 
    ここで `{BRANCH_NAME}` は実際のブランチ名です（新形式：`{type}/{title}`、
@@ -310,7 +310,7 @@ git branch -d {BRANCH_NAME}
 
 ```bash
 git add .work/
-git commit -m "docs: post-merge update for #{N}"
+git commit -m "docs: post-merge update"
 ```
 
 → ステップ 10 へ

@@ -13,10 +13,9 @@ Creates the worktree first, then creates the single per-branch task document ins
 This prevents task documents from being created in the main repository.
 
 > **Naming**: branches use `{type}/{title}` (no `PR{N}/` prefix). The worktree mirrors the branch as
-> `{repo}-wt-{type}-{title}` (slashes → hyphens). The branch document filename is derived from the
-> branch by replacing slashes with hyphens (`refactor/foo-bar` → `refactor-foo-bar.md`).
-> An internal numeric ID is still tracked in `index.yaml` for cross-reference (commits, archive
-> metadata), but it does not appear in branch names, worktree paths, or branch document filenames.
+> `{repo}-wt-{type}-{title}` (slashes → hyphens). The branch document filename is `{YYMMDD}-{branch-hyphenated}.md`
+> (e.g. `refactor/foo-bar` created on 260531 → `260531-refactor-foo-bar.md`).
+> An internal numeric ID is still tracked in `index.yaml` for archive metadata, but it does not appear in branch names, worktree paths, or branch document filenames.
 
 ---
 
@@ -34,8 +33,7 @@ This prevents task documents from being created in the main repository.
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **Title**: short kebab-case label that describes the work
 2. The full branch name is `{type}/{title}` (for example `refactor/rename-pr-to-branch`).
-3. Reserve an internal ID for `index.yaml` bookkeeping (used in the archive and in commit
-   cross-references — it does not appear in the branch name itself):
+3. Reserve an internal ID for `index.yaml` bookkeeping (used in the archive — it does not appear in the branch name itself):
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yaml
@@ -186,8 +184,8 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### Process
 
 Run one of the following depending on the choice in Step 5. The `--branch` argument is the branch
-name (`{type}/{title}`); the script converts slashes to hyphens to form the file name
-(e.g. `refactor/rename-pr-to-branch` → `refactor-rename-pr-to-branch.md`):
+name (`{type}/{title}`); the script prepends the date and converts slashes to hyphens to form the file name
+(e.g. `refactor/rename-pr-to-branch` on 260531 → `260531-refactor-rename-pr-to-branch.md`):
 
 **New task folder:**
 
@@ -217,7 +215,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Output
 
-- `../{repo}-wt-{type}-{title}/.work/tasks/{task_folder}/{type}-{title}.md` created
+- `../{repo}-wt-{type}-{title}/.work/tasks/{task_folder}/{YYMMDD}-{type}-{title}.md` created
 
 ---
 
@@ -229,7 +227,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Process
 
-Open the created `{type}-{title}.md` in the worktree and replace the template placeholder content
+Open the created `{YYMMDD}-{type}-{title}.md` in the worktree and replace the template placeholder content
 with the actual plan. The document holds every section for this branch — TODO, variations, QA, and
 references — all in one file.
 
@@ -240,17 +238,17 @@ references — all in one file.
 
 **`## 作業内容`** — task checklist. The following rows are mandatory and must not be removed or skipped:
 
-| 完了 | 作業内容 | 対象ファイル |
+| # | 完了 | 作業内容 |
 |---|---|---|
-| - | Record open questions in `## QA` (this same document) | - |
-| - | Update the note document in `.work/notes/` | - |
-| - | (Implementation tasks: replace with branch-specific work) | - |
-| - | Update rules / CLAUDE.md | - |
+| 1 | - | Record open questions in `## QA` (this same document) |
+| 2 | - | Update the note document in `.work/notes/` |
+| 3 | - | (Implementation tasks: replace with branch-specific work) |
+| 4 | - | Update rules / CLAUDE.md |
 
 **`## 変更内容`** — the implementation files this branch adds or modifies (excluding tests). Fill in
 once implementation starts — every file that lands in a commit goes here:
 
-| ファイル名 | 新規/編集 | 内容 | 補足 |
+| # | ファイル名 | 新規/編集 | 内容 | 補足 |
 
 **`## テスト`** — test files added or modified alongside the implementation. Leave the placeholder row if
 this branch has no test changes; otherwise list each test file.
@@ -260,14 +258,14 @@ this branch has no test changes; otherwise list each test file.
 **`## 参考ドキュメント`** — links to related notes / specs (the note from Step 8 is appended here).
 
 **`## 関連イシュー`** — list `.work/issues/ISSUE-{N}` entries this branch resolves
-(table format: `| ID | 概要 | resolution |`). `resolution` is `resolved` or `wontfix`.
+(table format: `| # | ID | 概要 | resolution |`). `resolution` is `resolved` or `wontfix`.
 **If there are no related issues**: delete the `## 関連イシュー` heading and table entirely.
 
 **`## 関連ブランチ`** — list branches directly related to this one (predecessors, split siblings,
-follow-ups) (table format: `| ブランチ | 概要 |`). Leave the placeholder row if there are none.
+follow-ups) (table format: `| # | ブランチ | 概要 |`). Leave the placeholder row if there are none.
 
 **`## 次ブランチ候補`** — list follow-up branches mentioned during this session
-(columns: title / summary / 実施条件):
+(columns: `#` / title / summary / 実施条件):
 - `即時実施可` (or `-`) when the candidate has no dependency
 - `「{other candidate title}」が完了したら` when the candidate depends on another candidate in the same table
 

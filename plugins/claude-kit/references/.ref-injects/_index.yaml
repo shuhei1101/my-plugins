@@ -49,3 +49,9 @@ references:
 
   - path: plugin-config.md
     description: How to add a config skill to a plugin. The AskUserQuestion loop pattern, managed-toggle convention (absent = ON, "false" = OFF), scope selection, and a minimal SKILL.md template.
+
+  - path: askuserquestion.md
+    description: When and how to call AskUserQuestion from skills. Usage restriction (only when a skill or user explicitly instructs it), options constraints (2–4 items, Other auto-added), multiSelect, and preview field rules.
+
+  - path: jinja2/templates.md
+    description: Authoring rules for Jinja2 templates that emit Markdown (e.g. injection.md.j2). Covers the trim_blocks newline-eating rule, the {% endif %}{% if X %} + --- setext-heading bug, the }} + Handlebars-parser collision (fix with <!-- -->), and a quick checklist.
