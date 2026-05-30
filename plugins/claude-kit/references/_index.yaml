@@ -28,12 +28,6 @@ references:
   - path: plugin-claude-md.md
     description: How to write a plugin's root CLAUDE.md. Required sections (Skills / Hooks / Environment Variables / Dependencies / Changelog), table formats for each section, and the full copy-paste template.
 
-  - path: glossary.md
-    description: Format guide for .claude/rules/glossary.md. Single-file category-organized terminology table, writing discipline (always-loaded → keep terse), and how terms get added.
-
-  - path: incidents.md
-    description: Format guide for .claude/rules/incidents.md. Two-layer index + detail-file structure for recurrence-prevention logs, and how incidents get recorded.
-
   - path: references-sync.md
     description: JP mirror sync rule for plugin references files. When editing plugins/*/references/**/*.md, the paired *.jp.md must also be updated in the same commit.
 
