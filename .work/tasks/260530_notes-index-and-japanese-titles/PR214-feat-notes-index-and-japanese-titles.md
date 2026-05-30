@@ -19,6 +19,8 @@
 | 済 | `_index.md` をカテゴリ別分類で作成する | `.work/notes/_index.md` |
 | 済 | workプラグインのノートテンプレートを日本語タイトル例示に更新する | `plugins/work/templates/note.md` |
 | 済 | work:start スキルに `_index.md` 自動生成・更新ステップを追加する | `plugins/work/skills/start/SKILL.md` |
+| - | 既存ノート 25 件のファイル名を日本語化する | `.work/notes/*.md` |
+| - | `_index.md` のリンクを新ファイル名に更新する | `.work/notes/_index.md` |
 
 ## 変更内容
 
