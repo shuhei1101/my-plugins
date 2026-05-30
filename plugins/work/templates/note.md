@@ -4,11 +4,12 @@ updates:
   - YYYY-MM-DD — {更新内容}
 related_specs:
   - {related-spec}.md
-related_prs:
-  - PR{N}
+related_branches:
+  - {type}/{title}
 ---
 
 # {機能名} — {一行説明}
+<!-- タイトルは日本語で記述する。技術識別子（プラグイン名、コマンド名、ファイル名）はそのままでよい -->
 
 ## 概要
 

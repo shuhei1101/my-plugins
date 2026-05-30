@@ -1,46 +1,52 @@
 ---
-name: work-add
+name: worktree-create
 description: |
-  PR ブランチ用の git worktree を作成する。
-  work:start（Step 4）から呼び出されるか、直接呼び出す。
-  「ワークツリーを作って」「worktree を作成して」「work-add して」
-  または work-start から `/work:worktree-create` として呼び出されたときにトリガー。
+  ブランチ用のgitワークツリーを作成します。work:start（Step 4）から呼び出されてワークツリーを作成するか、
+  直接実行されます。「ワークツリーを作って」「worktree を作成して」「work-add して」
+  またはwork:startから `/work:worktree-create` として実行されたときにトリガー。
 ---
+
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
-# work:worktree-create — PR ワークツリーの作成
+# work:worktree-create — ワークツリーを作成
 
-PR 用の git worktree とブランチを作成する。
+git ワークツリーとブランチを作成します。
+
+> **命名規則**: ブランチは `{type}/{title}` を使用します（`PR{N}/` プレフィックスなし）。
+> ワークツリーパスはブランチ名を反映して `../{repo}-wt-{type}-{title}` となります
+> （スラッシュはハイフンに置き換え）。
+> レガシー `wt-PR{N}` 命名法のワークツリーはそのまま残されます — 新しく作成されたワークツリーのみ
+> 新しい形式に従います。
 
 ---
 
 ## タスク
 
-### Step 1: 引数を解決する
+### ステップ 1: 引数を解析
 
 #### 条件
 
-- 常に実行 — 最初に行う
+- 常に実行 — 最初に実行
 
 #### 処理
 
-1. 引数付きで呼び出された場合（例: `PR58 refactor/split-workspace-worktree`）、解析する:
-   - 第1引数: PR 番号または `PR{N}` 形式 → `N` を抽出
-   - 第2引数: ブランチサフィックス（`{type}/{title}`）
-2. 引数なしで呼び出された場合、ユーザーに確認する:
-   - PR 番号
-   - ブランチタイプとタイトル（kebab-case）
+1. 引数が指定されている場合（例：`refactor/rename-pr-to-branch`）、それを解析します：
+   - 単一の引数：ブランチ名（`{type}/{title}`）
+   - レガシー実行 `/work:worktree-create PR58 refactor/foo` も後方互換性のため受け付けます：
+     `PR{N}` トークンは削除され、ブランチサフィックスのみが使用されます
+2. 引数なしで呼び出された場合、ユーザーに質問します：
+   - ブランチタイプ（`feat` / `fix` / `refactor` / `docs` / `chore` / `test`）
+   - タイトル（kebab-case）
 
-→ Step 2 へ
+→ ステップ 2 へ
 
 #### 出力
 
-- `N` — PR 番号（整数）
-- `TYPE_TITLE` — ブランチサフィックス（例: `refactor/split-workspace-worktree`）
+- `BRANCH` — 完全なブランチ名（`{type}/{title}`）
 
 ---
 
-### Step 2: ワークツリーを作成する
+### ステップ 2: ワークツリーを作成
 
 #### 条件
 
@@ -48,34 +54,35 @@ PR 用の git worktree とブランチを作成する。
 
 #### 処理
 
-1. リポジトリルート名を取得:
+1. スラッシュをハイフンで置き換えてワークツリーサフィックスを派生させます：
 
 ```bash
-basename $(pwd)
+BRANCH=refactor/rename-pr-to-branch
+WT_SUFFIX="${BRANCH//\//-}"  # → refactor-rename-pr-to-branch
 ```
 
-2. ワークツリーとブランチを作成:
+2. ワークツリーとブランチを作成します：
 
 ```bash
-git worktree add -b PR{N}/{TYPE_TITLE} ../$(basename $(pwd))-wt-PR{N}
+git worktree add -b "$BRANCH" "../$(basename $(pwd))-wt-${WT_SUFFIX}"
 ```
 
-→ Step 3 へ
+→ ステップ 3 へ
 
 #### 出力
 
-- ワークツリーが `../repo-wt-PR{N}` に作成される
-- ブランチ `PR{N}/{TYPE_TITLE}` が存在する
+- ワークツリーが `../{repo}-wt-{type}-{title}` に作成されました
+- ブランチ `{type}/{title}` が存在します
 
-#### 注意
+#### 注記
 
 ##### 禁止事項
 
-- master/main に直接コミットしない
+- master/main に直接コミットしないでください
 
 ---
 
-### Step 3: 呼び出し元に報告する
+### ステップ 3: 呼び出し元に報告
 
 #### 条件
 
@@ -83,10 +90,10 @@ git worktree add -b PR{N}/{TYPE_TITLE} ../$(basename $(pwd))-wt-PR{N}
 
 #### 処理
 
-1. 作成したワークツリーのパスとブランチ名を報告する
-2. `work-start` から呼び出された場合は制御を返す
+1. 作成されたワークツリーパスとブランチ名を報告
+2. `work:start` から呼び出された場合、呼び出し元に制御を返す
 
 #### 出力
 
-- ワークツリーパス: `../repo-wt-PR{N}`
-- ブランチ名: `PR{N}/{TYPE_TITLE}`
+- ワークツリーパス：`../{repo}-wt-{type}-{title}`
+- ブランチ名：`{type}/{title}`

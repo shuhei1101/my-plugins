@@ -1,126 +1,128 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+
 ---
 name: plugin-update
 description: |
   カレントプロジェクトのプラグイン生成物を、現在インストール済みのプラグインバージョンに合わせて更新する:
-  workspace の静的 `.work/` テンプレ（CLAUDE.md・.gitignore）を上書きし、
+  work の静的 `.work/` テンプレ（CLAUDE.md・.gitignore）を上書きし、
   `index.yaml` を最新スキーマへ移行する。他プラグインの生成物は対象外（各プラグインが
   同等のスキルを持っている場合はそれを使う）。
   手動起動のみ — `/work:plugin-update` を使う。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
 # work:plugin-update — プラグイン生成物を最新版に揃える
 
-旧 `update` スキルからの置き換え（PR168）。スコープは **workspace 自身の静的テンプレ**のみ:
-`.work/CLAUDE.md`・`.gitignore`・`index.yaml` のスキーマ移行。
+旧 `update` スキルからの置き換え（PR168）。スコープは **work 自身の静的テンプレ** のみ:
+`.work/` の CLAUDE.md・`.gitignore`・`index.yaml` のスキーマ移行。
 
 他プラグインの diff ロジックは意図的に対象外 — 各プラグインが自分の更新パスを所有し、
-必要なら同等のスキル（仮: `/{plugin}:plugin-update`）を提供する。
+必要なら同等のスキル（例: `/{plugin}:plugin-update`）を提供する。
 このスキルは決してプラグイン境界を跨がない。
 
 ---
 
-## 作業内容
+## タスク
 
-### ステップ1: `.work/` の存在確認と PR ブランチの準備
+### ステップ 1: .work/ が存在することを確認し、作業ブランチを準備
 
 #### 条件
 
-- 常に — 最初に実行
+- 必ず最初に実行
 
-#### 処理内容
+#### 処理
 
-1. カレントプロジェクトに `.work/` があることを確認する
-2. なければユーザーに `/work:setup` を先に実行するよう伝えて終了する
-3. `/work:start` を実行してこの同期作業専用の PR ブランチを切る
-   （生成された編集が master でなくレビュー可能なブランチに載るようにするため）
-4. ワークツリーとブランチが作成されるのを待つ
+1. カレントプロジェクトに `.work/` が存在することを確認
+2. 存在しない場合、ユーザーに `/work:setup` を先に実行するよう案内して終了
+3. `/work:start` を実行してこの同期用の作業ブランチを作成
+   （生成されたファイル編集が確認可能なブランチにランディングするよう）
+4. worktree とブランチが作成されるまで待機
 
-→ ステップ2 へ
+→ ステップ 2 へ
 
 #### 出力
 
-- `.work/` の存在を確認した。PR ブランチ / ワークツリーが準備できている
-- 以降のファイル編集とコミットはこのワークツリーの PR ブランチで行う
+- `.work/` が確認済み。作業ブランチ / worktree が準備完了
+- 以降のすべてのファイル編集とコミットはこのworktree上の作業ブランチ内で実行される
 
 ---
 
-### ステップ2: `.work/` 配下の workspace テンプレートを上書きする
+### ステップ 2: `.work/` 内のワークスペーステンプレートを上書き
 
 #### 条件
 
-- ステップ1 完了
+- Step 1 完了
 
-#### 処理内容
+#### 処理
 
-1. workspace テンプレートルートを特定: `${CLAUDE_PLUGIN_ROOT}/templates/.work/`
-2. 以下のファイルをテンプレートからプロジェクトへコピー（上書き）:
+1. work プラグインテンプレートルート `${CLAUDE_PLUGIN_ROOT}/templates/.work/` を探索
+2. テンプレートから以下のファイルをプロジェクトにコピー（上書き）:
    - `CLAUDE.md` → `.work/CLAUDE.md`
    - `CLAUDE.jp.md` → `.work/CLAUDE.jp.md`
    - `tasks/.gitignore` → `.work/tasks/.gitignore`
-   - `issues/.gitignore` → `.work/issues/.gitignore`（テンプレ側に存在する場合）
-3. 上書きしたファイルを報告する
+   - `issues/.gitignore` → `.work/issues/.gitignore`（テンプレートに存在する場合）
+3. どのファイルが上書きされたかを報告
 
-→ ステップ3 へ
+→ ステップ 3 へ
 
 #### 出力
 
-- `.work/CLAUDE.md`・`.work/CLAUDE.jp.md`・`.work/tasks/.gitignore` が最新になっている
+- `.work/CLAUDE.md`、`.work/CLAUDE.jp.md`、`.work/tasks/.gitignore` が最新版に更新済み
 
 ---
 
-### ステップ3: `.work/tasks/index.yaml` を移行する（`last_id` がなければ追加）
+### ステップ 3: `.work/tasks/index.yaml` のマイグレーション（`last_id` がない場合は追加）
 
 #### 条件
 
-- ステップ2 完了
-- `.work/tasks/index.yaml` が存在する
+- Step 2 完了
+- `.work/tasks/index.yaml` が存在
 
-#### 処理内容
+#### 処理
 
 1. `.work/tasks/index.yaml` を読む
-2. `last_id` が既にあればこのステップをスキップ
-3. `last_id` がなければ:
-   - `last_id` = 全エントリの `max(id)`（空なら 0）を計算
-   - `prs` セクションの先頭に `last_id: {N}` を追加
-   - ファイルを書き戻す
+2. `last_id` が既に存在する → このステップをスキップ
+3. `last_id` が存在しない場合:
+   - `last_id` = すべてのエントリから `max(id)` を計算（空の場合は 0）
+   - インデックスファイルの先頭に `last_id: {N}` を追加
+   - 更新ファイルを書き込む
 
-→ ステップ4 へ
+→ ステップ 4 へ
 
 #### 出力
 
-- `index.yaml` に `last_id` が存在する
-- 既にあった場合は「index.yaml には既に last_id があります — スキップ」と報告
+- `index.yaml` に `last_id` が存在
+- 既に存在する場合：「index.yaml は既に last_id を持っています — スキップしました」と報告
 
-#### 補足
+#### 注記
 
-- `index.yaml` は gitignore 済み — コミット不要
-- このスキルが行うスキーマ移行はこれだけ。より深い書き換えは破壊的バージョンバンプ時の専用スクリプトに任せる
+- `index.yaml` は gitignore されている — コミット不要
+- これはこのスキルが実行する唯一のスキーママイグレーション。
+  より深い書き直しは、バージョンバンプに伴うワンオフスクリプトとして提供される
 
 ---
 
-### ステップ4: レビューしてコミットする
+### ステップ 4: 確認とコミット
 
 #### 条件
 
-- ステップ3 完了
+- Step 3 完了
 
-#### 処理内容
+#### 処理
 
-1. ワークツリーの `git status` と `git diff` をユーザーに見せる
-2. 意味のある単位でコミットする:
-   - `chore: sync workspace .work/ templates to v{N} #PR{N}`
+1. worktree の `git status` と `git diff` をユーザーに表示
+2. グループ化した変更を説明的なメッセージでコミット:
+   - `chore: sync work .work/ templates to v{version}`
 
-→ ステップ5 へ
+→ ステップ 5 へ
 
 ---
 
-### ステップ5: 完了報告
+### ステップ 5: 完了を報告
 
-#### 処理内容
+#### 処理
 
-1. 更新したファイルを列挙する
-2. 変更がなければ「workspace 関連の生成物はすべて最新です」と報告する
-3. 同期 PR の準備ができたら `/work:merge` を実行することをユーザーに提案する
+1. 更新されたすべてのファイルをリスト化
+2. ファイルに変更がない場合、「work プラグインの成果物はすべて最新版です」と報告
+3. ユーザーに準備完了後に `/work:merge` を実行して同期ブランチをマージするよう提案
 
 → 完了

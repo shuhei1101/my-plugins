@@ -8,6 +8,9 @@ references:
   - path: skills.md
     description: .claude/skills/<name>/SKILL.md の作り方。skill が適切な種別かの判定、既存類似スキルの確認、JP ミラー先行ワークフロー、ステップ構造テンプレ、description フロントマター規約。
 
+  - path: subagents.md
+    description: ステップ処理のサブエージェント委譲ガイド。委譲マーカー（[サブエージェントで実行・完了を待つ] / 並列実行・完了を待つ / 完了を待たない）、委譲の判断基準、制約（戻り値のみ・完了を待つ・コンテキストは空）。
+
   - path: rules.md
     description: .claude/rules/<name>.md の作り方。ルールの読み込み条件、2 種類（リンク型 / コンテキスト型）、ユースケース指向の paths 設計、統合 / 分離基準、フォルダ構成、必須セクション、構造例。
 
@@ -26,8 +29,17 @@ references:
   - path: plugin-claude-md.md
     description: プラグインのルート CLAUDE.md の書き方。必須セクション（Skills / Hooks / Environment Variables / Dependencies / Changelog）、各セクションのテーブル形式、コピペ用フルテンプレート。
 
-  - path: glossary.md
-    description: .claude/rules/glossary.md のフォーマットガイド。単一ファイル・カテゴリ分けの用語表、記述規律（常時ロード → 簡潔に）、用語の追加方法。
+  - path: setup-wizard.md
+    description: 必須スキル `setup-wizard` の書き方 — SessionStart フックと `.claude/{plugin}.local.md` の `setup_done` フラグで駆動する初回オンボーディング。フロー、AskUserQuestion の options 制約（2〜4 個）、`config` との関係、SKILL.md コピペ用 skeleton を含む。
+
+  - path: references-sync.md
+    description: プラグインリファレンスファイルの JP ミラー同期ルール。plugins/*/references/**/*.md を編集したら、ペアの *.jp.md も同じコミットで更新する。
 
   - path: incidents.md
     description: .claude/rules/incidents.md のフォーマットガイド。再発防止ログの 2 層（索引 + 詳細ファイル）構造、インシデントの記録方法。
+
+  - path: kit-hooks-sync.md
+    description: dev-kit と claude-kit の注入インフラ構造同期ルール。inject_references.py・hooks.json・テンプレート・_index.yaml・_injection_rules.yaml の共有構造を片方の kit で変更したら、もう片方も同じコミットで更新する。
+
+  - path: plugin-config.md
+    description: プラグインに config スキルを追加する方法。AskUserQuestion ループパターン、管理トグルの規約（キーなし = ON / "false" = OFF）、スコープ選択、最小 SKILL.md テンプレート。

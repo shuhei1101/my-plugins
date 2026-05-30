@@ -15,8 +15,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/yaml_skill_dispatch.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/yaml-skill-dispatch.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/markdown_frontmatter_check.py"
             ]
           },
           {
@@ -43,8 +42,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/yaml_skill_dispatch.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/yaml-skill-dispatch.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/markdown_frontmatter_check.py"
             ]
           },
           {
@@ -65,6 +63,13 @@
             "command": "python",
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject_references.py"
+            ]
+          },
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/markdown_frontmatter_check.py"
             ]
           },
           {
