@@ -1,0 +1,5 @@
+{
+  "name": "workspace",
+  "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, manages git worktrees (toggle via WORKSPACE_USE_WORKTREE), and guards git push/merge confirmation (toggle via WORKSPACE_GUARD). Protected branches for master-commit-guard are customizable via WORKSPACE_PROTECTED_BRANCHES (comma-separated, default master,main,develop).",
+  "version": "2.43.0"
+}

@@ -4,10 +4,12 @@ updates:
   - 2026-05-23 — PR91: pr-handoff スキルの追加
   - 2026-05-24 — PR109: pr-show スキルを merge Step 12 から切り出し
   - 2026-05-29 — PR163: worktree-kit を統合（work-add / vscode-workspace-sync を取り込み）
+  - 2026-05-30 — PR172: プラグインを work-kit → workspace にリネーム、env var も WORK_KIT_* → WORKSPACE_* に変更
 related_prs:
   - PR91
   - PR109
   - PR163
+  - PR172
 ---
 
 # work-kit スキル群 — 設計メモ

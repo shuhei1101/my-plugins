@@ -1,0 +1,195 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# testing/strategy — テスト方針
+
+> このファイルは `strategy.md` の日本語ミラーです。
+
+dev-kit Python の方針: **単体テストは書かない。** 結合テストとスモークテストの 2 種類だけ書く。
+
+---
+
+## 採用するテストの種類
+
+| 種類 | 目的 | 実行 |
+|---|---|---|
+| **結合テスト** | ユースケースごとに、ルート → サービス → 条件分岐 → 結果までを 1 単位でテスト。外部依存（LLM・TTS・HTTP・時刻 等）は **Mock 化** | CI / 開発時に自動 |
+| **スモークテスト** | 外部サービスへの**実接続**確認（実 LLM API・実 TTS 等） | ユーザー手動実行のみ。CI / AI 自動実行**禁止** |
+
+**単体テスト（関数 1 つに対するテスト）は書かない。**
+
+---
+
+## なぜ単体テストを書かないか
+
+- AI 駆動開発が前提で、**ソースコードが一次仕様** として一目で読める設計を採用している
+- 関数 1 つの振る舞いをテストに起こすコストに対し、得られる安心感が小さい
+- リファクタで先に壊れる（仕様が変わったわけではないのに）
+- 結合テストの方がユーザー価値に直結する（実際の使われ方に近い）
+
+代わりに **設計でカバー** する:
+- 関数ファースト + 型エイリアスで、テストしやすい関数境界を作る
+- 結合テストで「ユースケース全体」を高速に回せるようにする
+- 型チェック（mypy / pyright strict）でメソッドレベルの正しさを担保
+
+---
+
+## 結合テストの粒度
+
+ユースケースごとに 1 テストファイル。
+「リクエストが入った → サービスが動いた → 期待した結果が出た」を通しで確認する。
+
+```python
+# tests/features/chat/test_generate_response.py
+import pytest
+from {pkg}.features.chat.service import generate_response
+
+
+@pytest.mark.asyncio
+async def test_generate_response_success() -> None:
+    """通常入力に対して LLM レスポンスが返る。"""
+    async def chat_mock(req):
+        return "hello world"
+
+    result = await generate_response("hi", chat=chat_mock)
+
+    assert result == "hello world"
+
+
+@pytest.mark.asyncio
+async def test_generate_response_strips_markdown() -> None:
+    """LLM の返答から Markdown が除去される。"""
+    async def chat_mock(req):
+        return "**bold** text"
+
+    result = await generate_response("hi", chat=chat_mock)
+
+    assert "**" not in result
+```
+
+ポイント:
+- **外部依存（`chat`）は Mock で注入**
+- 1 ファイル 1 ユースケース、複数の条件分岐を `test_*` 関数で並列に
+- セットアップは fixture（`conftest.py`）に集約
+
+---
+
+## ファイル配置
+
+```
+tests/
+├── __init__.py
+├── conftest.py                  # 共通 fixtures
+├── features/
+│   ├── chat/
+│   │   ├── test_generate_response.py
+│   │   └── test_save_message.py
+│   └── users/
+│       └── test_create_user.py
+├── server/
+│   └── test_chat_route.py       # FastAPI ルートの結合テスト（TestClient）
+└── smoke/                       # スモーク（実接続）
+    ├── conftest.py              # スモーク用 fixtures
+    ├── test_openai_live.py
+    └── test_anthropic_live.py
+```
+
+`tests/{feature}/test_{usecase}.py` で feature をミラー。
+
+---
+
+## 結合テストの起動
+
+```bash
+uv run pytest tests/ -v --ignore=tests/smoke/
+```
+
+CI では `tests/smoke/` を除外。
+
+---
+
+## スモークテストの起動
+
+スモークは **明示フラグでガード**:
+
+```python
+# tests/smoke/conftest.py
+import pytest
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--run-smoke",
+        action="store_true",
+        default=False,
+        help="run smoke tests against real external services",
+    )
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    if not config.getoption("--run-smoke"):
+        skip = pytest.mark.skip(reason="need --run-smoke")
+        for item in items:
+            if "smoke" in item.keywords or "smoke" in str(item.fspath):
+                item.add_marker(skip)
+```
+
+実行:
+
+```bash
+uv run pytest tests/smoke/ --run-smoke
+```
+
+ユーザーが明示的に `--run-smoke` を指定したときだけ走る。
+**AI は自動でこれを実行してはならない**（外部 API 課金が発生する）。
+
+---
+
+## スモークテストに書く内容
+
+```python
+# tests/smoke/test_openai_live.py
+import pytest
+import os
+from {pkg}.integrations.llm.openai_client import chat_with_openai
+
+
+pytestmark = pytest.mark.smoke
+
+
+@pytest.mark.asyncio
+async def test_openai_smoke() -> None:
+    """OpenAI API への実接続が成立し、200 系で文字列が返ることを確認する。"""
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        pytest.skip("OPENAI_API_KEY not set")
+
+    result = await chat_with_openai(
+        [{"role": "user", "content": "say hi in one word"}],
+        api_key=api_key,
+        model="gpt-4o-mini",
+    )
+
+    assert isinstance(result, str)
+    assert len(result) > 0
+```
+
+「API が動くこと」を確認するだけ。**業務ロジックの検証はしない**（結合テスト側でやる）。
+
+---
+
+## カバレッジ
+
+`pytest-cov` を使う場合:
+
+```bash
+uv run pytest --cov={pkg} --cov-report=term-missing tests/ --ignore=tests/smoke/
+```
+
+ただし、**カバレッジ率を目標数値で縛らない**。
+重要なユースケースが結合テストで通っているかを定性的に判断する。
+
+---
+
+## 関連ファイル
+
+- `testing/pytest.md` — pytest 規約・fixtures
+- `testing/mocks.md` — 結合テストでの Mock パターン
+- `architecture/ts-style.md` — 関数の型エイリアスを使った差し替え
