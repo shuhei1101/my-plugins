@@ -31,7 +31,7 @@
 | mark-generated | ファイル種別に応じた出自メタデータコメント文字列を返す claude-kit スキル（`/claude-kit:mark-generated`）。PR94 で追加。PR161: `provenance.md` の薄ラッパーに格下げ。**PR165 で廃止** — `provenance.md` と全 provenance スタンプとともに削除。 |
 | provenance.md | `plugins/claude-kit/references/provenance.md`(+jp)。出自スタンプの単一正本。PR161 で導入。**PR165 で廃止** — `mark-generated` スキルと全 provenance スタンプとともに削除。 |
 | environment.md | `plugins/claude-kit/references/environment.md`(+jp)。プラグインの**実行されるコード（フック/スクリプト）**を環境変数で設定可能にするガイド: `settings.json` の `env` ブロックで設定（ユーザー/プロジェクト/ローカルのスコープ）、`os.environ` で読む（デフォルト・検証）、`{PREFIX}_INJECTION_TTL` / `{PREFIX}_INJECTION_LANG` の実例、命名・文書化の慣習、env とパス変数の区別。要点: **env を読めるのは実行コードだけ** — Markdown 成果物（CLAUDE.md / rule / SKILL.md）は env を*記載する*だけ。`hooks.json` / `settings.json` 編集時は全文、その他の全 claude 成果物では optional ポインタとして注入。PR162 で導入。 |
-| version-sync | プラグインのバージョンが上がったとき、ファイルに埋め込まれた出自メタデータを使って古い生成物を検出し、`changelogs/` の差分を反映する claude-kit スキル（`/claude-kit:version-sync {plugin}`）。完全自動モードで動作する（PR94 で追加）。 |
+| version-sync | ファイルに埋め込まれた出自メタデータを使って古いバージョンで生成された成果物を検出していた claude-kit スキル（`/claude-kit:version-sync {plugin}`）。PR94 で追加。**PR170 で廃止** — PR165 で出自スタンプを全廃したため、grep 対象がなくなり実質無意味になった。 |
 | 着手可能 (🟢) | pr-show スキルが提示する PR ステータスの一つ。予約済みブランチで `git log master..{branch} --oneline` のコミット数が 1 以下のもの。pr-handoff で予約された直後でまだ実装が始まっていない状態を示す（PR99 で導入）。 |
 | 進行中 (🟡) | pr-show スキルが提示する PR ステータスの一つ。予約済みブランチで master からのコミット数が 2 以上のもの。他の Claude Code セッションで作業中とみなし、現在のセッションでは触らない方が良い（PR99 で導入）。 |
 | 条件あり (🔴) | pr-show スキルが提示する PR ステータスの一つ。TODO.md の `## 次PR候補` で実施条件が他候補依存になっている [[依存後続候補]]。pr-handoff で予約されておらず先行 PR のマージ後に初めて予約対象になる（PR99 で導入）。 |
