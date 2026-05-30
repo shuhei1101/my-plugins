@@ -21,7 +21,7 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 ## Tasks
 
-### Step 1: Verify .work/ exists and prepare a PR branch
+### Step 1: Verify .work/ exists and prepare a working branch
 
 #### Condition
 
@@ -31,7 +31,7 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 1. Check that `.work/` exists in the current project
 2. If absent, tell the user to run `/workspace:setup` first and exit
-3. Invoke `/workspace:work-start` to create a PR branch dedicated to this sync
+3. Invoke `/workspace:work-start` to create a dedicated working branch for this sync
    (so the generated edits land on a reviewable branch, not master)
 4. Wait until the worktree and branch are created
 
@@ -39,8 +39,8 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 #### Output
 
-- `.work/` confirmed; PR branch / worktree ready
-- All subsequent file edits and commits in later steps happen inside this worktree on the PR branch
+- `.work/` confirmed; working branch / worktree ready
+- All subsequent file edits and commits in later steps happen inside this worktree on the working branch
 
 ---
 
@@ -81,7 +81,7 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 2. If `last_id` is already present → skip this step
 3. If `last_id` is absent:
    - Compute `last_id` = `max(id)` across all entries (0 if empty)
-   - Add `last_id: {N}` to the top of the `prs` section
+   - Add `last_id: {N}` to the top of the index file
    - Write the updated file
 
 → Proceed to Step 4
@@ -109,7 +109,7 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 1. Show the user `git status` and `git diff` of the worktree
 2. Commit grouped changes with a descriptive message:
-   - `chore: sync workspace .work/ templates to v{N} #PR{N}`
+   - `chore: sync workspace .work/ templates to v{version}`
 
 → Proceed to Step 5
 
@@ -121,6 +121,6 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 1. List every file that was updated
 2. If no files changed, report "All workspace artifacts already up to date"
-3. Suggest the user run `/workspace:merge` to merge the sync PR when ready
+3. Suggest the user run `/workspace:merge` to merge the sync branch when ready
 
 → Done

@@ -1,19 +1,22 @@
 ---
 name: pr-show
-description: Present next PR candidates in 3 categories (ready to start / in progress elsewhere / has conditions).
+description: Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions).
 ---
 
-# workspace:pr-show — Show Next PR Candidates
+# workspace:pr-show — Show Next Branch Candidates
 
-Reads a PR document's `## 次PR候補` table and classifies each candidate as ready to start, in progress elsewhere, or has conditions.
+Reads a branch document's `## 次ブランチ候補` table and classifies each candidate as ready to start, in progress elsewhere, or has conditions.
+
+> The skill name remains `pr-show` for historical and CLI compatibility; it now operates in branch
+> terms.
 
 ---
 
 ## Overview
 
-A standalone skill extracted from merge Step 12. Can be called at any time to check which PRs are next — not only after a merge.
+A standalone skill extracted from merge Step 13. Can be called at any time to check which branches are next — not only after a merge.
 
-**Data source**: the `## 次PR候補` table in the specified PR document.
+**Data source**: the `## 次ブランチ候補` table in the specified branch document.
 Never lists all git branches blindly — only candidates explicitly listed in the table are shown.
 
 ---
@@ -28,24 +31,24 @@ Never lists all git branches blindly — only candidates explicitly listed in th
 
 #### Process
 
-1. If called with a PR document path argument (e.g. from merge Step 12), use that file directly
+1. If called with a branch document path argument (e.g. from merge Step 13), use that file directly
 2. If called standalone (no argument):
-   - Find all PR documents under `.work/tasks/`:
+   - Find all branch documents under `.work/tasks/`:
      ```bash
-     find .work/tasks -type f -name "PR*.md"
+     find .work/tasks -type f -name "*.md" -not -name ".*"
      ```
-   - If only one active PR exists, use its document automatically
-   - If multiple exist, ask the user which PR to check
+   - If only one active branch exists, use its document automatically
+   - If multiple exist, ask the user which branch to check
 
 → Proceed to Step 2
 
 #### Output
 
-- PR document path confirmed
+- Branch document path confirmed
 
 ---
 
-### Step 2: Read the `## 次PR候補` table
+### Step 2: Read the `## 次ブランチ候補` table
 
 #### Condition
 
@@ -53,9 +56,9 @@ Never lists all git branches blindly — only candidates explicitly listed in th
 
 #### Process
 
-1. Read the `## 次PR候補` section from the PR document
+1. Read the `## 次ブランチ候補` section from the branch document
 2. If the table contains only a placeholder row (e.g., `{次にやること}` or a lone `-`)
-   → output "No next PR candidates." and finish
+   → output "No next branch candidates." and finish
 
 → Proceed to Step 3
 
@@ -113,19 +116,19 @@ For each candidate row:
 1. Output the table in this format:
 
    ```markdown
-   ## Next PRs you can pick up
+   ## Next branches you can pick up
 
-   | Category | PR | Summary |
+   | Category | Branch | Summary |
    |---|---|---|
-   | Ready to start | PR{N} | {title} (branch: {branch}) |
-   |  | PR{M} | {title} (branch: {branch}) |
-   | In progress elsewhere | PR{N} | {title} ({commit_count} commits ahead) |
+   | Ready to start | {branch} | {title} |
+   |  | {branch} | {title} |
+   | In progress elsewhere | {branch} | {title} ({commit_count} commits ahead) |
    | Has conditions | — | {title} — condition: depends on `{other-candidate}` being completed |
    ```
 
-   - When multiple PRs share the same category, write the category name only in the first row; leave subsequent cells empty
+   - When multiple branches share the same category, write the category name only in the first row; leave subsequent cells empty
    - Omit rows for categories with zero items
-   - If all categories are empty (placeholder table only), show: "No next PR candidates."
+   - If all categories are empty (placeholder table only), show: "No next branch candidates."
 
 → Done
 
@@ -139,16 +142,16 @@ For each candidate row:
 
 ### Data source rule
 
-Use only the specified PR document's `## 次PR候補` table — never `git branch --list 'PR*'`.
+Use only the specified branch document's `## 次ブランチ候補` table — never `git branch --list '*'` indiscriminately.
 Unrelated reserved branches from other sessions are intentionally excluded.
 
 ### Classification knowledge
 
 | Category | Detail |
 |---|---|
-| **Ready to start** | State immediately after pr-handoff reservation. Branch has just the PR-document creation commit (1 commit) ahead of master. |
+| **Ready to start** | State immediately after pr-handoff reservation. Branch has just the document-creation commit (1 commit) ahead of master. |
 | **In progress elsewhere** | Another Claude Code session has implementation commits on this branch. Two or more commits means the user is actively working there. |
-| **Has conditions** | A candidate that pr-handoff classified as a serial-dependency item and chose not to reserve. It becomes eligible once its predecessor PR merges. |
+| **Has conditions** | A candidate that pr-handoff classified as a serial-dependency item and chose not to reserve. It becomes eligible once its predecessor branch merges. |
 
 ### Why keep "in progress" visible
 
@@ -156,4 +159,4 @@ Hiding them entirely would create the impression "nothing is left." Surfacing th
 
 ### Why surface "has conditions"
 
-They do not appear as reserved branches, but they live in the PR document's `## 次PR候補` as "next-next" items. Listing them alongside ready-to-start ensures the user does not overlook them.
+They do not appear as reserved branches, but they live in the branch document's `## 次ブランチ候補` as "next-next" items. Listing them alongside ready-to-start ensures the user does not overlook them.

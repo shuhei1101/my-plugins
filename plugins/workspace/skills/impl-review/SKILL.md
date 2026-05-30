@@ -7,7 +7,7 @@ description: |
 
 # workspace:impl-review — Interactive Implementation Review
 
-Analyzes commits on the current PR branch and walks the user through each change area interactively using the `AskUserQuestion` tool. Items are presented in **batches of up to 4 per call** so the user only needs a few confirmation round-trips even for multi-feature PRs. Designed for mobile or SSH contexts where reading code diffs directly is impractical.
+Analyzes commits on the current working branch and walks the user through each change area interactively using the `AskUserQuestion` tool. Items are presented in **batches of up to 4 per call** so the user only needs a few confirmation round-trips even for multi-feature branches. Designed for mobile or SSH contexts where reading code diffs directly is impractical.
 
 ---
 
@@ -27,10 +27,10 @@ The skill builds an internal "overview list" of change areas and presents them i
 
 #### Process
 
-1. If there is an in-progress PR in the current conversation session, use that branch as the first priority
-2. If a PR number is explicitly provided as an argument (e.g. `PR139`), use it to find the branch:
+1. If there is an in-progress branch in the current conversation session, use that branch as the first priority
+2. If a branch name (or fragment) is explicitly provided as an argument (e.g. `refactor/rename-pr-to-branch`, or a legacy `PR139` form), use it to find the branch:
    ```bash
-   git branch --list "*PR{N}*"
+   git branch --list "*{argument}*"
    ```
 3. If neither applies, fall back to the current branch
 4. Confirm the base branch (default: `master`)
@@ -97,7 +97,7 @@ The skill builds an internal "overview list" of change areas and presents them i
 - Backend changes: focus on API surface changes, side effects, data model impact
 - Frontend changes: focus on affected screens, user-visible behavior changes
 - Config/infra changes: focus on what was enabled/disabled and the blast radius
-- Adjust granularity to change size: a one-file fix needs 1 item; a multi-feature PR may need 6–8
+- Adjust granularity to change size: a one-file fix needs 1 item; a multi-feature branch may need 6–8
 
 ---
 

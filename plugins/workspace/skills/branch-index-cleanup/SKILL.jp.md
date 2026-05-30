@@ -27,8 +27,9 @@ disable-model-invocation: true
 #### 処理
 
 1. ローカルブランチを一覧取得
-2. `index.yaml` と `index.archive.yaml` から登録済み PR ID を収集
-3. どちらにも登録されていないブランチを「未登録ブランチ」として列挙
+2. `index.yaml` と `index.archive.yaml` から登録済みの id と title（`{type}/{title}` 形式のブランチ名）を収集
+3. 新形式（`{type}/{title}`）は title と照合、レガシー形式（`PR{N}/{type}/{title}`）は id と照合
+4. どちらにも登録されていないブランチを「未登録ブランチ」として列挙
 
 → Step 2 へ
 
