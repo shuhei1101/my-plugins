@@ -173,7 +173,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 - Do not ask the user — decide autonomously based on content
 - When in doubt, create a new folder (folders can be consolidated later)
-- Legacy folders may still use the 8-digit `YYYYMMDD` prefix — leave them as-is; only new folders use `YYMMDD`
+- New folders must use the 6-digit `YYMMDD` prefix and a **Japanese title** (e.g. `260530_タスクフォルダ命名統一`)
 
 ---
 
@@ -286,7 +286,12 @@ follow-ups) (table format: `| ブランチ | 概要 |`). Leave the placeholder r
 1. Check `.work/notes/` inside the worktree for a related note
 2. If found → update the relevant sections for this branch
 3. If not found → create a new note using the template at `${CLAUDE_PLUGIN_ROOT}/templates/note.md`
+   - The note H1 title must be written **entirely in Japanese** (e.g. `# 機能名 — 一行説明`)
+   - Technical identifiers (plugin names, command names, file paths) may remain in their original form
 4. Add a link to the note in the branch document's `## 参考ドキュメント` section
+5. Update (or create) `.work/notes/_index.md`:
+   - Add the new note to the appropriate category, or update the entry if the note already existed
+   - If `_index.md` does not exist, create it with all current notes grouped by category
 
 → Proceed to Step 9
 

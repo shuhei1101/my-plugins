@@ -1,10 +1,13 @@
-"""dev-kit references auto-injection hook (Python / HTML / Next.js を一本化)。
+"""dev-kit references auto-injection hook (Python / HTML / Next.js / Markdown を一本化)。
 
 PreToolUse(Edit | Write | MultiEdit | Read) で発火し、対象ファイルパスを
-references/_injection_rules.yaml の rules と照合する。各ルールは `lang: python|html|next`
-を持ち、対応する env var (`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT`) が
-truthy (`true`/`1`/`yes`/`on`) のときのみ有効化される。**デフォルトは全 lang 無効**で、
-プロジェクトで使う言語だけを `settings.json` の env に明示的に opt-in する。
+references/_injection_rules.yaml の rules と照合する。
+
+- `lang: python|html|next|markdown` を持つルールは、対応する env var
+  (`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN`) が
+  truthy (`true`/`1`/`yes`/`on`) のときのみ有効化される。**デフォルトは全 lang 無効**で、
+  プロジェクトで使う言語だけを `settings.json` の env に明示的に opt-in する。
+- `lang` を持たないルールは **常時有効**（env opt-in 不要）。全 lang が OFF でも発火する。
 
 マッチしたパターンの required reference は **本文全量** を、optional reference は
 **パス + description のみ** を Jinja2 で整形して `decision: block` の reason に注入する。
@@ -50,6 +53,7 @@ LANG_ENV_VARS = {
     "python": "DEV_KIT_PYTHON",
     "html": "DEV_KIT_HTML",
     "next": "DEV_KIT_NEXT",
+    "markdown": "DEV_KIT_MARKDOWN",
 }
 TRUTHY = {"true", "1", "yes", "on"}
 
@@ -219,8 +223,6 @@ def main() -> int:
         return 0
 
     enabled = _enabled_langs()
-    if not enabled:
-        return 0  # 全 lang OFF: dev-kit はノーオペ
 
     plugin_root = _plugin_root()
     refs_dir = plugin_root / "references"
@@ -245,6 +247,10 @@ def main() -> int:
         _eprint(f"_injection_rules.yaml parse error: {e}")
         return 0
     rules = rules_doc.get("rules") or []
+
+    # 全 lang が OFF でも lang なしルール（常時有効）があれば続行する
+    if not enabled and not any(not r.get("lang") for r in rules):
+        return 0  # lang なしルールもない → ノーオペ
 
     descriptions: dict[str, str] = {}
     try:

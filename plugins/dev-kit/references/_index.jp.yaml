@@ -1,8 +1,6 @@
 references:
 - path: markdown/markdown-table.md
   description: "Markdown テーブルの記法規約。最左カラムに必ず # カラムを設け、すべての行に通し番号を書く。連続する行で同じ列の値が同じ場合、最初の行にのみ書き、以降のセルは 〃（ダイトーマーク）を使う。"
-- path: yaml/yaml.md
-  description: "プロジェクトのアセットおよび設定向け YAML 管理規約。3 ファイルパターン（index.yaml = コミット済みアセットカタログ、settings.yaml = gitignore 済みローカル設定、settings.yaml.sample = コミット済みテンプレート）。プログラムや AI はファイルをハードコードせず YAML 経由で参照すること。"
 - path: python/core/naming.md
   lang: python
   description: 命名規約。関数 snake_case、型エイリアス UpperCamel、ファイル/モジュール snake_case。feature フォルダ内の標準ファイル名（types/service/query/route/client/db）対応表
@@ -417,3 +415,6 @@ references:
 - path: html/common-component-first.md
   lang: html
   description: 共通コンポーネント先読み必須化。UI マークアップ・スタイル・DOM コードを追加する前に、共有の constants・routes・コンポーネント CSS/JS 層を先に読む。再利用 > 拡張 > 新規追加; インライン一発実装と値のハードコードを禁止。
+- path: markdown/markdown-editing.md
+  lang: markdown
+  description: Markdown フロントマター配置ルール。YAML フロントマターを持つファイルでは開き --- の前に何も置かない。HTML コメント等は閉じ --- の直後に移動する。

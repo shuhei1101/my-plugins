@@ -37,8 +37,6 @@ claude-kit はテンプレを project に展開しない（各 creator スキル
 | `**/.claude/settings{.local,}.json` | `references/hooks.md` + `common.md` + `environment.md` |
 | `**/hooks/prompts/*.md` | `references/hooks.md` |
 | `**/.claude-plugin/{plugin,marketplace}.json` | `references/plugin-structure.md` + `common.md` |
-| `**/rules/**/glossary.md` | `references/glossary.md` |
-| `**/references/incidents/**/*.md` | `references/incidents.md` |
 | `~/.claude/settings.json` の `statusLine` ブロック | `scripts/apply-statusline.py` の定義 |
 
 `agents/` は claude-kit に対応リファレンスがないため、common.md の「ファイル種別判定 +
@@ -90,7 +88,6 @@ JP/EN ミラー規約」のみが適用される（agents.md は将来追加予�
 4. **Hooks (manifest)** — `find . -type f -name 'hooks.json' -not -path '*/node_modules/*' -not -path '*/.git/*'` および `.claude/settings.json` / `.claude/settings.local.json`
 5. **Hook prompts** — `find . -type f -path '*/hooks/prompts/*.md' -not -path '*/node_modules/*' -not -path '*/.git/*'`
 6. **Plugin manifests** — `find . -type f \( -name 'plugin.json' -o -name 'marketplace.json' \) -path '*/.claude-plugin/*' -not -path '*/node_modules/*' -not -path '*/.git/*'`（マーケットプレイスリポジトリのみ該当）
-7. **Glossary / Incidents** — `find . -type f -name 'glossary.md' -path '*/rules/*'`, `find . -type f -path '*/references/incidents/*.md'`
 
 各ファイルについて:
 

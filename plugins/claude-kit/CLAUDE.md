@@ -4,7 +4,7 @@
 
 The authoring guides for each instruction-file type live in `references/` (`common.md`,
 `skills.md`, `rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`, plus `glossary.md` /
-`incidents.md`). The `claude-kit-references-injection` hook (`hooks/scripts/inject_references.py`)
+`incidents.md` / `plugin-config.md`). The `claude-kit-references-injection` hook (`hooks/scripts/inject_references.py`)
 injects the matching guide **in full body** when you edit the corresponding file (a `SKILL.md`, a
 rule, a `CLAUDE.md`, a `hooks.json`, a `plugin.json`, …) — see `references/_injection_rules.yaml`
 for the path→reference map.
@@ -41,3 +41,11 @@ enforced by the project's `*-jp-mirror-sync` rules.
 | `CLAUDE_KIT_INJECTION_DISABLE` | `true`/`1`/`yes`/`on` | (unset = ON) | Master kill switch — set to a truthy value to stop all reference injection |
 | `CLAUDE_KIT_INJECTION_TTL` | integer (seconds) | `3600` | TTL for the per-session injection token (patterns and references) |
 | `CLAUDE_KIT_INJECTION_LANG` | `en` / `jp` | `en` | Language for injected references (`jp` uses `index.jp.yaml` + `injection.jp.md.j2`) |
+| `CLAUDE_KIT_JP_MIRROR` | `true` / `false` | `true` | When `false`, skip `.jp.md` mirror creation and write the main `.md` file in Japanese directly |
+
+## Changelog
+
+| Version | Summary |
+|---|---|
+| `3.44.0` | Add `CLAUDE_KIT_JP_MIRROR` env var — when `false`, skip `.jp.md` mirrors and write the main file in Japanese |
+| `3.43.1` | (see `changelogs/` for earlier history) |
