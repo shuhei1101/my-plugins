@@ -977,3 +977,10 @@ branches:
   summary: claude-kit に Jinja2 テンプレート記法の参照ドキュメントを追加
   task: 260531_claude-kit-jinja2-authoring-rule
   completed: true
+- id: 228
+  title: fix/dev-kit-hook-jp-md-false-positive
+  type: fix
+  tags: []
+  summary: dev-kit フックが .jp.md ファイルに誤って advisory を出す条件バグを修正
+  task: 260531_dev-kit-hook-jp-md
+  completed: true
