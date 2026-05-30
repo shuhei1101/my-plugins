@@ -1,6 +1,6 @@
 # dev-kit — Development Conventions Toolkit
 
-Unified plugin covering Python / HTML-CSS-JS / Next.js 16 App Router / YAML conventions.
+Unified plugin covering Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown conventions.
 Reference auto-injection is opt-in per language via `settings.json` env vars.
 
 ## Skills
@@ -26,6 +26,7 @@ Hook scripts live under `hooks/scripts/` with a per-plugin `_common.py` for shar
 | `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | Reference auto-injection per language |
 | `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `tsc --noEmit --incremental` for `*.ts`/`*.tsx` |
 | `scripts/yaml_skill_dispatch.py` | PreToolUse(Edit/Write) | Remind user to invoke `dev-kit:yaml` when editing YAML |
+| `scripts/markdown_frontmatter_check.py` | PreToolUse(Edit/Write/MultiEdit) | Advisory warning when content appears before YAML frontmatter in `*.md` |
 | `scripts/_common.py` | — (library) | Stdin parsing / env truthy / once-per-session token / block reason emitter |
 
 ## Env toggles
@@ -40,6 +41,7 @@ Truthy = `true`/`1`/`yes`/`on` (case-insensitive). Falsy = anything else.
 | `DEV_KIT_PYTHON` | (off) | Inject Python references when editing matched `*.py` etc. |
 | `DEV_KIT_HTML` | (off) | Inject HTML references when editing `*.html`/`*.css`/`*.js` |
 | `DEV_KIT_NEXT` | (off) | Inject Next.js references when editing `*.ts`/`*.tsx` etc. |
+| `DEV_KIT_MARKDOWN` | (off) | Inject Markdown references when editing `*.md` |
 
 Default is **all off**. Opt into each language your project uses.
 
@@ -48,6 +50,7 @@ Default is **all off**. Opt into each language your project uses.
 | Env var | Default | Effect |
 |---|---|---|
 | `DEV_KIT_NEXT_TS_CHECK` | on | `tsc --noEmit` on `*.ts`/`*.tsx` after edit |
+| `DEV_KIT_MARKDOWN_CHECK` | on | Advisory frontmatter check on `*.md` writes |
 | `DEV_KIT_INJECTION_DISABLE` | off | **Truthy** disables all reference injection (kill switch) |
 | `DEV_KIT_INJECTION_TTL` | 3600 (sec) | TTL for the per-pattern/reference token cache |
 | `DEV_KIT_INJECTION_LANG` | `en` | Set to `jp` for Japanese reference bodies |
@@ -56,15 +59,16 @@ Default is **all off**. Opt into each language your project uses.
 
 ```
 references/
-├── python/      # Python conventions (47 files: architecture/, core/, fastapi/, llm/, etc.)
-├── html/        # HTML/CSS/JS principles (principles.md, ui-design.md)
-├── next/        # Next.js conventions (90 files: backend/, frontend/, testing/, etc.)
-├── yaml.md      # YAML standards
-├── index.yaml   # path + lang + description per reference (merged from python/html/next)
+├── python/         # Python conventions (47 files: architecture/, core/, fastapi/, llm/, etc.)
+├── html/           # HTML/CSS/JS principles (principles.md, ui-design.md)
+├── next/           # Next.js conventions (90 files: backend/, frontend/, testing/, etc.)
+├── yaml.md         # YAML standards
+├── markdown-editing.md   # Markdown frontmatter placement rule
+├── index.yaml      # path + lang + description per reference (merged from all langs)
 ├── injection_rules.yaml   # pattern + lang + required/optional per rule
 └── ...
 ```
 
-Each rule in `injection_rules.yaml` carries `lang: python|html|next`. The hook skips rules whose
+Each rule in `injection_rules.yaml` carries `lang: python|html|next|markdown`. The hook skips rules whose
 `lang` is not enabled in env. The TTL token at `~/.claude/tokens/dev-kit/{session_id}.yaml`
 prevents duplicate injection.

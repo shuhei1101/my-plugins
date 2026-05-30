@@ -404,3 +404,6 @@ references:
 - path: html/ui-design.md
   lang: html
   description: UX patterns and shared-component mandate. Read shared resources (constants/routes/components) before writing any screen code; reuse > extend > add.
+- path: markdown-editing.md
+  lang: markdown
+  description: Markdown frontmatter placement rule. Nothing may appear before the opening --- in a file with YAML frontmatter. Move HTML comments and other content to after the closing ---.

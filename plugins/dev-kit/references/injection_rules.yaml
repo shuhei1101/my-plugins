@@ -1,4 +1,8 @@
 rules:
+- pattern: '**/*.md'
+  lang: markdown
+  required:
+  - markdown-editing.md
 - pattern: '**/*.py'
   lang: python
   required:

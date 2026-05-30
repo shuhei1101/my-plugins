@@ -1,8 +1,8 @@
-"""dev-kit references auto-injection hook (Python / HTML / Next.js を一本化)。
+"""dev-kit references auto-injection hook (Python / HTML / Next.js / Markdown を一本化)。
 
 PreToolUse(Edit | Write | MultiEdit | Read) で発火し、対象ファイルパスを
-references/injection_rules.yaml の rules と照合する。各ルールは `lang: python|html|next`
-を持ち、対応する env var (`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT`) が
+references/injection_rules.yaml の rules と照合する。各ルールは `lang: python|html|next|markdown`
+を持ち、対応する env var (`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN`) が
 truthy (`true`/`1`/`yes`/`on`) のときのみ有効化される。**デフォルトは全 lang 無効**で、
 プロジェクトで使う言語だけを `settings.json` の env に明示的に opt-in する。
 
@@ -50,6 +50,7 @@ LANG_ENV_VARS = {
     "python": "DEV_KIT_PYTHON",
     "html": "DEV_KIT_HTML",
     "next": "DEV_KIT_NEXT",
+    "markdown": "DEV_KIT_MARKDOWN",
 }
 TRUTHY = {"true", "1", "yes", "on"}
 

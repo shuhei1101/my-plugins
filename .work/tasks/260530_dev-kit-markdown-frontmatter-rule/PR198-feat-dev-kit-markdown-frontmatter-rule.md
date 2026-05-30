@@ -35,23 +35,38 @@ JP ミラー警告コメント自体は維持しつつ、配置位置を「フ�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `## QA` の未決定事項を解消 | - 本ドキュメント |
+| 済 | `## QA` の未決定事項を解消 | - 本ドキュメント |
 | - | `.work/notes/` の関連ノート整備 | - 該当ノート |
-| - | `plugins/dev-kit/references/markdown-editing.md` (+ jp) を作成 | - 新規 |
-| - | `plugins/dev-kit/references/injection_rules.yaml` に新 reference を登録（注入対象パターン: `**/*.md`） | - 既存 yaml |
-| - | `plugins/dev-kit/hooks/scripts/markdown_frontmatter_check.py` を作成 | - 新規 |
-| - | `plugins/dev-kit/hooks/hooks.json` に PreToolUse(Edit/Write/MultiEdit) フックを追加 | - 既存 json |
-| - | `plugins/claude-kit/references/common.md` (+ jp) の JP mirror セクションを「フロントマター直後に置く」へ更新 | - claude-kit references |
-| - | 既存 `*.jp.md` / `CLAUDE.jp.md` でフロントマター上にコメントがあるものを一括修正 | - リポジトリ横断 |
-| - | dev-kit を MINOR bump | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | changelog 追加（`changelogs/v{X.Y.0}.md`） | - `plugins/dev-kit/changelogs/` |
-| - | ルール / CLAUDE.md の更新（必要なら） | - 該当ファイル |
+| 済 | `plugins/dev-kit/references/markdown-editing.md` (+ jp) を作成 | - 新規 |
+| 済 | `plugins/dev-kit/references/injection_rules.yaml` に新 reference を登録（注入対象パターン: `**/*.md`） | - 既存 yaml |
+| 済 | `plugins/dev-kit/hooks/scripts/markdown_frontmatter_check.py` を作成 | - 新規 |
+| 済 | `plugins/dev-kit/hooks/hooks.json` に PreToolUse(Edit/Write/MultiEdit) フックを追加 | - 既存 json |
+| 済 | `plugins/claude-kit/references/common.md` (+ jp) の JP mirror セクションを「フロントマター直後に置く」へ更新 | - claude-kit references |
+| 済 | 既存 `*.jp.md` / `CLAUDE.jp.md` でフロントマター上にコメントがあるものを一括修正 | - リポジトリ横断（違反ゼロを確認） |
+| 済 | dev-kit を MINOR bump | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | changelog 追加（`changelogs/v4.2.0.md`） | - `plugins/dev-kit/changelogs/` |
+| 済 | ルール / CLAUDE.md の更新 | - `plugins/dev-kit/CLAUDE.md` + jp |
 | - | コミット | - |
 
 ## 変更内容
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
+| `plugins/dev-kit/references/markdown-editing.md` | 新規 | Markdown フロントマター配置ルール（短文） | |
+| `plugins/dev-kit/references/markdown-editing.jp.md` | 新規 | JP ミラー | |
+| `plugins/dev-kit/references/index.yaml` | 編集 | `markdown-editing.md` エントリ追加 | `lang: markdown` |
+| `plugins/dev-kit/references/index.jp.yaml` | 編集 | JP ミラー対応 description 追加 | |
+| `plugins/dev-kit/references/injection_rules.yaml` | 編集 | `**/*.md` パターン追加（`lang: markdown`） | |
+| `plugins/dev-kit/hooks/scripts/inject_references.py` | 編集 | `lang: markdown` / `DEV_KIT_MARKDOWN` を LANG_ENV_VARS に追加 | |
+| `plugins/dev-kit/hooks/scripts/markdown_frontmatter_check.py` | 新規 | PreToolUse アドバイザリチェックスクリプト | |
+| `plugins/dev-kit/hooks/hooks.json` | 編集 | Edit/Write/MultiEdit に `markdown_frontmatter_check.py` 追加 | |
+| `plugins/dev-kit/CLAUDE.md` | 編集 | フック・env テーブルに Markdown 追加 | |
+| `plugins/dev-kit/CLAUDE.jp.md` | 編集 | JP ミラー更新 | |
+| `plugins/dev-kit/.claude-plugin/plugin.json` | 編集 | v4.1.0 → v4.2.0 | |
+| `plugins/dev-kit/changelogs/v4.2.0.md` | 新規 | チェンジログ | |
+| `.claude-plugin/marketplace.json` | 編集 | dev-kit v4.2.0 に更新 | |
+| `plugins/claude-kit/references/common.md` | 編集 | JP ミラー警告コメント配置規約を更新（フロントマター直後） | |
+| `plugins/claude-kit/references/common.jp.md` | 編集 | JP ミラー更新 | |
 
 ## テスト
 

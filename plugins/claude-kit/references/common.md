@@ -78,8 +78,11 @@ Every file requires a corresponding JP mirror:
 
 **Workflow — write the JP mirror first, then the English original.** Author the `.jp.md`
 in Japanese, then produce the English version from it. In this repo the English original is
-the file Claude actually loads, so the two must never drift. Every JP mirror must start with
-the warning comment `<!-- This file is a Japanese mirror. ... -->` (see `provenance.md`).
+the file Claude actually loads, so the two must never drift. Every JP mirror must begin with
+the warning comment `<!-- This file is a Japanese mirror. ... -->` placed **immediately after
+the closing `---` of the YAML frontmatter** (or at the very top if there is no frontmatter).
+Never place the comment before the opening `---` — doing so breaks YAML frontmatter rendering.
+See `provenance.md` for the exact comment text.
 
 > The repo bundles a `jp-mirror-translator` agent (`subagent_type: "claude-kit:jp-mirror-translator"`):
 > pass a `.md` path to generate/update its `.jp.md`, or a `.jp.md` path to update the English original.

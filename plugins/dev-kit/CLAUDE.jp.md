@@ -1,7 +1,7 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # dev-kit — 開発規約統合プラグイン
 
-Python / HTML-CSS-JS / Next.js 16 App Router / YAML を 1 プラグインに統合。
+Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown を 1 プラグインに統合。
 リファレンス自動注入は `settings.json` の env で言語ごとに opt-in する。
 
 ## スキル
@@ -27,6 +27,7 @@ Python / HTML-CSS-JS / Next.js 16 App Router / YAML を 1 プラグインに統�
 | `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | 言語ごとのリファレンス自動注入 |
 | `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
 | `scripts/yaml_skill_dispatch.py` | PreToolUse(Edit/Write) | YAML 編集時に `dev-kit:yaml` 起動をリマインド |
+| `scripts/markdown_frontmatter_check.py` | PreToolUse(Edit/Write/MultiEdit) | `*.md` 書き込み時に YAML フロントマター前コンテンツの警告（アドバイザリ） |
 | `scripts/_common.py` | — （ライブラリ） | stdin 読み・env truthy 判定・once-per-session トークン・block 理由出力 |
 
 ## env トグル
@@ -41,6 +42,7 @@ truthy = `true`/`1`/`yes`/`on`（大文字小文字無視）、falsy = それ以
 | `DEV_KIT_PYTHON` | OFF | `*.py` 等を編集した時に Python リファレンスを注入 |
 | `DEV_KIT_HTML` | OFF | `*.html` / `*.css` / `*.js` 編集時に HTML リファレンス注入 |
 | `DEV_KIT_NEXT` | OFF | `*.ts` / `*.tsx` 等の編集時に Next.js リファレンス注入 |
+| `DEV_KIT_MARKDOWN` | OFF | `*.md` 編集時に Markdown リファレンス注入 |
 
 デフォルトは **全 OFF**。プロジェクトで使用する言語のみ明示的に有効化する。
 
@@ -49,6 +51,7 @@ truthy = `true`/`1`/`yes`/`on`（大文字小文字無視）、falsy = それ以
 | env 変数 | デフォルト | 効果 |
 |---|---|---|
 | `DEV_KIT_NEXT_TS_CHECK` | ON | `*.ts` / `*.tsx` 編集後の `tsc --noEmit` チェック |
+| `DEV_KIT_MARKDOWN_CHECK` | ON | `*.md` 書き込み時のフロントマターチェック（アドバイザリ） |
 | `DEV_KIT_INJECTION_DISABLE` | OFF | **truthy** で全リファレンス注入を停止（緊急停止） |
 | `DEV_KIT_INJECTION_TTL` | 3600（秒） | パターン / リファレンスのトークンキャッシュ TTL |
 | `DEV_KIT_INJECTION_LANG` | `en` | `jp` で日本語版リファレンスを注入 |
@@ -57,14 +60,15 @@ truthy = `true`/`1`/`yes`/`on`（大文字小文字無視）、falsy = それ以
 
 ```
 references/
-├── python/      # Python 規約（47ファイル: architecture/, core/, fastapi/, llm/ など）
-├── html/        # HTML/CSS/JS 原則（principles.md, ui-design.md）
-├── next/        # Next.js 規約（90ファイル: backend/, frontend/, testing/ など）
-├── yaml.md      # YAML 規約
-├── index.yaml   # 各リファレンスの path + lang + description
-├── injection_rules.yaml   # 各ルールの pattern + lang + required/optional
+├── python/              # Python 規約（47ファイル: architecture/, core/, fastapi/, llm/ など）
+├── html/                # HTML/CSS/JS 原則（principles.md, ui-design.md）
+├── next/                # Next.js 規約（90ファイル: backend/, frontend/, testing/ など）
+├── yaml.md              # YAML 規約
+├── markdown-editing.md  # Markdown フロントマター配置ルール
+├── index.yaml           # 各リファレンスの path + lang + description
+├── injection_rules.yaml # 各ルールの pattern + lang + required/optional
 └── ...
 ```
 
-`injection_rules.yaml` の各ルールは `lang: python|html|next` を持つ。env で OFF の lang のルールは
+`injection_rules.yaml` の各ルールは `lang: python|html|next|markdown` を持つ。env で OFF の lang のルールは
 フックがスキップする。`~/.claude/tokens/dev-kit/{session_id}.yaml` の TTL トークンで二重注入を防ぐ。

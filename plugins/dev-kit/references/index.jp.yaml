@@ -404,3 +404,6 @@ references:
 - path: html/ui-design.md
   lang: html
   description: UX パターンと共有コンポーネント必須化。画面コードを書く前に共有リソース（constants/routes/components）を読み、再利用 > 拡張 > 新規追加 の順で判断する。
+- path: markdown-editing.md
+  lang: markdown
+  description: Markdown フロントマター配置ルール。YAML フロントマターを持つファイルでは開き --- の前に何も置かない。HTML コメント等は閉じ --- の直後に移動する。
