@@ -23,6 +23,8 @@ TTL はデフォルト 3600 秒、環境変数 CLAUDE_KIT_INJECTION_TTL (秒) �
 エントリ (now >= expires_at) を削除する (空になったファイルは削除)。期限切れ後に再びマッチ
 すれば再注入される。
 
+CLAUDE_KIT_INJECTION_DISABLE=true/1/yes/on で注入機構全体を停止できる (緊急停止用)。
+
 description は references/index.yaml (英語) から path -> description として取得する。
 環境変数 CLAUDE_KIT_INJECTION_LANG=jp で index.jp.yaml + injection.jp.md.j2 に切替。
 
@@ -43,6 +45,7 @@ PLUGIN_NAME = "claude-kit"
 ENV_PREFIX = "CLAUDE_KIT"
 LOG_TAG = "claude-kit-references-injection"
 DEFAULT_TTL = 3600
+TRUTHY = {"true", "1", "yes", "on"}
 
 
 def _eprint(msg: str) -> None:
@@ -184,6 +187,10 @@ def _cleanup_expired(token_dir: pathlib.Path, now: float, yaml) -> None:
 # main
 # --------------------------------------------------------------------------- #
 def main() -> int:
+    # ====== Master kill switch ======
+    if os.environ.get(f"{ENV_PREFIX}_INJECTION_DISABLE", "").lower() in TRUTHY:
+        return 0
+
     # 依存チェック (失敗時は静かに pass)
     try:
         import yaml
