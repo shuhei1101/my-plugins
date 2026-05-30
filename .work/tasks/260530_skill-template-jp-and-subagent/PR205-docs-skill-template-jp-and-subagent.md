@@ -18,12 +18,12 @@ JP テンプレートを日本語のセクション名で統一し、新規ス�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録する | このドキュメント |
-| - | notes ドキュメントを更新する | `.work/notes/` |
-| - | ステップ構造テンプレート（コードブロック）のセクション名を日本語化 | `skills.jp.md` |
-| - | 完全な SKILL.jp.md 骨格をテンプレートとして追加（日本語セクション名） | `skills.jp.md` |
-| - | サブエージェント使用ガイドセクションを追加 | `skills.jp.md` |
-| - | バージョンバンプ | `plugin.json` / `marketplace.json` |
+| 済 | QA を `## QA` に記録する | このドキュメント |
+| 済 | notes ドキュメントを更新する | `.work/notes/` |
+| 済 | ステップ構造テンプレート（コードブロック）のセクション名を日本語化 | `skills.jp.md` |
+| 済 | 完全な SKILL.jp.md 骨格をテンプレートとして追加（日本語セクション名） | `skills.jp.md` |
+| 済 | サブエージェント使用ガイドセクションを追加 | `skills.jp.md` |
+| 済 | バージョンバンプ | `plugin.json` / `marketplace.json` |
 
 ## 変更内容
 
@@ -47,6 +47,7 @@ QA なし
 
 - `plugins/claude-kit/references/skills.md`: 英語原本（JP ミラーの参照元）
 - `plugins/claude-kit/references/skills.jp.md`: 変更対象
+- `.work/notes/skill-template-standards.md`: テンプレート標準とサブエージェントガイドのノート
 
 ## 関連PR
 
