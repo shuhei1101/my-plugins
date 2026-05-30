@@ -1,8 +1,10 @@
 # Common helpers for work hook scripts.
 #
-# Kept intentionally per-plugin (not shared across plugins) per the
-# `premature-cross-plugin-centralization` incident: env prefixes and log tags
-# differ per plugin, so cross-plugin abstraction costs more than it saves.
+# This file is a starter template installed by `/ref-inject:apply`. It contains
+# generic helpers used by hook scripts that emit `decision: block` reasons,
+# parse hook stdin, throttle via per-session flags, etc. Add plugin-specific
+# helpers as new hooks are introduced. Keep this file per-plugin (do not share
+# across plugins) — see incident `premature-cross-plugin-centralization`.
 
 from __future__ import annotations
 
