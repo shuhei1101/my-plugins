@@ -894,3 +894,10 @@ branches:
   summary: 既存スキル全件見直し：JP ミラーのセクション名を新テンプレートに合わせて統一し、サブエージェント委譲候補を洗い出す
   task: 260531_existing-skills-review-and-normalize
   completed: true
+- id: 206
+  title: PR206 — ref-inject-references-edit-guard
+  type: feat
+  tags: []
+  summary: ref-inject に references/ 編集時の _index.yaml / _injection_rules.yaml 登録漏れ検知フックを追加
+  task: 260530_ref-inject-references-edit-guard
+  completed: true
