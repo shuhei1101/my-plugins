@@ -32,8 +32,8 @@
       "version": "3.34.0"
     },
     {
-      "name": "work-kit",
-      "source": "./plugins/work-kit",
+      "name": "workspace",
+      "source": "./plugins/workspace",
       "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, and manages git worktrees (toggle via WORK_KIT_USE_WORKTREE)",
       "version": "2.38.0"
     },

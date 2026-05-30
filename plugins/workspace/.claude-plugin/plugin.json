@@ -1,0 +1,5 @@
+{
+  "name": "workspace",
+  "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, and manages git worktrees (toggle via WORKSPACE_USE_WORKTREE)",
+  "version": "2.38.0"
+}
