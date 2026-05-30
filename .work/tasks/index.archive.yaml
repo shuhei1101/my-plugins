@@ -688,3 +688,10 @@ prs:
   summary: claude-kitにMarkdownテーブル記法のリファレンスを追加し、繰り返し値の省略ルールを注入
   task: 20260530_add-markdown-table-reference
   completed: true
+- id: 189
+  title: PR189 — add-japanese-comment-log-rule
+  type: docs
+  tags: []
+  summary: python-script.md にコメント・ログは日本語で書くルールを追加
+  task: 260530_add-japanese-comment-log-rule
+  completed: true
