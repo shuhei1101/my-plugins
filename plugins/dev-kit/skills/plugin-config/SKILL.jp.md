@@ -1,12 +1,12 @@
 ---
-name: config
+name: plugin-config
 description: |
-  /dev-kit:config が呼び出されたとき。
+  /dev-kit:plugin-config が呼び出されたとき。
   またはユーザーが「設定を変えたい」「env を設定したい」「トグルを切り替えたい」「言語を有効にしたい」「TypeScript チェックを無効にしたい」「Markdown チェックを無効にしたい」と言ったとき。
 ---
 <!-- This file is a Japanese mirror. When updating the English original (SKILL.md), update this file too. -->
 
-# dev-kit:config — プラグイントグル設定
+# dev-kit:plugin-config — プラグイントグル設定
 
 env トグル変数をインタラクティブに設定するスキル。
 「変数選択 → 値設定 → スコープ選択 → 適用」のループを繰り返し、ユーザーが終了を選択するまで続ける。

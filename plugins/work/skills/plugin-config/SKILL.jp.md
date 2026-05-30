@@ -1,12 +1,12 @@
 ---
-name: config
+name: plugin-config
 description: |
-  /work:config が呼び出されたとき。
+  /work:plugin-config が呼び出されたとき。
   またはユーザーが「設定を変えたい」「env を設定したい」「トグルを切り替えたい」「plugin config」「workspace config」と言ったとき。
 ---
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
-# work:config — プラグイントグル設定
+# work:plugin-config — プラグイントグル設定
 
 env トグル変数をインタラクティブに設定するスキル。
 「変数選択 → 値設定 → スコープ選択 → 適用」のループを繰り返し、ユーザーが終了を選択するまで続ける。
@@ -181,5 +181,5 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
 - AITUBER_NOTIFY のデフォルトスコープは「ユーザー」だが、スコープはユーザーが毎回選択する
-- dev-kit の env トグル（`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN` / `DEV_KIT_NEXT_TS_CHECK`）は `/dev-kit:config` で設定する
+- dev-kit の env トグル（`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN` / `DEV_KIT_NEXT_TS_CHECK`）は `/dev-kit:plugin-config` で設定する
 - `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` は逆極性のキルスイッチのためこのスキルでは管理しない（`plugin-config.md` 参照）

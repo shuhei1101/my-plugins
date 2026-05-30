@@ -5,7 +5,7 @@ toggle the plugin's env-variable-controlled features without manually editing `s
 
 Japanese mirror: `references/plugin-config.jp.md`
 
-Reference implementation: `plugins/work/skills/config/SKILL.md` (the `work:config` skill).
+Reference implementation: `plugins/work/skills/plugin-config/SKILL.md` (the `work:plugin-config` skill).
 
 ---
 
@@ -147,13 +147,13 @@ If no changes → "変更なし".
 
 ```markdown
 ---
-name: config
+name: plugin-config
 description: |
-  When /{plugin-name}:config is invoked.
+  When /{plugin-name}:plugin-config is invoked.
   Or when the user says "設定を変えたい", "env を設定したい", "トグルを切り替えたい".
 ---
 
-# {plugin-name}:config — Plugin Toggle Configuration
+# {plugin-name}:plugin-config — Plugin Toggle Configuration
 
 Interactively configures env toggle variables via `AskUserQuestion`.
 

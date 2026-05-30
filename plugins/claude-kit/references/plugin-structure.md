@@ -135,14 +135,14 @@ the cost of the first step.
 | Trigger | Manual (`/<plugin>:setup-wizard`) + SessionStart hook auto-prompt (only when the flag is unset) |
 | Completion mark | Write `setup_done: true` into the YAML frontmatter of `.claude/{plugin}.local.md` |
 | Scope | Only this plugin's own env / onboarding; never touch other plugins |
-| Related skill | If the plugin has env vars, also implement `config` (the wizard delegates to it) |
+| Related skill | If the plugin has env vars, also implement `plugin-config` (the wizard delegates to it) |
 | Reference | `references/setup-wizard.md` — full flow, skeleton, and checklist |
 
 See `setup-wizard.md` for the detailed authoring guide, skeleton, and SessionStart-hook implementation.
 
-### `config` (mandatory for plugins with env vars)
+### `plugin-config` (mandatory for plugins with env vars)
 
-Plugins that expose env vars **must** ship a `config` skill that lets the user edit
+Plugins that expose env vars **must** ship a `plugin-config` skill that lets the user edit
 them interactively via `AskUserQuestion`. Delegated to from `setup-wizard`. Not required for
 plugins without env vars.
 
@@ -150,8 +150,8 @@ plugins without env vars.
 
 | Item | Convention |
 |---|---|
-| Name | `config` (kebab-case literal — not `<plugin>-config`) |
-| Trigger | Manual (`/<plugin>:config`) + delegated invocation from `setup-wizard` |
+| Name | `plugin-config` (kebab-case literal) |
+| Trigger | Manual (`/<plugin>:plugin-config`) + delegated invocation from `setup-wizard` |
 | Scope | Only this plugin's own env vars; never touch other plugins' env |
 
 ---

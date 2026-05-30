@@ -11,7 +11,7 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 | 3 | `work:pr-show` | 次のブランチ候補を 3 カテゴリ（着手可能 / 進行中 / 条件あり）で表示 |
 | 4 | `work:merge` | 現在のブランチをマージし、関連イシューをクローズ、ブランチドキュメントをアーカイブ |
 | 5 | `work:qa-review` | 現在のブランチドキュメントの QA 項目をレビュー |
-| 6 | `work:config` | `settings.json` の work env トグルを対話的に設定 |
+| 6 | `work:plugin-config` | `settings.json` の work env トグルを対話的に設定 |
 | 7 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
 | 8 | `work:issue-scan` | ランダムなソースファイルをスキャンしてルール違反をイシューとして記録 |
 | 9 | `work:issue-save` | 会話中のイシューを保存 |
@@ -60,7 +60,7 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
 | 1 | 2.48.0 | 2026-05-30 | `work:notes-to-claude` スキルを削除 — プラグイン間依存を排除 |
-| 2 | 2.47.0 | 2026-05-30 | `work:config` 管理対象トグルに `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` を追加 |
+| 2 | 2.47.0 | 2026-05-30 | `work:plugin-config` 管理対象トグルに `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` を追加 |
 | 3 | 2.46.2 | 2026-05-30 | `issue-scan` スキルの古い `py-kit`/`next-kit` 記述を削除、`_injection_rules.yaml` に更新 |
 | 4 | 2.46.0 | 2026-05-30 | Stop フックのインライン python を `hooks/scripts/stop.py` + `_common.py` に抽出 |
 | 5 | 2.44.0 | 2026-05-30 | ブランチドキュメントを単一ファイル（`{branch-hyphenated}.md`）に統合；`plugin-update` スキルにリネーム |
@@ -68,4 +68,4 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 | 7 | 2.42.0 | 2026-05-30 | `WORKSPACE_PROTECTED_BRANCHES` env トグルを追加 |
 | 8 | 2.41.0 | 2026-05-30 | `impl-review` Step 4 をバッチ AskUserQuestion 方式に変更（最大 4 件/回） |
 | 9 | 2.40.0 | 2026-05-30 | `guard-kit` を work プラグインに統合 |
-| 10 | 2.39.0 | 2026-05-30 | env トグルを対話的に設定する `work:config` スキルを追加 |
+| 10 | 2.39.0 | 2026-05-30 | env トグルを対話的に設定する `work:plugin-config` スキルを追加 |

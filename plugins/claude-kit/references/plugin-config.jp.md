@@ -6,7 +6,7 @@ Claude Code プラグインに **config スキル** を追加する方法。conf
 
 英語正本: `references/plugin-config.md`
 
-参照実装: `plugins/work/skills/config/SKILL.md`（`work:config` スキル）
+参照実装: `plugins/work/skills/plugin-config/SKILL.md`（`work:plugin-config` スキル）
 
 ---
 
@@ -148,13 +148,13 @@ options:
 
 ```markdown
 ---
-name: config
+name: plugin-config
 description: |
-  When /{plugin-name}:config is invoked.
+  When /{plugin-name}:plugin-config is invoked.
   Or when the user says "設定を変えたい", "env を設定したい", "トグルを切り替えたい".
 ---
 
-# {plugin-name}:config — Plugin Toggle Configuration
+# {plugin-name}:plugin-config — Plugin Toggle Configuration
 
 Interactively configures env toggle variables via `AskUserQuestion`.
 
