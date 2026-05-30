@@ -747,3 +747,10 @@ prs:
   summary: python-script.md にコメント・ログは日本語で書くルールを追加
   task: 260530_add-japanese-comment-log-rule
   completed: true
+- id: 184
+  title: PR184 — claude-kit-plugin-update-skill
+  type: feat
+  tags: []
+  summary: claude-kit に plugin-update スキルを追加（PR168 の plugin authoring guide 必須化に追従）
+  task: 260530_claude-kit-plugin-update-skill
+  completed: true
