@@ -404,3 +404,6 @@ references:
 - path: html/ui-design.md
   lang: html
   description: UX パターンと共有コンポーネント必須化。画面コードを書く前に共有リソース（constants/routes/components）を読み、再利用 > 拡張 > 新規追加 の順で判断する。
+- path: html/debug-fab-sync.md
+  lang: html
+  description: debug-fab テンプレート同期ルール。uidev.js / uidev.css を編集したら SKILL.md と templates/CLAUDE.md も更新する。テンプレートファイルを変更したら plugin.json と marketplace.json のバージョンをバンプする。

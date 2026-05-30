@@ -1,0 +1,26 @@
+# Merge Skill ↔ Spec Step-Number Sync
+
+`.work/specs/work-kit-merge-flow.md` references the archive flow steps in the merge skill by
+step number. When adding or removing steps in `SKILL.md`, update the spec's step-number references
+in the same commit.
+Japanese mirror: `references/work-merge-skill-sync.jp.md`
+
+---
+
+## File dependencies
+
+| Changed | Also verify / update |
+|---|---|
+| `plugins/work/skills/merge/SKILL.md` — steps added/removed | `.work/specs/work-kit-merge-flow.md` — step-number references |
+| `plugins/work/skills/merge/SKILL.jp.md` updated | `SKILL.md` also updated in same commit (JP mirror) |
+| `.work/specs/work-kit-merge-flow.md` step numbers changed | `SKILL.md` actual steps match |
+
+## Background
+
+When a step was inserted in PR92, the spec still referenced "Steps 4–6" while the actual steps had
+shifted to "Steps 5–7". This sync rule was added to prevent the mismatch from recurring.
+
+## Checklist before committing
+
+- [ ] Step numbers in `.work/specs/work-kit-merge-flow.md` match the actual steps in `SKILL.md`
+- [ ] `SKILL.md` and `SKILL.jp.md` are updated in the same commit

@@ -32,5 +32,11 @@ references:
   - path: incidents.md
     description: .claude/rules/incidents.md のフォーマットガイド。再発防止ログの 2 層（索引 + 詳細ファイル）構造、インシデントの記録方法。
 
+  - path: references-sync.md
+    description: プラグインリファレンスファイルの JP ミラー同期ルール。plugins/*/references/**/*.md を編集したら、ペアの *.jp.md も同じコミットで更新する。
+
+  - path: kit-hooks-sync.md
+    description: dev-kit と claude-kit の注入インフラ構造同期ルール。inject_references.py・hooks.json・テンプレート・_index.yaml・_injection_rules.yaml の共有構造を片方の kit で変更したら、もう片方も同じコミットで更新する。
+
   - path: markdown-table.md
     description: Markdown テーブルの記法規約。主要ルール：連続する行で同じ列の値が同じ場合、最初の行にのみ書き、以降のセルは空白にする。

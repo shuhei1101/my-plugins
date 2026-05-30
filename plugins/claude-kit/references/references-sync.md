@@ -1,12 +1,9 @@
----
-description: Auto-loaded when editing any references file — enforces JP mirror update in the same commit
-globs:
-  - "plugins/**/references/**/*.md"
----
-
-# References JP Mirror Sync Rules
+# References JP Mirror Sync
 
 When editing `plugins/*/references/**/*.md`, **the paired `*.jp.md` must also be updated in the same commit**.
+Japanese mirror: `references/references-sync.jp.md`
+
+---
 
 ## Required sync targets
 
@@ -28,16 +25,14 @@ When editing `plugins/*/references/**/*.md`, **the paired `*.jp.md` must also be
 
 ## JP mirror warning comment
 
-All JP mirror files (`*.jp.md`) must have the following warning comment at the top of the file:
+All JP mirror files (`*.jp.md`) must have the following warning comment at the top:
 
 ```
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 ```
 
-When creating or editing a JP mirror by hand, always verify this comment is present.
-
 ## Why
 
-`*.jp.md` files are the Japanese reference for users to review references content.
+`*.jp.md` files are the Japanese reference for users to review content.
 References are injected into Claude's context by the ref-inject auto-injection hook, so if only
 one side is updated the content drifts and the intent cannot be read correctly from the JP mirror.
