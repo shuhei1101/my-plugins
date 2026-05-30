@@ -27,7 +27,7 @@ references:
     description: プラグインのルート CLAUDE.md の書き方。必須セクション（Skills / Hooks / Environment Variables / Dependencies / Changelog）、各セクションのテーブル形式、コピペ用フルテンプレート。
 
   - path: setup-wizard.md
-    description: 必須スキル `setup-wizard` の書き方 — SessionStart フックと `.claude/{plugin}.local.md` の `setup_done` フラグで駆動する初回オンボーディング。フロー、AskUserQuestion の options 制約（2〜4 個）、`plugin-config` との関係、SKILL.md コピペ用 skeleton を含む。
+    description: 必須スキル `setup-wizard` の書き方 — SessionStart フックと `.claude/{plugin}.local.md` の `setup_done` フラグで駆動する初回オンボーディング。フロー、AskUserQuestion の options 制約（2〜4 個）、`config` との関係、SKILL.md コピペ用 skeleton を含む。
 
   - path: glossary.md
     description: .claude/rules/glossary.md のフォーマットガイド。単一ファイル・カテゴリ分けの用語表、記述規律（常時ロード → 簡潔に）、用語の追加方法。
