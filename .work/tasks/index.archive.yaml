@@ -719,3 +719,10 @@ prs:
     に env 変数変更
   task: 260530_rename-workspace-to-work
   completed: true
+- id: 196
+  title: PR196 — add-number-column-rule
+  type: docs
+  tags: []
+  summary: Markdownテーブルの先頭にナンバーカラム(#)を設ける規約を明文化する
+  task: 260530_add-number-column-rule
+  completed: true
