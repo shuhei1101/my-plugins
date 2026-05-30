@@ -9,4 +9,4 @@
 #   task      : タスクフォルダ名（YYYYMMDD_{title}）
 #   completed : false = 進行中、true = マージ済み / 廃止済み
 
-prs: []
+branches: []

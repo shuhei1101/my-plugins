@@ -16,22 +16,29 @@ rules:
       - common.md
       - skills.md
     optional:
+      - subagents.md
       - environment.md
       - plugin-config.md
 
-  # ---- Rules: パススコープのルール（あるいは rules-jp ミラー）を編集する場合 ----
-  - pattern: "**/.claude/rules/**/*.md"
+  # ---- References: プラグインのリファレンスファイルを編集する場合 ----
+  - pattern: "plugins/*/references/**/*.md"
     required:
-      - common.md
-      - rules.md
-    optional:
-      - environment.md
-  - pattern: "**/.claude/rules-jp/**/*.md"
+      - references-sync.md
+    optional: []
+
+  # ---- *-kit 注入構造ファイル: dev-kit / claude-kit の共有構造を編集する場合 ----
+  - pattern: "plugins/*-kit/hooks/scripts/*.py"
     required:
-      - common.md
-      - rules.md
-    optional:
-      - environment.md
+      - kit-hooks-sync.md
+    optional: []
+  - pattern: "plugins/*-kit/hooks/templates/*.j2"
+    required:
+      - kit-hooks-sync.md
+    optional: []
+  - pattern: "plugins/*-kit/references/{_index,_injection_rules,CLAUDE}{.jp,}.{yaml,md}"
+    required:
+      - kit-hooks-sync.md
+    optional: []
 
   # ---- CLAUDE.md: プロジェクト／サブフォルダのメモリファイル ----
   - pattern: "**/CLAUDE{.local,.jp,}.md"
@@ -76,19 +83,3 @@ rules:
     optional:
       - environment.md
 
-  # ---- Glossary / Incidents: 固定ルールファイル用のフォーマットガイド ----
-  - pattern: "**/rules/**/glossary.md"
-    required:
-      - glossary.md
-    optional:
-      - environment.md
-  - pattern: "**/rules/**/incidents.md"
-    required:
-      - incidents.md
-    optional:
-      - environment.md
-
-  # ---- Markdown 一般: テーブル整形の規約 ----
-  - pattern: "**/*.md"
-    required:
-      - markdown-table.md
