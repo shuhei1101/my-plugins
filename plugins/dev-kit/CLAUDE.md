@@ -60,7 +60,8 @@ references/
 ├── python/      # Python conventions (47 files: architecture/, core/, fastapi/, llm/, etc.)
 ├── html/        # HTML/CSS/JS principles (principles.md, ui-design.md)
 ├── next/        # Next.js conventions (90 files: backend/, frontend/, testing/, etc.)
-├── yaml.md      # YAML standards
+├── markdown/    # Markdown conventions (markdown-table.md)
+├── yaml/        # YAML standards (yaml.md)
 ├── _index.yaml   # path + lang + description per reference (merged from python/html/next)
 ├── _injection_rules.yaml   # pattern + lang + required/optional per rule
 └── ...
@@ -74,6 +75,7 @@ prevents duplicate injection.
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.6.0 | 2026-05-30 | Move `yaml.md` / `yaml.jp.md` into `yaml/` subfolder to match `html/`, `next/`, `python/`, `markdown/` structure; register `yaml/yaml.md` in `_index.yaml` and add `**/index.yaml` / `**/settings.yaml(.sample)` injection rules (PR199) |
 | 4.5.0 | 2026-05-30 | Move `css-js-link.md` / `common-component-first.md` from `templates/html/rules/` to `references/html/`; wire them into `_injection_rules.yaml` html patterns; remove static-copy steps from `html-implement` (Step 7) and `plugin-update` (Step 2) (PR200) |
 | 4.4.0 | 2026-05-30 | Add `markdown/` reference subfolder with Markdown table conventions (`#` column rule, `〃` ditto mark for repeated values); injected on `**/*.md` edits (PR196) |
 | 4.3.0 | 2026-05-30 | Add `dev-kit:plugin-update` skill — inspects/fixes dev-kit-generated artifacts (static templates + convention-following source files) against the current dev-kit version. Self-contained: no dependency on any other plugin; refuses to run on master/main; never commits on its own (PR182) |
