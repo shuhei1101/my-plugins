@@ -1,9 +1,3 @@
----
-paths:
-  - "**/*.html"
-  - "**/*.css"
-  - "**/*.js"
----
 
 # Common Component First
 

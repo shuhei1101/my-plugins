@@ -1,9 +1,3 @@
----
-paths:
-  - "**/*.css"
-  - "**/*.js"
-  - "**/*.html"
----
 
 # CSS Class ↔ JS DOM Access Linkage
 

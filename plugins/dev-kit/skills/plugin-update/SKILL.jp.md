@@ -27,14 +27,10 @@ dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱
 
 ---
 
-## 静的テンプレ一覧（ステップ2・3 で再コピーする対象）
+## 静的テンプレ一覧（ステップ2 で再コピーする対象）
 
 | ソース (`${CLAUDE_PLUGIN_ROOT}/`) | 配布先 |
 |---|---|
-| `templates/html/rules/css-js-link.md` | `.claude/rules/css-js-link.md` |
-| `templates/html/rules/css-js-link.jp.md` | `.claude/rules-jp/css-js-link.md` |
-| `templates/html/rules/common-component-first.md` | `.claude/rules/common-component-first.md` |
-| `templates/html/rules/common-component-first.jp.md` | `.claude/rules-jp/common-component-first.md` |
 | `skills/html-debug-fab/templates/uidev.css` | プロジェクトの静的アセットディレクトリ |
 |  | `uidev.js` も同ディレクトリ |
 |  | `CLAUDE.md` も同ディレクトリ |
@@ -60,23 +56,7 @@ dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱
 
 ---
 
-### ステップ2: html-implement のルールテンプレを再コピーする
-
-#### 条件
-
-- `.claude/rules/css-js-link.md` が存在する（html-implement 導入済みと判定）
-
-#### 処理内容
-
-1. 存在確認。存在しなければ html-implement 未使用としてステップ3 へスキップ
-2. 上記テンプレ表の html-implement 行 4 ファイルを `${CLAUDE_PLUGIN_ROOT}/templates/html/rules/*` からコピー上書き
-3. 更新したファイル名を報告
-
-→ ステップ3 へ
-
----
-
-### ステップ3: html-debug-fab のウィジェットを再コピーする
+### ステップ2: html-debug-fab のウィジェットを再コピーする
 
 #### 条件
 
@@ -85,17 +65,17 @@ dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱
 #### 処理内容
 
 1. `find . -name 'uidev.css' -not -path '*/node_modules/*' -not -path '*/.git/*'` で検索
-2. 見つからなければ未導入としてステップ4 へスキップ
+2. 見つからなければ未導入としてステップ3 へスキップ
 3. 1 箇所のみ → そのディレクトリを配布先として確定
 4. 複数 → ユーザーに確認
 5. `${CLAUDE_PLUGIN_ROOT}/skills/html-debug-fab/templates/` から `uidev.css` / `uidev.js` / `CLAUDE.md` / `CLAUDE.jp.md` を上書きコピー（`example.html` は除く）
 6. 更新したファイル名を報告
 
-→ ステップ4 へ
+→ ステップ3 へ
 
 ---
 
-### ステップ4: Python ソースファイルの規約検査（DEV_KIT_PYTHON が有効な場合）
+### ステップ3: Python ソースファイルの規約検査（DEV_KIT_PYTHON が有効な場合）
 
 #### 条件
 
@@ -113,7 +93,7 @@ dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱
 4. 逸脱が見つかったファイルごとに内容と修正方針を提示し、ユーザーの確認を得てから修正する
 5. ファイル数が多い場合はバッチ処理（例: 10 ファイルずつ）
 
-→ ステップ5 へ
+→ ステップ4 へ
 
 #### 注意
 
@@ -121,7 +101,7 @@ injection hook が `Read` 時に自動注入した Python リファレンス群�
 
 ---
 
-### ステップ5: HTML/CSS/JS ソースファイルの規約検査（DEV_KIT_HTML が有効な場合）
+### ステップ4: HTML/CSS/JS ソースファイルの規約検査（DEV_KIT_HTML が有効な場合）
 
 #### 条件
 
@@ -137,11 +117,11 @@ injection hook が `Read` 時に自動注入した Python リファレンス群�
 3. 現行リファレンスの規約（FLOCSS、デザイントークン、DebugFAB 使い方 など）と照合し、逸脱を特定
 4. 逸脱ファイルごとに提示・確認・修正
 
-→ ステップ6 へ
+→ ステップ5 へ
 
 ---
 
-### ステップ6: TypeScript/TSX ソースファイルの規約検査（DEV_KIT_NEXT が有効な場合）
+### ステップ5: TypeScript/TSX ソースファイルの規約検査（DEV_KIT_NEXT が有効な場合）
 
 #### 条件
 
@@ -157,11 +137,11 @@ injection hook が `Read` 時に自動注入した Python リファレンス群�
 3. 現行リファレンスの規約（ファイル配置、Server Actions、auth、DB ヘルパー 等）と照合
 4. 逸脱ファイルごとに提示・確認・修正
 
-→ ステップ7 へ
+→ ステップ6 へ
 
 ---
 
-### ステップ7: 完了報告
+### ステップ6: 完了報告
 
 #### 処理内容
 
