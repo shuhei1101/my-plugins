@@ -19,6 +19,8 @@
 ## QA で決定した事項
 
 - **QA-001**: `{PREFIX}_INJECTION_DISABLE` の 3 プラグインへの波及は次 PR に委ねる（テンプレートのみ変更）
+  - PR174 にて `claude-kit` に実装済み（`CLAUDE_KIT_INJECTION_DISABLE`）
+  - py-kit / next-kit はこのリポジトリに存在しないため対象外
 - **QA-002**: `AITUBER_NOTIFY` はリポジトリ外（`~/.claude/settings.json`）を直接変更してよい
 - **QA-003**: merge 関連 env 変数は `WORK_KIT_MERGE_` で名前空間を切る
 

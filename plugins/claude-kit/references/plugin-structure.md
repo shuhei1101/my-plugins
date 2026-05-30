@@ -34,15 +34,26 @@ plugins/<plugin-name>/
 
 ### `plugin-update` (mandatory for every plugin)
 
-Every plugin **must** ship a `plugin-update` skill that brings the project's plugin-generated
-artifacts in line with the currently installed plugin version. Manual invocation only
+Every plugin **must** ship a `plugin-update` skill that brings the project's plugin-related
+artifacts into compliance with the currently installed plugin version. Manual invocation only
 (`/<plugin>:plugin-update`).
 
-**Why**: when a plugin ships static templates (`.work/CLAUDE.md`, hook prompts, sample configs,
-references injected via `injection_rules.yaml`, etc.) into the project, those copies drift behind
-the plugin source as new versions are released. Without a per-plugin sync command, the user has
-to diff and copy by hand. Each plugin owns its own update path because each plugin knows its own
-templates and migration rules.
+**What "plugin-related artifacts" means**:
+
+Two categories, handled differently:
+
+| Category | Examples | Action |
+|---|---|---|
+| Static templates | Files the plugin copies verbatim into the project (rule templates, widget assets, config stubs) | Re-copy from plugin source (straightforward, automatic) |
+| Convention-following files | Files the user created *following this plugin's guidance* (skills, hooks, agents, source code) | Inspect against current references; detect deviations and fix with user confirmation |
+
+The static-copy part is easy. The convention-inspection part is the main value: when a plugin's
+references or guidelines change, existing project files written under the old conventions may
+now violate the new standards. `plugin-update` surfaces those violations and applies the fix.
+
+**Why**: without this, version upgrades are silent. Users can install a newer plugin but their
+existing project files continue to follow the old conventions — invisible drift that produces
+inconsistent outputs over time.
 
 **Standard contract**:
 
@@ -50,12 +61,15 @@ templates and migration rules.
 |---|---|
 | Name | `plugin-update` (kebab-case literal — not `<plugin>-update`) |
 | Trigger | Manual only (no `description` auto-triggers; explicit `/<plugin>:plugin-update`) |
-| First action | Invoke the project's PR-branch skill (e.g. `/workspace:work-start`) so edits land on a reviewable branch |
-| Scope | Only this plugin's own static artifacts; never reach into other plugins |
-| Reference | See `plugins/workspace/skills/plugin-update/SKILL.md` for the canonical example |
+| First action | Refuse to run on `master` / `main` and ask the user to create a working branch first |
+| Branch management | Do **not** create branches, commit, or merge — leave all branch operations to the user |
+| Inter-plugin dependency | None — must not invoke skills or commands from other plugins |
+| Scope | Only this plugin's own artifacts; never modify files owned by other plugins |
+| Fix confirmation | Never modify convention-following files without explicit user confirmation |
 
-When creating a new plugin, generate `skills/plugin-update/SKILL.md` (and `.jp.md`) following the
-workspace example and adapt the template list to whatever static files your plugin ships.
+When creating a new plugin, generate `skills/plugin-update/SKILL.md` (and `.jp.md`), list the
+static templates to re-copy, and describe how to detect and fix deviations in files created by
+this plugin's skills. The skill must be self-contained.
 
 ---
 
@@ -79,13 +93,20 @@ components (agents/hooks/MCP).
 
 - **Creating**: generate the directory structure above. Add agents/hooks/MCP dirs only if requested.
   Create `CLAUDE.md` and `CLAUDE.jp.md` following `plugin-claude-md.md` — every plugin requires them.
-- **Updating**: edit only the changed files; do not touch unrelated files.
+- **Updating**: edit only the changed files; do not touch unrelated files. Also update
+  `plugins/<name>/CLAUDE.md` to reflect any added/changed skills, hooks, or environment variables.
 
-### Step 4 — plugin.json + marketplace.json + changelog (keep versions identical)
+### Step 4 — plugin.json + marketplace.json + CLAUDE.md (keep versions and content in sync)
 
-See the field/format/version sections below. **The version in `plugin.json`, the
-`.claude-plugin/marketplace.json` entry, and the `## Changelog` table in `CLAUDE.md` must
-always be identical.** Never let these three drift.
+See the field/format/version sections below. Before committing, verify all three of the following
+are updated:
+
+- [ ] `plugins/<name>/CLAUDE.md` — reflect added/changed skills, hooks, environment variables, or behavior; bump `## Changelog`
+- [ ] `plugins/<name>/.claude-plugin/plugin.json` — bump `version`
+- [ ] `.claude-plugin/marketplace.json` — bump the matching plugin's `version`
+
+**The version in `plugin.json`, the `.claude-plugin/marketplace.json` entry, and the `## Changelog`
+table in `CLAUDE.md` must always be identical.** Never let these three drift.
 
 > If two parallel PRs bump the same plugin and one merges first, rebump the other to the next
 > version on its branch before merging (incident `parallel-pr-version-bump-collision`).

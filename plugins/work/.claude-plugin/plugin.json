@@ -1,0 +1,5 @@
+{
+  "name": "work",
+  "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, manages worktrees (toggle via WORK_USE_WORKTREE), and guards force-operations (toggle via WORK_GUARD). Protected branches customizable via WORK_PROTECTED_BRANCHES (comma-separated, default master,main,develop).",
+  "version": "2.46.2"
+}
