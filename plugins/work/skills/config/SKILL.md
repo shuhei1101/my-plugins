@@ -7,7 +7,7 @@ description: |
 
 # work:config — Plugin Toggle Configuration
 
-Interactively configures env toggle variables via `AskUserQuestion`.
+Interactively configures env toggle variables.
 Loops through one-variable-at-a-time selection → value → scope → apply,
 until the user chooses to finish.
 
@@ -22,14 +22,9 @@ until the user chooses to finish.
 | `WORK_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
 | `WORK_MERGE_PROPOSAL` | Stop フックでの `/work:merge` 提案 | 有効 |
 | `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto branch-reserve | 有効 |
-| `DEV_KIT_NEXT_TS_CHECK` | PostToolUse tsc 型チェック | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
-| `CLAUDE_KIT_INJECTION_DISABLE` | claude-kit の全参照注入を無効化（逆極性） | 有効（注入 ON） |
-| `DEV_KIT_INJECTION_DISABLE` | dev-kit の全参照注入を無効化（逆極性） | 有効（注入 ON） |
 
 **Normal polarity**: キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
-
-**Reverse polarity** (`INJECTION_DISABLE` vars): キー不在 = ON（注入有効）。truthy（`"true"` など）に設定 = OFF（注入無効）。ON に戻すにはキーを削除する。
 
 ---
 
@@ -52,15 +47,9 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 For each managed toggle, check the `env` block of the relevant settings file:
 
-**Normal polarity** (all except `INJECTION_DISABLE` vars):
 - Key absent → **ON**（デフォルト有効）
 - Value in `("false", "0", "no", "off")` → **OFF**
 - Otherwise → **ON**（明示設定）
-
-**Reverse polarity** (`CLAUDE_KIT_INJECTION_DISABLE`, `DEV_KIT_INJECTION_DISABLE`):
-- Key absent → **ON**（注入有効）
-- Value in `("true", "1", "yes", "on")` → **OFF**（注入無効）
-- Otherwise → **ON**（注入有効）
 
 Display a state table as text output:
 
@@ -85,19 +74,24 @@ Display a state table as text output:
 
 #### Process
 
-**Call `AskUserQuestion` tool** with `multiSelect: false`:
+Output a numbered list as plain text, then end the turn and wait for user input:
 
-- question: `"設定する env 変数を選択（WORK_MERGE_PROPOSAL / WORK_MERGE_AUTO_HANDOFF / DEV_KIT_NEXT_TS_CHECK / AITUBER_NOTIFY / CLAUDE_KIT_INJECTION_DISABLE / DEV_KIT_INJECTION_DISABLE は「その他」に入力）"`
-- header: `"env 変数"`
-- options（各ラベルに現在の状態を含める）:
-  1. `"[{state}] WORK_PR_ENFORCEMENT"` — description: `"UserPromptSubmit work-start 強制注入"`
-  2. `"[{state}] WORK_STOP_REMINDER"` — description: `"Stop TODO/QA リマインダー注入"`
-  3. `"[{state}] WORK_USE_WORKTREE"` — description: `"work-start での worktree 作成"`
-  4. `"完了（設定を終了）"` — description: `"ループを終了して変更結果を表示"`
+```
+設定する変数の番号を入力してください（0 で終了）:
 
-If option 4 (完了) → skip to Step 5 (report)
-If "その他" (free text) → use the typed var name as the target; validate it is one of the 9 managed vars before proceeding
-Otherwise → use the selected option's var name
+  1. [{state}] WORK_PR_ENFORCEMENT — UserPromptSubmit work-start 強制注入
+  2. [{state}] WORK_STOP_REMINDER — Stop TODO/QA リマインダー注入
+  3. [{state}] WORK_USE_WORKTREE — work-start での worktree 作成
+  4. [{state}] WORK_MERGE_PROPOSAL — Stop フックでの merge 提案
+  5. [{state}] WORK_MERGE_AUTO_HANDOFF — merge Step 11 auto pr-handoff
+  6. [{state}] AITUBER_NOTIFY — Stop notify-aituber 通知
+  0. 完了（終了）
+```
+
+**Do not call `AskUserQuestion` here** — use plain numbered list to avoid the 4-option cap.
+
+If the user inputs `0` or `q` → jump to Step 5 (report).
+Otherwise parse the number and look up the corresponding var name.
 
 → Proceed to Step 3
 
@@ -113,21 +107,13 @@ Otherwise → use the selected option's var name
 
 **Call `AskUserQuestion` tool** with 2 questions in a single call:
 
-**Question 1 — 値** (switch options based on whether the selected var is reverse polarity):
-
+**Question 1 — 値**:
 - question: `"{VAR_NAME} の値を設定"`
 - header: `"値"`
 - multiSelect: false
-
-*Normal polarity vars* (all except `INJECTION_DISABLE` vars):
 - options:
   1. `"デフォルトに戻す（キー削除 = ON）"` — description: `"env キーを削除し、デフォルト有効に戻す"`
   2. `"OFF（"false" に設定）"` — description: `"この機能を無効化する"`
-
-*Reverse polarity vars* (`CLAUDE_KIT_INJECTION_DISABLE`, `DEV_KIT_INJECTION_DISABLE`):
-- options:
-  1. `"デフォルトに戻す（キー削除 = 注入 ON）"` — description: `"env キーを削除し、注入有効に戻す"`
-  2. `"無効にする（"true" に設定 = 注入 OFF）"` — description: `"参照注入を無効化する"`
 
 **Question 2 — スコープ**:
 - question: `"どの settings.json に書き込みますか？"`
@@ -157,12 +143,8 @@ Record both answers.
 2. Read JSON from target file (use `{}` if absent)
 3. Ensure `env` object exists
 4. Apply change:
-   - *Normal polarity vars*:
-     - "デフォルトに戻す" → delete `env.{VAR_NAME}` key
-     - "OFF" → set `env.{VAR_NAME}` to `"false"`
-   - *Reverse polarity vars* (`CLAUDE_KIT_INJECTION_DISABLE`, `DEV_KIT_INJECTION_DISABLE`):
-     - "デフォルトに戻す" → delete `env.{VAR_NAME}` key
-     - "無効にする" → set `env.{VAR_NAME}` to `"true"`
+   - "デフォルトに戻す" → delete `env.{VAR_NAME}` key
+   - "OFF" → set `env.{VAR_NAME}` to `"false"`
 5. Write back with 2-space indent
 
 Record the change (var name, old state → new state, file) for the final report.
@@ -175,7 +157,7 @@ Record the change (var name, old state → new state, file) for the final report
 
 #### Condition
 
-- User selected 完了 in Step 2
+- User input `0` or `q` in Step 2
 
 #### Process
 
@@ -199,3 +181,5 @@ If no changes were made, report "変更なし".
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
 - AITUBER_NOTIFY のデフォルトスコープは「ユーザー」だが、スコープはユーザーが毎回選択する
+- dev-kit の env トグル（`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN` / `DEV_KIT_NEXT_TS_CHECK`）は `/dev-kit:config` で設定する
+- `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` は逆極性のキルスイッチのためこのスキルでは管理しない（`plugin-config.md` 参照）

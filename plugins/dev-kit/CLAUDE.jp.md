@@ -73,6 +73,7 @@ references/
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.11.0 | 2026-05-31 | `dev-kit:config` スキルを追加 — 6 つの env トグル（`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` デフォルト ON）を番号付きリストループで対話的に設定（PR229） |
 | 4.10.0 | 2026-05-31 | `markdown_frontmatter_check.py` フックを削除。ルールは `**/*.md` 編集時の `references/markdown/markdown-editing.md` 自動注入で代替（PR228） |
 | 4.9.0 | 2026-05-31 | `references-edit-guard` PreToolUse フックを追加（ref-inject v1.7.0 経由）。`references/` 配下のファイルを **編集／作成する直前** に `_index.yaml` / `_injection_rules.yaml` の更新も忘れていないかリマインド（PR206） |
 | 4.8.0 | 2026-05-31 | `dev-kit:yaml` スキル・`references/yaml/`・`yaml_skill_dispatch.py` フック（+ プロンプト）を削除; `**/index.yaml` / `**/settings.yaml(.sample)` の注入パターンも削除; YAML 規約は dev-kit の対象外（PR202） |

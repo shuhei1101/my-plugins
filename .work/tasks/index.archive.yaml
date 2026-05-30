@@ -991,3 +991,10 @@ branches:
   summary: work プラグインのスキル名・説明から PR 概念を削除しブランチ概念に統一
   task: 260531_PRをブランチに統一
   completed: true
+- id: 229
+  title: feat/migrate-existing-plugins-to-have-config-skill
+  type: feat
+  tags: []
+  summary: 既存プラグインに config スキルを追加する（dev-kit:config を新規作成・work:config を整理）
+  task: 260531_migrate-existing-plugins-to-have-config-skill
+  completed: true
