@@ -30,9 +30,16 @@ PR163（worktree-kit → work-kit 統合）と PR164（env トグル導入）の
 |---|---|---|
 | 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR166/QA.md` |
 | 済 | `.work/notes/` に設計メモを作成する | - `.work/notes/merge-language-plugins.md` |
-| - | 設計・方針の決定（QA / notes 必須） | - QA.md / notes |
-| - | 実装（設計確定後） | - `plugins/dev-kit/` ほか |
-| - | ルール・CLAUDE.md・glossary を整備する | - `.claude/rules/core/glossary.md` ほか |
+| 済 | 設計・方針の決定（QA / notes 必須） | - QA.md（QA-001〜007 全て解決） |
+| 済 | dev-kit に skills/references/templates を git mv | - `plugins/dev-kit/skills/{py-script,py-project,html-*,next-*}` 等 |
+| 済 | 統合 `inject_references.py` を作成（DEV_KIT_PYTHON/HTML/NEXT で lang フィルタ） | - `plugins/dev-kit/hooks/inject_references.py` |
+| 済 | 統合 `injection_rules.yaml` / `index.yaml` / `index.jp.yaml` を作成（各エントリに `lang`） | - `plugins/dev-kit/references/*.yaml` |
+| 済 | `ts_check.py` の env を `DEV_KIT_NEXT_TS_CHECK` に変更 | - `plugins/dev-kit/hooks/ts_check.py` |
+| 済 | スキル内パス・プラグイン参照を `dev-kit:` に一括更新 | - `plugins/dev-kit/skills/**/SKILL*.md` |
+| 済 | 既存 py-kit / html-kit / next-kit を削除 + marketplace.json から除外 | - `plugins/{py,html,next}-kit/` 削除 / `.claude-plugin/marketplace.json` |
+| 済 | dev-kit を v3.0.0 → v4.0.0 にバンプ + 新 CLAUDE.md / changelog 作成 | - `plugins/dev-kit/{plugin.json,CLAUDE.md,CLAUDE.jp.md,changelogs/v4.0.0.md}` |
+| 済 | ルール・CLAUDE.md・glossary を整備する | - `.claude/rules/feature/{kit-hooks-index-sync,debug-fab-template-sync}.md(+jp)` / `.claude/rules/core/glossary.md(+jp)` |
+| 済 | リファレンス本文の旧プラグイン名表記を `dev-kit` に統一 | - `plugins/dev-kit/references/**/*.md` |
 
 ## 参考ドキュメント
 
