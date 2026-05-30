@@ -49,3 +49,16 @@ PR167 で確立した `work:config` スキルのパターンを、claude-kit の
 ## 次PR候補
 
 - `migrate-existing-plugins-to-have-config-skill`: py-kit / next-kit / html-kit に config スキルを追加
+
+## PR219 での実施内容（feat/migrate-existing-plugins-to-have-config-skill）
+
+- `dev-kit:config` スキルを新規追加
+  - 管理対象: `DEV_KIT_PYTHON`/`DEV_KIT_HTML`/`DEV_KIT_NEXT`/`DEV_KIT_MARKDOWN`（opt-in、デフォルト OFF）と `DEV_KIT_NEXT_TS_CHECK`/`DEV_KIT_MARKDOWN_CHECK`（normal polarity、デフォルト ON）
+  - Step 2 は番号付きリスト方式（`plugin-config.md` ガイドに準拠）
+- `work:config` を更新
+  - `NEXT_KIT_TS_CHECK`（旧名、実態は `DEV_KIT_NEXT_TS_CHECK`）を除去 → dev-kit:config に移管
+  - `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE`（逆極性キルスイッチ）を除去 → ポリシー除外
+  - Step 2 を AskUserQuestion 方式から番号付きリスト方式に移行（`plugin-config.md` ガイドに準拠）
+  - work 2.47.0 → 2.48.0
+
+注: `claude-kit` と `ref-inject` は config スキルを必要とする user-facing トグルがないため対象外。
