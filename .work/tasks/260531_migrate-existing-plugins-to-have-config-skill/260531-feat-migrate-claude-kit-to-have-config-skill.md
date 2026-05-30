@@ -23,8 +23,8 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | QA を `## QA` に記録する |
-| 2 | - | `.work/notes/` のノートを更新する |
+| 1 | 済 | QA を `## QA` に記録する |
+| 2 | 済 | `.work/notes/` のノートを更新する |
 | 3 | - | `claude-kit:config` スキルを新規作成（SKILL.md + SKILL.jp.md） |
 | 4 | - | claude-kit バージョンバンプ + changelog |
 | 5 | - | ルール / CLAUDE.md を更新する |
