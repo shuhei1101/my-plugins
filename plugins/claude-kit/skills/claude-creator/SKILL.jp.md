@@ -6,7 +6,7 @@ description: |
   "クロードのガイドを作りたい", "このフォルダの CLAUDE.md を作って", or asks to set up
   Claude Code instructions for a project or specific folder.
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # claude-creator — CLAUDE.md オーサリング（薄ラッパー）
 

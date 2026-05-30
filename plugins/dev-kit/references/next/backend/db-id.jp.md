@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of db-id.md. When updating the English original, update this file too. -->
 # drizzle/schema.ts — 主キー（ID）設計
 
 テーブル種別に応じて主キーの型を使い分ける。

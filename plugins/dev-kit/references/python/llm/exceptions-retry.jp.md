@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of exceptions-retry.md. When updating the English original, update this file too. -->
 # llm/exceptions-retry — LLM 例外階層とリトライ戦略
 
 > このファイルは `exceptions-retry.md` の日本語ミラーです。

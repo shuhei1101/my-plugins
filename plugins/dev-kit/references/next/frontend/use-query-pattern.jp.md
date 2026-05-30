@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of use-query-pattern.md. When updating the English original, update this file too. -->
 # hooks/use{Feature}.ts / use{Feature}s.ts — useQuery パターン
 
 TanStack Query で読み取りデータを取得する hook。

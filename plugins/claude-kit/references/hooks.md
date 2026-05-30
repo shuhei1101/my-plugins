@@ -304,4 +304,4 @@ When editing `plugins/**/hooks/prompts/*.md`, **update the paired `*.jp.md` in t
 
 - [ ] Changes in `*.md` are reflected in `*.jp.md` in Japanese
 - [ ] Section structure in `*.jp.md` matches the English `*.md`
-- [ ] `*.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror... -->`)
+- [ ] `*.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror of {source}.md ... -->`)

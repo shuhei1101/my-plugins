@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of merge-theirs-loses-branch-only-additions.md. When updating the English original, update this file too. -->
 
 # 大幅に編集された共有ファイルに対して `git merge master -X theirs` を使うと、ブランチ側のみの追記が静かに消える
 

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of naming.md. When updating the English original, update this file too. -->
 # Next.js App Router — Naming Conventions
 
 ## File and folder naming

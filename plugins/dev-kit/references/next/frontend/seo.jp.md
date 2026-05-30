@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of seo.md. When updating the English original, update this file too. -->
 # Next.js App Router — SEO / Metadata
 
 > **Stack**: Next.js 16 Metadata API、`sitemap.ts`、`robots.ts`、`manifest.ts`、構造化データ。

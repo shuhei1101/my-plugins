@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of db-ts.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/db.ts
 
 書き込み（INSERT / UPDATE / DELETE）専用ファイル。`service.ts` から呼ばれる。

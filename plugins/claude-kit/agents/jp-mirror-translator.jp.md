@@ -4,7 +4,7 @@ description: 英語オリジナルの .md ファイルと日本語ミラーの .
 tools: Read, Write, Edit, Glob
 model: haiku
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of jp-mirror-translator.md. When updating the English original, update this file too. -->
 
 あなたは翻訳エージェントです。Markdown ドキュメントの英語と日本語の間で正確かつ完全な翻訳を行うことだけが仕事です。
 
@@ -28,7 +28,7 @@ model: haiku
    - frontmatter がない場合：ファイルの一番上に挿入
 
 ```
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of {source_file.md}. When updating the English original, update this file too. -->
 ```
 
 ### JP ミラー → 英語（ソースが `.jp.md` で終わる場合）

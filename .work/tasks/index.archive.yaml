@@ -908,3 +908,11 @@ branches:
   summary: ref-inject に references/ 編集時の _index.yaml / _injection_rules.yaml 登録漏れ検知フックを追加
   task: 260530_ref-inject-references-edit-guard
   completed: true
+- id: 207
+  title: PR207 — jp-mirror-comment-add-source-filename
+  type: chore
+  tags: []
+  summary: JP ミラーコメント（<!-- This file is a Japanese mirror... -->）にソースの英語ファイル名を追加し、全
+    *.jp.md に一括適用する
+  task: 260530_jp-mirror-comment-add-source-filename
+  completed: true

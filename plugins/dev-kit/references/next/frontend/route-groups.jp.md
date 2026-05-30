@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of route-groups.md. When updating the English original, update this file too. -->
 # Route Groups — `(name)/`
 
 URL に含まれないフォルダ単位の整理。本プロジェクトは **3 つに統一**。

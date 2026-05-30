@@ -8,7 +8,7 @@ description: |
   ユーザーが「issue-scan」「コードをスキャン」「イシューを探して」「問題を見つけて」と言ったとき、
   または `/work:issue-scan` を明示的に呼び出したときに起動する。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。

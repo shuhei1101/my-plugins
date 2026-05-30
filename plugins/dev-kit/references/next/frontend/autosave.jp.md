@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of autosave.md. When updating the English original, update this file too. -->
 # Next.js App Router — Autosave Pattern
 
 > **対象**: 編集中のフォームを自動保存したい画面（長文編集、設定画面、ノート編集など）。

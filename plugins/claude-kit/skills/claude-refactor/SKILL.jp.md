@@ -6,7 +6,7 @@ description: |
   "スキルに重複がある気がする", "CLAUDE.md が長くなってきた",
   ".claude/ をきれいにしたい", or calls `/claude-kit:claude-refactor` explicitly.
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # claude-refactor — Claude 設定の監査と再編成
 

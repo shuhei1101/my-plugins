@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of unit.md. When updating the English original, update this file too. -->
 # Next.js App Router — Unit & Component Tests
 
 > **Stack**: Vitest + Testing Library + MSW（任意）。

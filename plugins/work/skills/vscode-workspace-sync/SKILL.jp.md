@@ -8,7 +8,7 @@ description: |
   「ワークスペース同期を設定して」「VS Codeのワークツリーを自動追加したい」などで起動。
   明示的には /work:vscode-workspace-sync。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:vscode-workspace-sync — VS Code ワークスペース ↔ ワークツリー同期
 

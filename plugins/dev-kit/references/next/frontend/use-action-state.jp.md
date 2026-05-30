@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of use-action-state.md. When updating the English original, update this file too. -->
 # Server Action をクライアントから呼ぶ — useTransition / useActionState / useFormStatus
 
 mutation の **第一選択は Server Action 直接呼び**。React 19 の Hook と組み合わせる。

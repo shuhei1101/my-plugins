@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of e2e.md. When updating the English original, update this file too. -->
 # Next.js App Router — E2E Tests (Playwright)
 
 > **Stack**: Playwright + Page Object Model + Fixtures。画面単位フォルダで構造化。

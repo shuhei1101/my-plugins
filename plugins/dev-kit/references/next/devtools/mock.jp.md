@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of mock.md. When updating the English original, update this file too. -->
 # Next.js App Router — Mocking (MSW)
 
 > **対象**: 開発中・テスト中の API モック。MSW で fetch をネットワークレイヤで intercept する。

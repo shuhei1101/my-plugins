@@ -7,7 +7,7 @@ description: |
   「create a new branch」などのトリガーキーワードで実行。
 ---
 
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:start — 新しいブランチを開始
 

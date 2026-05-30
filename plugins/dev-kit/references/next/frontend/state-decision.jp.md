@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of state-decision.md. When updating the English original, update this file too. -->
 # State の置き場所 — 決定フロー
 
 「この状態をどこに持つべきか」を判断する。

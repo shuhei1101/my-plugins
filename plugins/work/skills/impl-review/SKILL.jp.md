@@ -4,7 +4,7 @@ description: |
   /work:impl-review が呼び出されたとき。
   またはユーザーが「実装内容を確認したい」「今回の変更をレビューしたい」「何を実装したか振り返りたい」と言ったとき。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:impl-review — インタラクティブ実装レビュー
 

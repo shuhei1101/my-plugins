@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of id-routing.md. When updating the English original, update this file too. -->
 # [id]/ — レコード単位のルーティング
 
 `app/(authenticated)/{feature}/[id]/` 配下の構成。**`[id]/page.tsx` を View 画面そのもの**にする（PR135 で旧 view/ サブルートは廃止）。

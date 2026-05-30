@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of error-classes.md. When updating the English original, update this file too. -->
 # app/(shared)/errors/appError.ts — エラークラス階層
 
 アプリ内のエラー型を定義する。

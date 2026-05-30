@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of context-pattern.md. When updating the English original, update this file too. -->
 # React Context — 共有 state パターン
 
 複数のルート / コンポーネントで共有する UI state を Context で持つ。

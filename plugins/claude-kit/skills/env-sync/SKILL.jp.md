@@ -7,7 +7,7 @@ description: |
   「Claude Code の設定をコピーしたい」「設定ファイルを移行したい」と言ったとき、
   または `/claude-kit:env-sync` で明示的に呼ばれたときに起動する。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # env-sync — WSL ↔ Windows Claude Code 設定同期
 
