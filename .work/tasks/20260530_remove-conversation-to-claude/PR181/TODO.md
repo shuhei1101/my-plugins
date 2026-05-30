@@ -18,23 +18,23 @@
 
 | PR番号 | 概要 |
 |---|---|
-| - | - |
+| 済 | - |
 
 ## 作業内容
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/.../PR181/QA.md` |
-| - | `conversation-to-claude` スキル本体を削除 | `plugins/claude-kit/skills/conversation-to-claude/` |
-| - | claude-kit 内の `conversation-to-claude` 参照を除去 | `plugins/claude-kit/CLAUDE.md`(+jp), `skills/{skill,rule,claude}-creator/SKILL.md`(+jp), `references/glossary.md`(+jp), `hooks/prompts/pre-compact.md`(+jp) |
-| - | merge スキルから conversation-to-claude 呼び出しと `WORKSPACE_MERGE_CONV2CLAUDE` 分岐を削除 | `plugins/workspace/skills/merge/SKILL.md`(+jp) |
-| - | workspace:config から `WORKSPACE_MERGE_CONV2CLAUDE` 選択肢を削除 | `plugins/workspace/skills/config/SKILL.md`(+jp) |
-| - | notes-to-claude から conversation-to-claude 参照を除去（残す場合のみ） | `plugins/workspace/skills/notes-to-claude/SKILL.md`(+jp) |
-| - | プロジェクトの glossary/incidents を削除 | `.claude/rules/core/glossary.md`(+jp), `.claude/rules/core/incidents.md`(+jp), `.claude/references/incidents/` |
-| - | `.claude/rules/core/_overview.md` から glossary/incidents 行を削除 | `.claude/rules/core/_overview.md` |
-| - | `claude-kit-skill-dependencies` ルールを更新 or 削除（conversation-to-claude が消えるため） | `.claude/rules/feature/claude-kit-skill-dependencies.md`(+jp) |
-| - | claude-kit / workspace のバージョンを bump し marketplace.json を更新 | `plugins/claude-kit/.claude-plugin/plugin.json`, `plugins/workspace/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, changelogs/ |
-| - | プロジェクト CLAUDE.md / .jp.md から glossary/incidents 言及を削除（あれば） | `CLAUDE.md`, `CLAUDE.jp.md` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/.../PR181/QA.md` |
+| 済 | `conversation-to-claude` スキル本体を削除 | `plugins/claude-kit/skills/conversation-to-claude/` |
+| 済 | claude-kit 内の `conversation-to-claude` 参照を除去 | `plugins/claude-kit/CLAUDE.md`(+jp), `skills/{skill,rule,claude}-creator/SKILL.md`(+jp), `references/glossary.md`(+jp), `hooks/prompts/pre-compact.md`(+jp) |
+| 済 | merge スキルから conversation-to-claude 呼び出しと `WORKSPACE_MERGE_CONV2CLAUDE` 分岐を削除 | `plugins/workspace/skills/merge/SKILL.md`(+jp) |
+| 済 | workspace:config から `WORKSPACE_MERGE_CONV2CLAUDE` 選択肢を削除 | `plugins/workspace/skills/config/SKILL.md`(+jp) |
+| 済 | notes-to-claude から conversation-to-claude 参照を除去（残す場合のみ） | `plugins/workspace/skills/notes-to-claude/SKILL.md`(+jp) |
+| 済 | プロジェクトの glossary/incidents を削除 | `.claude/rules/core/glossary.md`(+jp), `.claude/rules/core/incidents.md`(+jp), `.claude/references/incidents/` |
+| 済 | `.claude/rules/core/_overview.md` から glossary/incidents 行を削除 | `.claude/rules/core/_overview.md` |
+| 済 | `claude-kit-skill-dependencies` ルールを更新 or 削除（conversation-to-claude が消えるため） | `.claude/rules/feature/claude-kit-skill-dependencies.md`(+jp) |
+| 済 | claude-kit / workspace のバージョンを bump し marketplace.json を更新 | `plugins/claude-kit/.claude-plugin/plugin.json`, `plugins/workspace/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, changelogs/ |
+| 済 | プロジェクト CLAUDE.md / .jp.md から glossary/incidents 言及を削除（あれば） | `CLAUDE.md`, `CLAUDE.jp.md` |
 
 ## 参考ドキュメント
 
@@ -44,4 +44,4 @@
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| - | - | - |
+| 済 | - | 済 |

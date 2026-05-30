@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # workspace:merge — Merge a PR
 
-Runs the full merge flow: TODO checklist verification → master compatibility check → conversation-to-claude inside the worktree (if claude-kit installed) → close related issues → index archive → `--no-ff` merge → worktree cleanup → QA doc sync → auto-invoke pr-handoff for any next PR candidates.
+Runs the full merge flow: TODO checklist verification → master compatibility check → close related issues → index archive → `--no-ff` merge → worktree cleanup → QA doc sync → auto-invoke pr-handoff for any next PR candidates.
 
 ---
 
@@ -131,69 +131,16 @@ git merge master
 
 ---
 
-### Step 4: Run conversation-to-claude **inside the worktree** (if claude-kit is installed)
+### Step 4: Close related issues (inside the worktree)
 
 #### Condition
 
 - Step 3 complete
-- `WORKSPACE_MERGE_CONV2CLAUDE` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip silently to Step 5
-
-#### Process
-
-1. Check whether `/claude-kit:conversation-to-claude` appears in the current session's available skill list
-2. If not available → skip this step silently → proceed to Step 5
-3. If available → **change to the worktree directory first**, then invoke the skill:
-
-```bash
-cd ../$(basename $(pwd))-wt-PR{N}
-```
-
-   Then invoke `/claude-kit:conversation-to-claude` and wait for it to complete.
-
-4. After completion, ensure that any `.claude/` files generated (rules / references / glossary) are
-   committed to the PR branch. If they were not already committed by the skill, commit them now inside the worktree:
-
-```bash
-git -C ../$(basename $(pwd))-wt-PR{N} add .claude/
-git -C ../$(basename $(pwd))-wt-PR{N} commit -m "docs: conversation-to-claude artifacts #PR{N}"
-```
-
-5. Return to the main repository directory:
-
-```bash
-cd -
-```
-
-→ Proceed to Step 5
-
-#### Notes
-
-- This step captures session knowledge before the branch is deleted
-- Do not skip even if the conversation seems short — let the skill decide what to persist
-
-##### Why run inside the worktree
-
-Running `conversation-to-claude` from the main repo (master) cwd writes `.claude/` files directly to master.
-Those changes are then committed straight to master, separate from the PR's `--no-ff` merge.
-The result is that "PR work" and "session knowledge" become scattered across separate commits.
-Running inside the worktree includes them in the PR branch so the merge commit captures everything together.
-
-##### Prohibitions
-
-- Do not run `conversation-to-claude` from the master cwd (causes direct master commits)
-
----
-
-### Step 5: Close related issues (inside the worktree)
-
-#### Condition
-
-- Step 4 complete
 
 #### Process
 
 1. Read the `## 関連イシュー` section of `.work/tasks/{date}_{title}/PR{N}/TODO.md` in the worktree
-2. **If the section is absent, empty, or only contains the template placeholder row** (`| ISSUE-{N} | ... |`) → skip the rest of this step and proceed to Step 6
+2. **If the section is absent, empty, or only contains the template placeholder row** (`| ISSUE-{N} | ... |`) → skip the rest of this step and proceed to Step 5
 3. For each row in the table, run the close command **inside the worktree**:
 
 ```bash
@@ -216,12 +163,12 @@ git -C ../$(basename $(pwd))-wt-PR{N} add .work/issues/
 git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: close related issues for PR{N} #PR{N}"
 ```
 
-→ Proceed to Step 6
+→ Proceed to Step 5
 
 #### Notes
 
 - The issue file moves are git-tracked renames; `_index.yaml` stays gitignored
-- This commit will be included in the `--no-ff` merge in Step 8
+- This commit will be included in the `--no-ff` merge in Step 7
 - If no issue rows were processed, do not create an empty commit
 
 ##### Why before mark-completed / archive
@@ -230,11 +177,11 @@ Running this step **before** `set-completed` / `archive` keeps the issue-close c
 
 ---
 
-### Step 6: Mark the PR as completed in index.yaml
+### Step 5: Mark the PR as completed in index.yaml
 
 #### Condition
 
-- Step 5 complete
+- Step 4 complete
 
 #### Process
 
@@ -245,7 +192,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
   .work/tasks/index.yaml --id {N}
 ```
 
-→ Proceed to Step 7
+→ Proceed to Step 6
 
 #### Notes
 
@@ -254,11 +201,11 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
 
 ---
 
-### Step 7: Archive completed index entries
+### Step 6: Archive completed index entries
 
 #### Condition
 
-- Step 6 complete
+- Step 5 complete
 
 #### Process
 
@@ -279,7 +226,7 @@ git -C ../$(basename $(pwd))-wt-PR{N} add .work/tasks/index.archive.yaml
 git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.archive.yaml #PR{N}"
 ```
 
-→ Proceed to Step 8
+→ Proceed to Step 7
 
 #### Notes
 
@@ -289,16 +236,16 @@ git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.a
 
 ---
 
-### Step 8: Execute the merge
+### Step 7: Execute the merge
 
 #### Condition
 
-- Step 7 complete
+- Step 6 complete
 
 > ⚠️ **Pre-merge check required**
-> If `index.archive.yaml` was not committed in the worktree in Step 7, the archive changes will be missing from the merge commit.
-> **Confirm that the `git commit` inside the worktree in Step 7 has completed before running the merge command.**
-> (Skip this check only if Step 7 reported 0 entries moved — no commit was needed.)
+> If `index.archive.yaml` was not committed in the worktree in Step 6, the archive changes will be missing from the merge commit.
+> **Confirm that the `git commit` inside the worktree in Step 6 has completed before running the merge command.**
+> (Skip this check only if Step 6 reported 0 entries moved — no commit was needed.)
 
 #### Notes
 
@@ -315,11 +262,11 @@ git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.a
 git merge --no-ff -m "{type}: {title} #PR{N}" PR{N}/{type}/{title}
 ```
 
-→ Proceed to Step 9
+→ Proceed to Step 8
 
 ---
 
-### Step 9: Remove the worktree and branch
+### Step 8: Remove the worktree and branch
 
 #### Process
 
@@ -330,7 +277,7 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
-→ Proceed to Step 10
+→ Proceed to Step 9
 
 #### Notes
 
@@ -340,7 +287,7 @@ git branch -d PR{N}/{type}/{title}
 
 ---
 
-### Step 10: Update QA.md
+### Step 9: Update QA.md
 
 #### Process
 
@@ -352,26 +299,26 @@ git add .work/
 git commit -m "docs: post-merge update for PR{N}"
 ```
 
-→ Proceed to Step 11
+→ Proceed to Step 10
 
 ---
 
-### Step 11: Report merge completion
+### Step 10: Report merge completion
 
 #### Process
 
 1. Report the merge as complete to the user
    - Include the merged branch name, PR number, and task folder
 
-→ Proceed to Step 12
+→ Proceed to Step 11
 
 ---
 
-### Step 12: Delegate next PR candidates to pr-handoff
+### Step 11: Delegate next PR candidates to pr-handoff
 
 #### Condition
 
-- `WORKSPACE_MERGE_AUTO_HANDOFF` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip this step and proceed to Step 13
+- `WORKSPACE_MERGE_AUTO_HANDOFF` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip this step and proceed to Step 12
 
 #### Process
 
@@ -379,11 +326,11 @@ git commit -m "docs: post-merge update for PR{N}"
 2. **If next PR candidates exist**: invoke `/workspace:pr-handoff` (no user confirmation needed). Delegate all classification and reservation logic to that skill
 3. **If next PR candidates are empty**: skip pr-handoff
 
-→ Proceed to Step 13
+→ Proceed to Step 12
 
 ---
 
-### Step 13: Present next PR candidates in 3 categories
+### Step 12: Present next PR candidates in 3 categories
 
 #### Process
 
