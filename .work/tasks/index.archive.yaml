@@ -950,4 +950,10 @@ branches:
   summary: 'Jinja2 テンプレート作成時の注意事項（trim_blocks との相互作用、{% %} + --- バグ、{{ }} を ## に埋めない等）を
     references/jinja2/ にドキュメント化'
   task: 260531_claude-kit-jinja2-authoring-rules
+- id: 225
+  title: feat/notes-naming-reference
+  type: feat
+  tags: []
+  summary: plugins/work/references/ にノート命名規則リファレンスを追加し .work/notes/ 編集時に自動注入
+  task: 260531_notes-naming-reference
   completed: true
