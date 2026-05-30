@@ -726,3 +726,11 @@ prs:
   summary: masterブランチを現在のブランチへ取り込む操作をガード除外に修正
   task: 260530_git-guard-allow-merge-master
   completed: true
+- id: 179
+  title: PR179 — prefix-underscore-injection-config
+  type: chore
+  tags: []
+  summary: ref-inject/dev-kit/claude-kit の references 配下にある index.yaml / index.jp.yaml
+    / injection_rules.yaml をアンダースコア接頭辞付きにリネームし、ファイル一覧の上部に固定する。依存 Python フックとドキュメントも追従。
+  task: 20260530_prefix-underscore-injection-config
+  completed: true
