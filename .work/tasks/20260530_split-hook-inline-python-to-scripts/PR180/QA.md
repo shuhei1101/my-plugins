@@ -8,78 +8,56 @@
 
 ---
 
-## QA-001: フォルダ配置の統一範囲
+## QA-001: フォルダ配置の統一範囲 ✅ 解決
 
 ### 背景
 
-現在、フックスクリプトの配置がプラグイン間で不揃いです:
+現在、フックスクリプトの配置がプラグイン間で不揃い:
+- `workspace`: `hooks/scripts/*.py`
+- `claude-kit`: `hooks/inject_references.py`（直置き）
+- `dev-kit`: `hooks/inject_references.py`、`hooks/ts_check.py`（直置き）
+- `ref-inject/templates`: `templates/hooks/inject_references.py`（直置き）
 
-| プラグイン | 既存スクリプト配置 |
-|---|---|
-| `workspace` | `hooks/scripts/master-commit-guard.py`、`hooks/scripts/git-guard.py`、`hooks/scripts/user-prompt-submit.py` |
-| `claude-kit` | `hooks/inject_references.py`（直置き） |
-| `dev-kit` | `hooks/inject_references.py`、`hooks/ts_check.py`（直置き） |
-| `ref-inject/templates` | `templates/hooks/inject_references.py`（直置き） |
+### 判断（2026-05-30 確定）
 
-新規に切り出すスクリプトは `hooks/scripts/` 配下に置くのが妥当ですが、既存ファイル（`inject_references.py` / `ts_check.py`）をどう扱うかが決まっていません。
+**選択肢 B 採用** — 既存ファイル（`inject_references.py` / `ts_check.py`）も含めて全プラグイン `hooks/scripts/` 配下に統一する。
 
-### 選択肢
+合わせて以下も更新:
+- 各プラグインの `hooks/hooks.json` の `args` パスを `${CLAUDE_PLUGIN_ROOT}/hooks/scripts/{name}.py` に変更
+- `kit-hooks-index-sync` ルール（`.claude/rules/feature/kit-hooks-index-sync.md`）の `paths:` グロブと Related Files 表
+- 各プラグインの `CLAUDE.md` / `references/CLAUDE.md` / `references/environment.md` / `references/hooks.md` などのドキュメント内パス記載
+- `ref-inject/skills/apply/SKILL.md` の template→destination 表
+- glossary.md のパス記述（歴史的なもの以外）
 
-- **A. 新規切り出しのみ `hooks/scripts/` に置く（既存ファイルは触らない）** — 差分が最小。ただし claude-kit と dev-kit で「直置きと scripts/ が混在」する状態が残る
-- **B. 既存ファイル（`inject_references.py` / `ts_check.py`）も `hooks/scripts/` に移動して全プラグインで配置を統一する** — 一貫性が出る。`hooks.json` の args path / kit-hooks-index-sync ルール / ref-inject templates も同期が必要で差分は大きい
-- **C. 新規切り出しは `hooks/` 直置きにして workspace 既存の `hooks/scripts/` を `hooks/` 直置きに戻す** — workspace 側を変えるアプローチ。3スクリプト分の移動と hooks.json 修正
-
-### 判断
-
-未決定（ユーザー回答待ち）
+歴史的記録（changelogs / incidents）は変更しない。
 
 ---
 
-## QA-002: `_common.py` に切り出す関数の範囲
+## QA-002: `_common.py` に切り出す関数の範囲 ✅ 解決
 
-### 背景
+### 判断（2026-05-30 確定）
 
-インラインスクリプトに頻出するパターン:
+**選択肢 A 採用** — 5パターン全部切り出し（自由裁量で綺麗にする方針）。具体的に `_common.py` に置く関数:
 
-1. stdin から JSON を読む
-2. env var を truthy/falsy 判定（`true/1/yes/on` 以外を falsy 扱い、または逆）
-3. `stop_hook_active` をチェックして早期 `sys.exit(0)`
-4. `/tmp/{tag}-{session_id}` のフラグファイルで「once-per-session」を実現
-5. prompt ファイル（`.md`）を読み、`{'decision':'block','reason': body}` を JSON で stdout に出力
+```python
+def read_hook_input() -> dict: ...
+def env_truthy(name: str, default: bool = True) -> bool: ...
+def exit_if_stop_loop(input_data: dict) -> None: ...
+def already_dispatched_this_session(tag: str, session_id: str) -> bool: ...
+def emit_block_reason(prompt_path: Path) -> None: ...
+```
 
-### 選択肢
-
-- **A. 上記5パターンすべてを `_common.py` に切り出す** — 切り出し後の各 `*.py` が極めて短く（10〜20行）なる
-- **B. 共通度の高い 3, 4, 5 のみ切り出す（1, 2 は各スクリプトで `json.load(sys.stdin)` / `os.environ.get(...).lower() not in ('false',...)` を直書き）** — `_common.py` のインターフェースが小さく、各スクリプトが自己完結気味
-- **C. 最小限の 5（block 理由出力）だけ切り出す** — ユーティリティ最小
-
-### 推奨
-
-A。インライン化されていた `python -c` がそもそもこの5パターンの組み合わせだったので、5つ全部を関数化したほうが切り出し後のスクリプトが宣言的になり、新フック追加時の再利用性も高い。
-
-### 判断
-
-未決定（ユーザー回答待ち、推奨 A）
+各プラグイン内に閉じる（プラグイン間共通化はしない方針は維持 — インシデント `premature-cross-plugin-centralization`）。
+各プラグインの `_common.py` は意図的にコピーになる。
 
 ---
 
-## QA-003: ref-inject templates 配下への対応
+## QA-003: ref-inject templates 配下への対応 ✅ 解決
 
-### 背景
+### 判断（2026-05-30 確定）
 
-`ref-inject` は新規プラグインに reference 自動注入機構を貼り付けるための雛形プラグイン。今回確立する `_common.py` パターンを templates 配下にも反映しておくと、今後 `/ref-inject:apply` で作る新プラグインも最初から切り出し済み構造になる。
+**選択肢 B 採用** — ref-inject の `templates/hooks/scripts/_common.py` に雛形を入れる。「こういう時にはこれ入れよう」というガイドとして、新規プラグインが最初から切り出し済み構造になるように。
 
-ただし ref-inject の templates 配下の `hooks.json` 自体にはインライン `python -c` が無いため、対応するインライン切り出しの対象スクリプトはない。テンプレに `_common.py` だけ置く意味があるかは判断が分かれる。
+合わせて ref-inject templates の `hooks/inject_references.py` も `hooks/scripts/inject_references.py` に移動し、`apply` スキルが最初から `scripts/` 配下に書き出すようにする。
 
-### 選択肢
-
-- **A. ref-inject templates 配下は今回触らない** — 必要になったタイミング（実際に共通処理を使う雛形フックを ref-inject に足すとき）で対応
-- **B. `templates/hooks/scripts/_common.py` の雛形だけ用意しておく（中身はプラグイン名プレースホルダ入りの最小骨組み）** — 先回り
-
-### 推奨
-
-A。`_common.py` は使われて初めて意味があるユーティリティで、雛形だけ置いても消費者がいない（インシデント `premature-cross-plugin-centralization` / `ref-inject-overbuilt-script-and-hook` と同じ匂い）。
-
-### 判断
-
-未決定（ユーザー回答待ち、推奨 A）
+雛形の `_common.py` の中身は env prefix プレースホルダ（`__ENV_PREFIX__` 等）を含む最小骨組み + コメントで「ここに各フックの共通処理を追加する」と書いておく。
