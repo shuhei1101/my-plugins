@@ -1,4 +1,3 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 ---
 name: plugin-update
 description: |
@@ -8,6 +7,7 @@ description: |
   当て込む。また `~/.claude/settings.json` の `statusLine` が claude-kit 由来であれば
   最新定義で再適用する。手動起動のみ — `/claude-kit:plugin-update`。
 ---
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
 # claude-kit:plugin-update — claude-kit 規約への追従
 
