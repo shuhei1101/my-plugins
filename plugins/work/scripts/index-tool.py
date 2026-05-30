@@ -63,8 +63,8 @@ def cmd_next_id(args: argparse.Namespace) -> None:
     """Print the next PR number."""
     index_path = Path(args.index_yaml)
     data = _load(index_path)
-    prs: list[dict] = data.get("prs", [])
-    last_id: int = data.get("last_id") or (max((p["id"] for p in prs), default=0))
+    branches: list[dict] = data.get("branches", [])
+    last_id: int = data.get("last_id") or (max((p["id"] for p in branches), default=0))
     print(last_id + 1)
 
 
@@ -74,7 +74,7 @@ def cmd_add(args: argparse.Namespace) -> None:
     original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
     data = yaml.safe_load(original) or {} if original else {}
 
-    prs: list[dict] = data.get("prs", [])
+    branches: list[dict] = data.get("branches", [])
     new_entry = {
         "id": args.id,
         "title": args.title,
@@ -84,8 +84,8 @@ def cmd_add(args: argparse.Namespace) -> None:
         "task": args.task,
         "completed": False,
     }
-    prs.append(new_entry)
-    data["prs"] = prs
+    branches.append(new_entry)
+    data["branches"] = branches
     data["last_id"] = args.id
 
     _save(index_path, data, original)
@@ -96,7 +96,7 @@ def cmd_list_active(args: argparse.Namespace) -> None:
     """Print active PR entries, one per line: id|title|type|task"""
     index_path = Path(args.index_yaml)
     data = _load(index_path)
-    active = [p for p in data.get("prs", []) if not p.get("completed", False)]
+    active = [p for p in data.get("branches", []) if not p.get("completed", False)]
     for p in active:
         print(f"{p['id']}|{p['title']}|{p['type']}|{p['task']}")
 
@@ -105,7 +105,7 @@ def cmd_completed_count(args: argparse.Namespace) -> None:
     """Print the number of completed PR entries."""
     index_path = Path(args.index_yaml)
     data = _load(index_path)
-    count = sum(1 for p in data.get("prs", []) if p.get("completed", False))
+    count = sum(1 for p in data.get("branches", []) if p.get("completed", False))
     print(count)
 
 
@@ -115,14 +115,14 @@ def cmd_set_completed(args: argparse.Namespace) -> None:
     original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
     data = yaml.safe_load(original) or {} if original else {}
 
-    prs: list[dict] = data.get("prs", [])
-    target = next((p for p in prs if p["id"] == args.id), None)
+    branches: list[dict] = data.get("branches", [])
+    target = next((p for p in branches if p["id"] == args.id), None)
     if target is None:
         print(f"Error: PR{args.id} not found in {index_path}", file=sys.stderr)
         sys.exit(1)
 
     target["completed"] = True
-    data["prs"] = prs
+    data["branches"] = branches
     _save(index_path, data, original)
     print(f"PR{args.id} marked as completed in {index_path}")
 
@@ -135,9 +135,9 @@ def cmd_archive(args: argparse.Namespace) -> None:
     original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
     data = yaml.safe_load(original) or {} if original else {}
 
-    prs: list[dict] = data.get("prs", [])
-    completed = [p for p in prs if p.get("completed", False)]
-    remaining = [p for p in prs if not p.get("completed", False)]
+    branches: list[dict] = data.get("branches", [])
+    completed = [p for p in branches if p.get("completed", False)]
+    remaining = [p for p in branches if not p.get("completed", False)]
 
     if not completed:
         print(0)
@@ -146,14 +146,14 @@ def cmd_archive(args: argparse.Namespace) -> None:
     # Append to archive
     archive_original = archive_path.read_text(encoding="utf-8") if archive_path.exists() else ""
     archive_data = yaml.safe_load(archive_original) or {} if archive_original else {}
-    archive_prs: list[dict] = archive_data.get("prs", [])
-    archive_prs.extend(completed)
-    archive_data["prs"] = archive_prs
+    archive_branches: list[dict] = archive_data.get("branches", [])
+    archive_branches.extend(completed)
+    archive_data["branches"] = archive_branches
     archive_path.parent.mkdir(parents=True, exist_ok=True)
     _save(archive_path, archive_data, archive_original)
 
     # Remove from index
-    data["prs"] = remaining
+    data["branches"] = remaining
     _save(index_path, data, original)
 
     print(len(completed))

@@ -10,6 +10,9 @@ references:
   - path: skills.md
     description: How to author a .claude/skills/<name>/SKILL.md. When a skill is the right type, checking for existing similar skills, the JP-mirror-first workflow, the step-based structure template, and description frontmatter rules.
 
+  - path: subagents.md
+    description: When and how to delegate step processing to subagents. Delegation markers ([subagent: run · await] / parallel · await all / no-await), when to delegate vs run in main agent, and constraints (return-value only, await by default, empty context).
+
   - path: rules.md
     description: How to author a .claude/rules/<name>.md. When rules load, the two rule types (link / context), use-case-oriented path-pattern design, consolidation/separation criteria, folder structure, required sections, and the structure example.
 

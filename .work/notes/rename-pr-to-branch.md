@@ -2,6 +2,8 @@
 created_at: 2026-05-30
 updates:
   - 2026-05-30 — 初版作成
+  - 2026-05-30 — PR188: work-start の PR 用語をブランチ用語に統一
+  - 2026-05-30 — PR190: index.yaml / index.archive.yaml の prs: キーを branches: に改名
 related_specs: []
 related_prs:
   - PR188
@@ -37,7 +39,21 @@ workspace の work-start スキルを中心に「PR（Pull Request）」とい�
 
 ### PR190: index.yaml キー名変更
 - `prs:` → `branches:`
-- index-tool.py とテンプレートの変更
+- index-tool.py / trim-index.py とテンプレートの変更
+
+**実施内容（PR190）:**
+- QA-001: 新名称 → `branches:` を採用（`work_items:` / `tasks:` より明確）
+- QA-002: 移行方針 → 一括置換（ローカルファイルなので後方互換不要）
+
+| ファイル | 変更内容 |
+|---|---|
+| `plugins/work/scripts/index-tool.py` | `data.get("prs")` → `data.get("branches")`、変数名も統一 |
+| `plugins/work/scripts/trim-index.py` | 同上 |
+| `plugins/work/templates/.work/tasks/index.yaml` | `prs: []` → `branches: []` |
+| `plugins/work/templates/.work/tasks/index.archive.yaml` | `archived_prs: []` → `branches: []`（既存バグ修正） |
+| 各 `.work/tasks/index*.yaml`（gitignored） | 一括 sed 置換 |
+
+**既存バグ修正:** テンプレート `index.archive.yaml` が `archived_prs:` キーを使っていたが、スクリプトは `"prs"` キーで読み書きしていた。PR190 で `branches:` に統一して修正済み。
 
 ### PR191: 既存フォルダ名の統一
 - 8桁 YYYYMMDD → 6桁 YYMMDD 形式に一括リネーム

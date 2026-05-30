@@ -1,9 +1,10 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of work-dot-work-dir.md. -->
+<!-- When updating the English original, update this file too. -->
 
-# .work/ — work タスク管理ディレクトリ
+# .work/ ディレクトリガイド
 
-work プラグインが管理するタスク・ブランチライフサイクルの作業場所。
-Claude はここのファイルを読み書きしてタスク状態を追跡する。
+`.work/` 配下のファイルを編集する際の構造説明・規約。
+英語ミラー: `references/work-dot-work-dir.md`
 
 ---
 
@@ -11,7 +12,7 @@ Claude はここのファイルを読み書きしてタスク状態を追跡す�
 
 | パス | 役割 |
 |---|---|
-| `tasks/index.yaml` | ブランチ索引（`completed: false` = 進行中）。`last_id` は次の内部数値 ID の基準値（archive 相互参照用。ブランチ名には埋め込まれない） |
+| `tasks/index.yaml` | ブランチ索引（`completed: false` = 進行中）。`last_id` は内部数値 ID の基準値（archive 相互参照用。ブランチ名には埋め込まれない） |
 | `tasks/index.archive.yaml` | アーカイブ済み（`completed: true`）のブランチエントリ。merge で `index-tool.py archive` が自動生成 |
 | `tasks/{YYMMDD}_{title}/{branch-hyphenated}.md` | ブランチごとに 1 つの Markdown ファイル — TODO・QA・変更内容まで全て 1 ドキュメントに統合 |
 | `notes/{トピック名}.md` | 作業中の議事録・検討メモ（一時的、AI 自動読み込みなし） |
@@ -19,11 +20,12 @@ Claude はここのファイルを読み書きしてタスク状態を追跡す�
 ### tasks/
 
 `tasks/index.yaml` がブランチの一元管理場所。進行中のブランチは `completed: false`、マージ済みは `completed: true`。
-`last_id` フィールドはこれまでに割り当てた内部数値 ID の最大値で、次の ID の参照基準となる。
+`last_id` フィールドはこれまでに割り当てた内部数値 ID の最大値。
 マージのたびに `index-tool.py archive` が完了済みエントリを `index.archive.yaml` へ移動し、`index.yaml` をアクティブなブランチのみに保つ。
 作業開始時は必ず index.yaml を読んで進行中のブランチを確認する。
 
-タスクごとにフォルダ（`{YYMMDD}_{title}/`）を切り、その中に **ブランチごとに 1 つの Markdown ファイル** を置く。ファイル名はブランチ名のスラッシュをハイフンに置換したもの（例: `refactor/rename-pr-to-branch` → `refactor-rename-pr-to-branch.md`）。
+タスクごとにフォルダ（`{YYMMDD}_{title}/`）を切り、その中に **ブランチごとに 1 つの Markdown ファイル** を置く。
+ファイル名はブランチ名のスラッシュをハイフンに置換したもの（例: `refactor/rename-pr-to-branch` → `refactor-rename-pr-to-branch.md`）。
 
 ブランチドキュメントは「このブランチが何をするか」の唯一の正本。実装開始前に作成し、作業を通じて常に最新に保つ。以下のセクションを含む:
 
@@ -39,7 +41,7 @@ Claude はここのファイルを読み書きしてタスク状態を追跡す�
 
 ### notes/
 
-**役割**: 議事録・検討メモレベルの一時的な作業ノート。**Claude Code には自動読み込みされない** — 非公式なスクラッチ領域として扱う。
+**立ち位置**: 議事録・検討メモレベルの一時的な作業ノート。Claude Code には**自動読み込みされない**ため、非公式なスクラッチ領域として扱う。
 
 フラット構造（**サブフォルダなし**）。1 ノート 1 トピック。重複禁止（リンク推奨）。
 
@@ -61,16 +63,4 @@ Claude はここのファイルを読み書きしてタスク状態を追跡す�
 - notes を恒久知識に昇格させる場合は `/work:notes-to-claude` を使う
 - 疑問点・未確定事項はブランチドキュメントの `## QA` セクションに追記
 - merge 前に作業内容テーブルの全行が `済` であることを確認
-
----
-
-## work スキル
-
-| スキル | 用途 |
-|---|---|
-| `/work:setup` | `.work/` を初期化（初回のみ） |
-| `/work:start` | タスクフォルダ・ブランチドキュメント・index.yaml エントリを作成 |
-| `/work:merge` | 作業内容確認・merge・index.yaml 更新・worktree クリーンアップを実行 |
-| `/work:pr-handoff` | ブランチドキュメントの `## 次ブランチ候補` から次のブランチを work:start と同じ流れで予約し、背景情報を新ブランチドキュメントに記録 |
-| `/work:notes-to-claude` | `notes/` の内容をルール・CLAUDE.md・references に昇格 |
-| `/work:plugin-update` | プロジェクトに既に存在するプラグイン生成物（`.work/` テンプレやその他プラグインの静的ファイル）を、現在インストール済みのプラグインバージョンに合わせて更新 |
+- **`.work/` 配下の変更（ブランチドキュメントの更新・ノートの記述など）は、実装コードのコミットとは別コミットにすること** — `.work/` 配下の変更同士はまとめてよい

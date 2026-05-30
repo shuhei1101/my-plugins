@@ -417,3 +417,6 @@ references:
 - path: html/common-component-first.md
   lang: html
   description: 共通コンポーネント先読み必須化。UI マークアップ・スタイル・DOM コードを追加する前に、共有の constants・routes・コンポーネント CSS/JS 層を先に読む。再利用 > 拡張 > 新規追加; インライン一発実装と値のハードコードを禁止。
+- path: markdown/markdown-editing.md
+  lang: markdown
+  description: Markdown フロントマター配置ルール。YAML フロントマターを持つファイルでは開き --- の前に何も置かない。HTML コメント等は閉じ --- の直後に移動する。

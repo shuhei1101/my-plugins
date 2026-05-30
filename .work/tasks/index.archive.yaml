@@ -774,7 +774,8 @@ branches:
   title: PR182 — dev-kit-plugin-update-skill
   type: feat
   tags: []
-  summary: dev-kit に plugin-update スキルを追加 (v4.3.0)、claude-kit plugin-structure.md の plugin-update 標準仕様を改訂 (v3.43.1)
+  summary: dev-kit に plugin-update スキルを追加 (v4.3.0)、claude-kit plugin-structure.md
+    の plugin-update 標準仕様を改訂 (v3.43.1)
   task: 260530_dev-kit-plugin-update-skill
   completed: true
 - id: 210
@@ -783,4 +784,26 @@ branches:
   tags: []
   summary: claude-kit の plugin authoring guide にプラグイン間依存ゼロ原則の独立セクションを追加（Why／許容例外／違反検出方法を明文化）
   task: 260530_claude-kit-zero-plugin-dependency-principle
+  completed: true
+- id: 185
+  title: PR185 — ref-inject-plugin-update-skill
+  type: feat
+  tags: []
+  summary: ref-inject に plugin-update スキルを追加（PR168 の plugin authoring guide 必須化に追従）
+  task: 260530_ref-inject-plugin-update-skill
+  completed: true
+- id: 190
+  title: PR190 — rename-index-prs-key
+  type: refactor
+  tags: []
+  summary: index.yamlとindex.archive.yamlのprs:キーをbranches:に改名し、index-tool.pyを更新する
+  task: 260530_index-yamlのprs:キーをbranches:に改名
+  completed: true
+- id: 198
+  title: PR198 — dev-kit-markdown-frontmatter-rule
+  type: feat
+  tags: []
+  summary: dev-kit/references/ にフロントマター付き md の編集規約（フロントマター上に HTML コメント禁止）を追加し、PreToolUse
+    検出フックも同梱
+  task: 260530_dev-kit-markdown-frontmatter-rule
   completed: true
