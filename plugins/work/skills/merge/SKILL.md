@@ -73,7 +73,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 3: Confirm compatibility with master
+### Step 3: Merge master into this branch
 
 #### Condition
 
@@ -89,56 +89,29 @@ git log HEAD..master --oneline
 
 If no output → master has not moved; skip to Step 4.
 
-2. Check for relevant relationships between this branch's changes and master's changes. Use git commands as a starting point, then apply contextual judgment:
-
-```bash
-# Get a picture of what this branch changed
-git diff master...HEAD --name-only
-
-# Scan master's commits for what changed and where
-git log HEAD..master --oneline --stat
-```
-
-   Do not rely on file-name matches alone — also consider indirect relationships:
-   - Did master change a **caller or importer** of a file this branch modifies?
-   - Did master change an **interface, type, schema, or config** that this branch depends on?
-   - Did master introduce **naming or structural changes** that this branch's code assumes haven't happened yet?
-
-3. Read the relevant master-side commit content and background:
-
-```bash
-git log -p HEAD..master -- {relevant file}
-```
-
-4. For each relevant change, judge priority autonomously using these dimensions:
-   - **Recency**: which commit is newer?
-   - **Blast radius**: is master's change central (many dependents) or local? Central changes take higher priority.
-   - **Interface changes**: if master changed a function signature, type, or schema, this branch may be using the old interface → update the branch side
-   - **Directional alignment**: are master and this branch heading toward the same goal, or opposite directions? Opposite directions often means one side has an error.
-   - **Branch purpose**: if this branch exists specifically to correct or supersede master's change, the branch takes priority.
-
-5. Based on the judgment, take one of the following actions autonomously (no user confirmation needed):
-   - **No action needed**: changes are independent → proceed to Step 4
-   - **Incorporate master**: master has a related change that this branch should reflect — merge master into the branch:
+2. Merge master into this branch:
 
 ```bash
 git merge master
 ```
 
-   Resolve conflicts and update the branch's implementation to be compatible.
-   - **Branch takes priority**: this branch is specifically correcting master, or the branch approach is clearly the newer correct one → proceed without merging
-   - **Tie**: when the judgment is evenly balanced, choose the safe side — incorporate master (`git merge master`), then re-apply the branch's intent on top
+3. Check whether the merge completed cleanly:
+
+```bash
+git status
+```
+
+   - **No conflicts** (clean merge) → proceed to Step 4
+   - **Conflicts exist** → stop here; report the conflicting files to the user and wait for
+     manual resolution before continuing
 
 → Proceed to Step 4
 
 #### Notes
 
-##### Autonomous tiebreaker order (when judgment is unclear)
+##### Prohibitions
 
-1. Recency — prefer the newer commit
-2. Blast radius — prefer the change that more things depend on
-3. Branch purpose — if the branch corrects this change, prefer the branch
-4. Safe default — incorporate master, then adapt the branch
+- Do not skip this step — merging master into the branch before merging to master is required
 
 ### Step 4: Close related issues (inside the worktree)
 
