@@ -16,8 +16,8 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `templates/.work/CLAUDE.jp.md` の規約セクションに規約を追記 | - `plugins/work/templates/.work/CLAUDE.jp.md` |
-| - | `templates/.work/CLAUDE.md` の規約セクションに規約を追記（JP ミラー後に反映） | - `plugins/work/templates/.work/CLAUDE.md` |
+| 済 | `templates/.work/CLAUDE.jp.md` の規約セクションに規約を追記 | - `plugins/work/templates/.work/CLAUDE.jp.md` |
+| 済 | `templates/.work/CLAUDE.md` の規約セクションに規約を追記（JP ミラー後に反映） | - `plugins/work/templates/.work/CLAUDE.md` |
 
 ## 変更内容
 
