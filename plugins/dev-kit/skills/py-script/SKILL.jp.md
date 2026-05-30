@@ -1,21 +1,21 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
-# SKILL.jp.md — py-kit:py-script（日本語ミラー）
+# SKILL.jp.md — dev-kit:py-script（日本語ミラー）
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
 
 ---
 
-**スキル名**: py-kit:py-script
+**スキル名**: dev-kit:py-script
 **トリガー**: 単一ファイルまたは数ファイル程度の簡易 Python スクリプト作成依頼時。
 「スクリプト作って」「ちょっとした Python ファイル書いて」「自動化スクリプトほしい」など。
-`pyproject.toml` や `tests/` を必要とする本格プロジェクトには使わない → `py-kit:py-project` を使う。
+`pyproject.toml` や `tests/` を必要とする本格プロジェクトには使わない → `dev-kit:py-project` を使う。
 
 ---
 
-# py-kit:py-script — 簡易 Python スクリプト作成
+# dev-kit:py-script — 簡易 Python スクリプト作成
 
-py-kit 規約に従った単一ファイル / 数ファイルのスクリプトを作成する。
+dev-kit Python 規約に従った単一ファイル / 数ファイルのスクリプトを作成する。
 
 ---
 
@@ -26,27 +26,27 @@ py-kit 規約に従った単一ファイル / 数ファイルのスクリプト�
 まず references のインデックスを読む:
 
 ```
-{plugin_root}/references/index.yaml
+{plugin_root}/references/python/index.yaml
 ```
 
-スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-script` → プラグインルートは `.../py-kit/`）。
+スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-script` → プラグインルートは `.../dev-kit/`）。
 
 このスキルで読むべきもの:
-- `{plugin_root}/references/core/naming.md` — 命名規約
-- `{plugin_root}/references/core/comments.md` — docstring とフィールド説明
-- `{plugin_root}/references/core/type-hints.md` — PEP 695 / 型注釈
-- `{plugin_root}/references/core/language-rules.md` — 日本語コメント / 英語ログ
-- `{plugin_root}/references/core/style.md` — ruff / 行長
-- `{plugin_root}/references/scripts/python-script.md` — スクリプト構造
+- `{plugin_root}/references/python/core/naming.md` — 命名規約
+- `{plugin_root}/references/python/core/comments.md` — docstring とフィールド説明
+- `{plugin_root}/references/python/core/type-hints.md` — PEP 695 / 型注釈
+- `{plugin_root}/references/python/core/language-rules.md` — 日本語コメント / 英語ログ
+- `{plugin_root}/references/python/core/style.md` — ruff / 行長
+- `{plugin_root}/references/python/scripts/python-script.md` — スクリプト構造
 
 bat ランチャーも作るなら:
-- `{plugin_root}/references/scripts/launchers-windows.md`
+- `{plugin_root}/references/python/scripts/launchers-windows.md`
 
 UNIX ランチャーなら:
-- `{plugin_root}/references/scripts/launchers-unix.md`
+- `{plugin_root}/references/python/scripts/launchers-unix.md`
 
 tkinter GUI なら:
-- `{plugin_root}/references/scripts/tkinter.md`
+- `{plugin_root}/references/python/scripts/tkinter.md`
 
 → ステップ2へ
 
@@ -91,24 +91,24 @@ tkinter GUI なら:
 
 #### 出力
 
-- py-kit 規約に従ったスクリプトファイル
+- dev-kit Python 規約に従ったスクリプトファイル
 - 必要なら bat / sh ランチャー
 
 #### 補足
 
 ##### 禁止事項
 
-- `pyproject.toml` を作らない（必要なら `py-kit:py-project` で本格プロジェクト化）
+- `pyproject.toml` を作らない（必要なら `dev-kit:py-project` で本格プロジェクト化）
 - `logger.py` / `settings.py` / `errors.py` 等の `shared/` モジュールを作らない（インライン）
 - `tests/` フォルダを作らない
 - 1 回限りのスクリプトに不要な抽象化を加えない（YAGNI）
-- 単体テストを書かない（py-kit 全体の方針）
+- 単体テストを書かない（dev-kit Python 全体の方針）
 
 ---
 
 ## 参考資料
 
-詳細は `{plugin_root}/references/index.yaml` を参照。
+詳細は `{plugin_root}/references/python/index.yaml` を参照。
 
 主要 reference:
 - `core/*` — 言語ルール

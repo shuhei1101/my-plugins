@@ -1,24 +1,24 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
-# SKILL.jp.md — py-kit:py-project（日本語ミラー）
+# SKILL.jp.md — dev-kit:py-project（日本語ミラー）
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
 
 ---
 
-**スキル名**: py-kit:py-project
+**スキル名**: dev-kit:py-project
 **トリガー**: Python プロジェクトに関する作業全般。
 新規プロジェクトをゼロから作る場合（機能フォルダ型レイアウト・関数ファースト設計・テスト雛形を生成）と、
 既存プロジェクトへの作業（レビュー・機能追加・リファクタ・バグ修正）の両方をカバーする。
 「新しい Python プロジェクト作って」「土台から作りたい」「このコード見て」「機能追加して」
 「リファクタして」「バグ直して」「コードレビューして」など。
-簡易な単発スクリプトには使わない → `py-kit:py-script` を使う。
+簡易な単発スクリプトには使わない → `dev-kit:py-script` を使う。
 
 ---
 
-# py-kit:py-project — Python プロジェクト（新規 or 既存）
+# dev-kit:py-project — Python プロジェクト（新規 or 既存）
 
-py-kit の新方針（機能フォルダ型レイアウト + TypeScript 風 + 関数ファースト）で
+dev-kit Python の方針（機能フォルダ型レイアウト + TypeScript 風 + 関数ファースト）で
 Python プロジェクトを扱う。
 
 ---
@@ -30,24 +30,24 @@ Python プロジェクトを扱う。
 まず references のインデックスを読む:
 
 ```
-{plugin_root}/references/index.yaml
+{plugin_root}/references/python/index.yaml
 ```
 
-スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-project` → プラグインルートは `.../py-kit/`）。
+スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-project` → プラグインルートは `.../dev-kit/`）。
 
 `index.yaml` の `references:` リストに全 reference のパスと 1 行説明が、
-`{plugin_root}/references/injection_rules.yaml` の `rules:` で「どの編集対象パスにどの reference を割り当てるか」が定義されている。
+`{plugin_root}/references/python/injection_rules.yaml` の `rules:` で「どの編集対象パスにどの reference を割り当てるか」が定義されている。
 
 このスキルで常に読むべきもの:
-- `{plugin_root}/references/core/naming.md`
-- `{plugin_root}/references/core/comments.md`
-- `{plugin_root}/references/core/type-hints.md`
-- `{plugin_root}/references/core/language-rules.md`
-- `{plugin_root}/references/core/style.md`
-- `{plugin_root}/references/architecture/layout.md`
-- `{plugin_root}/references/architecture/ts-style.md`
-- `{plugin_root}/references/architecture/composition-root.md`
-- `{plugin_root}/references/architecture/dependencies.md`
+- `{plugin_root}/references/python/core/naming.md`
+- `{plugin_root}/references/python/core/comments.md`
+- `{plugin_root}/references/python/core/type-hints.md`
+- `{plugin_root}/references/python/core/language-rules.md`
+- `{plugin_root}/references/python/core/style.md`
+- `{plugin_root}/references/python/architecture/layout.md`
+- `{plugin_root}/references/python/architecture/ts-style.md`
+- `{plugin_root}/references/python/architecture/composition-root.md`
+- `{plugin_root}/references/python/architecture/dependencies.md`
 
 タスクに応じて以下も:
 - 新規プロジェクト → `testing/strategy.md`, `packaging/pyproject.md`, `packaging/dependencies.md`
@@ -232,7 +232,7 @@ Python プロジェクトを扱う。
 
 ## 参考資料
 
-詳細は `{plugin_root}/references/index.yaml` を参照。
+詳細は `{plugin_root}/references/python/index.yaml` を参照。
 
 このスキルが扱う代表的な reference:
 - `core/*` — 言語ルール

@@ -1,16 +1,16 @@
 ---
-name: py-kit:py-script
+name: dev-kit:py-script
 description: >
   Create a simple Python script (single file or a few files, no full project scaffold).
   Trigger when the user asks for a quick script, a one-off automation, or anything that
   does not need pyproject.toml, a package directory, or tests.
   Examples: "write a script that...", "make a quick Python file to...", "スクリプト作って".
-  Do NOT trigger for full project creation — use py-kit:py-project instead.
+  Do NOT trigger for full project creation — use dev-kit:py-project instead.
 ---
 
-# py-kit:py-script — Simple Python Script
+# dev-kit:py-script — Simple Python Script
 
-Create a single-file (or few-file) script that follows py-kit conventions.
+Create a single-file (or few-file) script that follows dev-kit Python conventions.
 
 ---
 
@@ -21,27 +21,27 @@ Create a single-file (or few-file) script that follows py-kit conventions.
 First, read the references index:
 
 ```
-{plugin_root}/references/index.yaml
+{plugin_root}/references/python/index.yaml
 ```
 
-The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-script` → plugin root is `.../py-kit/`).
+The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-script` → plugin root is `.../dev-kit/`).
 
 Read the following for this skill:
-- `{plugin_root}/references/core/naming.md` — naming conventions
-- `{plugin_root}/references/core/comments.md` — docstrings and field descriptions
-- `{plugin_root}/references/core/type-hints.md` — PEP 695 / type annotations
-- `{plugin_root}/references/core/language-rules.md` — Japanese comments / English logs
-- `{plugin_root}/references/core/style.md` — ruff / line length
-- `{plugin_root}/references/scripts/python-script.md` — script structure
+- `{plugin_root}/references/python/core/naming.md` — naming conventions
+- `{plugin_root}/references/python/core/comments.md` — docstrings and field descriptions
+- `{plugin_root}/references/python/core/type-hints.md` — PEP 695 / type annotations
+- `{plugin_root}/references/python/core/language-rules.md` — Japanese comments / English logs
+- `{plugin_root}/references/python/core/style.md` — ruff / line length
+- `{plugin_root}/references/python/scripts/python-script.md` — script structure
 
 If a bat launcher is also needed:
-- `{plugin_root}/references/scripts/launchers-windows.md`
+- `{plugin_root}/references/python/scripts/launchers-windows.md`
 
 For a UNIX launcher:
-- `{plugin_root}/references/scripts/launchers-unix.md`
+- `{plugin_root}/references/python/scripts/launchers-unix.md`
 
 For a tkinter GUI:
-- `{plugin_root}/references/scripts/tkinter.md`
+- `{plugin_root}/references/python/scripts/tkinter.md`
 
 → Proceed to Step 2
 
@@ -86,24 +86,24 @@ For a tkinter GUI:
 
 #### Output
 
-- Script file following py-kit conventions
+- Script file following dev-kit Python conventions
 - bat / sh launcher if required
 
 #### Notes
 
 ##### Prohibitions
 
-- Do not create `pyproject.toml` (if needed, use `py-kit:py-project` for a full project).
+- Do not create `pyproject.toml` (if needed, use `dev-kit:py-project` for a full project).
 - Do not create `shared/` modules such as `logger.py` / `settings.py` / `errors.py` (inline them).
 - Do not create a `tests/` folder.
 - Do not add unnecessary abstraction for a one-off script (YAGNI).
-- Do not write unit tests (overall py-kit policy).
+- Do not write unit tests (overall dev-kit Python policy).
 
 ---
 
 ## References
 
-See `{plugin_root}/references/index.yaml` for details.
+See `{plugin_root}/references/python/index.yaml` for details.
 
 Primary references:
 - `core/*` — language rules

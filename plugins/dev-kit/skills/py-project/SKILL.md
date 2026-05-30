@@ -1,5 +1,5 @@
 ---
-name: py-kit:py-project
+name: dev-kit:py-project
 description: >
   Work with a Python project — create a new project from scratch, or review/extend/refactor/fix
   an existing one. Covers both new project scaffolding (feature-folder layout, function-first
@@ -7,12 +7,12 @@ description: >
   refactor, bug fix).
   Examples: "新しい Python プロジェクト作って", "土台から作りたい", "このコード見て",
   "機能追加して", "リファクタして", "バグ直して", "コードレビューして".
-  Do NOT trigger for simple one-off scripts — use py-kit:py-script instead.
+  Do NOT trigger for simple one-off scripts — use dev-kit:py-script instead.
 ---
 
-# py-kit:py-project — Python Project (New or Existing)
+# dev-kit:py-project — Python Project (New or Existing)
 
-Handles Python projects under py-kit's new policy
+Handles Python projects under dev-kit Python policy
 (feature-folder layout + TypeScript-style + function-first).
 
 ---
@@ -24,24 +24,24 @@ Handles Python projects under py-kit's new policy
 First, read the references index:
 
 ```
-{plugin_root}/references/index.yaml
+{plugin_root}/references/python/index.yaml
 ```
 
-The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-project` → plugin root is `.../py-kit/`).
+The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-project` → plugin root is `.../dev-kit/`).
 
 The `references:` list in `index.yaml` lists each reference path with a one-line description, and
-`{plugin_root}/references/injection_rules.yaml` defines "which references to assign to which file paths".
+`{plugin_root}/references/python/injection_rules.yaml` defines "which references to assign to which file paths".
 
 Always read the following for this skill:
-- `{plugin_root}/references/core/naming.md`
-- `{plugin_root}/references/core/comments.md`
-- `{plugin_root}/references/core/type-hints.md`
-- `{plugin_root}/references/core/language-rules.md`
-- `{plugin_root}/references/core/style.md`
-- `{plugin_root}/references/architecture/layout.md`
-- `{plugin_root}/references/architecture/ts-style.md`
-- `{plugin_root}/references/architecture/composition-root.md`
-- `{plugin_root}/references/architecture/dependencies.md`
+- `{plugin_root}/references/python/core/naming.md`
+- `{plugin_root}/references/python/core/comments.md`
+- `{plugin_root}/references/python/core/type-hints.md`
+- `{plugin_root}/references/python/core/language-rules.md`
+- `{plugin_root}/references/python/core/style.md`
+- `{plugin_root}/references/python/architecture/layout.md`
+- `{plugin_root}/references/python/architecture/ts-style.md`
+- `{plugin_root}/references/python/architecture/composition-root.md`
+- `{plugin_root}/references/python/architecture/dependencies.md`
 
 Add the following depending on the task:
 - New project → `testing/strategy.md`, `packaging/pyproject.md`, `packaging/dependencies.md`
@@ -226,7 +226,7 @@ Identify what must be updated alongside the changed files:
 
 ## References
 
-See `{plugin_root}/references/index.yaml` for full details.
+See `{plugin_root}/references/python/index.yaml` for full details.
 
 Typical references covered by this skill:
 - `core/*` — language rules
