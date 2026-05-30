@@ -28,10 +28,10 @@
 | スコープ | このプラグイン自身の env / オンボーディングのみ。他プラグインの設定には絶対に触らない |
 | 完了マーク | `.claude/{plugin}.local.md` の YAML frontmatter に `setup_done: true` を書き込む |
 
-### setup-wizard と plugin-config の関係
+### setup-wizard と config の関係
 
-`setup-wizard` は env 設定を **自プラグインの `plugin-config` スキル**に委譲する。各プラグインが
-env トグルを持つ場合、`plugin-config` スキルの実装も必須（→ 後述「関連必須スキル」）。
+`setup-wizard` は env 設定を **自プラグインの `config` スキル**に委譲する。各プラグインが
+env トグルを持つ場合、`config` スキルの実装も必須（→ 後述「関連必須スキル」）。
 
 ---
 
@@ -106,9 +106,9 @@ setup_done: true
 
 | ラベル | 動作 |
 |---|---|
-| すべて設定する | 自プラグインの `plugin-config` スキルを起動して全 env を対話設定 |
+| すべて設定する | 自プラグインの `config` スキルを起動して全 env を対話設定 |
 | 必須のみ | プラグインが必須と定義した env だけを設定（任意項目はスキップ） |
-| スキップ | env 設定を行わず次へ。後で `/<plugin>:plugin-config` で個別設定可能と案内 |
+| スキップ | env 設定を行わず次へ。後で `/<plugin>:config` で個別設定可能と案内 |
 
 ### Step 3 — ユースケース紹介
 
@@ -131,10 +131,10 @@ setup_done: true
 
 | スキル | 役割 |
 |---|---|
-| `plugin-config` | env 変数を `AskUserQuestion` で個別編集する単機能スキル。`setup-wizard` から委譲される |
+| `config` | env 変数を `AskUserQuestion` で個別編集する単機能スキル。`setup-wizard` から委譲される |
 | `plugin-update` | バージョン追従。詳細は本リファレンスの「Required skills」セクション |
 
-env を持たないプラグインなら `plugin-config` は不要だが、`setup-wizard` のユースケース紹介
+env を持たないプラグインなら `config` は不要だが、`setup-wizard` のユースケース紹介
 ステップは依然として価値があるため必須は維持する。
 
 ---
@@ -145,28 +145,28 @@ env を持たないプラグインなら `plugin-config` は不要だが、`setu
 ---
 name: setup-wizard
 description: |
-  Trigger on `SessionStart` (auto-loaded by hook when `setup_done` is unset) or when the
-  user calls `/<plugin>:setup-wizard` explicitly. Walks through env config and use-case
-  introduction, then marks the plugin as set up.
+  `SessionStart` 時（フックが `setup_done` 未設定を検知したとき）、または
+  ユーザーが `/<plugin>:setup-wizard` を明示的に呼んだときにトリガー。
+  env 設定とユースケース紹介を経てプラグインをセットアップ済みとしてマークする。
 ---
 
-# <plugin>:setup-wizard — Initial Onboarding
+# <plugin>:setup-wizard — 初回オンボーディング
 
 このスキルは <plugin> の初回オンボーディング用。AskUserQuestion を内部で使用する
 （このスキル内では AskUserQuestion 利用を許可）。
 
-## Tasks
+## 作業内容
 
-### Step 1: Check existing setup state
+### ステップ 1: 既セットアップ判定
 {`.claude/<plugin>.local.md` を読み、`setup_done` の値で分岐}
 
-### Step 2: env config (delegate to plugin-config)
-{AskUserQuestion で「すべて設定 / 必須のみ / スキップ」を提示し、選択に応じて `plugin-config` を起動}
+### ステップ 2: env 設定（config スキルに委譲）
+{AskUserQuestion で「すべて設定 / 必須のみ / スキップ」を提示し、選択に応じて `config` を起動}
 
-### Step 3: Use-case showcase
+### ステップ 3: ユースケース紹介
 {AskUserQuestion で「最初に試したいユースケース」を 2〜4 件提示し、選んだものを要約 + CLAUDE.md へリンク}
 
-### Step 4: Mark setup as done
+### ステップ 4: 完了マーク
 {`.claude/<plugin>.local.md` の frontmatter に `setup_done: true` を書き込む}
 ```
 
@@ -178,6 +178,6 @@ JP ミラー `SKILL.jp.md` も同時に作成すること（`common.md` の JP/E
 
 - [ ] `skills/setup-wizard/SKILL.md` と `SKILL.jp.md` を作成した
 - [ ] `hooks/hooks.json` に `SessionStart` フックを追加し、`hooks/scripts/setup_check.py` を実装した
-- [ ] env を持つプラグインなら `skills/plugin-config/SKILL.md` (+ `.jp.md`) も合わせて実装した
+- [ ] env を持つプラグインなら `skills/config/SKILL.md` (+ `.jp.md`) も合わせて実装した
 - [ ] プラグインの `CLAUDE.md` に「初回起動時のセットアップフロー」を 1 行記載した
 - [ ] バージョンを bump し、changelog に "setup-wizard を追加" と記録した
