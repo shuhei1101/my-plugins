@@ -681,3 +681,10 @@ prs:
   summary: プラグインの CLAUDE.md 標準セクション構成を定義し、changelogs/ を廃止してテンプレートを references/ に追加
   task: 20260530_add-plugin-claude-md-standard
   completed: true
+- id: 178
+  title: PR178 — add-markdown-table-reference
+  type: feat
+  tags: []
+  summary: claude-kitにMarkdownテーブル記法のリファレンスを追加し、繰り返し値の省略ルールを注入
+  task: 20260530_add-markdown-table-reference
+  completed: true
