@@ -73,13 +73,15 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 3: Merge the target branch into this branch
+### Step 3: Merge the target branch into this branch (inside the worktree)
 
 #### Condition
 
 - Step 2 complete
 
 #### Process
+
+All commands in this step must be run **inside the worktree** (`{WORKTREE_PATH}`), not in the main repository.
 
 1. Identify the merge target branch (`PARENT_BRANCH`) — the branch this branch will be merged into.
    In most cases this is `master`; for feature branches off `develop` it is `develop`.
@@ -88,7 +90,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 2. Check whether the target branch has new commits since this branch diverged:
 
 ```bash
-git log HEAD..<PARENT_BRANCH> --oneline
+git -C {WORKTREE_PATH} log HEAD..<PARENT_BRANCH> --oneline
 ```
 
 If no output → the target branch has not moved; skip to Step 4.
@@ -96,13 +98,13 @@ If no output → the target branch has not moved; skip to Step 4.
 3. Merge the target branch into this branch:
 
 ```bash
-git merge <PARENT_BRANCH>
+git -C {WORKTREE_PATH} merge <PARENT_BRANCH>
 ```
 
 4. Check whether the merge completed cleanly:
 
 ```bash
-git status
+git -C {WORKTREE_PATH} status
 ```
 
    - **No conflicts** (clean merge) → proceed to Step 4
