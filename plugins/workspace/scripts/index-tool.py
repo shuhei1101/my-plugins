@@ -1,0 +1,218 @@
+"""
+index-tool — CLI for workspace index.yaml operations.
+
+Usage:
+  python index-tool.py next-id [index_yaml]
+  python index-tool.py add [index_yaml] --id N --title T --type T --summary S --task T
+  python index-tool.py list-active [index_yaml]
+  python index-tool.py set-completed [index_yaml] --id N
+  python index-tool.py archive [index_yaml] [archive_yaml]
+
+  index_yaml   Path to index.yaml (default: .work/tasks/index.yaml)
+  archive_yaml Path to index.archive.yaml (default: .work/tasks/index.archive.yaml)
+
+Subcommands:
+  next-id        Print the next available PR number (last_id + 1, or 1 if absent)
+  add            Append a new PR entry and update last_id
+  list-active    Print active (completed: false) PR entries as lines:
+                   id|title|type|task
+  set-completed  Mark a PR entry as completed: true
+  archive        Move completed entries from index.yaml to index.archive.yaml.
+                 Prints the number of entries moved.
+
+By routing index.yaml operations through this script, Claude Code avoids
+loading the full YAML file into its context window.
+"""
+
+# ── stdlib ──────────────────────────────────────────────────
+import argparse
+import sys
+from pathlib import Path
+
+sys.stdout.reconfigure(encoding="utf-8")
+
+# ── third-party ─────────────────────────────────────────────
+try:
+    import yaml  # pip install pyyaml
+except ImportError:
+    print("Error: PyYAML not installed. Run: pip install pyyaml", file=sys.stderr)
+    sys.exit(1)
+
+# ── constants ───────────────────────────────────────────────
+DEFAULT_INDEX = Path(".work/tasks/index.yaml")
+DEFAULT_ARCHIVE = Path(".work/tasks/index.archive.yaml")
+
+
+# ── private helpers ─────────────────────────────────────────
+def _load(path: Path) -> dict:
+    """Return parsed YAML content, or empty dict if the file is missing."""
+    if not path.exists():
+        return {}
+    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+
+def _save(path: Path, data: dict, original_text: str) -> None:
+    """Write data back to path, preserving any leading comment lines."""
+    comment_lines = [l for l in original_text.splitlines() if l.startswith("#")]
+    header = "\n".join(comment_lines) + "\n\n" if comment_lines else ""
+    path.write_text(header + yaml.dump(data, allow_unicode=True, default_flow_style=False, sort_keys=False), encoding="utf-8")
+
+
+# ── subcommand handlers ──────────────────────────────────────
+def cmd_next_id(args: argparse.Namespace) -> None:
+    """Print the next PR number."""
+    index_path = Path(args.index_yaml)
+    data = _load(index_path)
+    prs: list[dict] = data.get("prs", [])
+    last_id: int = data.get("last_id") or (max((p["id"] for p in prs), default=0))
+    print(last_id + 1)
+
+
+def cmd_add(args: argparse.Namespace) -> None:
+    """Append a new PR entry and update last_id."""
+    index_path = Path(args.index_yaml)
+    original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
+    data = yaml.safe_load(original) or {} if original else {}
+
+    prs: list[dict] = data.get("prs", [])
+    new_entry = {
+        "id": args.id,
+        "title": args.title,
+        "type": args.type,
+        "tags": [],
+        "summary": args.summary,
+        "task": args.task,
+        "completed": False,
+    }
+    prs.append(new_entry)
+    data["prs"] = prs
+    data["last_id"] = args.id
+
+    _save(index_path, data, original)
+    print(f"Added PR{args.id} to {index_path}")
+
+
+def cmd_list_active(args: argparse.Namespace) -> None:
+    """Print active PR entries, one per line: id|title|type|task"""
+    index_path = Path(args.index_yaml)
+    data = _load(index_path)
+    active = [p for p in data.get("prs", []) if not p.get("completed", False)]
+    for p in active:
+        print(f"{p['id']}|{p['title']}|{p['type']}|{p['task']}")
+
+
+def cmd_completed_count(args: argparse.Namespace) -> None:
+    """Print the number of completed PR entries."""
+    index_path = Path(args.index_yaml)
+    data = _load(index_path)
+    count = sum(1 for p in data.get("prs", []) if p.get("completed", False))
+    print(count)
+
+
+def cmd_set_completed(args: argparse.Namespace) -> None:
+    """Mark a specific PR as completed: true in index.yaml."""
+    index_path = Path(args.index_yaml)
+    original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
+    data = yaml.safe_load(original) or {} if original else {}
+
+    prs: list[dict] = data.get("prs", [])
+    target = next((p for p in prs if p["id"] == args.id), None)
+    if target is None:
+        print(f"Error: PR{args.id} not found in {index_path}", file=sys.stderr)
+        sys.exit(1)
+
+    target["completed"] = True
+    data["prs"] = prs
+    _save(index_path, data, original)
+    print(f"PR{args.id} marked as completed in {index_path}")
+
+
+def cmd_archive(args: argparse.Namespace) -> None:
+    """Move completed entries from index.yaml to index.archive.yaml."""
+    index_path = Path(args.index_yaml)
+    archive_path = Path(args.archive_yaml)
+
+    original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
+    data = yaml.safe_load(original) or {} if original else {}
+
+    prs: list[dict] = data.get("prs", [])
+    completed = [p for p in prs if p.get("completed", False)]
+    remaining = [p for p in prs if not p.get("completed", False)]
+
+    if not completed:
+        print(0)
+        return
+
+    # Append to archive
+    archive_original = archive_path.read_text(encoding="utf-8") if archive_path.exists() else ""
+    archive_data = yaml.safe_load(archive_original) or {} if archive_original else {}
+    archive_prs: list[dict] = archive_data.get("prs", [])
+    archive_prs.extend(completed)
+    archive_data["prs"] = archive_prs
+    archive_path.parent.mkdir(parents=True, exist_ok=True)
+    _save(archive_path, archive_data, archive_original)
+
+    # Remove from index
+    data["prs"] = remaining
+    _save(index_path, data, original)
+
+    print(len(completed))
+
+
+# ── main ────────────────────────────────────────────────────
+def main(args: argparse.Namespace) -> None:
+    handlers = {
+        "next-id": cmd_next_id,
+        "add": cmd_add,
+        "list-active": cmd_list_active,
+        "completed-count": cmd_completed_count,
+        "set-completed": cmd_set_completed,
+        "archive": cmd_archive,
+    }
+    handlers[args.subcommand](args)
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    sub = parser.add_subparsers(dest="subcommand", required=True)
+
+    # next-id
+    p_next = sub.add_parser("next-id", help="Print next PR number")
+    p_next.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+
+    # add
+    p_add = sub.add_parser("add", help="Add a new PR entry")
+    p_add.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+    p_add.add_argument("--id", type=int, required=True)
+    p_add.add_argument("--title", required=True)
+    p_add.add_argument("--type", required=True, dest="type")
+    p_add.add_argument("--summary", required=True)
+    p_add.add_argument("--task", required=True)
+
+    # list-active
+    p_list = sub.add_parser("list-active", help="List active (not completed) PRs")
+    p_list.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+
+    # completed-count
+    p_count = sub.add_parser("completed-count", help="Print count of completed PRs")
+    p_count.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+
+    # set-completed
+    p_set = sub.add_parser("set-completed", help="Mark a PR entry as completed")
+    p_set.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+    p_set.add_argument("--id", type=int, required=True)
+
+    # archive
+    p_archive = sub.add_parser("archive", help="Move completed entries to archive file")
+    p_archive.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+    p_archive.add_argument("archive_yaml", nargs="?", default=str(DEFAULT_ARCHIVE))
+
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    main(args)

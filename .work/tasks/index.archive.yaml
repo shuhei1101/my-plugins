@@ -605,3 +605,37 @@ prs:
   summary: 常時発火フック／スキルステップを env で opt-out 可能にする（全てデフォルト現挙動維持）
   task: 20260529_add-env-toggles-for-hooks-and-steps
   completed: true
+- id: 165
+  title: PR165 — remove-mark-generated
+  type: refactor
+  tags: []
+  summary: mark-generated スキルとその全呼び出し箇所・バージョンマーカーを削除
+  task: 20260530_remove-mark-generated
+  completed: true
+- id: 167
+  title: PR167 — add-plugin-config-skill
+  type: feat
+  tags: []
+  summary: プラグイン env トグルを AskUserQuestion 経由で settings.json に書き込む設定スキルを追加する
+  task: 20260530_add-plugin-config-skill
+  completed: true
+- id: 170
+  title: PR170 — remove-version-sync
+  type: chore
+  tags: []
+  summary: mark-generated 削除後に不要になった version-sync スキルを削除
+  task: 20260530_remove-version-sync
+  completed: true
+- id: 172
+  title: PR172 — rename-work-kit-to-workspace
+  type: refactor
+  tags: []
+  summary: work-kit プラグインの名前を workspace にリネームし、全依存参照を更新する
+  task: 20260530_rename-work-kit-to-workspace
+- id: 166
+  title: PR166 — merge-language-plugins-into-dev-kit
+  type: refactor
+  tags: []
+  summary: py-kit / html-kit / next-kit を dev-kit に統合し、使用言語規約を env 変数で切り替える大規模リファクタ
+  task: 20260530_merge-language-plugins-into-dev-kit
+  completed: true

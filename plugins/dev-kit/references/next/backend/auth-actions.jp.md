@@ -1,0 +1,142 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# app/(shared)/actions/auth.ts — 認証 Server Action
+
+ログイン・サインアップ・ログアウトの Server Action 群。
+
+---
+
+## 必須テンプレ
+
+```ts
+'use server'
+
+import { auth } from "@/lib/auth"
+import { redirect } from "next/navigation"
+import { headers } from "next/headers"
+import { isRedirectError } from "next/dist/client/components/redirect"
+import { z } from "zod"
+import { HOME_URL, LOGIN_URL } from "@/app/(shared)/endpoints"
+import { handleActionError, type ActionResult } from "@/app/(shared)/actions/types"
+import { logger } from "@/app/(shared)/logger"
+
+const log = logger.create("action:auth")
+
+// ----- Schemas -----
+
+const LoginSchema = z.object({
+  email: z.string().email("メールアドレス形式が不正です"),
+  password: z.string().min(6, "パスワードは 6 文字以上"),
+})
+
+const SignupSchema = LoginSchema.extend({
+  name: z.string().min(1, "名前は必須です"),
+})
+
+// ----- Actions -----
+
+/** メール/パスワードでログイン */
+export async function loginAction(input: z.infer<typeof LoginSchema>): Promise<ActionResult<void>> {
+  let next: string
+  try {
+    const { email, password } = LoginSchema.parse(input)
+    const result = await auth.api.signInEmail({
+      body: { email, password },
+      headers: await headers(),
+      asResponse: false,
+    })
+    if (!result) throw new Error("ログインに失敗しました")
+    log.info("login success", { email })
+    next = HOME_URL
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    return handleActionError(e)
+  }
+  redirect(next)
+}
+
+/** サインアップ */
+export async function signupAction(input: z.infer<typeof SignupSchema>): Promise<ActionResult<void>> {
+  let next: string
+  try {
+    const data = SignupSchema.parse(input)
+    await auth.api.signUpEmail({
+      body: { email: data.email, password: data.password, name: data.name },
+      headers: await headers(),
+      asResponse: false,
+    })
+    log.info("signup success", { email: data.email })
+    next = HOME_URL
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    return handleActionError(e)
+  }
+  redirect(next)
+}
+
+/** ログアウト */
+export async function signOutAction(): Promise<void> {
+  try {
+    await auth.api.signOut({ headers: await headers() })
+    log.info("signout success")
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    log.error("signout failed", { error: (e as Error).message })
+  }
+  redirect(LOGIN_URL)
+}
+```
+
+---
+
+## ルール
+
+- ファイル冒頭に **`'use server'`**
+- 配置は **`app/(shared)/actions/auth.ts`**（共通 action）
+- 入力は Zod パース
+- `auth.api.signInEmail()` 等の Better Auth API を使う
+- `redirect()` は **try の外**、または `isRedirectError(e)` で除外
+- 結果は `ActionResult<T>` 形式（`signOutAction` は redirect しかしないので void でも可）
+- ログを記録（ログイン試行は監査ログの一部）
+
+## クライアントから呼ぶ
+
+```tsx
+'use client'
+import { useTransition } from "react"
+import { loginAction } from "@/app/(shared)/actions/auth"
+
+const [isPending, startTransition] = useTransition()
+
+const onSubmit = (data: LoginType) => {
+  startTransition(async () => {
+    const result = await loginAction(data)
+    if (result && !result.ok) toast.error(result.error.message)
+  })
+}
+```
+
+または `<form action={loginAction}>` でプログレッシブエンハンスメント:
+
+```tsx
+<form action={loginAction}>
+  <input name="email" type="email" />
+  <input name="password" type="password" />
+  <button type="submit">ログイン</button>
+</form>
+```
+
+（FormData を扱う場合は Action 側で `formData.get("email")` で読む）
+
+## 関連 references
+
+- `auth-context.md` — getAuthContext
+- `auth-setup.md` — Better Auth 設定
+- `auth-client.md` — クライアント側 useSession
+- `actions-ts.md` — Server Action 全般
+
+## 禁止
+
+- 認証ロジックを `client.ts` / `route.ts` でハードコード
+- パスワードを生で log に出す（**絶対 NG**）
+- セッショントークンを localStorage に保存
+- redirect 先を URL クエリ string で受け取る（オープンリダイレクト脆弱性、`security.md`）

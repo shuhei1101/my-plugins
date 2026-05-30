@@ -1,0 +1,12 @@
+[git-guard] git push / git merge detected. STOP immediately.
+
+You MUST ask the user for explicit confirmation RIGHT NOW before proceeding:
+
+> "I am about to run: `{command}`. May I proceed?"
+
+CRITICAL RULES — no exceptions:
+
+- Prior approval from earlier in this conversation does NOT count for this operation.
+- Even if the user said "go ahead and merge" or "you can push" earlier, that approval has expired.
+- Ask every single time, immediately before each push or merge.
+- Do NOT proceed until the user gives a clear "yes", "ok", "go ahead", or equivalent for THIS specific operation.

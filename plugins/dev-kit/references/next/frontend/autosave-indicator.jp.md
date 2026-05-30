@@ -1,0 +1,88 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# `<AutosaveIndicator>` — 自動保存の状態表示
+
+`useAutosave()` の `status` を表示する共通コンポーネント。
+
+---
+
+## 実装
+
+```tsx
+// app/(shared)/components/AutosaveIndicator.tsx
+'use client'
+
+import { Check, Loader2, AlertCircle } from "lucide-react"
+import { Button } from "./ui/button"
+import { formatDistanceToNow } from "date-fns"
+import { ja } from "date-fns/locale"
+
+type Props = {
+  status: "idle" | "saving" | "saved" | "error"
+  lastSavedAt: Date | null
+  onRetry: () => void
+}
+
+export const AutosaveIndicator = ({ status, lastSavedAt, onRetry }: Props) => {
+  if (status === "saving") return (
+    <span className="flex items-center gap-1 text-sm text-muted-foreground">
+      <Loader2 className="h-4 w-4 animate-spin" /> 保存中...
+    </span>
+  )
+
+  if (status === "saved") return (
+    <span className="flex items-center gap-1 text-sm text-green-600">
+      <Check className="h-4 w-4" /> 保存しました
+    </span>
+  )
+
+  if (status === "error") return (
+    <span className="flex items-center gap-1 text-sm text-destructive">
+      <AlertCircle className="h-4 w-4" />
+      保存失敗
+      <Button variant="link" size="sm" onClick={onRetry}>再試行</Button>
+    </span>
+  )
+
+  if (lastSavedAt) return (
+    <span className="text-sm text-muted-foreground">
+      {formatDistanceToNow(lastSavedAt, { locale: ja, addSuffix: true })}に保存
+    </span>
+  )
+
+  return null
+}
+```
+
+---
+
+## 使い方
+
+```tsx
+const { status, lastSavedAt, retry } = useAutosave({ ... })
+
+<div className="flex items-center justify-between">
+  <h2 className="text-xl font-semibold">ノート編集</h2>
+  <AutosaveIndicator status={status} lastSavedAt={lastSavedAt} onRetry={retry} />
+</div>
+```
+
+詳細: `frontend/patterns/autosave.md`
+
+---
+
+## ルール
+
+- 4 状態: `idle` / `saving` / `saved` / `error`
+- `saved` は数秒後に `idle` に戻す（hook 側）
+- `error` 時は **retry ボタン** を出す
+- `idle` で `lastSavedAt` があれば「N 分前に保存」を表示
+
+## 関連 references
+
+- `frontend/components-catalog.md`
+- `frontend/patterns/autosave.md` — useAutosave 実装
+
+## 禁止
+
+- 状態を文字列直書きで表示（必ず icon + 色）
+- error 時に retry を出さない

@@ -13,9 +13,10 @@ paths:
 
 ## Overview
 
-`py-kit`・`next-kit`・`claude-kit`（および将来追加される `*-kit`）は **同じ references 自動注入構造** を共有する。
+`dev-kit`・`claude-kit`（および将来追加される `*-kit`）は **同じ references 自動注入構造** を共有する。
 （`claude-kit` も `*-kit` グロブに一致するため、このルールの `paths:` で自動的に対象に含まれる。PR159 で
-creator スキル群を reference 自動注入へ移行して仲間入りした。）共有する構造:
+creator スキル群を reference 自動注入へ移行して仲間入りした。PR166 で py-kit / html-kit / next-kit が
+dev-kit に統合され、対象は dev-kit + claude-kit の 2 つになった。）共有する構造:
 
 - `hooks/inject_references.py` — PreToolUse(Edit/Write/MultiEdit) フックスクリプト
 - `hooks/hooks.json` — フック登録

@@ -1,0 +1,134 @@
+# app/(shared)/errors/handler/action.ts — handleActionError
+
+Server Action 内の try/catch から呼ぶ。AppError 派生・Zod エラーを `ActionResult<T>` 形式に変換。
+
+---
+
+## 実装
+
+```ts
+// app/(shared)/errors/handler/action.ts
+import { z } from "zod"
+import { isRedirectError } from "next/dist/client/components/redirect"
+import { AppError, ClientValueError, ClientAuthError, VersionConflictError, RateLimitError } from "../appError"
+import { logger } from "@/app/(shared)/logger"
+import type { ActionResult } from "@/app/(shared)/actions/types"
+
+const log = logger.create("error:action")
+
+export const handleActionError = (e: unknown): ActionResult<never> => {
+  // redirect() を catch しないように再 throw
+  if (isRedirectError(e)) throw e
+
+  if (e instanceof z.ZodError) {
+    const first = e.issues[0]
+    return { ok: false, error: { code: "VALIDATION", message: first.message, field: first.path.join(".") } }
+  }
+  if (e instanceof ClientValueError) {
+    return { ok: false, error: { code: e.code, message: e.message, field: e.field } }
+  }
+  if (e instanceof ClientAuthError) return { ok: false, error: { code: e.code, message: e.message } }
+  if (e instanceof VersionConflictError) return { ok: false, error: { code: e.code, message: e.message } }
+  if (e instanceof RateLimitError) return { ok: false, error: { code: e.code, message: e.message } }
+  if (e instanceof AppError) return { ok: false, error: { code: e.code, message: e.message } }
+
+  log.error("unexpected action error", {
+    error: e instanceof Error ? e.message : String(e),
+    stack: e instanceof Error ? e.stack : undefined,
+  })
+  return { ok: false, error: { code: "INTERNAL", message: "予期せぬエラーが発生しました。" } }
+}
+```
+
+---
+
+## ActionResult 型
+
+```ts
+// app/(shared)/actions/types.ts
+export type ActionResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; error: { code: string; message: string; field?: string } }
+```
+
+---
+
+## 使い方（Server Action 内）
+
+```ts
+'use server'
+
+export async function updateResourceAction(...): Promise<ActionResult<void>> {
+  try {
+    const { db, userId } = await getAuthContext()
+    const data = ResourceFormSchema.parse(input)
+    await editResource({ db, userId, ... })
+    return { ok: true, data: undefined }
+  } catch (e) {
+    return handleActionError(e)
+  }
+}
+```
+
+`redirect()` を try 内で呼ぶ場合は **catch で再 throw** が必要:
+
+```ts
+try {
+  await someService()
+  redirect(URL)
+} catch (e) {
+  if (isRedirectError(e)) throw e
+  return handleActionError(e)
+}
+```
+
+または try の外で redirect:
+
+```ts
+let next: string
+try {
+  await someService()
+  next = URL
+} catch (e) {
+  return handleActionError(e)
+}
+redirect(next)
+```
+
+---
+
+## クライアント側での扱い
+
+```tsx
+const result = await someAction(...)
+
+if (!result.ok) {
+  // フィールドエラー → form にセット
+  if (result.error.field) form.setError(result.error.field as any, { message: result.error.message })
+  // それ以外は toast
+  else toast.error(result.error.message)
+  return
+}
+toast.success("成功")
+```
+
+---
+
+## ルール
+
+- 全 Server Action を try/catch で囲み、catch で `handleActionError`
+- 戻り値は `ActionResult<T>` 形式
+- `redirect()` を catch しないよう `isRedirectError` で除外
+- 予期しないエラーは log に stack 記録
+
+## 関連 references
+
+- `shared/error-classes.md` — AppError 階層
+- `backend/actions-ts.md` — Server Action
+- `frontend/use-action-state.md` — クライアント側で結果を扱う
+
+## 禁止
+
+- `ActionResult<T>` 形式を破る
+- `redirect()` を握り潰す
+- stack をクライアントに渡す

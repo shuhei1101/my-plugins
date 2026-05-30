@@ -1,0 +1,143 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# app/(shared)/errors/appError.ts — エラークラス階層
+
+アプリ内のエラー型を定義する。
+
+---
+
+## 階層
+
+```
+AppError (base)
+├── ClientValueError       — フォーム / 入力エラー
+├── ClientAuthError        — 認証 / 認可エラー
+├── VersionConflictError   — 楽観的ロック衝突
+├── QueryError             — 読み取り失敗（query.ts）
+├── DatabaseError          — 書き込み失敗（db.ts / service.ts）
+└── RateLimitError         — レート制限
+```
+
+---
+
+## 必須テンプレ
+
+```ts
+// app/(shared)/errors/appError.ts
+export class AppError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number = 500,
+    public code: string = "INTERNAL",
+    public field?: string,
+  ) {
+    super(message)
+    this.name = "AppError"
+  }
+
+  /** API 失敗レスポンスから AppError を復元 */
+  static fromResponse(data: unknown, statusCode: number): AppError {
+    const body = data as { error?: { code?: string; message?: string; field?: string } }
+    const err = body.error
+    if (err?.code === "AUTH") return new ClientAuthError(err.message ?? "認証エラー", statusCode, err.code)
+    if (err?.code === "VALUE") return new ClientValueError(err.message ?? "入力エラー", statusCode, err.code, err.field)
+    if (err?.code === "CONFLICT") return new VersionConflictError(err.message ?? "競合", statusCode, err.code)
+    if (err?.code === "RATE_LIMIT") return new RateLimitError(err.message ?? "レート制限", statusCode)
+    return new AppError(err?.message ?? "エラー", statusCode, err?.code ?? "UNKNOWN", err?.field)
+  }
+}
+
+export class ClientValueError extends AppError {
+  constructor(message: string, status = 400, code = "VALUE", field?: string) {
+    super(message, status, code, field)
+    this.name = "ClientValueError"
+  }
+}
+
+export class ClientAuthError extends AppError {
+  constructor(message: string, status = 401, code = "AUTH") {
+    super(message, status, code)
+    this.name = "ClientAuthError"
+  }
+}
+
+export class VersionConflictError extends AppError {
+  constructor(message: string, status = 409, code = "CONFLICT") {
+    super(message, status, code)
+    this.name = "VersionConflictError"
+  }
+}
+
+export class QueryError extends AppError {
+  constructor(message: string) {
+    super(message, 500, "QUERY")
+    this.name = "QueryError"
+  }
+}
+
+export class DatabaseError extends AppError {
+  constructor(message: string) {
+    super(message, 500, "DATABASE")
+    this.name = "DatabaseError"
+  }
+}
+
+export class RateLimitError extends AppError {
+  constructor(message: string, status = 429) {
+    super(message, status, "RATE_LIMIT")
+    this.name = "RateLimitError"
+  }
+}
+```
+
+---
+
+## 投げる場所
+
+| エラー | 投げる場所 |
+|---|---|
+| `ClientValueError` | フォームバリデーション失敗（route / action） |
+| `ClientAuthError` | 認証 / 認可失敗（auth-context, service） |
+| `VersionConflictError` | `updateXxx` で行が見つからない（db.ts） |
+| `QueryError` | SELECT 失敗（query.ts） |
+| `DatabaseError` | INSERT/UPDATE/DELETE 失敗（db.ts, service.ts） |
+| `RateLimitError` | レート制限超過（proxy.ts, route.ts） |
+| `AppError`（generic） | 404 / 403 等の汎用エラー |
+
+---
+
+## 処理する場所
+
+| 場所 | Handler |
+|---|---|
+| `route.ts` | `withRouteErrorHandling` |
+| Server Action | `handleActionError` |
+| クライアント hook | `handleAppError(error, router)` |
+| ルートエラーバウンダリ | `error.tsx` / `global-error.tsx` |
+
+詳細:
+- `shared/error-route-handler.md`
+- `shared/error-action-handler.md`
+- `shared/error-client-handler.md`
+- `frontend/error-tsx.md`
+
+---
+
+## ルール
+
+- アプリ内のエラーは **必ず AppError 派生** を投げる（generic `Error` 禁止）
+- 内部詳細（stack, DB query）を **クライアントに見せない**
+- 投げるときは適切なサブクラスを選ぶ（型で意図が伝わる）
+
+## 関連 references
+
+- `shared/error-route-handler.md` — withRouteErrorHandling
+- `shared/error-action-handler.md` — handleActionError
+- `shared/error-client-handler.md` — handleAppError
+- `frontend/error-tsx.md` — error.tsx
+- `frontend/not-found-tsx.md`
+
+## 禁止
+
+- generic `throw new Error(...)` をアプリ内で投げる
+- error 内に stack / DB query 等の機密情報を入れる
+- catch して握り潰す（必ず再 throw or handler に渡す）

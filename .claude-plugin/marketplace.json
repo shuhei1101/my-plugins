@@ -10,38 +10,20 @@
     {
       "name": "dev-kit",
       "source": "./plugins/dev-kit",
-      "description": "Development conventions toolkit — YAML standards and YAML skill",
-      "version": "3.0.0"
-    },
-    {
-      "name": "py-kit",
-      "source": "./plugins/py-kit",
-      "description": "Python coding conventions and scaffolding — feature-folder layout, function-first design, TypeScript-style typing, standards references with auto-injection metadata",
-      "version": "2.5.0"
-    },
-    {
-      "name": "html-kit",
-      "source": "./plugins/html-kit",
-      "description": "HTML/CSS/JS development toolkit — floating debug widget, logging conventions, FLOCSS + design tokens application",
-      "version": "1.5.2"
+      "description": "Development conventions toolkit — Python (py-script/py-project), HTML/CSS/JS (FLOCSS, debug-fab, logging, mock), Next.js 16 App Router (implement/plan), and YAML. Reference auto-injection via PreToolUse(Edit/Write/MultiEdit/Read) gated by DEV_KIT_PYTHON / DEV_KIT_HTML / DEV_KIT_NEXT env opt-in; PostToolUse tsc check gated by DEV_KIT_NEXT_TS_CHECK.",
+      "version": "4.0.0"
     },
     {
       "name": "claude-kit",
       "source": "./plugins/claude-kit",
       "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
-      "version": "3.33.0"
+      "version": "3.35.0"
     },
     {
-      "name": "work-kit",
-      "source": "./plugins/work-kit",
-      "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, manages git worktrees (toggle via WORK_KIT_USE_WORKTREE), and guards git push/merge confirmation (toggle via WORK_KIT_GUARD)",
-      "version": "2.39.0"
-    },
-    {
-      "name": "next-kit",
-      "source": "./plugins/next-kit",
-      "description": "Next.js 16 App Router implementation conventions split per file-type (1 file = 1 use case) — shadcn/ui + Tailwind + Drizzle + TanStack Query + Server Actions + Better Auth, with PreToolUse hook auto-injection (index.yaml + injection_rules.yaml) and PostToolUse TypeScript type-check",
-      "version": "3.8.0"
+      "name": "workspace",
+      "source": "./plugins/workspace",
+      "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, manages git worktrees (toggle via WORKSPACE_USE_WORKTREE), and guards git push/merge confirmation (toggle via WORKSPACE_GUARD)",
+      "version": "2.40.0"
     },
     {
       "name": "ref-inject",

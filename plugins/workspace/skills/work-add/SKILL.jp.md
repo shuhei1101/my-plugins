@@ -1,0 +1,92 @@
+---
+name: work-add
+description: |
+  PR ブランチ用の git worktree を作成する。
+  workspace:work-start（Step 4）から呼び出されるか、直接呼び出す。
+  「ワークツリーを作って」「worktree を作成して」「work-add して」
+  または work-start から `/workspace:work-add` として呼び出されたときにトリガー。
+---
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+
+# workspace:work-add — PR ワークツリーの作成
+
+PR 用の git worktree とブランチを作成する。
+
+---
+
+## タスク
+
+### Step 1: 引数を解決する
+
+#### 条件
+
+- 常に実行 — 最初に行う
+
+#### 処理
+
+1. 引数付きで呼び出された場合（例: `PR58 refactor/split-workspace-worktree`）、解析する:
+   - 第1引数: PR 番号または `PR{N}` 形式 → `N` を抽出
+   - 第2引数: ブランチサフィックス（`{type}/{title}`）
+2. 引数なしで呼び出された場合、ユーザーに確認する:
+   - PR 番号
+   - ブランチタイプとタイトル（kebab-case）
+
+→ Step 2 へ
+
+#### 出力
+
+- `N` — PR 番号（整数）
+- `TYPE_TITLE` — ブランチサフィックス（例: `refactor/split-workspace-worktree`）
+
+---
+
+### Step 2: ワークツリーを作成する
+
+#### 条件
+
+- Step 1 完了
+
+#### 処理
+
+1. リポジトリルート名を取得:
+
+```bash
+basename $(pwd)
+```
+
+2. ワークツリーとブランチを作成:
+
+```bash
+git worktree add -b PR{N}/{TYPE_TITLE} ../$(basename $(pwd))-wt-PR{N}
+```
+
+→ Step 3 へ
+
+#### 出力
+
+- ワークツリーが `../repo-wt-PR{N}` に作成される
+- ブランチ `PR{N}/{TYPE_TITLE}` が存在する
+
+#### 注意
+
+##### 禁止事項
+
+- master/main に直接コミットしない
+
+---
+
+### Step 3: 呼び出し元に報告する
+
+#### 条件
+
+- Step 2 完了
+
+#### 処理
+
+1. 作成したワークツリーのパスとブランチ名を報告する
+2. `work-start` から呼び出された場合は制御を返す
+
+#### 出力
+
+- ワークツリーパス: `../repo-wt-PR{N}`
+- ブランチ名: `PR{N}/{TYPE_TITLE}`
