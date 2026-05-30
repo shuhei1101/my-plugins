@@ -653,3 +653,10 @@ prs:
   summary: /work-kit:impl-review の Step 4 を AskUserQuestion 1 回に最大 4 件まとめて投げる仕様に変更
   task: 20260530_impl-review-batch-questions
   completed: true
+- id: 177
+  title: PR177 — add-protected-branches-env
+  type: feat
+  tags: []
+  summary: master-commit-guard.py の PROTECTED_BRANCHES を env WORKSPACE_PROTECTED_BRANCHES（カンマ区切り）で上書き可能にする
+  task: 20260530_add-protected-branches-env
+  completed: true
