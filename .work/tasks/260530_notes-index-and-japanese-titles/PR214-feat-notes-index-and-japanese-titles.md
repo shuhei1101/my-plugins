@@ -59,3 +59,4 @@ QA なし
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
 | notes-sync-rule | ノートを新規作成・更新したとき `_index.md` の同期を促すルールを追加 | 即時実施可 |
+| notes-naming-reference | `plugins/work/references/` にノート命名規則リファレンスを追加し `_injection_rules.yaml` で `.work/notes/` 編集時に注入する。内容: ファイル名・H1 タイトルは日本語、技術識別子はそのまま、`_index.md` を常に更新する | `PR206/feat/ref-inject-references-edit-guard` がマージされてから |
