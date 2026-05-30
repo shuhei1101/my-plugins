@@ -4,7 +4,7 @@
 
 The authoring guides for each instruction-file type live in `references/` (`common.md`,
 `skills.md`, `rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`, plus `glossary.md` /
-`incidents.md`). The `claude-kit-references-injection` hook (`hooks/inject_references.py`) injects the
+`incidents.md`). The `claude-kit-references-injection` hook (`hooks/scripts/inject_references.py`) injects the
 matching guide **in full body** when you edit the corresponding file (a `SKILL.md`, a rule, a
 `CLAUDE.md`, a `hooks.json`, a `plugin.json`, …) — see `references/injection_rules.yaml` for the
 path→reference map.
@@ -23,7 +23,7 @@ hand-edit the mechanism per plugin (change the `ref-inject` templates and re-app
 ## Hooks
 
 claude-kit ships only two hooks now: the `claude-kit-references-injection` hook
-(`hooks/inject_references.py`, `PreToolUse(Edit | Write | MultiEdit | Read)`) and a `PreCompact`
+(`hooks/scripts/inject_references.py`, `PreToolUse(Edit | Write | MultiEdit | Read)`) and a `PreCompact`
 re-injection reminder. There are **no dispatch / check guards** — they were removed in favor of
 reference injection (creator-dispatch in PR159; `j2-stamp-check` and the PostToolUse `jp-mirror-check`
 in PR161). JP-mirror sync is enforced by the project's `*-jp-mirror-sync` rules.

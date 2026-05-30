@@ -5,7 +5,7 @@
 
 各指示ファイル種別のオーサリングガイドは `references/`（`common.md`, `skills.md`,
 `rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`、加えて `glossary.md` / `incidents.md`）に
-ある。`claude-kit-references-injection` フック（`hooks/inject_references.py`）が、対応するファイル
+ある。`claude-kit-references-injection` フック（`hooks/scripts/inject_references.py`）が、対応するファイル
 （`SKILL.md` / ルール / `CLAUDE.md` / `hooks.json` / `plugin.json` …）を編集したとき、該当ガイドを
 **本文全量**で注入する。パス → reference の対応は `references/injection_rules.yaml` 参照。
 
@@ -23,7 +23,7 @@
 ## フック
 
 claude-kit のフックは今や2つだけ: `claude-kit-references-injection` フック
-（`hooks/inject_references.py`, `PreToolUse(Edit | Write | MultiEdit | Read)`）と `PreCompact` の
+（`hooks/scripts/inject_references.py`, `PreToolUse(Edit | Write | MultiEdit | Read)`）と `PreCompact` の
 再注入リマインダ。**ディスパッチ/チェック系ガードは無い** — リファレンス注入へ寄せて廃止した
 （creator-dispatch は PR159、`j2-stamp-check` と PostToolUse の `jp-mirror-check` は PR161）。
 JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保。
