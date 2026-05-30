@@ -16,7 +16,7 @@ Claude Code 指示ファイル（skill / rule / CLAUDE.md / hook / plugin）の�
 
 ## 自動で読まれる場合
 
-`PreToolUse(Edit | Write | MultiEdit | Read)` で `hooks/inject_references.py` が:
+`PreToolUse(Edit | Write | MultiEdit | Read)` で `hooks/scripts/inject_references.py` が:
 
 1. 編集対象ファイルパスを `injection_rules.yaml` のパターンと照合
 2. マッチした `required` reference は **本文全量**、`optional` は **パス + description のみ** を注入

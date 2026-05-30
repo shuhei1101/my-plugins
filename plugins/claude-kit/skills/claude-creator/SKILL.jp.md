@@ -12,7 +12,7 @@ description: |
 
 CLAUDE.md のオーサリング手順は本プラグインの references に移り、`CLAUDE.md` を編集すると
 `claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動と呼び出し元
-（`conversation-to-claude`, `notes-to-claude`）のために残している薄いラッパー。
+（例: `notes-to-claude`）のために残している薄いラッパー。
 
 ## やること
 

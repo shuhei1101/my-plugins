@@ -11,7 +11,7 @@ description: |
 
 Authoring guidance for CLAUDE.md now lives in this plugin's references and is **auto-injected** by the
 `claude-kit-references-injection` hook whenever you edit a `CLAUDE.md`. This skill is a thin wrapper,
-kept for explicit invocation and for callers (`conversation-to-claude`, `notes-to-claude`).
+kept for explicit invocation and for callers (e.g. `notes-to-claude`).
 
 ## What to do
 

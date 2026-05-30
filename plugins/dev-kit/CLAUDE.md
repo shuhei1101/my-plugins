@@ -20,11 +20,14 @@ Reference auto-injection is opt-in per language via `settings.json` env vars.
 
 ## Hooks
 
+Hook scripts live under `hooks/scripts/` with a per-plugin `_common.py` for shared helpers.
+
 | Hook | Trigger | Purpose |
 |---|---|---|
-| `inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | Reference auto-injection per language |
-| `ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `tsc --noEmit --incremental` for `*.ts`/`*.tsx` |
-| `yaml-skill-dispatch` | PreToolUse(Edit/Write) | Remind user to invoke `dev-kit:yaml` when editing YAML |
+| `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | Reference auto-injection per language |
+| `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `tsc --noEmit --incremental` for `*.ts`/`*.tsx` |
+| `scripts/yaml_skill_dispatch.py` | PreToolUse(Edit/Write) | Remind user to invoke `dev-kit:yaml` when editing YAML |
+| `scripts/_common.py` | — (library) | Stdin parsing / env truthy / once-per-session token / block reason emitter |
 
 ## Env toggles
 
@@ -71,5 +74,6 @@ prevents duplicate injection.
 
 | Version | Date | Summary |
 |---|---|---|
-| 4.1.0 | 2026-05-30 | Add `dev-kit:plugin-update` skill — re-syncs html-implement rule templates and html-debug-fab widget into the project. Self-contained: no dependency on workspace or any other plugin; refuses to run on master/main; never commits on its own (PR182) |
+| 4.2.0 | 2026-05-30 | Add `dev-kit:plugin-update` skill — inspects/fixes dev-kit-generated artifacts (static templates + convention-following source files) against the current dev-kit version. Self-contained: no dependency on any other plugin; refuses to run on master/main; never commits on its own (PR182) |
+| 4.1.0 | 2026-05-30 | Move hook scripts under `hooks/scripts/` with shared `_common.py`; behavior unchanged (PR180) |
 | 4.0.0 | 2026-05-30 | Merge `py-kit` / `html-kit` / `next-kit` into `dev-kit`; opt-in language toggles via `DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` (PR166) |

@@ -1,5 +1,5 @@
 {
   "name": "ref-inject",
   "description": "Attaches a reference auto-injection mechanism to a plugin (new or existing). /ref-inject:apply copies a PreToolUse hook that injects edit-path-matched references (required full-body, optional pointer) using a TTL-based per-session YAML token. Injection part only — plugin.json/CLAUDE.md/marketplace are plugin-creator's job.",
-  "version": "1.3.0"
+  "version": "1.4.0"
 }

@@ -21,11 +21,14 @@ Python / HTML-CSS-JS / Next.js 16 App Router / YAML を 1 プラグインに統�
 
 ## フック
 
+フックスクリプトは `hooks/scripts/` 配下に集約し、共通ヘルパは plugin 内 `_common.py` に置く。
+
 | フック | トリガー | 用途 |
 |---|---|---|
-| `inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | 言語ごとのリファレンス自動注入 |
-| `ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
-| `yaml-skill-dispatch` | PreToolUse(Edit/Write) | YAML 編集時に `dev-kit:yaml` 起動をリマインド |
+| `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | 言語ごとのリファレンス自動注入 |
+| `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
+| `scripts/yaml_skill_dispatch.py` | PreToolUse(Edit/Write) | YAML 編集時に `dev-kit:yaml` 起動をリマインド |
+| `scripts/_common.py` | — （ライブラリ） | stdin 読み・env truthy 判定・once-per-session トークン・block 理由出力 |
 
 ## env トグル
 
@@ -71,5 +74,6 @@ references/
 
 | Version | Date | Summary |
 |---|---|---|
-| 4.1.0 | 2026-05-30 | `dev-kit:plugin-update` スキルを追加 — html-implement のルールテンプレと html-debug-fab のウィジェットをプロジェクトに再同期する。自己完結設計: workspace 等の他プラグインに依存しない / master・main では実行を拒否 / スキル自身はコミットしない（PR182） |
+| 4.2.0 | 2026-05-30 | `dev-kit:plugin-update` スキルを追加 — dev-kit 生成物（静的テンプレ + 規約遵守ソースファイル）を現バージョンの規約に検査・修正する。自己完結設計: 他プラグインに依存しない / master・main では実行拒否 / スキル自身はコミットしない（PR182） |
+| 4.1.0 | 2026-05-30 | フックスクリプトを `hooks/scripts/` 配下へ移動し共通ヘルパ `_common.py` を導入。挙動変更なし（PR180） |
 | 4.0.0 | 2026-05-30 | `py-kit` / `html-kit` / `next-kit` を `dev-kit` に統合。言語別の opt-in トグル `DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` を導入（PR166） |
