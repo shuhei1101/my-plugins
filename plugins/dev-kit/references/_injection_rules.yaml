@@ -1,8 +1,9 @@
 rules:
-# ---- Markdown (general): table formatting conventions ----
+# ---- Markdown (general): table formatting + frontmatter placement conventions ----
 - pattern: "**/*.md"
   required:
     - markdown/markdown-table.md
+    - markdown/markdown-editing.md
 # ---- YAML asset/config conventions: inject when editing the canonical asset/config YAMLs ----
 - pattern: "**/index.yaml"
   required:

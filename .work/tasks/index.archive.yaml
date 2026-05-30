@@ -799,3 +799,11 @@ branches:
   summary: index.yamlとindex.archive.yamlのprs:キーをbranches:に改名し、index-tool.pyを更新する
   task: 260530_index-yamlのprs:キーをbranches:に改名
   completed: true
+- id: 198
+  title: PR198 — dev-kit-markdown-frontmatter-rule
+  type: feat
+  tags: []
+  summary: dev-kit/references/ にフロントマター付き md の編集規約（フロントマター上に HTML コメント禁止）を追加し、PreToolUse
+    検出フックも同梱
+  task: 260530_dev-kit-markdown-frontmatter-rule
+  completed: true
