@@ -4,7 +4,7 @@ Design guide for the **mandatory** `setup-wizard` skill required when creating a
 Provides the initial-onboarding flow and use-case entry points the first time a user touches the plugin.
 Japanese mirror: `references/plugin/setup-wizard.jp.md`
 
-Counterpart to `plugin-update` (version sync) — `setup-wizard` covers initial setup.
+Counterpart to `plugin-migrate` (version sync) — `setup-wizard` covers initial setup.
 Read `common.md` and `skills.md` alongside this guide.
 
 ---
@@ -82,7 +82,7 @@ setup_done: true
 
 **No version field is stored.** Version drift is handled by convention, not by the flag:
 when a plugin is updated, its `setup-wizard` must be refreshed in the same change.
-This convention is stated in this reference; add the same item to the plugin's `plugin-update` checklist.
+This convention is stated in this reference; add the same item to the plugin's `plugin-migrate` checklist.
 
 ---
 
@@ -130,7 +130,7 @@ user they can re-run setup any time via `/<plugin>:setup-wizard`.
 | Skill | Role |
 |---|---|
 | `config` | Single-purpose skill that edits env vars one-by-one via `AskUserQuestion`. Delegated to from `setup-wizard` |
-| `plugin-update` | Version sync. See the "Required skills" section in this reference |
+| `plugin-migrate` | Version sync. See the "Required skills" section in this reference |
 
 If the plugin has no env vars, `config` is not required, but the use-case showcase step in
 `setup-wizard` is still valuable — `setup-wizard` itself remains mandatory.

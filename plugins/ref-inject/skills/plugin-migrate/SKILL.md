@@ -1,18 +1,18 @@
 ---
-name: plugin-update
+name: plugin-migrate
 description: |
   Inspect every plugin that has ref-inject applied (detected by the presence of
   hooks/scripts/inject_references.py) and update its injection mechanism files to match the
   current ref-inject templates. The references/ content (user-authored docs, _index.yaml,
   _injection_rules.yaml) is never touched — only the hook mechanism files are updated.
-  Manual invocation only — use /ref-inject:plugin-update.
+  Manual invocation only — use /ref-inject:plugin-migrate.
 ---
 
-# ref-inject:plugin-update — Update Injection Mechanism in Consumer Plugins
+# ref-inject:plugin-migrate — Update Injection Mechanism in Consumer Plugins
 
 Brings the injection hook files in **all ref-inject consumers** up to date with the current
 ref-inject templates. Where `/ref-inject:apply` installs the mechanism for the first time,
-`plugin-update` keeps it current across template changes.
+`plugin-migrate` keeps it current across template changes.
 
 The `references/` content (user-authored docs, `_index.yaml`, `_injection_rules.yaml`) is
 **never modified** — only the mechanism files under `hooks/` are updated.

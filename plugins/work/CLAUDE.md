@@ -18,7 +18,7 @@ reminds task updates on stop, manages worktrees, and guards force-operations on 
 | 9 | `work:issue-save` | Save a one-off issue from conversation |
 | 10 | `work:impl-review` | Review implementation against the branch document |
 | 11 | `work:setup` | Initialize `.work/` directory structure from templates |
-| 12 | `work:plugin-update` | Update `.work/` static templates to the current work version |
+| 12 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
 | 13 | `work:worktree-create` | Create a git worktree for a branch |
 | 14 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
 | 15 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
@@ -64,7 +64,7 @@ Branches are named `{type}/{title}` (no PR-number prefix); internal IDs are trac
 | 2 | 2.47.0 | 2026-05-30 | Add `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` to `work:config` managed toggles |
 | 3 | 2.46.2 | 2026-05-30 | Fix `issue-scan` skill: remove stale `py-kit`/`next-kit` references, update to `_injection_rules.yaml` |
 | 4 | 2.46.0 | 2026-05-30 | Extract Stop hook inline python to `hooks/scripts/stop.py` + `_common.py` |
-| 5 | 2.44.0 | 2026-05-30 | Unify branch document to single file (`{branch-hyphenated}.md`); rename `plugin-update` skill |
+| 5 | 2.44.0 | 2026-05-30 | Unify branch document to single file (`{branch-hyphenated}.md`); rename `plugin-migrate` skill |
 | 6 | 2.43.0 | 2026-05-30 | Add `WORKSPACE_MERGE_PROPOSAL` env toggle |
 | 7 | 2.42.0 | 2026-05-30 | Add `WORKSPACE_PROTECTED_BRANCHES` env toggle |
 | 8 | 2.41.0 | 2026-05-30 | Change `impl-review` Step 4 to batch AskUserQuestion (max 4 per call) |
