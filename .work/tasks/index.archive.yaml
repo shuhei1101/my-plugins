@@ -626,3 +626,10 @@ prs:
   summary: mark-generated 削除後に不要になった version-sync スキルを削除
   task: 20260530_remove-version-sync
   completed: true
+- id: 166
+  title: PR166 — merge-language-plugins-into-dev-kit
+  type: refactor
+  tags: []
+  summary: py-kit / html-kit / next-kit を dev-kit に統合し、使用言語規約を env 変数で切り替える大規模リファクタ
+  task: 20260530_merge-language-plugins-into-dev-kit
+  completed: true
