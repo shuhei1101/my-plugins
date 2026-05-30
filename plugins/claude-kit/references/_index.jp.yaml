@@ -8,6 +8,9 @@ references:
   - path: skills.md
     description: .claude/skills/<name>/SKILL.md の作り方。skill が適切な種別かの判定、既存類似スキルの確認、JP ミラー先行ワークフロー、ステップ構造テンプレ、description フロントマター規約。
 
+  - path: subagents.md
+    description: ステップ処理のサブエージェント委譲ガイド。委譲マーカー（[サブエージェントで実行・完了を待つ] / 並列実行・完了を待つ / 完了を待たない）、委譲の判断基準、制約（戻り値のみ・完了を待つ・コンテキストは空）。
+
   - path: rules.md
     description: .claude/rules/<name>.md の作り方。ルールの読み込み条件、2 種類（リンク型 / コンテキスト型）、ユースケース指向の paths 設計、統合 / 分離基準、フォルダ構成、必須セクション、構造例。
 
