@@ -18,11 +18,11 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を記録する | - |
-| - | `.jp.md` ファイルの除外条件を追加する | - `plugins/dev-kit/hooks/scripts/markdown_frontmatter_check.py` |
-| - | `Edit` / `MultiEdit` ツールのチェックを除外する（`Write` のみチェック） | - 〃 |
-| - | ノートを更新する | - `.work/notes/dev-kit-plugin.md` |
-| - | ルール / CLAUDE.md を確認・更新する | - |
+| 済 | QA を記録する | - |
+| 済 | `.jp.md` ファイルの除外条件を追加する | - `plugins/dev-kit/hooks/scripts/markdown_frontmatter_check.py` |
+| 済 | `Edit` / `MultiEdit` ツールのチェックを除外する（`Write` のみチェック） | - 〃 |
+| 済 | ノートを更新する | - `.work/notes/dev-kitフック設計メモ.md` |
+| 済 | ルール / CLAUDE.md を確認・更新する（変更不要と判断） | - |
 
 ## 変更内容
 
