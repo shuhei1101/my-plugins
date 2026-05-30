@@ -286,7 +286,12 @@ follow-ups) (table format: `| ブランチ | 概要 |`). Leave the placeholder r
 1. Check `.work/notes/` inside the worktree for a related note
 2. If found → update the relevant sections for this branch
 3. If not found → create a new note using the template at `${CLAUDE_PLUGIN_ROOT}/templates/note.md`
+   - The note H1 title must be written **entirely in Japanese** (e.g. `# 機能名 — 一行説明`)
+   - Technical identifiers (plugin names, command names, file paths) may remain in their original form
 4. Add a link to the note in the branch document's `## 参考ドキュメント` section
+5. Update (or create) `.work/notes/_index.md`:
+   - Add the new note to the appropriate category, or update the entry if the note already existed
+   - If `_index.md` does not exist, create it with all current notes grouped by category
 
 → Proceed to Step 9
 

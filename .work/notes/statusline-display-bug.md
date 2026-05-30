@@ -8,7 +8,7 @@ related_prs:
   - PR118
 ---
 
-# statusline-display-not-working — PR116 後のステータスライン非表示バグ
+# ステータスライン非表示バグ — PR116 後の不具合メモ
 
 ## 概要
 
