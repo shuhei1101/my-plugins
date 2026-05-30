@@ -33,6 +33,7 @@
 | [pr-showスキル.md](pr-showスキル.md) | pr-show スキル — 次 PR 候補一覧の状況表示 |
 | [ref-injectジェネレータ.md](ref-injectジェネレータ.md) | ref-inject — リファレンス自動注入プラグインのジェネレータ |
 | [work-kitスキル群.md](work-kitスキル群.md) | work-kit スキル群 — 設計メモ |
+| [AskUserQuestion制約リファレンス.md](AskUserQuestion制約リファレンス.md) | AskUserQuestion 制約リファレンス — スキルからの呼び出しガイド |
 
 ---
 
