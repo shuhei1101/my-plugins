@@ -28,6 +28,9 @@
 | 済 | 注入テンプレートに jp_mirror=false 時の1行通知を追加する | - `hooks/templates/injection.md.j2`<br>- `hooks/templates/injection.jp.md.j2` |
 | 済 | common.md の echo アプローチを削除し「注入通知に従う」形に書き直す | - `references/common.md`<br>- `references/common.jp.md` |
 | 済 | 「マークダウンは env var 読めない」知見を plugin-structure.md に追記する | - `references/plugin-structure.md`<br>- `references/plugin-structure.jp.md` |
+| - | jp_mirror 通知の改行構造を修正（trim_blocks との相互作用） | - `hooks/templates/injection.md.j2`<br>- `hooks/templates/injection.jp.md.j2` |
+| - | `{% if optional %}` 直後 `---` の setext heading バグを修正（元からのバグ） | - `hooks/templates/injection.md.j2`<br>- `hooks/templates/injection.jp.md.j2` |
+| - | `## {{ ref.path }}` 末尾に `<!-- -->` を追加してレンダリングバグを抑制する | - `hooks/templates/injection.md.j2`<br>- `hooks/templates/injection.jp.md.j2` |
 
 ## 変更内容
 
