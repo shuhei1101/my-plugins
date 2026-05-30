@@ -828,3 +828,17 @@ branches:
   summary: PR ドキュメント更新はコミットと同じコミットにまとめる規約を .work/CLAUDE.md に追記
   task: 260530_docs-commit-bundle-pr-doc
   completed: true
+- id: 214
+  title: PR214 — notes-index-and-japanese-titles
+  type: feat
+  tags: []
+  summary: ノートの H1 タイトルを日本語に統一し、カテゴリ別 _index.md を追加
+  task: 260530_notes-index-and-japanese-titles
+  completed: true
+- id: 215
+  title: PR215 — remove-unused-references
+  type: chore
+  tags: []
+  summary: 不要になったclaud-kit references（incidents/glossary）を削除
+  task: 260530_remove-unused-references
+  completed: true
