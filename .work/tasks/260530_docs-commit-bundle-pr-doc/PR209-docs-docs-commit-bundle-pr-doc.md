@@ -15,11 +15,11 @@ ref-inject を使って `.work/**` 編集時にインジェクトされるリフ
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `work-dot-work-dir.jp.md` を新規作成（JP ミラー） | - `plugins/work/references/work-dot-work-dir.jp.md` |
-| - | `work-dot-work-dir.md` を新規作成（英語正本） | - `plugins/work/references/work-dot-work-dir.md` |
-| - | `_index.yaml` / `_index.jp.yaml` にエントリを追加 | - `plugins/work/references/_index.yaml`<br>- `plugins/work/references/_index.jp.yaml` |
-| - | `_injection_rules.yaml` に `.work/**` パターンを追加 | - `plugins/work/references/_injection_rules.yaml` |
-| - | `templates/.work/CLAUDE.md` と `CLAUDE.jp.md` を削除 | - `plugins/work/templates/.work/CLAUDE.md`<br>- `plugins/work/templates/.work/CLAUDE.jp.md` |
+| 済 | `work-dot-work-dir.jp.md` を新規作成（JP ミラー） | - `plugins/work/references/work-dot-work-dir.jp.md` |
+| 済 | `work-dot-work-dir.md` を新規作成（英語正本） | - `plugins/work/references/work-dot-work-dir.md` |
+| 済 | `_index.yaml` / `_index.jp.yaml` にエントリを追加 | - `plugins/work/references/_index.yaml`<br>- `plugins/work/references/_index.jp.yaml` |
+| 済 | `_injection_rules.yaml` に `.work/**` パターンを追加 | - `plugins/work/references/_injection_rules.yaml` |
+| 済 | `templates/.work/CLAUDE.md` と `CLAUDE.jp.md` を削除 | - `plugins/work/templates/.work/CLAUDE.md`<br>- `plugins/work/templates/.work/CLAUDE.jp.md` |
 
 ## 変更内容
 
