@@ -28,6 +28,9 @@ references:
   - path: plugin-claude-md.md
     description: How to write a plugin's root CLAUDE.md. Required sections (Skills / Hooks / Environment Variables / Dependencies / Changelog), table formats for each section, and the full copy-paste template.
 
+  - path: setup-wizard.md
+    description: How to author the mandatory `setup-wizard` skill — first-run onboarding driven by a SessionStart hook plus the `setup_done` flag in `.claude/{plugin}.local.md`. Covers flow, AskUserQuestion option limits (2–4), the relationship with `plugin-config`, and a copy-paste SKILL.md skeleton.
+
   - path: glossary.md
     description: Format guide for .claude/rules/glossary.md. Single-file category-organized terminology table, writing discipline (always-loaded → keep terse), and how terms get added.
 

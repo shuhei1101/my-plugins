@@ -59,6 +59,46 @@ plugins/<plugin-name>/
 （と `.jp.md`）を生成し、テンプレファイルのリストを自分のプラグインが展開する静的ファイルに
 合わせて差し替える。
 
+> **プラグインを更新するときは、必ず `setup-wizard` の内容も合わせて最新化すること**
+> （ユースケース紹介・env 説明など）。`plugin-update` のチェックリストにも入れる。
+
+### `setup-wizard`（全プラグイン必須）
+
+すべてのプラグインは、初回利用時にユーザーをオンボーディングする `setup-wizard` スキルを**必ず**
+同梱する。SessionStart フック + `.claude/{plugin}.local.md` の `setup_done` フラグで自動誘導し、
+手動再実行は `/<plugin>:setup-wizard`。
+
+**理由**: 各プラグインの env トグル・初期設定・ユースケースは `CLAUDE.md` に分散しており、
+ユーザーが能動的に読まないと気づけない。初回起動時に対話的にセットアップとユースケース紹介を
+提供することで、最初の一歩のコストを下げる。
+
+**標準仕様**:
+
+| 項目 | 規約 |
+|---|---|
+| 名前 | `setup-wizard`（kebab-case 固定 — `<plugin>-setup-wizard` ではない） |
+| トリガー | 手動（`/<plugin>:setup-wizard`） + SessionStart フック自動誘導（フラグ未設定時のみ） |
+| 完了マーク | `.claude/{plugin}.local.md` の YAML frontmatter に `setup_done: true` を書き込む |
+| スコープ | このプラグイン自身の env / オンボーディングのみ。他プラグインには絶対に手を出さない |
+| 関連スキル | env を持つなら `plugin-config` も必須実装（setup-wizard が委譲する） |
+| 詳細ガイド | `references/setup-wizard.md`（フロー、skeleton、checklist） |
+
+詳細な書き方・skeleton・SessionStart フックの実装は `setup-wizard.md` を参照。
+
+### `plugin-config`（env を持つプラグインで必須）
+
+プラグインが env 変数を持つ場合、ユーザーが `AskUserQuestion` で対話的に設定できる
+`plugin-config` スキルを実装する。`setup-wizard` から委譲される。env を持たないプラグインでは
+不要。
+
+**標準仕様**:
+
+| 項目 | 規約 |
+|---|---|
+| 名前 | `plugin-config`（kebab-case 固定 — `<plugin>-config` ではない） |
+| トリガー | 手動（`/<plugin>:plugin-config`） + `setup-wizard` からの委譲呼び出し |
+| スコープ | このプラグイン自身の env 変数のみ。他プラグインの env には絶対に触らない |
+
 ---
 
 ## 作成ワークフロー
