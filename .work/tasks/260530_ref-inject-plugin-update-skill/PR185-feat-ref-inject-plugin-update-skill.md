@@ -28,16 +28,22 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `plugins/ref-inject/skills/plugin-update/SKILL.md` (+ jp) を作成 | - 新規 |
+| x | `plugins/ref-inject/skills/plugin-update/SKILL.md` (+ jp) を作成 | - 新規 |
 |  | スコープ: apply 済みプラグイン列挙 → 各 inject_references.py を現バージョンテンプレと照合 → 差分あればユーザー確認後に更新 | - |
-| - | ref-inject を MINOR bump | - `plugins/ref-inject/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | CLAUDE.md の Changelog 表に追記 | - `plugins/ref-inject/CLAUDE.md` / `.jp.md` |
-| - | コミット | - |
+| x | ref-inject を MINOR bump | - `plugins/ref-inject/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| x | CLAUDE.md の Changelog 表に追記 | - `plugins/ref-inject/CLAUDE.md` / `.jp.md` |
+| x | コミット | - |
 
 ## 変更内容
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
+| `plugins/ref-inject/skills/plugin-update/SKILL.md` | 新規 | plugin-update スキル定義（英語） | |
+| `plugins/ref-inject/skills/plugin-update/SKILL.jp.md` | 新規 | JP ミラー | |
+| `plugins/ref-inject/CLAUDE.md` | 編集 | 構成ツリーに plugin-update 追記 / Changelog 追加 | |
+| `plugins/ref-inject/CLAUDE.jp.md` | 編集 | 同上（日本語） | |
+| `plugins/ref-inject/.claude-plugin/plugin.json` | 編集 | 1.5.0 → 1.6.0 | |
+| `.claude-plugin/marketplace.json` | 編集 | ref-inject 1.5.0 → 1.6.0 | |
 
 ## テスト
 
