@@ -970,3 +970,10 @@ branches:
   summary: references/ 配下の ref-inject 内部ファイルを .ref-injects/ に移動し、_index.md を追加
   task: 260531_references再構成
   completed: true
+- id: 228
+  title: fix/dev-kit-hook-jp-md-false-positive
+  type: fix
+  tags: []
+  summary: dev-kit フックが .jp.md ファイルに誤って advisory を出す条件バグを修正
+  task: 260531_dev-kit-hook-jp-md
+  completed: true
