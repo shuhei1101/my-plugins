@@ -151,3 +151,19 @@ For large skills, extract heavy reference material to `references/` and link by 
 - [ ] `description` frontmatter has precise trigger conditions; only `name` + `description` set
 - [ ] Shared content is in `## References`; single-step content stays in its step
 - [ ] Both files stamped per `provenance.md` (auto-injected when you write the file)
+
+---
+
+## JP Mirror Sync
+
+When editing `SKILL.md`, **update `SKILL.jp.md` in the same commit**.
+
+| Edited file | Must also update |
+|---|---|
+| `plugins/{name}/skills/{skill}/SKILL.md` | `plugins/{name}/skills/{skill}/SKILL.jp.md` |
+
+### Checklist before committing
+
+- [ ] Changes in `SKILL.md` are reflected in `SKILL.jp.md` in Japanese
+- [ ] Section structure in `SKILL.jp.md` matches `SKILL.md`
+- [ ] `SKILL.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror... -->`)

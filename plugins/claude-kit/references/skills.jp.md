@@ -153,3 +153,19 @@ description: |
 - [ ] `description` frontmatter に精密なトリガー条件がある。設定は `name` + `description` のみ
 - [ ] 共有内容は `## 参照` にある。単一ステップの内容はそのステップに留まる
 - [ ] 両ファイルとも `provenance.md` に従ってスタンプ済み（ファイルを書く際に自動注入される）
+
+---
+
+## JP ミラー同期
+
+`SKILL.md` を編集したら、**必ず同じコミットで `SKILL.jp.md` も更新する**。
+
+| 編集したファイル | 必ず同時に更新するファイル |
+|---|---|
+| `plugins/{name}/skills/{skill}/SKILL.md` | `plugins/{name}/skills/{skill}/SKILL.jp.md` |
+
+### コミット前チェックリスト
+
+- [ ] `SKILL.md` の変更内容が `SKILL.jp.md` に日本語で反映されている
+- [ ] `SKILL.jp.md` のセクション構成が `SKILL.md` と一致している
+- [ ] `SKILL.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror... -->`）が含まれている

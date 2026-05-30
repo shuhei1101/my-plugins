@@ -111,11 +111,17 @@ Description of this project or folder.
 
 ---
 
-## Subfolder CLAUDE.md vs rules
+## JP Mirror Sync
 
-| Priority | Choice |
+When editing `CLAUDE.md`, **update `CLAUDE.jp.md` in the same commit**.
+
+| Edited file | Must also update |
 |---|---|
-| **Keep rules co-located with the code** (proximity) | Subfolder `CLAUDE.md` |
-| **See all active rules in one place** (auditability) | `.claude/rules/<name>.md` |
+| `CLAUDE.md` | `CLAUDE.jp.md` |
+| `plugins/{name}/CLAUDE.md` | `plugins/{name}/CLAUDE.jp.md` |
 
-Cross-path linking always belongs in `.claude/rules/`.
+### Checklist before committing
+
+- [ ] Changes in `CLAUDE.md` are reflected in `CLAUDE.jp.md` in Japanese
+- [ ] Section structure in `CLAUDE.jp.md` matches `CLAUDE.md`
+- [ ] `CLAUDE.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror... -->`)

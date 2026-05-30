@@ -36,3 +36,9 @@ references:
 
   - path: incidents.md
     description: Format guide for .claude/rules/incidents.md. Two-layer index + detail-file structure for recurrence-prevention logs, and how incidents get recorded.
+
+  - path: references-sync.md
+    description: JP mirror sync rule for plugin references files. When editing plugins/*/references/**/*.md, the paired *.jp.md must also be updated in the same commit.
+
+  - path: kit-hooks-sync.md
+    description: Structural sync rule for dev-kit and claude-kit injection infrastructure. When changing the shared injection structure (inject_references.py, hooks.json, templates, _index.yaml, _injection_rules.yaml) in one kit, the other must be updated in the same commit.

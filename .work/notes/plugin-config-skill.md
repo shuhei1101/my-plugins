@@ -34,6 +34,28 @@ PR164 で追加された env トグル群を、ユーザーが簡単に ON/OFF �
 4. 変更を適用して Step 2 に戻る
 5. 完了選択時: 全変更のサマリーを表示
 
+## 実装済み（PR204）
+
+PR174 完了を受けて、逆極性の `{PREFIX}_INJECTION_DISABLE` 変数を work:config 管理対象に追加。
+
+追加した管理変数:
+- `CLAUDE_KIT_INJECTION_DISABLE` — claude-kit の全参照注入を無効化（truthy で無効）
+- `DEV_KIT_INJECTION_DISABLE` — dev-kit の全参照注入を無効化（truthy で無効）
+
+### 逆極性変数の設計
+
+Step 1（状態判定）: truthy な値（"true"/"1"/"yes"/"on"）→ OFF（注入無効）。キー不在 or falsy → ON（注入有効）。
+
+Step 3（値選択）: 逆極性変数には専用 options を表示。
+- "デフォルトに戻す（キー削除 = 注入 ON）"
+- "無効にする（"true" に設定 = 注入 OFF）"
+
+Step 4（適用）: "無効にする" → `"true"` を設定。"デフォルトに戻す" → キー削除。
+
+Notes の除外文言を削除。
+
+work プラグインバージョン: v2.46.2 → v2.47.0（MINOR バンプ）
+
 ## 参照
 
 - `.work/notes/env-toggles-for-hooks-and-steps.md` — PR164 の env トグル実装メモ

@@ -3,6 +3,16 @@ rules:
 - pattern: "**/*.md"
   required:
     - markdown/markdown-table.md
+# ---- YAML asset/config conventions: inject when editing the canonical asset/config YAMLs ----
+- pattern: "**/index.yaml"
+  required:
+    - yaml/yaml.md
+- pattern: "**/settings.yaml"
+  required:
+    - yaml/yaml.md
+- pattern: "**/settings.yaml.sample"
+  required:
+    - yaml/yaml.md
 - pattern: '**/*.py'
   lang: python
   required:
@@ -780,17 +790,27 @@ rules:
   lang: html
   required:
   - html/principles.md
+  - html/css-js-link.md
+  - html/common-component-first.md
   optional:
   - html/ui-design.md
 - pattern: '**/*.css'
   lang: html
   required:
   - html/principles.md
+  - html/css-js-link.md
+  - html/common-component-first.md
   optional:
   - html/ui-design.md
 - pattern: '**/*.js'
   lang: html
   required:
   - html/principles.md
+  - html/css-js-link.md
+  - html/common-component-first.md
   optional:
   - html/ui-design.md
+- pattern: 'plugins/dev-kit/skills/html-debug-fab/templates/**'
+  lang: html
+  required:
+  - html/debug-fab-sync.md
