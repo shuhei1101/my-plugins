@@ -867,3 +867,10 @@ branches:
   summary: CLAUDE_KIT_JP_MIRROR 環境変数を追加し、false の場合は JP ミラーを作らず本体ファイルを日本語で書く
   task: 260530_claude-kit-jp-mirror-env
   completed: true
+- id: 221
+  title: chore/claude-kit-markdown-env-var-audit
+  type: chore
+  tags: []
+  summary: 他のマークダウンファイルで env var を直接読もうとする誤った指示がないか全量調査し修正する
+  task: 260531_claude-kit-markdown-env-var-audit
+  completed: true
