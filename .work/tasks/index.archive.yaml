@@ -785,3 +785,10 @@ prs:
   summary: plugin-work.mdにプラグインCLAUDE.md更新の整合性チェックを追加
   task: 260530_plugin-work-rule-add-claude-md-check
   completed: true
+- id: 204
+  title: PR204 — extend-work-kit-config-for-injection-disable
+  type: feat
+  tags: []
+  summary: work:config スキルを {PREFIX}_INJECTION_DISABLE（逆極性）対応に拡張する
+  task: 260530_extend-work-kit-config-for-injection-disable
+  completed: true
