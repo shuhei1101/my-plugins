@@ -22,8 +22,7 @@ until the user chooses to finish.
 | `WORK_KIT_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
 | `WORK_KIT_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
 | `WORK_KIT_MERGE_PROPOSAL` | Stop フックでの `/work-kit:merge` 提案 | 有効 |
-| `WORK_KIT_MERGE_CONV2CLAUDE` | merge Step 4 conversation-to-claude | 有効 |
-| `WORK_KIT_MERGE_AUTO_HANDOFF` | merge Step 12 auto pr-handoff | 有効 |
+| `WORK_KIT_MERGE_AUTO_HANDOFF` | merge Step 11 auto pr-handoff | 有効 |
 | `NEXT_KIT_TS_CHECK` | PostToolUse tsc 型チェック | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
 
@@ -78,7 +77,7 @@ Display a state table as text output:
 
 **Call `AskUserQuestion` tool** with `multiSelect: false`:
 
-- question: `"設定する env 変数を選択（MERGE_PROPOSAL / MERGE_CONV2CLAUDE / MERGE_AUTO_HANDOFF / NEXT_KIT_TS_CHECK / AITUBER_NOTIFY は「その他」に入力）"`
+- question: `"設定する env 変数を選択（MERGE_PROPOSAL / MERGE_AUTO_HANDOFF / NEXT_KIT_TS_CHECK / AITUBER_NOTIFY は「その他」に入力）"`
 - header: `"env 変数"`
 - options（各ラベルに現在の状態を含める）:
   1. `"[{state}] WORK_KIT_PR_ENFORCEMENT"` — description: `"UserPromptSubmit work-start 強制注入"`
@@ -87,7 +86,7 @@ Display a state table as text output:
   4. `"完了（設定を終了）"` — description: `"ループを終了して変更結果を表示"`
 
 If option 4 (完了) → skip to Step 5 (report)
-If "その他" (free text) → use the typed var name as the target; validate it is one of the 8 managed vars before proceeding
+If "その他" (free text) → use the typed var name as the target; validate it is one of the 7 managed vars before proceeding
 Otherwise → use the selected option's var name
 
 → Proceed to Step 3
