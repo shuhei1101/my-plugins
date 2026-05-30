@@ -21,16 +21,18 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/20260530_prefix-underscore-injection-config/PR179/QA.md` |
-| - | `ref-inject/templates/references/` の 3 ファイルをリネーム | `plugins/ref-inject/templates/references/{index,index.jp,injection_rules}.yaml` → `_*` |
-| - | `dev-kit/references/` の 3 ファイルをリネーム | `plugins/dev-kit/references/{index,index.jp,injection_rules}.yaml` → `_*` |
-| - | `claude-kit/references/` の 3 ファイルをリネーム | `plugins/claude-kit/references/{index,index.jp,injection_rules}.yaml` → `_*` |
-| - | 各 `inject_references.py` のファイル名参照を更新 | `plugins/{ref-inject/templates,dev-kit,claude-kit}/hooks/inject_references.py` |
-| - | `ref-inject:apply` スキルのファイル名参照を更新 | `plugins/ref-inject/skills/apply/SKILL.md` (+ `.jp.md`) |
-| - | 各プラグインの CLAUDE.md のファイル名参照を更新 | `plugins/{ref-inject,dev-kit,claude-kit}/CLAUDE.md` (+ `.jp.md`) |
-| - | `claude-kit/references/hooks.md` などのドキュメント追従 | `plugins/claude-kit/references/{hooks,CLAUDE}.md` (+ `.jp.md`) |
-| - | バージョンを bump し、`marketplace.json` も同期 | `plugins/{ref-inject,dev-kit,claude-kit}/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
-| - | ルール・CLAUDE.md を整備する | `.claude/rules/feature/kit-hooks-index-sync.md`, `.claude/rules/core/glossary.md` (新用語あれば) |
+| ✅ (空) | QA.md に未決定事項を記録する | `.work/tasks/20260530_prefix-underscore-injection-config/PR179/QA.md` |
+| ✅ | `ref-inject/templates/references/` の 3 ファイルをリネーム | `plugins/ref-inject/templates/references/_{index,index.jp,injection_rules}.yaml` |
+| ✅ | `dev-kit/references/` の 3 ファイルをリネーム | `plugins/dev-kit/references/_{index,index.jp,injection_rules}.yaml` |
+| ✅ | `claude-kit/references/` の 3 ファイルをリネーム | `plugins/claude-kit/references/_{index,index.jp,injection_rules}.yaml` |
+| ✅ | 各 `inject_references.py` のファイル名参照を更新 | `plugins/{ref-inject/templates,dev-kit,claude-kit}/hooks/inject_references.py` |
+| ✅ | `ref-inject:apply` スキルのファイル名参照を更新 | `plugins/ref-inject/skills/apply/SKILL.md` (+ `.jp.md`) |
+| ✅ | 各プラグインの CLAUDE.md のファイル名参照を更新 | `plugins/{ref-inject,dev-kit,claude-kit}/CLAUDE.md` (+ `.jp.md`) |
+| ✅ | `claude-kit/references/hooks.md` などのドキュメント追従 | `plugins/claude-kit/references/{hooks,CLAUDE}.md` (+ `.jp.md`) |
+| ✅ | 各プラグインの `injection.{md,jp.md}.j2` メッセージテンプレートも追従 | `plugins/{ref-inject/templates,dev-kit,claude-kit}/hooks/templates/injection.*.j2` |
+| ✅ | バージョンを bump し、`marketplace.json` も同期 + changelog 作成 | `plugins/{ref-inject,dev-kit,claude-kit}/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `plugins/*/changelogs/v*.md` |
+| ✅ | `kit-hooks-index-sync` ルールも追従 | `.claude/rules/feature/kit-hooks-index-sync.md` (+ `rules-jp/`) |
+| ✅ | スモークテスト: claude-kit / dev-kit のフックを実走（YAML パース確認） | — |
 
 ## 参考ドキュメント
 
