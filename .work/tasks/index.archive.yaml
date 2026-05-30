@@ -740,3 +740,10 @@ prs:
   summary: 各プラグインの injection_rules.yaml 内のコメントを日本語に統一
   task: 260530_translate-injection-rules-comments
   completed: true
+- id: 189
+  title: PR189 — add-japanese-comment-log-rule
+  type: docs
+  tags: []
+  summary: python-script.md にコメント・ログは日本語で書くルールを追加
+  task: 260530_add-japanese-comment-log-rule
+  completed: true
