@@ -1,4 +1,6 @@
 references:
+- path: markdown/markdown-table.md
+  description: "Markdown table formatting conventions. Always add a # column as the leftmost column; every row gets a sequential number. When consecutive rows share the same column value, write it only in the first row and use 〃 (ditto mark) in subsequent rows."
 - path: python/core/naming.md
   lang: python
   description: Naming conventions. Functions snake_case, type aliases UpperCamel, files/modules snake_case. Standard file names inside a feature folder (types/service/query/route/client/db).
@@ -407,3 +409,9 @@ references:
 - path: html/debug-fab-sync.md
   lang: html
   description: debug-fab template sync rules. When editing uidev.js or uidev.css, also update SKILL.md and templates/CLAUDE.md. Bump plugin.json and marketplace.json on any template change.
+- path: html/css-js-link.md
+  lang: html
+  description: CSS class ↔ JS DOM access linkage. Keep FLOCSS class definitions in CSS and DOM access in JS/HTML in sync. Covers existence checks, layer correctness, BEM substructure, dead classes, and no-magic-strings rule.
+- path: html/common-component-first.md
+  lang: html
+  description: Common component first mandate. Before adding new UI markup/styles/DOM code, read shared constants, routes, component CSS and JS layers. Reuse > extend > add; prohibits inline one-offs and hardcoded values.

@@ -80,7 +80,3 @@ rules:
     optional:
       - environment.md
 
-  # ---- Markdown 一般: テーブル整形の規約 ----
-  - pattern: "**/*.md"
-    required:
-      - markdown-table.md
