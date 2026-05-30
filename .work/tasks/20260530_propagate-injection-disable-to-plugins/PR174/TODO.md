@@ -34,13 +34,12 @@ PR164 の QA-001 で「ref-inject テンプレを直接使うのではなく、�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR174/QA.md` |
-| - | claude-kit の inject_references.py に env チェック追加 | - `plugins/claude-kit/hooks/scripts/inject_references.py` |
-| - | py-kit の inject_references.py に env チェック追加 | - `plugins/py-kit/hooks/scripts/inject_references.py` |
-| - | next-kit の inject_references.py に env チェック追加 | - `plugins/next-kit/hooks/scripts/inject_references.py` |
-| - | 各 kit のバージョンバンプ + changelog | - `plugins/{kit}/.claude-plugin/plugin.json` / `changelogs/` |
-| - | work-kit:config スキルを INJECTION_DISABLE 対応に拡張するか検討（拡張するなら別 PR 候補へ） | - QA.md |
-| - | ルール・glossary を更新する | - `.claude/rules/core/glossary.md` |
+| x | QA.md に未決定事項を記録する | - `.work/tasks/.../PR174/QA.md` |
+| x | claude-kit の inject_references.py に env チェック追加 | - `plugins/claude-kit/hooks/scripts/inject_references.py` |
+| x | py-kit / next-kit は本リポジトリに存在しないため対象外 | - |
+| x | claude-kit バージョンバンプ + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json` / `changelogs/v3.41.0.md` |
+| x | CLAUDE.md / CLAUDE.jp.md に環境変数テーブル追加 | - `plugins/claude-kit/CLAUDE.md`, `CLAUDE.jp.md` |
+| x | ノート更新（env-toggles-for-hooks-and-steps.md） | - `.work/notes/env-toggles-for-hooks-and-steps.md` |
 
 ## 参考ドキュメント
 
