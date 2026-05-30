@@ -1,13 +1,14 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
-# git-guard フックがファイル内容に誤反応
+# git-guard フックがコマンド文字列テキストに誤反応
 
 **日付**: 2026-05-30
 **カテゴリ**: tool-misuse
 
 ## 何が起きたか
 
-シェルのヒアドキュメントを使って `plugin.json` を書き込もうとした際、ファイルの説明文に "guards git push/merge confirmation" という文字列が含まれていた。
+git-guard フック（`PreToolUse(Bash)`）はBashコマンド文字列全体を検索する。引数・ファイル内容・サマリーテキストなど、「git push」「git merge」という文字列がどこに出現しても発動する。
 
+**ケースA — シェルヒアドキュメント**（2026-05-30）:
 ```bash
 cat > plugins/work/.claude-plugin/plugin.json << 'EOF'
 {
@@ -15,19 +16,21 @@ cat > plugins/work/.claude-plugin/plugin.json << 'EOF'
 }
 EOF
 ```
+ファイル本文がコマンド文字列に含まれるため、リテラル "git merge" がブロックを引き起こした。
 
-git-guard フック（`PreToolUse(Bash)`）がBashコマンド全体から "git push" と "git merge" をパターンマッチし、`decision: block` を返してファイル書き込みをブロックした。
+**ケースB — Pythonコマンド引数**（2026-05-30）:
+```bash
+python index-tool.py add ... --summary "git merge master/main は許可..."
+python -c "..." "git-guardフックを修正し、git merge master/mainは許可..." "session-id"
+```
+`--summary` や位置引数の値に "git merge" がテキストとして含まれるだけでガードが発動する（実際のgitコマンドではなくても）。
 
 ## 回避策
 
-ファイル内容に "git push" や "git merge" が含まれる場合:
-
-1. シェルヒアドキュメントの代わりに Python のファイル書き込み API を使う:
-   ```python
-   python3 -c "import json; data = {...}; open('file.json', 'w').write(json.dumps(data, indent=2))"
-   ```
-2. または文字列をリフレーズして triggering な文字列を避ける（例: "guards git push/merge" → "guards force-operations"）。
+1. **リフレーズ**: 引数やファイル内容で "git push" / "git merge" の文字列を避ける（例: "マージ"、"ギットマージ"、"force-operations"）。
+2. **Pythonファイル書き込み**: ヒアドキュメントの代わりにPython APIでファイルを書く。
+3. **WORK_GUARD=false**: 偽陽性が避けられない場合は環境変数でガードを一時的に無効化する。
 
 ## コンテキスト
 
-git-guard フックはBashコマンド文字列全体を検索する。ヒアドキュメントはファイル本文をコマンド文字列の一部として渡すため、文字列リテラル中の出現もガードを発動させる。
+git-guard の正規表現（`r"\bgit\s+(push|merge)\b"`）はBashコマンド文字列全体（引数や埋め込みコンテンツを含む）を検索する。コマンドとしての "git merge" と、テキストとして議論している "git merge" を区別できない。
