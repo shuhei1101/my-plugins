@@ -829,3 +829,10 @@ prs:
   summary: work-startスキルのPR用語をブランチ用語に統一し、ブランチ名からPR番号プレフィックスを除去する
   task: 260530_PR用語をブランチ用語に統一
   completed: true
+- id: 204
+  title: PR204 — extend-work-kit-config-for-injection-disable
+  type: feat
+  tags: []
+  summary: work:config スキルを {PREFIX}_INJECTION_DISABLE（逆極性）対応に拡張する
+  task: 260530_extend-work-kit-config-for-injection-disable
+  completed: true
