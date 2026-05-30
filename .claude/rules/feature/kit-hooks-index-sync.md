@@ -1,6 +1,7 @@
 ---
 paths:
-  - "plugins/*-kit/hooks/inject_references.py"
+  - "plugins/*-kit/hooks/scripts/inject_references.py"
+  - "plugins/*-kit/hooks/scripts/_common.py"
   - "plugins/*-kit/hooks/hooks.json"
   - "plugins/*-kit/hooks/templates/injection.md.j2"
   - "plugins/*-kit/hooks/templates/injection.jp.md.j2"
@@ -13,11 +14,13 @@ paths:
 
 ## Overview
 
-`py-kit`・`next-kit`・`claude-kit`（および将来追加される `*-kit`）は **同じ references 自動注入構造** を共有する。
+`dev-kit`・`claude-kit`（および将来追加される `*-kit`）は **同じ references 自動注入構造** を共有する。
 （`claude-kit` も `*-kit` グロブに一致するため、このルールの `paths:` で自動的に対象に含まれる。PR159 で
-creator スキル群を reference 自動注入へ移行して仲間入りした。）共有する構造:
+creator スキル群を reference 自動注入へ移行して仲間入りした。PR166 で py-kit / html-kit / next-kit が
+dev-kit に統合され、対象は dev-kit + claude-kit の 2 つになった。）共有する構造:
 
-- `hooks/inject_references.py` — PreToolUse(Edit/Write/MultiEdit) フックスクリプト
+- `hooks/scripts/inject_references.py` — PreToolUse(Edit/Write/MultiEdit) フックスクリプト
+- `hooks/scripts/_common.py` — フックスクリプトの共通ヘルパー（stdin 読み・env truthy 判定・once-per-session トークン・block 理由出力等）。各 plugin 内に閉じる（プラグイン間共通化はしない）
 - `hooks/hooks.json` — フック登録
 - `hooks/templates/injection.md.j2` + `injection.jp.md.j2` — Jinja2 テンプレ
 - `references/index.yaml` + `index.jp.yaml` — reference 一覧 + description
@@ -35,7 +38,8 @@ creator スキル群を reference 自動注入へ移行して仲間入りした�
 
 | File path | Role |
 |---|---|
-| `plugins/*-kit/hooks/inject_references.py` | フック本体（plugin ごとに env var 名・ログ tag だけ違うほぼ同一のコード） |
+| `plugins/*-kit/hooks/scripts/inject_references.py` | フック本体（plugin ごとに env var 名・ログ tag だけ違うほぼ同一のコード） |
+| `plugins/*-kit/hooks/scripts/_common.py` | フックスクリプト共通ヘルパー（各 plugin に同一形式の関数群、ENV_PREFIX のみ違う） |
 | `plugins/*-kit/hooks/hooks.json` | PreToolUse 登録（plugin ごとに同一形式） |
 | `plugins/*-kit/hooks/templates/injection.md.j2` | 注入テンプレ英語版（plugin ごとに plugin 名表記だけ違う） |
 | `plugins/*-kit/hooks/templates/injection.jp.md.j2` | 注入テンプレ日本語版 |

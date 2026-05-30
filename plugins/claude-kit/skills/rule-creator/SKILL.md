@@ -9,7 +9,7 @@ description: |
 
 Authoring guidance for rules now lives in this plugin's references and is **auto-injected** by the
 `claude-kit-references-injection` hook whenever you edit a file under `.claude/rules/`. This skill is
-a thin wrapper, kept for explicit invocation and for callers (`conversation-to-claude`, `notes-to-claude`).
+a thin wrapper, kept for explicit invocation and for callers (e.g. `notes-to-claude`).
 
 ## What to do
 

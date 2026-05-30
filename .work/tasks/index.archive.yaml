@@ -619,3 +619,95 @@ prs:
   summary: プラグイン env トグルを AskUserQuestion 経由で settings.json に書き込む設定スキルを追加する
   task: 20260530_add-plugin-config-skill
   completed: true
+- id: 170
+  title: PR170 — remove-version-sync
+  type: chore
+  tags: []
+  summary: mark-generated 削除後に不要になった version-sync スキルを削除
+  task: 20260530_remove-version-sync
+  completed: true
+- id: 172
+  title: PR172 — rename-work-kit-to-workspace
+  type: refactor
+  tags: []
+  summary: work-kit プラグインの名前を workspace にリネームし、全依存参照を更新する
+  task: 20260530_rename-work-kit-to-workspace
+- id: 166
+  title: PR166 — merge-language-plugins-into-dev-kit
+  type: refactor
+  tags: []
+  summary: py-kit / html-kit / next-kit を dev-kit に統合し、使用言語規約を env 変数で切り替える大規模リファクタ
+  task: 20260530_merge-language-plugins-into-dev-kit
+  completed: true
+- id: 169
+  title: PR169 — integrate guard-kit into work-kit
+  type: refactor
+  tags: []
+  summary: guard-kit を work-kit に統合し、WORK_KIT_GUARD env で有効/無効を切り替え可能にする
+  task: 20260530_integrate-guard-kit-into-work-kit
+  completed: true
+- id: 176
+  title: PR176 — impl-review-batch-questions
+  type: refactor
+  tags: []
+  summary: /work-kit:impl-review の Step 4 を AskUserQuestion 1 回に最大 4 件まとめて投げる仕様に変更
+  task: 20260530_impl-review-batch-questions
+  completed: true
+- id: 177
+  title: PR177 — add-protected-branches-env
+  type: feat
+  tags: []
+  summary: master-commit-guard.py の PROTECTED_BRANCHES を env WORKSPACE_PROTECTED_BRANCHES（カンマ区切り）で上書き可能にする
+  task: 20260530_add-protected-branches-env
+  completed: true
+- id: 173
+  title: PR173 — add-merge-proposal-toggle
+  type: feat
+  tags: []
+  summary: workspace の Stop フックでマージ提案するかどうかを WORKSPACE_MERGE_PROPOSAL env で制御できるようにする
+  task: 20260530_add-merge-proposal-toggle
+  completed: true
+- id: 168
+  title: PR168 — refactor-task-doc-structure
+  type: refactor
+  tags: []
+  summary: 'タスクドキュメント構造をリファクタ: 日付YYMMDD化・PR単一ファイル化・TODO+QA統合・変更内容/テストセクション追加'
+  task: 260530_refactor-task-doc-structure
+  completed: true
+- id: 171
+  title: PR171 — add-plugin-claude-md-standard
+  type: feat
+  tags: []
+  summary: プラグインの CLAUDE.md 標準セクション構成を定義し、changelogs/ を廃止してテンプレートを references/ に追加
+  task: 20260530_add-plugin-claude-md-standard
+  completed: true
+- id: 178
+  title: PR178 — add-markdown-table-reference
+  type: feat
+  tags: []
+  summary: claude-kitにMarkdownテーブル記法のリファレンスを追加し、繰り返し値の省略ルールを注入
+  task: 20260530_add-markdown-table-reference
+  completed: true
+- id: 181
+  title: PR181 — remove-conversation-to-claude
+  type: chore
+  tags: []
+  summary: conversation-to-claude スキルと、それに伴う glossary/incidents 系ファイルを削除
+  task: 20260530_remove-conversation-to-claude
+  completed: true
+- id: 183
+  title: PR183 — dev-kit-py-script-pattern-brace-expansion
+  type: refactor
+  tags: []
+  summary: dev-kit injection_rules.yaml の python-script 注入パターンを単数形 tool/script もカバーするよう
+    **/{tool,tools,script,scripts}/**/*.py に統合
+  task: 260530_dev-kit-py-script-pattern-brace-expansion
+  completed: true
+- id: 180
+  title: PR180 — split-hook-inline-python-to-scripts
+  type: refactor
+  tags: []
+  summary: hooks.json のインライン python -c を各プラグイン hooks/scripts/ に切り出し、共通処理を _common.py
+    に集約
+  task: 20260530_split-hook-inline-python-to-scripts
+  completed: true

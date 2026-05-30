@@ -1,7 +1,0 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
-HTML / CSS / JavaScript の実装・編集が要求されています。
-以下のスキルを状況に応じて呼び出してください:
-
-- `/html-kit:implement` — 実装ガイドライン（HTML/CSS/JS を実装・編集するときは必ず起動）
-- `/html-kit:logging` — ロギング設定（HTML/CSS/JS を実装・編集するときは必ず起動）
-- `/html-kit:mock` — モック生成（モック作成が要求された場合のみ起動）
