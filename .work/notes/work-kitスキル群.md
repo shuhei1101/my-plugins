@@ -123,3 +123,10 @@ work-start Step 4 がこの env var を読んで分岐する（従来の「workt
 - テンプレートに `CLAUDE.md` / `CLAUDE.jp.md` は存在しないためスキップ
 - `tasks/.gitignore` は既存プロジェクトと同一内容
 - `issues/.gitignore` は新規追加（既存プロジェクトに `issues/` フォルダが未作成の場合は作成）
+
+### v2.48.0 以降の変更（#232 追記）
+
+- `.work/CLAUDE.md` / `.work/CLAUDE.jp.md` は **削除対象**（ref-inject に移行済みで不要）
+- `plugin-update` スキルの Step 2 を改訂:
+  - 旧: CLAUDE.md・CLAUDE.jp.md を上書きコピー
+  - 新: CLAUDE.md・CLAUDE.jp.md が存在すれば `git rm` で削除し、`.gitignore` のみを同期
