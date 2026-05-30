@@ -14,6 +14,8 @@ Claude Code プラグインを作成または更新する方法。本ガイド�
 plugins/<plugin-name>/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin manifest (required)
+├── CLAUDE.md                # Plugin developer guide (required)
+├── CLAUDE.jp.md             # Japanese mirror (required)
 ├── skills/
 │   └── <skill-name>/
 │       ├── SKILL.md         # Skill definition (English, auto-loaded)
@@ -24,10 +26,7 @@ plugins/<plugin-name>/
 │   └── hooks.json           # Hook configuration (optional)
 ├── references/              # Shared reference docs (optional)
 │   └── <topic>.md
-├── .mcp.json                # MCP server config (optional)
-└── changelogs/              # Version history (required)
-    ├── v1.0.0.md            # Initial release
-    └── v1.1.0.md            # Subsequent versions
+└── .mcp.json                # MCP server config (optional)
 ```
 
 ---
@@ -80,12 +79,13 @@ plugins/<plugin-name>/
 ### ステップ 3 — ファイル変更を適用する
 
 - **作成**: 上記のディレクトリ構成を生成する。agents/hooks/MCP ディレクトリは要求された場合のみ追加する。
+  `CLAUDE.md` と `CLAUDE.jp.md` は `plugin-claude-md.md` に従って作成する — 全プラグインで必須。
 - **更新**: 変更したファイルだけを編集する。無関係なファイルには触れない。
 
 ### ステップ 4 — plugin.json + marketplace.json + changelog（バージョンを一致させる）
 
 下記のフィールド/形式/バージョンのセクションを参照。**`plugin.json` のバージョン、
-`.claude-plugin/marketplace.json` のエントリ、changelog のファイル名（`changelogs/v{X.Y.Z}.md`）は
+`.claude-plugin/marketplace.json` のエントリ、`CLAUDE.md` の `## Changelog` テーブルは
 常に一致していなければならない。** この 3 つを決して乖離させないこと。
 
 > 2 つの並行 PR が同じプラグインをバンプし、一方が先にマージされたら、マージ前にもう一方を
@@ -146,24 +146,13 @@ claude --plugin-dir ./plugins/<plugin-name>
 
 ---
 
-## changelog ファイルの形式
+## Changelog
 
-ファイル: `changelogs/v{X.Y.Z}.md` — **`plugin.json` と同じバージョン**。
+バージョン履歴はプラグインの `CLAUDE.md` 末尾の `## Changelog` テーブルに記録する
+（`changelogs/` ディレクトリは使用しない）。バージョンは新しい順に記載し、概要は簡潔に。
+詳細は git 履歴を参照。
 
-```markdown
-# v{X.Y.Z} — {YYYY-MM-DD}
-
-## 変更内容
-
-- {変更点}
-
-## 構造の変更
-
-{ディレクトリ構造や設定ファイルの変更があれば記載。なければ「なし」と書く。}
-```
-
-「構造の変更」セクションは重要 — このプラグインに依存する他プロジェクトに、自分側で適用すべき
-構造的な更新を知らせるためのもの。
+詳細なオーサリングガイドは `plugin-claude-md.md` を参照。
 
 ---
 
@@ -171,5 +160,5 @@ claude --plugin-dir ./plugins/<plugin-name>
 
 プラグインのフック/スクリプトは、`settings.json` の `env` ブロックで設定し `os.environ` で読む
 環境変数によって設定可能にできる（詳細は `environment.md`）。プラグインが env 変数を読む場合は、
-**そのプラグイン自身の `CLAUDE.md` に記載する**（名前・効果・デフォルト） — ソースを読まずとも何が
-設定可能か分かるように。キーはプラグイン名で名前空間化する（例: `PY_KIT_INJECTION_TTL`）。
+**プラグインの `CLAUDE.md` の `## Environment Variables` テーブルに記載する**（キー・値・デフォルト）。
+キーはプラグイン名で名前空間化する（例: `PY_KIT_INJECTION_TTL`）。テーブル形式は `plugin-claude-md.md` 参照。

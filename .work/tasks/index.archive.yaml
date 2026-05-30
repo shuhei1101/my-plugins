@@ -674,3 +674,10 @@ prs:
   summary: 'タスクドキュメント構造をリファクタ: 日付YYMMDD化・PR単一ファイル化・TODO+QA統合・変更内容/テストセクション追加'
   task: 260530_refactor-task-doc-structure
   completed: true
+- id: 171
+  title: PR171 — add-plugin-claude-md-standard
+  type: feat
+  tags: []
+  summary: プラグインの CLAUDE.md 標準セクション構成を定義し、changelogs/ を廃止してテンプレートを references/ に追加
+  task: 20260530_add-plugin-claude-md-standard
+  completed: true
