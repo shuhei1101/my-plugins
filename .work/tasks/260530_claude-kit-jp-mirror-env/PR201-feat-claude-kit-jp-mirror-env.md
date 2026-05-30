@@ -24,10 +24,10 @@
 | 済 | 環境変数テーブルに `CLAUDE_KIT_JP_MIRROR` を追加する | - `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md` |
 | 済 | バージョンをバンプする | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 | 済 | ルール・CLAUDE.md を更新する | - |
-| - | inject_references.py に CLAUDE_KIT_JP_MIRROR 読み取りを追加し jp_mirror をテンプレートに渡す | - `hooks/scripts/inject_references.py` |
-| - | 注入テンプレートに jp_mirror=false 時の1行通知を追加する | - `hooks/templates/injection.md.j2`<br>- `hooks/templates/injection.jp.md.j2` |
-| - | common.md の echo アプローチを削除し「注入通知に従う」形に書き直す | - `references/common.md`<br>- `references/common.jp.md` |
-| - | 「マークダウンは env var 読めない」知見を plugin-structure.md に追記する | - `references/plugin-structure.md`<br>- `references/plugin-structure.jp.md` |
+| 済 | inject_references.py に CLAUDE_KIT_JP_MIRROR 読み取りを追加し jp_mirror をテンプレートに渡す | - `hooks/scripts/inject_references.py` |
+| 済 | 注入テンプレートに jp_mirror=false 時の1行通知を追加する | - `hooks/templates/injection.md.j2`<br>- `hooks/templates/injection.jp.md.j2` |
+| 済 | common.md の echo アプローチを削除し「注入通知に従う」形に書き直す | - `references/common.md`<br>- `references/common.jp.md` |
+| 済 | 「マークダウンは env var 読めない」知見を plugin-structure.md に追記する | - `references/plugin-structure.md`<br>- `references/plugin-structure.jp.md` |
 
 ## 変更内容
 
@@ -35,12 +35,17 @@
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| `plugins/claude-kit/references/common.md` | 編集 | `CLAUDE_KIT_JP_MIRROR` の動作分岐を JP/EN mirror rules セクションに追記 | - |
+| `plugins/claude-kit/references/common.md` | 編集 | JP/EN mirror rules を書き直し（注入ヘッダーを確認する形に） | - |
 | `plugins/claude-kit/references/common.jp.md` | 編集 | 同上の日本語ミラー | - |
-| `plugins/claude-kit/CLAUDE.md` | 編集 | 環境変数テーブルに `CLAUDE_KIT_JP_MIRROR` を追加 | - |
+| `plugins/claude-kit/references/plugin-structure.md` | 編集 | 「マークダウンは env var 読めない」知見と2パターンを追記 | - |
+| `plugins/claude-kit/references/plugin-structure.jp.md` | 編集 | 同上の日本語ミラー | - |
+| `plugins/claude-kit/hooks/scripts/inject_references.py` | 編集 | `CLAUDE_KIT_JP_MIRROR` 読み取り・`jp_mirror` をテンプレートに渡す | - |
+| `plugins/claude-kit/hooks/templates/injection.md.j2` | 編集 | `jp_mirror=false` 時の1行通知を追加 | - |
+| `plugins/claude-kit/hooks/templates/injection.jp.md.j2` | 編集 | 同上の日本語版 | - |
+| `plugins/claude-kit/CLAUDE.md` | 編集 | 環境変数テーブルに `CLAUDE_KIT_JP_MIRROR` を追加、Changelog 追加 | - |
 | `plugins/claude-kit/CLAUDE.jp.md` | 編集 | 同上の日本語ミラー | - |
-| `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | バージョンバンプ | MINOR |
-| `.claude-plugin/marketplace.json` | 編集 | バージョンバンプ | MINOR |
+| `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | バージョン `3.43.1` → `3.44.0` | MINOR |
+| `.claude-plugin/marketplace.json` | 編集 | claude-kit バージョン `3.43.1` → `3.44.0` | MINOR |
 
 ## テスト
 
@@ -67,4 +72,4 @@ QA 事項なし。
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| - | - | - |
+| `claude-kit-markdown-env-var-audit` | 他のマークダウンファイル（SKILL.md・ルール・references）で「`echo $VAR` で env var を確認せよ」等の誤った指示がないか全量調査し、あれば修正する | 即時実施可 |
