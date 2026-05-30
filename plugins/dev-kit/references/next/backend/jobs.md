@@ -1,0 +1,236 @@
+# Next.js App Router — Background Jobs / Cron
+
+> **対象**: メール送信、画像処理、レポート生成、定期バッチなどの非同期処理。
+
+---
+
+## 選択肢
+
+| 方式 | 用途 | 推奨度 |
+|---|---|---|
+| **Vercel Cron** | 定期実行（毎日 / 毎時 / 毎週） | ★ 第一選択（Vercel デプロイ前提） |
+| **Next.js after()** | リクエスト後の軽量バックグラウンド処理 | ○ レスポンス遅延を避けたい時 |
+| **Inngest** | Workflow オーケストレーション・リトライ | ○ 複雑なワークフロー |
+| **Trigger.dev** | 長時間ジョブ・スケジュール | ○ Vercel 外でも |
+| **QStash (Upstash)** | メッセージキュー | ○ HTTP ベースの簡易 queue |
+| **BullMQ + Redis** | 自前 Redis ジョブ | △ セルフホスト時 |
+
+---
+
+## Vercel Cron — 定期実行
+
+`vercel.json` で cron schedule を定義し、対応する API ルートに POST が来る:
+
+```json
+{
+  "crons": [
+    { "path": "/api/v1/cron/daily-summary", "schedule": "0 9 * * *" },
+    { "path": "/api/v1/cron/weekly-cleanup", "schedule": "0 3 * * 1" }
+  ]
+}
+```
+
+```ts
+// app/api/v1/cron/daily-summary/route.ts
+import { NextRequest, NextResponse } from "next/server"
+import { generateDailySummary } from "./service"
+
+export async function POST(request: NextRequest) {
+  // Vercel Cron からのリクエストか検証
+  const authHeader = request.headers.get("authorization")
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return new NextResponse("Unauthorized", { status: 401 })
+  }
+
+  await generateDailySummary()
+  return NextResponse.json({ ok: true })
+}
+```
+
+`CRON_SECRET` は Vercel ダッシュボードで設定。Vercel Cron は自動的に `Authorization: Bearer ${CRON_SECRET}` を付ける。
+
+### Schedule 記法（cron expression）
+
+```
+*    *    *    *    *
+分  時  日  月  曜
+```
+
+例:
+- `0 9 * * *` — 毎日 9:00
+- `*/30 * * * *` — 30 分ごと
+- `0 3 * * 1` — 毎週月曜 3:00
+- `0 0 1 * *` — 毎月 1 日 0:00
+
+---
+
+## Next.js after() — リクエスト後処理
+
+レスポンス送信後にバックグラウンドで実行（Vercel 環境で動作）:
+
+```ts
+import { after } from "next/server"
+
+export async function POST(request: NextRequest) {
+  const result = await processOrder(...)
+
+  after(async () => {
+    // レスポンス返却後に走る
+    await sendOrderConfirmationEmail(result.userId)
+    await updateAnalytics(result.orderId)
+  })
+
+  return NextResponse.json({ data: result })
+}
+```
+
+用途:
+- メール送信、分析イベント送信、キャッシュウォーミング
+- ユーザーを待たせずレスポンスを返す
+
+注意:
+- 最大 30 秒程度（Vercel function 制限内）
+- 失敗してもユーザーには影響しないが、ログは残る
+- 必ず成功する必要があるならジョブキューに
+
+---
+
+## Inngest — Workflow
+
+複雑なワークフロー（複数ステップ・リトライ・並列・遅延実行）が必要なら:
+
+```ts
+// app/api/v1/inngest/route.ts
+import { serve } from "inngest/next"
+import { inngest } from "@/lib/inngest"
+import { processOrderFlow } from "@/inngest/process-order"
+
+export const { GET, POST, PUT } = serve({
+  client: inngest,
+  functions: [processOrderFlow],
+})
+```
+
+```ts
+// inngest/process-order.ts
+import { inngest } from "@/lib/inngest"
+
+export const processOrderFlow = inngest.createFunction(
+  { id: "process-order" },
+  { event: "order/created" },
+  async ({ event, step }) => {
+    await step.run("validate", async () => { /* バリデーション */ })
+    await step.sleep("wait-payment", "5m")
+    await step.run("charge", async () => { /* 請求 */ })
+    await step.run("send-receipt", async () => { /* 領収書送信 */ })
+  }
+)
+```
+
+```ts
+// API ルートからイベント送信
+await inngest.send({ name: "order/created", data: { orderId } })
+```
+
+リトライ・並列・スケジュール・スロットリングが Inngest にお任せできる。
+
+---
+
+## QStash — シンプルなメッセージキュー
+
+Upstash QStash で HTTP ベースの queue:
+
+```ts
+import { Client } from "@upstash/qstash"
+
+const qstash = new Client({ token: process.env.QSTASH_TOKEN! })
+
+// 5 分後に実行
+await qstash.publishJSON({
+  url: "https://example.com/api/v1/jobs/send-email",
+  body: { to, subject, body: html },
+  delay: 300,
+})
+```
+
+```ts
+// app/api/v1/jobs/send-email/route.ts
+import { verifySignatureAppRouter } from "@upstash/qstash/nextjs"
+
+export const POST = verifySignatureAppRouter(async (request) => {
+  const { to, subject, body } = await request.json()
+  await sendEmail({ to, subject, body })
+  return NextResponse.json({ ok: true })
+})
+```
+
+---
+
+## トランザクションメール
+
+| サービス | 推奨 |
+|---|---|
+| **Resend** | ★ React Email と統合、シンプル |
+| **SendGrid** | エンタープライズ |
+| **Postmark** | デリバラビリティ重視 |
+
+```ts
+import { Resend } from "resend"
+import { OrderConfirmationEmail } from "@/emails/order-confirmation"
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+export const sendOrderEmail = async ({ to, orderId }: { to: string; orderId: string }) => {
+  await resend.emails.send({
+    from: "no-reply@example.com",
+    to,
+    subject: "ご注文ありがとうございます",
+    react: OrderConfirmationEmail({ orderId }),
+  })
+}
+```
+
+`react-email` で React コンポーネントとしてメールテンプレートを作れる。
+
+---
+
+## Cron + after() の使い分け
+
+| ケース | 推奨 |
+|---|---|
+| 毎晩のサマリ生成 | Vercel Cron |
+| ユーザー操作直後の軽い後処理（メール送信） | `after()` |
+| 5 分後に督促メール | QStash（delay） |
+| 複数ステップの注文処理ワークフロー | Inngest |
+| 動画変換等の長時間処理（10 分以上） | Trigger.dev or 外部サービス |
+
+---
+
+## エラーハンドリング・冪等性
+
+- Job は **冪等**にする（同じ入力で再実行しても結果が同じ）
+- 必ず idempotency key を持たせる（例: `orderId` を使えば二重処理されない）
+- 失敗時にリトライされることを前提に設計
+- 致命的失敗は dead-letter queue へ
+
+---
+
+## ローカル開発
+
+- Vercel Cron は本番のみ動作（localhost では手動 POST で擬似実行）
+- Inngest は dev server あり: `pnpm inngest-cli dev`
+- QStash も dev server あり
+
+---
+
+## Constraints
+
+- 定期実行は **Vercel Cron**（Vercel デプロイ前提、状況による）
+- レスポンス遅延を避けたいなら **`after()`**
+- 複雑なワークフローは **Inngest**
+- HTTP メッセージキューは **QStash**
+- メール送信は **Resend + react-email** を推奨
+- Cron エンドポイントは **`CRON_SECRET` で認証**
+- ジョブは冪等に設計
+- ジョブ失敗を前提にリトライポリシーを設計
+- 環境変数経由でサービス資格情報を渡す（`PUBLIC_` prefix 禁止）

@@ -15,7 +15,7 @@ paths:
 
 ## 概要
 
-`py-kit` と `next-kit` (および将来追加される `*-kit`) は **同じ references 自動注入構造** を共有する:
+`dev-kit` と `claude-kit`（および将来追加される `*-kit`）は **同じ references 自動注入構造** を共有する:
 
 - `hooks/inject_references.py` — PreToolUse(Edit/Write/MultiEdit) フックスクリプト
 - `hooks/hooks.json` — フック登録

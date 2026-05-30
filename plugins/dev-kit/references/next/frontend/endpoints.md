@@ -1,0 +1,213 @@
+# Next.js App Router — URL Constant Management
+
+## 原則
+
+全ての URL string は `app/(shared)/endpoints.ts` に集約。コンポーネント・hook・`client.ts` で URL string をハードコーディングしない。
+
+---
+
+## File layout
+
+```
+app/(shared)/endpoints.ts
+```
+
+サブフォルダ不要。フィーチャごとにオブジェクトでまとめる。
+
+---
+
+## 2 つの形式
+
+### Flat const — 単発 URL
+
+```ts
+export const ROOT_URL  = `/`
+export const HOME_URL  = `/home`
+export const ERROR_URL = `/error`
+```
+
+list / new / view / edit / API 相当物が無い、本当に単発のもののみ。
+
+### Object — フィーチャグループ
+
+```ts
+const RESOURCES = `/resources`
+
+export const RESOURCE_URL = {
+  list: RESOURCES,
+  new:  `${RESOURCES}/new`,
+  view: (id: string) => `${RESOURCES}/${id}`,        // [id]/page.tsx = View（PR135 で変更）
+  edit: (id: string) => `${RESOURCES}/${id}/edit`,
+}
+
+const RESOURCES_API = `/api/v1/resources`             // PR135: v1 バージョニング
+
+export const RESOURCE_API_URL = {
+  list:   RESOURCES_API,
+  detail: (id: string) => `${RESOURCES_API}/${id}`,
+  publish:(id: string) => `${RESOURCES_API}/${id}/publish`,
+}
+```
+
+ポイント:
+- `view(id)` は **`/resources/{id}`**（旧 `/resources/{id}/view` から PR135 で変更）
+- API URL は **`/api/v1/`** 配下（PR135 でバージョニング導入）
+
+---
+
+## 命名規約
+
+| 定数 | 意味 |
+|---|---|
+| `{FEATURE}_URL` | フロントエンドルート群 |
+| `{FEATURE}_API_URL` | API ルート群（`/api/v1/{feature}/...`） |
+| `HOME_URL` / `ROOT_URL` | アプリ全体の単発 URL |
+
+| キー | 指す URL |
+|---|---|
+| `.list` | 一覧（`/resources`） |
+| `.new` | 新規作成（`/resources/new`） |
+| `.view(id)` | 読み取り画面（`/resources/[id]`） |
+| `.edit(id)` | 編集画面（`/resources/[id]/edit`） |
+| `.detail(id)` | 単体取得（API 用） |
+| `.{action}(id)` | カスタムアクション（`.publish(id)`, `.archive(id)` 等） |
+
+---
+
+## 共通ベース URL の composition
+
+```ts
+const RESOURCES = `/resources`
+const RESOURCES_API = `/api/v1/resources`
+
+export const RESOURCE_URL = {
+  list: RESOURCES,
+  new:  `${RESOURCES}/new`,
+  view: (id: string) => `${RESOURCES}/${id}`,
+  edit: (id: string) => `${RESOURCES}/${id}/edit`,
+}
+
+export const RESOURCE_API_URL = {
+  list:    RESOURCES_API,
+  detail:  (id: string) => `${RESOURCES_API}/${id}`,
+  publish: (id: string) => `${RESOURCES_API}/${id}/publish`,
+}
+```
+
+小文字 `const` はファイル内 private（export しない）、合成のためだけ。
+
+---
+
+## サブフィーチャ
+
+ネストせず別オブジェクトに切り出す:
+
+```ts
+const RESOURCES = `/resources`
+const RESOURCES_API = `/api/v1/resources`
+
+export const RESOURCE_URL = {
+  list: RESOURCES,
+  view: (id: string) => `${RESOURCES}/${id}`,
+  edit: (id: string) => `${RESOURCES}/${id}/edit`,
+}
+
+export const RESOURCE_COMMENT_URL = {
+  list:   (resourceId: string) => `${RESOURCES}/${resourceId}/comments`,
+  detail: (resourceId: string, commentId: string) =>
+    `${RESOURCES}/${resourceId}/comments/${commentId}`,
+}
+
+export const RESOURCE_COMMENT_API_URL = {
+  list:   (resourceId: string) => `${RESOURCES_API}/${resourceId}/comments`,
+  detail: (resourceId: string, commentId: string) =>
+    `${RESOURCES_API}/${resourceId}/comments/${commentId}`,
+  pin:    (resourceId: string, commentId: string) =>
+    `${RESOURCES_API}/${resourceId}/comments/${commentId}/pin`,
+}
+```
+
+深いネスト（`RESOURCE_URL.comments.detail(...)`）は禁止。`call site` が読みづらくなる。
+
+---
+
+## 使い方
+
+```ts
+import {
+  HOME_URL,
+  RESOURCE_URL,
+  RESOURCE_API_URL,
+  RESOURCE_COMMENT_API_URL,
+} from "@/app/(shared)/endpoints"
+
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+// Navigation
+router.push(HOME_URL)
+router.push(RESOURCE_URL.list)
+router.push(RESOURCE_URL.view(id))
+router.push(RESOURCE_URL.edit(id))
+
+// Link
+<Link href={RESOURCE_URL.view(id)}>詳細</Link>
+
+// API fetch
+const res = await fetch(RESOURCE_API_URL.detail(id))
+await fetch(RESOURCE_COMMENT_API_URL.pin(resourceId, commentId), { method: "POST" })
+```
+
+---
+
+## 新しい URL を追加するとき
+
+1. `app/(shared)/endpoints.ts` を開く
+2. 該当 `{FEATURE}_URL` オブジェクトを探す（or 新規作成）
+3. キーを追加（`list` / `new` / `view` / `edit` / カスタム動詞）
+4. API 相当物があれば `{FEATURE}_API_URL` にも追加
+5. ID 付き URL は関数形式（`(id: string) => ...`）
+
+---
+
+## やってはいけない
+
+```ts
+// ❌ ハードコーディング
+router.push("/resources/123")
+const res = await fetch("/api/v1/resources")
+
+// ❌ インライン補間
+router.push(`/resources/${id}`)
+
+// ❌ 深いネスト（call site が読みにくい）
+export const URLS = {
+  resources: { detail: { view: (id) => `/resources/${id}` } },
+}
+
+// ❌ variant ごとに別 top-level（旧フラット style）
+export const RESOURCE_LIST_URL = `/resources`
+export const RESOURCE_NEW_URL  = `/resources/new`
+export const RESOURCE_VIEW_URL = (id) => `/resources/${id}`
+export const RESOURCE_EDIT_URL = (id) => `/resources/${id}/edit`
+// → RESOURCE_URL オブジェクトに統合する
+```
+
+```ts
+// ✅ 必ず定数経由
+import { RESOURCE_URL } from "@/app/(shared)/endpoints"
+router.push(RESOURCE_URL.view(id))
+```
+
+---
+
+## Constraints
+
+- 全ての URL 文字列は `endpoints.ts`（オブジェクト or flat const）
+- 1 フィーチャ = 1 `{FEATURE}_URL` オブジェクト（+ あれば `{FEATURE}_API_URL`）
+- Flat const はアプリ全体の単発のみ
+- ネスト 3 段以上禁止（別オブジェクトに分割）
+- ID 付き URL は関数形式
+- API URL は `/api/v1/` 配下（PR135 でバージョニング）
+- `view(id)` は `/{feature}/[id]`（PR135 で `/view` 廃止）
+- API URL と Page URL は同じファイルでフィーチャ別にグループ

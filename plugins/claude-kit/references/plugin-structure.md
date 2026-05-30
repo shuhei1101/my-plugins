@@ -31,6 +31,35 @@ plugins/<plugin-name>/
 
 ---
 
+## Required skills
+
+### `plugin-update` (mandatory for every plugin)
+
+Every plugin **must** ship a `plugin-update` skill that brings the project's plugin-generated
+artifacts in line with the currently installed plugin version. Manual invocation only
+(`/<plugin>:plugin-update`).
+
+**Why**: when a plugin ships static templates (`.work/CLAUDE.md`, hook prompts, sample configs,
+references injected via `injection_rules.yaml`, etc.) into the project, those copies drift behind
+the plugin source as new versions are released. Without a per-plugin sync command, the user has
+to diff and copy by hand. Each plugin owns its own update path because each plugin knows its own
+templates and migration rules.
+
+**Standard contract**:
+
+| Item | Convention |
+|---|---|
+| Name | `plugin-update` (kebab-case literal — not `<plugin>-update`) |
+| Trigger | Manual only (no `description` auto-triggers; explicit `/<plugin>:plugin-update`) |
+| First action | Invoke the project's PR-branch skill (e.g. `/workspace:work-start`) so edits land on a reviewable branch |
+| Scope | Only this plugin's own static artifacts; never reach into other plugins |
+| Reference | See `plugins/workspace/skills/plugin-update/SKILL.md` for the canonical example |
+
+When creating a new plugin, generate `skills/plugin-update/SKILL.md` (and `.jp.md`) following the
+workspace example and adapt the template list to whatever static files your plugin ships.
+
+---
+
 ## Authoring workflow
 
 ### Step 1 — Determine mode: create or update
