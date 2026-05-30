@@ -18,6 +18,7 @@
 | 2 | 済 | ノートドキュメントを更新 | `.work/notes/work-kitスキル群.md` |
 | 3 | 済 | Step 3 を「master有新コミット → 必ず merge master → コンフリクトなら停止」に書き換え | `plugins/work/skills/merge/SKILL.md` |
 | 4 | 済 | ルール / CLAUDE.md 更新（変更なし） | - |
+| 5 | - | Step 3 の `master` 固定をマージ先ブランチ変数化（`{PARENT_BRANCH}`）に変更 | `plugins/work/skills/merge/SKILL.md`<br>`plugins/work/skills/merge/SKILL.jp.md` |
 
 ## 変更内容
 
