@@ -14,9 +14,10 @@ dev-kit の `references/injection_rules.yaml` に定義されている `python-s
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `python-script.md` の 2 つのパターンをブレース展開で 1 行に統合 | - `plugins/dev-kit/references/injection_rules.yaml` |
-| - | YAML パース検証（`yaml.safe_load` で読み込めることを確認） | - |
-| - | orphan-check（既存 `python-script.md` がパターンに紐づき続けていること） | - |
+| 済 | `python-script.md` の 2 つのパターンをブレース展開で 1 行に統合 | - `plugins/dev-kit/references/injection_rules.yaml` |
+| 済 | YAML パース検証（`yaml.safe_load` で読み込めることを確認） | - |
+| 済 | マッチング検証（`tool/` `tools/` `script/` `scripts/` の単数複数 + ネスト 11 ケース全 PASS） | - |
+| 済 | dev-kit のバージョン bump（plugin.json + marketplace.json） | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 
 ## 変更内容
 
