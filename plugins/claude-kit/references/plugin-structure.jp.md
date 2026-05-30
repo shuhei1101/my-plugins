@@ -51,7 +51,7 @@ plugins/<plugin-name>/
 |---|---|
 | 名前 | `plugin-update`（kebab-case 固定 — `<plugin>-update` ではない） |
 | トリガー | 手動のみ（`description` の自動トリガーなし。明示的に `/<plugin>:plugin-update`） |
-| 最初の動作 | プロジェクトの PR ブランチ作成スキル（例: `/workspace:work-start`）を呼び、編集がレビュー可能なブランチに載るようにする |
+| 最初の動作 | プロジェクトの PR ブランチ作成スキル（例: `/work:start`）を呼び、編集がレビュー可能なブランチに載るようにする |
 | スコープ | このプラグイン自身の静的成果物のみ。他プラグインには絶対に手を出さない |
 | 参考 | 標準的な実装例は `plugins/workspace/skills/plugin-update/SKILL.md` を参照 |
 

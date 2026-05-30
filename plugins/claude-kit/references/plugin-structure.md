@@ -50,7 +50,7 @@ templates and migration rules.
 |---|---|
 | Name | `plugin-update` (kebab-case literal — not `<plugin>-update`) |
 | Trigger | Manual only (no `description` auto-triggers; explicit `/<plugin>:plugin-update`) |
-| First action | Invoke the project's PR-branch skill (e.g. `/workspace:work-start`) so edits land on a reviewable branch |
+| First action | Invoke the project's PR-branch skill (e.g. `/work:start`) so edits land on a reviewable branch |
 | Scope | Only this plugin's own static artifacts; never reach into other plugins |
 | Reference | See `plugins/workspace/skills/plugin-update/SKILL.md` for the canonical example |
 

@@ -20,10 +20,10 @@
       "version": "3.41.0"
     },
     {
-      "name": "workspace",
-      "source": "./plugins/workspace",
-      "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, manages git worktrees (toggle via WORKSPACE_USE_WORKTREE), and guards git push/merge confirmation (toggle via WORKSPACE_GUARD). Protected branches for master-commit-guard are customizable via WORKSPACE_PROTECTED_BRANCHES (comma-separated, default master,main,develop).",
-      "version": "2.46.1"
+      "name": "work",
+      "source": "./plugins/work",
+      "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, manages worktrees (toggle via WORK_USE_WORKTREE), and guards force-operations (toggle via WORK_GUARD). Protected branches customizable via WORK_PROTECTED_BRANCHES (comma-separated, default master,main,develop).",
+      "version": "2.46.2"
     },
     {
       "name": "ref-inject",
