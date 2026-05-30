@@ -7,6 +7,7 @@ updates:
   - 2026-05-30 — PR172: プラグインを work-kit → workspace にリネーム、env var も WORK_KIT_* → WORKSPACE_* に変更
   - 2026-05-31 — #219: merge スキル Step 3 を master 取り込み必須フローに変更
   - 2026-05-31 — #226: タスクドキュメントのファイル名に日付プレフィックスを追加、作業内容テーブル構造を改訂
+  - 2026-05-31 — #240: merge スキル Step 3 の git コマンドにワークツリーパスを明示（実行コンテキスト不明による master 汚染を防止）
 related_prs:
   - PR91
   - PR109
