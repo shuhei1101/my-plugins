@@ -408,3 +408,9 @@ references:
 - path: html/ui-design.md
   lang: html
   description: UX パターンと共有コンポーネント必須化。画面コードを書く前に共有リソース（constants/routes/components）を読み、再利用 > 拡張 > 新規追加 の順で判断する。
+- path: html/css-js-link.md
+  lang: html
+  description: CSS クラス ↔ JS DOM アクセス紐付け。CSS の FLOCSS クラス定義と JS/HTML の DOM アクセスを同期させる。存在確認・レイヤー妥当性・BEM サブ構造・死んだクラス・魔法文字列禁止を網羅。
+- path: html/common-component-first.md
+  lang: html
+  description: 共通コンポーネント先読み必須化。UI マークアップ・スタイル・DOM コードを追加する前に、共有の constants・routes・コンポーネント CSS/JS 層を先に読む。再利用 > 拡張 > 新規追加; インライン一発実装と値のハードコードを禁止。

@@ -408,3 +408,9 @@ references:
 - path: html/ui-design.md
   lang: html
   description: UX patterns and shared-component mandate. Read shared resources (constants/routes/components) before writing any screen code; reuse > extend > add.
+- path: html/css-js-link.md
+  lang: html
+  description: CSS class ↔ JS DOM access linkage. Keep FLOCSS class definitions in CSS and DOM access in JS/HTML in sync. Covers existence checks, layer correctness, BEM substructure, dead classes, and no-magic-strings rule.
+- path: html/common-component-first.md
+  lang: html
+  description: Common component first mandate. Before adding new UI markup/styles/DOM code, read shared constants, routes, component CSS and JS layers. Reuse > extend > add; prohibits inline one-offs and hardcoded values.

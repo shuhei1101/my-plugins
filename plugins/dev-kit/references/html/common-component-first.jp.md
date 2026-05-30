@@ -1,14 +1,8 @@
----
-paths:
-  - "**/*.html"
-  - "**/*.css"
-  - "**/*.js"
----
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
 # 共通コンポーネント先読み
 
-> このファイルは `common-component-first.md` の日本語ミラーです(`.claude/rules-jp/common-component-first.md` に配置)。
+> このファイルは `common-component-first.md` の日本語ミラーです(`plugins/dev-kit/references/html/common-component-first.jp.md` に配置)。
 > Claude Code には自動読み込まれません。英語版を更新したら同じ変更を反映してください。
 
 任意の画面に UI マークアップ・スタイル・DOM アクセスを追加する前に、**プロジェクトの共有リソースを先に読む**:

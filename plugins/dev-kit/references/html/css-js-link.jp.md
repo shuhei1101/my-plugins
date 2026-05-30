@@ -1,14 +1,8 @@
----
-paths:
-  - "**/*.css"
-  - "**/*.js"
-  - "**/*.html"
----
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
 # CSS クラス ↔ JS DOM アクセスの紐付け
 
-> このファイルは `css-js-link.md` の日本語ミラーです(`.claude/rules-jp/css-js-link.md` に配置)。
+> このファイルは `css-js-link.md` の日本語ミラーです(`plugins/dev-kit/references/html/css-js-link.jp.md` に配置)。
 > Claude Code には自動読み込まれません。英語版を更新したら同じ変更を反映してください。
 
 CSS の FLOCSS クラス定義と、JS / HTML での DOM アクセスを同期する。

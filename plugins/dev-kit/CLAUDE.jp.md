@@ -75,7 +75,8 @@ references/
 
 | Version | Date | Summary |
 |---|---|---|
-| 4.5.0 | 2026-05-30 | `yaml.md` / `yaml.jp.md` を `yaml/` サブフォルダへ移動し、`html/`・`next/`・`python/`・`markdown/` と構造を統一（PR199） |
+| 4.6.0 | 2026-05-30 | `yaml.md` / `yaml.jp.md` を `yaml/` サブフォルダへ移動し、`html/`・`next/`・`python/`・`markdown/` と構造を統一; `yaml/yaml.md` を `_index.yaml` に登録し `**/index.yaml` / `**/settings.yaml(.sample)` の注入ルールを追加（PR199） |
+| 4.5.0 | 2026-05-30 | `css-js-link.md` / `common-component-first.md` を `templates/html/rules/` から `references/html/` へ移動し `_injection_rules.yaml` の html パターンに紐付け; `html-implement`（ステップ7）と `plugin-update`（ステップ2）の静的コピー手順を削除（PR200） |
 | 4.4.0 | 2026-05-30 | `markdown/` リファレンスサブフォルダを追加。Markdown テーブル規約（`#` カラムルール・`〃` ダイトーマーク）を収録し、`**/*.md` 編集時に注入（PR196） |
 | 4.3.0 | 2026-05-30 | `dev-kit:plugin-update` スキルを追加 — dev-kit 生成物（静的テンプレ + 規約遵守ソースファイル）を現バージョンの規約に検査・修正する。自己完結設計: 他プラグインに依存しない / master・main では実行拒否 / スキル自身はコミットしない（PR182） |
 | 4.2.0 | 2026-05-30 | `references/` 配下のメタ系 YAML を `_` 接頭辞付きにリネーム: `index.yaml` / `index.jp.yaml` / `injection_rules.yaml` → `_index.yaml` / `_index.jp.yaml` / `_injection_rules.yaml`（PR179） |
