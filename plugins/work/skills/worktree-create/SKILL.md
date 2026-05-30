@@ -1,15 +1,20 @@
 ---
-name: work-add
+name: worktree-create
 description: |
-  Create a git worktree for a PR branch.
+  Create a git worktree for a branch.
   Called by work:start (Step 4) to create the worktree, or invoked directly.
   Trigger when the user says "ワークツリーを作って", "worktree を作成して", "work-add して",
-  or invoked by work-start as `/work:worktree-create`.
+  or invoked by work:start as `/work:worktree-create`.
 ---
 
-# work:worktree-create — Create PR Worktree
+# work:worktree-create — Create Worktree
 
-Creates a git worktree and branch for a PR.
+Creates a git worktree and branch.
+
+> **Naming**: branches use `{type}/{title}` (no `PR{N}/` prefix). The worktree path mirrors the
+> branch name as `../{repo}-wt-{type}-{title}` (slashes replaced with hyphens).
+> Existing worktrees with the legacy `wt-PR{N}` naming are left as-is — only newly created
+> worktrees follow the new format.
 
 ---
 
@@ -23,19 +28,19 @@ Creates a git worktree and branch for a PR.
 
 #### Process
 
-1. If called with arguments (e.g. `PR58 refactor/split-workspace-worktree`), parse them:
-   - First arg: PR number or `PR{N}` form → extract `N`
-   - Second arg: branch suffix (`{type}/{title}`)
+1. If called with arguments (e.g. `refactor/rename-pr-to-branch`), parse them:
+   - Single arg: branch name (`{type}/{title}`)
+   - Legacy invocation `/work:worktree-create PR58 refactor/foo` is also accepted for back-compat:
+     the `PR{N}` token is dropped and only the branch suffix is used.
 2. If called without arguments, ask the user:
-   - PR number
-   - Branch type and title (kebab-case)
+   - Branch type (`feat` / `fix` / `refactor` / `docs` / `chore` / `test`)
+   - Title (kebab-case)
 
 → Proceed to Step 2
 
 #### Output
 
-- `N` — PR number (integer)
-- `TYPE_TITLE` — branch suffix, e.g. `refactor/split-workspace-worktree`
+- `BRANCH` — full branch name (`{type}/{title}`)
 
 ---
 
@@ -47,24 +52,25 @@ Creates a git worktree and branch for a PR.
 
 #### Process
 
-1. Determine the repo root name:
+1. Derive the worktree suffix by replacing slashes with hyphens:
 
 ```bash
-basename $(pwd)
+BRANCH=refactor/rename-pr-to-branch
+WT_SUFFIX="${BRANCH//\//-}"  # → refactor-rename-pr-to-branch
 ```
 
 2. Create the worktree and branch:
 
 ```bash
-git worktree add -b PR{N}/{TYPE_TITLE} ../$(basename $(pwd))-wt-PR{N}
+git worktree add -b "$BRANCH" "../$(basename $(pwd))-wt-${WT_SUFFIX}"
 ```
 
 → Proceed to Step 3
 
 #### Output
 
-- Worktree created at `../repo-wt-PR{N}`
-- Branch `PR{N}/{TYPE_TITLE}` exists
+- Worktree created at `../{repo}-wt-{type}-{title}`
+- Branch `{type}/{title}` exists
 
 #### Notes
 
@@ -83,9 +89,9 @@ git worktree add -b PR{N}/{TYPE_TITLE} ../$(basename $(pwd))-wt-PR{N}
 #### Process
 
 1. Report the created worktree path and branch name
-2. If called from `work-start`, return control to the caller
+2. If called from `work:start`, return control to the caller
 
 #### Output
 
-- Worktree path: `../repo-wt-PR{N}`
-- Branch name: `PR{N}/{TYPE_TITLE}`
+- Worktree path: `../{repo}-wt-{type}-{title}`
+- Branch name: `{type}/{title}`
