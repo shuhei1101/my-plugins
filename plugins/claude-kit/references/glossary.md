@@ -56,8 +56,7 @@ glossary.md is **always loaded** as a system prompt — every line costs context
 
 ## When Claude adds terms
 
-The `conversation-to-claude` skill detects new terms in Step 1 and proposes them to
-the user in the glossary block of the proposal. After the user approves, Claude:
+When asked to record a new term, Claude:
 
 1. Reads the existing glossary to avoid duplicates
 2. Uses the inferred definition from conversation context

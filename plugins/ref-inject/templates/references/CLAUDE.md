@@ -9,7 +9,7 @@ Reference docs auto-injected by the `__LOG_TAG__` hook based on the edited file 
 
 ## Reading automatically
 
-On `PreToolUse(Edit | Write | MultiEdit | Read)`, `hooks/inject_references.py`:
+On `PreToolUse(Edit | Write | MultiEdit | Read)`, `hooks/scripts/inject_references.py`:
 
 1. Matches the edited file path against `injection_rules.yaml` patterns
 2. Injects each matched `required` reference **in full body**, and each `optional` as **path + description only**

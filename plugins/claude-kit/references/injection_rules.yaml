@@ -1,16 +1,16 @@
-# claude-kit injection rules — edit-path pattern -> references (language-independent).
-#   pattern  : glob matched against the edited file path
-#              ** = any depth, * = single segment, ? = one char, {a,b} = alternation
-#              Prefix by-name folders with **/ so they match in subprojects.
-#   required : reference paths injected in FULL BODY (the must-read authoring guide)
-#   optional : reference paths injected as POINTER ONLY (path + description); Claude reads on demand
-# Every matching rule contributes its references (de-duplicated). common.md is the shared
-# base (file-type decision, JP/EN mirror rules).
-# environment.md (env-var configurability) is surfaced on EVERY claude artifact (Write/Edit) so the
-# author is aware configurable behavior is possible — full body where env is actually set
-# (hooks.json / settings.json), pointer-only (optional) elsewhere.
+# claude-kit の注入ルール — 編集ファイルのパスパターン → リファレンス（言語非依存）
+#   pattern  : 編集ファイルのパスに対して glob でマッチさせる
+#              ** = 任意の深さ / * = 1 セグメント / ? = 1 文字 / {a,b} = 選択
+#              名前ベースのフォルダ指定は `**/` を前置してサブプロジェクトでもマッチさせる
+#   required : 本文ごとフル注入されるリファレンスのパス（必ず読むべき執筆ガイド）
+#   optional : パス＋説明のみが注入されるリファレンス（Claude が必要に応じて Read する）
+# マッチしたルールはすべて寄与する（重複排除あり）。common.md は共通ベース
+# （ファイル種別の判断、JP/EN ミラーのルール）。
+# environment.md（環境変数による設定方法）は、すべての Claude 用成果物（Write/Edit）に対して
+# 注入する — 設定可能な挙動が存在することを著者に意識させるため。実際に env を設定する場所
+# （hooks.json / settings.json）ではフル本文で、それ以外では pointer-only（optional）で出す。
 rules:
-  # ---- Skills: editing a SKILL.md (or its JP mirror) ----
+  # ---- Skills: SKILL.md（あるいはその JP ミラー）を編集する場合 ----
   - pattern: "**/skills/*/SKILL{.jp,}.md"
     required:
       - common.md
@@ -18,7 +18,7 @@ rules:
     optional:
       - environment.md
 
-  # ---- Rules: editing a path-scoped rule (or its rules-jp mirror) ----
+  # ---- Rules: パススコープのルール（あるいは rules-jp ミラー）を編集する場合 ----
   - pattern: "**/.claude/rules/**/*.md"
     required:
       - common.md
@@ -32,7 +32,7 @@ rules:
     optional:
       - environment.md
 
-  # ---- CLAUDE.md: project / subfolder memory file ----
+  # ---- CLAUDE.md: プロジェクト／サブフォルダのメモリファイル ----
   - pattern: "**/CLAUDE{.local,.jp,}.md"
     required:
       - common.md
@@ -40,8 +40,8 @@ rules:
     optional:
       - environment.md
 
-  # ---- Hooks: plugin hooks.json, project settings (JSON — no stamp), prompt files (.md) ----
-  # settings.json / hooks.json carry the env block, so environment.md is injected in FULL here.
+  # ---- Hooks: プラグインの hooks.json、プロジェクト設定（JSON はスタンプなし）、プロンプトファイル（.md） ----
+  # settings.json / hooks.json は env ブロックを持つため、ここでは environment.md をフル注入する。
   - pattern: "**/hooks/hooks.json"
     required:
       - common.md
@@ -58,7 +58,7 @@ rules:
     optional:
       - environment.md
 
-  # ---- Plugins: manifest / marketplace (JSON — no stamp) ----
+  # ---- Plugins: マニフェスト／マーケットプレイス（JSON はスタンプなし） ----
   - pattern: "**/.claude-plugin/{plugin,marketplace}.json"
     required:
       - common.md
@@ -66,15 +66,15 @@ rules:
     optional:
       - environment.md
 
-  # ---- Plugin CLAUDE.md: root CLAUDE.md in a plugin directory ----
-  # Supplements the generic **/CLAUDE.md pattern above with the plugin-specific authoring guide.
+  # ---- プラグインの CLAUDE.md: プラグインディレクトリ直下の CLAUDE.md ----
+  # 上の汎用 **/CLAUDE.md パターンに、プラグイン固有の執筆ガイドを上乗せする。
   - pattern: "plugins/*/CLAUDE{.jp,}.md"
     required:
       - plugin-claude-md.md
     optional:
       - environment.md
 
-  # ---- Glossary / incidents: format guides for the fixed rule files ----
+  # ---- Glossary / Incidents: 固定ルールファイル用のフォーマットガイド ----
   - pattern: "**/rules/**/glossary.md"
     required:
       - glossary.md
@@ -86,7 +86,7 @@ rules:
     optional:
       - environment.md
 
-  # ---- Markdown (general): table formatting conventions ----
+  # ---- Markdown 一般: テーブル整形の規約 ----
   - pattern: "**/*.md"
     required:
       - markdown-table.md

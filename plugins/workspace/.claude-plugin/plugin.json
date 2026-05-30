@@ -1,5 +1,0 @@
-{
-  "name": "workspace",
-  "description": "Hook-based project lifecycle management — injects branch context on every prompt, reminds task updates on stop, manages git worktrees (toggle via WORKSPACE_USE_WORKTREE), and guards git push/merge confirmation (toggle via WORKSPACE_GUARD). Protected branches for master-commit-guard are customizable via WORKSPACE_PROTECTED_BRANCHES (comma-separated, default master,main,develop). v3.0.0: removed PR terminology — branches are `{type}/{title}` (no PR-number prefix); internal IDs continue in index.yaml for cross-reference only.",
-  "version": "3.0.0"
-}
