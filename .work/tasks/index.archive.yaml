@@ -719,3 +719,10 @@ prs:
     に env 変数変更
   task: 260530_rename-workspace-to-work
   completed: true
+- id: 195
+  title: PR195 — git-guard-allow-merge-master
+  type: fix
+  tags: []
+  summary: masterブランチを現在のブランチへ取り込む操作をガード除外に修正
+  task: 260530_git-guard-allow-merge-master
+  completed: true
