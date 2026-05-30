@@ -612,6 +612,13 @@ prs:
   summary: mark-generated スキルとその全呼び出し箇所・バージョンマーカーを削除
   task: 20260530_remove-mark-generated
   completed: true
+- id: 167
+  title: PR167 — add-plugin-config-skill
+  type: feat
+  tags: []
+  summary: プラグイン env トグルを AskUserQuestion 経由で settings.json に書き込む設定スキルを追加する
+  task: 20260530_add-plugin-config-skill
+  completed: true
 - id: 170
   title: PR170 — remove-version-sync
   type: chore
