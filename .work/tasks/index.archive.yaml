@@ -626,3 +626,10 @@ prs:
   summary: mark-generated 削除後に不要になった version-sync スキルを削除
   task: 20260530_remove-version-sync
   completed: true
+- id: 172
+  title: PR172 — rename-work-kit-to-workspace
+  type: refactor
+  tags: []
+  summary: work-kit プラグインの名前を workspace にリネームし、全依存参照を更新する
+  task: 20260530_rename-work-kit-to-workspace
+  completed: true

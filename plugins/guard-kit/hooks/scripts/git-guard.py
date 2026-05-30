@@ -29,7 +29,7 @@ def main() -> None:
         return
 
     session_id = payload.get("session_id", "default")
-    token = pathlib.Path(tempfile.gettempdir()) / f"work-kit-git-guard-{session_id}"
+    token = pathlib.Path(tempfile.gettempdir()) / f"workspace-git-guard-{session_id}"
 
     if token.exists():
         token.unlink()

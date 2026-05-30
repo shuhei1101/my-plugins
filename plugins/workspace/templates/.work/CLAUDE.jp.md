@@ -1,0 +1,71 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+> このファイルは `CLAUDE.md` の日本語ミラーです。Claude Code には読み込まれません。
+> 変更する場合は JP ミラーを先に更新し、その後 `CLAUDE.md` にも反映してください。
+
+# .work/ — workspace タスク管理ディレクトリ
+
+workspace プラグインが管理するタスク・PR ライフサイクルの作業場所。
+Claude はここのファイルを読み書きして作業状態を追跡する。
+
+---
+
+## ディレクトリ構成
+
+| パス | 役割 |
+|---|---|
+| `tasks/index.yaml` | PR 索引（`completed: false` = 進行中）。`last_id` フィールドで次の PR 番号を管理する |
+| `tasks/index.archive.yaml` | アーカイブ済み（`completed: true`）の PR エントリ。`trim-index.py` で自動生成される |
+| `tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` | PR の作業チェックリストと仕様参照 |
+| `tasks/{YYYYMMDD}_{title}/PR{N}/QA.md` | この PR の未解決事項（PR スコープ） |
+| `notes/{トピック名}.md` | 作業中の議事録・検討メモ（一時的、AI 自動読み込みなし） |
+
+### tasks/
+
+`tasks/index.yaml` が PR の一元管理場所。進行中の PR は `completed: false`、マージ済みは `completed: true`。
+`last_id` フィールドが次の PR 番号の基準値。マージのたびに `trim-index.py` が完了済みエントリを `index.archive.yaml` へ移動し、`index.yaml` をアクティブな PR のみに保つ。
+作業開始時は必ず index.yaml を読んで進行中の PR を確認する。
+
+タスクごとにフォルダ（`{YYYYMMDD}_{title}/`）を切り、その中に PR フォルダ（`PR{N}/`）を置く。
+各 PR フォルダには `TODO.md`（作業チェックリスト）と `QA.md`（未解決事項）を持つ。
+
+`TODO.md` は「この PR が何をするか」の唯一の正本。実装開始前に作成し、作業を通じて常に最新に保つ。
+完了した行は作業内容テーブルの `完了` 列を `済` にし、マージ前に全行が `済` であることを確認する。
+
+`QA.md` はこの PR スコープの未解決事項を記録する。ユーザーが決定したら仕様書・ドキュメントに反映する。
+
+### notes/
+
+**立ち位置**: 議事録・検討メモレベルの一時的な作業ノート。Claude Code には**自動読み込みされない**ため、公式ドキュメントとして扱わない。
+
+フラット構造（**サブフォルダ禁止**）。1 ノート 1 トピック。重複禁止（リンクで代替）。
+
+**ライフサイクル**:
+1. PR の検討・設計段階で自由にメモを書く（書き捨て OK）
+2. 作業完了後、内容が有益なら `/workspace:notes-to-claude` で恒久的な知識に昇格させる
+   - 再利用したい手順・依存関係 → ルール (`.claude/rules/`)
+   - 全セッションで必要な規約・禁止事項 → `CLAUDE.md`
+   - 詳細な参考資料 → `.claude/references/`
+3. 昇格済みのノートは削除してよい
+
+昇格しない内容（一時的な比較表・調査メモ・ボツ案など）は放置してかまわない。
+
+---
+
+## 規約
+
+- `TODO.md` の作業内容テーブルで完了した行は `完了` 列を `済` にする
+- notes を恒久知識に昇格させる場合は `/workspace:notes-to-claude` を使う
+- 疑問点・未確定事項は PR の `QA.md` に追記する
+- マージ前に作業内容テーブルの全行が `済` であることを確認する
+
+---
+
+## workspace スキル
+
+| スキル | 用途 |
+|---|---|
+| `/workspace:setup` | `.work/` を初期化する（初回のみ） |
+| `/workspace:work-start` | 新規タスク・PR・TODO.md・QA.md・index.yaml エントリを作成する |
+| `/workspace:merge` | TODO 確認・マージ・index.yaml 更新・クリーンアップを実行する |
+| `/workspace:pr-handoff` | TODO.md の「次PR候補」を元に次のPRをwork-startと同じ流れで予約し、背景情報をTODO.mdに記録する |
+| `/workspace:notes-to-claude` | `notes/` の内容をルール・CLAUDE.md・references に昇格させる |
