@@ -880,3 +880,10 @@ branches:
   summary: setup-wizard.md/jp.md の plugin-config 命名を config に修正し、JP ミラーのスケルトンを日本語化する
   task: 260531_fix-setup-wizard-config-naming
   completed: true
+- id: 199
+  title: PR199 — dev-kit-references-yaml-subfolder
+  type: refactor
+  tags: []
+  summary: dev-kit references の yaml.md / yaml.jp.md を yaml/ サブフォルダへ移動し、他言語（html/next/python/markdown）と構造を揃える
+  task: 260530_dev-kit-references-yaml-subfolder
+  completed: true
