@@ -15,15 +15,15 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/yaml_skill_dispatch.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/yaml-skill-dispatch.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/markdown_frontmatter_check.py"
             ]
           },
           {
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/markdown_frontmatter_check.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/references_edit_guard.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/references-edit-guard.md"
             ]
           }
         ]
@@ -42,15 +42,15 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/yaml_skill_dispatch.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/yaml-skill-dispatch.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/markdown_frontmatter_check.py"
             ]
           },
           {
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/markdown_frontmatter_check.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/references_edit_guard.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/references-edit-guard.md"
             ]
           }
         ]
@@ -70,6 +70,14 @@
             "command": "python",
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/markdown_frontmatter_check.py"
+            ]
+          },
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/references_edit_guard.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/references-edit-guard.md"
             ]
           }
         ]

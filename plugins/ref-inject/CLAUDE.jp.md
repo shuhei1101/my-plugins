@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # ref-inject プラグイン開発ガイド
 
 `ref-inject` は**プラグインにリファレンス自動注入の仕組みを付与する**プラグイン。`dev-kit` /

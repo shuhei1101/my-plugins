@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of error-route-handler.md. When updating the English original, update this file too. -->
 # app/(shared)/errors/handler/server.ts — withRouteErrorHandling
 
 `route.ts` の HTTP ハンドラを wrap して、AppError 派生・Zod エラーを構造化 JSON に変換する。

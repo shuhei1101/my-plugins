@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of url-state.md. When updating the English original, update this file too. -->
 # Next.js App Router — URL-Based Screen State
 
 ## 原則

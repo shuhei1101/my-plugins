@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of server-vs-client.md. When updating the English original, update this file too. -->
 # Next.js App Router — Server vs Client Component
 
 > **方針**: データ取得・初期表示・SEO が重要な箇所は **Server Component**、ユーザーインタラクションは **Client Component**。両者を `page.tsx`（Server）と `XxxScreen.tsx`（Client）で物理分離する。

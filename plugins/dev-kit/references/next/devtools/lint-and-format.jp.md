@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of lint-and-format.md. When updating the English original, update this file too. -->
 # Next.js App Router — ESLint, Prettier, TypeScript Config
 
 > **Next.js 16 の変更**: `next lint` 廃止、ESLint CLI に移行。ESLint v9 Flat Config 標準。

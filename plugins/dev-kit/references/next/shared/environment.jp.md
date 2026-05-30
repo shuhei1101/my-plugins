@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of environment.md. When updating the English original, update this file too. -->
 # Next.js App Router — Environment & Configuration
 
 > **方針**: 環境変数は **秘密情報のみ**、構造化された設定は **YAML** に置く。

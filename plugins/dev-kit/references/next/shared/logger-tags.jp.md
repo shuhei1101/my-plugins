@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of logger-tags.md. When updating the English original, update this file too. -->
 # Logger — Component tag 命名
 
 `logger.create("tag")` の tag 命名規約。集約サービスでのフィルタリングを統一する。

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — dev-kit:html-mock(日本語ミラー)
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
@@ -21,11 +21,11 @@
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: リファレンス読み込み + 共通リソースの棚卸し
 
-#### 処理内容
+#### 処理
 
 1. 全文読み込み:
 
@@ -50,7 +50,7 @@
 
 ### ステップ2: 画面タイプを確定
 
-#### 処理内容
+#### 処理
 
 モックでどの**単一**画面タイプを探るかをユーザーに確認する:
 
@@ -68,7 +68,7 @@
 
 ### ステップ3: 案のデザイン軸を決める
 
-#### 処理内容
+#### 処理
 
 1. 案ごとに意味のある差を生むデザイン軸を 3〜5 個ピックアップ。例:
    - サイドバー型 vs トップタブ型
@@ -86,7 +86,7 @@
 
 ### ステップ4: `frontend-design` スキルを適用
 
-#### 処理内容
+#### 処理
 
 `principles.md` セクション 4 に従い、`frontend-design:frontend-design` スキルを呼び出して
 モックの美的方向性(タイポグラフィ・配色・モーション・全体トーン)を確定する。
@@ -100,7 +100,7 @@
 
 ### ステップ5: モック HTML を生成
 
-#### 処理内容
+#### 処理
 
 **出力先をプロジェクト種別で分ける:**
 
@@ -171,7 +171,7 @@
 
 ### ステップ6: サーバーを起動してURLをユーザーに伝える
 
-#### 処理内容
+#### 処理
 
 **FastAPI などのサーバープロジェクトの場合:**
 

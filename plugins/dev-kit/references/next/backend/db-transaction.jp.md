@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of db-transaction.md. When updating the English original, update this file too. -->
 # Drizzle — トランザクション規約
 
 トランザクションは **`service.ts` がトランザクション境界** を持つ。

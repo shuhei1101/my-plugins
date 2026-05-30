@@ -4,7 +4,7 @@ description: |
   /work:config が呼び出されたとき。
   またはユーザーが「設定を変えたい」「env を設定したい」「トグルを切り替えたい」「plugin config」「workspace config」と言ったとき。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:config — プラグイントグル設定
 
@@ -18,12 +18,12 @@ env トグル変数を `AskUserQuestion` を使って対話的に設定します
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
-| `WORK_KIT_PR_ENFORCEMENT` | UserPromptSubmit work-start 強制注入 | 有効 |
-| `WORK_KIT_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
-| `WORK_KIT_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
-| `WORK_KIT_MERGE_PROPOSAL` | Stop フックでの `/work-kit:merge` 提案 | 有効 |
-| `WORK_KIT_MERGE_AUTO_HANDOFF` | merge Step 11 auto pr-handoff | 有効 |
-| `NEXT_KIT_TS_CHECK` | PostToolUse tsc 型チェック | 有効 |
+| `WORK_PR_ENFORCEMENT` | UserPromptSubmit work-start 強制注入 | 有効 |
+| `WORK_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
+| `WORK_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
+| `WORK_MERGE_PROPOSAL` | Stop フックでの `/work:merge` 提案 | 有効 |
+| `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto pr-handoff | 有効 |
+| `DEV_KIT_NEXT_TS_CHECK` | PostToolUse tsc 型チェック | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
 | `CLAUDE_KIT_INJECTION_DISABLE` | claude-kit の全参照注入を無効化（逆極性） | 有効（注入 ON） |
 | `DEV_KIT_INJECTION_DISABLE` | dev-kit の全参照注入を無効化（逆極性） | 有効（注入 ON） |
@@ -36,7 +36,7 @@ env トグル変数を `AskUserQuestion` を使って対話的に設定します
 
 ## タスク
 
-### Step 1: 現在の状態を読む
+### ステップ 1: 現在の状態を読む
 
 #### 条件
 
@@ -70,15 +70,15 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 | env 変数 | 状態 | 設定ファイル |
 |---|---|---|
-| WORK_KIT_PR_ENFORCEMENT | ON | .claude/settings.json |
+| WORK_PR_ENFORCEMENT | ON | .claude/settings.json |
 | ...（以下同様）| | |
 ```
 
-→ Step 2 に進みます
+→ ステップ 2 へ
 
 ---
 
-### Step 2: 設定する env 変数を選択（ループ先頭）
+### ステップ 2: 設定する env 変数を選択（ループ先頭）
 
 #### 条件
 
@@ -88,23 +88,23 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 **`AskUserQuestion` ツールを呼び出します** `multiSelect: false` で：
 
-- question: `"設定する env 変数を選択（MERGE_PROPOSAL / MERGE_AUTO_HANDOFF / NEXT_KIT_TS_CHECK / AITUBER_NOTIFY / CLAUDE_KIT_INJECTION_DISABLE / DEV_KIT_INJECTION_DISABLE は「その他」に入力）"`
+- question: `"設定する env 変数を選択（WORK_MERGE_PROPOSAL / WORK_MERGE_AUTO_HANDOFF / DEV_KIT_NEXT_TS_CHECK / AITUBER_NOTIFY / CLAUDE_KIT_INJECTION_DISABLE / DEV_KIT_INJECTION_DISABLE は「その他」に入力）"`
 - header: `"env 変数"`
 - options（各ラベルに現在の状態を含める）:
-  1. `"[{state}] WORK_KIT_PR_ENFORCEMENT"` — description: `"UserPromptSubmit work-start 強制注入"`
-  2. `"[{state}] WORK_KIT_STOP_REMINDER"` — description: `"Stop TODO/QA リマインダー注入"`
-  3. `"[{state}] WORK_KIT_USE_WORKTREE"` — description: `"work-start での worktree 作成"`
+  1. `"[{state}] WORK_PR_ENFORCEMENT"` — description: `"UserPromptSubmit work-start 強制注入"`
+  2. `"[{state}] WORK_STOP_REMINDER"` — description: `"Stop TODO/QA リマインダー注入"`
+  3. `"[{state}] WORK_USE_WORKTREE"` — description: `"work-start での worktree 作成"`
   4. `"完了（設定を終了）"` — description: `"ループを終了して変更結果を表示"`
 
 option 4（完了）が選ばれた場合 → Step 5（レポート）に飛びます
 「その他」（自由入力）の場合 → 入力されたテキストを対象変数として使用; 進める前に 9 つの管理対象変数のいずれかであることを検証します
 その他の場合 → 選択されたオプションの変数名を使用します
 
-→ Step 3 に進みます
+→ ステップ 3 へ
 
 ---
 
-### Step 3: 値とスコープを選択
+### ステップ 3: 値とスコープを選択
 
 #### 条件
 
@@ -140,11 +140,11 @@ option 4（完了）が選ばれた場合 → Step 5（レポート）に飛び�
 
 両方の答えを記録します。
 
-→ Step 4 に進みます
+→ ステップ 4 へ
 
 ---
 
-### Step 4: 変更を適用
+### ステップ 4: 変更を適用
 
 #### 条件
 
@@ -168,11 +168,11 @@ option 4（完了）が選ばれた場合 → Step 5（レポート）に飛び�
 
 最終レポート用に変更を記録します（変数名、変更前の状態 → 変更後の状態、ファイル）。
 
-→ Step 2 に戻ります
+→ ステップ 2 に戻る
 
 ---
 
-### Step 5: レポート
+### ステップ 5: レポート
 
 #### 条件
 
@@ -187,7 +187,7 @@ option 4（完了）が選ばれた場合 → Step 5（レポート）に飛び�
 
 | env 変数 | 変更前 | 変更後 | 設定ファイル |
 |---|---|---|---|
-| WORK_KIT_STOP_REMINDER | ON | OFF | .claude/settings.json |
+| WORK_STOP_REMINDER | ON | OFF | .claude/settings.json |
 ```
 
 変更がない場合は「変更なし」と報告します。

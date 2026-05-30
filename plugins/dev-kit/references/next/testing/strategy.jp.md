@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of strategy.md. When updating the English original, update this file too. -->
 # Next.js App Router — Testing Strategy
 
 > **方針**: ユースケース志向 + 画面単位のフォルダ構造。共通化と保守性を重視し、ベタ書きを避ける。

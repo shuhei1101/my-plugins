@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of auth-context.md. When updating the English original, update this file too. -->
 # app/(shared)/auth/index.ts — getAuthContext()
 
 すべての `route.ts` / Server Action / Server Component が認証を取る統一エントリポイント。

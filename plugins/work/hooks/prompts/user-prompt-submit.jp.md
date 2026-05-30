@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of user-prompt-submit.md. When updating the English original, update this file too. -->
 
 [work] **このプロンプトを処理する前に、以下のステップを完了してください。スキップはありません。例外もありません。**
 

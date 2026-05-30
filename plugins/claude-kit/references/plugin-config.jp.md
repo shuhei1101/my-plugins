@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of plugin-config.md. When updating the English original, update this file too. -->
 # プラグイン Config スキルガイド
 
 Claude Code プラグインに **config スキル** を追加する方法。config スキルとは、`settings.json` を

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of python3-c-backtick-shell-expansion.md. When updating the English original, update this file too. -->
 # python3 -c でバッククォートがシェル展開される
 
 **日付**: 2026-05-30

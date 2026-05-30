@@ -6,7 +6,7 @@ description: |
   "スキルに重複がある気がする", "CLAUDE.md が長くなってきた",
   ".claude/ をきれいにしたい", or calls `/claude-kit:claude-refactor` explicitly.
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # claude-refactor — Claude 設定の監査と再編成
 
@@ -18,11 +18,11 @@ description: |
 
 ---
 
-## 作業内容
+## タスク
 
-### ステップ1: 対象ファイルの収集と基準の読み込み
+### ステップ 1: 対象ファイルの収集と基準の読み込み
 
-#### 処理内容
+#### 処理
 
 1. リファレンスガイド（本プラグインの `references/`）を読む — 以下すべての判定の基準になる:
    - `common.md` — ファイル種別の判定基準、増殖防止ガード、JP/EN ミラー規則
@@ -42,13 +42,13 @@ description: |
 | CLAUDE.md JP | 各 `CLAUDE.jp.md` の存在を確認 |
 | hooks | `.claude/settings.json` / `settings.local.json` / `hooks/hooks.json` の hooks セクションを読む |
 
-→ ステップ2へ
+→ ステップ 2 へ
 
 ---
 
-### ステップ2: 各スコープを references と照合して分析
+### ステップ 2: 各スコープを references と照合して分析
 
-#### 処理内容
+#### 処理
 
 Step1 の references の基準を適用する — ここで再導出しない。
 
@@ -58,13 +58,13 @@ Step1 の references の基準を適用する — ここで再導出しない。
 - **hooks**（`hooks.md`）: rules/CLAUDE.md 内でフック化すべき内容（イベント対応に従う）、および冗長/未使用の既存フックエントリ。
 - **JP/EN ミラー**（`common.md`）: 欠けている `.jp.md` / `rules-jp/` / `CLAUDE.jp.md` の対応物。
 
-→ ステップ3へ
+→ ステップ 3 へ
 
 ---
 
-### ステップ3: 提案の提示と確認
+### ステップ 3: 提案の提示と確認
 
-#### 処理内容
+#### 処理
 
 1. 所見を次の表に整理する（項目が無い表は省略。空のスコープは「問題なし」と報告）:
 
@@ -79,13 +79,13 @@ Step1 の references の基準を適用する — ここで再導出しない。
 
 2. ユーザーに尋ねる: **すべて実行** / **個別選択** / **キャンセル**。確認を待つ。
 
-→ ステップ4へ
+→ ステップ 4 へ
 
 ---
 
-### ステップ4: 確定した変更の実行
+### ステップ 4: 確定した変更の実行
 
-#### 処理内容
+#### 処理
 
 ユーザーが承認したものだけ適用する。**対象ファイルを直接編集する** — オーサリングガイド
 （`skills.md` / `rules.md` / `claude-md.md` / `hooks.md` + `provenance.md`）は
@@ -111,9 +111,9 @@ Step1 の references の基準を適用する — ここで再導出しない。
 - **JP ミラー作成**: `.jp.md` を執筆（または `jp-mirror-translator` エージェントを使う）。
 - リネーム/移動後は、プロジェクト内の他所からの参照をすべて更新する。
 
-→ ステップ5へ
+→ ステップ 5 へ
 
-#### 補足
+#### 注意事項
 
 ##### 禁止事項
 
@@ -122,16 +122,16 @@ Step1 の references の基準を適用する — ここで再導出しない。
 
 ---
 
-### ステップ5: 結果報告
+### ステップ 5: 結果報告
 
-#### 処理内容
+#### 処理
 
 1. 変更 / 生成 / 削除したファイルを報告
 2. ユーザーにレビューとコミットを促す
 
 ---
 
-## References
+## 参照
 
 判定基準は本プラグインの `references/`（Step1 で読む）にある: `common.md`, `rules.md`,
 `skills.md`, `hooks.md`, `claude-md.md` — 加えて編集ファイルのスタンプ用に `provenance.md`。

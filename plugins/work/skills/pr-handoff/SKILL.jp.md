@@ -10,7 +10,7 @@ description: |
   「pr-handoff して」でトリガー、または `/work:pr-handoff` を明示的に呼び出し。
 ---
 
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:pr-handoff — 次ブランチをコンテキスト付きで予約
 
@@ -44,7 +44,7 @@ description: |
 
 ## タスク
 
-### Step 1: 次ブランチ候補を確認して分類
+### ステップ 1: 次ブランチ候補を確認して分類
 
 #### 条件
 
@@ -72,7 +72,7 @@ description: |
    - 依存候補は、そのルートが予約されたら依存ルートの「次ブランチ候補」に転記
    - 単一ルートが複数の後続者を持つ場合、後続者間の依存関係を転記テーブルで保持
 
-→ Step 2 に進む
+→ ステップ 2 へ
 
 #### 出力
 
@@ -98,7 +98,7 @@ description: |
 
 ---
 
-### Step 2: 関連する背景コンテキストを抽出
+### ステップ 2: 関連する背景コンテキストを抽出
 
 #### 条件
 
@@ -116,7 +116,7 @@ description: |
 3. 各即座に予約可能な候補が付属する依存後続者について、
    そのタイトル / summary / 実施条件も記録（Step 3 で転記します）
 
-→ Step 3 に進む
+→ ステップ 3 へ
 
 #### 出力
 
@@ -133,7 +133,7 @@ description: |
 
 ---
 
-### Step 3: work:start を呼び出して次ブランチを予約
+### ステップ 3: work:start を呼び出して次ブランチを予約
 
 #### 条件
 

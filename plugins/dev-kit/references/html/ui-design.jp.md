@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of ui-design.md. When updating the English original, update this file too. -->
 # UI Design — dev-kit (HTML) 共通リファレンス(日本語ミラー)
 
 > このファイルは `ui-design.md` の日本語ミラーです。Claude Code には読み込まれません。

@@ -4,7 +4,7 @@ description: |
   ユーザーが「ステータスラインを設定して」「statusline-setup を実行して」「ステータスラインをセットアップして」と言ったとき。
   または `/statusline-setup` で明示的に呼ばれたとき。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # statusline-setup — ステータスライン設定を適用する
 
@@ -30,7 +30,7 @@ my-plugins/ | Claude Sonnet 4.6 | ctx 23% (47k/200k)
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: スクリプトを実行する
 
@@ -38,7 +38,7 @@ my-plugins/ | Claude Sonnet 4.6 | ctx 23% (47k/200k)
 
 - 常に実行
 
-#### 処理内容
+#### 処理
 
 以下のコマンドを実行する:
 
@@ -52,7 +52,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/apply-statusline.py"
 
 - `~/.claude/settings.json` の `statusLine` キーが更新される
 
-#### 補足
+#### 注意事項
 
 ##### 実行環境の注意（重要）
 
@@ -81,7 +81,7 @@ Claude Code は自身の実行環境に対応するパスから設定を読み�
 
 - ステップ1 完了
 
-#### 処理内容
+#### 処理
 
 1. 適用完了をユーザーに伝える
 2. Claude Code を再起動しないと反映されない場合があることを案内する

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of error-tsx.md. When updating the English original, update this file too. -->
 # error.tsx / global-error.tsx — ルートエラーバウンダリ
 
 サブツリー全体のエラーを catch する Client Component。

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of app.md. When updating the English original, update this file too. -->
 # fastapi/app — FastAPI アプリ構成
 
 > このファイルは `app.md` の日本語ミラーです。

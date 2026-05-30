@@ -220,6 +220,10 @@ def main() -> int:
     index_filename = "_index.jp.yaml" if lang == "jp" else "_index.yaml"
     template_filename = "injection.jp.md.j2" if lang == "jp" else "injection.md.j2"
 
+    # JP ミラーモード: CLAUDE_KIT_JP_MIRROR=false で .jp.md 生成をスキップ
+    jp_mirror_raw = os.environ.get(f"{ENV_PREFIX}_JP_MIRROR", "true").lower()
+    jp_mirror = jp_mirror_raw not in ("false", "0", "no", "off")
+
     rules_yaml = refs_dir / "_injection_rules.yaml"
     index_yaml = refs_dir / index_filename
     if not rules_yaml.exists():
@@ -370,6 +374,7 @@ def main() -> int:
             file_path=file_path,
             required=required_data,
             optional=optional_data,
+            jp_mirror=jp_mirror,
         )
     except Exception as e:
         _eprint(f"template render error ({template_filename}): {e}")

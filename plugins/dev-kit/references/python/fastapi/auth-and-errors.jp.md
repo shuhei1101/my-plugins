@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of auth-and-errors.md. When updating the English original, update this file too. -->
 # fastapi/auth-and-errors — 認証と例外ハンドラ
 
 > このファイルは `auth-and-errors.md` の日本語ミラーです。

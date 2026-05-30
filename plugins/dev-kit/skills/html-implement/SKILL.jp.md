@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — dev-kit:html-implement(日本語ミラー)
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
@@ -21,7 +21,7 @@
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: リファレンス読み込み
 
@@ -38,7 +38,7 @@
 
 ### ステップ2: 共通リソースを先に読む(必須)
 
-#### 処理内容
+#### 処理
 
 コードを書く前に、プロジェクトの共通リソースを読み込む:
 
@@ -56,7 +56,7 @@
 
 - 共通リソースの所在メモ(何が、どこに、ある/ない)
 
-#### 補足
+#### 注意事項
 
 ##### 禁止事項
 
@@ -67,7 +67,7 @@
 
 ### ステップ3: FLOCSS + Design Tokens のセットアップを確保する
 
-#### 処理内容
+#### 処理
 
 プロジェクトの CSS 構造を確認し、ケースで分岐:
 
@@ -105,7 +105,7 @@
 
 ### ステップ4: 再利用 / 拡張 / 新規追加の計画
 
-#### 処理内容
+#### 処理
 
 モック(または機能仕様)を見て、各要素を 3 つのバケットに振り分ける:
 
@@ -128,7 +128,7 @@
 
 ### ステップ5: 拡張ポイントの設計
 
-#### 処理内容
+#### 処理
 
 新規コンポーネント・新規挙動には、**JSDoc 型を先に定義する**:
 
@@ -157,7 +157,7 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 
 ### ステップ6: 実装
 
-#### 処理内容
+#### 処理
 
 1. 以下に従う:
    - FLOCSS レイヤー + Design Tokens(`principles.md` セクション 2)

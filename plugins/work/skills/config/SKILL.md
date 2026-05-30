@@ -17,12 +17,12 @@ until the user chooses to finish.
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
-| `WORK_KIT_PR_ENFORCEMENT` | UserPromptSubmit work-start 強制注入 | 有効 |
-| `WORK_KIT_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
-| `WORK_KIT_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
-| `WORK_KIT_MERGE_PROPOSAL` | Stop フックでの `/work-kit:merge` 提案 | 有効 |
-| `WORK_KIT_MERGE_AUTO_HANDOFF` | merge Step 11 auto pr-handoff | 有効 |
-| `NEXT_KIT_TS_CHECK` | PostToolUse tsc 型チェック | 有効 |
+| `WORK_PR_ENFORCEMENT` | UserPromptSubmit work-start 強制注入 | 有効 |
+| `WORK_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
+| `WORK_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
+| `WORK_MERGE_PROPOSAL` | Stop フックでの `/work:merge` 提案 | 有効 |
+| `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto pr-handoff | 有効 |
+| `DEV_KIT_NEXT_TS_CHECK` | PostToolUse tsc 型チェック | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
 | `CLAUDE_KIT_INJECTION_DISABLE` | claude-kit の全参照注入を無効化（逆極性） | 有効（注入 ON） |
 | `DEV_KIT_INJECTION_DISABLE` | dev-kit の全参照注入を無効化（逆極性） | 有効（注入 ON） |
@@ -69,7 +69,7 @@ Display a state table as text output:
 
 | env 変数 | 状態 | 設定ファイル |
 |---|---|---|
-| WORK_KIT_PR_ENFORCEMENT | ON | .claude/settings.json |
+| WORK_PR_ENFORCEMENT | ON | .claude/settings.json |
 | ...（以下同様）| | |
 ```
 
@@ -87,12 +87,12 @@ Display a state table as text output:
 
 **Call `AskUserQuestion` tool** with `multiSelect: false`:
 
-- question: `"設定する env 変数を選択（MERGE_PROPOSAL / MERGE_AUTO_HANDOFF / NEXT_KIT_TS_CHECK / AITUBER_NOTIFY / CLAUDE_KIT_INJECTION_DISABLE / DEV_KIT_INJECTION_DISABLE は「その他」に入力）"`
+- question: `"設定する env 変数を選択（WORK_MERGE_PROPOSAL / WORK_MERGE_AUTO_HANDOFF / DEV_KIT_NEXT_TS_CHECK / AITUBER_NOTIFY / CLAUDE_KIT_INJECTION_DISABLE / DEV_KIT_INJECTION_DISABLE は「その他」に入力）"`
 - header: `"env 変数"`
 - options（各ラベルに現在の状態を含める）:
-  1. `"[{state}] WORK_KIT_PR_ENFORCEMENT"` — description: `"UserPromptSubmit work-start 強制注入"`
-  2. `"[{state}] WORK_KIT_STOP_REMINDER"` — description: `"Stop TODO/QA リマインダー注入"`
-  3. `"[{state}] WORK_KIT_USE_WORKTREE"` — description: `"work-start での worktree 作成"`
+  1. `"[{state}] WORK_PR_ENFORCEMENT"` — description: `"UserPromptSubmit work-start 強制注入"`
+  2. `"[{state}] WORK_STOP_REMINDER"` — description: `"Stop TODO/QA リマインダー注入"`
+  3. `"[{state}] WORK_USE_WORKTREE"` — description: `"work-start での worktree 作成"`
   4. `"完了（設定を終了）"` — description: `"ループを終了して変更結果を表示"`
 
 If option 4 (完了) → skip to Step 5 (report)
@@ -186,7 +186,7 @@ Output a summary of all changes made during this session:
 
 | env 変数 | 変更前 | 変更後 | 設定ファイル |
 |---|---|---|---|
-| WORK_KIT_STOP_REMINDER | ON | OFF | .claude/settings.json |
+| WORK_STOP_REMINDER | ON | OFF | .claude/settings.json |
 ```
 
 If no changes were made, report "変更なし".
