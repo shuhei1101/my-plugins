@@ -1,0 +1,32 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# work TODO テンプレート同期
+
+タスクドキュメントのテンプレートを `work-start` SKILL.md の Step 7 記入ガイドと同期させる。
+テンプレートのセクション構成が記入ガイドから乖離すると、生成されたタスクドキュメントが
+ドキュメント化されたワークフローと一致しなくなる。
+英語原文: `references/work-todo-template-sync.md`
+
+---
+
+## 関連ファイル
+
+| ファイルパス | 役割 |
+|---|---|
+| `plugins/work/templates/note.md` | work プラグインに同梱されるノートテンプレート |
+| `plugins/work/skills/start/SKILL.md` | タスクドキュメントへの記入方法を定義するスキル（Step 7） |
+| `plugins/work/skills/pr-handoff/SKILL.md` | タスクドキュメントの `## 次PR候補` を読んで次の PR を決定するスキル（Step 1） |
+
+## 編集時のチェック
+
+このドメインのいずれかのファイルを変更したとき、他のファイルも確認する:
+
+- [ ] `templates/note.md` のセクション構成が `work-start` SKILL.md Step 7 の記入指示と一致している
+- [ ] 新しく追加したセクションに対応する記入指示が SKILL.md Step 7 にある
+- [ ] 削除・リネームしたセクションの SKILL.md Step 7 のエントリも削除・更新している
+- [ ] `## 次PR候補` のリネーム・削除があった場合、`pr-handoff` SKILL.md Step 1 も更新している
+- [ ] `## 次PR候補` のカラムが変わった場合、`pr-handoff` と `work-start` SKILL.md Step 7 の両方を更新している
+
+## コミット前チェックリスト
+
+- [ ] テンプレートと SKILL.md Step 7 の記入ガイドが同期している
+- [ ] `pr-handoff` SKILL.md Step 1 が `## 次PR候補` のセクション構造と一致している

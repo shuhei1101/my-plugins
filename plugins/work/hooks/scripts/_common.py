@@ -1,4 +1,4 @@
-# Common helpers for workspace hook scripts.
+# Common helpers for work hook scripts.
 #
 # Kept intentionally per-plugin (not shared across plugins) per the
 # `premature-cross-plugin-centralization` incident: env prefixes and log tags
@@ -12,7 +12,7 @@ import pathlib
 import sys
 import tempfile
 
-ENV_PREFIX = "WORKSPACE"
+ENV_PREFIX = "WORK"
 
 FALSY = {"false", "0", "no", "off"}
 TRUTHY = {"true", "1", "yes", "on"}

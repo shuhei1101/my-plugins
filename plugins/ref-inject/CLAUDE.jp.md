@@ -1,8 +1,8 @@
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # ref-inject プラグイン開発ガイド
 
-`ref-inject` は**プラグインにリファレンス自動注入の仕組みを付与する**プラグイン。`py-kit` /
-`next-kit` で使われている `*-kit` 形式の、編集対象パスを `injection_rules.yaml` と照合して
+`ref-inject` は**プラグインにリファレンス自動注入の仕組みを付与する**プラグイン。`dev-kit` /
+`claude-kit` で使われている `*-kit` 形式の、編集対象パスを `_injection_rules.yaml` と照合して
 関連リファレンスを注入する `PreToolUse` フックを付ける。対象プラグインは新規でも既存でもよく、
 `/ref-inject:apply` は**注入部分だけ**を提供する。
 
@@ -40,8 +40,8 @@ ref-inject/
     │   ├── hooks.json
     │   └── templates/injection.md.j2 (+ .jp.md.j2)
     └── references/
-        ├── index.yaml (+ index.jp.yaml)
-        ├── injection_rules.yaml
+        ├── _index.yaml (+ _index.jp.yaml)
+        ├── _injection_rules.yaml
         ├── CLAUDE.md (+ CLAUDE.jp.md)
         └── example/getting-started.md
 ```
@@ -91,7 +91,7 @@ ref-inject/
 ## 使い方
 
 対象プラグイン（新規でも既存でも）に `/ref-inject:apply` を実行する。その後 `references/` を
-実際の doc で埋め、`injection_rules.yaml` で紐付ける。
+実際の doc で埋め、`_injection_rules.yaml` で紐付ける。
 
 全 consumer の**仕組み**を変えるときは、ここの `templates/` を編集し、変更後のテンプレを各
 consumer の `hooks/` に再適用する（references はそのまま。`ref-inject` 由来なのはフック・
@@ -103,5 +103,5 @@ consumer の `hooks/` に再適用する（references はそのまま。`ref-inj
 
 | プラグイン | 関係 |
 |---|---|
-| `py-kit` / `next-kit` | リファレンス注入の consumer。ref-inject テンプレートへ移行予定 |
+| `dev-kit` / `claude-kit` | リファレンス注入の consumer。ref-inject テンプレートを採用済み |
 | `claude-kit` | `plugin-creator`（プラグインレベルのファイルを所有）と共通フックポリシーの出所 |

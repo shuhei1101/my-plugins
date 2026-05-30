@@ -27,13 +27,13 @@ description: |
 
 **前提条件**:
 - `.work/issues/` が存在すること（なければ `/work:setup` を実行）
-- `*-kit` 形式のプラグイン（py-kit / next-kit など、`PreToolUse(Read)` フックを持つもの）が
+- `*-kit` 形式のプラグイン（dev-kit など、`PreToolUse(Read)` フックを持つもの）が
   1つ以上インストールされていること
 
 **動作方針**:
 - 各 `*-kit` プラグインの `PreToolUse(Read)` フックがファイル種別に応じて reference を
   自動注入してくれるため、本スキルは「対象ファイルを 1 つ選んで Read する」だけでよい
-- フックは `injection_rules.yaml` を参照して該当 reference を判断するので、
+- フックは `_injection_rules.yaml` を参照して該当 reference を判断するので、
   本スキル側で pattern マッチや YAML パースを実装する必要はない
 - フックの session+file-hash トークンにより、同一ファイルは 1 セッション 1 回しか注入されない
 

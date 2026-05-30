@@ -1,8 +1,0 @@
-# __PLUGIN_NAME__ reference index (English; parsed by inject_references.py).
-# Each entry maps a reference file to a one-line description.
-#   path        : path relative to this references/ directory
-#   description : shown in the injected pointer (and as the section heading)
-# Keep this in sync with index.jp.yaml (JP mirror) and injection_rules.yaml.
-references:
-  - path: example/getting-started.md
-    description: Example reference. Replace these with your real conventions.
