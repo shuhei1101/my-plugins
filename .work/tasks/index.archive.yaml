@@ -719,3 +719,10 @@ prs:
     に env 変数変更
   task: 260530_rename-workspace-to-work
   completed: true
+- id: 194
+  title: PR194 — translate-injection-rules-comments-to-japanese
+  type: chore
+  tags: []
+  summary: 各プラグインの injection_rules.yaml 内のコメントを日本語に統一
+  task: 260530_translate-injection-rules-comments
+  completed: true
