@@ -25,17 +25,22 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | claude-kit の成果物 2 種を整理する（静的テンプレ vs 規約遵守ファイル） | - 設計検討 |
-| - | `plugins/claude-kit/skills/plugin-update/SKILL.md` (+ jp) を作成 | - 新規 |
-|  | スコープ: `.claude/skills/**/SKILL.md` / `.claude/rules/**` / `.claude/hooks/**` / `agents/**` を現行リファレンス（skills.md / rules.md / hooks.md / plugin-structure.md）と照合 | - |
-| - | claude-kit を MINOR bump (3.38.1 → 3.39.0) | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | CLAUDE.md の Changelog 表に追記 | - `plugins/claude-kit/CLAUDE.md` / `.jp.md` |
+| 済 | claude-kit の成果物 2 種を整理する（静的テンプレ vs 規約遵守ファイル） | - 設計検討 |
+| 済 | `plugins/claude-kit/skills/plugin-update/SKILL.md` (+ jp) を作成 | - 新規 |
+|  | スコープ: `.claude/skills/**/SKILL.md` / `.claude/rules/**` / `.claude/hooks/**` を現行リファレンス（skills.md / rules.md / hooks.md / plugin-structure.md / claude-md.md / etc.）と照合し、最小差分を適用。注入フックがリファレンスを自動供給する点を活用 | - |
+| 済 | claude-kit を MINOR bump (3.40.0 → 3.41.0) ※master 取り込みで開始時バージョンが 3.38.0 から 3.40.0 にずれていたため再算出 | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | changelog 追加（`changelogs/v3.41.0.md`） ※CLAUDE.md の `## Changelog` 表への移行はまだどの plugin でも未実施。本 PR では既存パターンを踏襲し、テーブル化は別 PR で一括対応 | - `plugins/claude-kit/changelogs/v3.41.0.md` |
 | - | コミット | - |
 
 ## 変更内容
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
+| `plugins/claude-kit/skills/plugin-update/SKILL.md` | 新規 | claude-kit 規約への追従スキル本体 | 注入フックの自動供給を前提に、規約再掲を省略 |
+| `plugins/claude-kit/skills/plugin-update/SKILL.jp.md` | 新規 | JP mirror | warning コメント込み |
+| `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | `3.40.0` → `3.41.0` | MINOR (新スキル) |
+| `.claude-plugin/marketplace.json` | 編集 | claude-kit entry を `3.40.0` → `3.41.0` | 上と整合 |
+| `plugins/claude-kit/changelogs/v3.41.0.md` | 新規 | リリースノート | dev-kit / work と異なる semantic-migration 設計の根拠を記載 |
 
 ## テスト
 
