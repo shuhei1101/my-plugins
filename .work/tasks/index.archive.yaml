@@ -703,3 +703,26 @@ prs:
     **/{tool,tools,script,scripts}/**/*.py に統合
   task: 260530_dev-kit-py-script-pattern-brace-expansion
   completed: true
+- id: 180
+  title: PR180 — split-hook-inline-python-to-scripts
+  type: refactor
+  tags: []
+  summary: hooks.json のインライン python -c を各プラグイン hooks/scripts/ に切り出し、共通処理を _common.py
+    に集約
+  task: 20260530_split-hook-inline-python-to-scripts
+  completed: true
+- id: 186
+  title: PR186 — rename-workspace-to-work
+  type: refactor
+  tags: []
+  summary: workspace プラグインを work にリネーム、work-start→start、work-add→worktree-create にスキル名変更、WORKSPACE_*→WORK_*
+    に env 変数変更
+  task: 260530_rename-workspace-to-work
+  completed: true
+- id: 195
+  title: PR195 — git-guard-allow-merge-master
+  type: fix
+  tags: []
+  summary: masterブランチを現在のブランチへ取り込む操作をガード除外に修正
+  task: 260530_git-guard-allow-merge-master
+  completed: true
