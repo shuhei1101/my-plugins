@@ -23,10 +23,10 @@ PR210 で定義した「許容される例外」:
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録する | - 本ドキュメント |
-| - | `.work/notes/` の関連ノートを更新する | - `zero-plugin-dependency.md`（新規） |
-| - | grep で他プラグイン呼び出しを全件リストアップしユーザーに提示 | - `plugins/**/skills/**`<br>- `plugins/**/hooks/**`<br>- `plugins/**/references/**` |
-| - | 許容例外に該当するか判定し、違反箇所を確定する | - 各ファイル |
+| 済 | QA を `## QA` に記録する | - 本ドキュメント |
+| 済 | `.work/notes/` の関連ノートを更新する | - `zero-plugin-dependency.md` |
+| 済 | grep で他プラグイン呼び出しを全件リストアップしユーザーに提示 | - `plugins/**/skills/**`<br>- `plugins/**/hooks/**`<br>- `plugins/**/references/**` |
+| 済 | 許容例外に該当するか判定し、違反箇所を確定する | - 各ファイル |
 | - | 違反箇所をプラグイン内自己完結に書き換え（ユーザー確認後） | - 各ファイル |
 | - | 必要に応じてバージョンバンプ（PATCH） | - 対象プラグインの `plugin.json`・`marketplace.json` |
 | - | コミット | - |
