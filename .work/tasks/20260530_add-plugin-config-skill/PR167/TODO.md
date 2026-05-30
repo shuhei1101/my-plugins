@@ -41,6 +41,8 @@ AskUserQuestion の選択肢経由で各 env 変数を `settings.json` の `env`
 | 済 | `plugin-config` スキルを work-kit に実装 | - `plugins/work-kit/skills/plugin-config/SKILL.md` / `.jp.md` |
 | 済 | work-kit バージョンバンプ + changelog | - `plugins/work-kit/.claude-plugin/plugin.json` / `changelogs/` |
 | 済 | glossary に `plugin-config` エントリを追加 | - `.claude/rules/core/glossary.md` |
+| - | スキル名を `plugin-config` → `config` にリネーム | - `skills/plugin-config/` → `skills/config/` |
+| - | UX フロー再設計（ループ + 2 ターン AskUserQuestion） | - `skills/config/SKILL.md` |
 
 ## 参考ドキュメント
 
@@ -54,3 +56,4 @@ AskUserQuestion の選択肢経由で各 env 変数を `settings.json` の `env`
 |---|---|---|
 | propagate-injection-disable-to-plugins | ref-inject テンプレに追加した `{PREFIX}_INJECTION_DISABLE` を claude-kit / py-kit / next-kit の `inject_references.py` に手動同期する（QA-001 の決定事項） | 即時実施可 |
 | merge-language-plugins-into-dev-kit | py-kit / html-kit / next-kit を dev-kit に統合し、使用する言語規約を env 変数で切り替える方式にする。worktree-kit→work-kit 統合と同じ発想。大規模リファクタのため要設計（QA/notes 必須）。 | 即時実施可 |
+| claude-kit-plugin-config-reference | claude-kit references/ に「プラグイン config スキルの設計ガイド」を追加。新規プラグイン作成時に config スキルを必ず持つことを推奨するドキュメント + PreToolUse フックを追加 | 即時実施可 |
