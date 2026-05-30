@@ -15,8 +15,7 @@ This prevents task documents from being created in the main repository.
 > **Naming**: branches use `{type}/{title}` (no `PR{N}/` prefix). The worktree mirrors the branch as
 > `{repo}-wt-{type}-{title}` (slashes → hyphens). The branch document filename is `{YYMMDD}-{branch-hyphenated}.md`
 > (e.g. `refactor/foo-bar` created on 260531 → `260531-refactor-foo-bar.md`).
-> An internal numeric ID is still tracked in `index.yaml` for cross-reference (commits, archive
-> metadata), but it does not appear in branch names, worktree paths, or branch document filenames.
+> An internal numeric ID is still tracked in `index.yaml` for archive metadata, but it does not appear in branch names, worktree paths, or branch document filenames.
 
 ---
 
@@ -34,8 +33,7 @@ This prevents task documents from being created in the main repository.
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **Title**: short kebab-case label that describes the work
 2. The full branch name is `{type}/{title}` (for example `refactor/rename-pr-to-branch`).
-3. Reserve an internal ID for `index.yaml` bookkeeping (used in the archive and in commit
-   cross-references — it does not appear in the branch name itself):
+3. Reserve an internal ID for `index.yaml` bookkeeping (used in the archive — it does not appear in the branch name itself):
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yaml
