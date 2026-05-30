@@ -23,12 +23,18 @@
 | 済 | `Edit` / `MultiEdit` ツールのチェックを除外する（`Write` のみチェック） | - 〃 |
 | 済 | ノートを更新する | - `.work/notes/dev-kitフック設計メモ.md` |
 | 済 | ルール / CLAUDE.md を確認・更新する（変更不要と判断） | - |
+| 済 | `markdown_frontmatter_check.py` フックを削除し、リファレンス文書に一本化する | - `plugins/dev-kit/hooks/hooks.json`<br>- `plugins/dev-kit/hooks/scripts/markdown_frontmatter_check.py` |
 
 ## 変更内容
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | `plugins/dev-kit/hooks/scripts/markdown_frontmatter_check.py` | 編集 | `.jp.md` 除外・Edit 除外の条件追加 | - |
+| 1 | `plugins/dev-kit/hooks/scripts/markdown_frontmatter_check.py` | 削除 | フック廃止 | 注入で代替 |
+| 2 | `plugins/dev-kit/hooks/hooks.json` | 編集 | `markdown_frontmatter_check` エントリ削除 | - |
+| 3 | `plugins/dev-kit/CLAUDE.md` | 編集 | フック一覧・`DEV_KIT_MARKDOWN_CHECK` 行削除、v4.10.0 履歴追加 | - |
+| 4 | `plugins/dev-kit/.claude-plugin/plugin.json` | 編集 | 4.9.0 → 4.10.0 | - |
+| 5 | `plugins/dev-kit/changelogs/v4.10.0.md` | 新規 | changelog 追加 | - |
+| 6 | `.claude-plugin/marketplace.json` | 編集 | dev-kit バージョン 4.9.0 → 4.10.0 | - |
 
 ## テスト
 
