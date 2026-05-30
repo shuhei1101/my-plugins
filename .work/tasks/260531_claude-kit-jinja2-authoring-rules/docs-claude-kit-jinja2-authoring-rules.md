@@ -40,14 +40,14 @@ PR201 で `injection.md.j2` / `injection.jp.md.j2` を編集した際に
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| ✓ | QA を `## QA` に記録する（該当なし） | - |
-| ✓ | `.work/notes/` の関連ノートを確認・更新する（既存ノートなし → 本 PR の changelog で代替） | - |
-| ✓ | `references/jinja2/templates.md` (英語) と `.jp.md` を作成し、上記3パターン + その他の注意事項を記述する | - `plugins/claude-kit/references/jinja2/templates.md`<br>- `plugins/claude-kit/references/jinja2/templates.jp.md` |
-| ✓ | `_index.yaml` / `_index.jp.yaml` に新リファレンスを登録する | - `plugins/claude-kit/references/_index.yaml`<br>- `plugins/claude-kit/references/_index.jp.yaml` |
-| ✓ | `_injection_rules.yaml` に `**/hooks/templates/*.j2` パスを追加し新リファレンスを紐付ける | - `plugins/claude-kit/references/_injection_rules.yaml` |
-| ✓ | バージョンをバンプする（3.44.0 → 3.45.0） | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| ✓ | CLAUDE.md の Changelog を更新する／changelogs/v3.45.0.md を作成する | - `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md`<br>- `plugins/claude-kit/changelogs/v3.45.0.md` |
-| ✓ | ルール・CLAUDE.md を更新する（変更なし — `.claude/rules/` 配下に該当無し） | - |
+| 済 | QA を `## QA` に記録する（該当なし） | - |
+| 済 | `.work/notes/` の関連ノートを確認・更新する（既存ノートなし → 本 PR の changelog で代替） | - |
+| 済 | `references/jinja2/templates.md` (英語) と `.jp.md` を作成し、上記3パターン + その他の注意事項を記述する | - `plugins/claude-kit/references/jinja2/templates.md`<br>- `plugins/claude-kit/references/jinja2/templates.jp.md` |
+| 済 | `_index.yaml` / `_index.jp.yaml` に新リファレンスを登録する | - `plugins/claude-kit/references/_index.yaml`<br>- `plugins/claude-kit/references/_index.jp.yaml` |
+| 済 | `_injection_rules.yaml` に `**/hooks/templates/*.j2` パスを追加し新リファレンスを紐付ける | - `plugins/claude-kit/references/_injection_rules.yaml` |
+| 済 | バージョンをバンプする（3.44.0 → 3.45.0） | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | CLAUDE.md の Changelog を更新する／changelogs/v3.45.0.md を作成する | - `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md`<br>- `plugins/claude-kit/changelogs/v3.45.0.md` |
+| 済 | ルール・CLAUDE.md を更新する（変更なし — `.claude/rules/` 配下に該当無し） | - |
 
 ## 変更内容
 
@@ -80,6 +80,7 @@ QA 事項なし。
 
 ## 参考ドキュメント
 
+- `.work/notes/Jinja2テンプレート執筆ルール.md`: 本 PR の設計ノート（バグパターンの背景と対処）
 - `plugins/claude-kit/hooks/templates/injection.md.j2`: PR201 で修正した実例
 - `plugins/claude-kit/hooks/templates/injection.jp.md.j2`: 同上 JP 版
 - `plugins/claude-kit/hooks/scripts/inject_references.py`: `trim_blocks=True`, `lstrip_blocks=True` の設定箇所
