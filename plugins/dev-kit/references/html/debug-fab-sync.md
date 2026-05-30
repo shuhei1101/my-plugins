@@ -1,12 +1,10 @@
----
-description: Auto-loaded when editing files under plugins/dev-kit/skills/html-debug-fab/templates/
-globs:
-  - "plugins/dev-kit/skills/html-debug-fab/templates/**"
----
-
 # debug-fab Template Sync Rules
 
-When editing `uidev.js` or `uidev.css`, the following files must also be updated in the same commit:
+When editing files under `plugins/dev-kit/skills/html-debug-fab/templates/`, the following files
+must also be updated in the same commit.
+Japanese mirror: `references/html/debug-fab-sync.jp.md`
+
+---
 
 ## Required sync targets
 

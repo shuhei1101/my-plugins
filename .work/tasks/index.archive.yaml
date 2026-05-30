@@ -815,3 +815,10 @@ prs:
   summary: claude-kit プラグイン作成時に setup-wizard スキルを必須化するリファレンスを追加
   task: 260530_add-setup-wizard-reference
   completed: true
+- id: 203
+  title: PR203 — deprecate-claude-rules-migrate-to-references
+  type: refactor
+  tags: []
+  summary: .claude/rules/ 配下のルールを全廃止し、各プラグインの references/ へ移行する
+  task: 260530_deprecate-claude-rules-migrate-to-references
+  completed: true

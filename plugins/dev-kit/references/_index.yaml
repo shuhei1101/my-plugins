@@ -408,6 +408,9 @@ references:
 - path: html/ui-design.md
   lang: html
   description: UX patterns and shared-component mandate. Read shared resources (constants/routes/components) before writing any screen code; reuse > extend > add.
+- path: html/debug-fab-sync.md
+  lang: html
+  description: debug-fab template sync rules. When editing uidev.js or uidev.css, also update SKILL.md and templates/CLAUDE.md. Bump plugin.json and marketplace.json on any template change.
 - path: html/css-js-link.md
   lang: html
   description: CSS class ↔ JS DOM access linkage. Keep FLOCSS class definitions in CSS and DOM access in JS/HTML in sync. Covers existence checks, layer correctness, BEM substructure, dead classes, and no-magic-strings rule.

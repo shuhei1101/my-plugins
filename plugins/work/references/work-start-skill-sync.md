@@ -1,0 +1,26 @@
+# work-start ↔ worktree-create Skills Link
+
+`work-start` Step 4 delegates to `worktree-create`, so their interfaces must stay aligned.
+`vscode-workspace-sync` is also work-start-adjacent and uses the `work:` namespace.
+Japanese mirror: `references/work-start-skill-sync.jp.md`
+
+---
+
+## File dependencies
+
+| Edited file | Also verify / update |
+|---|---|
+| `plugins/work/skills/start/SKILL.md` | `plugins/work/skills/worktree-create/SKILL.md` — confirm the interface (PR number / branch args) matches Step 4 |
+| `plugins/work/skills/worktree-create/SKILL.md` | `plugins/work/skills/start/SKILL.md` — confirm Step 4 call form matches |
+| `plugins/work/skills/vscode-workspace-sync/SKILL.md` | confirm the namespace is `work:` |
+
+## Toggling worktree usage
+
+- Worktree usage is controlled by the `WORK_USE_WORKTREE` env var (enabled by default)
+- Setting `false` / `0` / `no` / `off` makes `work-start` skip worktree creation
+- This check is performed by `work-start` Step 4
+
+## Checklist before committing
+
+- [ ] `work-start` Step 4 call form matches the `worktree-create` SKILL.md interface
+- [ ] All three skill SKILL.md files are updated in the same commit if the interface changes

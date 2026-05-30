@@ -810,3 +810,7 @@ rules:
   - html/common-component-first.md
   optional:
   - html/ui-design.md
+- pattern: 'plugins/dev-kit/skills/html-debug-fab/templates/**'
+  lang: html
+  required:
+  - html/debug-fab-sync.md
