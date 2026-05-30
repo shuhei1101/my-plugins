@@ -28,8 +28,8 @@ PR163（worktree-kit → work-kit 統合）と PR164（env トグル導入）の
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR166/QA.md` |
-| - | `.work/notes/` に設計メモを作成する | - `.work/notes/merge-language-plugins.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR166/QA.md` |
+| 済 | `.work/notes/` に設計メモを作成する | - `.work/notes/merge-language-plugins.md` |
 | - | 設計・方針の決定（QA / notes 必須） | - QA.md / notes |
 | - | 実装（設計確定後） | - `plugins/dev-kit/` ほか |
 | - | ルール・CLAUDE.md・glossary を整備する | - `.claude/rules/core/glossary.md` ほか |
