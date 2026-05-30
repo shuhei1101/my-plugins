@@ -20,12 +20,12 @@ claude-kitのMarkdownリファレンスとして、テーブル記法の規則�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | QA.md に未決定事項を記録する | - `.work/tasks/.../PR178/QA.md` |
-| x | Markdownテーブルリファレンスを作成する | - `plugins/claude-kit/references/markdown-table.md` |
-| x | JPミラーを作成する | - `plugins/claude-kit/references/markdown-table.jp.md` |
-| x | injection_rules.yaml に .md 編集時の注入ルールを追加する | - `plugins/claude-kit/references/injection_rules.yaml` |
-| x | index.yaml にエントリを追加する | - `plugins/claude-kit/references/index.yaml` |
-| x | index.jp.yaml にエントリを追加する | - `plugins/claude-kit/references/index.jp.yaml` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR178/QA.md` |
+| 済 | Markdownテーブルリファレンスを作成する | - `plugins/claude-kit/references/markdown-table.md` |
+| 済 | JPミラーを作成する | - `plugins/claude-kit/references/markdown-table.jp.md` |
+| 済 | injection_rules.yaml に .md 編集時の注入ルールを追加する | - `plugins/claude-kit/references/injection_rules.yaml` |
+| 済 | index.yaml にエントリを追加する | - `plugins/claude-kit/references/index.yaml` |
+| 済 | index.jp.yaml にエントリを追加する | - `plugins/claude-kit/references/index.jp.yaml` |
 
 ## 参考ドキュメント
 
