@@ -956,4 +956,10 @@ branches:
   tags: []
   summary: plugins/work/references/ にノート命名規則リファレンスを追加し .work/notes/ 編集時に自動注入
   task: 260531_notes-naming-reference
+- id: 226
+  title: chore/work-template-update
+  type: chore
+  tags: []
+  summary: workプラグインのタスクテンプレートファイル名と表構造を修正
+  task: 260531_workテンプレート修正
   completed: true
