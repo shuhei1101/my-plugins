@@ -11,8 +11,10 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 ### 何をするか
 
 - `plugins/claude-kit/skills/plugin-update/SKILL.md` (+ `.jp.md`) を新規作成
-- claude-kit がプロジェクトに展開する静的成果物（CLAUDE.md / rules / references / プロンプトテンプレ等）を、現在インストール済みの claude-kit バージョンに合わせて更新するロジック
-- workspace の `plugin-update` SKILL.md (`plugins/workspace/skills/plugin-update/SKILL.md`) を参考実装として参照する
+- 対象は「claude-kit 関連成果物」の **2 種類**:
+  - **静的テンプレ**: claude-kit が `/ref-inject:apply` 経由で他プラグインに展開する injection hook スクリプト・templates/・references/ スケルトン → ref-inject の担当範囲なので claude-kit:plugin-update のスコープ外（ref-inject:plugin-update が行う）
+  - **規約遵守ファイル**: ユーザーが claude-kit のスキル（`skill-creator` / `rule-creator` / `hook-creator` / `plugin-creator` 等）を使って作成した `.claude/skills/**/SKILL.md` / `.claude/rules/**` / `.claude/hooks/**` / agents/ → 現行リファレンス（`references/skills.md` / `rules.md` / `hooks.md` / `plugin-structure.md` など）と照合し、規約逸脱を発見・修正
+- **参考にしない**: workspace の plugin-update は静的ファイルコピー特化の実装であり、claude-kit の規約検査フローとは目的が異なる
 - claude-kit の plugin.json と `.claude-plugin/marketplace.json` を MINOR bump、changelog 追加
 
 ### 実施条件
@@ -23,11 +25,11 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | claude-kit が展開する静的成果物を洗い出す | - claude-kit のソース全体 |
-| - | `plugins/claude-kit/skills/plugin-update/SKILL.md` (+ jp) を作成（workspace 版を参考に） | - 新規 |
-| - | claude-kit を MINOR bump | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | changelog を追加 | - `plugins/claude-kit/changelogs/v{X.Y.Z}.md` |
-| - | glossary / CLAUDE.md を必要に応じて更新 | - 該当箇所 |
+| - | claude-kit の成果物 2 種を整理する（静的テンプレ vs 規約遵守ファイル） | - 設計検討 |
+| - | `plugins/claude-kit/skills/plugin-update/SKILL.md` (+ jp) を作成 | - 新規 |
+|  | スコープ: `.claude/skills/**/SKILL.md` / `.claude/rules/**` / `.claude/hooks/**` / `agents/**` を現行リファレンス（skills.md / rules.md / hooks.md / plugin-structure.md）と照合 | - |
+| - | claude-kit を MINOR bump (3.38.1 → 3.39.0) | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| - | CLAUDE.md の Changelog 表に追記 | - `plugins/claude-kit/CLAUDE.md` / `.jp.md` |
 | - | コミット | - |
 
 ## 変更内容
@@ -47,8 +49,9 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 
 ## 参考ドキュメント
 
-- `plugins/workspace/skills/plugin-update/SKILL.md` — 参考実装
-- `plugins/claude-kit/references/plugin-structure.md` — `## Required skills` セクションで規定
+- `plugins/dev-kit/skills/plugin-update/SKILL.md` — 「静的テンプレ再コピー + 規約遵守ファイル検査」の 2 段構成を実装した参考例
+- `plugins/claude-kit/references/plugin-structure.md` — `## Required skills` セクション（plugin-update の定義）
+- `plugins/claude-kit/references/skills.md` / `rules.md` / `hooks.md` — 照合に使う規約リファレンス
 
 ## 関連PR
 
