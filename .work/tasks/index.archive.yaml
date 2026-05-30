@@ -936,3 +936,10 @@ branches:
   summary: 他のマークダウンファイルで env var を直接読もうとする誤った指示がないか全量調査し修正する
   task: 260531_claude-kit-markdown-env-var-audit
   completed: true
+- id: 226
+  title: chore/work-template-update
+  type: chore
+  tags: []
+  summary: workプラグインのタスクテンプレートファイル名と表構造を修正
+  task: 260531_workテンプレート修正
+  completed: true
