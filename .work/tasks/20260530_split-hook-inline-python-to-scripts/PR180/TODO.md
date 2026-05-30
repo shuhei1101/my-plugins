@@ -43,7 +43,7 @@
 | 済 | 各プラグインの `plugin.json` と `marketplace.json` の version を MINOR bump | - workspace 2.43→2.44 / claude-kit 3.35→3.36 / dev-kit 4.0→4.1 / ref-inject 1.3→1.4 |
 | 済 | 各プラグインの changelog 追加（v2.44.0 / v3.36.0 / v4.1.0 / v1.4.0） | - `plugins/{workspace,claude-kit,dev-kit,ref-inject}/changelogs/v*.md` |
 | 済 | 孤児チェック・hooks.json JSON validity チェック・全 script import チェック | - 自動 |
-| - | フック動作確認（Claude Code 再起動後にユーザーへ依頼） | - 動作確認 |
+| 済 | フック動作確認（`/reload-plugins` で 6プラグイン・18フック再ロード成功、Stop フックも本セッションで発火確認） | - 動作確認 |
 | 済 | `.claude/rules/core/incidents.md` への追記要否を判断 → 不要（インシデント由来でなくユーザー要望のリファクタ） | - 判断のみ |
 
 ## 参考ドキュメント
