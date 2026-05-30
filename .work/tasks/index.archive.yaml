@@ -963,3 +963,10 @@ branches:
   summary: workプラグインのタスクテンプレートファイル名と表構造を修正
   task: 260531_workテンプレート修正
   completed: true
+- id: 224
+  title: refactor/references-dot-ref-injects
+  type: refactor
+  tags: []
+  summary: references/ 配下の ref-inject 内部ファイルを .ref-injects/ に移動し、_index.md を追加
+  task: 260531_references再構成
+  completed: true
