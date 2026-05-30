@@ -30,6 +30,49 @@ plugins/<plugin-name>/
 
 ---
 
+## Zero inter-plugin dependency principle
+
+**Design every plugin as an independent distribution unit. Keep dependencies on other plugins' skills, commands, and script paths as close to zero as possible.**
+
+### Why
+
+A plugin is installed, updated, and removed individually. References to other plugins cause:
+
+- Install-order dependency (the dependee plugin must be installed first)
+- Cascading edits on rename (renaming a dependee plugin forces every reference to be updated)
+- Parallel-PR conflicts (PRs that cut across multiple plugins are harder to merge as their footprint grows)
+- Loss of reusability of the plugin on its own
+
+### Acceptable exceptions
+
+| Pattern | Reason |
+|---|---|
+| Calls between skills inside the same plugin | Same distribution unit — independence is not compromised |
+| Static template expansion via `ref-inject:apply` | Designed as something "shipped to" another plugin; after expansion the result lives entirely inside the destination plugin |
+| `claude-kit`'s references injection mechanism (other plugins opt in) | The consumer plugin opts in voluntarily — not a forced dependency |
+
+### Prohibited dependencies
+
+- A skill A's steps invoke `/other-plugin:skill-B`
+- A hook directly references a script file path inside another plugin (e.g. `${CLAUDE_PLUGIN_ROOT}/../other-plugin/...`)
+- A reference instructs the user to "run another plugin's command and come back"
+
+### How to detect violations
+
+Apply the following checks when designing both new and existing plugins:
+
+```bash
+# Find calls to other plugins' skills
+grep -rn "/[a-z-]\+:[a-z-]\+" plugins/<name>/skills/ plugins/<name>/references/
+
+# Check whether hook config references paths outside this plugin's CLAUDE_PLUGIN_ROOT
+grep -rn "CLAUDE_PLUGIN_ROOT.*\.\." plugins/<name>/hooks/
+```
+
+For each match, confirm it falls under "Acceptable exceptions" above; otherwise rewrite it to be self-contained within the plugin.
+
+---
+
 ## Required skills
 
 ### `plugin-update` (mandatory for every plugin)
