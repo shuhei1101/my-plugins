@@ -58,6 +58,7 @@ Content that doesn't need promotion (temporary comparisons, scratchpad investiga
 - Promote valuable notes to permanent knowledge using `/work:notes-to-claude`
 - Append unresolved questions to the branch document's `## QA` section
 - Confirm all rows in the task table are `済` before merging
+- Bundle branch document updates (`済` marks in `## 作業内容`, file entries in `## 変更内容`) into the implementation commit — never create a separate commit for document-only updates
 
 ---
 
