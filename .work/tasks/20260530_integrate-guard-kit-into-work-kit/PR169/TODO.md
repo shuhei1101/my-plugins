@@ -20,16 +20,17 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR169/QA.md` |
-| - | `.work/notes/integrate-guard-kit-into-work-kit.md` を作成 | - `.work/notes/integrate-guard-kit-into-work-kit.md` |
-| - | `git-guard.py` を work-kit にコピーし `WORK_KIT_GUARD` env チェックを追加 | - `plugins/work-kit/hooks/scripts/git-guard.py` |
-| - | `git-guard.md` / `git-guard.jp.md` を work-kit にコピー | - `plugins/work-kit/hooks/prompts/git-guard.md` / `git-guard.jp.md` |
-| - | `work-kit/hooks/hooks.json` の PreToolUse(Bash) 配列に git-guard エントリを追加 | - `plugins/work-kit/hooks/hooks.json` |
-| - | `plugins/guard-kit/` フォルダを削除 | - `plugins/guard-kit/` |
-| - | `marketplace.json` から guard-kit エントリを除外 | - `.claude-plugin/marketplace.json` |
-| - | work-kit のバージョンを 2.38.0 → 2.39.0 に bump（plugin.json と marketplace.json 両方） | - `plugins/work-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
-| - | `glossary.md` に「guard-kit 統合 (PR169)」エントリと `WORK_KIT_GUARD` を追加 | - `.claude/rules/core/glossary.md` |
-| - | JP ミラー同期（glossary 系） | - `.claude/rules-jp/` 配下 |
+| 済 | QA.md に未決定事項を記録する（QA なし） | - `.work/tasks/.../PR169/QA.md` |
+| 済 | `.work/notes/integrate-guard-kit-into-work-kit.md` を作成 | - `.work/notes/integrate-guard-kit-into-work-kit.md` |
+| 済 | `git-guard.py` を work-kit にコピーし `WORK_KIT_GUARD` env チェックを追加 | - `plugins/work-kit/hooks/scripts/git-guard.py` |
+| 済 | `git-guard.md` / `git-guard.jp.md` を work-kit にコピー | - `plugins/work-kit/hooks/prompts/git-guard.md` / `git-guard.jp.md` |
+| 済 | `work-kit/hooks/hooks.json` の PreToolUse(Bash) 配列に git-guard エントリを追加 | - `plugins/work-kit/hooks/hooks.json` |
+| 済 | `plugins/guard-kit/` フォルダを削除 | - `plugins/guard-kit/` |
+| 済 | `marketplace.json` から guard-kit エントリを除外 | - `.claude-plugin/marketplace.json` |
+| 済 | work-kit のバージョンを 2.38.0 → 2.39.0 に bump（plugin.json と marketplace.json 両方） | - `plugins/work-kit/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
+| 済 | changelog 追加 | - `plugins/work-kit/changelogs/v2.39.0.md` |
+| 済 | `glossary.md` に「guard-kit 統合 (PR169)」「WORK_KIT_GUARD」エントリ追加、`env トグル一覧 (PR164)` に WORK_KIT_GUARD を追記 | - `.claude/rules/core/glossary.md` |
+| 済 | JP ミラー同期（rules-jp/core/glossary.md） | - `.claude/rules-jp/core/glossary.md` |
 | - | 動作確認（push/merge 時にプロンプト挟まる、`WORK_KIT_GUARD=false` で挟まらない） | - 手動確認 |
 
 ## 参考ドキュメント
