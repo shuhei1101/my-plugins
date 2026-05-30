@@ -40,3 +40,6 @@ references:
 
   - path: plugin-config.md
     description: プラグインに config スキルを追加する方法。AskUserQuestion ループパターン、管理トグルの規約（キーなし = ON / "false" = OFF）、スコープ選択、最小 SKILL.md テンプレート。
+
+  - path: askuserquestion.md
+    description: スキルから AskUserQuestion を呼ぶ際のガイド。使用制限（スキルまたはユーザーが明示した場合のみ）、options 制約（2〜4 個・Other 自動付与）、multiSelect、preview フィールドの規則。
