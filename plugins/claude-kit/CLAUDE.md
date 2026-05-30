@@ -3,11 +3,11 @@
 ## Authoring knowledge lives in `references/`, auto-injected
 
 The authoring guides for each instruction-file type live in `references/` (`common.md`,
-`skills.md`, `rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`). The
-`claude-kit-references-injection` hook (`hooks/scripts/inject_references.py`) injects the matching
-guide **in full body** when you edit the corresponding file (a `SKILL.md`, a rule, a `CLAUDE.md`, a
-`hooks.json`, a `plugin.json`, …) — see `references/injection_rules.yaml` for the path→reference
-map.
+`skills.md`, `rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`, plus `glossary.md` /
+`incidents.md`). The `claude-kit-references-injection` hook (`hooks/scripts/inject_references.py`)
+injects the matching guide **in full body** when you edit the corresponding file (a `SKILL.md`, a
+rule, a `CLAUDE.md`, a `hooks.json`, a `plugin.json`, …) — see `references/_injection_rules.yaml`
+for the path→reference map.
 
 - The creator skills (`skill-creator` / `rule-creator` / `hook-creator` / `claude-creator` /
   `plugin-creator`) are **thin wrappers** that defer to these references. Edit the target file
@@ -16,7 +16,7 @@ map.
 - **Do not load other skills in a Step 0** — reading skills at startup costs 2500 × N tokens. The
   injection mechanism replaces the old "Step 0: read background materials" pattern.
 
-This injection structure is shared across all `*-kit` plugins (py-kit / next-kit / claude-kit) — see
+This injection structure is shared across all `*-kit` plugins (dev-kit / claude-kit) — see
 the `kit-hooks-index-sync` rule. Attach it to a plugin with `/ref-inject:apply <plugin>`; never
 hand-edit the mechanism per plugin (change the `ref-inject` templates and re-apply).
 

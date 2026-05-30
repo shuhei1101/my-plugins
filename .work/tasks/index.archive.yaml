@@ -761,4 +761,11 @@ prs:
   summary: ref-inject テンプレに追加した {PREFIX}_INJECTION_DISABLE を claude-kit / py-kit /
     next-kit の inject_references.py に手動同期
   task: 20260530_propagate-injection-disable-to-plugins
+- id: 179
+  title: PR179 — prefix-underscore-injection-config
+  type: chore
+  tags: []
+  summary: ref-inject/dev-kit/claude-kit の references 配下にある index.yaml / index.jp.yaml
+    / injection_rules.yaml をアンダースコア接頭辞付きにリネームし、ファイル一覧の上部に固定する。依存 Python フックとドキュメントも追従。
+  task: 260530_prefix-underscore-injection-config
   completed: true

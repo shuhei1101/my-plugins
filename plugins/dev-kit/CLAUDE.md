@@ -60,11 +60,11 @@ references/
 ├── html/        # HTML/CSS/JS principles (principles.md, ui-design.md)
 ├── next/        # Next.js conventions (90 files: backend/, frontend/, testing/, etc.)
 ├── yaml.md      # YAML standards
-├── index.yaml   # path + lang + description per reference (merged from python/html/next)
-├── injection_rules.yaml   # pattern + lang + required/optional per rule
+├── _index.yaml   # path + lang + description per reference (merged from python/html/next)
+├── _injection_rules.yaml   # pattern + lang + required/optional per rule
 └── ...
 ```
 
-Each rule in `injection_rules.yaml` carries `lang: python|html|next`. The hook skips rules whose
+Each rule in `_injection_rules.yaml` carries `lang: python|html|next`. The hook skips rules whose
 `lang` is not enabled in env. The TTL token at `~/.claude/tokens/dev-kit/{session_id}.yaml`
 prevents duplicate injection.
