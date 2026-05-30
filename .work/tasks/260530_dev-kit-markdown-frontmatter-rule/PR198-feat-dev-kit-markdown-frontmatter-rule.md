@@ -71,11 +71,11 @@ JP ミラー警告コメント自体は維持しつつ、配置位置を「フ�
 | B | フロントマター付き md のみを狙う pattern が glob で書けないので、注入は行わず PreToolUse フック側だけで違反検出する（リファレンスは hook の reason 文に同梱） |
 | C | `*.jp.md` と `CLAUDE.jp.md` と `SKILL.jp.md` 等 JP mirror 専用パターンに絞る |
 
-**推奨方式**: B 案 — リファレンスは hook 違反時の `reason` にのみ流し、auto-inject はしない。普段のノイズを抑えつつ、違反を犯した瞬間だけ説明が出る。
+**決定**: A 案 — `**/*.md` で全注入。リファレンス冒頭に「フロントマター無しなら無視してよい」と短く明示する。
 
-**状態**: 未解決
+**状態**: 解決済み
 
-**決定したら反映先**: `plugins/dev-kit/references/injection_rules.yaml`（B なら追加なし）、フック実装
+**反映先**: `plugins/dev-kit/references/injection_rules.yaml`（パターン `**/*.md` で追加）、リファレンス冒頭に注釈
 
 ### QA-002: フックの厳しさ（block か reason のみか）
 
@@ -86,11 +86,11 @@ JP ミラー警告コメント自体は維持しつつ、配置位置を「フ�
 | A | `reason` のみで継続を許可（注意喚起だけ） |
 | B | `decision: block` で書き込みを止め、修正を強制する |
 
-**推奨方式**: A 案 — ユーザー意図的に置きたいケースが将来出る可能性があり、まずは注意喚起ベースに留める。
+**決定**: A 案 — `reason` のみで継続を許可。注意喚起ベースに留める。
 
-**状態**: 未解決
+**状態**: 解決済み
 
-**決定したら反映先**: `markdown_frontmatter_check.py` の出力 JSON
+**反映先**: `markdown_frontmatter_check.py` の出力 JSON（`reason` のみ、`decision: block` なし）
 
 ## 参考ドキュメント
 
