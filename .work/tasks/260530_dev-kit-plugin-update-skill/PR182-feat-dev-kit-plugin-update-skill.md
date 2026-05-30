@@ -33,7 +33,7 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 | 済 | claude-kit リファレンス `plugin-structure.md` (+ jp) の `plugin-update` 標準仕様表から workspace 依存記述を除去し「プラグイン間依存ゼロ」を明文化 | - `plugins/claude-kit/references/plugin-structure.md`<br>- `plugins/claude-kit/references/plugin-structure.jp.md` |
 | 済 | claude-kit を PATCH bump (3.38.0 → 3.38.1) し Changelog 表を新設 | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json`<br>- `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md` |
 | 済 | dev-kit v4.1.0 の Changelog 記述を「自己完結設計」へ更新 | - `plugins/dev-kit/CLAUDE.md`<br>- `plugins/dev-kit/CLAUDE.jp.md` |
-| - | 追加コミット | - |
+| 済 | 追加コミット | - a5bfda6 |
 
 ## 変更内容
 
