@@ -16,7 +16,7 @@
 # dev-kit:yaml — YAML ファイル管理
 
 アセットカタログとプロジェクト設定のための `index.yaml`・`settings.yaml`・`settings.yaml.sample`
-を作成・管理する。規約は `{plugin_root}/references/yaml.md` に定義されている。
+を作成・管理する。規約は `{plugin_root}/references/yaml/yaml.md` に定義されている。
 
 ---
 
@@ -27,7 +27,7 @@
 共通 YAML 規約を読み込む：
 
 ```
-{plugin_root}/references/yaml.md
+{plugin_root}/references/yaml/yaml.md
 ```
 
 プラグインルートはこのスキルファイルの2階層上（例：`Base directory: .../skills/yaml` → プラグインルートは `.../{plugin-name}/`）。
@@ -62,7 +62,7 @@
 
 #### 処理内容
 
-1. `references/yaml.md`（index.yaml セクション）の規約に従って `{機能名}/index.yaml` にエントリを追加する。
+1. `references/yaml/yaml.md`（index.yaml セクション）の規約に従って `{機能名}/index.yaml` にエントリを追加する。
 2. 新しいアセットを追加した場合 → `index.yaml` にエントリを追加し、`settings.yaml.sample` にも対応するキーを追加する。
 3. アセットを削除した場合 → `index.yaml` で非アクティブ化またはエントリを削除し、`settings.yaml.sample` からもキーを削除する。
 
@@ -110,8 +110,8 @@ index.yaml に新しいキーが追加された、または新しい設定項目
 
 #### 処理内容
 
-1. `references/yaml.md`（worktree でのランタイム書き換え YAML セクション）の対象表に照らして適用対象かを確認する。
-2. `references/yaml.md` の2つの実現方法のどちらかを選ぶ：
+1. `references/yaml/yaml.md`（worktree でのランタイム書き換え YAML セクション）の対象表に照らして適用対象かを確認する。
+2. `references/yaml/yaml.md` の2つの実現方法のどちらかを選ぶ：
    - **A. ファイルシステムレベル**：worktree セットアップで symlink / junction。
    - **B. アプリレベル**：`git rev-parse --git-common-dir` を使ったランタイムパス解決。
 3. 採用方針を対応する `.claude/rules/<name>.md` に記録する（ステップ7参照）：
@@ -137,7 +137,7 @@ index.yaml に新しいキーが追加された、または新しい設定項目
 #### 処理内容
 
 1. 関連する YAML ファイルを `paths:` frontmatter で指定した `.claude/rules/<機能名>.md` を作成する。
-2. `references/yaml.md`（ルールファイルセクション）に従って以下を含める：
+2. `references/yaml/yaml.md`（ルールファイルセクション）に従って以下を含める：
    - 各フィールドの意味
    - 更新手順（index.yaml vs settings.yaml.sample のどちらをいつ更新するか）
    - 対象の場合は runtime 解決方法（ステップ6より）
@@ -156,7 +156,7 @@ index.yaml に新しいキーが追加された、または新しい設定項目
 
 ## 参考資料
 
-`{plugin_root}/references/yaml.md`：
+`{plugin_root}/references/yaml/yaml.md`：
 - 3ファイル構成
 - index.yaml の規約
 - settings.yaml.sample の規約

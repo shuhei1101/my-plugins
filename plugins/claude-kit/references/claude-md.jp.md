@@ -112,11 +112,17 @@ Description of this project or folder.
 
 ---
 
-## サブフォルダ CLAUDE.md vs rules
+## JP ミラー同期
 
-| 優先 | 選択 |
+`CLAUDE.md` を編集したら、**必ず同じコミットで `CLAUDE.jp.md` も更新する**。
+
+| 編集したファイル | 必ず同時に更新するファイル |
 |---|---|
-| **ルールをコードに隣接させたい**（近接性） | サブフォルダ `CLAUDE.md` |
-| **有効なルールを一箇所で見たい**（監査性） | `.claude/rules/<name>.md` |
+| `CLAUDE.md` | `CLAUDE.jp.md` |
+| `plugins/{name}/CLAUDE.md` | `plugins/{name}/CLAUDE.jp.md` |
 
-クロスパスのリンクは常に `.claude/rules/` に属する。
+### コミット前チェックリスト
+
+- [ ] `CLAUDE.md` の変更内容が `CLAUDE.jp.md` に日本語で反映されている
+- [ ] `CLAUDE.jp.md` のセクション構成が `CLAUDE.md` と一致している
+- [ ] `CLAUDE.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror... -->`）が含まれている

@@ -67,11 +67,11 @@ def main(args: argparse.Namespace) -> None:
     raw = index_path.read_text(encoding="utf-8")
     data = yaml.safe_load(raw) or {}
 
-    prs: list[dict] = data.get("prs", [])
-    last_id: int = data.get("last_id") or (max((p["id"] for p in prs), default=0))
+    branches: list[dict] = data.get("branches", [])
+    last_id: int = data.get("last_id") or (max((p["id"] for p in branches), default=0))
 
-    active = [p for p in prs if not p.get("completed", False)]
-    done = [p for p in prs if p.get("completed", False)]
+    active = [p for p in branches if not p.get("completed", False)]
+    done = [p for p in branches if p.get("completed", False)]
 
     if not done:
         print("Nothing to archive - no completed entries found.")
@@ -79,17 +79,17 @@ def main(args: argparse.Namespace) -> None:
 
     # Merge into archive (skip duplicates by id)
     archive_data = _load(archive_path)
-    existing: list[dict] = archive_data.get("prs", [])
+    existing: list[dict] = archive_data.get("branches", [])
     existing_ids = {p["id"] for p in existing}
     merged = existing + [p for p in done if p["id"] not in existing_ids]
     merged.sort(key=lambda p: p["id"])
 
     prefix = HEADER_COMMENT if not archive_path.exists() else ""
-    archive_path.write_text(prefix + _dump({"prs": merged}), encoding="utf-8")
+    archive_path.write_text(prefix + _dump({"branches": merged}), encoding="utf-8")
 
     # Rewrite index.yaml: preserve header comment + last_id + active entries only
     comment = _header_comment(raw)
-    index_path.write_text(comment + _dump({"last_id": last_id, "prs": active}), encoding="utf-8")
+    index_path.write_text(comment + _dump({"last_id": last_id, "branches": active}), encoding="utf-8")
 
     print(f"Archived {len(done)} completed PR(s) to {archive_path}")
     print(f"index.yaml now has {len(active)} active PR(s), last_id={last_id}")

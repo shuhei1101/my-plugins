@@ -30,7 +30,8 @@ to `plugin-creator`, not here:
 ref-inject/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md / CLAUDE.jp.md
-├── skills/apply/SKILL.md (+ .jp.md)    # /ref-inject:apply — Claude reads templates & writes them into the target plugin
+├── skills/apply/SKILL.md (+ .jp.md)           # /ref-inject:apply — Claude reads templates & writes them into the target plugin
+├── skills/plugin-update/SKILL.md (+ .jp.md)  # /ref-inject:plugin-update — update injection files in all consumers
 └── templates/                           # the injection files copied into a target plugin (injection part only)
     ├── hooks/
     │   ├── scripts/
@@ -105,3 +106,12 @@ hook/template files come from `ref-inject`).
 |---|---|
 | `dev-kit` / `claude-kit` | Reference-injection consumers; use ref-inject's templates |
 | `claude-kit` | Source of `plugin-creator` (owns plugin-level files) and the common hook policy |
+
+---
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 1.6.0 | 2026-05-30 | Add `ref-inject:plugin-update` skill — enumerates consumers and updates injection hook files to current templates; leaves references/ untouched (PR185) |
+| 1.5.0 | — | Two-tier TTL token (pattern + reference tiers) to prevent double-injection of shared references across multiple patterns (PR160) |

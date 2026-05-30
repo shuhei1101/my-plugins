@@ -8,6 +8,9 @@ references:
   - path: skills.md
     description: .claude/skills/<name>/SKILL.md の作り方。skill が適切な種別かの判定、既存類似スキルの確認、JP ミラー先行ワークフロー、ステップ構造テンプレ、description フロントマター規約。
 
+  - path: subagents.md
+    description: ステップ処理のサブエージェント委譲ガイド。委譲マーカー（[サブエージェントで実行・完了を待つ] / 並列実行・完了を待つ / 完了を待たない）、委譲の判断基準、制約（戻り値のみ・完了を待つ・コンテキストは空）。
+
   - path: rules.md
     description: .claude/rules/<name>.md の作り方。ルールの読み込み条件、2 種類（リンク型 / コンテキスト型）、ユースケース指向の paths 設計、統合 / 分離基準、フォルダ構成、必須セクション、構造例。
 
@@ -32,5 +35,8 @@ references:
   - path: incidents.md
     description: .claude/rules/incidents.md のフォーマットガイド。再発防止ログの 2 層（索引 + 詳細ファイル）構造、インシデントの記録方法。
 
-  - path: markdown-table.md
-    description: Markdown テーブルの記法規約。主要ルール：連続する行で同じ列の値が同じ場合、最初の行にのみ書き、以降のセルは空白にする。
+  - path: references-sync.md
+    description: プラグインリファレンスファイルの JP ミラー同期ルール。plugins/*/references/**/*.md を編集したら、ペアの *.jp.md も同じコミットで更新する。
+
+  - path: kit-hooks-sync.md
+    description: dev-kit と claude-kit の注入インフラ構造同期ルール。inject_references.py・hooks.json・テンプレート・_index.yaml・_injection_rules.yaml の共有構造を片方の kit で変更したら、もう片方も同じコミットで更新する。

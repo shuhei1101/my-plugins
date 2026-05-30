@@ -4,8 +4,8 @@ updates:
   - YYYY-MM-DD — {更新内容}
 related_specs:
   - {related-spec}.md
-related_prs:
-  - PR{N}
+related_branches:
+  - {type}/{title}
 ---
 
 # {機能名} — {一行説明}
