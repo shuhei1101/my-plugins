@@ -46,7 +46,7 @@ JP ミラー警告コメント自体は維持しつつ、配置位置を「フ�
 | 済 | dev-kit を MINOR bump | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 | 済 | changelog 追加（`changelogs/v4.2.0.md`） | - `plugins/dev-kit/changelogs/` |
 | 済 | ルール / CLAUDE.md の更新 | - `plugins/dev-kit/CLAUDE.md` + jp |
-| - | コミット | - |
+| 済 | コミット | - |
 
 ## 変更内容
 
