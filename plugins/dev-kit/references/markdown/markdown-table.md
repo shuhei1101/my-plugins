@@ -14,7 +14,7 @@ The `#` column is **always filled** — every row has a sequential number, no ex
 | # | File | Changes |
 |---|---|---|
 | 1 | `foo.md` | Added section A |
-| 2 |  | Fixed typo in section B |
+| 2 | 〃 | Fixed typo in section B |
 | 3 | `bar.md` | Removed deprecated note |
 
 **Anti-pattern — omitting the number column:**
@@ -30,17 +30,17 @@ The `#` column makes rows easy to reference in conversation ("row 3") and helps 
 
 ## Repeated cell values
 
-When consecutive rows share the same value in a column, write the value **only in the first row** and leave the cell blank in subsequent rows.
+When consecutive rows share the same value in a column, write the value **only in the first row** and use `〃` (ditto mark) in subsequent rows.
 
 **Example:**
 
 | # | File | Changes |
 |---|---|---|
 | 1 | `foo.md` | Added section A |
-| 2 |  | Fixed typo in section B |
+| 2 | 〃 | Fixed typo in section B |
 | 3 | `bar.md` | Removed deprecated note |
 
-**Anti-pattern — do not repeat:**
+**Anti-pattern — do not repeat the full value:**
 
 | # | File | Changes |
 |---|---|---|

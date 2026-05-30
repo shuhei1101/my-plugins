@@ -1,6 +1,6 @@
 references:
 - path: markdown/markdown-table.md
-  description: "Markdown table formatting conventions. Always add a # column as the leftmost column; every row gets a sequential number. When consecutive rows share the same column value, write it only in the first row and leave subsequent cells blank."
+  description: "Markdown table formatting conventions. Always add a # column as the leftmost column; every row gets a sequential number. When consecutive rows share the same column value, write it only in the first row and use 〃 (ditto mark) in subsequent rows."
 - path: python/core/naming.md
   lang: python
   description: Naming conventions. Functions snake_case, type aliases UpperCamel, files/modules snake_case. Standard file names inside a feature folder (types/service/query/route/client/db).
