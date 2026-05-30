@@ -20,16 +20,16 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR171/QA.md` |
-| - | `.work/notes/` にノートを作成する | - `.work/notes/plugin-claude-md-standard.md` |
-| - | `plugin-claude-md.md` テンプレートを新規作成 | - `plugins/claude-kit/references/plugin-claude-md.md` |
-| - | JP ミラー `plugin-claude-md.jp.md` を作成 | - `plugins/claude-kit/references/plugin-claude-md.jp.md` |
-| - | `plugin-structure.md` を更新（changelogs/ 廃止・CLAUDE.md 必須化・テンプレート参照） | - `plugins/claude-kit/references/plugin-structure.md` |
-| - | `plugin-structure.jp.md` を更新 | - `plugins/claude-kit/references/plugin-structure.jp.md` |
-| - | `index.yaml` に plugin-claude-md.md を追加 | - `plugins/claude-kit/references/index.yaml` |
-| - | `index.jp.yaml` を更新 | - `plugins/claude-kit/references/index.jp.yaml` |
-| - | `injection_rules.yaml` に plugin-claude-md.md の注入ルールを追加 | - `plugins/claude-kit/references/injection_rules.yaml` |
-| - | バージョンバンプ + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `changelogs/` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR171/QA.md` |
+| 済 | `.work/notes/` にノートを作成する | - `.work/notes/plugin-claude-md-standard.md` |
+| 済 | `plugin-claude-md.md` テンプレートを新規作成 | - `plugins/claude-kit/references/plugin-claude-md.md` |
+| 済 | JP ミラー `plugin-claude-md.jp.md` を作成 | - `plugins/claude-kit/references/plugin-claude-md.jp.md` |
+| 済 | `plugin-structure.md` を更新（changelogs/ 廃止・CLAUDE.md 必須化・テンプレート参照） | - `plugins/claude-kit/references/plugin-structure.md` |
+| 済 | `plugin-structure.jp.md` を更新 | - `plugins/claude-kit/references/plugin-structure.jp.md` |
+| 済 | `index.yaml` に plugin-claude-md.md を追加 | - `plugins/claude-kit/references/index.yaml` |
+| 済 | `index.jp.yaml` を更新 | - `plugins/claude-kit/references/index.jp.yaml` |
+| 済 | `injection_rules.yaml` に plugin-claude-md.md の注入ルールを追加 | - `plugins/claude-kit/references/injection_rules.yaml` |
+| 済 | バージョンバンプ + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `changelogs/v3.35.0.md` |
 
 ## 参考ドキュメント
 
