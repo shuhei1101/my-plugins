@@ -35,6 +35,7 @@ rules:
   - pattern: "plugins/*-kit/hooks/templates/*.j2"
     required:
       - kit-hooks-sync.md
+      - jinja2/authoring.md
     optional: []
 
   # ---- Jinja2 テンプレート（任意プラグインの hooks/templates/*.j2）：Markdown 出力時の落とし穴 ----

@@ -26,7 +26,6 @@ Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown を 1 プラグ�
 |---|---|---|
 | `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | 言語ごとのリファレンス自動注入 |
 | `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
-| `scripts/markdown_frontmatter_check.py` | PreToolUse(Edit/Write/MultiEdit) | `*.md` 書き込み時に YAML フロントマター前コンテンツの警告（アドバイザリ） |
 | `scripts/_common.py` | — （ライブラリ） | stdin 読み・env truthy 判定・once-per-session トークン・block 理由出力 |
 
 ## env トグル
@@ -50,7 +49,6 @@ truthy = `true`/`1`/`yes`/`on`（大文字小文字無視）、falsy = それ以
 | env 変数 | デフォルト | 効果 |
 |---|---|---|
 | `DEV_KIT_NEXT_TS_CHECK` | ON | `*.ts` / `*.tsx` 編集後の `tsc --noEmit` チェック |
-| `DEV_KIT_MARKDOWN_CHECK` | ON | `*.md` 書き込み時のフロントマターチェック（アドバイザリ） |
 | `DEV_KIT_INJECTION_DISABLE` | OFF | **truthy** で全リファレンス注入を停止（緊急停止） |
 | `DEV_KIT_INJECTION_TTL` | 3600（秒） | パターン / リファレンスのトークンキャッシュ TTL |
 | `DEV_KIT_INJECTION_LANG` | `en` | `jp` で日本語版リファレンスを注入 |
@@ -75,6 +73,7 @@ references/
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.10.0 | 2026-05-31 | `markdown_frontmatter_check.py` フックを削除。ルールは `**/*.md` 編集時の `references/markdown/markdown-editing.md` 自動注入で代替（PR228） |
 | 4.9.0 | 2026-05-31 | `references-edit-guard` PreToolUse フックを追加（ref-inject v1.7.0 経由）。`references/` 配下のファイルを **編集／作成する直前** に `_index.yaml` / `_injection_rules.yaml` の更新も忘れていないかリマインド（PR206） |
 | 4.8.0 | 2026-05-31 | `dev-kit:yaml` スキル・`references/yaml/`・`yaml_skill_dispatch.py` フック（+ プロンプト）を削除; `**/index.yaml` / `**/settings.yaml(.sample)` の注入パターンも削除; YAML 規約は dev-kit の対象外（PR202） |
 | 4.7.0 | 2026-05-31 | Markdown フロントマター配置チェックフックとリファレンスを追加; `markdown-editing.md` を `markdown/` サブフォルダへ移動; `markdown-table.md` と並んで `_injection_rules.yaml` に登録; `DEV_KIT_MARKDOWN` opt-in サポートを追加（PR198） |
