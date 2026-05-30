@@ -598,3 +598,10 @@ prs:
     に CLAUDE.md 記載慣習）
   task: 20260529_document-plugin-env-vars
   completed: true
+- id: 164
+  title: PR164 — add-env-toggles-for-hooks-and-steps
+  type: feat
+  tags: []
+  summary: 常時発火フック／スキルステップを env で opt-out 可能にする（全てデフォルト現挙動維持）
+  task: 20260529_add-env-toggles-for-hooks-and-steps
+  completed: true
