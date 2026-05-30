@@ -24,6 +24,10 @@
 | 済 | 環境変数テーブルに `CLAUDE_KIT_JP_MIRROR` を追加する | - `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md` |
 | 済 | バージョンをバンプする | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 | 済 | ルール・CLAUDE.md を更新する | - |
+| - | inject_references.py に CLAUDE_KIT_JP_MIRROR 読み取りを追加し jp_mirror をテンプレートに渡す | - `hooks/scripts/inject_references.py` |
+| - | 注入テンプレートに jp_mirror=false 時の1行通知を追加する | - `hooks/templates/injection.md.j2`<br>- `hooks/templates/injection.jp.md.j2` |
+| - | common.md の echo アプローチを削除し「注入通知に従う」形に書き直す | - `references/common.md`<br>- `references/common.jp.md` |
+| - | 「マークダウンは env var 読めない」知見を plugin-structure.md に追記する | - `references/plugin-structure.md`<br>- `references/plugin-structure.jp.md` |
 
 ## 変更内容
 
