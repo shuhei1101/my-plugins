@@ -3,6 +3,7 @@ created_at: 2026-05-24
 updates:
   - 2026-05-24 — PR108: JP ミラー確認フックの設計メモを作成
   - 2026-05-25 — PR123: rules-jp/core/ の JP ミラー警告をブロッククォートから mark-generated HTML コメント形式に移行
+  - 2026-05-30 — PR201: CLAUDE_KIT_JP_MIRROR 環境変数を追加し、false の場合は JP ミラーを作らず本体ファイルを日本語で書く機能を追加
 related_specs: []
 related_prs:
   - PR108
@@ -10,6 +11,7 @@ related_prs:
   - PR133
   - PR137
   - PR141
+  - PR201
 ---
 
 # JP ミラーポリシー — .md 作成時の .jp.md 強制
@@ -63,3 +65,16 @@ claude-kit が所有する方が責務として適切。
 
 creator skills の JP ミラー生成ステップで `jp-mirror-translator` エージェントを呼ぶよう変更し、
 翻訳処理を一元化する。
+
+## CLAUDE_KIT_JP_MIRROR 環境変数（PR201）
+
+`common.md` の JP/EN mirror rules に `CLAUDE_KIT_JP_MIRROR` 環境変数の分岐を追加する。
+
+- **デフォルト（`true` / 未設定）**: 現行通り `.jp.md` ミラーファイルを別途作成する
+- **`false` の場合**: `.jp.md` を作らず、本体 `.md` ファイルを日本語で直接書く
+
+### 仕組み
+
+Markdown ファイルは env var を直接読めないため、`common.md` の指示に「ファイル作成前に
+`echo ${CLAUDE_KIT_JP_MIRROR:-true}` を実行して値を確認せよ」と明記する。Claude が
+その結果を見て動作を分岐させる。
