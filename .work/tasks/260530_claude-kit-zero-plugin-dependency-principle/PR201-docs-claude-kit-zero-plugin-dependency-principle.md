@@ -43,11 +43,11 @@ PR182 で `plugin-update` 標準仕様表に "Inter-plugin dependency: None" を
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | jp 側で原則セクションのドラフトを書く | - `plugins/claude-kit/references/plugin-structure.jp.md` |
-| x | 英語版に翻訳して追加 | - `plugins/claude-kit/references/plugin-structure.md` |
-| x | claude-kit を PATCH bump（3.43.1 → 3.43.2） | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | jp 側で原則セクションのドラフトを書く | - `plugins/claude-kit/references/plugin-structure.jp.md` |
+| 済 | 英語版に翻訳して追加 | - `plugins/claude-kit/references/plugin-structure.md` |
+| 済 | claude-kit を PATCH bump（3.43.1 → 3.43.2） | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 | skip | CLAUDE.md の Changelog 表に追記（既存表が無いので skip） | - 該当箇所 |
-| x | コミット | - |
+| 済 | コミット | - |
 
 ## 変更内容
 
