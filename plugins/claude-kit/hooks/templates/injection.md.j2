@@ -5,6 +5,9 @@ The **required** references must be followed when working with this file. Ones n
 session are inlined in full; ones already injected earlier are listed by path only (re-`Read` if
 they have scrolled out of context).
 
+{% if not jp_mirror %}> `CLAUDE_KIT_JP_MIRROR=false` — Skip JP mirrors; write the main `.md` file in Japanese directly.
+{% endif %}
+
 {% if required %}
 {% for ref in required %}
 ---

@@ -67,25 +67,11 @@ Adding more of these costs tokens on all work, not just the relevant task. Befor
 
 ## JP/EN mirror rules
 
-### Check `CLAUDE_KIT_JP_MIRROR` first
+**Check the injection header first.** If it shows `` `CLAUDE_KIT_JP_MIRROR=false` ``, skip
+`.jp.md` mirrors and write the main `.md` file in Japanese directly.
+Otherwise (default), create a `.jp.md` mirror for every file as shown below.
 
-Before creating any file, run the following command to determine the JP mirror mode:
-
-```bash
-echo ${CLAUDE_KIT_JP_MIRROR:-true}
-```
-
-| Value | Behavior |
-|---|---|
-| `true` (default / unset) | Create a separate `.jp.md` mirror file (follow the workflow below) |
-| `false` | Write the main `.md` file in Japanese directly; do not create a `.jp.md` mirror |
-
-**When `CLAUDE_KIT_JP_MIRROR=false`**: write the files listed in the table below in Japanese
-directly. Skip creating `.jp.md` mirrors entirely.
-
----
-
-Every file requires a corresponding JP mirror (when `CLAUDE_KIT_JP_MIRROR=true`):
+Every file requires a corresponding JP mirror (when `CLAUDE_KIT_JP_MIRROR=true` or unset):
 
 | English file (read by Claude) | JP mirror (human reference only) |
 |---|---|

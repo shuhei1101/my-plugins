@@ -183,3 +183,17 @@ A plugin's hooks/scripts can be made configurable via environment variables set 
 **document it in the `## Environment Variables` table of the plugin's `CLAUDE.md`** — key, values
 (with default marked), and description. Namespace the key with the plugin name
 (e.g. `PY_KIT_INJECTION_TTL`). See `plugin-claude-md.md` for the table format.
+
+### Markdown files cannot read environment variables
+
+**Only hooks and scripts (`.py` files, inline `-c` commands) can read env vars via `os.environ`.**
+Markdown instruction files (`CLAUDE.md`, rules, `SKILL.md`, references) are loaded into context
+as text — they are never executed and have no access to the process environment.
+
+Never instruct Claude to "run `echo $VAR`" inside a Markdown file to detect an env var value.
+Instead, use one of these patterns:
+
+| Pattern | When to use |
+|---|---|
+| **Hook template injection** | Hook reads the var and passes it as a Jinja2 variable to the injection template; the template adds a one-line notice (e.g. `` `CLAUDE_KIT_JP_MIRROR=false` ``). Claude reads the notice in its injected context and branches accordingly. Best for a small number of vars affecting a specific skill/rule. |
+| **Session-start env injection** | A dedicated hook runs at `UserPromptSubmit` and injects all env var values into Claude's context once per session. Best when many vars need to be visible across all Markdown files. |
