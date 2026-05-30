@@ -11,7 +11,7 @@
 
 - creator スキル（`skill-creator` / `rule-creator` / `hook-creator` / `claude-creator` /
   `plugin-creator`）は references に委譲する**薄いラッパー**。対象ファイルを直接編集すれば
-  ガイドが注入される。ラッパーは明示起動と呼び出し元（例: `notes-to-claude`）のために残している。
+  ガイドが注入される。ラッパーは明示起動と呼び出し元のために残している。
 - **Step 0 で他スキルを読み込まない** — スキルの起動時読み込みは 2500 × N トークンを消費する。
   注入機構が旧来の「Step 0: 背景資料を読む」パターンを置き換える。
 

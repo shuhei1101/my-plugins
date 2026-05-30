@@ -12,7 +12,7 @@ for the path→reference map.
 - The creator skills (`skill-creator` / `rule-creator` / `hook-creator` / `claude-creator` /
   `plugin-creator`) are **thin wrappers** that defer to these references. Edit the target file
   directly; the guide is injected. The wrappers remain for explicit invocation and for callers
-  (e.g. `notes-to-claude`).
+  for explicit invocation.
 - **Do not load other skills in a Step 0** — reading skills at startup costs 2500 × N tokens. The
   injection mechanism replaces the old "Step 0: read background materials" pattern.
 

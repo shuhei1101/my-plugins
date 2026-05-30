@@ -42,11 +42,7 @@ Flat structure (**no subfolders**). One note per topic. No duplication — use l
 
 **Lifecycle**:
 1. Write freely during planning and investigation (throwaway is fine)
-2. After work is done, promote valuable content to permanent knowledge via `/work:notes-to-claude`:
-   - Reusable procedures or file dependencies → rule (`.claude/rules/`)
-   - Project-wide conventions or prohibitions → `CLAUDE.md`
-   - Detailed reference material → `.claude/references/`
-3. Delete notes once promoted
+2. Review notes after work is done — keep what may be referenced again; delete the rest
 
 Content that doesn't need promotion (temporary comparisons, scratchpad investigations, rejected ideas) can stay as-is indefinitely.
 
@@ -55,7 +51,6 @@ Content that doesn't need promotion (temporary comparisons, scratchpad investiga
 ## Conventions
 
 - Mark completed rows in the `## 作業内容` table with `済` in the `完了` column
-- Promote valuable notes to permanent knowledge using `/work:notes-to-claude`
 - Append unresolved questions to the branch document's `## QA` section
 - Confirm all rows in the task table are `済` before merging
 
@@ -69,5 +64,4 @@ Content that doesn't need promotion (temporary comparisons, scratchpad investiga
 | `/work:start` | Create task folder, branch document, and index.yaml entry |
 | `/work:merge` | Verify task checklist, merge, update index.yaml, and clean up worktree |
 | `/work:pr-handoff` | Reserve next branches from the `## 次ブランチ候補` section using the work:start flow, and record background context in each new branch document |
-| `/work:notes-to-claude` | Promote `notes/` content to rules, CLAUDE.md, or references |
 | `/work:plugin-update` | Bring the current project's plugin-generated artifacts (.work/ templates and other plugin static files) in line with the currently installed plugin versions |

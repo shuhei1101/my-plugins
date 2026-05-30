@@ -11,8 +11,7 @@ description: |
 # claude-creator — CLAUDE.md オーサリング（薄ラッパー）
 
 CLAUDE.md のオーサリング手順は本プラグインの references に移り、`CLAUDE.md` を編集すると
-`claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動と呼び出し元
-（例: `notes-to-claude`）のために残している薄いラッパー。
+`claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動のために残している薄いラッパー。
 
 ## やること
 

@@ -27,14 +27,27 @@ PR210 で定義した「許容される例外」:
 | 済 | `.work/notes/` の関連ノートを更新する | - `zero-plugin-dependency.md` |
 | 済 | grep で他プラグイン呼び出しを全件リストアップしユーザーに提示 | - `plugins/**/skills/**`<br>- `plugins/**/hooks/**`<br>- `plugins/**/references/**` |
 | 済 | 許容例外に該当するか判定し、違反箇所を確定する | - 各ファイル |
-| - | 違反箇所をプラグイン内自己完結に書き換え（ユーザー確認後） | - 各ファイル |
-| - | 必要に応じてバージョンバンプ（PATCH） | - 対象プラグインの `plugin.json`・`marketplace.json` |
-| - | コミット | - |
+| 済 | `notes-to-claude` スキルを削除（違反解消の方針として選択） | - `plugins/work/skills/notes-to-claude/SKILL.md`<br>- `plugins/work/skills/notes-to-claude/SKILL.jp.md` |
+| 済 | 削除に伴う参照箇所を更新 | - `plugins/work/templates/.work/CLAUDE.md`<br>- `plugins/work/templates/.work/CLAUDE.jp.md`<br>- `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md`<br>- claude-kit スキル3ファイル |
+| 済 | バージョンバンプ（MINOR/PATCH） | - 対象プラグインの `plugin.json`・`marketplace.json` |
+| 済 | コミット | - |
 
 ## 変更内容
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
+| `plugins/work/skills/notes-to-claude/SKILL.md` | 削除 | claude-kit 依存のスキルを削除 | |
+| `plugins/work/skills/notes-to-claude/SKILL.jp.md` | 削除 | 〃 | |
+| `plugins/work/templates/.work/CLAUDE.md` | 編集 | notes-to-claude の参照を削除 | |
+| `plugins/work/templates/.work/CLAUDE.jp.md` | 編集 | 〃 | |
+| `plugins/work/.claude-plugin/plugin.json` | 編集 | v2.48.0 にバンプ | |
+| `plugins/claude-kit/CLAUDE.md` | 編集 | notes-to-claude の例示を削除 | |
+| `plugins/claude-kit/CLAUDE.jp.md` | 編集 | 〃 | |
+| `plugins/claude-kit/skills/claude-creator/SKILL.jp.md` | 編集 | 〃 | |
+| `plugins/claude-kit/skills/rule-creator/SKILL.jp.md` | 編集 | 〃 | |
+| `plugins/claude-kit/skills/skill-creator/SKILL.jp.md` | 編集 | 〃 | |
+| `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | v3.43.3 にバンプ | |
+| `.claude-plugin/marketplace.json` | 編集 | work・claude-kit のバージョンを更新 | |
 
 ## テスト
 
