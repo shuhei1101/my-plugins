@@ -1,5 +1,9 @@
 branches:
 - completed: true
+  id: 73
+  title: PR73 — skill-creator-references-cleanup
+  type: refactor
+- completed: true
   id: 81
   title: PR81 — debug-fab-copy-fix
   type: fix
@@ -841,4 +845,11 @@ branches:
   tags: []
   summary: 不要になったclaud-kit references（incidents/glossary）を削除
   task: 260530_remove-unused-references
+  completed: true
+- id: 175
+  title: PR175 — claude-kit-plugin-config-reference
+  type: feat
+  tags: []
+  summary: claude-kit references/ に「プラグイン config スキルの設計ガイド」を追加 + PreToolUse フック追加
+  task: 20260530_claude-kit-plugin-config-reference
   completed: true
