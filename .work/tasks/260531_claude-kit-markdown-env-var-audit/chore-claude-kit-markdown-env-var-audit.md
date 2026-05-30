@@ -32,22 +32,20 @@ PR201 では正しいパターン（フックが `os.environ` で読み Jinja2 �
 
 ## 作業内容
 
-| 完了 | 作業内容 | 対象ファイル |
-|---|---|---|
-| - | QA を `## QA` に記録する | - |
-| - | `.work/notes/` の関連ノートを確認・更新する | - |
-| - | `plugins/**/*.md` 全体を `echo \$`、`os.environ` 等のキーワードで grep し誤り候補を抽出 | - |
-| - | 抽出した各候補を内容確認し、誤りなら適切なパターンに書き換える | (調査結果による) |
-| - | JP ミラー側 (`*.jp.md`) も同様に修正する | (調査結果による) |
-| - | ルール・CLAUDE.md を更新する | - |
+| # | 完了 | 作業内容 | 対象ファイル |
+|---|---|---|---|
+| 1 | ✅ | `plugins/**/*.md` 全体を `echo $`、`os.environ` 等のキーワードで grep し誤り候補を抽出 | - |
+| 2 | ✅ | 抽出した各候補を内容確認し、誤りを修正（`WORK_KIT_*` → `WORK_*`、`NEXT_KIT_TS_CHECK` → `DEV_KIT_NEXT_TS_CHECK`） | `work/skills/config/SKILL.md` |
+| 3 | ✅ | JP ミラー側 (`SKILL.jp.md`) も同様に修正 | `work/skills/config/SKILL.jp.md` |
 
 ## 変更内容
 
 実装したファイル（テスト以外）。コミットに積まれる全ファイルを列挙する。
 
-| ファイル名 | 新規/編集 | 内容 | 補足 |
-|---|---|---|---|
-| (調査後に記入) | - | - | - |
+| # | ファイル名 | 新規/編集 | 内容 | 補足 |
+|---|---|---|---|---|
+| 1 | `plugins/work/skills/config/SKILL.md` | 編集 | `WORK_KIT_*` → `WORK_*`、`NEXT_KIT_TS_CHECK` → `DEV_KIT_NEXT_TS_CHECK`、`/work-kit:merge` → `/work:merge` | env var 名がフックコードと不一致だった |
+| 2 | `plugins/work/skills/config/SKILL.jp.md` | 編集 | 同上（JP ミラー） | 〃 |
 
 ## テスト
 
