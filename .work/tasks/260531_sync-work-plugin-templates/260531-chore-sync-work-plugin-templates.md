@@ -14,14 +14,14 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | QA を `## QA` に記録する |
-| 2 | - | ノートを `.work/notes/` に更新する |
-| 3 | - | `.work/CLAUDE.md` を最新テンプレートで上書き |
-| 4 | - | `.work/CLAUDE.jp.md` を最新テンプレートで上書き |
-| 5 | - | `.work/tasks/.gitignore` を最新テンプレートで上書き |
-| 6 | - | `.work/issues/.gitignore` を最新テンプレートで上書き（存在する場合） |
-| 7 | - | `index.yaml` に `last_id` がなければ追加 |
-| 8 | - | 変更をコミット |
+| 1 | 済 | QA を `## QA` に記録する |
+| 2 | 済 | ノートを `.work/notes/` に更新する |
+| 3 | 済 | `.work/CLAUDE.md` を最新テンプレートで上書き（テンプレートに CLAUDE.md 未存在のためスキップ） |
+| 4 | 済 | `.work/CLAUDE.jp.md` を最新テンプレートで上書き（テンプレートに CLAUDE.jp.md 未存在のためスキップ） |
+| 5 | 済 | `.work/tasks/.gitignore` を最新テンプレートで上書き（既に同一内容） |
+| 6 | 済 | `.work/issues/.gitignore` を最新テンプレートで追加 |
+| 7 | 済 | `index.yaml` に `last_id` がなければ追加（last_id: 232 で既存） |
+| 8 | 済 | 変更をコミット |
 
 ## 変更内容
 
@@ -29,10 +29,7 @@
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | `.work/CLAUDE.md` | 編集 | 最新テンプレートへ上書き | - |
-| 2 | `.work/CLAUDE.jp.md` | 編集 | 最新テンプレートへ上書き | - |
-| 3 | `.work/tasks/.gitignore` | 編集 | 最新テンプレートへ上書き | - |
-| 4 | `.work/issues/.gitignore` | 編集 | 最新テンプレートへ上書き | 存在する場合のみ |
+| 1 | `.work/issues/.gitignore` | 新規 | テンプレートより追加（`_index.yaml` を gitignore） | - |
 
 ## テスト
 
