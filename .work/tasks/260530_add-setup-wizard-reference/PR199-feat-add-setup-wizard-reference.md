@@ -32,6 +32,7 @@
 | 済 | injection_rules.yaml で `plugin.json` / `marketplace.json` 編集時に setup-wizard.md を required 注入 | - `plugins/claude-kit/references/injection_rules.yaml` |
 | 済 | claude-kit バージョン bump（3.40.0 → 3.41.0）+ changelog 作成 | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json`<br>- `plugins/claude-kit/changelogs/v3.41.0.md` |
 | 済 | ノート作成（設計の経緯と決定事項を記録） | - `.work/notes/setup-wizard-pattern.md` |
+| 済 | `plugin-config` スキル名を `config` に修正（setup-wizard.md / plugin-structure.md 等） | - `plugins/claude-kit/references/setup-wizard.md`<br>- `plugins/claude-kit/references/setup-wizard.jp.md`<br>- `plugins/claude-kit/references/plugin-structure.md`<br>- `plugins/claude-kit/references/plugin-structure.jp.md`<br>- `plugins/claude-kit/references/index.yaml`<br>- `plugins/claude-kit/references/index.jp.yaml` |
 
 ## 変更内容
 
