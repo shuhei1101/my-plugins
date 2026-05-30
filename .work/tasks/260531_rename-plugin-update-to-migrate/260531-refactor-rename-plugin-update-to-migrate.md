@@ -15,12 +15,12 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | QA を `## QA` に記録 |
-| 2 | - | `.work/notes/` のノートを更新 |
-| 3 | - | 4 プラグインの `skills/plugin-update/` ディレクトリを `skills/plugin-migrate/` にリネーム |
-| 4 | - | SKILL.md / SKILL.jp.md 内の `plugin-update` 参照を `plugin-migrate` に更新 |
-| 5 | - | 依存ファイル（CLAUDE.md / references/）の `plugin-update` 参照を `plugin-migrate` に更新 |
-| 6 | - | rules / CLAUDE.md を更新 |
+| 1 | 済 | QA を `## QA` に記録 |
+| 2 | 済 | `.work/notes/` のノートを更新 |
+| 3 | 済 | 4 プラグインの `skills/plugin-update/` ディレクトリを `skills/plugin-migrate/` にリネーム |
+| 4 | 済 | SKILL.md / SKILL.jp.md 内の `plugin-update` 参照を `plugin-migrate` に更新 |
+| 5 | 済 | 依存ファイル（CLAUDE.md / references/）の `plugin-update` 参照を `plugin-migrate` に更新 |
+| 6 | 済 | rules / CLAUDE.md を確認（インシデントレポート内の過去 grep コマンドのみ — 変更不要） |
 
 ## 変更内容
 
