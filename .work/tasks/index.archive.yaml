@@ -1,4 +1,4 @@
-prs:
+branches:
 - id: 73
   title: PR73 — skill-creator-references-cleanup
   type: refactor
@@ -791,4 +791,11 @@ prs:
   tags: []
   summary: plugin-work.mdにプラグインCLAUDE.md更新の整合性チェックを追加
   task: 260530_plugin-work-rule-add-claude-md-check
+  completed: true
+- id: 190
+  title: PR190 — rename-index-prs-key
+  type: refactor
+  tags: []
+  summary: index.yamlとindex.archive.yamlのprs:キーをbranches:に改名し、index-tool.pyを更新する
+  task: 260530_index-yamlのprs:キーをbranches:に改名
   completed: true
