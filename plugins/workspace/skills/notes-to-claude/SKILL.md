@@ -27,7 +27,6 @@ No confirmation steps. This skill always runs on a branch, so all changes are re
 **Relation to other skills**:
 - `claude-refactor` audits what is *already inside* `.claude/` — detects bloat, duplicates, type mismatches.
 - `notes-to-claude` ingests knowledge *from* `.work/notes/` *into* `.claude/`.
-- `conversation-to-claude` captures knowledge from the current session's conversation history.
 Run `notes-to-claude` first to populate `.claude/`, then `claude-refactor` to keep it tidy.
 
 ---
@@ -181,5 +180,4 @@ If an existing file covers the domain → append to it (no new file).
 | Skill | Starting point | Goal |
 |---|---|---|
 | `workspace:notes-to-claude` (this skill) | `.work/notes/` temporary memos | Populate `.claude/` with new knowledge |
-| `claude-kit:conversation-to-claude` | Session conversation history | Capture session learnings as Claude artifacts |
 | `claude-kit:claude-refactor` | Existing `.claude/` contents | Audit, deduplicate, and reorganize what's already there |
