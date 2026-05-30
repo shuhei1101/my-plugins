@@ -667,3 +667,10 @@ prs:
   summary: workspace の Stop フックでマージ提案するかどうかを WORKSPACE_MERGE_PROPOSAL env で制御できるようにする
   task: 20260530_add-merge-proposal-toggle
   completed: true
+- id: 168
+  title: PR168 — refactor-task-doc-structure
+  type: refactor
+  tags: []
+  summary: 'タスクドキュメント構造をリファクタ: 日付YYMMDD化・PR単一ファイル化・TODO+QA統合・変更内容/テストセクション追加'
+  task: 260530_refactor-task-doc-structure
+  completed: true

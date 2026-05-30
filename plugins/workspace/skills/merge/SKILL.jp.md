@@ -43,7 +43,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 出力
 
-- マージ対象の PR 番号・TODO.md パス・ブランチ名が確定している
+- マージ対象の PR 番号・PR ドキュメントパス・ブランチ名が確定している
 
 ---
 
@@ -55,7 +55,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 処理内容
 
-1. `.work/tasks/{date}_{title}/PR{N}/TODO.md` の `## 作業内容` テーブルを読む
+1. `.work/tasks/{date}_{title}/{branch-hyphenated}.md` の `## 作業内容` テーブルを読む
 2. 全行の「完了」列が `済` であることを確認する
 
 → 全て `済` ならステップ3へ進む
@@ -198,7 +198,7 @@ cd -
 
 #### 処理内容
 
-1. ワークツリーの `.work/tasks/{date}_{title}/PR{N}/TODO.md` から `## 関連イシュー` セクションを読み込む
+1. ワークツリーの `.work/tasks/{date}_{title}/{branch-hyphenated}.md` から `## 関連イシュー` セクションを読み込む
 2. **セクション自体が無い、空、またはテンプレートのプレースホルダー行（`| ISSUE-{N} | ... |`）のみ**の場合 → このステップの残りをスキップしてステップ6へ進む
 3. テーブルの各行について、ワークツリー内で以下を実行する:
 
@@ -351,7 +351,7 @@ git branch -d PR{N}/{type}/{title}
 
 #### 処理内容
 
-1. `.work/tasks/{date}_{title}/PR{N}/QA.md` を確認し、未解決エントリがあればユーザーに確認する
+1. `.work/tasks/{date}_{title}/{branch-hyphenated}.md` の `## QA` セクションを確認し、未解決エントリがあればユーザーに確認する
 2. 変更があればコミットする:
 
 ```bash
@@ -382,7 +382,7 @@ git commit -m "docs: PR{N} マージ後ドキュメント更新"
 
 #### 処理内容
 
-1. マージした PR の `TODO.md` を読み、`## 次PR候補` セクションの内容を確認する
+1. マージした PR ドキュメントを読み、`## 次PR候補` セクションの内容を確認する
 2. **次PR候補がある場合**: `/workspace:pr-handoff` を呼び出す（ユーザー確認不要）。分類・予約のロジックはすべて pr-handoff に委譲する
 3. **次PR候補が空の場合**: pr-handoff はスキップ
 
@@ -394,7 +394,7 @@ git commit -m "docs: PR{N} マージ後ドキュメント更新"
 
 #### 処理内容
 
-マージした PR の `TODO.md` パスを渡して `/workspace:pr-show` を呼び出し、状況テーブルを提示する。
+マージした PR ドキュメントのパスを渡して `/workspace:pr-show` を呼び出し、状況テーブルを提示する。
 
 #### 補足
 

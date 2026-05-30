@@ -7,7 +7,7 @@ description: |
 
 # workspace:qa-review — Interactive QA Review
 
-Reads a PR's QA.md and presents unresolved items via the `AskUserQuestion` tool, batching up to 4 questions per call. After all responses are collected, updates QA.md in a single pass.
+Reads the `## QA` section of a PR document and presents unresolved items via the `AskUserQuestion` tool, batching up to 4 questions per call. After all responses are collected, updates the PR document in a single pass.
 
 ---
 
@@ -21,23 +21,23 @@ Reads a PR's QA.md and presents unresolved items via the `AskUserQuestion` tool,
 
 #### Process
 
-1. If there is an in-progress PR in the current conversation session, use its QA.md as the first priority
-2. If a PR number is explicitly provided as an argument (e.g. `PR139` or `139`), use it to find the QA.md
+1. If there is an in-progress PR in the current conversation session, use its PR document as the first priority
+2. If a PR number is explicitly provided as an argument (e.g. `PR139` or `139`), use it to find the PR document
 3. If neither applies:
-   - Search for QA.md files: `find .work/tasks -name QA.md`
+   - Search for PR documents: `find .work/tasks -type f -name "PR*.md"`
    - If only one is found, use it automatically
    - If multiple exist, use `AskUserQuestion` to ask the user which PR to review
 4. Also check git worktrees in case the target is in a sibling worktree:
    ```bash
    git worktree list
    ```
-5. Confirm the QA.md path (pattern: `.work/tasks/*/PR{N}/QA.md`)
+5. Confirm the PR document path (pattern: `.work/tasks/{YYMMDD}_{title}/{branch-hyphenated}.md`)
 
 → Proceed to Step 2
 
 #### Output
 
-- QA.md path confirmed
+- PR document path confirmed
 
 ---
 
@@ -49,8 +49,8 @@ Reads a PR's QA.md and presents unresolved items via the `AskUserQuestion` tool,
 
 #### Process
 
-1. Read the QA.md file
-2. Extract all `## QA-XXX` sections where the **状態** line does NOT contain「解決済み」or「却下」
+1. Read the PR document and locate its `## QA` section
+2. Extract all `### QA-XXX` subsections where the **状態** line does NOT contain「解決済み」or「却下」
 3. If no unresolved items exist → report "QAに未決定事項はありません" and finish
 4. Build a list: each item has its ID, title, and a body summary
 
@@ -89,11 +89,11 @@ Batch unresolved items into groups of up to 4 (the `AskUserQuestion` maximum) an
 #### Notes
 
 - If the item body is long, summarize to the essential question in the `question` field
-- Answers are retained in the prompt history, so no intermediate QA.md update is needed between batches
+- Answers are retained in the prompt history, so no intermediate PR-document update is needed between batches
 
 ---
 
-### Step 4: Update QA.md with all decisions at once
+### Step 4: Update the PR document's `## QA` section with all decisions at once
 
 #### Condition
 
@@ -101,11 +101,11 @@ Batch unresolved items into groups of up to 4 (the `AskUserQuestion` maximum) an
 
 #### Process
 
-1. Apply all responses collected in Step 3 to QA.md in a single pass:
+1. Apply all responses collected in Step 3 to the PR document's `## QA` section in a single pass:
    - Resolved: `**状態**: 解決済み — {decision note or free-text input}`
    - Closed: `**状態**: 却下 — {reason or free-text input}`
    - On hold: leave the line unchanged
-2. Write the updated QA.md
+2. Write the updated PR document
 
 → Proceed to Step 5
 
