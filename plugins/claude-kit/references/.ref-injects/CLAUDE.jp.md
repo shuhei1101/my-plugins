@@ -32,11 +32,16 @@ Claude Code 指示ファイル（skill / rule / CLAUDE.md / hook / plugin）の�
 
 | 編集ファイル | 注入されるガイド |
 |---|---|
-| `**/skills/*/SKILL.md` | `common.md` + `skills.md` |
-| `**/.claude/rules/**/*.md` | `common.md` + `rules.md` |
-| `**/CLAUDE.md` | `common.md` + `claude-md.md` |
-| `**/hooks/hooks.json`、`**/.claude/settings.json`、`**/hooks/prompts/*.md` | `common.md` + `hooks.md` |
-| `**/.claude-plugin/{plugin,marketplace}.json` | `common.md` + `plugin-structure.md` |
+| `**/skills/*/SKILL.md` | `common/common.md` + `skill/skills.md` |
+| `**/CLAUDE{.local,.jp,}.md` | `common/common.md` + `claude-md/claude-md.md` |
+| `plugins/*/CLAUDE{.jp,}.md` | ↑ + `plugin/plugin-claude-md.md` + `plugin/version-sync.md` |
+| `**/hooks/hooks.json`、`**/.claude/settings.json` | `common/common.md` + `hook/hooks.md` + `common/environment.md` |
+| `**/hooks/prompts/*.md` | `hook/hooks.md` |
+| `**/.claude-plugin/{plugin,marketplace}.json` | `common/common.md` + `plugin/plugin-structure.md` + `plugin/version-sync.md` |
+| `plugins/*/references/**/*.md` | `common/references-sync.md` |
+| `plugins/*-kit/hooks/scripts/*.py` | `hook/kit-hooks-sync.md` |
+| `plugins/*-kit/hooks/templates/*.j2` | `hook/kit-hooks-sync.md` + `hook/jinja2/authoring.md` |
+| `**/hooks/templates/*.j2` | `hook/jinja2/templates.md` |
 
 ## メンテナンス
 

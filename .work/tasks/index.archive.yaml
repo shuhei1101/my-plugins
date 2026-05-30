@@ -998,3 +998,10 @@ branches:
   summary: 既存プラグインに config スキルを追加する（dev-kit:config を新規作成・work:config を整理）
   task: 260531_migrate-existing-plugins-to-have-config-skill
   completed: true
+- id: 231
+  title: feat/migrate-claude-kit-to-have-config-skill
+  type: feat
+  tags: []
+  summary: claude-kit に config スキルを追加（INJECTION_LANG / JP_MIRROR / TTL が対象候補）
+  task: 260531_claude-kitへのconfigスキル追加
+  completed: true
