@@ -1,4 +1,4 @@
-prs:
+branches:
 - completed: true
   id: 81
   title: PR81 — debug-fab-copy-fix
