@@ -828,3 +828,10 @@ branches:
   summary: PR ドキュメント更新はコミットと同じコミットにまとめる規約を .work/CLAUDE.md に追記
   task: 260530_docs-commit-bundle-pr-doc
   completed: true
+- id: 218
+  title: feat/notes-sync-rule
+  type: feat
+  tags: []
+  summary: ノート新規作成・更新時に _index.md への追記を促すルールを追加
+  task: 260531_notes-sync-rule
+  completed: true
