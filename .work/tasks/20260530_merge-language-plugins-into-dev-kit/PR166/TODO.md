@@ -51,4 +51,4 @@ PR163（worktree-kit → work-kit 統合）と PR164（env トグル導入）の
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| {次にやること} | {背景・目的} | {例: 即時実施可} |
+| impl-review-batch-questions | `/work-kit:impl-review` の Step 4 を 1 件ずつではなく **AskUserQuestion 1 回に最大 4 件まとめて投げる** 仕様に変更（4+4 など複数バッチ可）。モバイル/SSH での確認往復を減らす目的。SKILL.md の Step 4 とその ja ミラーを更新する。 | 即時実施可 |
