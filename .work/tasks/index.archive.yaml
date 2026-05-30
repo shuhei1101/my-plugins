@@ -1,4 +1,4 @@
-prs:
+branches:
 - id: 73
   title: PR73 — skill-creator-references-cleanup
   type: refactor
@@ -797,9 +797,6 @@ prs:
   title: PR182 — dev-kit-plugin-update-skill
   type: feat
   tags: []
-  summary: dev-kit に plugin-update スキルを追加 (v4.3.0)、claude-kit plugin-structure.md
-    の plugin-update 標準仕様を改訂 (v3.43.1)
-  task: 260530_dev-kit-plugin-update-skill
   summary: plugin-work.mdにプラグインCLAUDE.md更新の整合性チェックを追加
   task: 260530_plugin-work-rule-add-claude-md-check
   completed: true
@@ -810,4 +807,11 @@ prs:
   summary: html-implement の .claude/rules/ 静的配布をやめ、css-js-link.md / common-component-first.md
     を references/html/ に移して injection_rules.yaml の html パターンに紐付ける
   task: 260530_dev-kit-html-rules-to-injection
+  completed: true
+- id: 201
+  title: PR201 — claude-kit-jp-mirror-env
+  type: feat
+  tags: []
+  summary: CLAUDE_KIT_JP_MIRROR 環境変数を追加し、false の場合は JP ミラーを作らず本体ファイルを日本語で書く
+  task: 260530_claude-kit-jp-mirror-env
   completed: true
