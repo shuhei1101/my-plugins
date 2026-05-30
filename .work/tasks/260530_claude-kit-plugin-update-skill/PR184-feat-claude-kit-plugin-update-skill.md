@@ -30,7 +30,7 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 |  | スコープ: `.claude/skills/**/SKILL.md` / `.claude/rules/**` / `.claude/hooks/**` を現行リファレンス（skills.md / rules.md / hooks.md / plugin-structure.md / claude-md.md / etc.）と照合し、最小差分を適用。注入フックがリファレンスを自動供給する点を活用 | - |
 | 済 | claude-kit を MINOR bump (3.40.0 → 3.41.0) ※master 取り込みで開始時バージョンが 3.38.0 から 3.40.0 にずれていたため再算出 | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 | 済 | changelog 追加（`changelogs/v3.41.0.md`） ※CLAUDE.md の `## Changelog` 表への移行はまだどの plugin でも未実施。本 PR では既存パターンを踏襲し、テーブル化は別 PR で一括対応 | - `plugins/claude-kit/changelogs/v3.41.0.md` |
-| - | コミット | - |
+| 済 | コミット | - |
 
 ## 変更内容
 
