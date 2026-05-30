@@ -56,8 +56,6 @@ Content that doesn't need promotion (temporary comparisons, scratchpad investiga
 
 - Mark completed rows in the `## 作業内容` table with `済` in the `完了` column
 - Promote valuable notes to permanent knowledge using `/work:notes-to-claude`
-- **When creating or renaming a note under `notes/`, update `_index.md` in the same commit**
-- **When deleting a promoted note, remove its `_index.md` entry in the same commit**
 - Append unresolved questions to the branch document's `## QA` section
 - Confirm all rows in the task table are `済` before merging
 - **Commit `.work/` folder changes separately from implementation code** — `.work/`-only changes (branch document updates, notes, etc.) may be bundled together in a single commit
