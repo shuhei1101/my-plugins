@@ -37,12 +37,12 @@ PR167 で work-kit に `config` スキル（`/work-kit:config`）を追加した
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR175/QA.md` |
-| - | `.work/notes/plugin-config-reference.md` に設計メモを書く | - `.work/notes/plugin-config-reference.md` |
-| x | `references/plugin-config.md` / `.jp.md` を新規作成 | - `plugins/claude-kit/references/plugin-config.md` |
-| x | `references/_index.yaml` / `_injection_rules.yaml` に登録 | - `plugins/claude-kit/references/_index.yaml` |
-| x | _injection_rules.yaml で SKILL.md / plugin.json 編集時に optional 注入 | - `plugins/claude-kit/references/_injection_rules.yaml` |
-| x | claude-kit バージョンバンプ + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json` / `changelogs/` |
+| 済 | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR175/QA.md` |
+| 済 | `.work/notes/plugin-config-reference.md` に設計メモを書く | - `.work/notes/plugin-config-reference.md` |
+| 済 | `references/plugin-config.md` / `.jp.md` を新規作成 | - `plugins/claude-kit/references/plugin-config.md` |
+| 済 | `references/_index.yaml` / `_injection_rules.yaml` に登録 | - `plugins/claude-kit/references/_index.yaml` |
+| 済 | _injection_rules.yaml で SKILL.md / plugin.json 編集時に optional 注入 | - `plugins/claude-kit/references/_injection_rules.yaml` |
+| 済 | claude-kit バージョンバンプ + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json` / `changelogs/` |
 | - | glossary に `plugin-config パターン` エントリ追加（.claude/rules/core/glossary.md 未作成のためスキップ） | - `.claude/rules/core/glossary.md` |
 
 ## 参考ドキュメント
