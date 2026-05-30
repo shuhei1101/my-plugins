@@ -24,9 +24,9 @@ JP テンプレートを日本語のセクション名で統一し、新規ス�
 | 済 | 完全な SKILL.jp.md 骨格をテンプレートとして追加（日本語セクション名） | `skills.jp.md` |
 | 済 | サブエージェント使用ガイドセクションを追加 | `skills.jp.md` |
 | 済 | バージョンバンプ | `plugin.json` / `marketplace.json` |
-| - | `🤖` マーカーを説明的テキスト形式に変更（完了待ち/待たない明示） | `skills.jp.md` / `skills.md` |
-| - | サブエージェントガイドを `subagents.md` / `subagents.jp.md` として分離 | `references/` |
-| - | SKILL.md 編集時に `subagents.md` を optional 注入するよう登録 | `_injection_rules.yaml` / `_index.yaml` / `_index.jp.yaml` |
+| 済 | `🤖` マーカーを説明的テキスト形式に変更（完了待ち/待たない明示） | `skills.jp.md` / `skills.md` |
+| 済 | サブエージェントガイドを `subagents.md` / `subagents.jp.md` として分離 | `references/` |
+| 済 | SKILL.md 編集時に `subagents.md` を optional 注入するよう登録 | `_injection_rules.yaml` / `_index.yaml` / `_index.jp.yaml` |
 
 ## 変更内容
 
