@@ -23,7 +23,7 @@ JSON Lines 形式で下流ツール(Claude / ログビューア / `jq`)が読め
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: 規約を読み込む
 
@@ -41,7 +41,7 @@ JSON Lines 形式で下流ツール(Claude / ログビューア / `jq`)が読め
 
 ### ステップ2: 既存のログを点検する
 
-#### 処理内容
+#### 処理
 
 1. プロジェクト内の `console.log` / `console.info` / `console.warn` / `console.error` 使用箇所を検索する。
 2. 既存のロガーモジュールがあれば確認する。
@@ -53,7 +53,7 @@ JSON Lines 形式で下流ツール(Claude / ログビューア / `jq`)が読め
 
 ### ステップ3: ロガーモジュールを作成(なければ)
 
-#### 処理内容
+#### 処理
 
 `static/logger.js` 等に小さなモジュールを配置する。下記テンプレートを使い、パスや
 ストレージキーをプロジェクトに合わせて調整する:
@@ -115,7 +115,7 @@ export const setLevel = (level) => localStorage.setItem("log.level", level);
 
 ### ステップ4: レベル別の使い分けガイドを適用する
 
-#### 処理内容
+#### 処理
 
 ログを出す箇所では、下表に従って適切なレベルを選ぶ。
 既存の `console.log` をリファクタするときも、それぞれを下記のどれかに振り分ける:
@@ -139,7 +139,7 @@ export const setLevel = (level) => localStorage.setItem("log.level", level);
 
 ### ステップ5: 未捕捉エラーをグローバルに拾う
 
-#### 処理内容
+#### 処理
 
 ページ起動時に未捕捉エラーと unhandled rejection を捕捉する:
 
@@ -167,7 +167,7 @@ window.addEventListener("unhandledrejection", (e) => {
 
 ### ステップ6: 生 console 呼び出しを置換する
 
-#### 処理内容
+#### 処理
 
 1. 非テストコード内の `console.log(...)` をすべて `logger.info(...)`(または別の適切なレベル)に置換する。
 2. アドホック作業の `console.debug` は一時的に許容するが、コミット前に削除する。

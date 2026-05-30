@@ -22,7 +22,7 @@ git ワークツリーとブランチを作成します。
 
 ## タスク
 
-### Step 1: 引数を解析
+### ステップ 1: 引数を解析
 
 #### 条件
 
@@ -38,7 +38,7 @@ git ワークツリーとブランチを作成します。
    - ブランチタイプ（`feat` / `fix` / `refactor` / `docs` / `chore` / `test`）
    - タイトル（kebab-case）
 
-→ Step 2 に進む
+→ ステップ 2 へ
 
 #### 出力
 
@@ -46,7 +46,7 @@ git ワークツリーとブランチを作成します。
 
 ---
 
-### Step 2: ワークツリーを作成
+### ステップ 2: ワークツリーを作成
 
 #### 条件
 
@@ -67,7 +67,7 @@ WT_SUFFIX="${BRANCH//\//-}"  # → refactor-rename-pr-to-branch
 git worktree add -b "$BRANCH" "../$(basename $(pwd))-wt-${WT_SUFFIX}"
 ```
 
-→ Step 3 に進む
+→ ステップ 3 へ
 
 #### 出力
 
@@ -82,7 +82,7 @@ git worktree add -b "$BRANCH" "../$(basename $(pwd))-wt-${WT_SUFFIX}"
 
 ---
 
-### Step 3: 呼び出し元に報告
+### ステップ 3: 呼び出し元に報告
 
 #### 条件
 

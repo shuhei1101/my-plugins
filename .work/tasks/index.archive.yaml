@@ -874,3 +874,10 @@ branches:
   summary: PR179 merge fallout 修正 + dev-kit:yaml スキル一式削除
   task: 260531_fix-pr179-merge-fallout
   completed: true
+- id: 217
+  title: PR217 — existing-skills-review-and-normalize
+  type: chore
+  tags: []
+  summary: 既存スキル全件見直し：JP ミラーのセクション名を新テンプレートに合わせて統一し、サブエージェント委譲候補を洗い出す
+  task: 260531_existing-skills-review-and-normalize
+  completed: true
