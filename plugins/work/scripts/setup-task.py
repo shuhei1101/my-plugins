@@ -130,7 +130,6 @@ def main() -> None:
         {
             "{N}": id_for_heading,
             "{タイトル}": title_for_heading,
-            "{ブランチ名}": args.branch,
         },
     )
 

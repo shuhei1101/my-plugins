@@ -231,6 +231,8 @@ Open the created `{YYMMDD}-{type}-{title}.md` in the worktree and replace the te
 with the actual plan. The document holds every section for this branch — TODO, variations, QA, and
 references — all in one file.
 
+**`# タイトル`（H1）** — write a descriptive Japanese title for this branch work (not the branch name). Example: `# ブランチドキュメントの H1 をタイトルに変更`
+
 **`## 概要`** — write the goal / background, plus the `### 実施条件` sub-section:
 
 - `### 実施条件`: when this branch can be started. `即時実施可`, or `「{other branch name}」が完了してから`.
