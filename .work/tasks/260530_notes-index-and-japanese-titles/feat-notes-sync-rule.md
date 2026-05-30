@@ -20,18 +20,19 @@ PR214 (`feat/notes-index-and-japanese-titles`) で `.work/notes/` 配下のノ�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録する | - |
-| - | ノートドキュメントを更新する | `.work/notes/` |
-| - | `.work/notes/` 編集時に `_index.md` 同期を促すルールまたはリファレンスを追加する | `plugins/work/` |
-| - | ルール / CLAUDE.md を更新する | - |
+| 済 | QA を `## QA` に記録する | - |
+| 済 | ノートドキュメントを更新する | `.work/notes/` |
+| 済 | `.work/notes/` 編集時に `_index.md` 同期を促すルールまたはリファレンスを追加する | `plugins/work/` |
+| 済 | ルール / CLAUDE.md を更新する | - |
 
 ## 変更内容
 
 実装したファイル（テスト以外）。コミットに積まれる全ファイルを列挙する。
 
-| ファイル名 | 新規/編集 | 内容 | 補足 |
-|---|---|---|---|
-| `{file/path}` | 新規 | {このファイルで何を実装したか} | {補足あれば} |
+| # | ファイル名 | 新規/編集 | 内容 | 補足 |
+|---|---|---|---|---|
+| 1 | `plugins/work/references/work-dot-work-dir.md` | 編集 | `notes/` セクションに `_index.md` カタログの説明と同期規約を追加 | |
+| 2 | `plugins/work/references/work-dot-work-dir.jp.md` | 編集 | 英語版の日本語ミラーを同期 | |
 
 ## テスト
 
