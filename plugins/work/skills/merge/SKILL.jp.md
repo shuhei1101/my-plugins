@@ -80,7 +80,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 3: マスターをブランチに取り込む
+### Step 3: マージ先ブランチをこのブランチに取り込む
 
 #### 条件
 
@@ -88,21 +88,25 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 処理
 
-1. このブランチが分岐してから master に新しいコミットがあるかどうかを確認：
+1. マージ先ブランチ（`PARENT_BRANCH`）を特定する — このブランチがマージされる先のブランチ。
+   通常は `master`。`develop` ベースのブランチなら `develop`。
+   不明な場合は Step 7 を参照（Step 7 でマージ実行前に親ブランチを確認する）。
+
+2. マージ先ブランチに新しいコミットがあるかどうかを確認：
 
 ```bash
-git log HEAD..master --oneline
+git log HEAD..<PARENT_BRANCH> --oneline
 ```
 
-出力がない場合 → master は移動していません。Step 4 にスキップしてください。
+出力がない場合 → マージ先ブランチは移動していません。Step 4 にスキップしてください。
 
-2. master をこのブランチにマージ：
+3. マージ先ブランチをこのブランチに取り込む：
 
 ```bash
-git merge master
+git merge <PARENT_BRANCH>
 ```
 
-3. マージがクリーンに完了したか確認：
+4. マージがクリーンに完了したか確認：
 
 ```bash
 git status
@@ -118,7 +122,7 @@ git status
 
 ##### 禁止事項
 
-- このステップをスキップしない — master にマージする前にブランチへ master を取り込むことは必須
+- このステップをスキップしない — マージ先に戻す前にマージ先ブランチの内容を取り込むことは必須
 
 ### Step 4: 関連イシューをクローズ（ワークツリー内）
 

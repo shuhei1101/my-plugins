@@ -73,7 +73,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 3: Merge master into this branch
+### Step 3: Merge the target branch into this branch
 
 #### Condition
 
@@ -81,21 +81,25 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Process
 
-1. Check whether master has new commits since this branch diverged:
+1. Identify the merge target branch (`PARENT_BRANCH`) — the branch this branch will be merged into.
+   In most cases this is `master`; for feature branches off `develop` it is `develop`.
+   Cross-check with Step 7 if unsure (Step 7 confirms the current branch is the parent before running the merge).
+
+2. Check whether the target branch has new commits since this branch diverged:
 
 ```bash
-git log HEAD..master --oneline
+git log HEAD..<PARENT_BRANCH> --oneline
 ```
 
-If no output → master has not moved; skip to Step 4.
+If no output → the target branch has not moved; skip to Step 4.
 
-2. Merge master into this branch:
+3. Merge the target branch into this branch:
 
 ```bash
-git merge master
+git merge <PARENT_BRANCH>
 ```
 
-3. Check whether the merge completed cleanly:
+4. Check whether the merge completed cleanly:
 
 ```bash
 git status
@@ -111,7 +115,7 @@ git status
 
 ##### Prohibitions
 
-- Do not skip this step — merging master into the branch before merging to master is required
+- Do not skip this step — merging the target branch into this branch before merging back is required
 
 ### Step 4: Close related issues (inside the worktree)
 
