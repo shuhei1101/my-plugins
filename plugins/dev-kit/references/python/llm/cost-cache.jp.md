@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of cost-cache.md. When updating the English original, update this file too. -->
 # llm/cost-cache — トークン管理とコスト最適化
 
 > このファイルは `cost-cache.md` の日本語ミラーです。

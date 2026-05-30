@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of language-rules.md. When updating the English original, update this file too. -->
 # 言語ルール
 
 > このファイルは `language-rules.md` の日本語ミラーです。

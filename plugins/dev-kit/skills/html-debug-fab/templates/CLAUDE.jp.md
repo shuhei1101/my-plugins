@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # debug-fab templates
 
 > 日本語ミラー: `CLAUDE.jp.md`(参照用、Claude Code は読み込まない)

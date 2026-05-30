@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of hooks.md. When updating the English original, update this file too. -->
 # フック作成ガイド
 
 **プロンプト注入型フック**の設計・作成の方法 — イベント発火時に Claude のコンテキストへ
@@ -307,4 +307,4 @@ Claude がこれから触るファイルに関連する規約/ドキュメント
 
 - [ ] `*.md` の変更内容が `*.jp.md` に日本語で反映されている
 - [ ] `*.jp.md` のセクション構成が英語版 `*.md` と一致している
-- [ ] `*.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror... -->`）が含まれている
+- [ ] `*.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror of {source}.md ... -->`）が含まれている

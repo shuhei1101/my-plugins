@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of confirm-dialog.md. When updating the English original, update this file too. -->
 # `useConfirmDialog()` — 確認ダイアログ（shadcn `<AlertDialog>` ベース）
 
 `window.confirm` を置き換える共通フック。`await confirm({...})` 形式で promise を返す。

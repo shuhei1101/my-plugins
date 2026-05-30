@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of async.md. When updating the English original, update this file too. -->
 # concurrency/async — asyncio 規約
 
 > このファイルは `async.md` の日本語ミラーです。

@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of autosave-indicator.md. When updating the English original, update this file too. -->
 # `<AutosaveIndicator>` — 自動保存の状態表示
 
 `useAutosave()` の `status` を表示する共通コンポーネント。

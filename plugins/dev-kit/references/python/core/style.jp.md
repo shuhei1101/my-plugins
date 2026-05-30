@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of style.md. When updating the English original, update this file too. -->
 # スタイル
 
 > このファイルは `style.md` の日本語ミラーです。

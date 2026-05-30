@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of prompts-authoring.md. When updating the English original, update this file too. -->
 # llm/prompts-authoring — プロンプトファイルの書き方と組み立て
 
 > このファイルは `prompts-authoring.md` の日本語ミラーです。
@@ -225,4 +225,3 @@ TASK_B_PROMPT = "..."   # 同じ部品を共有するなら parts + includes で
 
 - `llm/prompts-loader.md` — index.yaml を読み込んで部品を結合する実装
 - `llm/cost-cache.md` — プロンプトキャッシュの設計考え方
-- `dev-kit:yaml` — `index.yaml` の運用規約全般（dev-kit Python 外）

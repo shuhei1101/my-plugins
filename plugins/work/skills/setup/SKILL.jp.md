@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — work:setup スキル（日本語ミラー）
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
@@ -26,7 +26,7 @@
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: セットアップスクリプトを実行する
 
@@ -34,7 +34,7 @@
 
 - 常に — 最初に実行する
 
-#### 処理内容
+#### 処理
 
 1. 以下のコマンドを実行する:
 
@@ -52,12 +52,12 @@ python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/setup.py"
 
 ### ステップ2: 完了確認
 
-#### 処理内容
+#### 処理
 
 1. スクリプトの出力を確認する
 2. ユーザーに完了を報告する
 
-#### 補足
+#### 注意事項
 
 ##### チェックリスト
 

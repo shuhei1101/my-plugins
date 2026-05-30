@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of settings.md. When updating the English original, update this file too. -->
 # settings — pydantic-settings による設定管理
 
 > このファイルは `settings.md` の日本語ミラーです。

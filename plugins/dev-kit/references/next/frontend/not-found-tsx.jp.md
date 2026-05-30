@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of not-found-tsx.md. When updating the English original, update this file too. -->
 # not-found.tsx — 404 ページ
 
 `notFound()` が呼ばれた時に表示される Server Component。

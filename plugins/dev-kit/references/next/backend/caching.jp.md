@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of caching.md. When updating the English original, update this file too. -->
 # Next.js App Router — Caching
 
 > **Next.js 16 のキャッシュ API**: `cacheLife`, `cacheTag`, `revalidateTag`（cacheLife プロファイル必須化）, `updateTag`（新）, `refresh`（新）, `"use cache"` ディレクティブ。

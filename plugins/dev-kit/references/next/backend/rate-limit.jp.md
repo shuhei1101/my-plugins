@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of rate-limit.md. When updating the English original, update this file too. -->
 # Next.js App Router — Rate Limiting
 
 > **対象**: ブルートフォース・DoS・スパムの抑止。

@@ -6,7 +6,7 @@ description: |
   issue-scan・issue-create から呼び出されることを想定。直接ユーザーが呼ぶ用途は想定しない。
 disable-model-invocation: true
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 > このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
@@ -36,7 +36,7 @@ disable-model-invocation: true
 
 ---
 
-## 作業内容
+## タスク
 
 ### ステップ1: 受け取った情報を確認する
 
@@ -44,7 +44,7 @@ disable-model-invocation: true
 
 - 常に — 最初に実行する
 
-#### 処理内容
+#### 処理
 
 1. 呼び出し元から渡されたイシュー情報を確認する
 2. 必須項目（タイトル・タイプ・優先度・問題の説明）が揃っているか確認する
@@ -64,7 +64,7 @@ disable-model-invocation: true
 
 - 常に — ステップ1の後に実行する
 
-#### 処理内容
+#### 処理
 
 1. `.work/issues/_index.yaml` を読み込む（なければ `last_id: 0, issues: []` として扱う）
 2. `last_id` に 1 を加える
@@ -84,7 +84,7 @@ disable-model-invocation: true
 
 - 常に — ステップ2の後に実行する
 
-#### 処理内容
+#### 処理
 
 1. `.work/issues/ISSUE-{N}.md` を以下の構造で作成する:
 
@@ -124,7 +124,7 @@ disable-model-invocation: true
 
 - 常に — ステップ3の後に実行する
 
-#### 処理内容
+#### 処理
 
 1. `_index.yaml` に以下のエントリを追記する:
    ```yaml

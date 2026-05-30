@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of git-guard.md. When updating the English original, update this file too. -->
 # git-guard.jp.md — git-guard プロンプト（日本語ミラー）
 
 > このファイルは `git-guard.md` の日本語ミラーです。Claude Code には読み込まれません。

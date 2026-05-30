@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of plugin-claude-md.md. When updating the English original, update this file too. -->
 # プラグイン CLAUDE.md 執筆ガイド
 
 プラグインのルート `CLAUDE.md`（と `CLAUDE.jp.md` ミラー）を書く方法。

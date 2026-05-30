@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of pytest.md. When updating the English original, update this file too. -->
 # testing/pytest — pytest 規約
 
 > このファイルは `pytest.md` の日本語ミラーです。

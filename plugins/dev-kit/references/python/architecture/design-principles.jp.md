@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of design-principles.md. When updating the English original, update this file too. -->
 # 設計原則の優先順位
 
 > このファイルは `design-principles.md` の日本語ミラーです。

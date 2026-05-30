@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of work-start-skill-sync.md. When updating the English original, update this file too. -->
 # work-start ↔ worktree-create スキルリンク
 
 `work-start` の Step 4 は `worktree-create` に委譲するため、インターフェースを常に整合させること。

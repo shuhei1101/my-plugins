@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of python-script.md. When updating the English original, update this file too. -->
 # python-script — 単一ファイルスクリプト
 
 > このファイルは `python-script.md` の日本語ミラーです。

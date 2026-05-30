@@ -6,13 +6,12 @@ description: |
   "クロードのガイドを作りたい", "このフォルダの CLAUDE.md を作って", or asks to set up
   Claude Code instructions for a project or specific folder.
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # claude-creator — CLAUDE.md オーサリング（薄ラッパー）
 
 CLAUDE.md のオーサリング手順は本プラグインの references に移り、`CLAUDE.md` を編集すると
-`claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動と呼び出し元
-（例: `notes-to-claude`）のために残している薄いラッパー。
+`claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動のために残している薄いラッパー。
 
 ## やること
 

@@ -166,4 +166,4 @@ When editing `SKILL.md`, **update `SKILL.jp.md` in the same commit**.
 
 - [ ] Changes in `SKILL.md` are reflected in `SKILL.jp.md` in Japanese
 - [ ] Section structure in `SKILL.jp.md` matches `SKILL.md`
-- [ ] `SKILL.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror... -->`)
+- [ ] `SKILL.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror of SKILL.md ... -->`)

@@ -67,7 +67,11 @@ Adding more of these costs tokens on all work, not just the relevant task. Befor
 
 ## JP/EN mirror rules
 
-Every file requires a corresponding JP mirror:
+**Check the injection header first.** If it shows `` `CLAUDE_KIT_JP_MIRROR=false` ``, skip
+`.jp.md` mirrors and write the main `.md` file in Japanese directly.
+Otherwise (default), create a `.jp.md` mirror for every file as shown below.
+
+Every file requires a corresponding JP mirror (when `CLAUDE_KIT_JP_MIRROR=true` or unset):
 
 | English file (read by Claude) | JP mirror (human reference only) |
 |---|---|
@@ -79,7 +83,7 @@ Every file requires a corresponding JP mirror:
 **Workflow — write the JP mirror first, then the English original.** Author the `.jp.md`
 in Japanese, then produce the English version from it. In this repo the English original is
 the file Claude actually loads, so the two must never drift. Every JP mirror must start with
-the warning comment `<!-- This file is a Japanese mirror. ... -->` (see `provenance.md`).
+the warning comment `<!-- This file is a Japanese mirror of {source}.md. ... -->` (see `provenance.md`).
 
 > The repo bundles a `jp-mirror-translator` agent (`subagent_type: "claude-kit:jp-mirror-translator"`):
 > pass a `.md` path to generate/update its `.jp.md`, or a `.jp.md` path to update the English original.

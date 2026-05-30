@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of ts-style.md. When updating the English original, update this file too. -->
 # TypeScript 風 Python — 関数ファースト設計
 
 > このファイルは `ts-style.md` の日本語ミラーです。

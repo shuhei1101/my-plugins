@@ -12,7 +12,7 @@ for the path→reference map.
 - The creator skills (`skill-creator` / `rule-creator` / `hook-creator` / `claude-creator` /
   `plugin-creator`) are **thin wrappers** that defer to these references. Edit the target file
   directly; the guide is injected. The wrappers remain for explicit invocation and for callers
-  (e.g. `notes-to-claude`).
+  for explicit invocation.
 - **Do not load other skills in a Step 0** — reading skills at startup costs 2500 × N tokens. The
   injection mechanism replaces the old "Step 0: read background materials" pattern.
 
@@ -41,3 +41,11 @@ enforced by the project's `*-jp-mirror-sync` rules.
 | `CLAUDE_KIT_INJECTION_DISABLE` | `true`/`1`/`yes`/`on` | (unset = ON) | Master kill switch — set to a truthy value to stop all reference injection |
 | `CLAUDE_KIT_INJECTION_TTL` | integer (seconds) | `3600` | TTL for the per-session injection token (patterns and references) |
 | `CLAUDE_KIT_INJECTION_LANG` | `en` / `jp` | `en` | Language for injected references (`jp` uses `index.jp.yaml` + `injection.jp.md.j2`) |
+| `CLAUDE_KIT_JP_MIRROR` | `true` / `false` | `true` | When `false`, skip `.jp.md` mirror creation and write the main `.md` file in Japanese directly |
+
+## Changelog
+
+| Version | Summary |
+|---|---|
+| `3.44.0` | Add `CLAUDE_KIT_JP_MIRROR` env var — when `false`, skip `.jp.md` mirrors and write the main file in Japanese |
+| `3.43.1` | (see `changelogs/` for earlier history) |
