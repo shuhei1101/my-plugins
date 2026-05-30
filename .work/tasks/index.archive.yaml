@@ -619,3 +619,10 @@ prs:
   summary: プラグイン env トグルを AskUserQuestion 経由で settings.json に書き込む設定スキルを追加する
   task: 20260530_add-plugin-config-skill
   completed: true
+- id: 173
+  title: PR173 — add-merge-proposal-toggle
+  type: feat
+  tags: []
+  summary: work-kit の merge スキルでマージを提案するかどうかを制御する環境変数トグルを追加
+  task: 20260530_add-plugin-config-skill
+  completed: true
