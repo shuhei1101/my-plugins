@@ -31,7 +31,7 @@
 | 済 | changelog 追加 | - `plugins/work-kit/changelogs/v2.39.0.md` |
 | 済 | `glossary.md` に「guard-kit 統合 (PR169)」「WORK_KIT_GUARD」エントリ追加、`env トグル一覧 (PR164)` に WORK_KIT_GUARD を追記 | - `.claude/rules/core/glossary.md` |
 | 済 | JP ミラー同期（rules-jp/core/glossary.md） | - `.claude/rules-jp/core/glossary.md` |
-| - | 動作確認（push/merge 時にプロンプト挟まる、`WORK_KIT_GUARD=false` で挟まらない） | - 手動確認 |
+| 済 | 動作確認（push/merge 時にプロンプト挟まる、`WORK_KIT_GUARD=false` で挟まらない） | - 手動確認 |
 
 ## 参考ドキュメント
 
