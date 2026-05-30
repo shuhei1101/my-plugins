@@ -47,15 +47,15 @@ PR182 で dev-kit:plugin-update スキルを追加したが、レビュー中に
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | 2 ルールファイルを templates/html/rules → references/html へ移動 | - `plugins/dev-kit/references/html/css-js-link.md`(+ jp)<br>- `plugins/dev-kit/references/html/common-component-first.md`(+ jp) |
-| - | references/_index.yaml と _index.jp.yaml にエントリ追加 | - `plugins/dev-kit/references/_index.yaml`<br>- `plugins/dev-kit/references/_index.jp.yaml` |
-| - | references/_injection_rules.yaml の html パターン 3 件に required 追記 | - `plugins/dev-kit/references/_injection_rules.yaml` |
-| - | templates/html/rules/ ディレクトリを削除 | - `plugins/dev-kit/templates/html/rules/`（削除） |
-| - | html-implement SKILL からルールコピー手順を削除 | - `plugins/dev-kit/skills/html-implement/SKILL.md`(+ jp) |
-| - | plugin-update SKILL のステップ2 を削除しステップ番号を繰り上げ | - `plugins/dev-kit/skills/plugin-update/SKILL.md`(+ jp) |
-| - | dev-kit を MINOR bump | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | CLAUDE.md Changelog 表に v4.4.0 追記 | - `plugins/dev-kit/CLAUDE.md`(+ jp) |
-| - | コミット | - |
+| x | 2 ルールファイルを templates/html/rules → references/html へ移動 | - `plugins/dev-kit/references/html/css-js-link.md`(+ jp)<br>- `plugins/dev-kit/references/html/common-component-first.md`(+ jp) |
+| x | references/_index.yaml と _index.jp.yaml にエントリ追加 | - `plugins/dev-kit/references/_index.yaml`<br>- `plugins/dev-kit/references/_index.jp.yaml` |
+| x | references/_injection_rules.yaml の html パターン 3 件に required 追記 | - `plugins/dev-kit/references/_injection_rules.yaml` |
+| x | templates/html/rules/ ディレクトリを削除 | - `plugins/dev-kit/templates/html/rules/`（削除） |
+| x | html-implement SKILL からルールコピー手順を削除 | - `plugins/dev-kit/skills/html-implement/SKILL.md`(+ jp) |
+| x | plugin-update SKILL のステップ2 を削除しステップ番号を繰り上げ | - `plugins/dev-kit/skills/plugin-update/SKILL.md`(+ jp) |
+| x | dev-kit を MINOR bump | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| x | CLAUDE.md Changelog 表に v4.4.0 追記 | - `plugins/dev-kit/CLAUDE.md`(+ jp) |
+| x | コミット | - |
 
 ## 変更内容
 
