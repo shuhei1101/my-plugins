@@ -17,17 +17,17 @@ SKILL.md・SKILL.jp.md のフロントマター、ドキュメント内テキス
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | QA を `## QA` に記録する |
-| 2 | - | ノートドキュメントを更新する |
-| 3 | - | `plugins/work/skills/config/` を `plugin-config/` にリネーム |
-| 4 | - | `plugins/dev-kit/skills/config/` を `plugin-config/` にリネーム |
-| 5 | - | 各 SKILL.md / SKILL.jp.md のフロントマター `name` と本文内スキル名を修正 |
-| 6 | - | `plugins/work/CLAUDE.md` のスキル名参照を修正 |
-| 7 | - | `plugins/dev-kit/CLAUDE.md` のスキル名参照を修正 |
-| 8 | - | `plugins/work/.claude-plugin/plugin.json` の description を修正 |
-| 9 | - | `plugins/dev-kit/.claude-plugin/plugin.json` の description を修正 |
-| 10 | - | `.claude-plugin/marketplace.json` の description を修正 |
-| 11 | - | CLAUDE.md 更新 |
+| 1 | 済 | QA を `## QA` に記録する |
+| 2 | 済 | ノートドキュメントを更新する |
+| 3 | 済 | `plugins/work/skills/config/` を `plugin-config/` にリネーム |
+| 4 | 済 | `plugins/dev-kit/skills/config/` を `plugin-config/` にリネーム |
+| 5 | 済 | 各 SKILL.md / SKILL.jp.md のフロントマター `name` と本文内スキル名を修正 |
+| 6 | 済 | `plugins/work/CLAUDE.md` のスキル名参照を修正 |
+| 7 | 済 | `plugins/dev-kit/CLAUDE.md` のスキル名参照を修正 |
+| 8 | 済 | `plugins/work/.claude-plugin/plugin.json` の description を修正 |
+| 9 | 済 | `plugins/dev-kit/.claude-plugin/plugin.json` の description を修正 |
+| 10 | 済 | `.claude-plugin/marketplace.json` の description を修正 |
+| 11 | 済 | claude-kit references (plugin-config / plugin-structure / setup-wizard) を修正 |
 
 ## 変更内容
 
