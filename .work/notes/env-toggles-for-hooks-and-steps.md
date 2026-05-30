@@ -33,3 +33,22 @@
 - work-kit: 2.37.0 → 2.38.0
 - next-kit: 3.7.0 → 3.8.0
 - ref-inject: 1.2.0 → 1.3.0
+
+---
+
+# PR173 — WORK_KIT_MERGE_PROPOSAL トグル追加
+
+## 概要
+
+merge スキルがマージを提案するかどうかを env var でオフにできるようにする。
+
+## 追加する env トグル
+
+| env 変数 | 実装箇所 | デフォルト | 無効化値 |
+|---|---|---|---|
+| `WORK_KIT_MERGE_PROPOSAL` | merge SKILL.md (TBD: どのステップか調査) | 有効（提案あり） | `false`/`0`/`no`/`off` |
+
+## 設計メモ
+
+- PR164 の `WORK_KIT_MERGE_` 名前空間に追加
+- `work-kit:config` スキルの選択肢にも追加する（PR167 で追加されたスキル）

@@ -660,3 +660,10 @@ prs:
   summary: master-commit-guard.py の PROTECTED_BRANCHES を env WORKSPACE_PROTECTED_BRANCHES（カンマ区切り）で上書き可能にする
   task: 20260530_add-protected-branches-env
   completed: true
+- id: 173
+  title: PR173 — add-merge-proposal-toggle
+  type: feat
+  tags: []
+  summary: workspace の Stop フックでマージ提案するかどうかを WORKSPACE_MERGE_PROPOSAL env で制御できるようにする
+  task: 20260530_add-merge-proposal-toggle
+  completed: true
