@@ -19,18 +19,18 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | `.work/tasks/.../PR172/QA.md` |
-| - | `plugins/work-kit/` フォルダを `plugins/workspace/` にリネーム（git mv） | `plugins/work-kit/` → `plugins/workspace/` |
-| - | `plugin.json` の `name` を `workspace` に変更 | `plugins/workspace/.claude-plugin/plugin.json` |
-| - | `marketplace.json` の name / source を更新 | `.claude-plugin/marketplace.json` |
-| - | SKILL.md 内の `work-kit:` 参照を `workspace:` に変更 | `plugins/workspace/skills/**/*.md` |
-| - | ルールファイルのパス・スキル名参照を更新 | `.claude/rules/**/*.md` |
-| - | ルールファイル名を変更（work-kit-*.md → workspace-*.md） | `.claude/rules/feature/work-kit-*.md` |
-| - | glossary.md / glossary.jp.md の `/work-kit:xxx` 参照を更新 | `.claude/rules/core/glossary.md` 他 |
-| - | `.work/tasks/` CLAUDE.md など内部テンプレート参照を更新 | `plugins/workspace/templates/` |
-| - | guard-kit hook 内の work-kit 参照を更新 | `plugins/guard-kit/` |
-| - | claude-kit エージェント内の work-kit 参照を更新 | `plugins/claude-kit/agents/` |
-| - | ルール・CLAUDE.md を整備する | `.claude/rules/core/glossary.md` |
+| 済 | QA.md に未決定事項を記録する | `.work/tasks/.../PR172/QA.md` |
+| 済 | `plugins/work-kit/` フォルダを `plugins/workspace/` にリネーム（git mv） | `plugins/work-kit/` → `plugins/workspace/` |
+| 済 | `plugin.json` の `name` を `workspace` に変更 | `plugins/workspace/.claude-plugin/plugin.json` |
+| 済 | `marketplace.json` の name / source を更新 | `.claude-plugin/marketplace.json` |
+| 済 | SKILL.md 内の `work-kit:` 参照を `workspace:` に変更 | `plugins/workspace/skills/**/*.md` |
+| 済 | ルールファイルのパス・スキル名参照を更新 | `.claude/rules/**/*.md` |
+| 済 | ルールファイル名を変更（work-kit-*.md → workspace-*.md） | `.claude/rules/feature/work-kit-*.md` |
+| 済 | glossary.md / glossary.jp.md の `/work-kit:xxx` 参照を更新 | `.claude/rules/core/glossary.md` 他 |
+| 済 | `.work/tasks/` CLAUDE.md など内部テンプレート参照を更新 | `plugins/workspace/templates/` |
+| 済 | guard-kit hook 内の work-kit 参照を更新 | `plugins/guard-kit/` |
+| 済 | claude-kit エージェント内の work-kit 参照を更新 | `plugins/claude-kit/agents/` |
+| - | ルール・CLAUDE.md を整備する（glossary に rename エントリ追加） | `.claude/rules/core/glossary.md` |
 
 ## 参考ドキュメント
 
