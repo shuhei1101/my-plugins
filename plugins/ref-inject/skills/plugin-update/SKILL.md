@@ -40,32 +40,11 @@ This file is the canonical marker left by `/ref-inject:apply`.
 
 ## Tasks
 
-### Step 1: Check the current branch
+### Step 1: Enumerate consumer plugins
 
 #### Condition
 
 - Always — run first
-
-#### Process
-
-1. Run `git rev-parse --abbrev-ref HEAD`
-2. If `master` / `main` → tell the user "Cannot run on master / main. Create a working branch
-   first and re-run." and stop
-3. Otherwise → proceed
-
-→ Proceed to Step 2
-
-#### Output
-
-- The current branch is confirmed to be neither `master` nor `main`
-
----
-
-### Step 2: Enumerate consumer plugins
-
-#### Condition
-
-- Step 1 complete
 
 #### Process
 
@@ -79,7 +58,7 @@ This file is the canonical marker left by `/ref-inject:apply`.
    Derive `{plugin_root}` (e.g. `plugins/claude-kit`) for each match.
 3. If no consumers are found → report "No ref-inject consumers found." and stop.
 
-→ Proceed to Step 3
+→ Proceed to Step 2
 
 #### Output
 
@@ -87,11 +66,11 @@ This file is the canonical marker left by `/ref-inject:apply`.
 
 ---
 
-### Step 3: Derive placeholder values for each consumer
+### Step 2: Derive placeholder values for each consumer
 
 #### Condition
 
-- Step 2 complete
+- Step 1 complete
 
 #### Process
 
@@ -105,7 +84,7 @@ For each consumer plugin root (`{plugin_root}`), derive the placeholder values f
 | `__LOG_TAG__` | `{name}-references-injection` | `claude-kit-references-injection` |
 | `__DEFAULT_TTL__` | Read from first `TTL` line in the consumer's existing `.py`; fall back to `3600` | `3600` |
 
-→ Proceed to Step 4
+→ Proceed to Step 3
 
 #### Output
 
@@ -113,11 +92,11 @@ For each consumer plugin root (`{plugin_root}`), derive the placeholder values f
 
 ---
 
-### Step 4: Compare mechanism files and report
+### Step 3: Compare mechanism files and report
 
 #### Condition
 
-- Step 3 complete
+- Step 2 complete
 
 #### Process
 
@@ -144,7 +123,7 @@ For each consumer plugin:
    - **Up to date**: no differences
    - **Needs update**: list each file that differs
 
-→ Proceed to Step 5
+→ Proceed to Step 4
 
 #### Output
 
@@ -152,11 +131,11 @@ For each consumer plugin:
 
 ---
 
-### Step 5: Apply updates (with user confirmation)
+### Step 4: Apply updates (with user confirmation)
 
 #### Condition
 
-- Step 4 complete
+- Step 3 complete
 - At least one consumer has files that need updating
 
 #### Process
@@ -174,7 +153,7 @@ For each consumer plugin:
 4. After writing each consumer, grep `{plugin_root}/hooks/` for any remaining
    `__PLACEHOLDER__` tokens and report if any are found.
 
-→ Proceed to Step 6
+→ Proceed to Step 5
 
 #### Notes
 
@@ -185,11 +164,11 @@ For each consumer plugin:
 
 ---
 
-### Step 6: Report completion
+### Step 5: Report completion
 
 #### Condition
 
-- Step 5 complete
+- Step 4 complete
 
 #### Process
 
@@ -208,4 +187,3 @@ For each consumer plugin:
 ##### Prohibitions
 
 - Auto-committing
-- Running on master / main (enforced in Step 1)
