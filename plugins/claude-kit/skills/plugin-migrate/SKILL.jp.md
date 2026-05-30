@@ -1,20 +1,20 @@
 ---
-name: plugin-update
+name: plugin-migrate
 description: |
   プロジェクト内の claude-kit 由来成果物（`.claude/skills/**` / `.claude/rules/**` /
   `.claude/hooks/**` / `**/CLAUDE.md` / `**/.claude-plugin/{plugin,marketplace}.json`）を、
   現在インストール済みの claude-kit リファレンス規約と照合し、逸脱があれば最小限の差分を
   当て込む。また `~/.claude/settings.json` の `statusLine` が claude-kit 由来であれば
-  最新定義で再適用する。手動起動のみ — `/claude-kit:plugin-update`。
+  最新定義で再適用する。手動起動のみ — `/claude-kit:plugin-migrate`。
 ---
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# claude-kit:plugin-update — claude-kit 規約への追従
+# claude-kit:plugin-migrate — claude-kit 規約への追従
 
-dev-kit / work プラグインの plugin-update は **静的テンプレの再コピー** だが、
+dev-kit / work プラグインの plugin-migrate は **静的テンプレの再コピー** だが、
 claude-kit はテンプレを project に展開しない（各 creator スキルは「現行リファレンスに沿って
 ファイルを生成・編集する」薄いラッパであり、規約自体は `references/*.md` に集約されている）。
-したがって claude-kit の plugin-update は **「規約 vs プロジェクト既存成果物」の照合 + 差分適用**
+したがって claude-kit の plugin-migrate は **「規約 vs プロジェクト既存成果物」の照合 + 差分適用**
 というセマンティック・マイグレーションを行う。
 
 照合のキモは「対象ファイルを `Read` で開けば、`claude-kit-references-injection` フックが
@@ -109,7 +109,7 @@ f. 既に規約準拠ならそのファイルはスキップ
 ##### 禁止事項
 
 - ファイル全体の置き換え（差分マイグレーションでなくテンプレ展開になるため）
-- 他プラグインの成果物（例: `plugins/work/skills/*/SKILL.md`）への変更 — それらは各プラグインの `plugin-update` の責務
+- 他プラグインの成果物（例: `plugins/work/skills/*/SKILL.md`）への変更 — それらは各プラグインの `plugin-migrate` の責務
 
 ---
 
@@ -151,4 +151,4 @@ f. 既に規約準拠ならそのファイルはスキップ
 
 ##### 禁止事項
 
-- 自動コミット（dev-kit / work の plugin-update と同じ方針）
+- 自動コミット（dev-kit / work の plugin-migrate と同じ方針）

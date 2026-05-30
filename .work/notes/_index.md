@@ -51,6 +51,7 @@
 | [言語プラグイン統合メモ.md](言語プラグイン統合メモ.md) | py-kit / html-kit / next-kit → dev-kit 統合 (PR166) |
 | [プラグインCLAUDE標準構成.md](プラグインCLAUDE標準構成.md) | プラグイン CLAUDE.md 標準構成 — 標準セクション定義 |
 | [claude-kit-references-structure.md](claude-kit-references-structure.md) | claude-kit リファレンス構造整理 — サブフォルダ分割設計メモ |
+| [plugin-migrate-rename.md](plugin-migrate-rename.md) | plugin-migrate スキル命名規則 — plugin-update から plugin-migrate へのリネーム |
 
 ---
 

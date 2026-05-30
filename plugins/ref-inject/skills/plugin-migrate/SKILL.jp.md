@@ -1,17 +1,17 @@
 ---
-name: plugin-update
+name: plugin-migrate
 description: |
   ref-inject が適用済みのプラグイン（hooks/scripts/inject_references.py の存在で判定）を検査し、
   注入の仕組みファイルを現行の ref-inject テンプレートに揃える。references/ の内容（ユーザー作成の
   doc・_index.yaml・_injection_rules.yaml）は一切変更しない — hooks/ 配下の仕組みファイルだけを更新する。
-  手動起動のみ — /ref-inject:plugin-update を使う。
+  手動起動のみ — /ref-inject:plugin-migrate を使う。
 ---
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# ref-inject:plugin-update — コンシューマープラグインの注入の仕組みを更新
+# ref-inject:plugin-migrate — コンシューマープラグインの注入の仕組みを更新
 
 **全 ref-inject コンシューマー**の注入フックファイルを、現行の ref-inject テンプレートに揃える。
-`/ref-inject:apply` が初回導入を行うのに対し、`plugin-update` はテンプレート変更が生じたときに仕組みを最新化し続ける。
+`/ref-inject:apply` が初回導入を行うのに対し、`plugin-migrate` はテンプレート変更が生じたときに仕組みを最新化し続ける。
 
 `references/` の内容（ユーザー作成の doc・`_index.yaml`・`_injection_rules.yaml`）は
 **一切変更しない** — 更新対象は `hooks/` 配下の仕組みファイルのみ。

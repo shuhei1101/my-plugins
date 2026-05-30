@@ -1,21 +1,21 @@
 ---
-name: plugin-update
+name: plugin-migrate
 description: |
   Bring the current project's plugin-generated artifacts in line with the currently installed
   plugin versions: overwrite work's static `.work/` templates (CLAUDE.md, .gitignore) and
   migrate `index.yaml` to the latest schema. Other plugins' generated artifacts are out of scope
   unless they ship their own equivalent skill.
-  Manual invocation only — use /work:plugin-update.
+  Manual invocation only — use /work:plugin-migrate.
 ---
 
-# work:plugin-update — Sync Plugin-Generated Artifacts to Latest Versions
+# work:plugin-migrate — Sync Plugin-Generated Artifacts to Latest Versions
 
 Replaces the older `update` skill (PR168). Scope is **work's own static templates** only:
 the `.work/` CLAUDE.md, `.gitignore` files, and `index.yaml` schema migration.
 
 Per-plugin diff logic for *other* plugins is intentionally out of scope here — each plugin
 owns its own update path and ships its own equivalent skill if needed (e.g. a hypothetical
-`/{plugin}:plugin-update`). This skill never reaches across plugin boundaries.
+`/{plugin}:plugin-migrate`). This skill never reaches across plugin boundaries.
 
 ---
 

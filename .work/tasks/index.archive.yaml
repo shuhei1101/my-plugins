@@ -1012,3 +1012,10 @@ branches:
   summary: 全プラグインの config スキルを plugin-config にリネーム
   task: 260531_configスキルリネーム
   completed: true
+- id: 236
+  title: refactor/rename-plugin-update-to-migrate
+  type: refactor
+  tags: []
+  summary: plugin-update スキルを plugin-migrate にリネームし、依存箇所を全更新
+  task: 260531_plugin-update-to-migrate
+  completed: true

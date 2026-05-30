@@ -1,15 +1,15 @@
 ---
-name: plugin-update
+name: plugin-migrate
 description: |
   Inspect and fix dev-kit-generated artifacts in the project (both static templates and
   source files that were created following dev-kit conventions) to ensure they comply with
   the currently installed dev-kit version's conventions.
   Covers both re-copying static templates and detecting/fixing convention deviations in
   existing project source files.
-  Manual invocation only — use /dev-kit:plugin-update.
+  Manual invocation only — use /dev-kit:plugin-migrate.
 ---
 
-# dev-kit:plugin-update — Bring dev-kit Artifacts into Compliance with Current Conventions
+# dev-kit:plugin-migrate — Bring dev-kit Artifacts into Compliance with Current Conventions
 
 ## What it does
 
