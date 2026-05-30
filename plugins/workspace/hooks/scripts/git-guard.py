@@ -1,4 +1,4 @@
-"""guard-kit / git-guard — PreToolUse(Bash) hook.
+"""workspace / git-guard — PreToolUse(Bash) hook.
 
 `git push` または `git merge` を含む Bash コマンドを検出したとき、
 プロンプト注入 (`decision: block`) で必ずユーザー確認を挟む。
@@ -6,6 +6,9 @@
 ループ防止のため、セッションごとに一時トークンファイルを使い、
 1 回ブロックしたら 2 回目以降は素通りさせる
 (= 同一セッションで同じコマンドを再実行できる)。
+
+env トグル:
+    WORKSPACE_GUARD: `false` / `0` / `no` / `off` で無効化（デフォルト有効）
 
 Args:
     sys.argv[1]: プロンプト本文の Markdown ファイルパス
@@ -15,6 +18,7 @@ Args:
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import re
 import sys
@@ -22,6 +26,9 @@ import tempfile
 
 
 def main() -> None:
+    if os.environ.get("WORKSPACE_GUARD", "true").lower() in ("false", "0", "no", "off"):
+        return
+
     payload = json.loads(sys.stdin.read())
     command = payload.get("tool_input", {}).get("command", "")
 
