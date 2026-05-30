@@ -639,3 +639,10 @@ prs:
   summary: py-kit / html-kit / next-kit を dev-kit に統合し、使用言語規約を env 変数で切り替える大規模リファクタ
   task: 20260530_merge-language-plugins-into-dev-kit
   completed: true
+- id: 169
+  title: PR169 — integrate guard-kit into work-kit
+  type: refactor
+  tags: []
+  summary: guard-kit を work-kit に統合し、WORK_KIT_GUARD env で有効/無効を切り替え可能にする
+  task: 20260530_integrate-guard-kit-into-work-kit
+  completed: true

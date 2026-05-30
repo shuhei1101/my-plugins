@@ -22,14 +22,8 @@
     {
       "name": "workspace",
       "source": "./plugins/workspace",
-      "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, and manages git worktrees (toggle via WORK_KIT_USE_WORKTREE)",
-      "version": "2.39.0"
-    },
-    {
-      "name": "guard-kit",
-      "source": "./plugins/guard-kit",
-      "description": "Safety guards for dangerous operations — hooks that intercept git push/merge and other risky commands to enforce user confirmation",
-      "version": "1.2.1"
+      "description": "Hook-based project lifecycle management — injects PR task context on every prompt, reminds task updates on stop, manages git worktrees (toggle via WORKSPACE_USE_WORKTREE), and guards git push/merge confirmation (toggle via WORKSPACE_GUARD)",
+      "version": "2.40.0"
     },
     {
       "name": "ref-inject",
