@@ -68,3 +68,4 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
+| dev-kit-markdown-frontmatter-rule | `plugins/dev-kit/references/` に **マークダウン編集規約** を新規追加（短文）: 「フロントマター(`---`)を持つファイルでは、`---` の上に HTML コメント (`<!-- ... -->`) を置かない（Markdown プレビューが崩れる）。コメントが必要なら閉じ `---` の直後に書く」。さらに編集対象が frontmatter 付き md の場合に上記違反を検出する PreToolUse(Edit/Write/MultiEdit) フックを追加。フックは dev-kit のみで完結させる。<br>**背景**: PR184 で SKILL.jp.md にフロントマター上の HTML コメント（claude-kit common.md の JP mirror 規約に沿って入れた `<!-- This file is a Japanese mirror... -->`）を置いてしまい、プレビューが崩れた事例から発生。claude-kit 側の JP mirror 規約自体も「フロントマター直後に置く」へ更新が必要（同 PR か follow-up で対応）。 | 即時実施可 |
