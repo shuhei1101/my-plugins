@@ -312,7 +312,7 @@ git commit -m "docs: post-merge update"
 #### Process
 
 1. Report the merge as complete to the user
-   - Include the merged branch name, internal ID, and task folder
+   - Include the merged branch name and task folder
 
 → Proceed to Step 12
 
