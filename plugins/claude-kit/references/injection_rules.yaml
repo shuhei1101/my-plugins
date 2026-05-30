@@ -85,8 +85,3 @@ rules:
       - incidents.md
     optional:
       - environment.md
-
-  # ---- Markdown (general): table formatting conventions ----
-  - pattern: "**/*.md"
-    required:
-      - markdown-table.md

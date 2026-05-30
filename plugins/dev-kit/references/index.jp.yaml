@@ -1,4 +1,6 @@
 references:
+- path: markdown/markdown-table.md
+  description: "Markdown テーブルの記法規約。最左カラムに必ず # カラムを設け、すべての行に通し番号を書く。連続する行で同じ列の値が同じ場合、最初の行にのみ書き、以降のセルは空白にする。"
 - path: python/core/naming.md
   lang: python
   description: 命名規約。関数 snake_case、型エイリアス UpperCamel、ファイル/モジュール snake_case。feature フォルダ内の標準ファイル名（types/service/query/route/client/db）対応表
