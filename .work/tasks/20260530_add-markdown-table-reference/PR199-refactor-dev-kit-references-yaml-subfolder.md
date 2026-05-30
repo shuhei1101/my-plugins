@@ -18,14 +18,14 @@ PR196 の次PR候補として記録済みの作業。
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録する | - |
-| - | ノートドキュメントを更新する（対象なし） | `.work/notes/` |
-| - | `yaml/` サブフォルダを作成して yaml.md / yaml.jp.md を移動する | - `plugins/dev-kit/references/yaml/yaml.md`（新規）<br>- `plugins/dev-kit/references/yaml/yaml.jp.md`（新規）<br>- `plugins/dev-kit/references/yaml.md`（削除）<br>- `plugins/dev-kit/references/yaml.jp.md`（削除） |
-| - | `_injection_rules.yaml` のパスを更新する | `plugins/dev-kit/references/_injection_rules.yaml` |
-| - | `_index.yaml` / `_index.jp.yaml` のパスを更新する | - `plugins/dev-kit/references/_index.yaml`<br>- `plugins/dev-kit/references/_index.jp.yaml` |
-| - | dev-kit CLAUDE.md の Reference structure と Changelog を更新する | `plugins/dev-kit/CLAUDE.md` |
-| - | プラグインバージョンをバンプする | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | ルール / CLAUDE.md を更新する（対象なし） | - |
+| 済 | QA を `## QA` に記録する | - |
+| 済 | ノートドキュメントを更新する（対象なし） | `.work/notes/` |
+| 済 | `yaml/` サブフォルダを作成して yaml.md / yaml.jp.md を移動する | - `plugins/dev-kit/references/yaml/yaml.md`（新規）<br>- `plugins/dev-kit/references/yaml/yaml.jp.md`（新規）<br>- `plugins/dev-kit/references/yaml.md`（削除）<br>- `plugins/dev-kit/references/yaml.jp.md`（削除） |
+| 済 | `_injection_rules.yaml` のパスを更新する（対象エントリなし — 変更不要） | `plugins/dev-kit/references/_injection_rules.yaml` |
+| 済 | `_index.yaml` / `_index.jp.yaml` のパスを更新する（対象エントリなし — 変更不要） | - `plugins/dev-kit/references/_index.yaml`<br>- `plugins/dev-kit/references/_index.jp.yaml` |
+| 済 | dev-kit CLAUDE.md の Reference structure と Changelog を更新する | `plugins/dev-kit/CLAUDE.md` |
+| 済 | プラグインバージョンをバンプする | - `plugins/dev-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | ルール / CLAUDE.md を更新する（対象なし） | - |
 
 ## 変更内容
 
@@ -35,10 +35,10 @@ PR196 の次PR候補として記録済みの作業。
 | `plugins/dev-kit/references/yaml/yaml.jp.md` | 新規 | 同上の JP ミラー | - |
 | `plugins/dev-kit/references/yaml.md` | 削除 | yaml/ サブフォルダへ移動 | - |
 | `plugins/dev-kit/references/yaml.jp.md` | 削除 | yaml/ サブフォルダへ移動 | - |
-| `plugins/dev-kit/references/_injection_rules.yaml` | 編集 | yaml パスを `yaml/yaml.md` に更新 | - |
-| `plugins/dev-kit/references/_index.yaml` | 編集 | yaml パスを更新 | - |
-| `plugins/dev-kit/references/_index.jp.yaml` | 編集 | yaml パスを更新 | - |
+| `plugins/dev-kit/skills/yaml/SKILL.md` | 編集 | パス参照を `yaml/yaml.md` に更新 | - |
+| `plugins/dev-kit/skills/yaml/SKILL.jp.md` | 編集 | 同上（日本語ミラー） | - |
 | `plugins/dev-kit/CLAUDE.md` | 編集 | Reference structure と Changelog を更新 | 4.4.0 → 4.5.0 |
+| `plugins/dev-kit/CLAUDE.jp.md` | 編集 | 同上（日本語ミラー） | - |
 | `plugins/dev-kit/.claude-plugin/plugin.json` | 編集 | 4.4.0 → 4.5.0 | MINOR: 構造変更 |
 | `.claude-plugin/marketplace.json` | 編集 | dev-kit バージョンをバンプ | - |
 
