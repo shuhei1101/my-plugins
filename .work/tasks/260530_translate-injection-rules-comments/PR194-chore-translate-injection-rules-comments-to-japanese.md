@@ -21,7 +21,7 @@
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | claude-kit の injection_rules.yaml の英語コメントを日本語化 | - `plugins/claude-kit/references/injection_rules.yaml` |
-| - | dev-kit の injection_rules.yaml の英語コメントを日本語化（コメント無しのため対象外） | - `plugins/dev-kit/references/injection_rules.yaml` |
+| 済 | dev-kit の injection_rules.yaml の英語コメントを日本語化（コメント無しのため対象外と判断） | - `plugins/dev-kit/references/injection_rules.yaml` |
 | 済 | ref-inject のテンプレート injection_rules.yaml の英語コメントを日本語化 | - `plugins/ref-inject/templates/references/injection_rules.yaml` |
 | 済 | 注入ルール構造（pattern / required / optional）の意味が日本語コメントから読み取れることを確認 | - |
 
