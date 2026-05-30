@@ -36,6 +36,16 @@ PR167 で確立した `work:config` スキルのパターンを、claude-kit の
 - `plugins/work/skills/config/SKILL.md` — work:config スキル（模範例）
 - `.work/notes/plugin-config-skill.md` — PR167 の設計メモ（UX フロー詳細）
 
+## Step 2 パターン変更（追記）
+
+当初は Step 2 も AskUserQuestion を使う設計だったが、以下の理由で番号入力形式に変更：
+
+- AskUserQuestion は 4 オプション上限があり、env トグルが多いプラグインでは制限になる
+- 番号付きテキストリストなら全トグルを上限なしに表示できる
+- 値・スコープの選択（Step 3）はバイナリ選択なので引き続き AskUserQuestion を使用
+
+`work:config` スキル本体（参照実装）は旧パターンのまま。合わせる場合は別 PR で対応。
+
 ## 次PR候補
 
 - `migrate-existing-plugins-to-have-config-skill`: py-kit / next-kit / html-kit に config スキルを追加

@@ -43,6 +43,7 @@ PR167 で work-kit に `config` スキル（`/work-kit:config`）を追加した
 | 済 | `references/_index.yaml` / `_injection_rules.yaml` に登録 | - `plugins/claude-kit/references/_index.yaml` |
 | 済 | _injection_rules.yaml で SKILL.md / plugin.json 編集時に optional 注入 | - `plugins/claude-kit/references/_injection_rules.yaml` |
 | 済 | claude-kit バージョンバンプ + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json` / `changelogs/` |
+| 済 | Step 2 を AskUserQuestion → 番号入力リスト形式に変更 | - `plugins/claude-kit/references/plugin-config.md` / `.jp.md` |
 | - | glossary に `plugin-config パターン` エントリ追加（.claude/rules/core/glossary.md 未作成のためスキップ） | - `.claude/rules/core/glossary.md` |
 
 ## 参考ドキュメント
