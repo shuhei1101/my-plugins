@@ -16,16 +16,16 @@ PR174「propagate-injection-disable-to-plugins」が完了してから（完了�
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録する | - |
-| - | ノートドキュメントを更新する | `.work/notes/plugin-config-skill.md` |
-| - | Managed Toggles テーブルに 2 変数を追加 | `plugins/work/skills/config/SKILL.md` |
-| - | Step 1 に逆極性変数の状態判定ロジックを追加（truthy = OFF） | |
-| - | Step 2 の AskUserQuestion オプションを更新（INJECTION_DISABLE 変数を その他 案内に追記） | |
-| - | Step 3 に逆極性変数向けの値選択オプションを追加 | |
-| - | Step 4 に逆極性変数の適用ロジックを追加（OFF = "true"、ON = キー削除） | |
-| - | Notes の除外文言を削除 | |
-| - | SKILL.jp.md を更新 | `plugins/work/skills/config/SKILL.jp.md` |
-| - | plugin.json と marketplace.json のバージョンバンプ（MINOR: 2.46.2 → 2.47.0） | `plugins/work/.claude-plugin/plugin.json`<br>`.claude-plugin/marketplace.json` |
+| 済 | QA を `## QA` に記録する（QA なし） | - |
+| 済 | ノートドキュメントを更新する | `.work/notes/plugin-config-skill.md` |
+| 済 | Managed Toggles テーブルに 2 変数を追加 | `plugins/work/skills/config/SKILL.md` |
+| 済 | Step 1 に逆極性変数の状態判定ロジックを追加（truthy = OFF） | |
+| 済 | Step 2 の AskUserQuestion オプションを更新（INJECTION_DISABLE 変数を その他 案内に追記） | |
+| 済 | Step 3 に逆極性変数向けの値選択オプションを追加 | |
+| 済 | Step 4 に逆極性変数の適用ロジックを追加（OFF = "true"、ON = キー削除） | |
+| 済 | Notes の除外文言を削除 | |
+| 済 | SKILL.jp.md を更新 | `plugins/work/skills/config/SKILL.jp.md` |
+| 済 | plugin.json と marketplace.json のバージョンバンプ（MINOR: 2.46.2 → 2.47.0） | `plugins/work/.claude-plugin/plugin.json`<br>`.claude-plugin/marketplace.json` |
 
 ## 変更内容
 
