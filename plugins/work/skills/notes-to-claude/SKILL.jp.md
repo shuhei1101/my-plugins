@@ -184,5 +184,5 @@ description: |
 | スキル | 起点 | 目的 |
 |---|---|---|
 | `work:notes-to-claude`（本スキル） | `.work/notes/` の一時メモ | `.claude/` に新しい知識を流し込む |
-| `claude-kit:conversation-to-claude` | セッションの会話履歴 | セッションで得た学びを Claude アーティファクトに残す |
+
 | `claude-kit:claude-refactor` | 既存の `.claude/` の中身 | 肥大化・重複・タイプミスマッチを監査・整理する |
