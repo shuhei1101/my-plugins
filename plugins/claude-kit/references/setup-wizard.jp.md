@@ -145,28 +145,28 @@ env を持たないプラグインなら `config` は不要だが、`setup-wizar
 ---
 name: setup-wizard
 description: |
-  Trigger on `SessionStart` (auto-loaded by hook when `setup_done` is unset) or when the
-  user calls `/<plugin>:setup-wizard` explicitly. Walks through env config and use-case
-  introduction, then marks the plugin as set up.
+  `SessionStart` 時（フックが `setup_done` 未設定を検知したとき）、または
+  ユーザーが `/<plugin>:setup-wizard` を明示的に呼んだときにトリガー。
+  env 設定とユースケース紹介を経てプラグインをセットアップ済みとしてマークする。
 ---
 
-# <plugin>:setup-wizard — Initial Onboarding
+# <plugin>:setup-wizard — 初回オンボーディング
 
 このスキルは <plugin> の初回オンボーディング用。AskUserQuestion を内部で使用する
 （このスキル内では AskUserQuestion 利用を許可）。
 
-## Tasks
+## 作業内容
 
-### Step 1: Check existing setup state
+### ステップ 1: 既セットアップ判定
 {`.claude/<plugin>.local.md` を読み、`setup_done` の値で分岐}
 
-### Step 2: env config (delegate to config)
+### ステップ 2: env 設定（config スキルに委譲）
 {AskUserQuestion で「すべて設定 / 必須のみ / スキップ」を提示し、選択に応じて `config` を起動}
 
-### Step 3: Use-case showcase
+### ステップ 3: ユースケース紹介
 {AskUserQuestion で「最初に試したいユースケース」を 2〜4 件提示し、選んだものを要約 + CLAUDE.md へリンク}
 
-### Step 4: Mark setup as done
+### ステップ 4: 完了マーク
 {`.claude/<plugin>.local.md` の frontmatter に `setup_done: true` を書き込む}
 ```
 

@@ -747,3 +747,11 @@ prs:
   summary: python-script.md にコメント・ログは日本語で書くルールを追加
   task: 260530_add-japanese-comment-log-rule
   completed: true
+branches:
+- id: 216
+  title: PR216 — fix-setup-wizard-config-naming
+  type: fix
+  tags: []
+  summary: setup-wizard.md/jp.md の plugin-config 命名を config に修正し、JP ミラーのスケルトンを日本語化する
+  task: 260531_fix-setup-wizard-config-naming
+  completed: true
