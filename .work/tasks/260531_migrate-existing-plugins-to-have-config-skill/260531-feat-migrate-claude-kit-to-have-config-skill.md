@@ -25,15 +25,15 @@
 |---|---|---|
 | 1 | 済 | QA を `## QA` に記録する |
 | 2 | 済 | `.work/notes/` のノートを更新する |
-| 3 | - | `claude-kit:config` スキルを新規作成（SKILL.md + SKILL.jp.md） |
-| 4 | - | claude-kit バージョンバンプ + changelog |
-| 5 | - | ルール / CLAUDE.md を更新する |
+| 3 | 済 | `claude-kit:config` スキルを新規作成（SKILL.md + SKILL.jp.md） |
+| 4 | 済 | claude-kit バージョンバンプ + changelog |
+| 5 | 済 | ルール / CLAUDE.md を更新する |
 
 ## 変更内容
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | `plugins/claude-kit/skills/config/SKILL.md` | 新規 | claude-kit の env トグルをインタラクティブに設定するスキル | JP_MIRROR / INJECTION_LANG / TTL |
+| 1 | `plugins/claude-kit/skills/config/SKILL.md` | 新規 | claude-kit の env トグルをインタラクティブに設定するスキル | JP_MIRROR / INJECTION_LANG（en/jp 3択）/ TTL（整数入力） |
 | 2 | `plugins/claude-kit/skills/config/SKILL.jp.md` | 新規 | 〃 の日本語ミラー | - |
 | 3 | `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | バージョンバンプ | - |
 | 4 | `plugins/claude-kit/CLAUDE.md` | 編集 | changelog に新バージョンエントリを追加 | - |
@@ -57,9 +57,9 @@
 | 1 | A | config スキルに含める（整数入力をプレーンテキストで受け付ける） |
 | 2 | B | config スキルから除外し、手動 settings.json 編集にとどめる |
 
-**推奨方式**: B — TTL は調整頻度が低く開発者向けの性質が強い。ON/OFF ループに整数入力を混在させると UX が複雑になる。config スキルは JP_MIRROR と INJECTION_LANG の 2 変数に絞る。
+**推奨方式**: A — config スキルに含める（整数入力）
 
-**状態**: 未解決
+**状態**: 解決済み → **A案採用**（AskUserQuestion でプレーンテキスト入力）
 
 **決定したら反映先**: 作業内容 #3 の実装方針
 
@@ -74,7 +74,7 @@
 
 **推奨方式**: A — AskUserQuestion で en/jp/キー削除の 3 択を表示するのが最も明快。Step 3 内で変数の種類を判定して分岐する。
 
-**状態**: 未解決
+**状態**: 解決済み → **A案採用**（AskUserQuestion で en/jp/デフォルト 3択）
 
 **決定したら反映先**: 作業内容 #3 の実装方針
 
