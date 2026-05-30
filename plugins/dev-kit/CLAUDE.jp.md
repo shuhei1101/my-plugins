@@ -17,6 +17,7 @@ Python / HTML-CSS-JS / Next.js 16 App Router / YAML を 1 プラグインに統�
 | `dev-kit:next-implement` | Next.js 実装ワークフロー |
 | `dev-kit:next-plan` | Next.js 計画ドキュメント生成 |
 | `dev-kit:yaml` | YAML 規約 |
+| `dev-kit:plugin-update` | プロジェクトに展開済みの dev-kit 生成物（html-implement のルール / html-debug-fab のウィジェット）をインストール済み dev-kit のバージョンに同期する（手動 `/dev-kit:plugin-update` のみ） |
 
 ## フック
 
@@ -65,3 +66,10 @@ references/
 
 `injection_rules.yaml` の各ルールは `lang: python|html|next` を持つ。env で OFF の lang のルールは
 フックがスキップする。`~/.claude/tokens/dev-kit/{session_id}.yaml` の TTL トークンで二重注入を防ぐ。
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 4.1.0 | 2026-05-30 | `dev-kit:plugin-update` スキルを追加 — html-implement のルールテンプレと html-debug-fab のウィジェットをプロジェクトに再同期する（PR182） |
+| 4.0.0 | 2026-05-30 | `py-kit` / `html-kit` / `next-kit` を `dev-kit` に統合。言語別の opt-in トグル `DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` を導入（PR166） |

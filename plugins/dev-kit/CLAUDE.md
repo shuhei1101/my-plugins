@@ -16,6 +16,7 @@ Reference auto-injection is opt-in per language via `settings.json` env vars.
 | `dev-kit:next-implement` | Next.js implementation workflow |
 | `dev-kit:next-plan` | Next.js planning document generator |
 | `dev-kit:yaml` | YAML standards |
+| `dev-kit:plugin-update` | Sync dev-kit-generated artifacts in the project (html-implement rules, html-debug-fab widget) to the installed dev-kit version (manual `/dev-kit:plugin-update` only) |
 
 ## Hooks
 
@@ -65,3 +66,10 @@ references/
 Each rule in `injection_rules.yaml` carries `lang: python|html|next`. The hook skips rules whose
 `lang` is not enabled in env. The TTL token at `~/.claude/tokens/dev-kit/{session_id}.yaml`
 prevents duplicate injection.
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 4.1.0 | 2026-05-30 | Add `dev-kit:plugin-update` skill — re-syncs html-implement rule templates and html-debug-fab widget into the project (PR182) |
+| 4.0.0 | 2026-05-30 | Merge `py-kit` / `html-kit` / `next-kit` into `dev-kit`; opt-in language toggles via `DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` (PR166) |
