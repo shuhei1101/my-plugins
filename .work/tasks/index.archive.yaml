@@ -853,3 +853,10 @@ branches:
   summary: claude-kit references/ に「プラグイン config スキルの設計ガイド」を追加 + PreToolUse フック追加
   task: 20260530_claude-kit-plugin-config-reference
   completed: true
+- id: 220
+  title: fix/marketplace-json-duplicate-version
+  type: fix
+  tags: []
+  summary: PR175 マージ作業中の sed ミスで marketplace.json の claude-kit エントリに version 行が重複して入っていたのを修正
+  task: 260531_fix-marketplace-json-duplicate-version
+  completed: true
