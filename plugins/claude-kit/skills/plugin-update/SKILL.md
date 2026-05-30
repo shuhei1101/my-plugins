@@ -30,14 +30,14 @@ responsibility.
 
 | Project pattern | Reference |
 |---|---|
-| `**/skills/*/SKILL{.jp,}.md` | `references/skills.md` + `common.md` |
-| `**/.claude/rules/**/*.md`, `**/.claude/rules-jp/**/*.md` | `references/rules.md` + `common.md` |
-| `**/CLAUDE{.local,.jp,}.md` | `references/claude-md.md` + `common.md` |
-| `plugins/*/CLAUDE{.jp,}.md` | `references/plugin-claude-md.md` (additional) |
-| `**/hooks/hooks.json` | `references/hooks.md` + `common.md` + `environment.md` |
-| `**/.claude/settings{.local,}.json` | `references/hooks.md` + `common.md` + `environment.md` |
-| `**/hooks/prompts/*.md` | `references/hooks.md` |
-| `**/.claude-plugin/{plugin,marketplace}.json` | `references/plugin-structure.md` + `common.md` |
+| `**/skills/*/SKILL{.jp,}.md` | `references/skill/skills.md` + `common/common.md` |
+| `**/.claude/rules/**/*.md`, `**/.claude/rules-jp/**/*.md` | `references/claude-md/rules.md` + `common/common.md` |
+| `**/CLAUDE{.local,.jp,}.md` | `references/claude-md/claude-md.md` + `common/common.md` |
+| `plugins/*/CLAUDE{.jp,}.md` | `references/plugin/plugin-claude-md.md` + `references/plugin/version-sync.md` (additional) |
+| `**/hooks/hooks.json` | `references/hook/hooks.md` + `common/common.md` + `common/environment.md` |
+| `**/.claude/settings{.local,}.json` | `references/hook/hooks.md` + `common/common.md` + `common/environment.md` |
+| `**/hooks/prompts/*.md` | `references/hook/hooks.md` |
+| `**/.claude-plugin/{plugin,marketplace}.json` | `references/plugin/plugin-structure.md` + `common/common.md` + `plugin/version-sync.md` |
 | `~/.claude/settings.json` `statusLine` block | `scripts/apply-statusline.py` definition |
 
 `agents/` has no dedicated claude-kit reference yet (only `common.md`'s file-type +
