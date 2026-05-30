@@ -6,7 +6,7 @@ description: Present next PR candidates in 3 categories (ready to start / in pro
 
 # work-kit:pr-show — Show Next PR Candidates
 
-Reads a PR's `## 次PR候補` table and classifies each candidate as ready to start, in progress elsewhere, or has conditions.
+Reads a PR document's `## 次PR候補` table and classifies each candidate as ready to start, in progress elsewhere, or has conditions.
 
 ---
 
@@ -14,7 +14,7 @@ Reads a PR's `## 次PR候補` table and classifies each candidate as ready to st
 
 A standalone skill extracted from merge Step 12. Can be called at any time to check which PRs are next — not only after a merge.
 
-**Data source**: the `## 次PR候補` table in the specified TODO.md.
+**Data source**: the `## 次PR候補` table in the specified PR document.
 Never lists all git branches blindly — only candidates explicitly listed in the table are shown.
 
 ---
@@ -29,20 +29,20 @@ Never lists all git branches blindly — only candidates explicitly listed in th
 
 #### Process
 
-1. If called with a TODO.md path argument (e.g. from merge Step 12), use that file directly
+1. If called with a PR document path argument (e.g. from merge Step 12), use that file directly
 2. If called standalone (no argument):
-   - Find all TODO.md files under `.work/tasks/`:
+   - Find all PR documents under `.work/tasks/`:
      ```bash
-     find .work/tasks -name TODO.md
+     find .work/tasks -type f -name "PR*.md"
      ```
-   - If only one active PR exists, use its TODO.md automatically
+   - If only one active PR exists, use its document automatically
    - If multiple exist, ask the user which PR to check
 
 → Proceed to Step 2
 
 #### Output
 
-- TODO.md path confirmed
+- PR document path confirmed
 
 ---
 
@@ -54,7 +54,7 @@ Never lists all git branches blindly — only candidates explicitly listed in th
 
 #### Process
 
-1. Read the `## 次PR候補` section from the TODO.md
+1. Read the `## 次PR候補` section from the PR document
 2. If the table contains only a placeholder row (e.g., `{次にやること}` or a lone `-`)
    → output "No next PR candidates." and finish
 
@@ -140,14 +140,14 @@ For each candidate row:
 
 ### Data source rule
 
-Use only the specified TODO.md's `## 次PR候補` table — never `git branch --list 'PR*'`.
+Use only the specified PR document's `## 次PR候補` table — never `git branch --list 'PR*'`.
 Unrelated reserved branches from other sessions are intentionally excluded.
 
 ### Classification knowledge
 
 | Category | Detail |
 |---|---|
-| **Ready to start** | State immediately after pr-handoff reservation. Branch has just the TODO.md creation commit (1 commit) ahead of master. |
+| **Ready to start** | State immediately after pr-handoff reservation. Branch has just the PR-document creation commit (1 commit) ahead of master. |
 | **In progress elsewhere** | Another Claude Code session has implementation commits on this branch. Two or more commits means the user is actively working there. |
 | **Has conditions** | A candidate that pr-handoff classified as a serial-dependency item and chose not to reserve. It becomes eligible once its predecessor PR merges. |
 
@@ -157,4 +157,4 @@ Hiding them entirely would create the impression "nothing is left." Surfacing th
 
 ### Why surface "has conditions"
 
-They do not appear as reserved branches, but they live in TODO.md `## 次PR候補` as "next-next" items. Listing them alongside ready-to-start ensures the user does not overlook them.
+They do not appear as reserved branches, but they live in the PR document's `## 次PR候補` as "next-next" items. Listing them alongside ready-to-start ensures the user does not overlook them.

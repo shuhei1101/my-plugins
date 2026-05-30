@@ -2,8 +2,8 @@
 name: pr-handoff
 description: |
   Reserve the next PR using the same flow as work-start, after the current PR is complete.
-  Reads the "Next PR candidates" section from the current TODO.md to determine what to work on,
-  then records relevant background context in the new TODO.md.
+  Reads the "Next PR candidates" section from the current PR document to determine what to work on,
+  then records relevant background context in the new PR document.
   Candidates with a serial dependency (only doable after a preceding PR is merged) are NOT
   reserved now — they are embedded into the reserved preceding PR's "Next PR candidates"
   so the chain is carried forward.
@@ -14,9 +14,9 @@ description: |
 
 # work-kit:pr-handoff — Reserve the Next PR with Context
 
-Reads the "Next PR candidates" from the current PR's TODO.md and runs the same flow
+Reads the "Next PR candidates" from the current PR document and runs the same flow
 as `work-start` to create the branch and work folder. Records relevant background
-context in the new TODO.md to improve handoff quality.
+context in the new PR document to improve handoff quality.
 
 When a serial dependency exists (a successor PR can only start after a preceding PR is
 merged), reserve only the immediately-actionable candidates; embed the dependent
@@ -28,7 +28,7 @@ candidates into the reserved preceding PR's `## 次PR候補` section.
 
 After a PR is complete, the next session's Claude has zero context about what was done.
 This skill runs the work-start reservation flow while writing background information
-(why this PR is needed, decisions made in the previous PR) into the new TODO.md.
+(why this PR is needed, decisions made in the previous PR) into the new PR document.
 
 Additionally, when a successor PR can only be implemented after a preceding PR is merged
 (serial dependency), reserving all candidates at once would create the successor's worktree
@@ -48,12 +48,12 @@ runs again, the dependent candidate becomes the next immediate target.
 
 #### Process
 
-1. Read the current PR's TODO.md:
+1. Read the current PR document:
    ```
-   .work/tasks/{task_folder}/PR{N}/TODO.md
+   .work/tasks/{task_folder}/{branch-hyphenated}.md
    ```
 
-2. Read the `## 次PR候補` table (columns: title / summary / 実施条件):
+2. Read its `## 次PR候補` table (columns: title / summary / 実施条件):
    - No candidates (placeholder text) → ask the user for the next PR details
    - Candidates present → inspect each row's `実施条件` column and classify as follows:
 
@@ -139,7 +139,7 @@ runs again, the dependent candidate becomes the next immediate target.
    > Call `/work-kit:work-start` for each candidate with its title and type.
    > Repeat until every immediately reservable candidate is reserved.
 
-2. During each work-start's TODO.md fill-in step (Step 7), fill in the following:
+2. During each work-start's PR-document fill-in step (Step 7), fill in the following:
    - Append the background context from Step 2 to `## 概要`
    - Include "why this PR is needed" and "relationship to the previous PR"
    - **If this candidate has attached dependent successors, transcribe them into `## 次PR候補`** (all three columns: title / summary / 実施条件)
@@ -149,7 +149,7 @@ runs again, the dependent candidate becomes the next immediate target.
 #### Output
 
 - All immediately reservable candidates have their branch and work folder created
-- Each TODO.md contains background context
+- Each new PR document contains background context
 - Dependent successor candidates are transcribed into the preceding PR's `## 次PR候補` and will be reserved by the next pr-handoff run
 
 #### Notes
@@ -158,10 +158,10 @@ runs again, the dependent candidate becomes the next immediate target.
 
 The differences from a plain `work-start` are these two points:
 
-1. **The `## 概要` section of TODO.md is pre-filled with background context.**
+1. **The `## 概要` section of the new PR document is pre-filled with background context.**
 2. **Dependent successor candidates are transcribed into the new PR's `## 次PR候補` to carry forward the chain.**
 
-Everything else (branch creation, folder creation, QA.md) follows work-start's standard flow.
+Everything else (branch creation, folder creation, `## QA` section) follows work-start's standard flow.
 
 ##### Chained handoff example
 

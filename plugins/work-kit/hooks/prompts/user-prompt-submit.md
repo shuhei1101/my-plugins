@@ -24,7 +24,7 @@ Check whether a PR is in progress in **the current Claude Code conversation sess
 
 ---
 
-### Step 2: Check QA before reading TODO
+### Step 2: Check QA before reading the rest of the PR document
 
 #### Condition
 
@@ -33,11 +33,11 @@ Check whether a PR is in progress in **the current Claude Code conversation sess
 #### Process
 
 1. Use `git worktree list` to locate the in-progress PR's worktree and navigate to it
-2. Read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/QA.md`
-3. If unresolved QA entries exist — **stop here** — ask the user to resolve them; do nothing further
-4. If QA is clear (or empty), read `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md`
-5. If the user's requested task is not already listed in TODO.md, add it and commit before proceeding
-6. Continue work according to the TODO
+2. Read the PR document at `.work/tasks/{YYMMDD}_{title}/{branch-hyphenated}.md`
+3. If its `## QA` section has unresolved entries — **stop here** — ask the user to resolve them; do nothing further
+4. If `## QA` is clear (or empty), read the `## 作業内容` section of the same PR document
+5. If the user's requested task is not already listed in `## 作業内容`, add it and commit before proceeding
+6. Continue work according to the document
 
 #### Notes
 
