@@ -2,6 +2,7 @@
 created_at: 2026-05-30
 updates:
   - 2026-05-30 — 初版作成
+  - 2026-05-30 — PR197: plugin-structure.md の Authoring workflow に CLAUDE.md 更新チェックを追加
 related_specs: []
 related_prs:
   - PR171

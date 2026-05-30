@@ -3,6 +3,7 @@ created_at: 2026-05-30
 updates:
   - 2026-05-30 — 初版（PR169 着手）
   - 2026-05-30 — master 適合: PR172 work-kit→workspace リネームに合わせて WORK_KIT_GUARD → WORKSPACE_GUARD に変更、対象パスも plugins/workspace/ に修正
+  - 2026-05-30 — PR195: git merge master/main を許可するよう git-guard.py の正規表現を修正（workspace→work リネーム後は WORK_GUARD）
 related_specs:
   - env-toggles-for-hooks-and-steps.md
 related_prs:
@@ -10,6 +11,7 @@ related_prs:
   - PR172
   - PR164
   - PR163
+  - PR195
 ---
 
 # guard-kit を workspace に統合 — PR169

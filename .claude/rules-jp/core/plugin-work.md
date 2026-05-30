@@ -30,11 +30,13 @@ paths:
 | `plugins/{name}/.claude-plugin/plugin.json` | プラグインマニフェスト（名前・バージョン・説明） |
 | `.claude-plugin/marketplace.json` | マーケットプレイスカタログ — plugin.json のバージョンと常に一致させる |
 | `plugins/{name}/skills/{skill}/SKILL.md` | スキル定義 |
+| `plugins/{name}/CLAUDE.md` | プラグインレベルの概要（スキル・フック・環境変数を記載） |
 
 ## 編集時に必ずやること
 
-コミット前に両方を更新する:
+コミット前にすべてを更新する:
 
+- [ ] `plugins/{name}/CLAUDE.md` — 追加・変更したスキル・フック・環境変数・動作を反映
 - [ ] `plugins/{name}/.claude-plugin/plugin.json` — `version` をバンプ
 - [ ] `.claude-plugin/marketplace.json` — 対応するプラグインの `version` をバンプ
 

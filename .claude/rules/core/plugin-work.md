@@ -17,11 +17,13 @@ Rules for creating and updating plugins in this marketplace. Auto-loads whenever
 | `plugins/{name}/.claude-plugin/plugin.json` | Plugin manifest (name, version, description) |
 | `.claude-plugin/marketplace.json` | Marketplace catalog — must always match plugin.json version |
 | `plugins/{name}/skills/{skill}/SKILL.md` | Skill definition |
+| `plugins/{name}/CLAUDE.md` | Plugin-level overview documenting skills, hooks, and env vars |
 
 ## When Editing
 
-Always update both before committing:
+Always update all of the following before committing:
 
+- [ ] `plugins/{name}/CLAUDE.md` — reflect any added/changed skills, hooks, environment variables, or behavior
 - [ ] `plugins/{name}/.claude-plugin/plugin.json` — bump `version`
 - [ ] `.claude-plugin/marketplace.json` — bump the matching plugin's `version`
 
