@@ -4,7 +4,7 @@
 name: plugin-update
 description: |
   カレントプロジェクトのプラグイン生成物を、現在インストール済みのプラグインバージョンに合わせて更新する:
-  work の静的 `.work/` テンプレ（CLAUDE.md・.gitignore）を上書きし、
+  work の `.work/.gitignore` ファイルを同期し、レガシーの `.work/CLAUDE.md` を削除し、
   `index.yaml` を最新スキーマへ移行する。他プラグインの生成物は対象外（各プラグインが
   同等のスキルを持っている場合はそれを使う）。
   手動起動のみ — `/work:plugin-update` を使う。
@@ -13,7 +13,7 @@ description: |
 # work:plugin-update — プラグイン生成物を最新版に揃える
 
 旧 `update` スキルからの置き換え（PR168）。スコープは **work 自身の静的テンプレ** のみ:
-`.work/` の CLAUDE.md・`.gitignore`・`index.yaml` のスキーマ移行。
+`.work/` の `.gitignore` ファイルの同期、レガシー `CLAUDE.md` の削除、`index.yaml` のスキーマ移行。
 
 他プラグインの diff ロジックは意図的に対象外 — 各プラグインが自分の更新パスを所有し、
 必要なら同等のスキル（例: `/{plugin}:plugin-update`）を提供する。
@@ -46,7 +46,7 @@ description: |
 
 ---
 
-### ステップ 2: `.work/` 内のワークスペーステンプレートを上書き
+### ステップ 2: レガシー `.work/CLAUDE.md` を削除し、`.gitignore` を同期
 
 #### 条件
 
@@ -54,19 +54,22 @@ description: |
 
 #### 処理
 
-1. work プラグインテンプレートルート `${CLAUDE_PLUGIN_ROOT}/templates/.work/` を探索
-2. テンプレートから以下のファイルをプロジェクトにコピー（上書き）:
-   - `CLAUDE.md` → `.work/CLAUDE.md`
-   - `CLAUDE.jp.md` → `.work/CLAUDE.jp.md`
+1. `.work/CLAUDE.md` が存在する場合、`git rm` で削除する
+   - このファイルは ref-inject に移行済みのため不要
+   - `.work/CLAUDE.jp.md` が存在する場合も同様に削除する
+2. work プラグインテンプレートルート `${CLAUDE_PLUGIN_ROOT}/templates/.work/` を探索
+3. テンプレートから以下の `.gitignore` ファイルをプロジェクトにコピー（上書き）:
    - `tasks/.gitignore` → `.work/tasks/.gitignore`
    - `issues/.gitignore` → `.work/issues/.gitignore`（テンプレートに存在する場合）
-3. どのファイルが上書きされたかを報告
+     - `.work/issues/` が存在しない場合は作成してからコピー
+4. どのファイルが変更されたかを報告
 
 → ステップ 3 へ
 
 #### 出力
 
-- `.work/CLAUDE.md`、`.work/CLAUDE.jp.md`、`.work/tasks/.gitignore` が最新版に更新済み
+- `.work/CLAUDE.md` / `.work/CLAUDE.jp.md` が削除済み（存在した場合）
+- `.work/tasks/.gitignore`、`.work/issues/.gitignore` が最新版に更新済み
 
 ---
 

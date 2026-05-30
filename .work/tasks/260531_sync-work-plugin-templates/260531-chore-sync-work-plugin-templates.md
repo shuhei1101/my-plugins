@@ -22,6 +22,8 @@
 | 6 | 済 | `.work/issues/.gitignore` を最新テンプレートで追加 |
 | 7 | 済 | `index.yaml` に `last_id` がなければ追加（last_id: 232 で既存） |
 | 8 | 済 | 変更をコミット |
+| 9 | - | `.work/CLAUDE.md` と `.work/CLAUDE.jp.md` を削除（テンプレートから削除済み＝ref-inject に移行済み） |
+| 10 | - | `work:plugin-update` スキルに削除ステップを追加 |
 
 ## 変更内容
 

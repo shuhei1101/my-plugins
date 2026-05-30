@@ -2,7 +2,7 @@
 name: plugin-update
 description: |
   Bring the current project's plugin-generated artifacts in line with the currently installed
-  plugin versions: overwrite work's static `.work/` templates (CLAUDE.md, .gitignore) and
+  plugin versions: sync work's `.work/.gitignore` files, remove legacy `.work/CLAUDE.md`, and
   migrate `index.yaml` to the latest schema. Other plugins' generated artifacts are out of scope
   unless they ship their own equivalent skill.
   Manual invocation only — use /work:plugin-update.
@@ -11,7 +11,7 @@ description: |
 # work:plugin-update — Sync Plugin-Generated Artifacts to Latest Versions
 
 Replaces the older `update` skill (PR168). Scope is **work's own static templates** only:
-the `.work/` CLAUDE.md, `.gitignore` files, and `index.yaml` schema migration.
+the `.work/` `.gitignore` files, removal of legacy `CLAUDE.md`, and `index.yaml` schema migration.
 
 Per-plugin diff logic for *other* plugins is intentionally out of scope here — each plugin
 owns its own update path and ships its own equivalent skill if needed (e.g. a hypothetical
@@ -44,7 +44,7 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 ---
 
-### Step 2: Overwrite workspace templates inside `.work/`
+### Step 2: Remove legacy `.work/CLAUDE.md` and sync `.gitignore` files
 
 #### Condition
 
@@ -52,19 +52,22 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 #### Process
 
-1. Locate the work plugin template root: `${CLAUDE_PLUGIN_ROOT}/templates/.work/`
-2. Copy the following files from the template into the project (overwrite):
-   - `CLAUDE.md` → `.work/CLAUDE.md`
-   - `CLAUDE.jp.md` → `.work/CLAUDE.jp.md`
+1. If `.work/CLAUDE.md` exists, remove it with `git rm`
+   - `.work/CLAUDE.md` was a static file that is now handled by ref-inject; it is no longer shipped in the template
+   - If `.work/CLAUDE.jp.md` exists, remove it the same way
+2. Locate the work plugin template root: `${CLAUDE_PLUGIN_ROOT}/templates/.work/`
+3. Copy the following `.gitignore` files from the template into the project (overwrite):
    - `tasks/.gitignore` → `.work/tasks/.gitignore`
    - `issues/.gitignore` → `.work/issues/.gitignore` (if present in the template)
-3. Report which files were overwritten
+     - Create `.work/issues/` first if it does not exist
+4. Report which files were changed
 
 → Proceed to Step 3
 
 #### Output
 
-- `.work/CLAUDE.md`, `.work/CLAUDE.jp.md`, `.work/tasks/.gitignore` updated to the latest
+- `.work/CLAUDE.md` / `.work/CLAUDE.jp.md` removed (if they existed)
+- `.work/tasks/.gitignore`, `.work/issues/.gitignore` updated to the latest
 
 ---
 
