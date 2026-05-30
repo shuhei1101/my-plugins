@@ -41,8 +41,9 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 | 3 | `WORK_PROTECTED_BRANCHES` | `master,main,develop` | master-commit-guard で保護するブランチのカンマ区切りリスト |
 | 4 | `WORKSPACE_STOP_REMINDER` | `true` | Stop 時にタスク更新リマインドを表示 |
 | 5 | `WORKSPACE_MERGE_PROPOSAL` | `true` | Stop 時に `/work:merge` の実行を提案 |
-| 6 | `CLAUDE_KIT_INJECTION_DISABLE` | (off) | リファレンス注入を無効化（kill switch） |
-| 7 | `DEV_KIT_INJECTION_DISABLE` | (off) | dev-kit リファレンス注入を無効化 |
+| 6 | `WORK_BRANCH_AUTHOR` | （空） | ブランチ名に作者名を追加：`{type}/{author}/{title}` 形式になる |
+| 7 | `CLAUDE_KIT_INJECTION_DISABLE` | (off) | リファレンス注入を無効化（kill switch） |
+| 8 | `DEV_KIT_INJECTION_DISABLE` | (off) | dev-kit リファレンス注入を無効化 |
 
 ## ブランチドキュメント構造
 
@@ -53,19 +54,20 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 - `## テスト` — テスト項目
 - `## 変更内容` — 実装メモ
 
-ブランチ名は `{type}/{title}`（PR 番号プレフィックスなし）。内部 ID は `index.yaml` で管理。
+ブランチ名はデフォルト `{type}/{title}`（PR 番号プレフィックスなし）。`WORK_BRANCH_AUTHOR` が設定されている場合は `{type}/{author}/{title}` になる。内部 ID は `index.yaml` で管理。
 
 ## 変更履歴
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.48.0 | 2026-05-30 | `work:notes-to-claude` スキルを削除 — プラグイン間依存を排除 |
-| 2 | 2.47.0 | 2026-05-30 | `work:plugin-config` 管理対象トグルに `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` を追加 |
-| 3 | 2.46.2 | 2026-05-30 | `issue-scan` スキルの古い `py-kit`/`next-kit` 記述を削除、`_injection_rules.yaml` に更新 |
-| 4 | 2.46.0 | 2026-05-30 | Stop フックのインライン python を `hooks/scripts/stop.py` + `_common.py` に抽出 |
-| 5 | 2.44.0 | 2026-05-30 | ブランチドキュメントを単一ファイル（`{branch-hyphenated}.md`）に統合；`plugin-migrate` スキルにリネーム |
-| 6 | 2.43.0 | 2026-05-30 | `WORKSPACE_MERGE_PROPOSAL` env トグルを追加 |
-| 7 | 2.42.0 | 2026-05-30 | `WORKSPACE_PROTECTED_BRANCHES` env トグルを追加 |
-| 8 | 2.41.0 | 2026-05-30 | `impl-review` Step 4 をバッチ AskUserQuestion 方式に変更（最大 4 件/回） |
-| 9 | 2.40.0 | 2026-05-30 | `guard-kit` を work プラグインに統合 |
-| 10 | 2.39.0 | 2026-05-30 | env トグルを対話的に設定する `work:plugin-config` スキルを追加 |
+| 1 | 2.50.0 | 2026-05-31 | `WORK_BRANCH_AUTHOR` env var を追加 — ブランチ名に作者名セグメントを挿入 |
+| 2 | 2.48.0 | 2026-05-30 | `work:notes-to-claude` スキルを削除 — プラグイン間依存を排除 |
+| 3 | 2.47.0 | 2026-05-30 | `work:plugin-config` 管理対象トグルに `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` を追加 |
+| 4 | 2.46.2 | 2026-05-30 | `issue-scan` スキルの古い `py-kit`/`next-kit` 記述を削除、`_injection_rules.yaml` に更新 |
+| 5 | 2.46.0 | 2026-05-30 | Stop フックのインライン python を `hooks/scripts/stop.py` + `_common.py` に抽出 |
+| 6 | 2.44.0 | 2026-05-30 | ブランチドキュメントを単一ファイル（`{branch-hyphenated}.md`）に統合；`plugin-migrate` スキルにリネーム |
+| 7 | 2.43.0 | 2026-05-30 | `WORKSPACE_MERGE_PROPOSAL` env トグルを追加 |
+| 8 | 2.42.0 | 2026-05-30 | `WORKSPACE_PROTECTED_BRANCHES` env トグルを追加 |
+| 9 | 2.41.0 | 2026-05-30 | `impl-review` Step 4 をバッチ AskUserQuestion 方式に変更（最大 4 件/回） |
+| 10 | 2.40.0 | 2026-05-30 | `guard-kit` を work プラグインに統合 |
+| 11 | 2.39.0 | 2026-05-30 | env トグルを対話的に設定する `work:plugin-config` スキルを追加 |
