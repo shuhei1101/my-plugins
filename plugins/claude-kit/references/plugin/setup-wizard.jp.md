@@ -5,7 +5,7 @@
 ユーザーがプラグインを初めて使うときの初期セットアップと、ユースケース別の入口を提供する。
 英語原本: `references/plugin/setup-wizard.md`
 
-`plugin-update`（バージョン追従）と対になる「初期セットアップ」の規約。`common.md` と
+`plugin-migrate`（バージョン追従）と対になる「初期セットアップ」の規約。`common.md` と
 `skills.md` も併読すること。
 
 ---
@@ -84,7 +84,7 @@ setup_done: true
 **version 情報は持たせない**。バージョン追従は規約で人間に守らせる方針:
 プラグインを更新するときは、合わせて `setup-wizard` の内容も最新化する。
 本リファレンス自体に「プラグイン更新時 setup-wizard も更新」を明記してあるため、
-`plugin-update` 実装側のチェックリストにも入れること。
+`plugin-migrate` 実装側のチェックリストにも入れること。
 
 ---
 
@@ -132,7 +132,7 @@ setup_done: true
 | スキル | 役割 |
 |---|---|
 | `config` | env 変数を `AskUserQuestion` で個別編集する単機能スキル。`setup-wizard` から委譲される |
-| `plugin-update` | バージョン追従。詳細は本リファレンスの「Required skills」セクション |
+| `plugin-migrate` | バージョン追従。詳細は本リファレンスの「Required skills」セクション |
 
 env を持たないプラグインなら `config` は不要だが、`setup-wizard` のユースケース紹介
 ステップは依然として価値があるため必須は維持する。
@@ -178,6 +178,6 @@ JP ミラー `SKILL.jp.md` も同時に作成すること（`common.md` の JP/E
 
 - [ ] `skills/setup-wizard/SKILL.md` と `SKILL.jp.md` を作成した
 - [ ] `hooks/hooks.json` に `SessionStart` フックを追加し、`hooks/scripts/setup_check.py` を実装した
-- [ ] env を持つプラグインなら `skills/config/SKILL.md` (+ `.jp.md`) も合わせて実装した
+- [ ] env を持つプラグインなら `skills/plugin-config/SKILL.md` (+ `.jp.md`) も合わせて実装した
 - [ ] プラグインの `CLAUDE.md` に「初回起動時のセットアップフロー」を 1 行記載した
 - [ ] バージョンを bump し、changelog に "setup-wizard を追加" と記録した

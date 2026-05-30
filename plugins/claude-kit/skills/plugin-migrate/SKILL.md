@@ -1,19 +1,19 @@
 ---
-name: plugin-update
+name: plugin-migrate
 description: |
   Walk the project's claude-kit-authored artifacts (`.claude/skills/**` / `.claude/rules/**` /
   `.claude/hooks/**` / `**/CLAUDE.md` / `**/.claude-plugin/{plugin,marketplace}.json`) and
   bring them in line with the currently installed claude-kit reference conventions, applying
   minimal in-place edits where they deviate. Also re-applies the statusline if claude-kit's
   version is currently set in `~/.claude/settings.json`.
-  Manual invocation only — use /claude-kit:plugin-update.
+  Manual invocation only — use /claude-kit:plugin-migrate.
 ---
 
-# claude-kit:plugin-update — Sync to claude-kit Conventions
+# claude-kit:plugin-migrate — Sync to claude-kit Conventions
 
-Where `dev-kit` / `work` plugin-update is **static template re-copy**, claude-kit does not
+Where `dev-kit` / `work` plugin-migrate is **static template re-copy**, claude-kit does not
 ship templates into projects: each creator skill is a thin wrapper that defers to authoring
-guides in `references/*.md`. So claude-kit's plugin-update is a **semantic migration**:
+guides in `references/*.md`. So claude-kit's plugin-migrate is a **semantic migration**:
 walk each existing artifact, compare it against the current reference, and apply the deltas.
 
 The mechanic that makes this cheap: opening any target file with `Read` triggers the
@@ -110,7 +110,7 @@ f. If the file is already compliant, skip it
 ##### Prohibitions
 
 - Wholesale file replacement (it stops being a migration and becomes a template drop)
-- Modifying other plugins' artifacts (e.g. `plugins/work/skills/*/SKILL.md`) — those belong to each plugin's own `plugin-update`
+- Modifying other plugins' artifacts (e.g. `plugins/work/skills/*/SKILL.md`) — those belong to each plugin's own `plugin-migrate`
 
 ---
 
@@ -152,4 +152,4 @@ f. If the file is already compliant, skip it
 
 ##### Prohibitions
 
-- Auto-committing (same policy as `dev-kit` / `work` plugin-update)
+- Auto-committing (same policy as `dev-kit` / `work` plugin-migrate)

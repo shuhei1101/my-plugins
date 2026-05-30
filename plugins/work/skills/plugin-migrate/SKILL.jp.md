@@ -1,22 +1,22 @@
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 ---
-name: plugin-update
+name: plugin-migrate
 description: |
   カレントプロジェクトのプラグイン生成物を、現在インストール済みのプラグインバージョンに合わせて更新する:
   work の静的 `.work/` テンプレ（CLAUDE.md・.gitignore）を上書きし、
   `index.yaml` を最新スキーマへ移行する。他プラグインの生成物は対象外（各プラグインが
   同等のスキルを持っている場合はそれを使う）。
-  手動起動のみ — `/work:plugin-update` を使う。
+  手動起動のみ — `/work:plugin-migrate` を使う。
 ---
 
-# work:plugin-update — プラグイン生成物を最新版に揃える
+# work:plugin-migrate — プラグイン生成物を最新版に揃える
 
 旧 `update` スキルからの置き換え（PR168）。スコープは **work 自身の静的テンプレ** のみ:
 `.work/` の CLAUDE.md・`.gitignore`・`index.yaml` のスキーマ移行。
 
 他プラグインの diff ロジックは意図的に対象外 — 各プラグインが自分の更新パスを所有し、
-必要なら同等のスキル（例: `/{plugin}:plugin-update`）を提供する。
+必要なら同等のスキル（例: `/{plugin}:plugin-migrate`）を提供する。
 このスキルは決してプラグイン境界を跨がない。
 
 ---

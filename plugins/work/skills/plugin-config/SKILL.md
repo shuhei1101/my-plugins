@@ -1,11 +1,11 @@
 ---
-name: config
+name: plugin-config
 description: |
-  When /work:config is invoked.
+  When /work:plugin-config is invoked.
   Or when the user says "設定を変えたい", "env を設定したい", "トグルを切り替えたい", "plugin config", or "workspace config".
 ---
 
-# work:config — Plugin Toggle Configuration
+# work:plugin-config — Plugin Toggle Configuration
 
 Interactively configures env toggle variables.
 Loops through one-variable-at-a-time selection → value → scope → apply,
@@ -181,5 +181,5 @@ If no changes were made, report "変更なし".
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
 - AITUBER_NOTIFY のデフォルトスコープは「ユーザー」だが、スコープはユーザーが毎回選択する
-- dev-kit の env トグル（`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN` / `DEV_KIT_NEXT_TS_CHECK`）は `/dev-kit:config` で設定する
+- dev-kit の env トグル（`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN` / `DEV_KIT_NEXT_TS_CHECK`）は `/dev-kit:plugin-config` で設定する
 - `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` は逆極性のキルスイッチのためこのスキルでは管理しない（`plugin-config.md` 参照）

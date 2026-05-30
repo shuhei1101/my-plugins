@@ -12,13 +12,13 @@ reminds task updates on stop, manages worktrees, and guards force-operations on 
 | 3 | `work:pr-show` | Show next branch candidates in 3 categories (ready / in-progress / conditional) |
 | 4 | `work:merge` | Merge the current branch, close related issues, archive the branch document |
 | 5 | `work:qa-review` | Review QA items in the current branch document |
-| 6 | `work:config` | Interactively configure work env toggles in `settings.json` |
+| 6 | `work:plugin-config` | Interactively configure work env toggles in `settings.json` |
 | 7 | `work:issue-create` | Create issue files under `.work/issues/` |
 | 8 | `work:issue-scan` | Scan a random source file for rule violations, record as issues |
 | 9 | `work:issue-save` | Save a one-off issue from conversation |
 | 10 | `work:impl-review` | Review implementation against the branch document |
 | 11 | `work:setup` | Initialize `.work/` directory structure from templates |
-| 12 | `work:plugin-update` | Update `.work/` static templates to the current work version |
+| 12 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
 | 13 | `work:worktree-create` | Create a git worktree for a branch |
 | 14 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
 | 15 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
@@ -62,13 +62,13 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 | # | Version | Date | Summary |
 |---|---|---|---|
 | 1 | 2.50.0 | 2026-05-31 | Add `WORK_BRANCH_AUTHOR` env var — insert author name into branch names |
-| 3 | 2.48.0 | 2026-05-30 | Remove `work:notes-to-claude` skill — inter-plugin dependency eliminated |
-| 4 | 2.47.0 | 2026-05-30 | Add `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` to `work:config` managed toggles |
-| 5 | 2.46.2 | 2026-05-30 | Fix `issue-scan` skill: remove stale `py-kit`/`next-kit` references, update to `_injection_rules.yaml` |
-| 6 | 2.46.0 | 2026-05-30 | Extract Stop hook inline python to `hooks/scripts/stop.py` + `_common.py` |
-| 7 | 2.44.0 | 2026-05-30 | Unify branch document to single file (`{branch-hyphenated}.md`); rename `plugin-update` skill |
-| 8 | 2.43.0 | 2026-05-30 | Add `WORKSPACE_MERGE_PROPOSAL` env toggle |
-| 9 | 2.42.0 | 2026-05-30 | Add `WORKSPACE_PROTECTED_BRANCHES` env toggle |
-| 10 | 2.41.0 | 2026-05-30 | Change `impl-review` Step 4 to batch AskUserQuestion (max 4 per call) |
-| 11 | 2.40.0 | 2026-05-30 | Integrate `guard-kit` into work plugin |
-| 12 | 2.39.0 | 2026-05-30 | Add `work:config` skill for interactive env toggle configuration |
+| 2 | 2.48.0 | 2026-05-30 | Remove `work:notes-to-claude` skill — inter-plugin dependency eliminated |
+| 3 | 2.47.0 | 2026-05-30 | Add `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` to `work:plugin-config` managed toggles |
+| 4 | 2.46.2 | 2026-05-30 | Fix `issue-scan` skill: remove stale `py-kit`/`next-kit` references, update to `_injection_rules.yaml` |
+| 5 | 2.46.0 | 2026-05-30 | Extract Stop hook inline python to `hooks/scripts/stop.py` + `_common.py` |
+| 6 | 2.44.0 | 2026-05-30 | Unify branch document to single file (`{branch-hyphenated}.md`); rename `plugin-migrate` skill |
+| 7 | 2.43.0 | 2026-05-30 | Add `WORKSPACE_MERGE_PROPOSAL` env toggle |
+| 8 | 2.42.0 | 2026-05-30 | Add `WORKSPACE_PROTECTED_BRANCHES` env toggle |
+| 9 | 2.41.0 | 2026-05-30 | Change `impl-review` Step 4 to batch AskUserQuestion (max 4 per call) |
+| 10 | 2.40.0 | 2026-05-30 | Integrate `guard-kit` into work plugin |
+| 11 | 2.39.0 | 2026-05-30 | Add `work:plugin-config` skill for interactive env toggle configuration |
