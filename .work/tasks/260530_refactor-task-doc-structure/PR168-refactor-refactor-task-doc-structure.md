@@ -29,8 +29,8 @@ work-kit のタスクドキュメント構造を刷新する。
 | 済 | `.work/CLAUDE.md` / `.jp.md` を新構造の説明に書き換え | - `plugins/work-kit/templates/.work/CLAUDE.md`<br>- `plugins/work-kit/templates/.work/CLAUDE.jp.md` |
 | 済 | glossary（英 / 日）に新規用語を追記 | - `.claude/rules/core/glossary.md`<br>- `.claude/rules-jp/core/glossary.md` |
 | 済 | `plugin.json` / `marketplace.json` を v2.39.0 にバンプ（MINOR） | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | 全 `*.jp.md` を英版に追従して更新 | - `plugins/work-kit/skills/*/SKILL.jp.md`<br>- `plugins/work-kit/hooks/prompts/*.jp.md` |
-| - | コミット | - |
+| 済 | 全 `*.jp.md` を英版に追従して更新 | - `plugins/work-kit/skills/*/SKILL.jp.md`<br>- `plugins/work-kit/hooks/prompts/*.jp.md` |
+| 済 | コミット | - |
 
 ## 変更内容
 
