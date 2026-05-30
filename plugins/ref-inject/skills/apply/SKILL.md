@@ -81,7 +81,9 @@ Substitute placeholders in text files; copy binaries verbatim.
 | Template (under `templates/`) | Destination (under the target plugin) |
 |---|---|
 | `hooks/scripts/inject_references.py` | `hooks/scripts/inject_references.py` |
+| `hooks/scripts/references_edit_guard.py` | `hooks/scripts/references_edit_guard.py` |
 | `hooks/scripts/_common.py` | `hooks/scripts/_common.py` |
+| `hooks/prompts/references-edit-guard.md` / `.jp.md` | `hooks/prompts/…` (same names) |
 | `hooks/hooks.json` | `hooks/hooks.json` |
 | `hooks/templates/injection.md.j2` / `injection.jp.md.j2` | `hooks/templates/…` (same names) |
 | `references/_index.yaml` / `_index.jp.yaml` | `references/…` (same names) |
@@ -92,7 +94,7 @@ Substitute placeholders in text files; copy binaries verbatim.
 Notes:
 - Paths mirror the template — no relocation.
 - Leave `${CLAUDE_PLUGIN_ROOT}` in `hooks.json` literal — Claude Code expands it at runtime.
-- **If the target already has `hooks/hooks.json`** (other hooks present): do not overwrite it — merge the `PreToolUse` (Edit/Write/MultiEdit/Read) entries into the existing file instead.
+- **If the target already has `hooks/hooks.json`** (other hooks present): do not overwrite it — merge the `PreToolUse` (Edit/Write/MultiEdit/Read) **and `PostToolUse` (Edit/Write/MultiEdit)** entries into the existing file instead.
 - **If the target already has the injection files** (a re-apply / mechanism update): overwrite `hooks/*` but leave existing `references/` content (_index.yaml / _injection_rules.yaml / real docs) untouched — only add the skeleton files that are missing.
 - After writing, confirm no `__PLACEHOLDER__` token remains (grep the target plugin's `hooks/`).
 
