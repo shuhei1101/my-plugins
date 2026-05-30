@@ -36,7 +36,7 @@ JP ミラー警告コメント自体は維持しつつ、配置位置を「フ�
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
 | 済 | `## QA` の未決定事項を解消 | - 本ドキュメント |
-| - | `.work/notes/` の関連ノート整備 | - 該当ノート |
+| 済 | `.work/notes/` の関連ノート整備 | - 該当ノート |
 | 済 | `plugins/dev-kit/references/markdown-editing.md` (+ jp) を作成 | - 新規 |
 | 済 | `plugins/dev-kit/references/injection_rules.yaml` に新 reference を登録（注入対象パターン: `**/*.md`） | - 既存 yaml |
 | 済 | `plugins/dev-kit/hooks/scripts/markdown_frontmatter_check.py` を作成 | - 新規 |
