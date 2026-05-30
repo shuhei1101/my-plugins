@@ -40,14 +40,14 @@ PR201 で `injection.md.j2` / `injection.jp.md.j2` を編集した際に
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録する | - |
-| - | `.work/notes/` の関連ノートを確認・更新する | - |
-| - | `references/jinja2/templates.md` (英語) と `.jp.md` を作成し、上記3パターン + その他の注意事項を記述する | - `plugins/claude-kit/references/jinja2/templates.md`<br>- `plugins/claude-kit/references/jinja2/templates.jp.md` |
-| - | `_index.yaml` / `_index.jp.yaml` に新リファレンスを登録する | - `plugins/claude-kit/references/_index.yaml`<br>- `plugins/claude-kit/references/_index.jp.yaml` |
-| - | `_injection_rules.yaml` に `**/hooks/templates/*.j2` パスを追加し新リファレンスを紐付ける | - `plugins/claude-kit/references/_injection_rules.yaml` |
-| - | バージョンをバンプする | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| - | CLAUDE.md の Changelog を更新する | - `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md` |
-| - | ルール・CLAUDE.md を更新する | - |
+| ✓ | QA を `## QA` に記録する（該当なし） | - |
+| ✓ | `.work/notes/` の関連ノートを確認・更新する（既存ノートなし → 本 PR の changelog で代替） | - |
+| ✓ | `references/jinja2/templates.md` (英語) と `.jp.md` を作成し、上記3パターン + その他の注意事項を記述する | - `plugins/claude-kit/references/jinja2/templates.md`<br>- `plugins/claude-kit/references/jinja2/templates.jp.md` |
+| ✓ | `_index.yaml` / `_index.jp.yaml` に新リファレンスを登録する | - `plugins/claude-kit/references/_index.yaml`<br>- `plugins/claude-kit/references/_index.jp.yaml` |
+| ✓ | `_injection_rules.yaml` に `**/hooks/templates/*.j2` パスを追加し新リファレンスを紐付ける | - `plugins/claude-kit/references/_injection_rules.yaml` |
+| ✓ | バージョンをバンプする（3.44.0 → 3.45.0） | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| ✓ | CLAUDE.md の Changelog を更新する／changelogs/v3.45.0.md を作成する | - `plugins/claude-kit/CLAUDE.md`<br>- `plugins/claude-kit/CLAUDE.jp.md`<br>- `plugins/claude-kit/changelogs/v3.45.0.md` |
+| ✓ | ルール・CLAUDE.md を更新する（変更なし — `.claude/rules/` 配下に該当無し） | - |
 
 ## 変更内容
 
@@ -55,7 +55,16 @@ PR201 で `injection.md.j2` / `injection.jp.md.j2` を編集した際に
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| (実装後に記入) | - | - | - |
+| `plugins/claude-kit/references/jinja2/templates.md` | 新規 | Markdown を出力する Jinja2 テンプレートのオーサリングルール（trim_blocks、setext 見出しバグ、`}}` + Handlebars 衝突、チェックリスト） | EN 正本 |
+| `plugins/claude-kit/references/jinja2/templates.jp.md` | 新規 | 上記の JP ミラー | - |
+| `plugins/claude-kit/references/_index.yaml` | 編集 | `jinja2/templates.md` エントリ追加 | - |
+| `plugins/claude-kit/references/_index.jp.yaml` | 編集 | 上記の JP ミラー | - |
+| `plugins/claude-kit/references/_injection_rules.yaml` | 編集 | `**/hooks/templates/*.j2` → `jinja2/templates.md` ルール追加 | - |
+| `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | version 3.44.0 → 3.45.0 | - |
+| `.claude-plugin/marketplace.json` | 編集 | claude-kit version 3.44.0 → 3.45.0 | - |
+| `plugins/claude-kit/CLAUDE.md` | 編集 | Changelog テーブルに 3.45.0 行を追加 | - |
+| `plugins/claude-kit/CLAUDE.jp.md` | 編集 | 上記の JP ミラー | - |
+| `plugins/claude-kit/changelogs/v3.45.0.md` | 新規 | 3.45.0 の changelog 詳細 | - |
 
 ## テスト
 
