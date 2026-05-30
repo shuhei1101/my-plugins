@@ -31,13 +31,14 @@ stdin の file_path が対象拡張子 → セッションフラグ確認
 
 | フック | トリガー | 動作 |
 |---|---|---|
-| markdown_frontmatter_check | Edit/Write/MultiEdit で `*.md` | フロントマター開き `---` より前に非空行がある場合に advisory 警告（block なし） |
+| markdown_frontmatter_check | Write で `*.md`（`.jp.md` 除く） | フロントマター開き `---` より前に非空行がある場合に advisory 警告 |
 
 ### 設計判断
 
-- **block なし**: `decision: block` の reason で警告するが強制修正はしない（A案 = advisory）
+- **Write のみ対象**: Edit / MultiEdit の `new_string` はファイル断片のため全体チェックができない → 誤検知が多発するため Write のみに限定（#228 で修正）
+- **`.jp.md` 除外**: JP ミラーは仕様上 `<!-- Japanese mirror of ... -->` コメントがフロントマター前に来るのが正しい形式のため除外（#228 で修正）
+- **advisory の実装**: `decision: block` の reason で警告する — Claude が内容を見て続行可否を判断する
 - **言語注入**: `DEV_KIT_MARKDOWN=true` で `markdown-editing.md` を auto-inject（A案 = 全注入）
-- **既存違反**: 調査したところフロントマター前コメントの真の違反ゼロを確認（全ファイルの `---` は水平線）
 
 ## 関連ファイル
 

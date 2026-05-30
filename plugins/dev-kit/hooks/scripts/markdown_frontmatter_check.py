@@ -1,9 +1,10 @@
 """dev-kit Markdown frontmatter placement check.
 
-PreToolUse(Edit | Write | MultiEdit) で発火し、*.md ファイルへの書き込み内容に
+PreToolUse(Write) で発火し、*.md ファイルへの書き込み内容に
 「YAML フロントマター開き --- より前に非空行がある」パターンを検出して警告する。
 
-- block はしない (decision: block は出力しない) — 注意喚起のみ (advisory)
+- Edit / MultiEdit は対象外（new_string はファイル断片であり全体ではないため誤検知する）
+- .jp.md ファイルは対象外（JP ミラーは仕様上 HTML コメントがフロントマター前に来る）
 - 違反がなければ無出力で終了
 - env トグル: DEV_KIT_MARKDOWN_CHECK=false/0/no/off で無効化（デフォルト有効）
 """
@@ -43,17 +44,18 @@ def main() -> int:
     tool_name = data.get("tool_name", "")
     tool_input = data.get("tool_input") or {}
 
-    if tool_name == "MultiEdit":
-        file_path = tool_input.get("file_path", "")
-        edits = tool_input.get("edits") or []
-        content = "\n".join(e.get("new_string", "") for e in edits)
-    elif tool_name in ("Edit", "Write"):
-        file_path = tool_input.get("file_path", "")
-        content = tool_input.get("new_string") or tool_input.get("content") or ""
-    else:
+    # Edit / MultiEdit の new_string はファイル断片のため誤検知が多い — Write のみ対象
+    if tool_name != "Write":
         return 0
 
+    file_path = tool_input.get("file_path", "")
+    content = tool_input.get("content") or ""
+
     if not file_path.endswith(".md"):
+        return 0
+
+    # JP ミラーファイルは仕様上 HTML コメントがフロントマター前に来るため除外
+    if file_path.endswith(".jp.md"):
         return 0
 
     if not _has_content_before_frontmatter(content):
