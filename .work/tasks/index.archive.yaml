@@ -970,3 +970,10 @@ branches:
   summary: references/ 配下の ref-inject 内部ファイルを .ref-injects/ に移動し、_index.md を追加
   task: 260531_references再構成
   completed: true
+- id: 227
+  title: feat/claude-kit-jinja2-authoring-rule
+  type: feat
+  tags: []
+  summary: claude-kit に Jinja2 テンプレート記法の参照ドキュメントを追加
+  task: 260531_claude-kit-jinja2-authoring-rule
+  completed: true
