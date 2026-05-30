@@ -2,13 +2,14 @@
 name: merge
 description: |
   Merge a PR: verify TODO checklist, archive index, merge with --no-ff, remove worktree and branch,
-  and sync QA.md. Trigger when the user says "マージして", "merge して", or "PR をマージしたい".
+  and confirm any remaining QA entries in the PR document.
+  Trigger when the user says "マージして", "merge して", or "PR をマージしたい".
 disable-model-invocation: true
 ---
 
 # workspace:merge — Merge a PR
 
-Runs the full merge flow: TODO checklist verification → master compatibility check → close related issues → index archive → `--no-ff` merge → worktree cleanup → QA doc sync → auto-invoke pr-handoff for any next PR candidates.
+Runs the full merge flow: TODO checklist verification → master compatibility check → close related issues → index archive → `--no-ff` merge → worktree cleanup → confirm remaining QA entries in the PR document → auto-invoke pr-handoff for any next PR candidates.
 
 ---
 
@@ -37,11 +38,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Output
 
-- PR number, TODO.md path, and branch name confirmed
+- PR number, PR document path, and branch name confirmed
 
 ---
 
-### Step 2: Verify the TODO checklist
+### Step 2: Verify the task checklist
 
 #### Condition
 
@@ -49,8 +50,8 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Process
 
-1. Read `## 作業内容` table in `.work/tasks/{date}_{title}/PR{N}/TODO.md`
-2. Confirm all rows have `済` in the Done column
+1. Read the `## 作業内容` table in the PR document at `.work/tasks/{date}_{title}/{branch-hyphenated}.md`
+2. Confirm all rows have `済` in the `完了` column
 
 → Proceed to Step 3 only if all rows are `済`
 
@@ -129,8 +130,6 @@ git merge master
 3. PR purpose — if the PR corrects this change, prefer the PR
 4. Safe default — incorporate master, then adapt the PR
 
----
-
 ### Step 4: Close related issues (inside the worktree)
 
 #### Condition
@@ -139,7 +138,7 @@ git merge master
 
 #### Process
 
-1. Read the `## 関連イシュー` section of `.work/tasks/{date}_{title}/PR{N}/TODO.md` in the worktree
+1. Read the `## 関連イシュー` section of the PR document at `.work/tasks/{date}_{title}/{branch-hyphenated}.md` in the worktree
 2. **If the section is absent, empty, or only contains the template placeholder row** (`| ISSUE-{N} | ... |`) → skip the rest of this step and proceed to Step 5
 3. For each row in the table, run the close command **inside the worktree**:
 
@@ -287,11 +286,11 @@ git branch -d PR{N}/{type}/{title}
 
 ---
 
-### Step 9: Update QA.md
+### Step 9: Confirm remaining QA entries
 
 #### Process
 
-1. Review `.work/tasks/{date}_{title}/PR{N}/QA.md` and confirm any remaining unresolved entries with the user
+1. Review the `## QA` section of the PR document at `.work/tasks/{date}_{title}/{branch-hyphenated}.md` and confirm any remaining unresolved entries with the user
 2. Commit if there are changes:
 
 ```bash
@@ -322,7 +321,7 @@ git commit -m "docs: post-merge update for PR{N}"
 
 #### Process
 
-1. Read the merged PR's `TODO.md` and inspect the `## 次PR候補` section
+1. Read the merged PR document and inspect its `## 次PR候補` section
 2. **If next PR candidates exist**: invoke `/workspace:pr-handoff` (no user confirmation needed). Delegate all classification and reservation logic to that skill
 3. **If next PR candidates are empty**: skip pr-handoff
 
@@ -334,7 +333,7 @@ git commit -m "docs: post-merge update for PR{N}"
 
 #### Process
 
-Invoke `/workspace:pr-show` passing the merged PR's `TODO.md` path as the data source.
+Invoke `/workspace:pr-show` passing the merged PR document path as the data source.
 
 #### Notes
 

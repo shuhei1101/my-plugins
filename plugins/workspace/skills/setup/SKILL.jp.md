@@ -21,8 +21,7 @@
 .work/
 ├── tasks/      # タスク・PR フォルダ（動的生成）
 ├── notes/      # 設計メモ・検討ノート（空フォルダ）
-├── issues/     # issue-scan・issue-create で管理するイシューファイル
-└── QA.md       # 未解決事項
+└── issues/     # issue-scan・issue-create で管理するイシューファイル
 ```
 
 ---
@@ -65,4 +64,3 @@ python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/setup.py"
 - [ ] `.work/tasks/` — 存在する
 - [ ] `.work/notes/` — 存在する
 - [ ] `.work/issues/` — 存在する（内部に `.gitignore` あり）
-- [ ] `.work/QA.md` — 存在する
