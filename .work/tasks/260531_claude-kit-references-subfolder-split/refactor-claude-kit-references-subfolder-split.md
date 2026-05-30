@@ -28,15 +28,15 @@ claude-kit の `references/` はすべてのファイルがフラットに並ん
 
 | # | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|---|
-| 1 | x | `## QA` に未決定事項を記録する | - `refactor-claude-kit-references-subfolder-split.md` |
-| 2 | - | `.work/notes/` のノートを更新する | - `.work/notes/claude-kit-references-structure.md` |
-| 3 | x | 現在の `references/` ファイル一覧とトピック別グルーピングを設計する（QA 先決） | - |
-| 4 | x | サブフォルダを作成しファイルを移動する | - `plugins/claude-kit/references/{plugin,skill,hook,claude-md,common}/` |
-| 5 | x | `_index.yaml` / `_index.jp.yaml` のパスを更新する | - `plugins/claude-kit/references/.ref-injects/_index.yaml`<br>- `plugins/claude-kit/references/.ref-injects/_index.jp.yaml` |
-| 6 | x | `_injection_rules.yaml` のパスを更新する | - `plugins/claude-kit/references/.ref-injects/_injection_rules.yaml` |
-| 7 | x | plugin バージョン同期チェックを独立ファイルに分離する | - `plugins/claude-kit/references/plugin/version-sync.md` |
-| 8 | x | `plugins/*/CLAUDE.md` 編集時にバージョン同期 reminder が注入されるよう injection rule を追加 | - `plugins/claude-kit/references/.ref-injects/_injection_rules.yaml` |
-| 9 | x | claude-kit バージョンバンプ + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `plugins/claude-kit/CLAUDE.md` |
+| 1 | 済 | `## QA` に未決定事項を記録する | - `refactor-claude-kit-references-subfolder-split.md` |
+| 2 | 済 | `.work/notes/` のノートを更新する | - `.work/notes/claude-kit-references-structure.md` |
+| 3 | 済 | 現在の `references/` ファイル一覧とトピック別グルーピングを設計する（QA 先決） | - |
+| 4 | 済 | サブフォルダを作成しファイルを移動する | - `plugins/claude-kit/references/{plugin,skill,hook,claude-md,common}/` |
+| 5 | 済 | `_index.yaml` / `_index.jp.yaml` のパスを更新する | - `plugins/claude-kit/references/.ref-injects/_index.yaml`<br>- `plugins/claude-kit/references/.ref-injects/_index.jp.yaml` |
+| 6 | 済 | `_injection_rules.yaml` のパスを更新する | - `plugins/claude-kit/references/.ref-injects/_injection_rules.yaml` |
+| 7 | 済 | plugin バージョン同期チェックを独立ファイルに分離する | - `plugins/claude-kit/references/plugin/version-sync.md` |
+| 8 | 済 | `plugins/*/CLAUDE.md` 編集時にバージョン同期 reminder が注入されるよう injection rule を追加 | - `plugins/claude-kit/references/.ref-injects/_injection_rules.yaml` |
+| 9 | 済 | claude-kit バージョンバンプ + changelog | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `plugins/claude-kit/CLAUDE.md` |
 
 ## 変更内容
 
