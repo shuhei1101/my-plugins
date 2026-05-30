@@ -13,17 +13,20 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録 | - |
-| - | `.work/notes/` のノートを更新 | - |
-| - | `git merge master/main/origin/master/origin/main` のみ許可するよう正規表現を修正 | - `plugins/work/hooks/scripts/git-guard.py` |
-| - | プロンプト内容の更新（必要あれば） | - `plugins/work/hooks/prompts/git-guard.md`<br>- `plugins/work/hooks/prompts/git-guard.jp.md` |
-| - | バージョンバンプ | - `plugins/work/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | QA を `## QA` に記録 | - |
+| 済 | `.work/notes/` のノートを更新 | - `.work/notes/integrate-guard-kit-into-workspace.md` |
+| 済 | `git merge master/main/origin/master/origin/main` のみ許可するよう正規表現を修正 | - `plugins/work/hooks/scripts/git-guard.py` |
+| 済 | プロンプト内容の更新（不要と判断 — ブロック時のみ表示のため） | - |
+| 済 | バージョンバンプ | - `plugins/work/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json`<br>- `plugins/work/changelogs/v2.46.1.md` |
 
 ## 変更内容
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| `plugins/work/hooks/scripts/git-guard.py` | 編集 | mergeの正規表現を拡張し master/main を除外 | - |
+| `plugins/work/hooks/scripts/git-guard.py` | 編集 | `_SAFE_MERGE` 正規表現を追加し `git merge (origin/)?(master\|main)` を除外 | - |
+| `plugins/work/.claude-plugin/plugin.json` | 編集 | バージョン 2.46.0 → 2.46.1 | - |
+| `.claude-plugin/marketplace.json` | 編集 | work バージョン 2.46.0 → 2.46.1 | - |
+| `plugins/work/changelogs/v2.46.1.md` | 新規 | v2.46.1 変更内容を記録 | - |
 
 ## テスト
 
