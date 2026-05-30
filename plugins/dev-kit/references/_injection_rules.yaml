@@ -780,17 +780,23 @@ rules:
   lang: html
   required:
   - html/principles.md
+  - html/css-js-link.md
+  - html/common-component-first.md
   optional:
   - html/ui-design.md
 - pattern: '**/*.css'
   lang: html
   required:
   - html/principles.md
+  - html/css-js-link.md
+  - html/common-component-first.md
   optional:
   - html/ui-design.md
 - pattern: '**/*.js'
   lang: html
   required:
   - html/principles.md
+  - html/css-js-link.md
+  - html/common-component-first.md
   optional:
   - html/ui-design.md
