@@ -30,7 +30,7 @@
 | 済 | `.work/tasks/` CLAUDE.md など内部テンプレート参照を更新 | `plugins/workspace/templates/` |
 | 済 | guard-kit hook 内の work-kit 参照を更新 | `plugins/guard-kit/` |
 | 済 | claude-kit エージェント内の work-kit 参照を更新 | `plugins/claude-kit/agents/` |
-| - | ルール・CLAUDE.md を整備する（glossary に rename エントリ追加） | `.claude/rules/core/glossary.md` |
+| 済 | ルール・CLAUDE.md を整備する（glossary に rename エントリ追加） | `.claude/rules/core/glossary.md` |
 
 ## 参考ドキュメント
 
