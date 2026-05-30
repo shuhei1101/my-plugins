@@ -3,6 +3,7 @@ created_at: 2026-05-24
 updates:
   - 2026-05-24 — PR108: JP ミラー確認フックの設計メモを作成
   - 2026-05-25 — PR123: rules-jp/core/ の JP ミラー警告をブロッククォートから mark-generated HTML コメント形式に移行
+  - 2026-05-31 — PR207: JP ミラーコメントにソースファイル名を追加（全 211 ファイル一括適用）
 related_specs: []
 related_prs:
   - PR108
@@ -10,6 +11,7 @@ related_prs:
   - PR133
   - PR137
   - PR141
+  - PR207
 ---
 
 # JP ミラーポリシー — .md 作成時の .jp.md 強制
@@ -63,3 +65,19 @@ claude-kit が所有する方が責務として適切。
 
 creator skills の JP ミラー生成ステップで `jp-mirror-translator` エージェントを呼ぶよう変更し、
 翻訳処理を一元化する。
+
+## JP ミラーコメントへのソースファイル名追加（PR207）
+
+全 `*.jp.md` の冒頭コメントにソースの英語ファイル名を追加し、一括適用する。
+
+**旧形式:**
+```
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+```
+
+**新形式:**
+```
+<!-- This file is a Japanese mirror of {source_file.md}. When updating the English original, update this file too. -->
+```
+
+ソースファイル名はベース名のみ（フルパスなし）。`foo.jp.md` のソースは `foo.md`。
