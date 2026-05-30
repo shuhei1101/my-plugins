@@ -8,7 +8,7 @@ related_prs:
   - PR139
 ---
 
-# interactive-review-skills — AskUserQuestion を使った2つのレビュースキル
+# インタラクティブレビュースキル — AskUserQuestion を使った 2 つのレビュー
 
 ## 概要
 

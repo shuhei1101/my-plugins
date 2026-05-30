@@ -16,7 +16,7 @@ related_prs:
   - PR125
 ---
 
-# claude-kit creator-skill-hook — UserPromptSubmit フック設計メモ
+# クリエータースキルフック (claude-kit) — UserPromptSubmit フック設計メモ
 
 ## 概要
 

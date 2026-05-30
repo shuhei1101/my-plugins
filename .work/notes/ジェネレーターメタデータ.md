@@ -11,7 +11,7 @@ related_prs:
   - PR94
 ---
 
-# generator-metadata — creator スキル生成物の出自トレース機構
+# ジェネレーターメタデータ — creator スキル生成物の出自トレース機構
 
 ## 概要
 

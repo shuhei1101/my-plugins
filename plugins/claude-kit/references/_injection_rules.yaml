@@ -18,6 +18,7 @@ rules:
     optional:
       - subagents.md
       - environment.md
+      - plugin-config.md
 
   # ---- References: プラグインのリファレンスファイルを編集する場合 ----
   - pattern: "plugins/*/references/**/*.md"
@@ -72,6 +73,7 @@ rules:
       - plugin-structure.md
     optional:
       - environment.md
+      - plugin-config.md
 
   # ---- プラグインの CLAUDE.md: プラグインディレクトリ直下の CLAUDE.md ----
   # 上の汎用 **/CLAUDE.md パターンに、プラグイン固有の執筆ガイドを上乗せする。

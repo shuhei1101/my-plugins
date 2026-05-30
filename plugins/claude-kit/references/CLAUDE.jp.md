@@ -37,8 +37,6 @@ Claude Code 指示ファイル（skill / rule / CLAUDE.md / hook / plugin）の�
 | `**/CLAUDE.md` | `common.md` + `claude-md.md` |
 | `**/hooks/hooks.json`、`**/.claude/settings.json`、`**/hooks/prompts/*.md` | `common.md` + `hooks.md` |
 | `**/.claude-plugin/{plugin,marketplace}.json` | `common.md` + `plugin-structure.md` |
-| `**/rules/**/glossary.md` | `glossary.md` |
-| `**/rules/**/incidents.md` | `incidents.md` |
 
 ## メンテナンス
 

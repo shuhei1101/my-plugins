@@ -36,8 +36,6 @@ Set `CLAUDE_KIT_INJECTION_LANG=jp` to inject Japanese descriptions (`_index.jp.y
 | `**/CLAUDE.md` | `common.md` + `claude-md.md` |
 | `**/hooks/hooks.json`, `**/.claude/settings.json`, `**/hooks/prompts/*.md` | `common.md` + `hooks.md` |
 | `**/.claude-plugin/{plugin,marketplace}.json` | `common.md` + `plugin-structure.md` |
-| `**/rules/**/glossary.md` | `glossary.md` |
-| `**/rules/**/incidents.md` | `incidents.md` |
 
 ## Maintenance
 
