@@ -32,6 +32,7 @@
 | [インタラクティブレビュースキル.md](インタラクティブレビュースキル.md) | インタラクティブレビュースキル — AskUserQuestion を使った 2 つのレビュー |
 | [next-kitプランスキル.md](next-kitプランスキル.md) | next-kit:plan スキル — Next.js プロジェクト設計計画書生成 |
 | [プラグイン設定スキル.md](プラグイン設定スキル.md) | プラグイン設定スキル — 設計メモ (PR167) |
+| [plugin-config-reference.md](plugin-config-reference.md) | plugin-config リファレンス設計メモ — config スキル規約・ガイド (PR175) |
 | [pr-showスキル.md](pr-showスキル.md) | pr-show スキル — 次 PR 候補一覧の状況表示 |
 | [ref-injectジェネレータ.md](ref-injectジェネレータ.md) | ref-inject — リファレンス自動注入プラグインのジェネレータ |
 | [work-kitスキル群.md](work-kitスキル群.md) | work-kit スキル群 — 設計メモ |
@@ -49,6 +50,7 @@
 | [guard-kit統合メモ.md](guard-kit統合メモ.md) | guard-kit を workspace に統合 — PR169 |
 | [言語プラグイン統合メモ.md](言語プラグイン統合メモ.md) | py-kit / html-kit / next-kit → dev-kit 統合 (PR166) |
 | [プラグインCLAUDE標準構成.md](プラグインCLAUDE標準構成.md) | プラグイン CLAUDE.md 標準構成 — 標準セクション定義 |
+| [claude-kit-references-structure.md](claude-kit-references-structure.md) | claude-kit リファレンス構造整理 — サブフォルダ分割設計メモ |
 
 ---
 
