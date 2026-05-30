@@ -27,7 +27,13 @@ import subprocess
 import sys
 import tempfile
 
-PROTECTED_BRANCHES = ("master", "main", "develop")
+# env `WORKSPACE_PROTECTED_BRANCHES` でカンマ区切り上書き可（空要素は除外）。
+# 未設定時はデフォルト `master,main,develop` で完全な後方互換。
+PROTECTED_BRANCHES = tuple(
+    b.strip()
+    for b in os.environ.get("WORKSPACE_PROTECTED_BRANCHES", "master,main,develop").split(",")
+    if b.strip()
+)
 
 
 def _git_dir_from_command(command: str) -> str | None:
