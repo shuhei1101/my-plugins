@@ -14,6 +14,8 @@ Claude Code プラグインを作成または更新する方法。本ガイド�
 plugins/<plugin-name>/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin manifest (required)
+├── CLAUDE.md                # Plugin developer guide (required)
+├── CLAUDE.jp.md             # Japanese mirror (required)
 ├── skills/
 │   └── <skill-name>/
 │       ├── SKILL.md         # Skill definition (English, auto-loaded)
@@ -24,11 +26,38 @@ plugins/<plugin-name>/
 │   └── hooks.json           # Hook configuration (optional)
 ├── references/              # Shared reference docs (optional)
 │   └── <topic>.md
-├── .mcp.json                # MCP server config (optional)
-└── changelogs/              # Version history (required)
-    ├── v1.0.0.md            # Initial release
-    └── v1.1.0.md            # Subsequent versions
+└── .mcp.json                # MCP server config (optional)
 ```
+
+---
+
+## 必須スキル
+
+### `plugin-update`（全プラグイン必須）
+
+すべてのプラグインは、プロジェクトに展開したプラグイン生成物を現在インストール済みのプラグイン
+バージョンに合わせて更新する `plugin-update` スキルを**必ず**同梱する。手動起動のみ
+（`/<plugin>:plugin-update`）。
+
+**理由**: プラグインがプロジェクトに静的テンプレ（`.work/CLAUDE.md`・フックプロンプト・サンプル
+コンフィグ・`injection_rules.yaml` で注入する references など）を展開する場合、それらのコピーは
+新バージョンが出るたびにプラグインソースに対して陳腐化していく。プラグイン専用の同期コマンドが
+ないと、ユーザーは手で diff してコピーする羽目になる。各プラグインが自分の更新パスを持つのは、
+プラグイン自身が自分のテンプレートと移行ルールを知っているから。
+
+**標準仕様**:
+
+| 項目 | 規約 |
+|---|---|
+| 名前 | `plugin-update`（kebab-case 固定 — `<plugin>-update` ではない） |
+| トリガー | 手動のみ（`description` の自動トリガーなし。明示的に `/<plugin>:plugin-update`） |
+| 最初の動作 | プロジェクトの PR ブランチ作成スキル（例: `/workspace:work-start`）を呼び、編集がレビュー可能なブランチに載るようにする |
+| スコープ | このプラグイン自身の静的成果物のみ。他プラグインには絶対に手を出さない |
+| 参考 | 標準的な実装例は `plugins/workspace/skills/plugin-update/SKILL.md` を参照 |
+
+新規プラグインを作成するときは、workspace の実装を参考に `skills/plugin-update/SKILL.md`
+（と `.jp.md`）を生成し、テンプレファイルのリストを自分のプラグインが展開する静的ファイルに
+合わせて差し替える。
 
 ---
 
@@ -50,12 +79,13 @@ plugins/<plugin-name>/
 ### ステップ 3 — ファイル変更を適用する
 
 - **作成**: 上記のディレクトリ構成を生成する。agents/hooks/MCP ディレクトリは要求された場合のみ追加する。
+  `CLAUDE.md` と `CLAUDE.jp.md` は `plugin-claude-md.md` に従って作成する — 全プラグインで必須。
 - **更新**: 変更したファイルだけを編集する。無関係なファイルには触れない。
 
 ### ステップ 4 — plugin.json + marketplace.json + changelog（バージョンを一致させる）
 
 下記のフィールド/形式/バージョンのセクションを参照。**`plugin.json` のバージョン、
-`.claude-plugin/marketplace.json` のエントリ、changelog のファイル名（`changelogs/v{X.Y.Z}.md`）は
+`.claude-plugin/marketplace.json` のエントリ、`CLAUDE.md` の `## Changelog` テーブルは
 常に一致していなければならない。** この 3 つを決して乖離させないこと。
 
 > 2 つの並行 PR が同じプラグインをバンプし、一方が先にマージされたら、マージ前にもう一方を
@@ -116,24 +146,13 @@ claude --plugin-dir ./plugins/<plugin-name>
 
 ---
 
-## changelog ファイルの形式
+## Changelog
 
-ファイル: `changelogs/v{X.Y.Z}.md` — **`plugin.json` と同じバージョン**。
+バージョン履歴はプラグインの `CLAUDE.md` 末尾の `## Changelog` テーブルに記録する
+（`changelogs/` ディレクトリは使用しない）。バージョンは新しい順に記載し、概要は簡潔に。
+詳細は git 履歴を参照。
 
-```markdown
-# v{X.Y.Z} — {YYYY-MM-DD}
-
-## 変更内容
-
-- {変更点}
-
-## 構造の変更
-
-{ディレクトリ構造や設定ファイルの変更があれば記載。なければ「なし」と書く。}
-```
-
-「構造の変更」セクションは重要 — このプラグインに依存する他プロジェクトに、自分側で適用すべき
-構造的な更新を知らせるためのもの。
+詳細なオーサリングガイドは `plugin-claude-md.md` を参照。
 
 ---
 
@@ -141,5 +160,5 @@ claude --plugin-dir ./plugins/<plugin-name>
 
 プラグインのフック/スクリプトは、`settings.json` の `env` ブロックで設定し `os.environ` で読む
 環境変数によって設定可能にできる（詳細は `environment.md`）。プラグインが env 変数を読む場合は、
-**そのプラグイン自身の `CLAUDE.md` に記載する**（名前・効果・デフォルト） — ソースを読まずとも何が
-設定可能か分かるように。キーはプラグイン名で名前空間化する（例: `PY_KIT_INJECTION_TTL`）。
+**プラグインの `CLAUDE.md` の `## Environment Variables` テーブルに記載する**（キー・値・デフォルト）。
+キーはプラグイン名で名前空間化する（例: `PY_KIT_INJECTION_TTL`）。テーブル形式は `plugin-claude-md.md` 参照。

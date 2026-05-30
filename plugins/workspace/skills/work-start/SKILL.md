@@ -2,14 +2,14 @@
 name: work-start
 description: |
   Start a new PR: determine PR number, collect details, add index.yaml entry in main repo,
-  create worktree, then create all task documents INSIDE the worktree.
+  create worktree, then create the single per-PR task document INSIDE the worktree.
   Trigger when the user says "新しい PR を作って", "新しい作業を始めたい", "work-start して",
   "start new work", or "create a new PR".
 ---
 
 # workspace:work-start — Start a New PR
 
-Creates the worktree first, then creates all task documents inside it.
+Creates the worktree first, then creates the single per-PR task document inside it.
 This prevents task documents from being created in the main repository.
 
 ---
@@ -78,7 +78,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --title "PR{N} — {title}" \
   --type {type} \
   --summary "{summary}" \
-  --task "{YYYYMMDD}_{title}"
+  --task "{YYMMDD}_{title}"
 ```
 
 → Proceed to Step 4
@@ -90,6 +90,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### Notes
 
 - `index.yaml` is excluded by `.work/tasks/.gitignore` — no commit to master is needed
+- Use a 6-digit `YYMMDD` (e.g. `260530`), not the 8-digit `YYYYMMDD` form
 
 ---
 
@@ -142,13 +143,13 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### Process
 
 1. Read all folder names under `.work/tasks/` in the worktree
-2. Compare each folder name (`YYYYMMDD_title` format) against the purpose of this PR and decide:
+2. Compare each folder name (`YYMMDD_title` format) against the purpose of this PR and decide:
    - **Add to existing folder**: an existing folder covers the same goal or feature area, and this PR fits naturally as part of it
      - Examples: splitting a feature across multiple PRs, a follow-up fix, related refactoring
    - **Create new folder**: no existing folder is closely related, or `.work/tasks/` is empty
 3. Confirm the argument to pass to the next step:
    - Adding to existing → use `--task-dir {folder_name}`
-   - Creating new → use `--date {YYYYMMDD} --title {title}`
+   - Creating new → use `--date {YYMMDD} --title {title}`
 
 → Proceed to Step 6
 
@@ -160,10 +161,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 - Do not ask the user — decide autonomously based on content
 - When in doubt, create a new folder (folders can be consolidated later)
+- Legacy folders may still use the 8-digit `YYYYMMDD` prefix — leave them as-is; only new folders use `YYMMDD`
 
 ---
 
-### Step 6: Create PR folder, TODO.md, and QA.md (inside worktree)
+### Step 6: Create the PR document (inside worktree)
 
 #### Condition
 
@@ -171,7 +173,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Process
 
-Run one of the following depending on the choice in Step 5:
+Run one of the following depending on the choice in Step 5. The `--branch` argument is the full branch
+name (`PR{N}/{type}/{title}`); the script converts slashes to hyphens to form the file name
+(e.g. `PR168/refactor/refactor-task-doc-structure` → `PR168-refactor-refactor-task-doc-structure.md`):
 
 **New task folder:**
 
@@ -179,8 +183,9 @@ Run one of the following depending on the choice in Step 5:
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   ../$(basename $(pwd))-wt-PR{N} \
   --pr {N} \
+  --branch PR{N}/{type}/{title} \
   --title {title} \
-  --date {YYYYMMDD} \
+  --date {YYMMDD} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
 ```
 
@@ -190,6 +195,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   ../$(basename $(pwd))-wt-PR{N} \
   --pr {N} \
+  --branch PR{N}/{type}/{title} \
   --task-dir {existing_folder_name} \
   --title {title} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -199,12 +205,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Output
 
-- `../repo-wt-PR{N}/.work/tasks/{task_folder}/PR{N}/TODO.md` created
-- `../repo-wt-PR{N}/.work/tasks/{task_folder}/PR{N}/QA.md` created
+- `../repo-wt-PR{N}/.work/tasks/{task_folder}/PR{N}-{type}-{title}.md` created
 
 ---
 
-### Step 7: Fill in TODO.md with the work plan (inside worktree)
+### Step 7: Fill in the PR document with the work plan (inside worktree)
 
 #### Condition
 
@@ -212,40 +217,47 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Process
 
-Open `TODO.md` in the worktree and replace the template placeholder rows with the actual tasks.
-The following rows are mandatory and must not be removed or skipped:
+Open the created `PR{N}-{type}-{title}.md` in the worktree and replace the template placeholder content with
+the actual plan. The document holds every section for this PR — TODO, variations, QA, and references — all
+in one file.
 
-| Done | Task |
-|---|---|
-| - | Record open questions in QA.md |
-| - | Update the note document in `.work/notes/` |
-| - | (Implementation tasks: replace with PR-specific work) |
-| - | Update rules / CLAUDE.md |
+**`## 概要`** — write the goal / background, plus the `### 実施条件` sub-section:
 
-Also fill in the subsections under `## 概要` (between `## 概要` and `## 作業内容`):
+- `### 実施条件`: when this PR can be started. `即時実施可`, or `「{other PR name}」が完了してから`.
+  Mirrors the `実施条件` column from the triggering PR's `## 次PR候補` row.
 
-**`### 実施条件`**:
-- Write when this PR can be started: `即時実施可` or `「{other PR name}」が完了してから`
-- This mirrors the `実施条件` column from the `## 次PR候補` table of the triggering PR
+**`## 作業内容`** — task checklist. The following rows are mandatory and must not be removed or skipped:
 
-**`### 関連PR`**:
-- List PRs that are directly related to this one (predecessors, split siblings, follow-ups)
-- Use the table format: `| PR番号 | 概要 |` — one row per related PR
-- Leave the placeholder row if there are no related PRs
+| 完了 | 作業内容 | 対象ファイル |
+|---|---|---|
+| - | Record open questions in `## QA` (this same document) | - |
+| - | Update the note document in `.work/notes/` | - |
+| - | (Implementation tasks: replace with PR-specific work) | - |
+| - | Update rules / CLAUDE.md | - |
 
-Also fill in the `## 関連イシュー` section (between `## 参考ドキュメント` and `## 次PR候補`):
-- List `.work/issues/ISSUE-{N}` entries that this PR is intended to resolve
-- Use the table format: `| ID | 概要 | resolution |` — one row per issue
-- `resolution` is `resolved` (the PR fixes the issue) or `wontfix` (the issue is intentionally not fixed)
-- These rows drive the auto-close logic in the `merge` skill (issue files are moved to `.work/issues/closed/` and recorded in `_index.archive.yaml.closed_issues`)
-- **If there are no related issues**: delete the `## 関連イシュー` heading and table entirely (do not keep an empty placeholder)
+**`## 変更内容`** — the implementation files this PR adds or modifies (excluding tests). Fill in once
+implementation starts — every file that lands in a commit goes here:
 
-Also fill in the `## 次PR候補` section at the bottom of TODO.md (columns: title / summary / 実施条件):
-- If the user mentioned follow-up work or future PRs during this session, list them here
-- Fill in `実施条件` for each candidate:
-  - `即時実施可` (or leave a `-`) when the candidate has no dependency
-  - `「{other candidate title}」が完了したら` when the candidate depends on another candidate in the same table (serial dependency)
-- If nothing was mentioned, leave the placeholder row as-is (do not delete the section)
+| ファイル名 | 新規/編集 | 内容 | 補足 |
+
+**`## テスト`** — test files added or modified alongside the implementation. Leave the placeholder row if
+this PR has no test changes; otherwise list each test file.
+
+**`## QA`** — record open questions from Step 2 as QA-XXX entries here (Step 9 below appends them).
+
+**`## 参考ドキュメント`** — links to related notes / specs (the note from Step 8 is appended here).
+
+**`## 関連イシュー`** — list `.work/issues/ISSUE-{N}` entries this PR resolves
+(table format: `| ID | 概要 | resolution |`). `resolution` is `resolved` or `wontfix`.
+**If there are no related issues**: delete the `## 関連イシュー` heading and table entirely.
+
+**`## 関連PR`** — list PRs directly related to this one (predecessors, split siblings, follow-ups)
+(table format: `| PR番号 | 概要 |`). Leave the placeholder row if there are none.
+
+**`## 次PR候補`** — list follow-up PRs mentioned during this session
+(columns: title / summary / 実施条件):
+- `即時実施可` (or `-`) when the candidate has no dependency
+- `「{other candidate title}」が完了したら` when the candidate depends on another candidate in the same table
 
 → Proceed to Step 8
 
@@ -262,13 +274,13 @@ Also fill in the `## 次PR候補` section at the bottom of TODO.md (columns: tit
 1. Check `.work/notes/` inside the worktree for a related note
 2. If found → update the relevant sections for this PR
 3. If not found → create a new note using the template at `${CLAUDE_PLUGIN_ROOT}/templates/note.md`
-4. Add a link to the note in TODO.md's `## 参考ドキュメント` section
+4. Add a link to the note in the PR document's `## 参考ドキュメント` section
 
 → Proceed to Step 9
 
 ---
 
-### Step 9: Record open questions in QA.md (inside worktree)
+### Step 9: Record open questions in the `## QA` section (inside worktree)
 
 #### Condition
 
@@ -276,7 +288,7 @@ Also fill in the `## 次PR候補` section at the bottom of TODO.md (columns: tit
 
 #### Process
 
-1. Append any open questions from Step 2 to `PR{N}/QA.md` inside the worktree as QA-XXX entries
+1. Append any open questions from Step 2 to the `## QA` section of the PR document as QA-XXX entries
 2. Skip if there are no open questions
 
 → Proceed to Step 10
@@ -288,7 +300,7 @@ Also fill in the `## 次PR候補` section at the bottom of TODO.md (columns: tit
 #### Process
 
 1. Commit all created files inside the worktree (branch: `PR{N}/{type}/{title}`)
-2. Report what was created: branch name, worktree path, TODO.md path, note path
+2. Report what was created: branch name, worktree path, PR document path, note path
 3. Start implementation:
    - **If QA entries exist** → ask the user for confirmation before starting
    - **If no QA entries** → proceed with implementation immediately
@@ -303,7 +315,7 @@ Also fill in the `## 次PR候補` section at the bottom of TODO.md (columns: tit
 
 - Commit in meaningful units that are easy for the user to understand
 - Do not split commits too finely
-- Do not mix planning documents (TODO, notes, etc.) and implementation code in the same commit
+- Do not mix planning documents (PR document, notes, etc.) and implementation code in the same commit
 
 ##### Commit message language
 

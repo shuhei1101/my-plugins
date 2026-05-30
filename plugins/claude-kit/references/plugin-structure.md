@@ -13,6 +13,8 @@ Japanese mirror: `references/plugin-structure.jp.md`
 plugins/<plugin-name>/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin manifest (required)
+├── CLAUDE.md                # Plugin developer guide (required)
+├── CLAUDE.jp.md             # Japanese mirror (required)
 ├── skills/
 │   └── <skill-name>/
 │       ├── SKILL.md         # Skill definition (English, auto-loaded)
@@ -23,11 +25,37 @@ plugins/<plugin-name>/
 │   └── hooks.json           # Hook configuration (optional)
 ├── references/              # Shared reference docs (optional)
 │   └── <topic>.md
-├── .mcp.json                # MCP server config (optional)
-└── changelogs/              # Version history (required)
-    ├── v1.0.0.md            # Initial release
-    └── v1.1.0.md            # Subsequent versions
+└── .mcp.json                # MCP server config (optional)
 ```
+
+---
+
+## Required skills
+
+### `plugin-update` (mandatory for every plugin)
+
+Every plugin **must** ship a `plugin-update` skill that brings the project's plugin-generated
+artifacts in line with the currently installed plugin version. Manual invocation only
+(`/<plugin>:plugin-update`).
+
+**Why**: when a plugin ships static templates (`.work/CLAUDE.md`, hook prompts, sample configs,
+references injected via `injection_rules.yaml`, etc.) into the project, those copies drift behind
+the plugin source as new versions are released. Without a per-plugin sync command, the user has
+to diff and copy by hand. Each plugin owns its own update path because each plugin knows its own
+templates and migration rules.
+
+**Standard contract**:
+
+| Item | Convention |
+|---|---|
+| Name | `plugin-update` (kebab-case literal — not `<plugin>-update`) |
+| Trigger | Manual only (no `description` auto-triggers; explicit `/<plugin>:plugin-update`) |
+| First action | Invoke the project's PR-branch skill (e.g. `/workspace:work-start`) so edits land on a reviewable branch |
+| Scope | Only this plugin's own static artifacts; never reach into other plugins |
+| Reference | See `plugins/workspace/skills/plugin-update/SKILL.md` for the canonical example |
+
+When creating a new plugin, generate `skills/plugin-update/SKILL.md` (and `.jp.md`) following the
+workspace example and adapt the template list to whatever static files your plugin ships.
 
 ---
 
@@ -50,12 +78,13 @@ components (agents/hooks/MCP).
 ### Step 3 — Apply file changes
 
 - **Creating**: generate the directory structure above. Add agents/hooks/MCP dirs only if requested.
+  Create `CLAUDE.md` and `CLAUDE.jp.md` following `plugin-claude-md.md` — every plugin requires them.
 - **Updating**: edit only the changed files; do not touch unrelated files.
 
 ### Step 4 — plugin.json + marketplace.json + changelog (keep versions identical)
 
 See the field/format/version sections below. **The version in `plugin.json`, the
-`.claude-plugin/marketplace.json` entry, and the changelog filename (`changelogs/v{X.Y.Z}.md`) must
+`.claude-plugin/marketplace.json` entry, and the `## Changelog` table in `CLAUDE.md` must
 always be identical.** Never let these three drift.
 
 > If two parallel PRs bump the same plugin and one merges first, rebump the other to the next
@@ -116,24 +145,13 @@ Add to `.claude-plugin/marketplace.json` → `plugins` array:
 
 ---
 
-## Changelog file format
+## Changelog
 
-File: `changelogs/v{X.Y.Z}.md` — **same version as `plugin.json`**.
+Version history is recorded in the `## Changelog` table at the bottom of the plugin's `CLAUDE.md`
+(not in a separate `changelogs/` directory). One row per version, newest at the top. Keep summaries
+brief — git history has the full diff.
 
-```markdown
-# v{X.Y.Z} — {YYYY-MM-DD}
-
-## 変更内容
-
-- {変更点}
-
-## 構造の変更
-
-{ディレクトリ構造や設定ファイルの変更があれば記載。なければ「なし」と書く。}
-```
-
-The "構造の変更" section is critical — it lets other projects that depend on this plugin know what
-structural updates they must apply on their end.
+Full authoring guide: `plugin-claude-md.md`.
 
 ---
 
@@ -141,5 +159,6 @@ structural updates they must apply on their end.
 
 A plugin's hooks/scripts can be made configurable via environment variables set in `settings.json`'s
 `env` block and read with `os.environ` (full guide: `environment.md`). When a plugin reads any env var,
-**document it in the plugin's own `CLAUDE.md`** — name, effect, and default — so users know what is
-configurable without reading the source. Namespace the key with the plugin name (e.g. `PY_KIT_INJECTION_TTL`).
+**document it in the `## Environment Variables` table of the plugin's `CLAUDE.md`** — key, values
+(with default marked), and description. Namespace the key with the plugin name
+(e.g. `PY_KIT_INJECTION_TTL`). See `plugin-claude-md.md` for the table format.

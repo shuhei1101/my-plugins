@@ -16,8 +16,7 @@ Expanded structure:
 .work/
 ├── tasks/      # Task / PR folders (created dynamically by work-start)
 ├── notes/      # Design notes and memos (empty initially)
-├── issues/     # Issue files managed by issue-scan and issue-create
-└── QA.md       # Open questions
+└── issues/     # Issue files managed by issue-scan and issue-create
 ```
 
 ---
@@ -60,4 +59,3 @@ python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/setup.py"
 - [ ] `.work/tasks/` — exists
 - [ ] `.work/notes/` — exists
 - [ ] `.work/issues/` — exists (with `.gitignore` inside)
-- [ ] `.work/QA.md` — exists

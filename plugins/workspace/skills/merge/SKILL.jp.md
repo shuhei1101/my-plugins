@@ -14,7 +14,7 @@
 ## 概要
 
 PR のマージフローを実行するスキル。
-TODO 確認 → master 適合確認 → conversation-to-claude 実行（ワークツリー内、claude-kit インストール済みの場合） → 関連イシューのクローズ → index アーカイブ → `--no-ff` マージ → ワークツリークリーンアップ → ドキュメント更新 → 次PR候補があれば pr-handoff で予約、を行う。
+TODO 確認 → master 適合確認 → 関連イシューのクローズ → index アーカイブ → `--no-ff` マージ → ワークツリークリーンアップ → ドキュメント更新 → 次PR候補があれば pr-handoff で予約、を行う。
 
 ---
 
@@ -43,7 +43,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 出力
 
-- マージ対象の PR 番号・TODO.md パス・ブランチ名が確定している
+- マージ対象の PR 番号・PR ドキュメントパス・ブランチ名が確定している
 
 ---
 
@@ -55,7 +55,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 処理内容
 
-1. `.work/tasks/{date}_{title}/PR{N}/TODO.md` の `## 作業内容` テーブルを読む
+1. `.work/tasks/{date}_{title}/{branch-hyphenated}.md` の `## 作業内容` テーブルを読む
 2. 全行の「完了」列が `済` であることを確認する
 
 → 全て `済` ならステップ3へ進む
@@ -135,71 +135,16 @@ git merge master
 3. PR の目的 — PR がその変更を修正するためのものなら PR を優先
 4. 安全側 — 上記で決まらない場合は master を取り込み、PR を適合させる
 
----
-
-### ステップ4: conversation-to-claude を**ワークツリーで**実行する（claude-kit インストール済みの場合）
+### ステップ4: 関連イシューをクローズする（ワークツリー内）
 
 #### 条件
 
 - ステップ3が完了していること
-- `WORKSPACE_MERGE_CONV2CLAUDE` が `false`/`0`/`no`/`off` でないこと（デフォルト: 有効）; 無効の場合 → ステップ5へスキップ
 
 #### 処理内容
 
-1. 現在のセッションの利用可能なスキル一覧に `/claude-kit:conversation-to-claude` があるか確認する
-2. ない場合 → このステップをスキップ → ステップ5へ進む
-3. ある場合 → **ワークツリーディレクトリに移動してから** `/claude-kit:conversation-to-claude` を実行する:
-
-```bash
-cd ../$(basename $(pwd))-wt-PR{N}
-```
-
-   その後 `/claude-kit:conversation-to-claude` を実行し、完了を待つ。
-
-4. スキル完了後、ワークツリーに生成された `.claude/` 配下のファイル（rules / references / glossary など）が
-   PR ブランチにコミット済みであることを確認する。コミットされていなければワークツリー内でコミットする:
-
-```bash
-git -C ../$(basename $(pwd))-wt-PR{N} add .claude/
-git -C ../$(basename $(pwd))-wt-PR{N} commit -m "docs: conversation-to-claude artifacts #PR{N}"
-```
-
-5. メインリポジトリのディレクトリに戻る:
-
-```bash
-cd -
-```
-
-→ ステップ5へ進む
-
-#### 補足
-
-- このステップはブランチが削除される前にセッションの知識を永続化するために実行する
-- 会話が短くても省略しない — スキル側に判断させる
-
-##### なぜワークツリーで実行するか
-
-メインリポジトリ（master）の cwd で `conversation-to-claude` を実行すると、
-生成された `.claude/` ファイルが master 直接コミットとなり、PR の `--no-ff` マージに同梱されない。
-結果として「PR の作業内容」と「セッション知識」が別コミットで散らばってしまう。
-ワークツリーで実行することで、PR ブランチに同梱され、マージコミット単位での一貫性が保たれる。
-
-##### 禁止事項
-
-- master の cwd で `conversation-to-claude` を実行しない（master 直接コミットの原因）
-
----
-
-### ステップ5: 関連イシューをクローズする（ワークツリー内）
-
-#### 条件
-
-- ステップ4が完了していること
-
-#### 処理内容
-
-1. ワークツリーの `.work/tasks/{date}_{title}/PR{N}/TODO.md` から `## 関連イシュー` セクションを読み込む
-2. **セクション自体が無い、空、またはテンプレートのプレースホルダー行（`| ISSUE-{N} | ... |`）のみ**の場合 → このステップの残りをスキップしてステップ6へ進む
+1. ワークツリーの `.work/tasks/{date}_{title}/{branch-hyphenated}.md` から `## 関連イシュー` セクションを読み込む
+2. **セクション自体が無い、空、またはテンプレートのプレースホルダー行（`| ISSUE-{N} | ... |`）のみ**の場合 → このステップの残りをスキップしてステップ5へ進む
 3. テーブルの各行について、ワークツリー内で以下を実行する:
 
 ```bash
@@ -222,12 +167,12 @@ git -C ../$(basename $(pwd))-wt-PR{N} add .work/issues/
 git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: close related issues for PR{N} #PR{N}"
 ```
 
-→ ステップ6へ進む
+→ ステップ5へ進む
 
 #### 補足
 
 - イシューファイルの移動は git の rename として追跡される。`_index.yaml` は gitignore のままで OK
-- このコミットはステップ8の `--no-ff` マージに同梱される
+- このコミットはステップ7の `--no-ff` マージに同梱される
 - 1 件もイシュー行が処理されなかった場合は空コミットを作らない
 
 ##### なぜ set-completed / archive より前か
@@ -236,11 +181,11 @@ git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: close related issues for
 
 ---
 
-### ステップ6: index.yaml で PR を完了済みにする
+### ステップ5: index.yaml で PR を完了済みにする
 
 #### 条件
 
-- ステップ5が完了していること
+- ステップ4が完了していること
 
 #### 処理内容
 
@@ -251,7 +196,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
   .work/tasks/index.yaml --id {N}
 ```
 
-→ ステップ7へ進む
+→ ステップ6へ進む
 
 #### 補足
 
@@ -260,11 +205,11 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
 
 ---
 
-### ステップ7: 完了済みエントリをアーカイブする
+### ステップ6: 完了済みエントリをアーカイブする
 
 #### 条件
 
-- ステップ6が完了していること
+- ステップ5が完了していること
 
 #### 処理内容
 
@@ -285,25 +230,25 @@ git -C ../$(basename $(pwd))-wt-PR{N} add .work/tasks/index.archive.yaml
 git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.archive.yaml #PR{N}"
 ```
 
-→ ステップ8へ進む
+→ ステップ7へ進む
 
 #### 補足
 
 - `index.yaml` は gitignore 対象のためコミット不要
-- `index.archive.yaml` は git 追跡対象 — 派生元ブランチに直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ8のマージに含まれる）
+- `index.archive.yaml` は git 追跡対象 — 派生元ブランチに直接コミットするのではなく、マージ対象の PR ブランチにコミットする（ステップ7のマージに含まれる）
 - archive コマンドはメインリポジトリの `index.yaml` を読み、ワークツリーの `index.archive.yaml` に書き込む
 
 ---
 
-### ステップ8: マージを実行する
+### ステップ7: マージを実行する
 
 #### 条件
 
-- ステップ7が完了していること
+- ステップ6が完了していること
 
 > ⚠️ **マージ前の必須確認**
-> ステップ7でワークツリー内の `index.archive.yaml` をコミットし忘れたままマージを実行すると、アーカイブ変更がマージコミットに含まれない。
-> **マージコマンドを実行する前に、必ずステップ7のワークツリー内 `git commit` が完了していることを確認すること。**
+> ステップ6でワークツリー内の `index.archive.yaml` をコミットし忘れたままマージを実行すると、アーカイブ変更がマージコミットに含まれない。
+> **マージコマンドを実行する前に、必ずステップ6のワークツリー内 `git commit` が完了していることを確認すること。**
 > （アーカイブ件数が 0 だったためコミット不要だった場合はこの確認をスキップしてよい）
 
 #### 補足
@@ -321,11 +266,11 @@ git -C ../$(basename $(pwd))-wt-PR{N} commit -m "chore: archive PR{N} to index.a
 git merge --no-ff -m "{type}: {title} #PR{N}" PR{N}/{type}/{title}
 ```
 
-→ ステップ9へ進む
+→ ステップ8へ進む
 
 ---
 
-### ステップ9: ワークツリーとブランチを削除する
+### ステップ8: ワークツリーとブランチを削除する
 
 #### 処理内容
 
@@ -336,7 +281,7 @@ git worktree remove ../$(basename $(pwd))-wt-PR{N}
 git branch -d PR{N}/{type}/{title}
 ```
 
-→ ステップ10へ進む
+→ ステップ9へ進む
 
 #### 補足
 
@@ -347,11 +292,11 @@ git branch -d PR{N}/{type}/{title}
 
 ---
 
-### ステップ10: ドキュメントを更新する
+### ステップ9: ドキュメントを更新する
 
 #### 処理内容
 
-1. `.work/tasks/{date}_{title}/PR{N}/QA.md` を確認し、未解決エントリがあればユーザーに確認する
+1. `.work/tasks/{date}_{title}/{branch-hyphenated}.md` の `## QA` セクションを確認し、未解決エントリがあればユーザーに確認する
 2. 変更があればコミットする:
 
 ```bash
@@ -359,42 +304,42 @@ git add .work/
 git commit -m "docs: PR{N} マージ後ドキュメント更新"
 ```
 
-→ ステップ11へ進む
+→ ステップ10へ進む
 
 ---
 
-### ステップ11: マージ完了をユーザーに報告
+### ステップ10: マージ完了をユーザーに報告
 
 #### 処理内容
 
 1. マージが完了したことをユーザーに報告する
    - マージ済みブランチ名・PR番号・対象タスクフォルダを含める
 
+→ ステップ11へ進む
+
+---
+
+### ステップ11: 次PR候補を pr-handoff に委譲
+
+#### 条件
+
+- `WORKSPACE_MERGE_AUTO_HANDOFF` が `false`/`0`/`no`/`off` でないこと（デフォルト: 有効）; 無効の場合 → このステップをスキップしてステップ12へ進む
+
+#### 処理内容
+
+1. マージした PR ドキュメントを読み、`## 次PR候補` セクションの内容を確認する
+2. **次PR候補がある場合**: `/workspace:pr-handoff` を呼び出す（ユーザー確認不要）。分類・予約のロジックはすべて pr-handoff に委譲する
+3. **次PR候補が空の場合**: pr-handoff はスキップ
+
 → ステップ12へ進む
 
 ---
 
-### ステップ12: 次PR候補を pr-handoff に委譲
-
-#### 条件
-
-- `WORKSPACE_MERGE_AUTO_HANDOFF` が `false`/`0`/`no`/`off` でないこと（デフォルト: 有効）; 無効の場合 → このステップをスキップしてステップ13へ進む
+### ステップ12: 次PR候補の状況を 3 カテゴリで提示
 
 #### 処理内容
 
-1. マージした PR の `TODO.md` を読み、`## 次PR候補` セクションの内容を確認する
-2. **次PR候補がある場合**: `/workspace:pr-handoff` を呼び出す（ユーザー確認不要）。分類・予約のロジックはすべて pr-handoff に委譲する
-3. **次PR候補が空の場合**: pr-handoff はスキップ
-
-→ ステップ13へ進む
-
----
-
-### ステップ13: 次PR候補の状況を 3 カテゴリで提示
-
-#### 処理内容
-
-マージした PR の `TODO.md` パスを渡して `/workspace:pr-show` を呼び出し、状況テーブルを提示する。
+マージした PR ドキュメントのパスを渡して `/workspace:pr-show` を呼び出し、状況テーブルを提示する。
 
 #### 補足
 
