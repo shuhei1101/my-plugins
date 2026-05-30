@@ -9,9 +9,10 @@ GitHubのPR概念に縛られた命名（`PR{N}/type/title` 形式のブラン�
 **具体的な変更点:**
 - work-start Step 1: 「PR番号を決定する」→「ブランチ名を決定する」（index-tool.py の `next-id` を廃止）
 - ブランチ名形式: `PR{N}/type/title` → `type/title`（PR番号プレフィックスを除去）
-- ワークツリー名: `{repo}-wt-PR{N}` → `{repo}-wt-{type}-{title}` 形式
+- ワークツリー名: `{repo}-wt-PR{N}` → `{repo}-wt-{branch-name}` 形式（例: `wt-refactor-rename-pr-to-branch`）
 - SKILL.md 全体の「PR」表記を「ブランチ」に変更（Pull Request 概念への言及を除去）
 - work-add SKILL.md: PR番号引数を除去し、ブランチ名だけ受け取る形に変更
+- PRドキュメント内のセクション名変更: `## 関連PR` → `## 関連ブランチ`、`## 次PR候補` → `## 次ブランチ候補`
 
 ### 実施条件
 
@@ -27,7 +28,8 @@ GitHubのPR概念に縛られた命名（`PR{N}/type/title` 形式のブラン�
 | - | work-start SKILL.md のブランチ名形式を `type/title` に変更（PR番号除去） | - 同上 |
 | - | work-start SKILL.md 全体の「PR」用語を「ブランチ」に統一 | - 同上 |
 | - | work-add SKILL.md をブランチ名のみ受け取る形に変更 | - `plugins/workspace/skills/work-add/SKILL.md` |
-| - | work-add SKILL.md でワークツリー名を `wt-{type}-{title}` 形式に変更 | - 同上 |
+| - | work-add SKILL.md でワークツリー名を `wt-{branch-name}` 形式に変更（既存は変えない） | - 同上 |
+| - | PRドキュメントテンプレートのセクション名を変更（関連PR→関連ブランチ、次PR候補→次ブランチ候補） | - `plugins/workspace/templates/.work/tasks/yymmdd_xxx/PRNNN-type-title.md` |
 | - | 他の workspace スキル（merge, pr-handoff 等）で PR番号に強く依存する箇所を調査・更新 | - 関連スキル全般 |
 | - | 各 SKILL.jp.md を同期 | - 対象の `.jp.md` ファイル |
 | - | ルール・CLAUDE.md を更新（必要なら） | - |
@@ -58,13 +60,13 @@ GitHubのPR概念に縛られた命名（`PR{N}/type/title` 形式のブラン�
 
 **推奨方式**: B — 内部IDは残し、ブランチ名からは除去する。PR188 のスコープでは index.yaml の構造変更は PR190 に委ねる。
 
-**状態**: 未解決（PR188 着手時に確認）
+**状態**: 解決済み — **B を採用**。内部 ID は採番継続、ブランチ名・ファイル名には露出しない。
 
 **決定したら反映先**: `## 作業内容` の「他の workspace スキル調査」行、および PR190 のスコープ定義
 
 ### QA-002: 既存ワークツリーとの命名衝突
 
-**背景**: 現在 `wt-PR{N}` で命名されているワークツリーが複数存在する。新形式 `wt-{type}-{title}` に変えたとき、既存のワークツリーとの共存や命名衝突をどう扱うか。
+**背景**: 現在 `wt-PR{N}` で命名されているワークツリーが複数存在する。新形式 `wt-{branch-name}` に変えたとき、既存のワークツリーとの共存や命名衝突をどう扱うか。
 
 | 案 | 内容 |
 |---|---|
@@ -73,7 +75,7 @@ GitHubのPR概念に縛られた命名（`PR{N}/type/title` 形式のブラン�
 
 **推奨方式**: A — 既存は変えない。新規作成分から切り替える。
 
-**状態**: 未解決（PR188 着手時に確認）
+**状態**: 解決済み — **A を採用**。既存ワークツリーはそのまま。新規は `wt-{branch-name}` 形式（例: `my-plugins-wt-refactor-rename-pr-to-branch`）。
 
 **決定したら反映先**: `## 作業内容` の work-add 変更行
 
@@ -83,13 +85,13 @@ GitHubのPR概念に縛られた命名（`PR{N}/type/title` 形式のブラン�
 - `plugins/workspace/skills/work-start/SKILL.md` — 変更対象メインスキル
 - `plugins/workspace/skills/work-add/SKILL.md` — ワークツリー作成スキル
 
-## 関連PR
+## 関連ブランチ
 
-| PR番号 | 概要 |
+| ブランチ | 概要 |
 |---|---|
-| #168 | PR ドキュメント単一ファイル化（命名規則の前回変更） |
+| PR168/refactor/refactor-task-doc-structure | PR ドキュメント単一ファイル化（命名規則の前回変更） |
 
-## 次PR候補
+## 次ブランチ候補
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
