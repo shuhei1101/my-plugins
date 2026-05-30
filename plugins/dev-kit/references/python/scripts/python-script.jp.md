@@ -86,9 +86,9 @@ def _parse_args() -> argparse.Namespace:
 
 def process(input_path: Path, output_path: Path) -> None:
     """入力 CSV を読んで集計結果を JSON に書く。"""
-    logger.info(f"reading {input_path}")
+    logger.info(f"{input_path} を読み込み中")
     # ... 実処理
-    logger.info(f"wrote {output_path}")
+    logger.info(f"{output_path} に書き込み完了")
 
 
 # ================================================================
@@ -104,10 +104,10 @@ def main() -> int:
         process(args.input, args.output)
         return 0
     except FileNotFoundError as e:
-        logger.error(f"file not found: {e}")
+        logger.error(f"ファイルが見つかりません: {e}")
         return 2
     except Exception:
-        logger.exception("unexpected error")
+        logger.exception("予期しないエラーが発生しました")
         return 1
 
 
@@ -126,6 +126,7 @@ if __name__ == "__main__":
 5. **`if __name__ == "__main__": sys.exit(main())`**: 直接実行可能に
 6. **logger 使用**: `print` でなく `logger`
 7. **例外処理**: 想定例外を捕まえ、未捕捉例外は `logger.exception` で traceback ごと残す
+8. **コメント・ログは日本語で書く**: インラインコメントおよび `logger.*` のメッセージ文字列は英語でなく日本語で書く
 
 ---
 
