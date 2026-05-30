@@ -688,3 +688,11 @@ prs:
   summary: claude-kitにMarkdownテーブル記法のリファレンスを追加し、繰り返し値の省略ルールを注入
   task: 20260530_add-markdown-table-reference
   completed: true
+- id: 186
+  title: PR186 — rename-workspace-to-work
+  type: refactor
+  tags: []
+  summary: workspace プラグインを work にリネーム、work-start→start、work-add→worktree-create にスキル名変更、WORKSPACE_*→WORK_*
+    に env 変数変更
+  task: 260530_rename-workspace-to-work
+  completed: true
