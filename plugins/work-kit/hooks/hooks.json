@@ -11,6 +11,14 @@
               "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/master-commit-guard.py",
               "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/master-commit-guard.md"
             ]
+          },
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/git-guard.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/git-guard.md"
+            ]
           }
         ]
       }
