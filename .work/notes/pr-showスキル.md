@@ -8,7 +8,7 @@ related_prs:
   - PR120
 ---
 
-# pr-show — 次PR候補の状況一覧表示スキル設計メモ
+# pr-show スキル — 次 PR 候補一覧の状況表示
 
 ## 概要
 

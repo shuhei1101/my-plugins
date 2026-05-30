@@ -8,7 +8,7 @@ related_prs:
   - PR107
 ---
 
-# merge Step 12 — 次PR一覧の出力フォーマット
+# マージ Step 12 — 次 PR 一覧の出力フォーマット
 
 ## 概要
 

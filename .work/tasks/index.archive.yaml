@@ -814,3 +814,17 @@ branches:
     検出フックも同梱
   task: 260530_dev-kit-markdown-frontmatter-rule
   completed: true
+- id: 205
+  title: PR205 — skill-template-jp-and-subagent
+  type: docs
+  tags: []
+  summary: skills.jp.mdのテンプレート雛形を日本語化し、サブエージェント使用ガイドを追加する
+  task: 260530_skill-template-jp-and-subagent
+  completed: true
+- id: 209
+  title: PR209 — docs-commit-bundle-pr-doc
+  type: docs
+  tags: []
+  summary: PR ドキュメント更新はコミットと同じコミットにまとめる規約を .work/CLAUDE.md に追記
+  task: 260530_docs-commit-bundle-pr-doc
+  completed: true

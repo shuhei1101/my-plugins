@@ -8,7 +8,7 @@ related_prs:
   - PR203
 ---
 
-# deprecate-rules-migrate-to-references — .claude/rules/ 廃止とリファレンス移行
+# ルール廃止とリファレンス移行 — .claude/rules/ 削除方針
 
 ## 概要
 
