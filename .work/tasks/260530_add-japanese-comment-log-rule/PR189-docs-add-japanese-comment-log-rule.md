@@ -13,12 +13,12 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | `## Required elements` に日本語コメント・ログルールを追加 | `plugins/dev-kit/references/python/scripts/python-script.md` |
-| - | テンプレートのログ文字列を日本語に更新 | `plugins/dev-kit/references/python/scripts/python-script.md` |
-| - | JP ミラーを同期 | `plugins/dev-kit/references/python/scripts/python-script.jp.md` |
-| - | QA を `## QA` に記録する | - |
-| - | `.work/notes/` のノートを更新する | - |
-| - | rules / CLAUDE.md を更新する | - |
+| 済 | `## Required elements` に日本語コメント・ログルールを追加 | `plugins/dev-kit/references/python/scripts/python-script.md` |
+| 済 | テンプレートのログ文字列を日本語に更新 | `plugins/dev-kit/references/python/scripts/python-script.md` |
+| 済 | JP ミラーを同期 | `plugins/dev-kit/references/python/scripts/python-script.jp.md` |
+| 済 | QA を `## QA` に記録する | - |
+| 済 | `.work/notes/` のノートを更新する | - |
+| 済 | rules / CLAUDE.md を更新する | - |
 
 ## 変更内容
 
