@@ -792,3 +792,10 @@ branches:
   summary: ref-inject に plugin-update スキルを追加（PR168 の plugin authoring guide 必須化に追従）
   task: 260530_ref-inject-plugin-update-skill
   completed: true
+- id: 190
+  title: PR190 — rename-index-prs-key
+  type: refactor
+  tags: []
+  summary: index.yamlとindex.archive.yamlのprs:キーをbranches:に改名し、index-tool.pyを更新する
+  task: 260530_index-yamlのprs:キーをbranches:に改名
+  completed: true
