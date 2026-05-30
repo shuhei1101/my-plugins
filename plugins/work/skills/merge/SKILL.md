@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # work:merge — Merge a Branch
 
-Runs the full merge flow: TODO checklist verification → master compatibility check → close related issues → index archive → `--no-ff` merge → worktree cleanup → confirm remaining QA entries in the branch document → auto-invoke pr-handoff for any next branch candidates.
+Runs the full merge flow: TODO checklist verification → master compatibility check → close related issues → index archive → `--no-ff` merge → worktree cleanup → confirm remaining QA entries in the branch document → auto-invoke branch-reserve for any next branch candidates.
 
 > **Naming**: new branches use `{type}/{title}` (no `PR{N}/` prefix); new worktrees use
 > `{repo}-wt-{type}-{title}`. Legacy branches still on `PR{N}/{type}/{title}` with worktrees at
@@ -302,7 +302,7 @@ git commit -m "docs: post-merge update"
 
 ---
 
-### Step 11: Delegate next branch candidates to pr-handoff
+### Step 11: Delegate next branch candidates to branch-reserve
 
 #### Condition
 
@@ -311,8 +311,8 @@ git commit -m "docs: post-merge update"
 #### Process
 
 1. Read the merged branch document and inspect its `## 次ブランチ候補` section
-2. **If next branch candidates exist**: invoke `/work:pr-handoff` (no user confirmation needed). Delegate all classification and reservation logic to that skill
-3. **If next branch candidates are empty**: skip pr-handoff
+2. **If next branch candidates exist**: invoke `/work:branch-reserve` (no user confirmation needed). Delegate all classification and reservation logic to that skill
+3. **If next branch candidates are empty**: skip branch-reserve
 
 → Proceed to Step 12
 
@@ -322,8 +322,8 @@ git commit -m "docs: post-merge update"
 
 #### Process
 
-Invoke `/work:pr-show` passing the merged branch document path as the data source.
+Invoke `/work:branch-show` passing the merged branch document path as the data source.
 
 #### Notes
 
-Full logic (reading `## 次ブランチ候補` table, classifying each candidate, branch lookup by title) is defined in the `pr-show` skill.
+Full logic (reading `## 次ブランチ候補` table, classifying each candidate, branch lookup by title) is defined in the `branch-show` skill.

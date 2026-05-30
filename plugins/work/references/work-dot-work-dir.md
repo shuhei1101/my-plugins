@@ -30,7 +30,7 @@ The branch document is the single source of truth for what a branch does. Create
 - `## 参考ドキュメント` — links to related notes / specs
 - `## 関連イシュー` — `.work/issues/` entries this branch resolves (auto-closed by merge)
 - `## 関連ブランチ` — predecessor / successor / sibling branches
-- `## 次ブランチ候補` — follow-up branches to reserve via `/work:pr-handoff`
+- `## 次ブランチ候補` — follow-up branches to reserve via `/work:branch-reserve`
 
 ### notes/
 
