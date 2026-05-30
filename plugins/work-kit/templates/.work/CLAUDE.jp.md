@@ -75,4 +75,4 @@ PR ドキュメントは「この PR が何をするか」の唯一の正本。�
 | `/work-kit:merge` | TODO 確認・マージ・index.yaml 更新・クリーンアップを実行する |
 | `/work-kit:pr-handoff` | PR ドキュメントの `## 次PR候補` を元に次の PR を work-start と同じ流れで予約し、背景情報を新 PR に記録する |
 | `/work-kit:notes-to-claude` | `notes/` の内容をルール・CLAUDE.md・references に昇格させる |
-| `/work-kit:update-plugin` | プロジェクトに既に存在する `.work/` ドキュメントおよびその他のプラグイン生成物を、現在インストール済みのプラグインバージョンに合わせて更新する |
+| `/work-kit:plugin-update` | プロジェクトに既に存在する `.work/` ドキュメントおよびその他のプラグイン生成物を、現在インストール済みのプラグインバージョンに合わせて更新する |

@@ -71,4 +71,4 @@ Content that doesn't need promotion (temporary comparisons, scratchpad investiga
 | `/work-kit:merge` | Verify TODO, merge, update index.yaml, and clean up worktree |
 | `/work-kit:pr-handoff` | Reserve next PRs from the `## 次PR候補` section using the work-start flow, and record background context in each new PR document |
 | `/work-kit:notes-to-claude` | Promote `notes/` content to rules, CLAUDE.md, or references |
-| `/work-kit:update-plugin` | Bring an existing project's `.work/` documents (and other plugin-generated artifacts) up to date with the currently installed plugin versions |
+| `/work-kit:plugin-update` | Bring an existing project's `.work/` documents (and other plugin-generated artifacts) up to date with the currently installed plugin versions |

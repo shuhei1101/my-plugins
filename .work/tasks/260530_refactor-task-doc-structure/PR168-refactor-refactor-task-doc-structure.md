@@ -9,7 +9,7 @@ work-kit のタスクドキュメント構造を刷新する。
 旧構造は PR ごとに `.work/tasks/{YYYYMMDD}_{title}/PR{N}/TODO.md` と `QA.md` の 2 ファイルに分かれ、日付プレフィックスは 8 桁の `YYYYMMDD`。
 新構造では PR ごとに 1 つの Markdown ファイルに統合し、日付プレフィックスを 6 桁 `YYMMDD`、ファイル名はブランチ名のスラッシュをハイフンに置換した形にする。実装ファイル / テストのテーブルも新規セクションとして導入する。
 
-合わせて、`update` スキルを `update-plugin` にリネームし、内容を「プロジェクトのプラグイン生成物を最新版に揃える」スキルに整理する。
+合わせて、`update` スキルを `plugin-update` にリネームし、内容を「プロジェクトのプラグイン生成物を最新版に揃える」スキルに整理する。
 
 ### 実施条件
 
@@ -25,7 +25,7 @@ work-kit のタスクドキュメント構造を刷新する。
 | 済 | `work-start` SKILL.md を新構造に書き換え（YYMMDD、新セクション説明、Step 統合） | - `plugins/work-kit/skills/work-start/SKILL.md` |
 | 済 | `merge` / `pr-handoff` / `pr-show` / `qa-review` / `setup` のパス参照を新構造に更新 | - 各 `skills/*/SKILL.md` |
 | 済 | フックプロンプト（`user-prompt-submit.md` / `stop.md`）を新構造に更新 | - `plugins/work-kit/hooks/prompts/user-prompt-submit.md`<br>- `plugins/work-kit/hooks/prompts/stop.md` |
-| 済 | `update` スキルを `update-plugin` にリネーム＆内容を「プラグイン生成物の最新化」に整理 | - `plugins/work-kit/skills/update-plugin/SKILL.md` |
+| 済 | `update` スキルを `plugin-update` にリネーム＆内容を「プラグイン生成物の最新化」に整理 | - `plugins/work-kit/skills/plugin-update/SKILL.md` |
 | 済 | `.work/CLAUDE.md` / `.jp.md` を新構造の説明に書き換え | - `plugins/work-kit/templates/.work/CLAUDE.md`<br>- `plugins/work-kit/templates/.work/CLAUDE.jp.md` |
 | 済 | glossary（英 / 日）に新規用語を追記 | - `.claude/rules/core/glossary.md`<br>- `.claude/rules-jp/core/glossary.md` |
 | 済 | `plugin.json` / `marketplace.json` を v2.39.0 にバンプ（MINOR） | - `plugins/work-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
@@ -41,7 +41,7 @@ work-kit のタスクドキュメント構造を刷新する。
 | `plugins/work-kit/templates/.work/tasks/yyyymmdd_xxx/PRXXX/QA.md` | 削除 | 旧テンプレ | - |
 | `plugins/work-kit/templates/TODO.md` | 削除 | 旧 setup-task.py 用テンプレ（新テンプレに統合） | - |
 | `plugins/work-kit/templates/QA.md` | 削除 | 旧 setup-task.py 用テンプレ（新テンプレに統合） | - |
-| `plugins/work-kit/templates/.work/CLAUDE.md` | 編集 | 新構造（`{YYMMDD}_{title}/{branch-hyphenated}.md` 1 ファイル統合）に記述を書き換え、`update-plugin` を skills 表に追加 | - |
+| `plugins/work-kit/templates/.work/CLAUDE.md` | 編集 | 新構造（`{YYMMDD}_{title}/{branch-hyphenated}.md` 1 ファイル統合）に記述を書き換え、`plugin-update` を skills 表に追加 | - |
 | `plugins/work-kit/templates/.work/CLAUDE.jp.md` | 編集 | 同上の日本語版 | - |
 | `plugins/work-kit/templates/.work/tasks/index.archive.yaml` | 編集 | コメント内の `YYYYMMDD_{title}` を `YYMMDD_{title}` に更新 | - |
 | `plugins/work-kit/scripts/setup-task.py` | 編集 | `--branch` 受付・単一ファイル `{branch-hyphenated}.md` 生成・`YYMMDD` 日付対応 | - |
@@ -51,13 +51,13 @@ work-kit のタスクドキュメント構造を刷新する。
 | `plugins/work-kit/skills/pr-show/SKILL.md` | 編集 | `find -name TODO.md` を `find -type f -name "PR*.md"` に変更、文言を PR ドキュメント基準に | - |
 | `plugins/work-kit/skills/qa-review/SKILL.md` | 編集 | QA.md ファイル単独参照を PR ドキュメント内 `## QA` セクション参照に書き換え | `### QA-XXX` サブセクションを対象とする |
 | `plugins/work-kit/skills/setup/SKILL.md` | 編集 | 古い `.work/QA.md` 言及を削除（実体が存在しないため） | - |
-| `plugins/work-kit/skills/update/` → `plugins/work-kit/skills/update-plugin/` | リネーム | スキルフォルダを `update` → `update-plugin` にリネーム | git mv |
-| `plugins/work-kit/skills/update-plugin/SKILL.md` | 編集 | 内容刷新: work-kit テンプレ同期 + 各プラグインへの `claude-kit:version-sync` 委譲。`/work-kit:work-start` で PR ブランチを切ってから作業する設計 | - |
+| `plugins/work-kit/skills/update/` → `plugins/work-kit/skills/plugin-update/` | リネーム | スキルフォルダを `update` → `plugin-update` にリネーム | git mv |
+| `plugins/work-kit/skills/plugin-update/SKILL.md` | 編集 | 内容刷新: work-kit テンプレ同期 + 各プラグインへの `claude-kit:version-sync` 委譲。`/work-kit:work-start` で PR ブランチを切ってから作業する設計 | - |
 | `plugins/work-kit/hooks/prompts/user-prompt-submit.md` | 編集 | Step 2 のパス参照を PR ドキュメント内 `## QA` / `## 作業内容` セクション参照に書き換え | YYYYMMDD → YYMMDD も |
 | `plugins/work-kit/hooks/prompts/stop.md` | 編集 | `TODO.md` / `QA.md` 言及を PR ドキュメント内セクション参照に書き換え | - |
 | `plugins/work-kit/.claude-plugin/plugin.json` | 編集 | v2.38.0 → v2.39.0（MINOR bump） | 新機能扱い |
 | `.claude-plugin/marketplace.json` | 編集 | work-kit エントリ v2.38.0 → v2.39.0 | plugin.json と揃える |
-| `.claude/rules/core/glossary.md` | 編集 | 新用語 4 件を追記（PR ドキュメント単一ファイル化 / 変更内容セクション / テストセクション / update-plugin） | - |
+| `.claude/rules/core/glossary.md` | 編集 | 新用語 4 件を追記（PR ドキュメント単一ファイル化 / 変更内容セクション / テストセクション / plugin-update） | - |
 | `.claude/rules-jp/core/glossary.md` | 編集 | 同上の日本語版 | - |
 | `plugins/work-kit/skills/work-start/SKILL.jp.md` | 編集 | 英語版に追従して JP ミラーを更新 | (JP ミラータスクで実施) |
 | `plugins/work-kit/skills/merge/SKILL.jp.md` | 編集 | 同上 | (JP ミラータスクで実施) |
@@ -65,7 +65,7 @@ work-kit のタスクドキュメント構造を刷新する。
 | `plugins/work-kit/skills/pr-show/SKILL.jp.md` | 編集 | 同上 | (JP ミラータスクで実施) |
 | `plugins/work-kit/skills/qa-review/SKILL.jp.md` | 編集 | 同上 | (JP ミラータスクで実施) |
 | `plugins/work-kit/skills/setup/SKILL.jp.md` | 編集 | 同上 | (JP ミラータスクで実施) |
-| `plugins/work-kit/skills/update-plugin/SKILL.jp.md` | 編集 | 同上 | (JP ミラータスクで実施) |
+| `plugins/work-kit/skills/plugin-update/SKILL.jp.md` | 編集 | 同上 | (JP ミラータスクで実施) |
 | `plugins/work-kit/hooks/prompts/user-prompt-submit.jp.md` | 編集 | 同上 | (JP ミラータスクで実施) |
 | `plugins/work-kit/hooks/prompts/stop.jp.md` | 編集 | 同上 | (JP ミラータスクで実施) |
 
@@ -145,11 +145,11 @@ work-kit のタスクドキュメント構造を刷新する。
 |---|---|
 | A | `sync-templates` |
 | B | `align-to-latest` |
-| C | `update-plugin` |
+| C | `plugin-update` |
 
-**推奨方式**: C。ユーザー指示「プラグインとかでいいんじゃない」「update-plugin」で確定。
+**推奨方式**: C。ユーザー指示「プラグインとかでいいんじゃない」「plugin-update」で確定。
 
-**状態**: 解決済み — `update-plugin` 採用
+**状態**: 解決済み — `plugin-update` 採用
 
 **決定したら反映先**: フォルダリネーム、SKILL.md/jp 内容刷新、`.work/CLAUDE.md` の skills 表
 
