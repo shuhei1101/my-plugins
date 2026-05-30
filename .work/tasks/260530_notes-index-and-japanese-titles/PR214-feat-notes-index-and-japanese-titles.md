@@ -13,12 +13,12 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録する | - |
-| - | ノートドキュメントを更新する | `.work/notes/` |
-| - | 既存ノート 25 件の H1 タイトルを日本語に統一する | `.work/notes/*.md` (my-plugins-wt-PR214) |
-| - | `_index.md` をカテゴリ別分類で作成する | `.work/notes/_index.md` |
-| - | workプラグインのノートテンプレートを日本語タイトル例示に更新する | `work/2.46.2/templates/note.md` (プラグインキャッシュ) |
-| - | work:start スキルに `_index.md` 自動生成・更新ステップを追加する | `work/2.46.2/skills/start/SKILL.md` |
+| 済 | QA を `## QA` に記録する | - |
+| 済 | ノートドキュメントを更新する | `.work/notes/` |
+| 済 | 既存ノート 11 件の H1 タイトルを日本語に統一する | `.work/notes/*.md` (my-plugins-wt-PR214) |
+| 済 | `_index.md` をカテゴリ別分類で作成する | `.work/notes/_index.md` |
+| 済 | workプラグインのノートテンプレートを日本語タイトル例示に更新する | `plugins/work/templates/note.md` |
+| 済 | work:start スキルに `_index.md` 自動生成・更新ステップを追加する | `plugins/work/skills/start/SKILL.md` |
 
 ## 変更内容
 
