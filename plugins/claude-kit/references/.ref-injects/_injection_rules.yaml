@@ -35,7 +35,7 @@ rules:
     required:
       - kit-hooks-sync.md
     optional: []
-  - pattern: "plugins/*-kit/references/{_index,_injection_rules,CLAUDE}{.jp,}.{yaml,md}"
+  - pattern: "plugins/*-kit/references/.ref-injects/{_index,_injection_rules,CLAUDE}{.jp,}.{yaml,md}"
     required:
       - kit-hooks-sync.md
     optional: []
