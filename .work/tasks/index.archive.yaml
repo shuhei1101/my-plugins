@@ -646,3 +646,10 @@ prs:
   summary: guard-kit を work-kit に統合し、WORK_KIT_GUARD env で有効/無効を切り替え可能にする
   task: 20260530_integrate-guard-kit-into-work-kit
   completed: true
+- id: 176
+  title: PR176 — impl-review-batch-questions
+  type: refactor
+  tags: []
+  summary: /work-kit:impl-review の Step 4 を AskUserQuestion 1 回に最大 4 件まとめて投げる仕様に変更
+  task: 20260530_impl-review-batch-questions
+  completed: true

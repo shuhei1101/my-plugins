@@ -7,13 +7,13 @@ description: |
 
 # workspace:impl-review — Interactive Implementation Review
 
-Analyzes commits on the current PR branch and walks the user through each change area interactively using the `AskUserQuestion` tool. The user can approve each item or request a deeper explanation. Designed for mobile or SSH contexts where reading code diffs directly is impractical.
+Analyzes commits on the current PR branch and walks the user through each change area interactively using the `AskUserQuestion` tool. Items are presented in **batches of up to 4 per call** so the user only needs a few confirmation round-trips even for multi-feature PRs. Designed for mobile or SSH contexts where reading code diffs directly is impractical.
 
 ---
 
 ## Overview
 
-The skill builds an internal "overview list" of change areas and immediately walks through each item one by one via `AskUserQuestion` — without showing the full list preview to the user. If the user selects "もっと詳しく" (deep dive), the skill spirals into detail for that area and then returns to the main list.
+The skill builds an internal "overview list" of change areas and presents them in batches via `AskUserQuestion` — without showing the full list preview to the user. Each batch packs up to 4 items into a single `AskUserQuestion` call, the user answers all 4 at once, and any items marked "もっと詳しく" (deep dive) are spiralled into individually after the batch returns. Then the next batch is presented.
 
 ---
 
@@ -101,7 +101,7 @@ The skill builds an internal "overview list" of change areas and immediately wal
 
 ---
 
-### Step 4: Interactive review loop
+### Step 4: Batched interactive review
 
 #### Condition
 
@@ -109,30 +109,47 @@ The skill builds an internal "overview list" of change areas and immediately wal
 
 #### Process
 
-For each item in the overview list in order:
+Split the overview list into **batches of up to 4 items** and present each batch. `AskUserQuestion` accepts up to 4 questions per call, so batching minimizes confirmation round-trips (e.g. 5 items → 4 + 1, 8 items → 4 + 4).
 
-1. Use the `AskUserQuestion` tool:
+For each batch, do the following:
+
+1. Call `AskUserQuestion` **once**, packing the batch's items into the `questions` array. For each question:
    - **question**: The item's 2–3 sentence explanation
-   - **header**: Item number and title (e.g. `1/5: qa-review 追加`)
+   - **header**: Item number and short title (max 12 chars) — e.g. `1/8 qa-review`
    - **options**:
-     - `OK / 次へ` — Understood; move to the next item
+     - `OK / 次へ` — Understood
      - `もっと詳しく` — Explain this area in more depth
      - `問題あり` — Flag this area for follow-up
    - **multiSelect**: false
 
-2. If `OK / 次へ`: proceed to the next item
+2. When the batch result returns, classify each answer:
+   - `OK / 次へ` → no action
+   - `もっと詳しく` → enqueue for deep-dive after this batch finishes
+   - `問題あり` → record as flagged
 
-3. If `もっと詳しく` (deep-dive mode):
+3. If any items were enqueued for deep-dive, run the deep-dive loop on each one in order (deep-dive cannot be batched — one item at a time):
    - Present detailed information: specific code changes, the reason for the approach, potential risks
-   - Use `AskUserQuestion` again:
+   - Call `AskUserQuestion`:
      - **question**: 「さらに深掘りしますか？」
      - **options**: `OK / 終わり` / `別の角度から説明して` / `問題あり`
    - Continue until the user selects `OK / 終わり` or `問題あり`
-   - After exiting deep-dive, return to the overview list and continue with the next item
 
-4. If `問題あり`: record the item as flagged, then continue to the next item
+4. Once all deep-dives for the current batch are done, proceed to the next batch.
 
 → Proceed to Step 5
+
+#### Notes
+
+##### Why batched
+
+The old design called `AskUserQuestion` once per item, so 8 areas cost 8 confirmation round-trips — painful on mobile or SSH. `AskUserQuestion` supports up to 4 questions per call, so 8 areas finish in 2 round-trips (4 + 4) plus deep-dive turns.
+
+##### Batch size selection
+
+- Total ≤ 4 → one batch with all items
+- 5–8 → 4 + remainder, or split evenly
+- 9+ → split into batches of 4
+- There is no reason to deliberately under-fill a batch (deep-dives are a separate loop, so packing all 4 questions is always fine)
 
 ---
 
