@@ -1,4 +1,4 @@
-# plugin-config スキル設計メモ — PR165
+# plugin-config スキル設計メモ — PR167
 
 ## 概要
 
@@ -16,6 +16,12 @@ PR164 で追加された env トグル群を、ユーザーが簡単に ON/OFF �
 - settings.json はユーザースコープ（`~/.claude/settings.json`）かプロジェクトスコープ（`.claude/settings.json`）かを選択させる
 - env 未設定 = デフォルト有効のため、「ON（デフォルト）」の場合は env キーを削除する設計にする
 - `INJECTION_DISABLE` のみ逆極性（truthy で無効化）— 表示ラベルを「注入を無効にする」にする
+
+## 実装済み（PR167）
+
+- `plugins/work-kit/skills/plugin-config/SKILL.md` — スキル定義
+- `plugins/work-kit/skills/plugin-config/SKILL.jp.md` — JP ミラー
+- work-kit v2.38.0 → v2.39.0 バンプ
 
 ## 参照
 

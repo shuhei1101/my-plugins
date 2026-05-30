@@ -35,12 +35,12 @@ AskUserQuestion の選択肢経由で各 env 変数を `settings.json` の `env`
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA.md に未決定事項を記録する | - `.work/tasks/.../PR167/QA.md` |
-| - | `.work/notes/` のノートを更新する | - `.work/notes/plugin-config-skill.md` |
-| - | スキル設計（対象 env / スコープ / UX フロー） | - QA.md / notes |
-| - | `plugin-config` スキルを work-kit に実装 | - `plugins/work-kit/skills/plugin-config/SKILL.md` / `.jp.md` |
-| - | work-kit バージョンバンプ + changelog | - `plugins/work-kit/.claude-plugin/plugin.json` / `changelogs/` |
-| - | glossary に `plugin-config` エントリを追加 | - `.claude/rules/core/glossary.md` |
+| 済 | QA.md に未決定事項を記録する | - `.work/tasks/.../PR167/QA.md` |
+| 済 | `.work/notes/` のノートを更新する | - `.work/notes/plugin-config-skill.md` |
+| 済 | スキル設計（対象 env / スコープ / UX フロー） | - QA.md / notes |
+| 済 | `plugin-config` スキルを work-kit に実装 | - `plugins/work-kit/skills/plugin-config/SKILL.md` / `.jp.md` |
+| 済 | work-kit バージョンバンプ + changelog | - `plugins/work-kit/.claude-plugin/plugin.json` / `changelogs/` |
+| 済 | glossary に `plugin-config` エントリを追加 | - `.claude/rules/core/glossary.md` |
 
 ## 参考ドキュメント
 
