@@ -10,7 +10,7 @@
 
 ## 自動注入
 
-`PreToolUse(Edit | Write | MultiEdit | Read)` で `hooks/inject_references.py` が:
+`PreToolUse(Edit | Write | MultiEdit | Read)` で `hooks/scripts/inject_references.py` が:
 
 1. 編集対象パスを `injection_rules.yaml` のパターンと照合
 2. マッチした `required` を**本文全量**、`optional` を**パス + description のみ**で注入

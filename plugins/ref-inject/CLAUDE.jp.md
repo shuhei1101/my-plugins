@@ -34,7 +34,9 @@ ref-inject/
 ├── skills/apply/SKILL.md (+ .jp.md)    # /ref-inject:apply — Claude がテンプレを読んで対象プラグインへ書く
 └── templates/                           # 対象プラグインにコピーする注入ファイル（注入部分のみ）
     ├── hooks/
-    │   ├── inject_references.py          # PreToolUse: パス照合 → リファレンス注入（再利用される注入スクリプト）
+    │   ├── scripts/
+    │   │   ├── inject_references.py      # PreToolUse: パス照合 → リファレンス注入（再利用される注入スクリプト）
+    │   │   └── _common.py                # フックスクリプトの共通ヘルパー（stdin・env truthy・once-per-session・block 理由出力）
     │   ├── hooks.json
     │   └── templates/injection.md.j2 (+ .jp.md.j2)
     └── references/
