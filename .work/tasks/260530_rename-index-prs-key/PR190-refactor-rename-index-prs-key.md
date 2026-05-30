@@ -19,21 +19,25 @@ PR188（work-start の PR 用語をブランチ用語に統一）と並行して
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を確認・記録する | - |
-| - | `.work/notes/` の作業メモを更新 | - |
-| - | `prs:` キーの新名称を決定（QA-001 参照） | - |
-| - | テンプレート index.yaml の `prs:` キーを新名称に変更 | - `plugins/workspace/templates/.work/tasks/index.yaml` |
-| - | テンプレート index.archive.yaml の `prs:` キーを新名称に変更 | - `plugins/workspace/templates/.work/tasks/index.archive.yaml` |
-| - | index-tool.py の `prs:` 参照を新名称に変更 | - `plugins/workspace/scripts/index-tool.py` |
-| - | SKILL.md 等でキー名に言及している箇所を更新 | - workspace スキル全般 |
-| - | CLAUDE.md / glossary 等の用語集を更新（必要なら） | - |
-| - | 各 SKILL.jp.md を同期 | - 対象の `.jp.md` ファイル |
-| - | コミット | - |
+| 済 | QA を確認・記録する | - |
+| 済 | `.work/notes/` の作業メモを更新 | `.work/notes/rename-pr-to-branch.md` |
+| 済 | `prs:` キーの新名称を決定（QA-001 参照） | - |
+| 済 | テンプレート index.yaml の `prs:` キーを新名称に変更 | `plugins/work/templates/.work/tasks/index.yaml` |
+| 済 | テンプレート index.archive.yaml の `prs:` キーを新名称に変更 | `plugins/work/templates/.work/tasks/index.archive.yaml` |
+| 済 | index-tool.py の `prs:` 参照を新名称に変更 | `plugins/work/scripts/index-tool.py` |
+| 済 | trim-index.py の `prs:` 参照を新名称に変更 | `plugins/work/scripts/trim-index.py` |
+| 済 | 既存 index.yaml / index.archive.yaml を一括置換 | `.work/tasks/` 以下の全ファイル（gitignored） |
+| 済 | SKILL.md 等でキー名に言及している箇所を確認（言及なし） | - |
+| 済 | コミット | - |
 
 ## 変更内容
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
+| `plugins/work/scripts/index-tool.py` | 編集 | `prs:` → `branches:` キー・変数名を一括変更 | |
+| `plugins/work/scripts/trim-index.py` | 編集 | 同上 | |
+| `plugins/work/templates/.work/tasks/index.yaml` | 編集 | `prs: []` → `branches: []` | |
+| `plugins/work/templates/.work/tasks/index.archive.yaml` | 編集 | `archived_prs: []` → `branches: []`（既存バグも修正） | |
 
 ## テスト
 
@@ -55,7 +59,7 @@ PR188（work-start の PR 用語をブランチ用語に統一）と並行して
 
 **推奨方式**: A（`branches:`）— PR188 の方針に最も合致し、ブランチ管理であることが明確。
 
-**状態**: 未解決（着手時に確認）
+**状態**: 解決済み → **A（`branches:`）** を採用
 
 **決定したら反映先**: `## 作業内容` のテンプレート・スクリプト変更行
 
@@ -70,7 +74,7 @@ PR188（work-start の PR 用語をブランチ用語に統一）と並行して
 
 **推奨方式**: B — ローカルファイルのみなので一括置換の方がシンプル。
 
-**状態**: 未解決（着手時に確認）
+**状態**: 解決済み → **B（一括置換）** を採用
 
 **決定したら反映先**: `## 作業内容` の index-tool.py 変更行
 
