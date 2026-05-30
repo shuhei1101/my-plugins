@@ -41,8 +41,8 @@ AskUserQuestion の選択肢経由で各 env 変数を `settings.json` の `env`
 | 済 | `plugin-config` スキルを work-kit に実装 | - `plugins/work-kit/skills/plugin-config/SKILL.md` / `.jp.md` |
 | 済 | work-kit バージョンバンプ + changelog | - `plugins/work-kit/.claude-plugin/plugin.json` / `changelogs/` |
 | 済 | glossary に `plugin-config` エントリを追加 | - `.claude/rules/core/glossary.md` |
-| - | スキル名を `plugin-config` → `config` にリネーム | - `skills/plugin-config/` → `skills/config/` |
-| - | UX フロー再設計（ループ + 2 ターン AskUserQuestion） | - `skills/config/SKILL.md` |
+| 済 | スキル名を `plugin-config` → `config` にリネーム | - `skills/plugin-config/` → `skills/config/` |
+| 済 | UX フロー再設計（ループ + 2 ターン AskUserQuestion） | - `skills/config/SKILL.md` |
 
 ## 参考ドキュメント
 

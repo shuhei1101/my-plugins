@@ -19,9 +19,20 @@ PR164 で追加された env トグル群を、ユーザーが簡単に ON/OFF �
 
 ## 実装済み（PR167）
 
-- `plugins/work-kit/skills/plugin-config/SKILL.md` — スキル定義
-- `plugins/work-kit/skills/plugin-config/SKILL.jp.md` — JP ミラー
+- `plugins/work-kit/skills/config/SKILL.md` — スキル定義（`plugin-config` → `config` にリネーム）
+- `plugins/work-kit/skills/config/SKILL.jp.md` — JP ミラー
 - work-kit v2.38.0 → v2.39.0 バンプ
+
+## UX フロー（最終設計）
+
+1. 現在の設定状態をテキストで一覧表示
+2. ループ開始: `AskUserQuestion` #1 → どの env 変数を設定するか（4 オプション + その他）
+   - options 1-3: よく使う work-kit 変数（現在の状態を `[ON/OFF]` でラベルに表示）
+   - option 4: 完了（ループ終了）
+   - その他: MERGE_CONV2CLAUDE / MERGE_AUTO_HANDOFF / NEXT_KIT_TS_CHECK / AITUBER_NOTIFY を手入力
+3. `AskUserQuestion` #2 → 2 つの質問を 1 回で：値（デフォルト/OFF） + スコープ（プロジェクト/ユーザー）
+4. 変更を適用して Step 2 に戻る
+5. 完了選択時: 全変更のサマリーを表示
 
 ## 参照
 
