@@ -30,7 +30,7 @@
 | 済 | QA.md に未決定事項を記録する（未決定事項なし） | - `.work/tasks/.../PR177/QA.md` |
 | 済 | `.work/notes/add-protected-branches-env.md` を作成（pr-handoff で作成済み） | - `.work/notes/add-protected-branches-env.md` |
 | 済 | `master-commit-guard.py` で `os.environ.get('WORKSPACE_PROTECTED_BRANCHES', 'master,main,develop')` をカンマ区切りでパースして `PROTECTED_BRANCHES` を構築するように変更（空文字除去・前後 strip） | - `plugins/workspace/hooks/scripts/master-commit-guard.py` |
-| 済 | `plugin.json` / `marketplace.json` のバージョン bump（2.40.0 → 2.41.0） | - `plugins/workspace/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
+| 済 | `plugin.json` / `marketplace.json` のバージョン bump（master との並列 PR176 衝突により 2.41.0 → 2.42.0 にリバンプ） | - `plugins/workspace/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` |
 | 済 | description に `WORKSPACE_PROTECTED_BRANCHES` を追記 | - 同上 |
 | 済 | changelog 追加 | - `plugins/workspace/changelogs/v2.41.0.md` |
 | 済 | `glossary.md` に `WORKSPACE_PROTECTED_BRANCHES` エントリ追加、`env トグル一覧 (PR164)` に追記 | - `.claude/rules/core/glossary.md` |

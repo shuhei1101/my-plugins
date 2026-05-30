@@ -57,7 +57,8 @@ env 未設定時は `master,main,develop` で**完全な後方互換**。
 
 ## バージョン bump
 
-- workspace: 2.40.0 → 2.41.0（MINOR: 新機能・後方互換）
+- workspace: 2.41.0 → 2.42.0（MINOR: 新機能・後方互換）
+- 当初 2.40.0 → 2.41.0 を予定していたが、並列で進んでいた PR176（impl-review-batch-questions）が先に master へマージされて v2.41.0 を取ったためリバンプ。`parallel-pr-version-bump-collision` 同パターン。
 
 ## glossary 更新
 
