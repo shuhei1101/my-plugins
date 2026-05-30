@@ -3,7 +3,7 @@
 
 > このファイルは `comments.md` の日本語ミラーです。
 
-next-kit の `frontend/conventions/comments.md` と同じ思想で Python に適用する。
+dev-kit Next の `frontend/conventions/comments.md` と同じ思想で Python に適用する。
 
 ---
 
@@ -73,7 +73,7 @@ def calculate_score(user: User, items: list[Item]) -> int:
 
 ## パターン 2: 設計上重要なフィールドの説明
 
-「設計上重要」の判断基準（next-kit と同じ）:
+「設計上重要」の判断基準（dev-kit Next と同じ）:
 - 外部キー / ID 参照
 - ステータス系 enum / Literal
 - 業務的に意味のあるフラグ（公開 / アーカイブ / 削除等）

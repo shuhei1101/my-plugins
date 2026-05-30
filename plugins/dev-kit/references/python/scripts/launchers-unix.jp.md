@@ -86,7 +86,7 @@ python script.py "$@"
 
 ## 複数バイナリの選択
 
-`uv run` を使うパターン（py-kit プロジェクトの場合 `uv` 推奨）:
+`uv run` を使うパターン（dev-kit Python プロジェクトの場合 `uv` 推奨）:
 
 ```bash
 #!/usr/bin/env bash

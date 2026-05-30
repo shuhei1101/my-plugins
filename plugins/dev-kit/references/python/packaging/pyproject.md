@@ -232,7 +232,7 @@ uv run pytest
 uv run python -m mypkg --arg foo
 ```
 
-`uv` is a fast unified version of `pip` + `venv` + `pip-tools`. In py-kit projects, **uv is the standard**.
+`uv` is a fast unified version of `pip` + `venv` + `pip-tools`. In dev-kit Python projects, **uv is the standard**.
 See `packaging/dependencies.md` for details.
 
 ---

@@ -1,6 +1,6 @@
 # testing/mocks — Mock Patterns for Integration Tests
 
-In integration tests, **mock out all external dependencies**. Because py-kit injects dependencies via function type aliases, mocks are just plain functions.
+In integration tests, **mock out all external dependencies**. Because dev-kit Python injects dependencies via function type aliases, mocks are just plain functions.
 
 ---
 

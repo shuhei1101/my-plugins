@@ -222,4 +222,4 @@ TASK_B_PROMPT = "..."   # 同じ部品を共有するなら parts + includes で
 
 - `llm/prompts-loader.md` — implementation that reads index.yaml and concatenates parts
 - `llm/cost-cache.md` — design thinking around the prompt cache
-- `dev-kit:yaml` — general operational conventions for `index.yaml` (outside py-kit)
+- `dev-kit:yaml` — general operational conventions for `index.yaml` (outside dev-kit Python)

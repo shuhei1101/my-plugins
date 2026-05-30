@@ -23,7 +23,7 @@ The basic priority order when judging code additions and refactoring.
 - **O (Open/Closed)**: open for extension, closed for modification (important when adding a new feature / new provider)
 - **L (Liskov Substitution)**: once you abstract via a Protocol, implementations must be **structurally equivalent** (return type / exception contract / scope of side effects)
 - **I (Interface Segregation)**: do not build a giant Protocol. Split it small per purpose (separate `AsyncChatFn` and `EmbedFn` into different types)
-- **D (Dependency Inversion)**: higher layers abstract lower layers via **function type aliases** (py-kit uses function types — see `architecture/ts-style.md` / `architecture/dependencies.md`)
+- **D (Dependency Inversion)**: higher layers abstract lower layers via **function type aliases** (dev-kit Python uses function types — see `architecture/ts-style.md` / `architecture/dependencies.md`)
 
 ### Extensibility awareness (do not strictly enforce YAGNI)
 
@@ -35,7 +35,7 @@ The basic priority order when judging code additions and refactoring.
 
 ## Class vs Function Priority
 
-py-kit is **function-first** (`architecture/ts-style.md`). Use classes for:
+dev-kit Python is **function-first** (`architecture/ts-style.md`). Use classes for:
 - DTOs (`@dataclass` / `BaseModel`)
 - Library requirements (FastAPI Middleware, Pydantic BaseModel inheritance, CLI Command)
 - Long-lived runtime state (connection pools, WebSocket sessions)

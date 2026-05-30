@@ -83,7 +83,7 @@ Use `"$@"` rather than `$*` (avoids accidents with whitespace-containing argumen
 
 ## Choosing among multiple binaries
 
-Pattern using `uv run` (recommended for py-kit projects: use `uv`):
+Pattern using `uv run` (recommended for dev-kit Python projects: use `uv`):
 
 ```bash
 #!/usr/bin/env bash

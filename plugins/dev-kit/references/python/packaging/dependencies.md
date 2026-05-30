@@ -1,6 +1,6 @@
 # packaging/dependencies — Dependency management
 
-In py-kit projects, **`uv`** is the standard. `pip` / `poetry` are not used.
+In dev-kit Python projects, **`uv`** is the standard. `pip` / `poetry` are not used.
 
 ---
 

@@ -1,7 +1,7 @@
-# UI Principles — html-kit Shared Reference
+# UI Principles — dev-kit (HTML) Shared Reference
 
 Conventions for **development-support UI** screens (admin panels, internal tools, debug pages).
-Every skill in `html-kit` references this document. Read in full when writing any UI code in scope.
+Every skill in `dev-kit` HTML skills reference this document. Read in full when writing any UI code in scope.
 
 ---
 

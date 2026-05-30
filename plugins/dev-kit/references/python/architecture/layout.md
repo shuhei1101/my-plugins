@@ -1,6 +1,6 @@
 # Top-level layout + feature internal structure
 
-py-kit's standard is **feature-folder layout**. Pure DDD (domain / application / infrastructure / interface) is discontinued.
+dev-kit Python's standard is **feature-folder layout**. Pure DDD (domain / application / infrastructure / interface) is discontinued.
 
 ---
 

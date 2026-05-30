@@ -3,7 +3,7 @@
 
 > このファイルは `ts-style.md` の日本語ミラーです。
 
-py-kit の中心ドキュメント。**関数ファースト + 型エイリアス + DTO + Protocol** で TypeScript の主要機能を Python で再現する。
+dev-kit Python の中心ドキュメント。**関数ファースト + 型エイリアス + DTO + Protocol** で TypeScript の主要機能を Python で再現する。
 
 ---
 

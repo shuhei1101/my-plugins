@@ -26,7 +26,7 @@
 - **O (Open/Closed)**: 拡張に開き、変更に閉じる（新 feature / 新 provider 追加のとき重要）
 - **L (Liskov Substitution)**: Protocol で抽象化したら、実装は **構造的に等価** であること（戻り値の型 / 例外契約 / 副作用範囲）
 - **I (Interface Segregation)**: 巨大な Protocol を作らない。用途別に小さく分ける（`AsyncChatFn` と `EmbedFn` を別 type で）
-- **D (Dependency Inversion)**: 高レイヤは低レイヤを **関数の型エイリアス** で抽象化（py-kit は関数の型でやる、`architecture/ts-style.md` / `architecture/dependencies.md`）
+- **D (Dependency Inversion)**: 高レイヤは低レイヤを **関数の型エイリアス** で抽象化（dev-kit Python は関数の型でやる、`architecture/ts-style.md` / `architecture/dependencies.md`）
 
 ### 拡張性意識（YAGNI は強制しない）
 
@@ -38,7 +38,7 @@
 
 ## クラスと関数の優先順位
 
-py-kit は **関数ファースト**（`architecture/ts-style.md`）。クラスは:
+dev-kit Python は **関数ファースト**（`architecture/ts-style.md`）。クラスは:
 - DTO（`@dataclass` / `BaseModel`）
 - ライブラリ要求（FastAPI Middleware、Pydantic BaseModel 継承、CLI Command）
 - 長期保持のランタイム状態（接続プール、WebSocket セッション）

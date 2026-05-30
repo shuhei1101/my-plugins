@@ -3,7 +3,7 @@
 
 > このファイルは `layout.md` の日本語ミラーです。
 
-py-kit の標準は **機能フォルダ型レイアウト**。純 DDD（domain / application / infrastructure / interface）は廃止。
+dev-kit Python の標準は **機能フォルダ型レイアウト**。純 DDD（domain / application / infrastructure / interface）は廃止。
 
 ---
 

@@ -1,6 +1,6 @@
 # packaging/python-versions — Python version policy
 
-py-kit's policy: **adopt the highest version possible**.
+dev-kit Python's policy: **adopt the highest version possible**.
 
 ---
 
@@ -29,7 +29,7 @@ py-kit's policy: **adopt the highest version possible**.
 | `--disable-gil` build | 3.13 | Experimental; not recommended for production |
 | `interpreters` standard module | 3.13 | Official API for subinterpreters |
 
-py-kit fully adopts PEP 695, so **3.12+ is required**.
+dev-kit Python fully adopts PEP 695, so **3.12+ is required**.
 
 ---
 

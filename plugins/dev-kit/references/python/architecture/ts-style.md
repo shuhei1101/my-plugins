@@ -1,6 +1,6 @@
 # TypeScript-Style Python — Function-First Design
 
-The central document of py-kit. Reproduce TypeScript's core features in Python with **function-first + type aliases + DTOs + Protocols**.
+The central document of dev-kit Python. Reproduce TypeScript's core features in Python with **function-first + type aliases + DTOs + Protocols**.
 
 ---
 

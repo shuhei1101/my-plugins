@@ -3,7 +3,7 @@
 
 > このファイルは `python-versions.md` の日本語ミラーです。
 
-py-kit の方針: **極力高いバージョンを採用する**。
+dev-kit Python の方針: **極力高いバージョンを採用する**。
 
 ---
 
@@ -32,7 +32,7 @@ py-kit の方針: **極力高いバージョンを採用する**。
 | `--disable-gil` ビルド | 3.13 | 実験的・本番未推奨 |
 | `interpreters` 標準モジュール | 3.13 | subinterpreter 公式 API |
 
-py-kit は PEP 695 を全面採用するので **3.12+ 必須**。
+dev-kit Python は PEP 695 を全面採用するので **3.12+ 必須**。
 
 ---
 

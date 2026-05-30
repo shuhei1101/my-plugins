@@ -1,6 +1,6 @@
 # Recommended Decorators + Handler Decorators
 
-The decorators recommended for use in py-kit, and the **handler decorator** pattern that absorbs cross-cutting concerns.
+The decorators recommended for use in dev-kit Python, and the **handler decorator** pattern that absorbs cross-cutting concerns.
 
 ---
 

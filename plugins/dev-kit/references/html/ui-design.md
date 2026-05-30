@@ -1,4 +1,4 @@
-# UI Design — html-kit Shared Reference
+# UI Design — dev-kit (HTML) Shared Reference
 
 UI / UX patterns and conventions for development-support screens.
 Read alongside `principles.md`. Used by `mock`, `implement`, and `debug-fab` skills.
@@ -225,13 +225,13 @@ screen uses it today. "よく使うものはここに入れる" — when in doub
 ### Workflow
 
 When implementing or mocking a screen, the **first step is always to look up the existing
-shared components** (`c-*`, `p-*`) before writing new markup. See the `html-kit:implement`
+shared components** (`c-*`, `p-*`) before writing new markup. See the `dev-kit:html-implement`
 skill and the `.claude/rules/common-component-first.md` rule for the enforced workflow.
 
 ---
 
 ## Mock generation hand-off
 
-When generating mocks via `html-kit:mock`, apply the patterns in this document.
+When generating mocks via `dev-kit:html-mock`, apply the patterns in this document.
 Each mock variant ("案 A/B/C/...") should explore a meaningful axis of difference
 (e.g. sidebar layout vs top-tab layout, dense vs spacious card grid), not just color changes.

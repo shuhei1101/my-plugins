@@ -3,7 +3,7 @@
 
 > このファイルは `dependencies.md` の日本語ミラーです。
 
-py-kit プロジェクトでは **`uv`** を標準とする。`pip` / `poetry` は使わない。
+dev-kit Python プロジェクトでは **`uv`** を標準とする。`pip` / `poetry` は使わない。
 
 ---
 

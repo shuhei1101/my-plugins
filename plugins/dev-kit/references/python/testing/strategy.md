@@ -1,6 +1,6 @@
 # testing/strategy — Testing Policy
 
-py-kit's policy: **do not write unit tests.** Write only two kinds of tests: integration tests and smoke tests.
+dev-kit Python's policy: **do not write unit tests.** Write only two kinds of tests: integration tests and smoke tests.
 
 ---
 

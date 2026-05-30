@@ -235,7 +235,7 @@ uv run pytest
 uv run python -m mypkg --arg foo
 ```
 
-`uv` は `pip` + `venv` + `pip-tools` を統合した高速版。py-kit プロジェクトでは **uv 標準**。
+`uv` は `pip` + `venv` + `pip-tools` を統合した高速版。dev-kit Python プロジェクトでは **uv 標準**。
 詳細は `packaging/dependencies.md`。
 
 ---

@@ -225,4 +225,4 @@ TASK_B_PROMPT = "..."   # 同じ部品を共有するなら parts + includes で
 
 - `llm/prompts-loader.md` — index.yaml を読み込んで部品を結合する実装
 - `llm/cost-cache.md` — プロンプトキャッシュの設計考え方
-- `dev-kit:yaml` — `index.yaml` の運用規約全般（py-kit 外）
+- `dev-kit:yaml` — `index.yaml` の運用規約全般（dev-kit Python 外）

@@ -1,6 +1,6 @@
 # Comment Rules
 
-Apply the same philosophy as next-kit's `frontend/conventions/comments.md` to Python.
+Apply the same philosophy as dev-kit Next `frontend/conventions/comments.md` to Python.
 
 ---
 
@@ -70,7 +70,7 @@ The signature carries the types. **Write only the purpose.**
 
 ## Pattern 2: Descriptions of Design-Significant Fields
 
-Criteria for "design-significant" (same as next-kit):
+Criteria for "design-significant" (same as dev-kit Next):
 - Foreign keys / ID references
 - Status-style enums / Literals
 - Business-meaningful flags (public / archived / deleted, etc.)
