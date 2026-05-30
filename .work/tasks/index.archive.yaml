@@ -1,4 +1,4 @@
-prs:
+branches:
 - id: 73
   title: PR73 — skill-creator-references-cleanup
   type: refactor
