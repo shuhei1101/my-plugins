@@ -54,3 +54,33 @@ merge スキルがマージを提案するかどうかを env var でオフに�
 
 - PR164 の `WORK_MERGE_` 名前空間に追加
 - `work-kit:config` スキルの選択肢にも追加する（PR167 で追加されたスキル）
+
+---
+
+# feat/branch-author-env — WORK_BRANCH_AUTHOR 追加
+
+## 概要
+
+ブランチ名に作者名を差し込む文字列型環境変数。ブール型トグルとは異なり、任意の文字列を値にとる。
+
+## 仕様
+
+| # | env 変数 | 型 | デフォルト | 動作 |
+|---|---|---|---|---|
+| 1 | `WORK_BRANCH_AUTHOR` | 文字列 | 空（未設定） | 設定時: `{type}/{author}/{title}`、未設定: `{type}/{title}` |
+
+## 動作例
+
+- `WORK_BRANCH_AUTHOR=nishikawa` のとき: `feat/nishikawa/test-update`
+- `WORK_BRANCH_AUTHOR=` （空）のとき: `feat/test-update`
+
+## 実装箇所
+
+- `plugins/work/skills/start/SKILL.md` — Step 1 でチェック
+- `plugins/work/CLAUDE.md` — Environment Variables テーブルに追加
+
+## 設計メモ
+
+- ブール型トグルとは別種の「文字列型 env var」として位置付ける
+- `work:config` スキルはブール型トグル専用のため、このvarは対象外（手動設定）
+- ワークツリーパスは `{repo}-wt-{type}-{author}-{title}` に自動で展開される（スラッシュをハイフンに変換する既存ロジックに依存）
