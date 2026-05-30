@@ -61,6 +61,21 @@ PR182 で dev-kit:plugin-update スキルを追加したが、レビュー中に
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
+| `plugins/dev-kit/references/html/css-js-link.md` | 新規（移動） | CSS クラス ↔ JS DOM 紐付けルール | templates/html/rules/ から移動、frontmatter 除去 |
+| `plugins/dev-kit/references/html/css-js-link.jp.md` | 新規（移動） | 同上の JP ミラー | パス参照を更新 |
+| `plugins/dev-kit/references/html/common-component-first.md` | 新規（移動） | 共通コンポーネント先読みルール | templates/html/rules/ から移動、frontmatter 除去 |
+| `plugins/dev-kit/references/html/common-component-first.jp.md` | 新規（移動） | 同上の JP ミラー | パス参照を更新 |
+| `plugins/dev-kit/references/_index.yaml` | 編集 | html/css-js-link.md / html/common-component-first.md エントリ追加 | |
+| `plugins/dev-kit/references/_index.jp.yaml` | 編集 | 同上の日本語エントリ追加 | |
+| `plugins/dev-kit/references/_injection_rules.yaml` | 編集 | html パターン 3 件（*.html/css/js）の required に 2 ファイル追記 | |
+| `plugins/dev-kit/skills/html-implement/SKILL.md` | 編集 | Step 7（ルールコピー手順）を削除、Step 6 → Done に変更 | |
+| `plugins/dev-kit/skills/html-implement/SKILL.jp.md` | 編集 | ステップ7 を削除 | |
+| `plugins/dev-kit/skills/plugin-update/SKILL.md` | 編集 | Step 2（html-implement ルール再コピー）削除、Steps 3→6 を 2→5 に繰り上げ | |
+| `plugins/dev-kit/skills/plugin-update/SKILL.jp.md` | 編集 | 同上 | |
+| `plugins/dev-kit/.claude-plugin/plugin.json` | 編集 | v4.3.0 → v4.4.0 MINOR バンプ | |
+| `.claude-plugin/marketplace.json` | 編集 | dev-kit v4.3.0 → v4.4.0 | |
+| `plugins/dev-kit/CLAUDE.md` | 編集 | Changelog に v4.4.0 行を追加 | |
+| `plugins/dev-kit/CLAUDE.jp.md` | 編集 | 同上（日本語） | |
 
 ## テスト
 
