@@ -915,4 +915,10 @@ branches:
   summary: JP ミラーコメント（<!-- This file is a Japanese mirror... -->）にソースの英語ファイル名を追加し、全
     *.jp.md に一括適用する
   task: 260530_jp-mirror-comment-add-source-filename
+- id: 218
+  title: feat/notes-sync-rule
+  type: feat
+  tags: []
+  summary: ノート新規作成・更新時に _index.md への追記を促すルールを追加
+  task: 260531_notes-sync-rule
   completed: true
