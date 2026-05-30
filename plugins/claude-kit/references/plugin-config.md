@@ -81,23 +81,24 @@ Output a state table as text before calling `AskUserQuestion`:
 
 ### Step 2 — Select env var (loop head)
 
-Call `AskUserQuestion` with `multiSelect: false`:
+Output a numbered list of all managed toggles as plain text, then end the turn and wait for
+the user to type a number (or `0` / `q` to finish):
 
-```yaml
-question: "設定する env 変数を選択"
-header:   "env 変数"
-options:
-  - label: "[{state}] {VAR_NAME_1}"   description: "{機能の説明}"
-  - label: "[{state}] {VAR_NAME_2}"   description: "{機能の説明}"
-  - label: "[{state}] {VAR_NAME_3}"   description: "{機能の説明}"
-  - label: "完了（設定を終了）"         description: "ループを終了して変更結果を表示"
+```
+設定する変数の番号を入力してください（0 で終了）:
+
+  1. [{state}] {VAR_NAME_1} — {機能の説明}
+  2. [{state}] {VAR_NAME_2} — {機能の説明}
+  3. [{state}] {VAR_NAME_3} — {機能の説明}
+  …
+  0. 完了（終了）
 ```
 
-Keep the option list to **3 user-facing vars + 完了**. If the plugin has more, put the three
-most commonly changed ones in the list and accept the rest as free-text "その他" input (validate
-against the full list before proceeding).
+**Do not call `AskUserQuestion` here** — a plain numbered list lets you show all toggles without
+the 4-option cap.
 
-If the user selects 完了 → jump to Step 5.
+If the user types `0` or `q` → jump to Step 5.
+Otherwise parse the number, look up the corresponding var name, → proceed to Step 3.
 
 ### Step 3 — Select value and scope
 
