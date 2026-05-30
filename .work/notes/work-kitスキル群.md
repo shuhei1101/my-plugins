@@ -29,8 +29,8 @@ work-kit プラグインに含まれるスキルの設計・目的・相互関�
 | `update` | work-kit スキルを手動更新する |
 | `setup` | `.work/` ディレクトリを初期化する（プロジェクトに初回導入） |
 | `branch-index-cleanup` | 古いブランチとindex.yamlエントリをクリーンアップ |
-| `pr-handoff` | 次のセッション向け引き継ぎ指示書を会話内に出力（PR91で追加） |
-| `pr-show` | 予約済みPRの状況を3カテゴリ（着手可能・進行中・条件あり）で一覧表示（PR109で追加） |
+| `branch-reserve` | 次ブランチをコンテキスト付きで予約（PR91で追加、#230でリネーム） |
+| `branch-show` | 次ブランチ候補を3カテゴリ（着手可能・進行中・条件あり）で一覧表示（PR109で追加、#230でリネーム） |
 | `work-add` | git worktree とブランチを作成（PR163 で worktree-kit から統合） |
 | `vscode-workspace-sync` | VS Code `.code-workspace` の `folders` を worktree と同期する PostToolUse フックを設定（PR163 で worktree-kit から統合） |
 
@@ -46,7 +46,7 @@ work-kit ← worktree-kit の片方向依存しかなく、別プラグインに
 
 work-start Step 4 がこの env var を読んで分岐する（従来の「worktree-kit インストール有無」判定を置き換え）。
 
-## pr-handoff スキルの設計
+## branch-reserve スキルの設計（旧 pr-handoff）
 
 ### 目的
 
@@ -67,7 +67,7 @@ work-start Step 4 がこの env var を読んで分岐する（従来の「workt
 ### トリガー条件
 
 - ユーザーが「引き継ぎ書を作って」「次のPRの指示書を作って」「ハンドオフして」などと言ったとき
-- ユーザーが「pr-handoff して」と言ったとき
+- ユーザーが「branch-reserve して」「ブランチを予約して」と言ったとき
 
 ## merge スキル — Step 3: master 取り込み必須化（#219）
 

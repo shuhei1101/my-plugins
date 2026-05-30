@@ -22,7 +22,7 @@ env トグル変数を `AskUserQuestion` を使って対話的に設定します
 | `WORK_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
 | `WORK_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
 | `WORK_MERGE_PROPOSAL` | Stop フックでの `/work:merge` 提案 | 有効 |
-| `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto pr-handoff | 有効 |
+| `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto branch-reserve | 有効 |
 | `DEV_KIT_NEXT_TS_CHECK` | PostToolUse tsc 型チェック | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
 | `CLAUDE_KIT_INJECTION_DISABLE` | claude-kit の全参照注入を無効化（逆極性） | 有効（注入 ON） |

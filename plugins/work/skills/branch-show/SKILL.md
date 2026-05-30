@@ -1,14 +1,11 @@
 ---
-name: pr-show
+name: branch-show
 description: Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions).
 ---
 
-# work:pr-show — Show Next Branch Candidates
+# work:branch-show — Show Next Branch Candidates
 
 Reads a branch document's `## 次ブランチ候補` table and classifies each candidate as ready to start, in progress elsewhere, or has conditions.
-
-> The skill name remains `pr-show` for historical and CLI compatibility; it now operates in branch
-> terms.
 
 ---
 
@@ -80,11 +77,11 @@ For each candidate row:
 
 **a. Has conditions (条件あり)**:
 - Column 3 (実施条件) references another candidate — e.g. `「{other}」が完了したら`
-- pr-handoff intentionally did not reserve a branch for these
+- branch-reserve intentionally did not reserve a branch for these
 - List directly from the table — no branch lookup needed
 
 **b. Ready to start or In progress elsewhere**:
-- Column 3 is blank or `即時実施可` — pr-handoff should have reserved a branch
+- Column 3 is blank or `即時実施可` — branch-reserve should have reserved a branch
 - Find the branch by searching for the candidate title:
   ```bash
   git branch --list "*{candidate-title}*"
@@ -95,7 +92,7 @@ For each candidate row:
   ```
 - commits ≤ 1 → **Ready to start**
 - commits ≥ 2 → **In progress elsewhere**
-- Branch not found → pr-handoff was not run; note as "未予約 (pr-handoff not run)"
+- Branch not found → branch-reserve was not run; note as "未予約 (branch-reserve not run)"
 
 → Proceed to Step 4
 
@@ -149,9 +146,9 @@ Unrelated reserved branches from other sessions are intentionally excluded.
 
 | Category | Detail |
 |---|---|
-| **Ready to start** | State immediately after pr-handoff reservation. Branch has just the document-creation commit (1 commit) ahead of master. |
+| **Ready to start** | State immediately after branch-reserve reservation. Branch has just the document-creation commit (1 commit) ahead of master. |
 | **In progress elsewhere** | Another Claude Code session has implementation commits on this branch. Two or more commits means the user is actively working there. |
-| **Has conditions** | A candidate that pr-handoff classified as a serial-dependency item and chose not to reserve. It becomes eligible once its predecessor branch merges. |
+| **Has conditions** | A candidate that branch-reserve classified as a serial-dependency item and chose not to reserve. It becomes eligible once its predecessor branch merges. |
 
 ### Why keep "in progress" visible
 

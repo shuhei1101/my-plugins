@@ -1,5 +1,5 @@
 ---
-name: pr-handoff
+name: branch-reserve
 description: |
   Reserve the next branch using the same flow as work:start, after the current branch is complete.
   Reads the "Next branch candidates" section from the current branch document to determine what to
@@ -8,10 +8,10 @@ description: |
   reserved now — they are embedded into the reserved preceding branch's "Next branch candidates"
   so the chain is carried forward.
   Trigger when the user says "引き継ぎ書を作って", "次のブランチをセットアップして", "ハンドオフして",
-  "handoff して", "pr-handoff して", or calls `/work:pr-handoff` explicitly.
+  "ブランチを予約して", "branch-reserve して", or calls `/work:branch-reserve` explicitly.
 ---
 
-# work:pr-handoff — Reserve the Next Branch with Context
+# work:branch-reserve — Reserve the Next Branch with Context
 
 Reads the "Next branch candidates" from the current branch document and runs the same flow
 as `work:start` to create the branch and work folder. Records relevant background
@@ -21,9 +21,6 @@ When a serial dependency exists (a successor branch can only start after a prece
 merged), reserve only the immediately-actionable candidates; embed the dependent
 candidates into the reserved preceding branch's `## 次ブランチ候補` section.
 
-> The skill name remains `pr-handoff` for historical and CLI compatibility, but the workflow now
-> operates in branch terms — no `PR{N}` semantics. The "next branch candidates" table lives in the
-> `## 次ブランチ候補` section of every branch document.
 
 ---
 
@@ -37,7 +34,7 @@ Additionally, when a successor branch can only be implemented after a preceding 
 (serial dependency), reserving all candidates at once would create the successor's worktree
 on a stale master base. To avoid this, dependent candidates are not reserved now — they are
 transcribed into the preceding branch's `## 次ブランチ候補`, so when that branch completes and
-pr-handoff runs again, the dependent candidate becomes the next immediate target.
+branch-reserve runs again, the dependent candidate becomes the next immediate target.
 
 ---
 
@@ -153,7 +150,7 @@ pr-handoff runs again, the dependent candidate becomes the next immediate target
 
 - All immediately reservable candidates have their branch and work folder created
 - Each new branch document contains background context
-- Dependent successor candidates are transcribed into the preceding branch's `## 次ブランチ候補` and will be reserved by the next pr-handoff run
+- Dependent successor candidates are transcribed into the preceding branch's `## 次ブランチ候補` and will be reserved by the next branch-reserve run
 
 #### Notes
 
@@ -176,8 +173,8 @@ A current branch's `## 次ブランチ候補`:
 | feature-B | Add feature B | feature-A が完了したら |
 | feature-C | Add feature C | feature-B が完了したら |
 
-→ After pr-handoff runs:
+→ After branch-reserve runs:
 
 - Only `feat/feature-A` is reserved
 - That branch's `## 次ブランチ候補` is populated with feature-B (実施条件: 即時実施可) and feature-C (実施条件: feature-B が完了したら)
-- When `feat/feature-A` completes and pr-handoff runs again, feature-B becomes the next reserved branch, and feature-C is transcribed forward into its `## 次ブランチ候補`
+- When `feat/feature-A` completes and branch-reserve runs again, feature-B becomes the next reserved branch, and feature-C is transcribed forward into its `## 次ブランチ候補`
