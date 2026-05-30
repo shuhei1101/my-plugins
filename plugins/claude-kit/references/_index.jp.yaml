@@ -46,3 +46,6 @@ references:
 
   - path: askuserquestion.md
     description: スキルから AskUserQuestion を呼ぶ際のガイド。使用制限（スキルまたはユーザーが明示した場合のみ）、options 制約（2〜4 個・Other 自動付与）、multiSelect、preview フィールドの規則。
+
+  - path: jinja2/templates.md
+    description: Markdown を出力する Jinja2 テンプレート（例 injection.md.j2）のオーサリングルール。trim_blocks の改行食いルール、{% endif %}{% if X %} + --- の setext 見出しバグ、}} と Handlebars 系パーサーの衝突（<!-- --> で対処）、クイックチェックリスト。

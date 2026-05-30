@@ -943,4 +943,11 @@ branches:
   summary: AskUserQuestion の制約（options 2〜4個、Other自動付与、multiSelect、preview）を claude-kit
     リファレンスに汎用ドキュメントとして追加
   task: 260530_document-askuserquestion-limits
+- id: 222
+  title: docs/claude-kit-jinja2-authoring-rules
+  type: docs
+  tags: []
+  summary: 'Jinja2 テンプレート作成時の注意事項（trim_blocks との相互作用、{% %} + --- バグ、{{ }} を ## に埋めない等）を
+    references/jinja2/ にドキュメント化'
+  task: 260531_claude-kit-jinja2-authoring-rules
   completed: true
