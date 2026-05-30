@@ -12,10 +12,10 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録する | - |
-| - | ノートドキュメントを更新する | `.work/notes/` |
-| - | ナンバーカラムルールを追加する | - `plugins/claude-kit/references/markdown-table.md`<br>- `plugins/claude-kit/references/markdown-table.jp.md` |
-| - | ルール / CLAUDE.md を更新する | - |
+| 済 | QA を `## QA` に記録する | - |
+| 済 | ノートドキュメントを更新する（対象なし） | `.work/notes/` |
+| 済 | ナンバーカラムルールを追加する | - `plugins/claude-kit/references/markdown-table.md`<br>- `plugins/claude-kit/references/markdown-table.jp.md` |
+| 済 | ルール / CLAUDE.md を更新する（対象なし） | - |
 
 ## 変更内容
 
