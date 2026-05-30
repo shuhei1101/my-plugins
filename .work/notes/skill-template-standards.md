@@ -3,9 +3,11 @@ created_at: 2026-05-30
 updates:
   - 2026-05-30 — 初版作成（PR205）
   - 2026-05-30 — サブエージェントガイドを subagents.md に分離・委譲マーカーを説明的テキストに変更（PR205）
+  - 2026-05-31 — PR217 予約：既存 SKILL.jp.md の全件見直し（セクション名統一・サブエージェント候補洗い出し）
 related_specs: []
 related_prs:
   - PR205
+  - PR217
 ---
 
 # skill-template-standards — SKILL.jp.md テンプレート標準とサブエージェントガイド
