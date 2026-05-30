@@ -785,6 +785,20 @@ branches:
   summary: claude-kit の plugin authoring guide にプラグイン間依存ゼロ原則の独立セクションを追加（Why／許容例外／違反検出方法を明文化）
   task: 260530_claude-kit-zero-plugin-dependency-principle
   completed: true
+- id: 185
+  title: PR185 — ref-inject-plugin-update-skill
+  type: feat
+  tags: []
+  summary: ref-inject に plugin-update スキルを追加（PR168 の plugin authoring guide 必須化に追従）
+  task: 260530_ref-inject-plugin-update-skill
+  completed: true
+- id: 190
+  title: PR190 — rename-index-prs-key
+  type: refactor
+  tags: []
+  summary: index.yamlとindex.archive.yamlのprs:キーをbranches:に改名し、index-tool.pyを更新する
+  task: 260530_index-yamlのprs:キーをbranches:に改名
+  completed: true
 - id: 191
   title: PR191 — unify-task-folder-naming
   type: chore

@@ -15,3 +15,6 @@ references:
 
   - path: work-todo-template-sync.md
     description: Sync rule for work TODO templates and work-start SKILL.md. The section structure in templates must match the fill-in guidance in work-start SKILL.md Step 7.
+
+  - path: work-dot-work-dir.md
+    description: Guide for editing files under .work/ — directory structure, branch document sections, notes lifecycle, and commit conventions (keep .work/ changes in a separate commit from implementation code).

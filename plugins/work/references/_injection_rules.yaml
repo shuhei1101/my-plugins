@@ -26,3 +26,8 @@ rules:
   - pattern: "plugins/work/skills/{start,pr-handoff}/SKILL{.jp,}.md"
     required:
       - work-todo-template-sync.md
+
+  # ---- .work/ ディレクトリ: 構成・規約（コミット分離ルール含む） ----
+  - pattern: ".work/**"
+    required:
+      - work-dot-work-dir.md

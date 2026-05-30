@@ -10,4 +10,4 @@
 #   archived  : アーカイブ日（YYYY-MM-DD）
 #   resolution: merged / abandoned
 
-archived_prs: []
+branches: []

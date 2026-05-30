@@ -31,7 +31,8 @@
 ref-inject/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md / CLAUDE.jp.md
-├── skills/apply/SKILL.md (+ .jp.md)    # /ref-inject:apply — Claude がテンプレを読んで対象プラグインへ書く
+├── skills/apply/SKILL.md (+ .jp.md)           # /ref-inject:apply — Claude がテンプレを読んで対象プラグインへ書く
+├── skills/plugin-update/SKILL.md (+ .jp.md)  # /ref-inject:plugin-update — 全 consumer の注入ファイルを更新
 └── templates/                           # 対象プラグインにコピーする注入ファイル（注入部分のみ）
     ├── hooks/
     │   ├── scripts/
@@ -105,3 +106,12 @@ consumer の `hooks/` に再適用する（references はそのまま。`ref-inj
 |---|---|
 | `dev-kit` / `claude-kit` | リファレンス注入の consumer。ref-inject テンプレートを採用済み |
 | `claude-kit` | `plugin-creator`（プラグインレベルのファイルを所有）と共通フックポリシーの出所 |
+
+---
+
+## Changelog
+
+| バージョン | 日付 | 概要 |
+|---|---|---|
+| 1.6.0 | 2026-05-30 | `ref-inject:plugin-update` スキルを追加 — consumer を列挙し注入フックファイルを現行テンプレートに更新する; references/ は変更しない (PR185) |
+| 1.5.0 | — | 二層 TTL トークン（パターン層 + リファレンス層）導入 — 複数パターンで共有されるリファレンスの二重注入を防止 (PR160) |
