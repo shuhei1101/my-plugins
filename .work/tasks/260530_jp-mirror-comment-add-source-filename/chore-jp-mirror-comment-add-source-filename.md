@@ -4,18 +4,33 @@
 
 ## 概要
 
-{このブランチの目的・背景を書く}
+`*.jp.md` 冒頭の JP ミラー警告コメントにソースの英語ファイル名を追加し、全ファイルに一括適用する。
+
+**現在のフォーマット:**
+```
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+```
+
+**新フォーマット:**
+```
+<!-- This file is a Japanese mirror of {source_file.md}. When updating the English original, update this file too. -->
+```
+
+各 `foo.jp.md` に対してソースファイル名は `foo.md`（ベース名のみ、フルパスなし）。
 
 ### 実施条件
 
-{例: 即時実施可 / 「{他ブランチ名}」が完了してから}
+即時実施可
 
 ## 作業内容
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| 済 | {何をするか（サンプル行 — 実際の作業に書き換える）} | - `{file/path}` |
-| - | {何をするか} | - `{file/path1}`<br>- `{file/path2}` |
+| 済 | QA を `## QA` に記録する | - |
+| 済 | `.work/notes/` の関連ノートを確認・更新する | - |
+| 済 | 全 `*.jp.md` の旧形式コメントをソースファイル名入り新形式に一括置換する | `plugins/**/*.jp.md`（211ファイル） |
+| 済 | コメント定義を参照するドキュメントを新形式に更新する | `references/common.md`, `common.jp.md`, `jp-mirror-translator.md`, `jp-mirror-translator.jp.md` |
+| 済 | ルール・CLAUDE.md を更新する | - |
 
 ## 変更内容
 
@@ -23,59 +38,43 @@
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| `{file/path}` | 新規 | {このファイルで何を実装したか} | {補足あれば} |
-| `{file/path2}` | 編集 | {何を変更したか} | - |
+| `plugins/**/*.jp.md` | 編集 | 旧形式コメント → 新形式コメント（ソースファイル名追加） | 211ファイル |
+| `plugins/claude-kit/references/common.md` | 編集 | コメント記法の定義を新形式に更新 | - |
+| `plugins/claude-kit/references/common.jp.md` | 編集 | 同上の日本語ミラー | - |
+| `plugins/claude-kit/references/references-sync.md` | 編集 | コメント例・チェックリストを新形式に更新 | - |
+| `plugins/claude-kit/references/references-sync.jp.md` | 編集 | 同上の日本語ミラー | - |
+| `plugins/claude-kit/references/hooks.md` | 編集 | チェックリストを新形式に更新 | - |
+| `plugins/claude-kit/references/hooks.jp.md` | 編集 | 同上の日本語ミラー | - |
+| `plugins/claude-kit/references/claude-md.md` | 編集 | チェックリストを新形式に更新 | - |
+| `plugins/claude-kit/references/claude-md.jp.md` | 編集 | 同上の日本語ミラー | - |
+| `plugins/claude-kit/references/skills.md` | 編集 | チェックリストを新形式に更新 | - |
+| `plugins/claude-kit/references/skills.jp.md` | 編集 | 同上の日本語ミラー | - |
+| `plugins/claude-kit/agents/jp-mirror-translator.md` | 編集 | コメント例を新形式に更新 | - |
+| `plugins/claude-kit/agents/jp-mirror-translator.jp.md` | 編集 | 同上の日本語ミラー | - |
 
 ## テスト
 
-上記実装に伴って追加・変更したテストファイル。
-
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| `{test/path}` | 新規 | {このテストで何を検証するか} | {補足あれば} |
+| (テストなし) | - | - | - |
 
 ## QA
 
-このブランチのスコープの未決定事項を QA-XXX として記録する。決定後は本文の該当箇所に反映する。
-
-### QA-001: jp-mirror-comment-add-source-filename
-
-**背景**: {なぜこれを判断する必要があるか}
-
-| 案 | 内容 |
-|---|---|
-| A | {案 A の説明} |
-| B | {案 B の説明} |
-
-**推奨方式**: {A/B のどちらか + 理由を 1〜2 行。「後で決める」は禁止}
-
-**状態**: 未解決
-
-**決定したら反映先**: {ドキュメントの該当セクション}
+QA 事項なし。
 
 ## 参考ドキュメント
 
-- `{path/to/spec.md}`: {何の資料か}
-
-## 関連イシュー
-
-このブランチが解決する `.work/issues/` のイシュー一覧。merge 実行時に自動でクローズされる。
-イシューがない場合は表ごと削除してよい。
-
-| ID | 概要 | resolution |
-|---|---|---|
-| ISSUE-207 | {イシューのタイトル} | resolved |
+- `.work/notes/JPミラーポリシー.md`: JP ミラーポリシーのメモ
 
 ## 関連ブランチ
 
-直接関連するブランチ（先行・分割兄弟・後続）を列挙する。
-
 | ブランチ | 概要 |
 |---|---|
-| {type/title} | {概要} |
+| `feat/claude-kit-jp-mirror-env` | JP ミラー env var（PR201） |
 
 ## 次ブランチ候補
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
-| {次にやること} | {背景・目的} | {例: 即時実施可 / 「{他候補タイトル}」が完了したら} |
+| `claude-kit-markdown-env-var-audit` | 他の `.md` ファイルで「`echo $VAR`」等の誤った env var 確認指示がないか調査・修正 | 即時実施可 |
+| `claude-kit-jinja2-authoring-rules` | `references/jinja2/` フォルダを作成し Jinja2 テンプレート作成時の注意事項をドキュメント化 | 即時実施可 |
