@@ -2,7 +2,7 @@
 
 ---
 
-### Step 1: Determine whether a PR is in progress
+### Step 1: Determine whether a branch is in progress
 
 #### Condition
 
@@ -10,31 +10,31 @@
 
 #### Process
 
-Check whether a PR is in progress in **the current Claude Code conversation session**.
+Check whether a working branch is in progress in **the current Claude Code conversation session**.
 
-→ PR exists → proceed to Step 2
-→ No PR → proceed to Step 3
+→ Branch exists → proceed to Step 2
+→ No branch → proceed to Step 3
 
 #### Notes
 
-- "In-progress PR" means a PR that was created or explicitly mentioned within this conversation.
-- Do NOT read `index.yaml` or any other files to look for in-progress PRs.
-- If unsure, treat it as "no PR" and proceed to Step 3.
+- "In-progress branch" means a working branch that was created or explicitly mentioned within this conversation.
+- Do NOT read `index.yaml` or any other files to look for in-progress branches.
+- If unsure, treat it as "no branch" and proceed to Step 3.
 
 ---
 
-### Step 2: Check QA before reading the rest of the PR document
+### Step 2: Check QA before reading the rest of the branch document
 
 #### Condition
 
-- A PR is in progress
+- A branch is in progress
 
 #### Process
 
-1. Use `git worktree list` to locate the in-progress PR's worktree and navigate to it
-2. Read the PR document at `.work/tasks/{YYMMDD}_{title}/{branch-hyphenated}.md`
+1. Use `git worktree list` to locate the in-progress branch's worktree and navigate to it
+2. Read the branch document at `.work/tasks/{YYMMDD}_{title}/{branch-hyphenated}.md`
 3. If its `## QA` section has unresolved entries — **stop here** — ask the user to resolve them; do nothing further
-4. If `## QA` is clear (or empty), read the `## 作業内容` section of the same PR document
+4. If `## QA` is clear (or empty), read the `## 作業内容` section of the same branch document
 5. If the user's requested task is not already listed in `## 作業内容`, add it and commit before proceeding
 6. Continue work according to the document
 
@@ -51,12 +51,12 @@ Check whether a PR is in progress in **the current Claude Code conversation sess
 
 #### Condition
 
-- No PR is in progress
+- No working branch is in progress
 
 #### Process
 
-1. Run `/workspace:work-start` to create a PR
-2. Once the PR is created, proceed to Step 2
+1. Run `/workspace:work-start` to create a branch
+2. Once the branch is created, proceed to Step 2
 
 #### Notes
 
