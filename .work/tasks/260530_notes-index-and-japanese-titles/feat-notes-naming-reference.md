@@ -22,13 +22,13 @@
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| - | QA を `## QA` に記録する | - |
-| - | ノートドキュメントを更新する | `.work/notes/` |
-| - | ノート命名規則リファレンスを新規作成する | `plugins/work/references/notes-naming-rules.md` |
-| - | JP ミラーを作成する | `plugins/work/references/notes-naming-rules.jp.md` |
-| - | `_injection_rules.yaml` に `.work/notes/` パターンを追加する | `plugins/work/references/_injection_rules.yaml` |
-| - | `_index.yaml` / `_index.jp.yaml` にリファレンスエントリを追加する | `plugins/work/references/` |
-| - | `work-dot-work-dir.md` の既存ルールとの重複を確認・整理する | `plugins/work/references/work-dot-work-dir.md` |
+| 済 | QA を `## QA` に記録する | - |
+| 済 | ノートドキュメントを更新する | `.work/notes/` |
+| 済 | ノート命名規則リファレンスを新規作成する | `plugins/work/references/notes-naming-rules.md` |
+| 済 | JP ミラーを作成する | `plugins/work/references/notes-naming-rules.jp.md` |
+| 済 | `_injection_rules.yaml` に `.work/notes/` パターンを追加する | `plugins/work/references/_injection_rules.yaml` |
+| 済 | `_index.yaml` / `_index.jp.yaml` にリファレンスエントリを追加する | `plugins/work/references/` |
+| 済 | `work-dot-work-dir.md` の既存ルールとの重複を確認・整理する | `plugins/work/references/work-dot-work-dir.md` |
 
 ## 変更内容
 
@@ -36,7 +36,13 @@
 
 | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|
-| `{file/path}` | 新規 | {このファイルで何を実装したか} | {補足あれば} |
+| `plugins/work/references/notes-naming-rules.md` | 新規 | ノート命名規則・_index.md 管理ルールのリファレンス | - |
+| `plugins/work/references/notes-naming-rules.jp.md` | 新規 | JP ミラー | - |
+| `plugins/work/references/_injection_rules.yaml` | 編集 | `.work/notes/**` → notes-naming-rules.md パターン追加 | - |
+| `plugins/work/references/_index.yaml` | 編集 | notes-naming-rules.md エントリ追加 | - |
+| `plugins/work/references/_index.jp.yaml` | 編集 | notes-naming-rules.md エントリ追加（日本語） | - |
+| `plugins/work/references/work-dot-work-dir.md` | 編集 | _index.md 同期ルール 2 行を削除（notes-naming-rules.md へ移譲） | - |
+| `plugins/work/references/work-dot-work-dir.jp.md` | 編集 | 同上（JP ミラー） | - |
 
 ## テスト
 
