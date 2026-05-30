@@ -48,6 +48,7 @@ PR182 で `plugin-update` 標準仕様表に "Inter-plugin dependency: None" を
 | 済 | claude-kit を PATCH bump（3.43.1 → 3.43.2） | - `plugins/claude-kit/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
 | skip | CLAUDE.md の Changelog 表に追記（既存表が無いので skip） | - 該当箇所 |
 | 済 | コミット | - |
+| 済 | PR201 番号衝突解消のため PR210 にリネーム（ブランチ・worktree・タスクドキュメント・index.yaml） | - 該当箇所 |
 
 ## 変更内容
 
