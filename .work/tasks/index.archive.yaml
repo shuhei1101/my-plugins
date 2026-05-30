@@ -1,11 +1,10 @@
 prs:
-- completed: true
-  id: 81
-  title: PR81 — debug-fab-copy-fix
-  type: fix
+- id: 73
+  title: PR73 — skill-creator-references-cleanup
+  type: refactor
   tags: []
-  summary: debug-fab の要素コピーが特定条件で動作しないバグを修正
-  task: 20260523_debug-fab-copy-fix
+  task: 20260523_skill-creator-references-cleanup
+  completed: true
 - completed: true
   id: 74
   summary: 未登録ブランチを精査して index.yaml/index.archive.yaml に整理するワークフロースキル。pr-pick が一覧表示までしか行わないのに対し、本スキルは
@@ -14,12 +13,6 @@ prs:
   task: 20260522_branch-index-cleanup-skill
   title: 'PR74 — work-kit: branch-index-cleanup スキル追加'
   type: feat
-- id: 73
-  title: PR73 — skill-creator-references-cleanup
-  type: refactor
-  tags: []
-  task: 20260523_skill-creator-references-cleanup
-  completed: true
 - id: 76
   title: PR76 — rules-folder-restructure
   type: refactor
@@ -48,6 +41,13 @@ prs:
   summary: conversation-to-claude スキルの確認ステップを削除し完全自動化、アーティファクト増殖ガードを common.md に追加
   task: 20260523_conversation-to-claude-auto
   completed: true
+- completed: true
+  id: 81
+  title: PR81 — debug-fab-copy-fix
+  type: fix
+  tags: []
+  summary: debug-fab の要素コピーが特定条件で動作しないバグを修正
+  task: 20260523_debug-fab-copy-fix
 - id: 82
   title: PR82 — conversation-to-claude step3 subagent
   type: refactor
@@ -104,13 +104,6 @@ prs:
   summary: Stop フックの reason に全文を埋め込む代わりに、ファイルパス参照の1行メッセージを出力する方式に変更
   task: 20260524_stop-hook-prompt-by-ref
   completed: true
-- id: 92
-  title: PR92 — merge-skill-master-reconcile
-  type: feat
-  tags: []
-  summary: merge スキルに Step2〜3 の間に master 適合確認ステップを追加する
-  task: 20260523_merge-skill-master-reconcile
-  completed: true
 - id: 90
   title: PR90 — add notes-to-claude skill
   type: feat
@@ -118,12 +111,26 @@ prs:
   summary: notes/ の立ち位置説明を CLAUDE.md に追記し、notes → rule/CLAUDE.md 昇格スキルを新規作成する
   task: 20260524_add-notes-to-claude-skill
   completed: true
+- id: 92
+  title: PR92 — merge-skill-master-reconcile
+  type: feat
+  tags: []
+  summary: merge スキルに Step2〜3 の間に master 適合確認ステップを追加する
+  task: 20260523_merge-skill-master-reconcile
+  completed: true
 - id: 93
   title: PR93 — merge step improvements
   type: feat
   tags: []
   summary: merge Step 10 に pr-handoff 自動呼び出しを追加、Step 3 で conversation-to-claude をワークツリーで実行
   task: 20260524_merge-step-improvements
+  completed: true
+- id: 94
+  title: PR94 — generator-metadata
+  type: feat
+  tags: []
+  summary: creator スキルの生成物に出自メタデータ(プラグイン名・スキル名・バージョン)を HTML コメント形式で埋め込む。既存生成物にも遡及適用。バージョン同期スキルを新規追加。
+  task: 20260524_generator-metadata
   completed: true
 - id: 95
   title: PR95 — pr-handoff sequential dependencies
@@ -139,13 +146,6 @@ prs:
   summary: PR95 で pr-handoff が直列依存対応になり「即時予約対象」「依存後続候補」を区別するようになったので、merge SKILL Step10
     の文言を追従させる
   task: 20260524_merge-step10-handoff-sync
-  completed: true
-- id: 94
-  title: PR94 — generator-metadata
-  type: feat
-  tags: []
-  summary: creator スキルの生成物に出自メタデータ(プラグイン名・スキル名・バージョン)を HTML コメント形式で埋め込む。既存生成物にも遡及適用。バージョン同期スキルを新規追加。
-  task: 20260524_generator-metadata
   completed: true
 - id: 97
   title: PR97 — mark-generated-html-js-css
@@ -213,6 +213,20 @@ prs:
   summary: merge スキル Step 12 の次PR一覧出力をテーブル形式（分類・PR番号・概要の3列）に変更
   task: 20260524_merge-step12-table-format
   completed: true
+- id: 108
+  title: PR108 — md-jp-mirror-hook
+  type: feat
+  tags: []
+  summary: .md ファイル作成時に JP ミラー作成を促す PostToolUse フックを追加
+  task: 20260524_md-jp-mirror-hook
+  completed: true
+- id: 109
+  title: PR109 — pr-show-skill
+  type: feat
+  tags: []
+  summary: merge スキルの Step 12（予約済みPR状況表示）を独立スキル pr-show として切り出す
+  task: 20260524_pr-show-skill
+  completed: true
 - id: 110
   title: PR110 — remove-redundant-creator-rules
   type: refactor
@@ -228,20 +242,6 @@ prs:
   summary: merge スキル Step 12 が全 PR ブランチを列挙していたのを、直前マージの次PR候補のみ表示する方式に修正
   task: 20260524_merge-step12-next-pr-only
   completed: true
-- id: 109
-  title: PR109 — pr-show-skill
-  type: feat
-  tags: []
-  summary: merge スキルの Step 12（予約済みPR状況表示）を独立スキル pr-show として切り出す
-  task: 20260524_pr-show-skill
-  completed: true
-- id: 108
-  title: PR108 — md-jp-mirror-hook
-  type: feat
-  tags: []
-  summary: .md ファイル作成時に JP ミラー作成を促す PostToolUse フックを追加
-  task: 20260524_md-jp-mirror-hook
-  completed: true
 - id: 112
   title: PR112 — incident-criteria-and-jp-mirror-sync
   type: refactor
@@ -255,6 +255,13 @@ prs:
   tags: []
   summary: merge SKILL.md の冗長な禁止事項を削除し、最新メッセージ起動条件のみ残す
   task: 20260524_merge-skill-cleanup
+  completed: true
+- id: 114
+  title: PR114 — incident-glossary-content-cleanup
+  type: refactor
+  tags: []
+  summary: 既存インシデント・用語集の内容精査（PRの作業内容が混入しているエントリの削除・修正）
+  task: 20260524_incident-glossary-content-cleanup
   completed: true
 - id: 115
   title: PR115 — hook-revert-direct-reason
@@ -277,12 +284,12 @@ prs:
   summary: 'pr-show スキルに disable-model-invocation: true を追加して誤起動を防ぐ'
   task: 20260524_pr-show-disable-model-invocation
   completed: true
-- id: 114
-  title: PR114 — incident-glossary-content-cleanup
-  type: refactor
+- id: 118
+  title: PR118 — statusline-display-not-working
+  type: fix
   tags: []
-  summary: 既存インシデント・用語集の内容精査（PRの作業内容が混入しているエントリの削除・修正）
-  task: 20260524_incident-glossary-content-cleanup
+  summary: commit 4144128 後にステータスラインが表示されなくなる問題の調査・修正
+  task: 20260524_statusline-display-not-working
   completed: true
 - id: 119
   title: PR119 — hook-read-follow-remove
@@ -290,13 +297,6 @@ prs:
   tags: []
   summary: claude-kit/hooks.json の Read and follow パターンを直接コンテンツ埋め込みに変更
   task: 20260524_hook-revert-direct-reason
-  completed: true
-- id: 118
-  title: PR118 — statusline-display-not-working
-  type: fix
-  tags: []
-  summary: commit 4144128 後にステータスラインが表示されなくなる問題の調査・修正
-  task: 20260524_statusline-display-not-working
   completed: true
 - id: 120
   title: PR120 — remove pr-show disable-model-invocation
@@ -356,12 +356,27 @@ prs:
   summary: AIイシュー自動発見システム構想.md に設計内容（フォルダ構成・スキルフロー・メタデータ）を反映
   task: 20260526_update-ai-issue-notes
   completed: true
+- id: 129
+  title: PR129 — create-py-kit-plugin
+  type: feat
+  tags: []
+  summary: dev-kit から Python を分離し py-kit プラグインを新規作成する（references/python/ 構成・py-script/py-project
+    スキル移動）
+  task: 20260526_create-py-kit-plugin
+  completed: true
 - id: 130
   title: PR130 — rename-ui-kit-to-html-kit
   type: refactor
   tags: []
   summary: ui-kit プラグインを html-kit にリネームし、言語スコープ（HTML/CSS/JS）を明確にする
   task: 20260526_rename-ui-kit-to-html-kit
+  completed: true
+- id: 131
+  title: PR131 — add-issue-skills-to-work-kit
+  type: feat
+  tags: []
+  summary: work-kit に issue-scan・issue-create スキルを追加し、.work/issues/ ディレクトリ管理を実装する
+  task: 20260526_add-issue-skills-to-work-kit
   completed: true
 - id: 132
   title: PR132 — create-next-kit-plugin
@@ -377,13 +392,19 @@ prs:
   summary: work-kit プラグインに JP ミラー ↔ 英語版の翻訳エージェントを追加
   task: 20260527_jp-mirror-translator-agent
   completed: true
-- id: 129
-  title: PR129 — create-py-kit-plugin
-  type: feat
+- id: 135
+  title: PR135 — review-next-kit-plugin
+  type: docs
   tags: []
-  summary: dev-kit から Python を分離し py-kit プラグインを新規作成する（references/python/ 構成・py-script/py-project
-    スキル移動）
-  task: 20260526_create-py-kit-plugin
+  summary: next-kit プラグイン自体のレビュー・改善提案を QA 形式で大量に書き出す
+  task: 20260527_review-next-kit-plugin
+  completed: true
+- id: 137
+  title: PR137 — agent-jp-mirror-rule
+  type: docs
+  tags: []
+  summary: plugins/{name}/agents/*.md 変更時に .jp.md も同コミットで更新する JP ミラー同期ルールを追加
+  task: 20260527_agent-jp-mirror-rule
   completed: true
 - id: 138
   title: PR138 — review-py-kit-plugin
@@ -399,12 +420,13 @@ prs:
   summary: QA.mdをAskUserQuestion形式で提示するqa-reviewスキルと、実装内容をインタラクティブにレビューするimpl-reviewスキルをwork-kitに追加
   task: 20260527_interactive-review-skills
   completed: true
-- id: 137
-  title: PR137 — agent-jp-mirror-rule
-  type: docs
+- id: 140
+  title: PR140 — rebuild-py-kit-references
+  type: refactor
   tags: []
-  summary: plugins/{name}/agents/*.md 変更時に .jp.md も同コミットで更新する JP ミラー同期ルールを追加
-  task: 20260527_agent-jp-mirror-rule
+  summary: PR138 確定方針（DDD廃止 → 機能フォルダ型 + TypeScript 風 + 関数ファースト）に従って py-kit references
+    を全面再構築。38 ファイル + index.yaml + SKILL.md 書き直し + MAJOR バンプ + glossary 更新 + JP ミラー全件
+  task: 20260527_rebuild-py-kit-references
   completed: true
 - id: 141
   title: PR141 — move-jp-mirror-agent-to-claude-kit
@@ -414,27 +436,12 @@ prs:
     の JP ミラー生成でエージェントを使うよう変更。不要な agent-jp-mirror-sync ルールと _overview.md を削除。
   task: 20260528_move-jp-mirror-agent-to-claude-kit
   completed: true
-- id: 140
-  title: PR140 — rebuild-py-kit-references
-  type: refactor
-  tags: []
-  summary: PR138 確定方針（DDD廃止 → 機能フォルダ型 + TypeScript 風 + 関数ファースト）に従って py-kit references
-    を全面再構築。38 ファイル + index.yaml + SKILL.md 書き直し + MAJOR バンプ + glossary 更新 + JP ミラー全件
-  task: 20260527_rebuild-py-kit-references
-  completed: true
 - id: 142
   title: PR142 — add-j2-support-to-mark-generated
   type: feat
   tags: []
   summary: mark-generated スキルに .j2 ファイルサポートを追加し、PreToolUse フックで .j2 編集時にスタンプ確認を促す
   task: 20260528_add-j2-support-to-mark-generated
-  completed: true
-- id: 135
-  title: PR135 — review-next-kit-plugin
-  type: docs
-  tags: []
-  summary: next-kit プラグイン自体のレビュー・改善提案を QA 形式で大量に書き出す
-  task: 20260527_review-next-kit-plugin
   completed: true
 - id: 143
   title: PR143 — add-typescript-lint-hook
@@ -443,12 +450,12 @@ prs:
   summary: Edit/Write 後に tsc --noEmit を自動実行して TS 型崩れを早期検知するフックを追加 (PR135 QA-046 補強)
   task: 20260528_add-typescript-lint-hook
   completed: true
-- id: 131
-  title: PR131 — add-issue-skills-to-work-kit
+- id: 144
+  title: PR144 — add-next-kit-plan-skill
   type: feat
   tags: []
-  summary: work-kit に issue-scan・issue-create スキルを追加し、.work/issues/ ディレクトリ管理を実装する
-  task: 20260526_add-issue-skills-to-work-kit
+  summary: next-kit references を読んでページ/API/feature の設計計画書（ISSUE形式）を生成する1スキル /next-kit:plan
+  task: 20260528_add-next-kit-plan-skill
   completed: true
 - id: 145
   title: PR145 — update-ai-issue-discovery-notes-pr135
@@ -456,13 +463,6 @@ prs:
   tags: []
   summary: PR135 の references 再構築 + フック導入を .work/notes/AIイシュー自動発見システム構想.md に反映
   task: 20260528_update-ai-issue-discovery-notes-pr135
-  completed: true
-- id: 144
-  title: PR144 — add-next-kit-plan-skill
-  type: feat
-  tags: []
-  summary: next-kit references を読んでページ/API/feature の設計計画書（ISSUE形式）を生成する1スキル /next-kit:plan
-  task: 20260528_add-next-kit-plan-skill
   completed: true
 - id: 146
   title: PR146 — integrate-issue-close-to-merge
@@ -506,19 +506,19 @@ prs:
   summary: session-kit の SessionStart を 1日 TTL の一時ファイル掃除に役割変更（clear バンプ廃止）
   task: 20260528_session-kit-token-ttl-cleanup
   completed: true
-- id: 153
-  title: PR153 — modernize-creator-dispatch-hooks
-  type: refactor
-  tags: []
-  summary: claude-kit の creator-dispatch フックをインライン -c からスクリプト抽出して統一形式に
-  task: 20260528_modernize-creator-dispatch-hooks
-  completed: true
 - id: 152
   title: PR152 — add-pre-compact-conversation-hook
   type: feat
   tags: []
   summary: /compact 直前に conversation-to-claude を実行する PreCompact フックを claude-kit に追加
   task: 20260528_add-pre-compact-conversation-hook
+  completed: true
+- id: 153
+  title: PR153 — modernize-creator-dispatch-hooks
+  type: refactor
+  tags: []
+  summary: claude-kit の creator-dispatch フックをインライン -c からスクリプト抽出して統一形式に
+  task: 20260528_modernize-creator-dispatch-hooks
   completed: true
 - id: 154
   title: PR154 — py-kit comments orchestration guidance
@@ -567,14 +567,6 @@ prs:
     フックの本拠で references 注入ユースケースが無い可能性があり、適用可否の評価と分解検討から始める
   task: 20260529_migrate-claude-kit-to-ref-inject
   completed: true
-- id: 161
-  title: PR161 — reference-ize-mark-generated-prune-hooks
-  type: refactor
-  tags: []
-  summary: 'claude-kit の AI 呼び出し系を reference 注入へ寄せる: claude-refactor 薄化 / mark-generated
-    を provenance reference 化してスキル廃止（3プラグイン横断）/ j2-stamp-check・jp-mirror-check フック削除'
-  task: 20260529_reference-ize-mark-generated-prune-hooks
-  completed: true
 - id: 160
   title: PR160 — ref-inject-two-tier-injection-cache
   type: feat
@@ -583,12 +575,13 @@ prs:
     のコピーも同期。
   task: 20260529_ref-inject-two-tier-injection-cache
   completed: true
-- id: 163
-  title: PR163 — merge-worktree-kit-into-work-kit
+- id: 161
+  title: PR161 — reference-ize-mark-generated-prune-hooks
   type: refactor
   tags: []
-  summary: worktree-kit を work-kit に統合し、環境変数 WORK_KIT_USE_WORKTREE でゲートする
-  task: 20260529_merge-worktree-kit-into-work-kit
+  summary: 'claude-kit の AI 呼び出し系を reference 注入へ寄せる: claude-refactor 薄化 / mark-generated
+    を provenance reference 化してスキル廃止（3プラグイン横断）/ j2-stamp-check・jp-mirror-check フック削除'
+  task: 20260529_reference-ize-mark-generated-prune-hooks
   completed: true
 - id: 162
   title: PR162 — document-plugin-env-vars
@@ -597,6 +590,13 @@ prs:
   summary: プラグインの環境変数の使い方を references に追記（hooks.md に settings.json env セクション、plugin-structure.md
     に CLAUDE.md 記載慣習）
   task: 20260529_document-plugin-env-vars
+  completed: true
+- id: 163
+  title: PR163 — merge-worktree-kit-into-work-kit
+  type: refactor
+  tags: []
+  summary: worktree-kit を work-kit に統合し、環境変数 WORK_KIT_USE_WORKTREE でゲートする
+  task: 20260529_merge-worktree-kit-into-work-kit
   completed: true
 - id: 164
   title: PR164 — add-env-toggles-for-hooks-and-steps
@@ -612,12 +612,33 @@ prs:
   summary: mark-generated スキルとその全呼び出し箇所・バージョンマーカーを削除
   task: 20260530_remove-mark-generated
   completed: true
+- id: 166
+  title: PR166 — merge-language-plugins-into-dev-kit
+  type: refactor
+  tags: []
+  summary: py-kit / html-kit / next-kit を dev-kit に統合し、使用言語規約を env 変数で切り替える大規模リファクタ
+  task: 20260530_merge-language-plugins-into-dev-kit
+  completed: true
 - id: 167
   title: PR167 — add-plugin-config-skill
   type: feat
   tags: []
   summary: プラグイン env トグルを AskUserQuestion 経由で settings.json に書き込む設定スキルを追加する
   task: 20260530_add-plugin-config-skill
+  completed: true
+- id: 168
+  title: PR168 — refactor-task-doc-structure
+  type: refactor
+  tags: []
+  summary: 'タスクドキュメント構造をリファクタ: 日付YYMMDD化・PR単一ファイル化・TODO+QA統合・変更内容/テストセクション追加'
+  task: 260530_refactor-task-doc-structure
+  completed: true
+- id: 169
+  title: PR169 — integrate guard-kit into work-kit
+  type: refactor
+  tags: []
+  summary: guard-kit を work-kit に統合し、WORK_KIT_GUARD env で有効/無効を切り替え可能にする
+  task: 20260530_integrate-guard-kit-into-work-kit
   completed: true
 - id: 170
   title: PR170 — remove-version-sync
@@ -626,25 +647,33 @@ prs:
   summary: mark-generated 削除後に不要になった version-sync スキルを削除
   task: 20260530_remove-version-sync
   completed: true
+- id: 171
+  title: PR171 — add-plugin-claude-md-standard
+  type: feat
+  tags: []
+  summary: プラグインの CLAUDE.md 標準セクション構成を定義し、changelogs/ を廃止してテンプレートを references/ に追加
+  task: 20260530_add-plugin-claude-md-standard
+  completed: true
 - id: 172
   title: PR172 — rename-work-kit-to-workspace
   type: refactor
   tags: []
   summary: work-kit プラグインの名前を workspace にリネームし、全依存参照を更新する
   task: 20260530_rename-work-kit-to-workspace
-- id: 166
-  title: PR166 — merge-language-plugins-into-dev-kit
-  type: refactor
+- id: 173
+  title: PR173 — add-merge-proposal-toggle
+  type: feat
   tags: []
-  summary: py-kit / html-kit / next-kit を dev-kit に統合し、使用言語規約を env 変数で切り替える大規模リファクタ
-  task: 20260530_merge-language-plugins-into-dev-kit
+  summary: workspace の Stop フックでマージ提案するかどうかを WORKSPACE_MERGE_PROPOSAL env で制御できるようにする
+  task: 20260530_add-merge-proposal-toggle
   completed: true
-- id: 169
-  title: PR169 — integrate guard-kit into work-kit
-  type: refactor
+- id: 174
+  title: PR174 — propagate-injection-disable-to-plugins
+  type: feat
   tags: []
-  summary: guard-kit を work-kit に統合し、WORK_KIT_GUARD env で有効/無効を切り替え可能にする
-  task: 20260530_integrate-guard-kit-into-work-kit
+  summary: ref-inject テンプレに追加した {PREFIX}_INJECTION_DISABLE を claude-kit / py-kit /
+    next-kit の inject_references.py に手動同期
+  task: 20260530_propagate-injection-disable-to-plugins
   completed: true
 - id: 176
   title: PR176 — impl-review-batch-questions
@@ -660,27 +689,6 @@ prs:
   summary: master-commit-guard.py の PROTECTED_BRANCHES を env WORKSPACE_PROTECTED_BRANCHES（カンマ区切り）で上書き可能にする
   task: 20260530_add-protected-branches-env
   completed: true
-- id: 173
-  title: PR173 — add-merge-proposal-toggle
-  type: feat
-  tags: []
-  summary: workspace の Stop フックでマージ提案するかどうかを WORKSPACE_MERGE_PROPOSAL env で制御できるようにする
-  task: 20260530_add-merge-proposal-toggle
-  completed: true
-- id: 168
-  title: PR168 — refactor-task-doc-structure
-  type: refactor
-  tags: []
-  summary: 'タスクドキュメント構造をリファクタ: 日付YYMMDD化・PR単一ファイル化・TODO+QA統合・変更内容/テストセクション追加'
-  task: 260530_refactor-task-doc-structure
-  completed: true
-- id: 171
-  title: PR171 — add-plugin-claude-md-standard
-  type: feat
-  tags: []
-  summary: プラグインの CLAUDE.md 標準セクション構成を定義し、changelogs/ を廃止してテンプレートを references/ に追加
-  task: 20260530_add-plugin-claude-md-standard
-  completed: true
 - id: 178
   title: PR178 — add-markdown-table-reference
   type: feat
@@ -688,20 +696,13 @@ prs:
   summary: claude-kitにMarkdownテーブル記法のリファレンスを追加し、繰り返し値の省略ルールを注入
   task: 20260530_add-markdown-table-reference
   completed: true
-- id: 181
-  title: PR181 — remove-conversation-to-claude
+- id: 179
+  title: PR179 — prefix-underscore-injection-config
   type: chore
   tags: []
-  summary: conversation-to-claude スキルと、それに伴う glossary/incidents 系ファイルを削除
-  task: 20260530_remove-conversation-to-claude
-  completed: true
-- id: 183
-  title: PR183 — dev-kit-py-script-pattern-brace-expansion
-  type: refactor
-  tags: []
-  summary: dev-kit injection_rules.yaml の python-script 注入パターンを単数形 tool/script もカバーするよう
-    **/{tool,tools,script,scripts}/**/*.py に統合
-  task: 260530_dev-kit-py-script-pattern-brace-expansion
+  summary: ref-inject/dev-kit/claude-kit の references 配下にある index.yaml / index.jp.yaml
+    / injection_rules.yaml をアンダースコア接頭辞付きにリネームし、ファイル一覧の上部に固定する。依存 Python フックとドキュメントも追従。
+  task: 260530_prefix-underscore-injection-config
   completed: true
 - id: 180
   title: PR180 — split-hook-inline-python-to-scripts
@@ -711,6 +712,36 @@ prs:
     に集約
   task: 20260530_split-hook-inline-python-to-scripts
   completed: true
+- id: 181
+  title: PR181 — remove-conversation-to-claude
+  type: chore
+  tags: []
+  summary: conversation-to-claude スキルと、それに伴う glossary/incidents 系ファイルを削除
+  task: 20260530_remove-conversation-to-claude
+  completed: true
+- id: 182
+  title: PR182 — dev-kit-plugin-update-skill
+  type: feat
+  tags: []
+  summary: dev-kit に plugin-update スキルを追加 (v4.3.0)、claude-kit plugin-structure.md
+    の plugin-update 標準仕様を改訂 (v3.43.1)
+  task: 260530_dev-kit-plugin-update-skill
+  completed: true
+- id: 183
+  title: PR183 — dev-kit-py-script-pattern-brace-expansion
+  type: refactor
+  tags: []
+  summary: dev-kit injection_rules.yaml の python-script 注入パターンを単数形 tool/script もカバーするよう
+    **/{tool,tools,script,scripts}/**/*.py に統合
+  task: 260530_dev-kit-py-script-pattern-brace-expansion
+  completed: true
+- id: 184
+  title: PR184 — claude-kit-plugin-update-skill
+  type: feat
+  tags: []
+  summary: claude-kit に plugin-update スキルを追加（PR168 の plugin authoring guide 必須化に追従）
+  task: 260530_claude-kit-plugin-update-skill
+  completed: true
 - id: 186
   title: PR186 — rename-workspace-to-work
   type: refactor
@@ -719,12 +750,12 @@ prs:
     に env 変数変更
   task: 260530_rename-workspace-to-work
   completed: true
-- id: 195
-  title: PR195 — git-guard-allow-merge-master
-  type: fix
+- id: 189
+  title: PR189 — add-japanese-comment-log-rule
+  type: docs
   tags: []
-  summary: masterブランチを現在のブランチへ取り込む操作をガード除外に修正
-  task: 260530_git-guard-allow-merge-master
+  summary: python-script.md にコメント・ログは日本語で書くルールを追加
+  task: 260530_add-japanese-comment-log-rule
   completed: true
 - id: 192
   title: PR192 — レガシー mark-generated マーカーの一括削除
@@ -739,4 +770,55 @@ prs:
   tags: []
   summary: 各プラグインの injection_rules.yaml 内のコメントを日本語に統一
   task: 260530_translate-injection-rules-comments
+  completed: true
+- id: 195
+  title: PR195 — git-guard-allow-merge-master
+  type: fix
+  tags: []
+  summary: masterブランチを現在のブランチへ取り込む操作をガード除外に修正
+  task: 260530_git-guard-allow-merge-master
+  completed: true
+- id: 196
+  title: PR196 — add-number-column-rule
+  type: docs
+  tags: []
+  summary: Markdownテーブルの先頭にナンバーカラム(#)を設ける規約を明文化する
+  task: 260530_add-number-column-rule
+  completed: true
+- id: 197
+  title: PR197 — plugin-work-rule-add-claude-md-check
+  type: chore
+  tags: []
+  summary: ref-inject/dev-kit/claude-kit の references 配下にある index.yaml / index.jp.yaml
+    / injection_rules.yaml をアンダースコア接頭辞付きにリネームし、ファイル一覧の上部に固定する。依存 Python フックとドキュメントも追従。
+  task: 260530_prefix-underscore-injection-config
+  completed: true
+- id: 182
+  title: PR182 — dev-kit-plugin-update-skill
+  type: feat
+  tags: []
+  summary: plugin-work.mdにプラグインCLAUDE.md更新の整合性チェックを追加
+  task: 260530_plugin-work-rule-add-claude-md-check
+  completed: true
+- id: 200
+  title: PR200 — dev-kit-html-rules-to-injection
+  type: refactor
+  tags: []
+  summary: html-implement の .claude/rules/ 静的配布をやめ、css-js-link.md / common-component-first.md
+    を references/html/ に移して injection_rules.yaml の html パターンに紐付ける
+  task: 260530_dev-kit-html-rules-to-injection
+  completed: true
+- id: 199
+  title: PR199 — add-setup-wizard-reference
+  type: feat
+  tags: []
+  summary: claude-kit プラグイン作成時に setup-wizard スキルを必須化するリファレンスを追加
+  task: 260530_add-setup-wizard-reference
+  completed: true
+- id: 203
+  title: PR203 — deprecate-claude-rules-migrate-to-references
+  type: refactor
+  tags: []
+  summary: .claude/rules/ 配下のルールを全廃止し、各プラグインの references/ へ移行する
+  task: 260530_deprecate-claude-rules-migrate-to-references
   completed: true

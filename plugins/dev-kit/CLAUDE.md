@@ -16,6 +16,7 @@ Reference auto-injection is opt-in per language via `settings.json` env vars.
 | `dev-kit:next-implement` | Next.js implementation workflow |
 | `dev-kit:next-plan` | Next.js planning document generator |
 | `dev-kit:yaml` | YAML standards |
+| `dev-kit:plugin-update` | Sync dev-kit-generated artifacts in the project (html-implement rules, html-debug-fab widget) to the installed dev-kit version (manual `/dev-kit:plugin-update` only) |
 
 ## Hooks
 
@@ -59,12 +60,25 @@ references/
 ├── python/      # Python conventions (47 files: architecture/, core/, fastapi/, llm/, etc.)
 ├── html/        # HTML/CSS/JS principles (principles.md, ui-design.md)
 ├── next/        # Next.js conventions (90 files: backend/, frontend/, testing/, etc.)
-├── yaml.md      # YAML standards
-├── index.yaml   # path + lang + description per reference (merged from python/html/next)
-├── injection_rules.yaml   # pattern + lang + required/optional per rule
+├── markdown/    # Markdown conventions (markdown-table.md)
+├── yaml/        # YAML standards (yaml.md)
+├── _index.yaml   # path + lang + description per reference (merged from python/html/next)
+├── _injection_rules.yaml   # pattern + lang + required/optional per rule
 └── ...
 ```
 
-Each rule in `injection_rules.yaml` carries `lang: python|html|next`. The hook skips rules whose
+Each rule in `_injection_rules.yaml` carries `lang: python|html|next`. The hook skips rules whose
 `lang` is not enabled in env. The TTL token at `~/.claude/tokens/dev-kit/{session_id}.yaml`
 prevents duplicate injection.
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 4.6.0 | 2026-05-30 | Move `yaml.md` / `yaml.jp.md` into `yaml/` subfolder to match `html/`, `next/`, `python/`, `markdown/` structure; register `yaml/yaml.md` in `_index.yaml` and add `**/index.yaml` / `**/settings.yaml(.sample)` injection rules (PR199) |
+| 4.5.0 | 2026-05-30 | Move `css-js-link.md` / `common-component-first.md` from `templates/html/rules/` to `references/html/`; wire them into `_injection_rules.yaml` html patterns; remove static-copy steps from `html-implement` (Step 7) and `plugin-update` (Step 2) (PR200) |
+| 4.4.0 | 2026-05-30 | Add `markdown/` reference subfolder with Markdown table conventions (`#` column rule, `〃` ditto mark for repeated values); injected on `**/*.md` edits (PR196) |
+| 4.3.0 | 2026-05-30 | Add `dev-kit:plugin-update` skill — inspects/fixes dev-kit-generated artifacts (static templates + convention-following source files) against the current dev-kit version. Self-contained: no dependency on any other plugin; refuses to run on master/main; never commits on its own (PR182) |
+| 4.2.0 | 2026-05-30 | Rename meta-YAML files in `references/` with `_` prefix: `index.yaml` / `index.jp.yaml` / `injection_rules.yaml` → `_index.yaml` / `_index.jp.yaml` / `_injection_rules.yaml` (PR179) |
+| 4.1.0 | 2026-05-30 | Move hook scripts under `hooks/scripts/` with shared `_common.py`; behavior unchanged (PR180) |
+| 4.0.0 | 2026-05-30 | Merge `py-kit` / `html-kit` / `next-kit` into `dev-kit`; opt-in language toggles via `DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` (PR166) |

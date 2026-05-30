@@ -1,0 +1,36 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# work ストッププロンプト組み同期
+
+`stop.md` と `stop-no-merge.md` は対称な Stop フックプロンプトの組。
+`stop-no-merge.md` は `stop.md` から**ステップ 4**（マージ提案）を取り除いたもの。
+いずれかを編集したら、ステップ 1〜3 を両ファイルで一致させること。
+英語原文: `references/work-stop-prompt-sync.md`
+
+---
+
+## 関係
+
+| ファイル | 内容 |
+|---|---|
+| `plugins/work/hooks/prompts/stop.md` | ステップ 1〜4: TODO/QA/ノートリマインダー + `/work:merge` 提案 |
+| `plugins/work/hooks/prompts/stop-no-merge.md` | ステップ 1〜3 のみ: TODO/QA/ノートリマインダー（マージ提案なし） |
+
+## 編集時のルール
+
+| 変更 | アクション |
+|---|---|
+| `stop.md` のステップ 1〜3 を編集 | `stop-no-merge.md` にも同じ変更を適用する |
+| `stop.md` のステップ 4 を編集 | `stop-no-merge.md` の変更は不要 |
+| `stop-no-merge.md` にステップ 4 を追加しない | このファイルの目的はマージ提案を省くこと |
+
+## 背景
+
+`hooks.json` の Stop フックスクリプトは `WORK_MERGE_PROPOSAL` に応じていずれかのファイルを選択する:
+- Truthy（デフォルト）→ `stop.md` を読み込む
+- Falsy → `stop-no-merge.md` を読み込む
+
+## コミット前チェックリスト
+
+- [ ] `stop.md` と `stop-no-merge.md` のステップ 1〜3 が一致している
+- [ ] ステップ 4 は `stop.md` にのみ存在する
+- [ ] JP ミラー（`stop.jp.md`、`stop-no-merge.jp.md`）が同じコミットで更新されている

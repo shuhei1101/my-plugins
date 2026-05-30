@@ -1,0 +1,28 @@
+# work の注入ルール — 編集ファイルのパスパターン → リファレンス（言語非依存）
+#   pattern  : 編集ファイルのパスに対して glob でマッチさせる
+#   required : 本文ごとフル注入されるリファレンスのパス
+#   optional : パス＋説明のみが注入されるリファレンス
+# マッチしたルールはすべて寄与する（重複排除あり）。
+rules:
+  # ---- Stop hook prompts: stop.md と stop-no-merge.md は対称な組として管理 ----
+  - pattern: "plugins/work/hooks/prompts/{stop,stop-no-merge}{.jp,}.md"
+    required:
+      - work-stop-prompt-sync.md
+
+  # ---- Merge skill: SKILL.md と仕様書のステップ番号が一致していること ----
+  - pattern: "plugins/work/skills/merge/SKILL{.jp,}.md"
+    required:
+      - work-merge-skill-sync.md
+
+  # ---- work-start / worktree-create: インターフェースの整合性 ----
+  - pattern: "plugins/work/skills/{start,worktree-create,vscode-workspace-sync}/SKILL{.jp,}.md"
+    required:
+      - work-start-skill-sync.md
+
+  # ---- TODO テンプレート: work-start SKILL.md のステップ構成と一致させる ----
+  - pattern: "plugins/work/templates/**"
+    required:
+      - work-todo-template-sync.md
+  - pattern: "plugins/work/skills/{start,pr-handoff}/SKILL{.jp,}.md"
+    required:
+      - work-todo-template-sync.md

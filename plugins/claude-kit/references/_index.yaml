@@ -1,0 +1,41 @@
+# claude-kit reference index (English; parsed by inject_references.py).
+# Each entry maps a reference file to a one-line description.
+#   path        : path relative to this references/ directory
+#   description : shown in the injected pointer (and as the section heading)
+# Keep this in sync with _index.jp.yaml (JP mirror) and injection_rules.yaml.
+references:
+  - path: common.md
+    description: Shared base for all Claude config authoring. File-type decision criteria (rule vs skill vs CLAUDE.md vs hook vs reference), anti-proliferation guard, and JP/EN mirror rules.
+
+  - path: skills.md
+    description: How to author a .claude/skills/<name>/SKILL.md. When a skill is the right type, checking for existing similar skills, the JP-mirror-first workflow, the step-based structure template, and description frontmatter rules.
+
+  - path: rules.md
+    description: How to author a .claude/rules/<name>.md. When rules load, the two rule types (link / context), use-case-oriented path-pattern design, consolidation/separation criteria, folder structure, required sections, and the structure example.
+
+  - path: hooks.md
+    description: How to author a prompt-injection hook. Hook events, the injection mechanism, when to use hooks, loop prevention (stop_hook_active / one-time token), ready-to-use hooks.json snippets, prompt-file placement, and path variables.
+
+  - path: environment.md
+    description: How to make a plugin's hooks/scripts configurable via environment variables — set in settings.json's env block (user/project/local scopes), read with os.environ, defaults/validation, the {PREFIX}_INJECTION_TTL / _INJECTION_LANG example, and env-vs-path-variable distinction. Markdown files cannot read env.
+
+  - path: claude-md.md
+    description: How to author a CLAUDE.md (root or subfolder). When it loads, the thinness principle, extraction-destination guide, validation against other file types, the JP-mirror-first workflow, required sections, and the line-count guideline.
+
+  - path: plugin-structure.md
+    description: How to author or update a plugin. Standard directory layout, plugin.json fields, marketplace.json entry, create-vs-update mode, version bump rules, and the plugin.json/marketplace.json/CLAUDE.md changelog version-sync invariant.
+
+  - path: plugin-claude-md.md
+    description: How to write a plugin's root CLAUDE.md. Required sections (Skills / Hooks / Environment Variables / Dependencies / Changelog), table formats for each section, and the full copy-paste template.
+
+  - path: glossary.md
+    description: Format guide for .claude/rules/glossary.md. Single-file category-organized terminology table, writing discipline (always-loaded → keep terse), and how terms get added.
+
+  - path: incidents.md
+    description: Format guide for .claude/rules/incidents.md. Two-layer index + detail-file structure for recurrence-prevention logs, and how incidents get recorded.
+
+  - path: references-sync.md
+    description: JP mirror sync rule for plugin references files. When editing plugins/*/references/**/*.md, the paired *.jp.md must also be updated in the same commit.
+
+  - path: kit-hooks-sync.md
+    description: Structural sync rule for dev-kit and claude-kit injection infrastructure. When changing the shared injection structure (inject_references.py, hooks.json, templates, _index.yaml, _injection_rules.yaml) in one kit, the other must be updated in the same commit.
