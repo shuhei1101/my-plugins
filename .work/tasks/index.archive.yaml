@@ -632,4 +632,10 @@ prs:
   tags: []
   summary: work-kit プラグインの名前を workspace にリネームし、全依存参照を更新する
   task: 20260530_rename-work-kit-to-workspace
+- id: 166
+  title: PR166 — merge-language-plugins-into-dev-kit
+  type: refactor
+  tags: []
+  summary: py-kit / html-kit / next-kit を dev-kit に統合し、使用言語規約を env 変数で切り替える大規模リファクタ
+  task: 20260530_merge-language-plugins-into-dev-kit
   completed: true
