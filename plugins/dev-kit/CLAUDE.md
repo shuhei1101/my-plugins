@@ -75,7 +75,7 @@ prevents duplicate injection.
 
 | Version | Date | Summary |
 |---|---|---|
-| 4.7.0 | 2026-05-31 | Add `references-edit-guard` PostToolUse hook (via ref-inject v1.6.0) that reminds to update `_index.yaml` / `_injection_rules.yaml` when files under `references/` are added or moved (PR206) |
+| 4.7.0 | 2026-05-31 | Add `references-edit-guard` PreToolUse hook (via ref-inject v1.6.0) that reminds to update `_index.yaml` / `_injection_rules.yaml` **before** editing or creating files under `references/` (PR206) |
 | 4.6.0 | 2026-05-30 | Move `yaml.md` / `yaml.jp.md` into `yaml/` subfolder to match `html/`, `next/`, `python/`, `markdown/` structure; register `yaml/yaml.md` in `_index.yaml` and add `**/index.yaml` / `**/settings.yaml(.sample)` injection rules (PR199) |
 | 4.5.0 | 2026-05-30 | Move `css-js-link.md` / `common-component-first.md` from `templates/html/rules/` to `references/html/`; wire them into `_injection_rules.yaml` html patterns; remove static-copy steps from `html-implement` (Step 7) and `plugin-update` (Step 2) (PR200) |
 | 4.4.0 | 2026-05-30 | Add `markdown/` reference subfolder with Markdown table conventions (`#` column rule, `〃` ditto mark for repeated values); injected on `**/*.md` edits (PR196) |

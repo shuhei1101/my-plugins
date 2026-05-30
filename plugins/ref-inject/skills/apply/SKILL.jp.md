@@ -92,7 +92,7 @@ description: |
 メモ:
 - パスはテンプレートをそのまま反映 — 移動なし。
 - `hooks.json` 内の `${CLAUDE_PLUGIN_ROOT}` はそのまま残す（Claude Code が実行時に展開）。
-- **対象に既に `hooks/hooks.json` がある場合**（他のフックがある）: 上書きせず、`PreToolUse`（Edit/Write/MultiEdit/Read）**と `PostToolUse`（Edit/Write/MultiEdit）** エントリを既存ファイルにマージする。
+- **対象に既に `hooks/hooks.json` がある場合**（他のフックがある）: 上書きせず、`PreToolUse`（Edit/Write/MultiEdit/Read）エントリを既存ファイルにマージする。`inject_references.py` と `references_edit_guard.py` は同じ `PreToolUse` matcher 配下に並べる（1 つの matcher に複数の `hooks`）。
 - **対象に既に注入ファイルがある場合**（再適用 / 仕組み更新）: `hooks/*` は上書きするが、既存の `references/` の中身（_index.yaml / _injection_rules.yaml / 実 doc）はそのまま残し、欠けている雛形だけ補う。
 - 書き込み後、対象プラグインの `hooks/` を grep して `__PLACEHOLDER__` が残っていないか確認する。
 

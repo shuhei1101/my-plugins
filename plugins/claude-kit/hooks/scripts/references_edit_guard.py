@@ -3,7 +3,8 @@
 # 対応する _index.yaml / _index.jp.yaml / _injection_rules.yaml への登録漏れを
 # リマインドするプロンプトを Claude に注入する。
 #
-# Trigger : PostToolUse(Edit | Write | MultiEdit)
+# Trigger : PreToolUse(Edit | Write | MultiEdit) — 編集を実行する前に注入することで、
+#           実際の編集前にユーザー／Claude が登録漏れを意識できるようにする。
 # Scope   : このプラグインの references/ 配下のみ。他プラグインの編集には反応しない。
 # Dedup   : セッションごとに 1 回だけ注入（_common.already_dispatched_this_session）。
 

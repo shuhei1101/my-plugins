@@ -26,7 +26,7 @@ PR199（dev-kit yaml サブフォルダ化）のマージ間際に、`yaml/yaml.
 | 済 | `## QA` の未解決事項をユーザーに確認 | - |
 | 済 | フックスクリプトの仕様を決める（path matching・出力プロンプト・dedup 方針） | - |
 | 済 | `references/` 編集を検知するフックスクリプトを実装 | - `plugins/ref-inject/templates/hooks/scripts/references_edit_guard.py` |
-| 済 | フックを `templates/hooks/hooks.json` に PostToolUse として登録 | - `plugins/ref-inject/templates/hooks/hooks.json` |
+| 済 | フックを `templates/hooks/hooks.json` の既存 PreToolUse matcher 配下に登録 | - `plugins/ref-inject/templates/hooks/hooks.json` |
 | 済 | リマインダープロンプト本文（英 + JP）を作成 | - `plugins/ref-inject/templates/hooks/prompts/references-edit-guard.md`<br>- `plugins/ref-inject/templates/hooks/prompts/references-edit-guard.jp.md` |
 | 済 | ref-inject:apply スキルが新フックをコピーするよう更新 | - `plugins/ref-inject/skills/apply/SKILL.md`<br>- `plugins/ref-inject/skills/apply/SKILL.jp.md` |
 | 済 | 既存 ref-inject 利用先（dev-kit / claude-kit）の hooks.json / scripts / prompts に新フックを波及 | - `plugins/dev-kit/hooks/{hooks.json,scripts/references_edit_guard.py,prompts/references-edit-guard.md,prompts/references-edit-guard.jp.md}`<br>- `plugins/claude-kit/hooks/{hooks.json,scripts/references_edit_guard.py,prompts/references-edit-guard.md,prompts/references-edit-guard.jp.md}` |
@@ -62,9 +62,9 @@ PR スコープの未決定事項を QA-XXX として記録する。決定後は
 
 ### QA-001: フックのイベントを PreToolUse / PostToolUse のどちらにするか
 
-**決定**: 案 A（PostToolUse）。編集完了後にリマインドする方が誤検知が少ない。
+**決定**: 案 B（PreToolUse）。編集完了後だと既にミスが発生済みで意味がない。**編集前** に登録のことを意識できる方が予防効果が高い。
 
-**反映先**: `plugins/ref-inject/templates/hooks/hooks.json` の PostToolUse(Edit/Write/MultiEdit)
+**反映先**: `plugins/ref-inject/templates/hooks/hooks.json` の PreToolUse(Edit/Write/MultiEdit) matcher 配下（既存の inject_references.py と同じ matcher に並べる）
 
 ### QA-002: 既存のプラグインへ波及適用するか
 

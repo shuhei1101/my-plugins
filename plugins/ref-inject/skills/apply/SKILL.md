@@ -94,7 +94,7 @@ Substitute placeholders in text files; copy binaries verbatim.
 Notes:
 - Paths mirror the template — no relocation.
 - Leave `${CLAUDE_PLUGIN_ROOT}` in `hooks.json` literal — Claude Code expands it at runtime.
-- **If the target already has `hooks/hooks.json`** (other hooks present): do not overwrite it — merge the `PreToolUse` (Edit/Write/MultiEdit/Read) **and `PostToolUse` (Edit/Write/MultiEdit)** entries into the existing file instead.
+- **If the target already has `hooks/hooks.json`** (other hooks present): do not overwrite it — merge the `PreToolUse` (Edit/Write/MultiEdit/Read) entries into the existing file instead. Both `inject_references.py` and `references_edit_guard.py` live under the same `PreToolUse` matchers (multiple `hooks` per matcher).
 - **If the target already has the injection files** (a re-apply / mechanism update): overwrite `hooks/*` but leave existing `references/` content (_index.yaml / _injection_rules.yaml / real docs) untouched — only add the skeleton files that are missing.
 - After writing, confirm no `__PLACEHOLDER__` token remains (grep the target plugin's `hooks/`).
 
