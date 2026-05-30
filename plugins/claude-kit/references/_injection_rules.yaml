@@ -16,6 +16,7 @@ rules:
       - common.md
       - skills.md
     optional:
+      - subagents.md
       - environment.md
 
   # ---- Rules: パススコープのルール（あるいは rules-jp ミラー）を編集する場合 ----

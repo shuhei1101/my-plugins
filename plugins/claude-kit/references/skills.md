@@ -95,6 +95,15 @@ Each step follows this pattern. Use only the subsections a given step needs:
 ##### Prohibitions
 ```
 
+To delegate a step to a subagent, prefix the item with a delegation marker (see `subagents.md`):
+
+```markdown
+#### Process
+1. [subagent: parallel · await all] Glob .claude/skills/ and collect each description
+   (return: `[{name, description}]`)
+→ Proceed to Step 2
+```
+
 ### Full SKILL.md skeleton
 
 ```markdown
