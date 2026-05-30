@@ -114,6 +114,46 @@ When creating a new plugin, generate `skills/plugin-update/SKILL.md` (and `.jp.m
 static templates to re-copy, and describe how to detect and fix deviations in files created by
 this plugin's skills. The skill must be self-contained.
 
+> **When you update a plugin, refresh `setup-wizard` in the same change** (use-case showcase,
+> env explanations, etc.). Add this to the plugin's `plugin-update` checklist.
+
+### `setup-wizard` (mandatory for every plugin)
+
+Every plugin **must** ship a `setup-wizard` skill that walks the user through first-run setup.
+A SessionStart hook reads the `setup_done` flag in `.claude/{plugin}.local.md`; if unset, it
+prompts the user to launch `setup-wizard`. Manual re-run via `/<plugin>:setup-wizard`.
+
+**Why**: each plugin's env toggles, initial settings, and use cases are scattered across
+`CLAUDE.md` and users won't find them on their own. An interactive first-run flow lowers
+the cost of the first step.
+
+**Standard contract**:
+
+| Item | Convention |
+|---|---|
+| Name | `setup-wizard` (kebab-case literal — not `<plugin>-setup-wizard`) |
+| Trigger | Manual (`/<plugin>:setup-wizard`) + SessionStart hook auto-prompt (only when the flag is unset) |
+| Completion mark | Write `setup_done: true` into the YAML frontmatter of `.claude/{plugin}.local.md` |
+| Scope | Only this plugin's own env / onboarding; never touch other plugins |
+| Related skill | If the plugin has env vars, also implement `config` (the wizard delegates to it) |
+| Reference | `references/setup-wizard.md` — full flow, skeleton, and checklist |
+
+See `setup-wizard.md` for the detailed authoring guide, skeleton, and SessionStart-hook implementation.
+
+### `config` (mandatory for plugins with env vars)
+
+Plugins that expose env vars **must** ship a `config` skill that lets the user edit
+them interactively via `AskUserQuestion`. Delegated to from `setup-wizard`. Not required for
+plugins without env vars.
+
+**Standard contract**:
+
+| Item | Convention |
+|---|---|
+| Name | `config` (kebab-case literal — not `<plugin>-config`) |
+| Trigger | Manual (`/<plugin>:config`) + delegated invocation from `setup-wizard` |
+| Scope | Only this plugin's own env vars; never touch other plugins' env |
+
 ---
 
 ## Authoring workflow
