@@ -1,3 +1,0 @@
-You are about to edit a YAML file. The dev-kit plugin provides the **dev-kit:yaml** skill, which covers YAML file management conventions: index.yaml, settings.yaml, settings.yaml.sample, asset catalogs, and project configuration.
-
-Invoke /dev-kit:yaml if this file aligns with those conventions.

@@ -15,7 +15,6 @@ Reference auto-injection is opt-in per language via `settings.json` env vars.
 | `dev-kit:html-debug-fab` | Floating debug button (FAB) with element picker |
 | `dev-kit:next-implement` | Next.js implementation workflow |
 | `dev-kit:next-plan` | Next.js planning document generator |
-| `dev-kit:yaml` | YAML standards |
 | `dev-kit:plugin-update` | Sync dev-kit-generated artifacts in the project (html-implement rules, html-debug-fab widget) to the installed dev-kit version (manual `/dev-kit:plugin-update` only) |
 
 ## Hooks
@@ -26,7 +25,6 @@ Hook scripts live under `hooks/scripts/` with a per-plugin `_common.py` for shar
 |---|---|---|
 | `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | Reference auto-injection per language |
 | `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `tsc --noEmit --incremental` for `*.ts`/`*.tsx` |
-| `scripts/yaml_skill_dispatch.py` | PreToolUse(Edit/Write) | Remind user to invoke `dev-kit:yaml` when editing YAML |
 | `scripts/markdown_frontmatter_check.py` | PreToolUse(Edit/Write/MultiEdit) | Advisory warning when content appears before YAML frontmatter in `*.md` |
 | `scripts/_common.py` | — (library) | Stdin parsing / env truthy / once-per-session token / block reason emitter |
 
@@ -64,7 +62,6 @@ references/
 ├── html/        # HTML/CSS/JS principles (principles.md, ui-design.md)
 ├── next/        # Next.js conventions (90 files: backend/, frontend/, testing/, etc.)
 ├── markdown/    # Markdown conventions (markdown-table.md, markdown-editing.md)
-├── yaml/        # YAML standards (yaml.md)
 ├── _index.yaml   # path + lang + description per reference (merged from all langs)
 ├── _injection_rules.yaml   # pattern + lang + required/optional per rule
 └── ...
@@ -78,6 +75,7 @@ prevents duplicate injection.
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.8.0 | 2026-05-31 | Remove `dev-kit:yaml` skill, `references/yaml/`, and the `yaml_skill_dispatch.py` hook (+ prompts); drop `**/index.yaml` / `**/settings.yaml(.sample)` injection patterns; the YAML conventions are out of scope for dev-kit (PR202) |
 | 4.7.0 | 2026-05-31 | Add Markdown frontmatter placement check hook and reference; move `markdown-editing.md` into `markdown/` subfolder; wire into `_injection_rules.yaml` alongside `markdown-table.md`; add `DEV_KIT_MARKDOWN` opt-in support (PR198) |
 | 4.6.0 | 2026-05-30 | Move `yaml.md` / `yaml.jp.md` into `yaml/` subfolder to match `html/`, `next/`, `python/`, `markdown/` structure; register `yaml/yaml.md` in `_index.yaml` and add `**/index.yaml` / `**/settings.yaml(.sample)` injection rules (PR199) |
 | 4.5.0 | 2026-05-30 | Move `css-js-link.md` / `common-component-first.md` from `templates/html/rules/` to `references/html/`; wire them into `_injection_rules.yaml` html patterns; remove static-copy steps from `html-implement` (Step 7) and `plugin-update` (Step 2) (PR200) |
