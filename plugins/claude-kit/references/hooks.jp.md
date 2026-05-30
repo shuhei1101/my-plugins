@@ -249,7 +249,7 @@ Claude がこれから触るファイルに関連する規約/ドキュメント
 /ref-inject:apply <target-plugin>
 ```
 
-これは注入フック（`hooks/inject_references.py` + `hooks/hooks.json`）、Jinja2 テンプレート、
+これは注入フック（`hooks/scripts/inject_references.py` + `hooks/hooks.json`）、Jinja2 テンプレート、
 `references/` スケルトンをコピーし、プラグインごとのプレースホルダを置換する。その後、
 `references/index.yaml`（path + description）を埋め、`references/injection_rules.yaml` で
 編集パスのパターンを束ね、reference ドキュメントを書く（1 reference = 1 ユースケース）。

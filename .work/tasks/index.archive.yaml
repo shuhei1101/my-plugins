@@ -703,3 +703,11 @@ prs:
     **/{tool,tools,script,scripts}/**/*.py に統合
   task: 260530_dev-kit-py-script-pattern-brace-expansion
   completed: true
+- id: 180
+  title: PR180 — split-hook-inline-python-to-scripts
+  type: refactor
+  tags: []
+  summary: hooks.json のインライン python -c を各プラグイン hooks/scripts/ に切り出し、共通処理を _common.py
+    に集約
+  task: 20260530_split-hook-inline-python-to-scripts
+  completed: true

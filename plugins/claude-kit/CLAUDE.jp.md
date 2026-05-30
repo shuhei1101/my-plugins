@@ -5,7 +5,7 @@
 
 各指示ファイル種別のオーサリングガイドは `references/`（`common.md`, `skills.md`,
 `rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`）にある。
-`claude-kit-references-injection` フック（`hooks/inject_references.py`）が、対応するファイル
+`claude-kit-references-injection` フック（`hooks/scripts/inject_references.py`）が、対応するファイル
 （`SKILL.md` / ルール / `CLAUDE.md` / `hooks.json` / `plugin.json` …）を編集したとき、該当ガイドを
 **本文全量**で注入する。パス → reference の対応は `references/injection_rules.yaml` 参照。
 
@@ -22,7 +22,7 @@
 ## フック
 
 claude-kit のフックは 1 つだけ: `claude-kit-references-injection` フック
-（`hooks/inject_references.py`, `PreToolUse(Edit | Write | MultiEdit | Read)`）。
+（`hooks/scripts/inject_references.py`, `PreToolUse(Edit | Write | MultiEdit | Read)`）。
 **ディスパッチ/チェック系ガードは無い** — リファレンス注入へ寄せて廃止した
 （creator-dispatch は PR159、`j2-stamp-check` と PostToolUse の `jp-mirror-check` は PR161）。
 JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保。
@@ -30,4 +30,5 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 > 今後ガード系フックを戻すときの一般指針: `UserPromptSubmit`（ユーザー入力テキストしか見ない）でなく
 > `PreToolUse` を使う。セッション単位フラグ（`/tmp/{hook}-{session_id}`）でセッション 1 回だけ発火させる。
 > ロジックはインライン `-c` でなくスクリプトファイルに抽出する（インライン python はクォートのネストで
-> 壊れやすい — incident `statusline-python-quote-nesting`）。
+> 壊れやすい — incident `statusline-python-quote-nesting`）。フックスクリプトは `hooks/scripts/` 配下に置き、
+> 共通ヘルパーは plugin 内 `_common.py` に集約する（PR180 で導入）。

@@ -19,11 +19,14 @@ Reference auto-injection is opt-in per language via `settings.json` env vars.
 
 ## Hooks
 
+Hook scripts live under `hooks/scripts/` with a per-plugin `_common.py` for shared helpers.
+
 | Hook | Trigger | Purpose |
 |---|---|---|
-| `inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | Reference auto-injection per language |
-| `ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `tsc --noEmit --incremental` for `*.ts`/`*.tsx` |
-| `yaml-skill-dispatch` | PreToolUse(Edit/Write) | Remind user to invoke `dev-kit:yaml` when editing YAML |
+| `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | Reference auto-injection per language |
+| `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `tsc --noEmit --incremental` for `*.ts`/`*.tsx` |
+| `scripts/yaml_skill_dispatch.py` | PreToolUse(Edit/Write) | Remind user to invoke `dev-kit:yaml` when editing YAML |
+| `scripts/_common.py` | — (library) | Stdin parsing / env truthy / once-per-session token / block reason emitter |
 
 ## Env toggles
 
