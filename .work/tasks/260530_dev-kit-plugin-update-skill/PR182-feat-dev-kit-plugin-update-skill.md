@@ -81,5 +81,6 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 
 | タイトル | 概要 | 実施条件 |
 |---|---|---|
+| dev-kit html ルールを静的ファイル配布から injection 方式に移行 | `html-implement` が `.claude/rules/` に静的コピーしている `css-js-link.md` / `common-component-first.md` を廃止し、ref-inject と同じ injection hook 方式に切り替える。具体的には: (1) 両ファイルを `references/html/` に移動、(2) `injection_rules.yaml` の既存 html パターン（`**/*.html|css|js`）に `required` として追記、(3) `templates/html/rules/` ディレクトリを削除、(4) `html-implement` SKILL のルールコピー手順を削除、(5) `plugin-update` SKILL のステップ2（ルールテンプレ再コピー）を削除、(6) dev-kit を MINOR bump。調査結果: `injection_rules.yaml` には既に `html/principles.md` が html パターンに紐付いており、同じ仕組みに乗るだけ。 | 即時実施可（PR182 マージ後） |
 | claude-kit リファレンスに「プラグイン間依存ゼロ原則」を追記 | claude-kit の plugin authoring guide（`plugins/claude-kit/references/plugin-structure.md` + jp）に、**新規・既存どちらのプラグイン設計でもプラグイン間依存は極力ゼロにする**という原則セクションを追加する。`plugin-update` 仕様で既に「inter-plugin dependency: None」と書いたが、原則自体を独立セクションとして格上げし、`Why`／許容される例外（例: 同プラグイン内のスキル呼び出しは OK 等）／違反検出方法を明記する。| 即時実施可（PR182 マージ後） |
 | 既存プラグイン間依存の棚卸とゼロ化対応 | `plugins/**/skills/**/SKILL.md` / `hooks/**` / `references/**` を全件 grep し、他プラグインのスキルやコマンドを呼び出している箇所をリストアップしてユーザーに提示する。レビュー後、可能なものから順次「プラグイン内自己完結」へ書き換え、最終的に依存件数ゼロを目標とする。例: workspace の skills 内に dev-kit/claude-kit への参照がないか、ref-inject の apply で他プラグインを操作していないか等を確認。 | 上記「プラグイン間依存ゼロ原則」PR のマージ後（原則を先に確立してから棚卸する方が判断軸が安定するため） |
