@@ -17,7 +17,7 @@
       "name": "claude-kit",
       "source": "./plugins/claude-kit",
       "description": "Toolkit for authoring Claude Code instruction files — CLAUDE.md, path-scoped rules, and skills",
-      "version": "3.41.0"
+      "version": "3.42.0"
     },
     {
       "name": "work",

@@ -32,3 +32,11 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 > ロジックはインライン `-c` でなくスクリプトファイルに抽出する（インライン python はクォートのネストで
 > 壊れやすい — incident `statusline-python-quote-nesting`）。フックスクリプトは `hooks/scripts/` 配下に置き、
 > 共通ヘルパーは plugin 内 `_common.py` に集約する（PR180 で導入）。
+
+## 環境変数
+
+| 変数名 | 値 | デフォルト | 説明 |
+|---|---|---|---|
+| `CLAUDE_KIT_INJECTION_DISABLE` | `true`/`1`/`yes`/`on` | （未設定 = ON） | マスターキルスイッチ — truthy 値で注入機構全体を停止する |
+| `CLAUDE_KIT_INJECTION_TTL` | 整数（秒） | `3600` | セッション単位注入トークンの TTL（patterns / references 共通） |
+| `CLAUDE_KIT_INJECTION_LANG` | `en` / `jp` | `en` | 注入リファレンスの言語（`jp` で `index.jp.yaml` + `injection.jp.md.j2` を使用） |

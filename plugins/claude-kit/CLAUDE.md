@@ -33,3 +33,11 @@ enforced by the project's `*-jp-mirror-sync` rules.
 > once per session; extract the logic into a script file, not an inline `-c` one-liner (inline python
 > breaks on quote-nesting — incident `statusline-python-quote-nesting`). Hook scripts live under
 > `hooks/scripts/` with a per-plugin `_common.py` for shared helpers (introduced in PR180).
+
+## Environment Variables
+
+| Variable | Values | Default | Description |
+|---|---|---|---|
+| `CLAUDE_KIT_INJECTION_DISABLE` | `true`/`1`/`yes`/`on` | (unset = ON) | Master kill switch — set to a truthy value to stop all reference injection |
+| `CLAUDE_KIT_INJECTION_TTL` | integer (seconds) | `3600` | TTL for the per-session injection token (patterns and references) |
+| `CLAUDE_KIT_INJECTION_LANG` | `en` / `jp` | `en` | Language for injected references (`jp` uses `index.jp.yaml` + `injection.jp.md.j2`) |
