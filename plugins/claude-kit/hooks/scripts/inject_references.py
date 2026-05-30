@@ -214,6 +214,7 @@ def main() -> int:
 
     plugin_root = _plugin_root()
     refs_dir = plugin_root / "references"
+    ref_injects_dir = refs_dir / ".ref-injects"
 
     # 言語選択: 環境変数 CLAUDE_KIT_INJECTION_LANG=jp で日本語版
     lang = os.environ.get(f"{ENV_PREFIX}_INJECTION_LANG", "en").lower()
@@ -224,8 +225,8 @@ def main() -> int:
     jp_mirror_raw = os.environ.get(f"{ENV_PREFIX}_JP_MIRROR", "true").lower()
     jp_mirror = jp_mirror_raw not in ("false", "0", "no", "off")
 
-    rules_yaml = refs_dir / "_injection_rules.yaml"
-    index_yaml = refs_dir / index_filename
+    rules_yaml = ref_injects_dir / "_injection_rules.yaml"
+    index_yaml = ref_injects_dir / index_filename
     if not rules_yaml.exists():
         _eprint(f"_injection_rules.yaml not found at {rules_yaml}")
         return 0
