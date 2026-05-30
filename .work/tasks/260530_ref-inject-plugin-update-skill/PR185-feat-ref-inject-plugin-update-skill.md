@@ -28,11 +28,11 @@ PR168 で claude-kit の plugin authoring guide (`plugins/claude-kit/references/
 
 | 完了 | 作業内容 | 対象ファイル |
 |---|---|---|
-| x | `plugins/ref-inject/skills/plugin-update/SKILL.md` (+ jp) を作成 | - 新規 |
+| 済 | `plugins/ref-inject/skills/plugin-update/SKILL.md` (+ jp) を作成 | - 新規 |
 |  | スコープ: apply 済みプラグイン列挙 → 各 inject_references.py を現バージョンテンプレと照合 → 差分あればユーザー確認後に更新 | - |
-| x | ref-inject を MINOR bump | - `plugins/ref-inject/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
-| x | CLAUDE.md の Changelog 表に追記 | - `plugins/ref-inject/CLAUDE.md` / `.jp.md` |
-| x | コミット | - |
+| 済 | ref-inject を MINOR bump | - `plugins/ref-inject/.claude-plugin/plugin.json`<br>- `.claude-plugin/marketplace.json` |
+| 済 | CLAUDE.md の Changelog 表に追記 | - `plugins/ref-inject/CLAUDE.md` / `.jp.md` |
+| 済 | コミット | - |
 
 ## 変更内容
 
