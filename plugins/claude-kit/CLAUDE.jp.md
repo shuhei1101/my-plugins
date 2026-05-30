@@ -41,3 +41,11 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 | `CLAUDE_KIT_INJECTION_DISABLE` | `true`/`1`/`yes`/`on` | （未設定 = ON） | マスターキルスイッチ — truthy 値で注入機構全体を停止する |
 | `CLAUDE_KIT_INJECTION_TTL` | 整数（秒） | `3600` | セッション単位注入トークンの TTL（patterns / references 共通） |
 | `CLAUDE_KIT_INJECTION_LANG` | `en` / `jp` | `en` | 注入リファレンスの言語（`jp` で `index.jp.yaml` + `injection.jp.md.j2` を使用） |
+| `CLAUDE_KIT_JP_MIRROR` | `true` / `false` | `true` | `false` の場合、`.jp.md` ミラーを作らず本体 `.md` ファイルを日本語で直接書く |
+
+## 変更履歴
+
+| バージョン | 概要 |
+|---|---|
+| `3.44.0` | `CLAUDE_KIT_JP_MIRROR` 環境変数を追加 — `false` の場合 `.jp.md` ミラーをスキップし本体ファイルを日本語で書く |
+| `3.43.1` | （それ以前の履歴は `changelogs/` を参照） |

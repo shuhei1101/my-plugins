@@ -860,3 +860,10 @@ branches:
   summary: PR175 マージ作業中の sed ミスで marketplace.json の claude-kit エントリに version 行が重複して入っていたのを修正
   task: 260531_fix-marketplace-json-duplicate-version
   completed: true
+- id: 201
+  title: PR201 — claude-kit-jp-mirror-env
+  type: feat
+  tags: []
+  summary: CLAUDE_KIT_JP_MIRROR 環境変数を追加し、false の場合は JP ミラーを作らず本体ファイルを日本語で書く
+  task: 260530_claude-kit-jp-mirror-env
+  completed: true
