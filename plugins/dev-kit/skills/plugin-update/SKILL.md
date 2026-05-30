@@ -1,47 +1,47 @@
 ---
 name: plugin-update
 description: |
-  Bring the current project's dev-kit-generated artifacts in line with the currently installed
-  dev-kit version: re-copy the HTML rule templates that `html-implement` ships into
-  `.claude/rules/`, and the debug widget (`uidev.css` / `uidev.js` / `CLAUDE.md`) that
-  `html-debug-fab` ships into the project's static asset directory.
-  Other plugins' generated artifacts are out of scope.
+  Inspect and fix dev-kit-generated artifacts in the project (both static templates and
+  source files that were created following dev-kit conventions) to ensure they comply with
+  the currently installed dev-kit version's conventions.
+  Covers both re-copying static templates and detecting/fixing convention deviations in
+  existing project source files.
   Manual invocation only — use /dev-kit:plugin-update.
 ---
 
-# dev-kit:plugin-update — Sync dev-kit-Generated Artifacts to Latest Versions
+# dev-kit:plugin-update — Bring dev-kit Artifacts into Compliance with Current Conventions
 
-Scope is **the static files dev-kit copies into the project** only:
+## What it does
 
-- HTML rule templates that `html-implement` ships into the project's `.claude/rules/`
-- The debug widget (`uidev.css` / `uidev.js` / `CLAUDE.md`) that `html-debug-fab` ships into
-  the project's static asset directory
+Two categories of dev-kit artifacts are handled differently:
 
-`py-script` / `py-project` / `next-implement` / `next-plan` / `yaml` are reference-injection
-skills — they do not copy any static files into the project, so they are out of scope. Files
-that live only inside the plugin (`references/`, `injection_rules.yaml`, etc.) are also
-out of scope.
+| Category | Content | Action |
+|---|---|---|
+| Static templates | Rule files that `html-implement` ships to `.claude/rules/`, `uidev.css` / `uidev.js` that `html-debug-fab` deploys | Re-copy from plugin source (automatic) |
+| Convention-following files | Python / HTML-CSS-JS / Next.js source code written by the user following dev-kit conventions | Inspect against current references; fix deviations with user confirmation |
 
-Per-plugin sync logic for *other* plugins is never touched here — each plugin owns its own
-`plugin-update`. This skill depends on no other plugin. Branch management (creating a PR
-branch, committing, merging) is the user's responsibility.
+Static template re-copy is automatic. Convention inspection is performed by Claude using the
+current references (auto-injected by the injection hook when each file is `Read`).
+
+Which language conventions to inspect is controlled by `settings.json` env vars
+(`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT`).
+
+This skill depends on no other plugin. Committing and merging are the user's responsibility.
 
 ---
 
-## Sync targets
+## Static templates (re-copied in Steps 2 and 3)
 
-| Source (`{dev_kit_root}/`) | Destination |
+| Source (`${CLAUDE_PLUGIN_ROOT}/`) | Destination |
 |---|---|
 | `templates/html/rules/css-js-link.md` | `.claude/rules/css-js-link.md` |
-| `templates/html/rules/css-js-link.jp.md` | `.claude/rules-jp/css-js-link.md` (drop `.jp.` suffix) |
+| `templates/html/rules/css-js-link.jp.md` | `.claude/rules-jp/css-js-link.md` |
 | `templates/html/rules/common-component-first.md` | `.claude/rules/common-component-first.md` |
-| `templates/html/rules/common-component-first.jp.md` | `.claude/rules-jp/common-component-first.md` (same) |
+| `templates/html/rules/common-component-first.jp.md` | `.claude/rules-jp/common-component-first.md` |
 | `skills/html-debug-fab/templates/uidev.css` | Project static asset directory |
-| | `uidev.js` in the same directory |
-| | `CLAUDE.md` in the same directory |
-| | `CLAUDE.jp.md` in the same directory |
-
-`{dev_kit_root}` = `${CLAUDE_PLUGIN_ROOT}` (resolved to the dev-kit plugin at skill runtime).
+|  | `uidev.js` in the same directory |
+|  | `CLAUDE.md` in the same directory |
+|  | `CLAUDE.jp.md` in the same directory |
 
 ---
 
@@ -62,87 +62,128 @@ branch, committing, merging) is the user's responsibility.
 
 → Proceed to Step 2
 
-#### Output
+---
 
-- The branch where the following file edits will land is confirmed to be neither master nor main
+### Step 2: Re-copy html-implement rule templates
+
+#### Condition
+
+- `.claude/rules/css-js-link.md` exists (html-implement considered deployed)
+
+#### Process
+
+1. Check for existence. If absent, treat html-implement as unused and skip to Step 3
+2. Copy the 4 html-implement rows from the table above from
+   `${CLAUDE_PLUGIN_ROOT}/templates/html/rules/*` over the destinations
+3. Report which files were updated
+
+→ Proceed to Step 3
+
+---
+
+### Step 3: Re-copy html-debug-fab widget
+
+#### Condition
+
+- `uidev.css` exists anywhere in the project (html-debug-fab considered deployed)
+
+#### Process
+
+1. `find . -name 'uidev.css' -not -path '*/node_modules/*' -not -path '*/.git/*'`
+2. Not found → treat as not deployed; skip to Step 4
+3. Exactly one match → that directory is the target
+4. Multiple matches → ask the user which to target
+5. Copy `uidev.css` / `uidev.js` / `CLAUDE.md` / `CLAUDE.jp.md` from
+   `${CLAUDE_PLUGIN_ROOT}/skills/html-debug-fab/templates/` (skip `example.html`)
+6. Report which files were updated
+
+→ Proceed to Step 4
+
+---
+
+### Step 4: Inspect Python source files (if DEV_KIT_PYTHON is enabled)
+
+#### Condition
+
+- `DEV_KIT_PYTHON` is truthy in `settings.json` env
+
+#### Process
+
+1. List Python files in the project
+   ```bash
+   find . -name "*.py" -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/__pycache__/*"
+   ```
+2. `Read` each file — the injection hook auto-injects the Python references
+3. Compare against the current conventions in the injected references; identify deviations
+   - Examples: missing type hints, non-standard logger implementation, incorrect settings structure
+4. For each file with deviations: show the deviation and proposed fix; get user confirmation before making changes
+5. Process in batches of ~10 files if the project is large
+
+→ Proceed to Step 5
+
+#### Notes
+
+The Python references auto-injected from `references/python/` are the authoritative standard.
+Do not flag anything not explicitly stated in those references.
+
+---
+
+### Step 5: Inspect HTML/CSS/JS source files (if DEV_KIT_HTML is enabled)
+
+#### Condition
+
+- `DEV_KIT_HTML` is truthy in `settings.json` env
+
+#### Process
+
+1. List HTML / CSS / JS files
+   ```bash
+   find . \( -name "*.html" -o -name "*.css" -o -name "*.js" \) -not -path "*/node_modules/*" -not -path "*/.git/*"
+   ```
+2. `Read` each file (HTML references are auto-injected)
+3. Inspect against current conventions (FLOCSS, design tokens, DebugFAB usage, etc.)
+4. For each deviation: show and propose fix, confirm with user before applying
+
+→ Proceed to Step 6
+
+---
+
+### Step 6: Inspect TypeScript/TSX source files (if DEV_KIT_NEXT is enabled)
+
+#### Condition
+
+- `DEV_KIT_NEXT` is truthy in `settings.json` env
+
+#### Process
+
+1. List TS / TSX files
+   ```bash
+   find . \( -name "*.ts" -o -name "*.tsx" \) -not -path "*/node_modules/*" -not -path "*/.git/*"
+   ```
+2. `Read` each file (Next.js references are auto-injected)
+3. Inspect against current conventions (file placement, Server Actions, auth, DB helpers, etc.)
+4. For each deviation: show and propose fix, confirm with user before applying
+
+→ Proceed to Step 7
+
+---
+
+### Step 7: Report completion
+
+#### Process
+
+1. List all static template files that were re-copied
+2. List all source files where convention deviations were found and fixed
+3. Show `git diff` for user review
+4. Present a suggested commit message; leave the actual commit to the user
+   - Suggested: `chore: sync dev-kit generated artifacts to v{N}`
+   - Read version from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`
+
+→ Done
 
 #### Notes
 
 ##### Prohibitions
 
-- Running on master / main
-
----
-
-### Step 2: Overwrite the html-implement rule templates
-
-#### Condition
-
-- Step 1 complete
-
-#### Process
-
-1. Detect whether html-implement is in use by checking the destination
-   - If `.claude/rules/css-js-link.md` does **not** exist → treat html-implement as unused;
-     skip this step and proceed to Step 3
-2. If in use, copy the four files in the html-implement rows of the table above from
-   `${CLAUDE_PLUGIN_ROOT}/templates/html/rules/*` over the destinations
-3. Report which files were overwritten
-
-→ Proceed to Step 3
-
-#### Output
-
-- `.claude/rules/{css-js-link,common-component-first}.md` and
-  `.claude/rules-jp/{css-js-link,common-component-first}.md` match the latest template
-
----
-
-### Step 3: Overwrite the html-debug-fab widget
-
-#### Condition
-
-- Step 2 complete
-
-#### Process
-
-1. Locate the existing `uidev.css` in the project
-   - Example: `find . -name 'uidev.css' -not -path '*/node_modules/*' -not -path '*/.git/*'`
-2. **Not found** → treat html-debug-fab as not deployed; skip this step and proceed to Step 4
-3. **Exactly one match** → that directory is the deployment target
-4. **Multiple matches** → ask the user which directory to target before proceeding
-5. Copy the following four files from `${CLAUDE_PLUGIN_ROOT}/skills/html-debug-fab/templates/`
-   over the target directory:
-   - `uidev.css`
-   - `uidev.js`
-   - `CLAUDE.md`
-   - `CLAUDE.jp.md`
-6. Do not copy `example.html` — it is a sample file, not a deployed asset
-7. Report which files were overwritten
-
-→ Proceed to Step 4
-
-#### Output
-
-- The target directory's `uidev.css` / `uidev.js` / `CLAUDE.md` / `CLAUDE.jp.md` match the
-  latest template
-
----
-
-### Step 4: Report the diff
-
-#### Condition
-
-- Step 3 complete
-
-#### Process
-
-1. Show the user `git status` and `git diff`
-2. If there are no changes, report "All dev-kit artifacts are already up to date" and stop
-3. If there are changes, list the overwritten files and present a suggested commit message
-   for the user to run themselves:
-   - Suggested message: `chore: sync dev-kit templates to v{N}`
-   - Read the current dev-kit version from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`
-4. This skill never commits on its own (commit/merge is the user's responsibility)
-
-→ Done
+- Never commit to master / main directly
+- Never apply fixes to convention-following files without explicit user confirmation

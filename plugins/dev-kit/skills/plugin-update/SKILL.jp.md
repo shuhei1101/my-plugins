@@ -1,45 +1,44 @@
 ---
 name: plugin-update
 description: |
-  カレントプロジェクトに展開済みの dev-kit 生成物を、現在インストールされている dev-kit の
-  バージョンに合わせて更新する: html-implement が配布する `.claude/rules/` 内ルールテンプレと、
-  html-debug-fab が配布する `uidev.css` / `uidev.js` / `CLAUDE.md` を再コピーする。
-  他プラグインの生成物は対象外。
+  プロジェクト内の dev-kit 生成物（静的テンプレと dev-kit 規約に従って作られたコード・設定ファイル）が
+  現在インストール済みの dev-kit バージョンの規約を満たしているかを検査・修正する。
+  静的テンプレの再コピーと、既存プロジェクトファイルの規約逸脱の発見・修正が対象。
   手動起動のみ — `/dev-kit:plugin-update` を使う。
 ---
 <!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
-# dev-kit:plugin-update — dev-kit 生成物を最新版に揃える
+# dev-kit:plugin-update — dev-kit 生成物を現行規約に揃える
 
-スコープは **dev-kit がプロジェクトに静的にコピーする成果物**のみ:
+## 何をするか
 
-- `html-implement` がプロジェクトの `.claude/rules/` に配布する HTML 系ルールテンプレ
-- `html-debug-fab` がプロジェクトの静的アセットディレクトリに配布するデバッグウィジェット (`uidev.css` / `uidev.js` / `CLAUDE.md`)
+dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱う:
 
-`py-script` / `py-project` / `next-implement` / `next-plan` / `yaml` 系は ref-injection 方式で
-プロジェクトに静的成果物を配布しないため対象外。`references/` や `injection_rules.yaml` など
-プラグイン本体の内側で完結するファイルも対象外。
+| 種別 | 内容 | 処理 |
+|---|---|---|
+| 静的テンプレ | html-implement が `.claude/rules/` に配布したルールファイル、html-debug-fab が配布した `uidev.css` / `uidev.js` | プラグイン本体から最新版を再コピー |
+| 規約遵守ファイル | dev-kit 規約に従って作られた Python / HTML-CSS-JS / Next.js のソースコード | 現行リファレンスと照合し、逸脱があれば修正 |
 
-他プラグインの生成物には絶対に手を出さない（各プラグインが自分の `plugin-update` を持つ）。
-このスキルはどの他プラグインにも依存しない。ブランチ管理（PR ブランチを切る、コミットする、
-マージするなど）はユーザーの責務。
+静的テンプレの再コピーは自動。規約の検査・修正は Claude が現行リファレンスを参照して判断する（injection hook が対象ファイルを `Read` する際に自動注入される）。
+
+どの言語の規約を検査するかは `settings.json` の env 変数（`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT`）で決まる。
+
+このスキルはどの他プラグインにも依存しない。コミット・マージはユーザーの責務。
 
 ---
 
-## 同期対象一覧
+## 静的テンプレ一覧（ステップ2・3 で再コピーする対象）
 
-| ソース (`{dev_kit_root}/`) | 配布先 |
+| ソース (`${CLAUDE_PLUGIN_ROOT}/`) | 配布先 |
 |---|---|
 | `templates/html/rules/css-js-link.md` | `.claude/rules/css-js-link.md` |
-| `templates/html/rules/css-js-link.jp.md` | `.claude/rules-jp/css-js-link.md`（`.jp.` を落とす） |
+| `templates/html/rules/css-js-link.jp.md` | `.claude/rules-jp/css-js-link.md` |
 | `templates/html/rules/common-component-first.md` | `.claude/rules/common-component-first.md` |
-| `templates/html/rules/common-component-first.jp.md` | `.claude/rules-jp/common-component-first.md`（同上） |
+| `templates/html/rules/common-component-first.jp.md` | `.claude/rules-jp/common-component-first.md` |
 | `skills/html-debug-fab/templates/uidev.css` | プロジェクトの静的アセットディレクトリ |
-| | `uidev.js` も同ディレクトリ |
-| | `CLAUDE.md` も同ディレクトリ |
-| | `CLAUDE.jp.md` も同ディレクトリ |
-
-`{dev_kit_root}` = `${CLAUDE_PLUGIN_ROOT}`（このスキル実行時に dev-kit プラグインへ解決される）。
+|  | `uidev.js` も同ディレクトリ |
+|  | `CLAUDE.md` も同ディレクトリ |
+|  | `CLAUDE.jp.md` も同ディレクトリ |
 
 ---
 
@@ -54,86 +53,130 @@ description: |
 #### 処理内容
 
 1. `git rev-parse --abbrev-ref HEAD` で現在のブランチを取得する
-2. **master / main の場合** → 「master / main では実行できません。先に作業用ブランチを切ってから再実行してください」とユーザーに伝えて終了する
-3. それ以外のブランチ → そのまま進む
+2. **master / main の場合** → 「master / main では実行できません。作業用ブランチを切ってから再実行してください」と伝えて終了する
+3. それ以外 → 続行
 
 → ステップ2 へ
 
-#### 出力
+---
 
-- 以降のファイル編集を行うブランチが master / main 以外であることが確定している
+### ステップ2: html-implement のルールテンプレを再コピーする
+
+#### 条件
+
+- `.claude/rules/css-js-link.md` が存在する（html-implement 導入済みと判定）
+
+#### 処理内容
+
+1. 存在確認。存在しなければ html-implement 未使用としてステップ3 へスキップ
+2. 上記テンプレ表の html-implement 行 4 ファイルを `${CLAUDE_PLUGIN_ROOT}/templates/html/rules/*` からコピー上書き
+3. 更新したファイル名を報告
+
+→ ステップ3 へ
+
+---
+
+### ステップ3: html-debug-fab のウィジェットを再コピーする
+
+#### 条件
+
+- プロジェクトに `uidev.css` が存在する（html-debug-fab 導入済みと判定）
+
+#### 処理内容
+
+1. `find . -name 'uidev.css' -not -path '*/node_modules/*' -not -path '*/.git/*'` で検索
+2. 見つからなければ未導入としてステップ4 へスキップ
+3. 1 箇所のみ → そのディレクトリを配布先として確定
+4. 複数 → ユーザーに確認
+5. `${CLAUDE_PLUGIN_ROOT}/skills/html-debug-fab/templates/` から `uidev.css` / `uidev.js` / `CLAUDE.md` / `CLAUDE.jp.md` を上書きコピー（`example.html` は除く）
+6. 更新したファイル名を報告
+
+→ ステップ4 へ
+
+---
+
+### ステップ4: Python ソースファイルの規約検査（DEV_KIT_PYTHON が有効な場合）
+
+#### 条件
+
+- `settings.json` の env で `DEV_KIT_PYTHON` が truthy
+
+#### 処理内容
+
+1. プロジェクト内の Python ファイルを列挙する
+   ```bash
+   find . -name "*.py" -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/__pycache__/*"
+   ```
+2. ファイルを `Read` する（injection hook が Python リファレンスを自動注入する）
+3. 現行リファレンスの規約と照合し、逸脱箇所を特定する
+   - 例: 型ヒント欠如、ロガー実装が規約外、設定ファイルの構造が規約外
+4. 逸脱が見つかったファイルごとに内容と修正方針を提示し、ユーザーの確認を得てから修正する
+5. ファイル数が多い場合はバッチ処理（例: 10 ファイルずつ）
+
+→ ステップ5 へ
+
+#### 注意
+
+injection hook が `Read` 時に自動注入した Python リファレンス群（`references/python/` 配下）が規約判断の根拠。リファレンスに明記されていない事項は逸脱として扱わない。
+
+---
+
+### ステップ5: HTML/CSS/JS ソースファイルの規約検査（DEV_KIT_HTML が有効な場合）
+
+#### 条件
+
+- `settings.json` の env で `DEV_KIT_HTML` が truthy
+
+#### 処理内容
+
+1. HTML / CSS / JS ファイルを列挙する
+   ```bash
+   find . \( -name "*.html" -o -name "*.css" -o -name "*.js" \) -not -path "*/node_modules/*" -not -path "*/.git/*"
+   ```
+2. ファイルを `Read` する（HTML リファレンスが自動注入される）
+3. 現行リファレンスの規約（FLOCSS、デザイントークン、DebugFAB 使い方 など）と照合し、逸脱を特定
+4. 逸脱ファイルごとに提示・確認・修正
+
+→ ステップ6 へ
+
+---
+
+### ステップ6: TypeScript/TSX ソースファイルの規約検査（DEV_KIT_NEXT が有効な場合）
+
+#### 条件
+
+- `settings.json` の env で `DEV_KIT_NEXT` が truthy
+
+#### 処理内容
+
+1. TS / TSX ファイルを列挙する
+   ```bash
+   find . \( -name "*.ts" -o -name "*.tsx" \) -not -path "*/node_modules/*" -not -path "*/.git/*"
+   ```
+2. ファイルを `Read` する（Next.js リファレンスが自動注入される）
+3. 現行リファレンスの規約（ファイル配置、Server Actions、auth、DB ヘルパー 等）と照合
+4. 逸脱ファイルごとに提示・確認・修正
+
+→ ステップ7 へ
+
+---
+
+### ステップ7: 完了報告
+
+#### 処理内容
+
+1. 再コピーした静的テンプレファイル一覧を表示
+2. 規約検査で修正したファイルと修正内容の一覧を表示
+3. 差分を `git diff` でユーザーに確認させる
+4. 提案コミットメッセージを提示し、コミットはユーザーに委ねる
+   - 提案例: `chore: sync dev-kit generated artifacts to v{N}`
+   - バージョンは `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` から取得
+
+→ 完了
 
 #### 注意
 
 ##### 禁止事項
 
-- master / main ブランチ上での実行
-
----
-
-### ステップ2: html-implement のルールテンプレを上書きする
-
-#### 条件
-
-- ステップ1 完了
-
-#### 処理内容
-
-1. 配布先が存在するかで html-implement の利用有無を判定する
-   - `.claude/rules/css-js-link.md` が **存在しない** 場合 → html-implement 未使用と判断し、本ステップをスキップしてステップ3 へ
-2. 利用済みの場合、上記表の html-implement 行 4 ファイルを `${CLAUDE_PLUGIN_ROOT}/templates/html/rules/*` からコピー上書きする
-3. 上書きしたファイル名を報告する
-
-→ ステップ3 へ
-
-#### 出力
-
-- `.claude/rules/{css-js-link,common-component-first}.md` と `.claude/rules-jp/{css-js-link,common-component-first}.md` が最新のテンプレ内容に揃っている
-
----
-
-### ステップ3: html-debug-fab のウィジェットを上書きする
-
-#### 条件
-
-- ステップ2 完了
-
-#### 処理内容
-
-1. プロジェクト内の既存 `uidev.css` の場所を検索する
-   - 例: `find . -name 'uidev.css' -not -path '*/node_modules/*' -not -path '*/.git/*'`
-2. **見つからない場合** → html-debug-fab 未配布と判断し、本ステップをスキップしてステップ4 へ
-3. **1 箇所のみ見つかった場合** → そのディレクトリを配布先として確定する
-4. **複数見つかった場合** → ユーザーに対象ディレクトリを確認してから進む
-5. 配布先ディレクトリに対して、`${CLAUDE_PLUGIN_ROOT}/skills/html-debug-fab/templates/` の以下 4 ファイルをコピー上書きする
-   - `uidev.css`
-   - `uidev.js`
-   - `CLAUDE.md`
-   - `CLAUDE.jp.md`
-6. `example.html` はサンプル用途のためコピーしない
-7. 上書きしたファイル名を報告する
-
-→ ステップ4 へ
-
-#### 出力
-
-- 配布先ディレクトリの `uidev.css` / `uidev.js` / `CLAUDE.md` / `CLAUDE.jp.md` が最新のテンプレ内容に揃っている
-
----
-
-### ステップ4: 差分を報告する
-
-#### 条件
-
-- ステップ3 完了
-
-#### 処理内容
-
-1. `git status` と `git diff` をユーザーに見せる
-2. 差分が無ければ「すべての dev-kit 生成物は既に最新です」と報告して終了する
-3. 差分があれば、上書きしたファイル一覧と提案コミットメッセージを提示し、コミットはユーザーに委ねる
-   - 提案メッセージ例: `chore: sync dev-kit templates to v{N}`
-   - dev-kit の現在バージョンは `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` から取得する
-4. このスキルは自分ではコミットしない（コミット・マージはユーザーの責務）
-
-→ 完了
+- master / main への直接コミット
+- ユーザー確認なしでの修正（規約検査の修正はすべてユーザーが承認する）

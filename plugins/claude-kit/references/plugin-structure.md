@@ -34,15 +34,26 @@ plugins/<plugin-name>/
 
 ### `plugin-update` (mandatory for every plugin)
 
-Every plugin **must** ship a `plugin-update` skill that brings the project's plugin-generated
-artifacts in line with the currently installed plugin version. Manual invocation only
+Every plugin **must** ship a `plugin-update` skill that brings the project's plugin-related
+artifacts into compliance with the currently installed plugin version. Manual invocation only
 (`/<plugin>:plugin-update`).
 
-**Why**: when a plugin ships static templates (`.work/CLAUDE.md`, hook prompts, sample configs,
-references injected via `injection_rules.yaml`, etc.) into the project, those copies drift behind
-the plugin source as new versions are released. Without a per-plugin sync command, the user has
-to diff and copy by hand. Each plugin owns its own update path because each plugin knows its own
-templates and migration rules.
+**What "plugin-related artifacts" means**:
+
+Two categories, handled differently:
+
+| Category | Examples | Action |
+|---|---|---|
+| Static templates | Files the plugin copies verbatim into the project (rule templates, widget assets, config stubs) | Re-copy from plugin source (straightforward, automatic) |
+| Convention-following files | Files the user created *following this plugin's guidance* (skills, hooks, agents, source code) | Inspect against current references; detect deviations and fix with user confirmation |
+
+The static-copy part is easy. The convention-inspection part is the main value: when a plugin's
+references or guidelines change, existing project files written under the old conventions may
+now violate the new standards. `plugin-update` surfaces those violations and applies the fix.
+
+**Why**: without this, version upgrades are silent. Users can install a newer plugin but their
+existing project files continue to follow the old conventions — invisible drift that produces
+inconsistent outputs over time.
 
 **Standard contract**:
 
@@ -53,11 +64,12 @@ templates and migration rules.
 | First action | Refuse to run on `master` / `main` and ask the user to create a working branch first |
 | Branch management | Do **not** create branches, commit, or merge — leave all branch operations to the user |
 | Inter-plugin dependency | None — must not invoke skills or commands from other plugins |
-| Scope | Only this plugin's own static artifacts; never reach into other plugins |
+| Scope | Only this plugin's own artifacts; never modify files owned by other plugins |
+| Fix confirmation | Never modify convention-following files without explicit user confirmation |
 
-When creating a new plugin, generate `skills/plugin-update/SKILL.md` (and `.jp.md`) and adapt the
-template list to whatever static files your plugin ships. The skill must be self-contained: do
-not depend on workspace, worktree-kit, or any other plugin's command.
+When creating a new plugin, generate `skills/plugin-update/SKILL.md` (and `.jp.md`), list the
+static templates to re-copy, and describe how to detect and fix deviations in files created by
+this plugin's skills. The skill must be self-contained.
 
 ---
 
