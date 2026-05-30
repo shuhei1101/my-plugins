@@ -19,7 +19,7 @@ Claude Code が git worktree を作成・削除するたびに VS Code の `.cod
 
 ## タスク
 
-### Step 1: `.code-workspace` ファイルを探す
+### ステップ 1: `.code-workspace` ファイルを探す
 
 #### 条件
 
@@ -36,7 +36,7 @@ Claude Code が git worktree を作成・削除するたびに VS Code の `.cod
 
    > `.code-workspace` ファイルが見つかりませんでした。絶対パスを入力してください。
 
-→ Step 2 へ
+→ ステップ 2 へ
 
 #### 出力
 
@@ -44,7 +44,7 @@ Claude Code が git worktree を作成・削除するたびに VS Code の `.cod
 
 ---
 
-### Step 2: ユーザーに確認
+### ステップ 2: ユーザーに確認
 
 #### 条件
 
@@ -59,7 +59,7 @@ Claude Code が git worktree を作成・削除するたびに VS Code の `.cod
 
 2. ユーザーの確認を待ってから進む
 
-→ Step 3 へ
+→ ステップ 3 へ
 
 #### 出力
 
@@ -67,7 +67,7 @@ Claude Code が git worktree を作成・削除するたびに VS Code の `.cod
 
 ---
 
-### Step 3: `.claude/settings.json` にフックを書き込む
+### ステップ 3: `.claude/settings.json` にフックを書き込む
 
 #### 条件
 
@@ -95,7 +95,7 @@ SKILL.md の Hook 2 JSON 参照
 - `.claude/` ディレクトリが存在しない場合は先に作成
 - `WORK_PATH` は絶対パスで指定（Windows ではスラッシュ区切りでも動作）
 
-→ Step 4 へ
+→ ステップ 4 へ
 
 #### 出力
 
@@ -103,7 +103,7 @@ SKILL.md の Hook 2 JSON 参照
 
 ---
 
-### Step 4: ユーザーに報告
+### ステップ 4: ユーザーに報告
 
 #### 条件
 
