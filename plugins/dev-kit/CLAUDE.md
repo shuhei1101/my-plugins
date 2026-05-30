@@ -74,6 +74,7 @@ prevents duplicate injection.
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.4.0 | 2026-05-30 | Add `markdown/` reference subfolder with Markdown table conventions (`#` column rule, `〃` ditto mark for repeated values); injected on `**/*.md` edits (PR196) |
 | 4.3.0 | 2026-05-30 | Add `dev-kit:plugin-update` skill — inspects/fixes dev-kit-generated artifacts (static templates + convention-following source files) against the current dev-kit version. Self-contained: no dependency on any other plugin; refuses to run on master/main; never commits on its own (PR182) |
 | 4.2.0 | 2026-05-30 | Rename meta-YAML files in `references/` with `_` prefix: `index.yaml` / `index.jp.yaml` / `injection_rules.yaml` → `_index.yaml` / `_index.jp.yaml` / `_injection_rules.yaml` (PR179) |
 | 4.1.0 | 2026-05-30 | Move hook scripts under `hooks/scripts/` with shared `_common.py`; behavior unchanged (PR180) |

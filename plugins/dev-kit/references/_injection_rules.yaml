@@ -1,4 +1,8 @@
 rules:
+# ---- Markdown (general): table formatting conventions ----
+- pattern: "**/*.md"
+  required:
+    - markdown/markdown-table.md
 - pattern: '**/*.py'
   lang: python
   required:
