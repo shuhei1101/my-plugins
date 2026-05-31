@@ -1064,3 +1064,11 @@ branches:
   summary: issue-scanスキルに自動ブランチ・マージとサブエージェント並列制御を追加
   task: 260531_issue-scan-auto-loop
   completed: true
+- id: 9
+  branch: refactor/issue-scanner-return-content
+  title: イシュースキャナーコンテンツ返却リファクタ
+  type: refactor
+  tags: []
+  summary: issue-scanner がファイルを書かずにコンテンツを返し、メインがファイル書き込みを担う設計に変更
+  task: 260531_issue-scanner-refactor
+  completed: true
