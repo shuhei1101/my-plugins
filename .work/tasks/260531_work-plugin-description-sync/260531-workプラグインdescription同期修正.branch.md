@@ -17,10 +17,10 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | 未解決事項を `## QA` に記録する |
-| 2 | - | `plugins/work/.claude-plugin/plugin.json` に v2.54.0 エントリを追記 |
-| 3 | - | `plugins/claude-kit/references/plugin/バージョン同期.md` に description 一致確認を追加（高級対策） |
-| 4 | - | `.work/notes/` の関連ノートを更新する |
+| 1 | 済 | 未解決事項を `## QA` に記録する |
+| 2 | 済 | `plugins/work/.claude-plugin/plugin.json` に v2.54.0 エントリを追記 |
+| 3 | 済 | `plugins/claude-kit/references/plugin/バージョン同期.md` に description 一致確認を追加（高級対策） |
+| 4 | 済 | `.work/notes/` の関連ノートを更新する |
 
 ## 変更内容
 
@@ -36,7 +36,7 @@
 
 | # | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | plugin.json の description が marketplace.json と完全一致している | (未実施) | - |
+| 1 | plugin.json の description が marketplace.json と完全一致している | git diff で確認、v2.54.0 エントリが一致 | OK |
 
 ## QA
 
