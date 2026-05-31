@@ -16,16 +16,16 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | `## QA` に未解決事項を記録する |
-| 2 | - | `.work/notes/` のノートを更新する |
-| 3 | - | `plugins/work/skills/start/SKILL.md` のコミットメッセージ言語セクションを env var 対応に更新 |
-| 4 | - | `plugins/work/skills/start/SKILL.jp.md` を同期 |
-| 5 | - | `plugins/work/CLAUDE.md` に新 env var 2 件を追記・バージョン更新 |
-| 6 | - | `plugins/work/CLAUDE.jp.md` を同期 |
-| 7 | - | `plugins/work/skills/plugin-config/SKILL.md` に `WORK_COMMIT_TYPE` を追加 |
-| 8 | - | `plugins/work/skills/plugin-config/SKILL.jp.md` を同期 |
-| 9 | - | `plugins/work/.claude-plugin/plugin.json` のバージョンを 2.51.0 に更新 |
-| 10 | - | ルール / CLAUDE.md を更新する |
+| 1 | 済 | `## QA` に未解決事項を記録する |
+| 2 | 済 | `.work/notes/` のノートを更新する |
+| 3 | 済 | `plugins/work/skills/start/SKILL.md` のコミットメッセージ言語セクションを env var 対応に更新 |
+| 4 | 済 | `plugins/work/skills/start/SKILL.jp.md` を同期 |
+| 5 | 済 | `plugins/work/CLAUDE.md` に新 env var 2 件を追記・バージョン更新 |
+| 6 | 済 | `plugins/work/CLAUDE.jp.md` を同期 |
+| 7 | 済 | `plugins/work/skills/plugin-config/SKILL.md` に `WORK_COMMIT_TYPE` を追加 |
+| 8 | 済 | `plugins/work/skills/plugin-config/SKILL.jp.md` を同期 |
+| 9 | 済 | `plugins/work/.claude-plugin/plugin.json` のバージョンを 2.51.0 に更新 |
+| 10 | 済 | ルール / CLAUDE.md を更新する（変更なし） |
 
 ## 変更内容
 
