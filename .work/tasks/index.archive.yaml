@@ -1174,3 +1174,11 @@ branches:
   summary: issue-scan の *-kit 記述削除・スキャン観点拡充。issue-save のテンプレートセクション日本語化・水平展開追加・メタ情報ファイル本文除去
   task: 260531_issueスキル改善
   completed: true
+- id: 6
+  branch: docs/markdown-table-no-column
+  title: マークダウンテーブルNoカラムガイドライン
+  type: docs
+  tags: []
+  summary: マークダウンテーブルの「#」カラムを「No」に変更し、Noカラムの省略条件ガイドラインを追加
+  task: 260531_markdown-table-no-column
+  completed: true
