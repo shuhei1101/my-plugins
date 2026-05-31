@@ -1117,3 +1117,10 @@ branches:
   summary: ノートフロントマターの related_specs を related_notes にリネーム
   task: 260531_ノートフロントマター修正
   completed: true
+- id: 250
+  title: chore/jp-md-comment-normalize
+  type: chore
+  tags: []
+  summary: .jp.md ファイル冒頭のコメントを HTML コメント形式のみに統一
+  task: 260531_jpmd_comment_normalize
+  completed: true

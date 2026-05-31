@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of constants.md. When updating the English original, update this file too. -->
 # shared/constants.py — 計算済み定数
 
-> このファイルは `constants.md` の日本語ミラーです。
-
 `constants.py` には **計算済みの不変値** だけを置く。実行時可変な値（env で切り替える等）は `settings.py` 側へ。
 
 ---

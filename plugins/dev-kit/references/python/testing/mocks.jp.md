@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of mocks.md. When updating the English original, update this file too. -->
 # testing/mocks — 結合テストの Mock パターン
 
-> このファイルは `mocks.md` の日本語ミラーです。
-
 結合テストでは **外部依存をすべて Mock 化** する。dev-kit Python は関数の型エイリアスで DI してるので、Mock も普通の関数で書く。
 
 ---
@@ -11,7 +9,6 @@
 
 ```python
 from {pkg}.features.chat.service import generate_response
-
 
 async def test_generate_response_ok() -> None:
     # 関数の型 AsyncChatFn を満たす Mock
@@ -35,7 +32,6 @@ async def test_generate_response_ok() -> None:
 from typing import Awaitable, Callable
 from {pkg}.integrations.llm.types import ChatRequest, ChatResponse
 
-
 def make_chat_mock(*responses: str):
     """順番に固定文字列を返す LLM Mock を作る。"""
     queue = list(responses)
@@ -47,11 +43,9 @@ def make_chat_mock(*responses: str):
 
     return _chat
 
-
 @pytest.fixture
 def chat_simple():
     return make_chat_mock("hello world")
-
 
 @pytest.fixture
 def chat_sequence():
@@ -71,7 +65,6 @@ def make_chat_spy():
     _chat.calls = calls   # type: ignore[attr-defined]
     return _chat
 
-
 async def test_chat_called_with_user_input() -> None:
     chat = make_chat_spy()
     await generate_response("hello", chat=chat)
@@ -86,17 +79,14 @@ async def test_chat_called_with_user_input() -> None:
 ```python
 from {pkg}.shared.errors import LlmRateLimitError, LlmServerError
 
-
 def make_chat_error(exc: Exception):
     async def _chat(req):
         raise exc
     return _chat
 
-
 @pytest.fixture
 def chat_rate_limited():
     return make_chat_error(LlmRateLimitError("too many requests"))
-
 
 @pytest.fixture
 def chat_server_error():
@@ -110,7 +100,6 @@ def chat_server_error():
 ```python
 import httpx
 import respx
-
 
 async def test_http_call(respx_mock) -> None:
     respx_mock.get("https://api.example.com/users/1").mock(
@@ -150,10 +139,8 @@ await my_service("...", fetch=fetch_mock)
 ```python
 from datetime import datetime, timezone
 
-
 def now_fixed() -> datetime:
     return datetime(2026, 1, 1, tzinfo=timezone.utc)
-
 
 def test_with_fixed_time() -> None:
     result = create_log_entry("hello", now=now_fixed)
@@ -173,7 +160,6 @@ ids = iter(["id-1", "id-2", "id-3"])
 
 def gen_id_seq() -> str:
     return next(ids)
-
 
 def test_create_user_assigns_id() -> None:
     user = create_user(
@@ -203,7 +189,6 @@ def make_user_repo():
 
     return save, find
 
-
 def test_create_then_find() -> None:
     save, find = make_user_repo()
 
@@ -224,7 +209,6 @@ def test_with_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     settings = Settings()
     assert settings.openai_api_key.get_secret_value() == "sk-test"
-
 
 def test_replace_function(monkeypatch: pytest.MonkeyPatch) -> None:
     def fake_now() -> datetime:

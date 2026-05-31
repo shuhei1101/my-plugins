@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of style.md. When updating the English original, update this file too. -->
 # スタイル
 
-> このファイルは `style.md` の日本語ミラーです。
-
 整形・静的解析の設定方針。`pyproject.toml` への記述例は `packaging/pyproject.md` 参照。
 
 ---
@@ -127,7 +125,6 @@ def create_user(input: CreateUserInput, *, save: SaveUser, generate_id: Generate
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class User: ...
-
 
 # ================================================================
 # Service

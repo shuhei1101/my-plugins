@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of launchers-unix.md. When updating the English original, update this file too. -->
 # launchers-unix — sh ランチャー
 
-> このファイルは `launchers-unix.md` の日本語ミラーです。
-
 UNIX 系（Linux / macOS / WSL）で Python スクリプトを起動する `.sh` ファイルの規約。
 
 ---

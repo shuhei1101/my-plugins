@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of pyproject.md. When updating the English original, update this file too. -->
 # packaging/pyproject — pyproject.toml 完全サンプル
 
-> このファイルは `pyproject.md` の日本語ミラーです。
-
 新規 Python プロジェクトの `pyproject.toml` 標準テンプレート。
 
 ---
@@ -62,7 +60,6 @@ Repository = "https://github.com/you/mypkg"
 [project.scripts]
 mypkg = "mypkg.__main__:main"
 
-
 # ================================================================
 # Build system
 # ================================================================
@@ -73,13 +70,11 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/mypkg"]
 
-
 # ================================================================
 # uv（依存管理ツール）
 # ================================================================
 [tool.uv]
 managed = true
-
 
 # ================================================================
 # ruff
@@ -107,7 +102,6 @@ ignore = [
 quote-style = "double"
 indent-style = "space"
 
-
 # ================================================================
 # mypy
 # ================================================================
@@ -120,7 +114,6 @@ show_error_codes = true
 pretty = true
 plugins = ["pydantic.mypy"]
 
-
 # ================================================================
 # pyright（任意・エディタ統合用）
 # ================================================================
@@ -129,7 +122,6 @@ pythonVersion = "3.12"
 typeCheckingMode = "strict"
 include = ["src", "tests"]
 exclude = ["**/node_modules", "**/.venv"]
-
 
 # ================================================================
 # pytest
@@ -149,7 +141,6 @@ addopts = [
 markers = [
     "smoke: real external-service tests (requires --run-smoke)",
 ]
-
 
 # ================================================================
 # coverage（任意）

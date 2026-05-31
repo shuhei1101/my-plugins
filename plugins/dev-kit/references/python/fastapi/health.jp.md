@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of health.md. When updating the English original, update this file too. -->
 # fastapi/health — ヘルスチェック
 
-> このファイルは `health.md` の日本語ミラーです。
-
 シンプルが正義。`/healthz` で 200 を返すだけ。
 
 ---
@@ -15,7 +13,6 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 router = APIRouter(tags=["health"])
-
 
 @router.get("/healthz")
 async def healthz() -> dict[str, str]:
@@ -50,7 +47,6 @@ k8s では `livenessProbe` と `readinessProbe` を別エンドポイントに�
 async def healthz() -> dict[str, str]:
     return {"status": "ok"}
 
-
 @router.get("/readyz")
 async def readyz(request: Request) -> dict[str, str]:
     """起動が完了してリクエストを受け取れる状態か。"""
@@ -83,7 +79,6 @@ async def healthz_deep(request: Request) -> dict[str, object]:
             "anthropic": await _check_anthropic(settings),
         },
     }
-
 
 async def _check_openai(settings: Settings) -> dict[str, object]:
     try:

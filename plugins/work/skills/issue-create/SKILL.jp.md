@@ -7,9 +7,6 @@ description: |
 ---
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-> このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
-> 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
-
 ---
 
 # work:issue-create — ユーザー入力からイシューを登録

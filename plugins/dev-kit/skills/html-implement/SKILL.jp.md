@@ -1,7 +1,6 @@
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — dev-kit:html-implement(日本語ミラー)
 
-> このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更時は JP ミラーを先に更新し、その後 `SKILL.md` にも反映する。
 
 ---

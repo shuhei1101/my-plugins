@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of python-script.md. When updating the English original, update this file too. -->
 # python-script — 単一ファイルスクリプト
 
-> このファイルは `python-script.md` の日本語ミラーです。
-
 `pyproject.toml` を作らない簡易スクリプトの構造。
 1 ファイル〜数ファイルで完結する自動化、コンバート、レポート生成等で使う。
 
@@ -43,14 +41,12 @@ import logging
 import sys
 from pathlib import Path
 
-
 # ================================================================
 # 定数
 # ================================================================
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 LOG_DIR = SCRIPT_DIR / "log"
-
 
 # ================================================================
 # Logger
@@ -64,9 +60,7 @@ def _setup_logger() -> logging.Logger:
     logger.addHandler(handler)
     return logger
 
-
 logger = _setup_logger()
-
 
 # ================================================================
 # 引数
@@ -79,7 +73,6 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--verbose", "-v", action="store_true", help="verbose log")
     return parser.parse_args()
 
-
 # ================================================================
 # 処理本体
 # ================================================================
@@ -89,7 +82,6 @@ def process(input_path: Path, output_path: Path) -> None:
     logger.info(f"{input_path} を読み込み中")
     # ... 実処理
     logger.info(f"{output_path} に書き込み完了")
-
 
 # ================================================================
 # Entry point
@@ -109,7 +101,6 @@ def main() -> int:
     except Exception:
         logger.exception("予期しないエラーが発生しました")
         return 1
-
 
 if __name__ == "__main__":
     sys.exit(main())

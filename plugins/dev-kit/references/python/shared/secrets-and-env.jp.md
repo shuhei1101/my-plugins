@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of secrets-and-env.md. When updating the English original, update this file too. -->
 # secrets-and-env — シークレット / 環境 / 構造 / アセットの分離
 
-> このファイルは `secrets-and-env.md` の日本語ミラーです。
-
 設定値の保管先を **シークレット / 個人環境 / 構造定義 / アセット / ランタイム状態** で明確に分離する。
 **シークレットは絶対に `settings.yaml` やコードに書かない**。
 
@@ -68,11 +66,9 @@ Python 側で `.env` を読むときは `SecretStr` でラップして、間違�
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings
 
-
 class Settings(BaseSettings):
     openai_api_key: SecretStr
     db_password: SecretStr
-
 
 settings = Settings()
 

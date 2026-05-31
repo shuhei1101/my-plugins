@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of tkinter.md. When updating the English original, update this file too. -->
 # tkinter — GUI スクリプト規約
 
-> このファイルは `tkinter.md` の日本語ミラーです。
-
 簡易 GUI が必要な場合の規約。本格的な GUI は別技術を検討（Electron / Tauri 等）するが、
 スクリプトに小さい操作画面を付ける程度なら tkinter で十分。
 
@@ -18,7 +16,6 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from pathlib import Path
 
-
 # ================================================================
 # テーマ / スタイル
 # ================================================================
@@ -30,7 +27,6 @@ PADDING = 12
 # アクセントカラー（青系・統一）
 ACCENT_COLOR = "#2563eb"      # tailwind blue-600
 ACCENT_HOVER = "#1d4ed8"      # blue-700
-
 
 # ================================================================
 # UI
@@ -53,14 +49,12 @@ def _apply_style(root: tk.Tk) -> None:
         background=[("active", ACCENT_HOVER)],
     )
 
-
 def build_root() -> tk.Tk:
     root = tk.Tk()
     root.title(WINDOW_TITLE)
     root.geometry(WINDOW_SIZE)
     _apply_style(root)
     return root
-
 
 def main() -> int:
     root = build_root()
@@ -92,7 +86,6 @@ def main() -> int:
     root.mainloop()
     return 0
 
-
 # ================================================================
 # Handlers
 # ================================================================
@@ -103,7 +96,6 @@ def _on_browse(var: tk.StringVar) -> None:
     if selected:
         var.set(selected)
 
-
 def _on_run(folder: str) -> None:
     """Run ボタンの処理。実処理は別関数に委譲する。"""
     try:
@@ -113,12 +105,10 @@ def _on_run(folder: str) -> None:
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
-
 def _do_work(folder: Path) -> int:
     """対象フォルダに対する実処理。テスト可能なように分離。"""
     # 実装
     return 0
-
 
 if __name__ == "__main__":
     import sys
@@ -179,7 +169,6 @@ class SettingsDialog(tk.Toplevel):
     @property
     def result(self) -> Settings | None:
         return self._result
-
 
 # 呼び出し側
 def open_settings(root: tk.Tk, current: Settings) -> Settings | None:
