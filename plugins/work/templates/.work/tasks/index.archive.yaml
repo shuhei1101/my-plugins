@@ -1,8 +1,9 @@
-# Managed by workspace merge skill. Archived (completed / abandoned) PRs.
+# Managed by workspace merge skill. Archived (completed / abandoned) branches.
 #
 # フィールド説明:
-#   id        : PR 番号
-#   title     : PR フォルダの h1 タイトルそのまま
+#   id        : 連番
+#   branch    : git ブランチ名
+#   title     : ブランチ文書の H1 タイトルそのまま
 #   type      : feat / fix / docs / refactor / chore / test
 #   tags      : 自由形式タグ（省略可）
 #   summary   : 一行説明

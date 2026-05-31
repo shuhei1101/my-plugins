@@ -5,12 +5,16 @@ updates:
   - 2026-05-30 — PR188: work-start の PR 用語をブランチ用語に統一
   - 2026-05-30 — PR190: index.yaml / index.archive.yaml の prs: キーを branches: に改名
   - 2026-05-31 — #230: pr-handoff → branch-reserve、pr-show → branch-show にリネーム
+  - 2026-05-31 — #244: ブランチ文書ファイル名を日本語タイトル基準に変更、index.yaml に branch フィールド追加
+  - 2026-05-31 — #248: user-prompt-submit.py・trim-index.py・issue-tool.py・plugin-config スキル・setup スキル内の残存 PR 用語をブランチ用語に統一
 related_notes: []
 related_prs:
   - PR188
   - PR189
   - PR190
   - PR191
+  - "#244"
+  - "#248"
 ---
 
 # PR用語廃止・ブランチ用語統一
@@ -59,6 +63,30 @@ workspace の work-start スキルを中心に「PR（Pull Request）」とい�
 ### PR191: 既存フォルダ名の統一
 - 8桁 YYYYMMDD → 6桁 YYMMDD 形式に一括リネーム
 - 新規フォルダは日本語名を使う規約を追加
+
+### #244: ブランチ文書ファイル名を日本語タイトル基準に変更
+
+- ファイル名: `{YYMMDD}-{branch-hyphenated}.md` → `{YYMMDD}-{日本語タイトル}.md`
+- テンプレートにブランチ名行 (`> ブランチ: \`{branch-name}\``) を追加（H1 直下）
+- `setup-task.py` に `--ja-title` パラメータ追加
+- `index.yaml` に `branch` フィールド追加（git ブランチ名）
+- `index-tool.py` の `add` サブコマンドに `--branch` パラメータ追加
+- PR 言語をスクリプトのコメント・出力メッセージから除去
+- 関連スキル・フック・リファレンスのパス表記 `{branch-hyphenated}.md` → `{YYMMDD}-{日本語タイトル}.md` に統一
+
+### #248: workプラグイン内の残存 PR 用語を一括修正
+
+| # | ファイル | 変更内容 |
+|---|---|---|
+| 1 | `plugins/work/hooks/scripts/user-prompt-submit.py` | docstring「PR 在中チェック」→「ブランチ文書確認」、`WORK_PR_ENFORCEMENT`→`WORK_BRANCH_ENFORCEMENT` |
+| 2 | `plugins/work/scripts/trim-index.py` | "completed PR(s)" / "active PR(s)" → "completed branch(es)" / "active branch(es)" |
+| 3 | `plugins/work/scripts/issue-tool.py` | `--linked-pr`→`--linked-branch`、`linked_pr`→`linked_branch`、出力メッセージ修正 |
+| 4 | `plugins/work/skills/plugin-config/SKILL.md` | `WORK_PR_ENFORCEMENT`→`WORK_BRANCH_ENFORCEMENT` |
+| 5 | `plugins/work/skills/plugin-config/SKILL.jp.md` | 〃（JPミラー） |
+| 6 | `plugins/work/skills/setup/SKILL.md` | "Task / PR folders"→"Task / branch folders" |
+| 7 | `plugins/work/skills/setup/SKILL.jp.md` | "タスク・PR フォルダ"→"タスク・ブランチフォルダ" |
+
+**留意:** legacy backward-compat 用途（`branch-index-cleanup`・`merge`・`worktree-create` スキルの `PR{N}/` 形式説明）は意図的に残存。これらは既存のレガシーブランチを扱うための文書であり、用語ではなく命名形式の説明のため対象外とした。
 
 ## 未決定事項
 

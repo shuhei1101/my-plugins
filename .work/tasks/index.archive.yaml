@@ -1089,3 +1089,24 @@ branches:
   summary: work:start SKILL.md の行4（ルール/CLAUDE.md更新）を削除し、Step 2のQA観点を補強する
   task: 260531_work-start-qa-improve
   completed: true
+- id: 244
+  title: refactor/branch-doc-filename-to-ja-title
+  type: refactor
+  tags: []
+  summary: ブランチ文書ファイル名を日本語タイトル基準に変更し index.yaml に branch フィールドを追加
+  task: 260531_ブランチ文書ファイル名変更
+  completed: true
+- id: 247
+  title: docs/update-test-table-columns
+  type: docs
+  tags: []
+  summary: ブランチドキュメントテンプレートのテスト表列をファイル名・メソッド名・期待値・実値・判定・補足に更新
+  task: 260531_テスト表列更新
+  completed: true
+- id: 248
+  title: refactor/fix-terminology-in-work-plugin
+  type: refactor
+  tags: []
+  summary: workプラグイン内のPR→ブランチ用語統一とuser-prompt-submit.py古い表記修正
+  task: 260531_workプラグイン用語修正
+  completed: true

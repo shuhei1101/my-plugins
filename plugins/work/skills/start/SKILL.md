@@ -15,8 +15,8 @@ This prevents task documents from being created in the main repository.
 > **Naming**: branches use `{type}/{title}` by default. If `WORK_BRANCH_AUTHOR` is set, the author
 > segment is inserted: `{type}/{author}/{title}` (e.g. `feat/nishikawa/test-update`).
 > The worktree mirrors the full branch name with slashes replaced by hyphens: `{repo}-wt-{branch-hyphenated}`.
-> The branch document filename is `{YYMMDD}-{branch-hyphenated}.md`
-> (e.g. `refactor/foo-bar` → `260531-refactor-foo-bar.md`).
+> The branch document filename is `{YYMMDD}-{日本語タイトル}.md` — the Japanese title collected in Step 2
+> (e.g. `260531-ブランチ文書ファイル名変更.md`). The git branch name is recorded inside the document header.
 > An internal numeric ID is still tracked in `index.yaml` for archive metadata, but it does not appear in branch names, worktree paths, or branch document filenames.
 
 ---
@@ -67,6 +67,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 #### Process
 
 1. Determine the following:
+   - **日本語タイトル**: descriptive Japanese title for this branch work — used in the document H1 and as the file name (e.g. `ブランチ文書ファイル名変更`)
    - **TODO list**: what will be done on this branch (becomes the checklist)
    - **Note**: does a related note exist in `.work/notes/`? Or does one need to be created?
    - **Open questions**: anything that needs to be confirmed or decided before starting implementation.
@@ -82,7 +83,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 #### Output
 
-- TODO list, note info, and open questions confirmed
+- 日本語タイトル `{日本語タイトル}`, TODO list, note info, and open questions confirmed
 
 ---
 
@@ -99,7 +100,8 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --id {N} \
-  --title "{branch}" \
+  --branch "{full-branch-name}" \
+  --title "{日本語タイトル}" \
   --type {type} \
   --summary "{summary}" \
   --task "{YYMMDD}_{title}"
@@ -117,7 +119,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 - Use a 6-digit `YYMMDD` (e.g. `260530`), not the 8-digit `YYYYMMDD` form
 - `--id {N}` is the internal numeric ID reserved in Step 1; it is recorded in the YAML row but
   not embedded in the branch / worktree / filename
-- `--title` records the branch name as the row title (no `PR{N}` prefix)
+- `--branch` records the git branch name; `--title` records the Japanese document title
 
 ---
 
@@ -203,9 +205,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### Process
 
 Run one of the following depending on the choice in Step 5. The `--branch` argument is the full branch
-name (e.g. `feat/nishikawa/test-update` or `feat/test-update`); the script prepends the date and
-converts slashes to hyphens to form the file name
-(e.g. `refactor/rename-pr-to-branch` on 260531 → `260531-refactor-rename-pr-to-branch.md`).
+name (e.g. `feat/nishikawa/test-update` or `feat/test-update`). The `--ja-title` argument is the
+Japanese title collected in Step 2; the script uses it as the file name stem
+(e.g. `ブランチ文書ファイル名変更` on 260531 → `260531-ブランチ文書ファイル名変更.md`).
 The worktree path `{wt}` is `../$(basename $(pwd))-wt-{branch-hyphenated}` (slashes in the full branch name → hyphens).
 
 **New task folder:**
@@ -215,6 +217,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   {wt} \
   --id {N} \
   --branch {full-branch-name} \
+  --ja-title "{日本語タイトル}" \
   --title {title} \
   --date {YYMMDD} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -227,8 +230,8 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   {wt} \
   --id {N} \
   --branch {full-branch-name} \
+  --ja-title "{日本語タイトル}" \
   --task-dir {existing_folder_name} \
-  --title {title} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
 ```
 
@@ -236,7 +239,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Output
 
-- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{branch-hyphenated}.md` created
+- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.md` created
 
 ---
 
@@ -248,11 +251,12 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Process
 
-Open the created `{YYMMDD}-{branch-hyphenated}.md` in the worktree and replace the template placeholder content
+Open the created `{YYMMDD}-{日本語タイトル}.md` in the worktree and replace the template placeholder content
 with the actual plan. The document holds every section for this branch — TODO, variations, QA, and
 references — all in one file.
 
-**`# タイトル`（H1）** — write a descriptive Japanese title for this branch work (not the branch name). Example: `# ブランチドキュメントの H1 をタイトルに変更`
+The **H1 title** and **ブランチ行** are pre-filled by the script from `--ja-title` and `--branch`.
+Verify they are correct; do not overwrite them.
 
 **`## 概要`** — write the goal / background, plus the `### 実施条件` sub-section:
 

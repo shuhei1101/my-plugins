@@ -50,7 +50,7 @@ description: |
 
 1. 現在のブランチドキュメントを読み込みます：
    ```
-   .work/tasks/{task_folder}/{branch-hyphenated}.md
+   .work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.md
    ```
 
 2. その `## 次ブランチ候補` テーブル（列：title / summary / 実施条件）を読み込みます：

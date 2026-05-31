@@ -49,7 +49,7 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 
 ## ブランチドキュメント構造
 
-各ブランチは `.work/tasks/{YYMMDD}_{title}/{branch-hyphenated}.md` の単一ファイルを使用し、以下のセクションを持つ：
+各ブランチは `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.md` の単一ファイルを使用し、以下のセクションを持つ：
 
 - `## 作業内容` — タスク説明とチェックリスト
 - `## QA` — 実装前に解決すべき質問
@@ -62,7 +62,8 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.51.0 | 2026-05-31 | `WORK_COMMIT_LANG` / `WORK_COMMIT_TYPE` env var を追加 — コミットメッセージの言語とタイププレフィックスを設定可能に |
+| 1 | 2.52.0 | 2026-05-31 | ブランチ文書ファイル名を日本語タイトル基準に変更（`{YYMMDD}-{日本語タイトル}.md`）、`index.yaml` に `branch` フィールド追加 |
+| 2 | 2.51.0 | 2026-05-31 | `WORK_COMMIT_LANG` / `WORK_COMMIT_TYPE` env var を追加 — コミットメッセージの言語とタイププレフィックスを設定可能に |
 | 2 | 2.50.0 | 2026-05-31 | `WORK_BRANCH_AUTHOR` env var を追加 — ブランチ名に作者名セグメントを挿入 |
 | 2 | 2.48.0 | 2026-05-30 | `work:notes-to-claude` スキルを削除 — プラグイン間依存を排除 |
 | 3 | 2.47.0 | 2026-05-30 | `work:plugin-config` 管理対象トグルに `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` を追加 |
