@@ -13,3 +13,7 @@ scan_records:
     skill: issue-scan
     scope: "consistency:jp-mirror-sync"
     issues_found: [ISSUE-062, ISSUE-063, ISSUE-064, ISSUE-065, ISSUE-066]
+  - date: 2026-05-31
+    skill: issue-scan
+    scope: "pattern:hook-scripts-py"
+    issues_found: [ISSUE-092, ISSUE-093, ISSUE-094, ISSUE-095, ISSUE-096, ISSUE-097]
