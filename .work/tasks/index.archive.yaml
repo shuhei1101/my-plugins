@@ -1089,3 +1089,10 @@ branches:
   summary: work:start SKILL.md の行4（ルール/CLAUDE.md更新）を削除し、Step 2のQA観点を補強する
   task: 260531_work-start-qa-improve
   completed: true
+- id: 244
+  title: refactor/branch-doc-filename-to-ja-title
+  type: refactor
+  tags: []
+  summary: ブランチ文書ファイル名を日本語タイトル基準に変更し index.yaml に branch フィールドを追加
+  task: 260531_ブランチ文書ファイル名変更
+  completed: true
