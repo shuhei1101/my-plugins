@@ -73,7 +73,7 @@ description: |
 
 ---
 
-### ステップ 3: `.work/tasks/index.yaml` のマイグレーション（`last_id` がない場合は追加）
+### ステップ 3: `.work/tasks/index.yaml` を branch キースキーマへマイグレーション
 
 #### 条件
 
@@ -82,25 +82,27 @@ description: |
 
 #### 処理
 
-1. `.work/tasks/index.yaml` を読む
-2. `last_id` が既に存在する → このステップをスキップ
-3. `last_id` が存在しない場合:
-   - `last_id` = すべてのエントリから `max(id)` を計算（空の場合は 0）
-   - インデックスファイルの先頭に `last_id: {N}` を追加
+1. `.work/tasks/index.yaml`（および存在すれば `.work/tasks/index.archive.yaml`）を読む
+2. どのエントリにも `id`・`tags` がなく、トップレベルに `last_id` もない → 移行済みとしてスキップ
+3. それ以外は branch キースキーマへ移行する:
+   - 全エントリから `id` と `tags` を除去
+   - トップレベルの `last_id` キーを除去
+   - `branch`・`title`・`type`・`summary`・`task`・`completed` のみ残す
+   - `index.archive.yaml` にも同じ正規化を適用
    - 更新ファイルを書き込む
 
 → ステップ 4 へ
 
 #### 出力
 
-- `index.yaml` に `last_id` が存在
-- 既に存在する場合：「index.yaml は既に last_id を持っています — スキップしました」と報告
+- `index.yaml`（および `index.archive.yaml`）が branch キースキーマになる（`id` / `last_id` / `tags` なし）
+- 既に移行済みの場合：「index.yaml は既に branch キースキーマです — スキップしました」と報告
 
 #### 注記
 
-- `index.yaml` は gitignore されている — コミット不要
-- これはこのスキルが実行する唯一のスキーママイグレーション。
-  より深い書き直しは、バージョンバンプに伴うワンオフスクリプトとして提供される
+- ブランチインデックスは `branch` を識別キーとする。数値 `id` や `last_id` は存在しない
+- `index.yaml` は gitignore されている — コミット不要。`index.archive.yaml` は git 追跡
+- マイグレーションは冪等 — 移行後に再実行しても no-op
 
 ---
 

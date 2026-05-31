@@ -14,8 +14,7 @@ Runs the full merge flow: TODO checklist verification → master compatibility c
 > **Naming**: new branches use `{type}/{title}` (no `PR{N}/` prefix); new worktrees use
 > `{repo}-wt-{type}-{title}`. Legacy branches still on `PR{N}/{type}/{title}` with worktrees at
 > `{repo}-wt-PR{N}` are handled with their literal recorded names — read the actual branch / worktree
-> path from `index.yaml` and `git worktree list` rather than reconstructing from `{N}`.
-> `{N}` below refers to the internal numeric ID tracked in `index.yaml` 
+> path from `index.yaml` and `git worktree list`.
 
 ---
 
@@ -36,7 +35,7 @@ Runs the full merge flow: TODO checklist verification → master compatibility c
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index.yaml
 ```
 
-   Each output line is: `id|title|type|task` — `title` is the recorded branch name (for new branches:
+   Each output line is: `branch|title|type|task` — `title` is the recorded branch name (for new branches:
    `{type}/{title}`; for legacy entries it may still be `PR{N} — {title}`)
 3. If multiple active entries exist, ask the user which one to merge
 4. Resolve the actual branch name and worktree path:
@@ -48,7 +47,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Output
 
-- Internal ID `{N}`, branch document path, branch name, and worktree path confirmed
+- Branch document path, branch name, and worktree path confirmed
 
 ---
 
@@ -173,7 +172,7 @@ Running this step **before** `set-completed` / `archive` keeps the issue-close c
 
 ```bash
 python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
-  .work/tasks/index.yaml --id {N}
+  .work/tasks/index.yaml --branch {full-branch-name}
 ```
 
 → Proceed to Step 6
