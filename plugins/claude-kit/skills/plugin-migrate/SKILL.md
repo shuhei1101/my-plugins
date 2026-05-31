@@ -47,37 +47,11 @@ JP/EN mirror rules apply). A future `agents.md` reference will be added.
 
 ## Tasks
 
-### Step 1: Check the current branch
+### Step 1: Walk each category and fix deviations
 
 #### Condition
 
 - Always — run first
-
-#### Process
-
-1. Run `git rev-parse --abbrev-ref HEAD`
-2. If `master` / `main` → tell the user "Cannot run on master / main. Create a working branch first and re-run." and stop
-3. Otherwise → proceed
-
-→ Proceed to Step 2
-
-#### Output
-
-- The branch where the following edits will land is confirmed to be neither `master` nor `main`
-
-#### Notes
-
-##### Prohibitions
-
-- Running on `master` / `main`
-
----
-
-### Step 2: Walk each category and fix deviations
-
-#### Condition
-
-- Step 1 complete
 
 #### Process
 
@@ -99,7 +73,7 @@ d. Use `Edit` to apply **minimal deltas** — preserve existing user content; ne
 e. JP mirrors (`*.jp.md` / `CLAUDE.jp.md` / `rules-jp/`) are updated in parallel after the English file is fixed
 f. If the file is already compliant, skip it
 
-→ Proceed to Step 3
+→ Proceed to Step 2
 
 #### Notes
 
@@ -114,11 +88,11 @@ f. If the file is already compliant, skip it
 
 ---
 
-### Step 3: Re-apply statusline if currently claude-kit's
+### Step 2: Re-apply statusline if currently claude-kit's
 
 #### Condition
 
-- Step 2 complete
+- Step 1 complete
 
 #### Process
 
@@ -127,15 +101,15 @@ f. If the file is already compliant, skip it
 3. If yes → run `python ${CLAUDE_PLUGIN_ROOT}/scripts/apply-statusline.py` to re-write with the current definition
 4. If no → skip (user isn't on claude-kit's statusline)
 
-→ Proceed to Step 4
+→ Proceed to Step 3
 
 ---
 
-### Step 4: Report the diff
+### Step 3: Report the diff
 
 #### Condition
 
-- Step 3 complete
+- Step 2 complete
 
 #### Process
 

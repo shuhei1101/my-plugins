@@ -1075,3 +1075,10 @@ branches:
   summary: コミットメッセージの言語とタイプ付与を環境変数で設定可能にする
   task: 260531_commit-message-options
   completed: true
+- id: 242
+  title: chore/remove-plugin-update-step1
+  type: chore
+  tags: []
+  summary: dev-kit / claude-kit の plugin-update スキルから Step 1 (ブランチチェック) を削除しステップ再番号付け
+  task: 260531_plugin-update-step1削除
+  completed: true

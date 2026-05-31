@@ -30,7 +30,7 @@ This skill depends on no other plugin. Committing and merging are the user's res
 
 ---
 
-## Static templates (re-copied in Step 2)
+## Static templates (re-copied in Step 1)
 
 | Source (`${CLAUDE_PLUGIN_ROOT}/`) | Destination |
 |---|---|
@@ -43,24 +43,7 @@ This skill depends on no other plugin. Committing and merging are the user's res
 
 ## Tasks
 
-### Step 1: Check the current branch
-
-#### Condition
-
-- Always — run first
-
-#### Process
-
-1. Get the current branch with `git rev-parse --abbrev-ref HEAD`
-2. **If on master / main** → tell the user "Cannot run on master / main. Create a working
-   branch first and re-run." and stop
-3. Any other branch → proceed
-
-→ Proceed to Step 2
-
----
-
-### Step 2: Re-copy html-debug-fab widget
+### Step 1: Re-copy html-debug-fab widget
 
 #### Condition
 
@@ -69,18 +52,18 @@ This skill depends on no other plugin. Committing and merging are the user's res
 #### Process
 
 1. `find . -name 'uidev.css' -not -path '*/node_modules/*' -not -path '*/.git/*'`
-2. Not found → treat as not deployed; skip to Step 3
+2. Not found → treat as not deployed; skip to Step 2
 3. Exactly one match → that directory is the target
 4. Multiple matches → ask the user which to target
 5. Copy `uidev.css` / `uidev.js` / `CLAUDE.md` / `CLAUDE.jp.md` from
    `${CLAUDE_PLUGIN_ROOT}/skills/html-debug-fab/templates/` (skip `example.html`)
 6. Report which files were updated
 
-→ Proceed to Step 3
+→ Proceed to Step 2
 
 ---
 
-### Step 3: Inspect Python source files (if DEV_KIT_PYTHON is enabled)
+### Step 2: Inspect Python source files (if DEV_KIT_PYTHON is enabled)
 
 #### Condition
 
@@ -98,7 +81,7 @@ This skill depends on no other plugin. Committing and merging are the user's res
 4. For each file with deviations: show the deviation and proposed fix; get user confirmation before making changes
 5. Process in batches of ~10 files if the project is large
 
-→ Proceed to Step 4
+→ Proceed to Step 3
 
 #### Notes
 
@@ -107,7 +90,7 @@ Do not flag anything not explicitly stated in those references.
 
 ---
 
-### Step 4: Inspect HTML/CSS/JS source files (if DEV_KIT_HTML is enabled)
+### Step 3: Inspect HTML/CSS/JS source files (if DEV_KIT_HTML is enabled)
 
 #### Condition
 
@@ -123,11 +106,11 @@ Do not flag anything not explicitly stated in those references.
 3. Inspect against current conventions (FLOCSS, design tokens, DebugFAB usage, etc.)
 4. For each deviation: show and propose fix, confirm with user before applying
 
-→ Proceed to Step 5
+→ Proceed to Step 4
 
 ---
 
-### Step 5: Inspect TypeScript/TSX source files (if DEV_KIT_NEXT is enabled)
+### Step 4: Inspect TypeScript/TSX source files (if DEV_KIT_NEXT is enabled)
 
 #### Condition
 
@@ -143,11 +126,11 @@ Do not flag anything not explicitly stated in those references.
 3. Inspect against current conventions (file placement, Server Actions, auth, DB helpers, etc.)
 4. For each deviation: show and propose fix, confirm with user before applying
 
-→ Proceed to Step 6
+→ Proceed to Step 5
 
 ---
 
-### Step 6: Report completion
+### Step 5: Report completion
 
 #### Process
 
