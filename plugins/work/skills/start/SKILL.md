@@ -266,8 +266,8 @@ once implementation starts — every file that lands in a commit goes here:
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 
-**`## テスト`** — test files added or modified alongside the implementation. Leave the placeholder row if
-this branch has no test changes; otherwise list each test file.
+**`## テスト`** — manual test / smoke-test execution log. Record each scenario checked, the actual
+result observed, and the verdict (OK / NG). Leave a single placeholder row if no tests were run.
 
 **`## QA`** — record open questions from Step 2 as QA-XXX entries here (Step 9 below appends them).
 
