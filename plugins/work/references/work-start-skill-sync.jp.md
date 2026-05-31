@@ -11,7 +11,7 @@
 
 | 編集したファイル | 確認・更新が必要なファイル |
 |---|---|
-| `plugins/work/skills/start/SKILL.md` | `plugins/work/skills/worktree-create/SKILL.md` — インターフェース（PR番号・ブランチ引数）が Step 4 と一致しているか確認 |
+| `plugins/work/skills/start/SKILL.md` | `plugins/work/skills/worktree-create/SKILL.md` — インターフェース（ブランチ名・引数）が Step 4 と一致しているか確認 |
 | `plugins/work/skills/worktree-create/SKILL.md` | `plugins/work/skills/start/SKILL.md` — Step 4 の呼び出し形式と一致しているか確認 |
 | `plugins/work/skills/vscode-workspace-sync/SKILL.md` | 名前空間が `work:` であることを確認 |
 

@@ -31,7 +31,7 @@ Reads the `## QA` section of a branch document and presents unresolved items via
    ```bash
    git worktree list
    ```
-5. Confirm the branch document path (pattern: `.work/tasks/{YYMMDD}_{title}/{branch-hyphenated}.md`)
+5. Confirm the branch document path (pattern: `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.md`)
 
 → Proceed to Step 2
 

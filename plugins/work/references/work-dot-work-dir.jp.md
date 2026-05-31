@@ -14,7 +14,7 @@
 |---|---|
 | `tasks/index.yaml` | ブランチ索引（`completed: false` = 進行中）。`last_id` は内部数値 ID の基準値（archive 相互参照用。ブランチ名には埋め込まれない） |
 | `tasks/index.archive.yaml` | アーカイブ済み（`completed: true`）のブランチエントリ。merge で `index-tool.py archive` が自動生成 |
-| `tasks/{YYMMDD}_{title}/{branch-hyphenated}.md` | ブランチごとに 1 つの Markdown ファイル — TODO・QA・変更内容まで全て 1 ドキュメントに統合 |
+| `tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.md` | ブランチごとに 1 つの Markdown ファイル — TODO・QA・変更内容まで全て 1 ドキュメントに統合 |
 | `notes/{トピック名}.md` | 作業中の議事録・検討メモ（一時的、AI 自動読み込みなし） |
 
 ### tasks/
@@ -25,7 +25,7 @@
 作業開始時は必ず index.yaml を読んで進行中のブランチを確認する。
 
 タスクごとにフォルダ（`{YYMMDD}_{title}/`）を切り、その中に **ブランチごとに 1 つの Markdown ファイル** を置く。
-ファイル名はブランチ名のスラッシュをハイフンに置換したもの（例: `refactor/rename-pr-to-branch` → `refactor-rename-pr-to-branch.md`）。
+ファイル名は `{YYMMDD}-{日本語タイトル}.md` — 日本語タイトルはブランチ文書の H1 と同じ（例: `260531-ブランチ文書ファイル名変更.md`）。
 
 ブランチドキュメントは「このブランチが何をするか」の唯一の正本。実装開始前に作成し、作業を通じて常に最新に保つ。以下のセクションを含む:
 

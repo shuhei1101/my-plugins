@@ -60,7 +60,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Process
 
-1. Read the `## 作業内容` table in the branch document at `.work/tasks/{date}_{title}/{branch-hyphenated}.md`
+1. Read the `## 作業内容` table in the branch document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md`
 2. Confirm all rows have `済` in the `完了` column
 
 → Proceed to Step 3 only if all rows are `済`
@@ -127,7 +127,7 @@ git -C {WORKTREE_PATH} status
 
 #### Process
 
-1. Read the `## 関連イシュー` section of the branch document at `.work/tasks/{date}_{title}/{branch-hyphenated}.md` in the worktree
+1. Read the `## 関連イシュー` section of the branch document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md` in the worktree
 2. **If the section is absent, empty, or only contains the template placeholder row** (`| ISSUE-{N} | ... |`) → skip the rest of this step and proceed to Step 5
 3. For each row in the table, run the close command **inside the worktree**:
 
@@ -281,7 +281,7 @@ git branch -d {BRANCH_NAME}
 
 #### Process
 
-1. Review the `## QA` section of the branch document at `.work/tasks/{date}_{title}/{branch-hyphenated}.md` and confirm any remaining unresolved entries with the user
+1. Review the `## QA` section of the branch document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md` and confirm any remaining unresolved entries with the user
 2. Commit if there are changes:
 
 ```bash

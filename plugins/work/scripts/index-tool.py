@@ -3,7 +3,7 @@ index-tool — CLI for workspace index.yaml operations.
 
 Usage:
   python index-tool.py next-id [index_yaml]
-  python index-tool.py add [index_yaml] --id N --title T --type T --summary S --task T
+  python index-tool.py add [index_yaml] --id N --branch B --title T --type T --summary S --task T
   python index-tool.py list-active [index_yaml]
   python index-tool.py set-completed [index_yaml] --id N
   python index-tool.py archive [index_yaml] [archive_yaml]
@@ -12,11 +12,11 @@ Usage:
   archive_yaml Path to index.archive.yaml (default: .work/tasks/index.archive.yaml)
 
 Subcommands:
-  next-id        Print the next available PR number (last_id + 1, or 1 if absent)
-  add            Append a new PR entry and update last_id
-  list-active    Print active (completed: false) PR entries as lines:
+  next-id        Print the next available ID (last_id + 1, or 1 if absent)
+  add            Append a new branch entry and update last_id
+  list-active    Print active (completed: false) branch entries as lines:
                    id|title|type|task
-  set-completed  Mark a PR entry as completed: true
+  set-completed  Mark a branch entry as completed: true
   archive        Move completed entries from index.yaml to index.archive.yaml.
                  Prints the number of entries moved.
 
@@ -60,7 +60,7 @@ def _save(path: Path, data: dict, original_text: str) -> None:
 
 # ── subcommand handlers ──────────────────────────────────────
 def cmd_next_id(args: argparse.Namespace) -> None:
-    """Print the next PR number."""
+    """Print the next available ID."""
     index_path = Path(args.index_yaml)
     data = _load(index_path)
     branches: list[dict] = data.get("branches", [])
@@ -69,7 +69,7 @@ def cmd_next_id(args: argparse.Namespace) -> None:
 
 
 def cmd_add(args: argparse.Namespace) -> None:
-    """Append a new PR entry and update last_id."""
+    """Append a new branch entry and update last_id."""
     index_path = Path(args.index_yaml)
     original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
     data = yaml.safe_load(original) or {} if original else {}
@@ -77,6 +77,7 @@ def cmd_add(args: argparse.Namespace) -> None:
     branches: list[dict] = data.get("branches", [])
     new_entry = {
         "id": args.id,
+        "branch": args.branch,
         "title": args.title,
         "type": args.type,
         "tags": [],
@@ -89,11 +90,11 @@ def cmd_add(args: argparse.Namespace) -> None:
     data["last_id"] = args.id
 
     _save(index_path, data, original)
-    print(f"Added PR{args.id} to {index_path}")
+    print(f"Added entry {args.id} to {index_path}")
 
 
 def cmd_list_active(args: argparse.Namespace) -> None:
-    """Print active PR entries, one per line: id|title|type|task"""
+    """Print active branch entries, one per line: id|title|type|task"""
     index_path = Path(args.index_yaml)
     data = _load(index_path)
     active = [p for p in data.get("branches", []) if not p.get("completed", False)]
@@ -102,7 +103,7 @@ def cmd_list_active(args: argparse.Namespace) -> None:
 
 
 def cmd_completed_count(args: argparse.Namespace) -> None:
-    """Print the number of completed PR entries."""
+    """Print the number of completed entries."""
     index_path = Path(args.index_yaml)
     data = _load(index_path)
     count = sum(1 for p in data.get("branches", []) if p.get("completed", False))
@@ -110,7 +111,7 @@ def cmd_completed_count(args: argparse.Namespace) -> None:
 
 
 def cmd_set_completed(args: argparse.Namespace) -> None:
-    """Mark a specific PR as completed: true in index.yaml."""
+    """Mark a specific branch entry as completed: true in index.yaml."""
     index_path = Path(args.index_yaml)
     original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
     data = yaml.safe_load(original) or {} if original else {}
@@ -118,13 +119,13 @@ def cmd_set_completed(args: argparse.Namespace) -> None:
     branches: list[dict] = data.get("branches", [])
     target = next((p for p in branches if p["id"] == args.id), None)
     if target is None:
-        print(f"Error: PR{args.id} not found in {index_path}", file=sys.stderr)
+        print(f"Error: entry {args.id} not found in {index_path}", file=sys.stderr)
         sys.exit(1)
 
     target["completed"] = True
     data["branches"] = branches
     _save(index_path, data, original)
-    print(f"PR{args.id} marked as completed in {index_path}")
+    print(f"Entry {args.id} marked as completed in {index_path}")
 
 
 def cmd_archive(args: argparse.Namespace) -> None:
@@ -180,28 +181,29 @@ def parse_args() -> argparse.Namespace:
     sub = parser.add_subparsers(dest="subcommand", required=True)
 
     # next-id
-    p_next = sub.add_parser("next-id", help="Print next PR number")
+    p_next = sub.add_parser("next-id", help="Print next available ID")
     p_next.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
 
     # add
-    p_add = sub.add_parser("add", help="Add a new PR entry")
+    p_add = sub.add_parser("add", help="Add a new branch entry")
     p_add.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
     p_add.add_argument("--id", type=int, required=True)
+    p_add.add_argument("--branch", default="")
     p_add.add_argument("--title", required=True)
     p_add.add_argument("--type", required=True, dest="type")
     p_add.add_argument("--summary", required=True)
     p_add.add_argument("--task", required=True)
 
     # list-active
-    p_list = sub.add_parser("list-active", help="List active (not completed) PRs")
+    p_list = sub.add_parser("list-active", help="List active (not completed) branches")
     p_list.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
 
     # completed-count
-    p_count = sub.add_parser("completed-count", help="Print count of completed PRs")
+    p_count = sub.add_parser("completed-count", help="Print count of completed entries")
     p_count.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
 
     # set-completed
-    p_set = sub.add_parser("set-completed", help="Mark a PR entry as completed")
+    p_set = sub.add_parser("set-completed", help="Mark a branch entry as completed")
     p_set.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
     p_set.add_argument("--id", type=int, required=True)
 

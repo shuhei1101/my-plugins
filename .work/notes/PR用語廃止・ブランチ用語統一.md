@@ -5,12 +5,14 @@ updates:
   - 2026-05-30 — PR188: work-start の PR 用語をブランチ用語に統一
   - 2026-05-30 — PR190: index.yaml / index.archive.yaml の prs: キーを branches: に改名
   - 2026-05-31 — #230: pr-handoff → branch-reserve、pr-show → branch-show にリネーム
+  - 2026-05-31 — #244: ブランチ文書ファイル名を日本語タイトル基準に変更、index.yaml に branch フィールド追加
 related_specs: []
 related_prs:
   - PR188
   - PR189
   - PR190
   - PR191
+  - "#244"
 ---
 
 # PR用語廃止・ブランチ用語統一
@@ -59,6 +61,16 @@ workspace の work-start スキルを中心に「PR（Pull Request）」とい�
 ### PR191: 既存フォルダ名の統一
 - 8桁 YYYYMMDD → 6桁 YYMMDD 形式に一括リネーム
 - 新規フォルダは日本語名を使う規約を追加
+
+### #244: ブランチ文書ファイル名を日本語タイトル基準に変更
+
+- ファイル名: `{YYMMDD}-{branch-hyphenated}.md` → `{YYMMDD}-{日本語タイトル}.md`
+- テンプレートにブランチ名行 (`> ブランチ: \`{branch-name}\``) を追加（H1 直下）
+- `setup-task.py` に `--ja-title` パラメータ追加
+- `index.yaml` に `branch` フィールド追加（git ブランチ名）
+- `index-tool.py` の `add` サブコマンドに `--branch` パラメータ追加
+- PR 言語をスクリプトのコメント・出力メッセージから除去
+- 関連スキル・フック・リファレンスのパス表記 `{branch-hyphenated}.md` → `{YYMMDD}-{日本語タイトル}.md` に統一
 
 ## 未決定事項
 
