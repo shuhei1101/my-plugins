@@ -101,33 +101,16 @@ model: sonnet
 
 #### 処理
 
-`k` 番目（0-indexed）の発見について、`.work/issues/ISSUE-{START + k}.md` を以下の構造で作成する
-（該当しない行・セクションは省略）:
+`k` 番目（0-indexed）の発見について、`.work/issues/ISSUE-{START + k}.md` を書く。
 
-```markdown
-# ISSUE-{N}: {タイトル}
+ファイル書き込み時に `イシュー記述ルール` リファレンスが自動注入される — **そのフォーマットに正確に
+従う**（`# ISSUE-{N}: {タイトル}` ヘッダ、`Type` / `Priority` / `Created` / `Tags` / `Scan scope`
+メタデータ、`## Problem`、任意の `## Horizontal expansion`、任意の `## Suggested fix`）。
+`Created` の日付は Bash 経由で `date +%Y-%m-%d` を使う。
 
-**Type**: {refactor | rule-violation | ui | backend}
-**Priority**: {high | medium | low}
-**Created**: {YYYY-MM-DD}
-**Tags**: [{タグ}]
-**Scan scope**: {主対象ファイルパス}
-
-## Problem
-
-{何が問題で、なぜかの具体的説明。file:line を引用}
-
-## Horizontal expansion
-
-{同じパターンが他のどこに存在しそうか — 無ければセクションごと省略}
-
-## Suggested fix
-
-{修正の方向性 — 不明ならセクションごと省略}
-```
-
-- `Created` の日付は Bash 経由で `date +%Y-%m-%d` を使う。
-- 問題の詳細説明と修正案は**ファイル内にのみ**書く — 戻り値には含めない。
+- 問題の詳細説明と修正案は**ファイル内にのみ**書く — 戻り値には決して含めない。
+- `_index.yaml` / `_index.archive.yaml` は更新しない。これがリファレンスの「index を更新する」手順から
+  **唯一逸脱する点**: index の管理とコミットはオーケストレーターが行い、あなたは行わない。
 
 #### 出力
 

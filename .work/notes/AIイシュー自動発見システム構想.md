@@ -169,7 +169,7 @@ plugins/html-kit/
 plugins/work-kit/skills/
 ├── ...（既存スキル）
 ├── issue-scan/     # コードベース自動スキャン
-└── issue-create/   # ユーザーの口頭説明からイシューを生成
+└── issue-create/   # ユーザーの口頭説明からイシューを生成（issue-save は廃止、フォーマットは references/issues/イシュー記述ルール.md へ集約）
 ```
 
 ### .work/issues/（対象プロジェクト側・work-kit setup で作成）
@@ -335,13 +335,17 @@ Step 6. スキャン結果をレポート
 
 ---
 
-### `/work-kit:issue-create`
+### `/work:issue-create`
+
+issue-save スキルは廃止。イシューファイルのフォーマット・採番・index 更新は ref-inject の
+`issues/イシュー記述ルール.md` リファレンスが定め、`.work/issues/ISSUE-*.md` を書く際に自動注入される。
+issue-create / issue-scanner はこの注入リファレンスに従って直接ファイルを書く。
 
 ```
 1. ユーザーが困りごとを口頭で説明する
 2. AI が内容を解釈し、独立した問題に分割
-3. 各問題を ISSUE-{N}.md に整形して保存
-4. _index.yaml に追記
+3. 各問題を ISSUE-{N}.md に整形して書き出す（注入される イシュー記述ルール のフォーマットに従う）
+4. _index.yaml に追記（last_id 更新）
 5. 作成したイシュー一覧をレポート
 ```
 

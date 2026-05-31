@@ -37,3 +37,8 @@ rules:
     required:
       - notes/ノート命名規則.md
       - notes/ノート記述内容ルール.md
+
+  # ---- issues/ イシューファイルのフォーマット・採番・index 更新ルール ----
+  - pattern: ".work/issues/**ISSUE-*.md"
+    required:
+      - issues/イシュー記述ルール.md

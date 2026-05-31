@@ -24,3 +24,6 @@ references:
 
   - path: notes/ノート記述内容ルール.md
     description: What to write in a .work/notes/ note, plus the fixed note template. A note is a current spec sheet (snapshot) — write only the present state, no history/rationale in the body; record change only in the trailing 変更履歴 table. No YAML frontmatter.
+
+  - path: issues/イシュー記述ルール.md
+    description: How to write an issue file under .work/issues/ — file naming, ID numbering (last_id in _index.yaml), the issue file format/template, and index updates. Auto-injected when reading, writing, or editing a .work/issues/ISSUE-*.md file.

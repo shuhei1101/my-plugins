@@ -106,34 +106,17 @@ Rules:
 
 #### Process
 
-For finding number `k` (0-indexed), create `.work/issues/ISSUE-{START + k}.md` with this structure
-(omit lines/sections that do not apply):
+For finding number `k` (0-indexed), write `.work/issues/ISSUE-{START + k}.md`.
 
-```markdown
-# ISSUE-{N}: {title}
+Writing the file auto-injects the `イシュー記述ルール` reference — **follow its format exactly**
+(the `# ISSUE-{N}: {title}` header, the `Type` / `Priority` / `Created` / `Tags` / `Scan scope`
+metadata, `## Problem`, optional `## Horizontal expansion`, optional `## Suggested fix`).
+Use `date +%Y-%m-%d` via Bash for the `Created` date.
 
-**Type**: {refactor | rule-violation | ui | backend}
-**Priority**: {high | medium | low}
-**Created**: {YYYY-MM-DD}
-**Tags**: [{tags}]
-**Scan scope**: {primary file path}
-
-## Problem
-
-{concrete description of what is wrong and why, citing file:line}
-
-## Horizontal expansion
-
-{where the same pattern likely appears elsewhere — omit the section if none}
-
-## Suggested fix
-
-{direction for the fix — omit the section if unknown}
-```
-
-- Use `date +%Y-%m-%d` (via Bash) for the `Created` date.
-- The full problem description and suggested fix live **in the file only** — they do not go in your
+- The full problem description and suggested fix live **in the file only** — they never go in your
   return value.
+- Do NOT update `_index.yaml` / `_index.archive.yaml`. This is the **one place you deviate** from the
+  reference's "update the index" step: the orchestrator owns the index and commits, not you.
 
 #### Output
 

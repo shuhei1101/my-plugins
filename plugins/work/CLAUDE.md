@@ -15,13 +15,12 @@ reminds task updates on stop, manages worktrees, and guards force-operations on 
 | 6 | `work:plugin-config` | Interactively configure work env toggles in `settings.json` |
 | 7 | `work:issue-create` | Create issue files under `.work/issues/` |
 | 8 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
-| 9 | `work:issue-save` | Save a one-off issue from conversation |
-| 10 | `work:impl-review` | Review implementation against the branch document |
-| 11 | `work:setup` | Initialize `.work/` directory structure from templates |
-| 12 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
-| 13 | `work:worktree-create` | Create a git worktree for a branch |
-| 14 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
-| 15 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
+| 9 | `work:impl-review` | Review implementation against the branch document |
+| 10 | `work:setup` | Initialize `.work/` directory structure from templates |
+| 11 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
+| 12 | `work:worktree-create` | Create a git worktree for a branch |
+| 13 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
+| 14 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
 
 ## Agents
 
@@ -70,6 +69,7 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
+| 1 | 2.55.0 | 2026-05-31 | Remove `issue-save` skill; move issue file format/numbering into a new `issues/イシュー記述ルール` reference auto-injected on `.work/issues/ISSUE-*.md` edits; `issue-create` and `issue-scanner` write issue files directly per the reference |
 | 1 | 2.54.0 | 2026-05-31 | Redesign `issue-scan` as an orchestrator delegating to parallel `work:issue-scanner` subagents (new agent); scan by perspective (folder/grep/layer/file-group) instead of single file; add `ISSUE_SCAN_AGENTS` env var |
 | 1 | 2.53.1 | 2026-05-31 | Split `references/` into category subfolders: `notes/`, `work-dir/`, `skill-sync/` |
 | 2 | 2.53.0 | 2026-05-31 | Redefine notes as a current spec sheet (snapshot; no history in the body, `## 変更履歴` table only, no frontmatter); add `ノート記述内容ルール` reference; merge `.work/specs` into notes and remove the folder |

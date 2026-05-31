@@ -22,3 +22,6 @@ references:
 
   - path: notes/ノート記述内容ルール.md
     description: .work/notes/ のノートに書く内容と固定ノートテンプレート。ノートは現在の仕様書（スナップショット） — 本文には現在状態のみを書き履歴・理由は書かない。変更は末尾の変更履歴テーブルにのみ残す。YAML frontmatter は付けない。
+
+  - path: issues/イシュー記述ルール.md
+    description: .work/issues/ 配下のイシューファイルの書き方 — ファイル命名・採番（_index.yaml の last_id）・イシューファイルのフォーマット/テンプレート・index 更新。.work/issues/ISSUE-*.md を読み・書き・編集する際に自動注入される。
