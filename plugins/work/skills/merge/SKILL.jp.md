@@ -94,27 +94,22 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
    通常は `master`。`develop` ベースのブランチなら `develop`。
    不明な場合は Step 7 を参照（Step 7 でマージ実行前に親ブランチを確認する）。
 
-2. マージ先ブランチに新しいコミットがあるかどうかを確認：
-
-```bash
-git -C {WORKTREE_PATH} log HEAD..<PARENT_BRANCH> --oneline
-```
-
-出力がない場合 → マージ先ブランチは移動していません。Step 4 にスキップしてください。
-
-3. マージ先ブランチをこのブランチに取り込む：
+2. 常にマージ先ブランチをこのブランチに取り込む — **事前の `git log` チェックやスキップは禁止**：
 
 ```bash
 git -C {WORKTREE_PATH} merge <PARENT_BRANCH>
 ```
 
-4. マージがクリーンに完了したか確認：
+   既に最新の場合は harmless な no-op（`Already up to date.`）で終わる。
+   新コミットがある状態でスキップすると、コンフリクトが master 上で表面化してしまう。
+
+3. マージがクリーンに完了したか確認：
 
 ```bash
 git -C {WORKTREE_PATH} status
 ```
 
-   - **コンフリクトなし**（クリーンなマージ）→ Step 4 に進む
+   - **コンフリクトなし**（クリーンなマージ / `Already up to date.`）→ Step 4 に進む
    - **コンフリクトあり** → ここで停止。コンフリクトが発生しているファイルをユーザーに報告し、
      手動での解消を待ってから続行
 
@@ -125,6 +120,7 @@ git -C {WORKTREE_PATH} status
 ##### 禁止事項
 
 - このステップをスキップしない — マージ先に戻す前にマージ先ブランチの内容を取り込むことは必須
+- **`git log` の出力を見てスキップを判断することを禁止** — `git merge <PARENT_BRANCH>` は必ず無条件で実行する
 
 ### ステップ 4: 関連イシューをクローズ（ワークツリー内）
 
@@ -262,6 +258,8 @@ git -C {WORKTREE_PATH} commit -m "chore: archive to index.archive.yaml"
 > このスキルが **ユーザーの最新メッセージで** 実行された場合のみマージしてください。
 > スキルコンテキストが前のターンから残っている場合（現在のメッセージからではない）、
 > マージしないでください — 前の実行の許可は引き継がれません。
+
+> **このステップを実行する前に、Step 3 がクリーンに完了していること。** ワークツリー内で `git merge <PARENT_BRANCH>` が実行され、コンフリクトなし（クリーンなマージ / `Already up to date.`）と確認されている必要がある。Step 3 がスキップされた、またはコンフリクトが未解消の場合は進まず、先に Step 3 を修正すること。
 
 #### 処理
 
