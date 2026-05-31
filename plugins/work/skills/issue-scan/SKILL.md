@@ -149,7 +149,7 @@ references and records discovered problems via `/work:issue-save`.
 #### Process
 
 1. For each discovered problem, invoke `/work:issue-save`:
-   - Pass title / type / priority / tags / scope (= chosen file path) / problem description / horizontal expansion notes / suggested fix
+   - Pass title / type / priority / tags / scope (= chosen file path) / problem description / suggested fix / horizontal expansion notes
    - Collect the ISSUE IDs returned by issue-save
 
 → Proceed to Step 6

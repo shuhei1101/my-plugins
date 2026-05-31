@@ -23,9 +23,9 @@ Called by `issue-scan` and `issue-create` with the issue information to record.
 - Tags (optional): list of relevant keywords — recorded in `_index.yaml` only
 - Scan scope (optional): which file or layer was scanned (provided by issue-scan) — recorded in `_index.yaml` only
 - Problem description (required): explanation of what the problem is
-- Horizontal expansion (optional): notes on whether the same problem exists elsewhere in the codebase (provided by issue-scan)
-- User's words (optional): quote from the user's input (provided by issue-create)
 - Suggested fix (optional): direction for a fix — omit if unknown
+- Horizontal expansion (optional): notes on whether the same problem exists elsewhere in the codebase (provided by issue-scan)
+- Related documents (optional): links to relevant references or notes
 
 **Return value**: the created issue ID (e.g. `ISSUE-003`), returned to the caller
 
@@ -92,17 +92,17 @@ Called by `issue-scan` and `issue-create` with the issue information to record.
 
    {問題の説明}
 
-   ## 水平展開
-
-   {水平展開メモ}   ← 提供されなかった場合はこのセクション自体を省略
-
    ## 修正案
 
    {修正案}   ← 提供されなかった場合はこのセクション自体を省略
 
-   ## ユーザーの言葉
+   ## 水平展開
 
-   {ユーザーの言葉}   ← 提供されなかった場合はこのセクション自体を省略
+   {水平展開メモ}   ← 提供されなかった場合はこのセクション自体を省略
+
+   ## 関連ドキュメント
+
+   {関連リファレンス・ノートへのリンク}   ← 提供されなかった場合はこのセクション自体を省略
    ```
 
 → Proceed to Step 4
