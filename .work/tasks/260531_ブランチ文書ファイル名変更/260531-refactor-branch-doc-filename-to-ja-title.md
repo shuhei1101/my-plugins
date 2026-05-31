@@ -17,14 +17,14 @@
 |---|---|---|
 | 1 | 済 | QA を `## QA` に記録する |
 | 2 | 済 | `.work/notes/` のノートを更新する |
-| 3 | - | テンプレートファイルを `yymmdd-日本語タイトル.md` にリネームし、ブランチ名行を追加 |
-| 4 | - | `setup-task.py` に `--ja-title` パラメータを追加し日本語タイトルをファイル名に使用 |
-| 5 | - | `index-tool.py` に `--branch` パラメータを追加し PR 言語を修正 |
-| 6 | - | `index.yaml` / `index.archive.yaml` テンプレートを修正（PR → ブランチ、branch フィールド追加） |
-| 7 | - | `skills/start/SKILL.md` を更新（ファイル名説明・コマンド例・Step 2 に日本語タイトル収集を追加） |
-| 8 | - | 関連スキル・フック・リファレンスの `{branch-hyphenated}.md` パス表記を全件更新 |
-| 9 | - | JP ミラーも同様に更新 |
-| 10 | - | `CLAUDE.md` の changelog に追記 |
+| 3 | 済 | テンプレートファイルを `yymmdd-日本語タイトル.md` にリネームし、ブランチ名行を追加 |
+| 4 | 済 | `setup-task.py` に `--ja-title` パラメータを追加し日本語タイトルをファイル名に使用 |
+| 5 | 済 | `index-tool.py` に `--branch` パラメータを追加し PR 言語を修正 |
+| 6 | 済 | `index.yaml` / `index.archive.yaml` テンプレートを修正（PR → ブランチ、branch フィールド追加） |
+| 7 | 済 | `skills/start/SKILL.md` を更新（ファイル名説明・コマンド例・Step 2 に日本語タイトル収集を追加） |
+| 8 | 済 | 関連スキル・フック・リファレンスの `{branch-hyphenated}.md` パス表記を全件更新 |
+| 9 | 済 | JP ミラーも同様に更新 |
+| 10 | 済 | `CLAUDE.md` の changelog に追記 |
 | 11 | - | rules / CLAUDE.md を更新する |
 
 ## 変更内容
@@ -33,7 +33,27 @@
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | `{file/path}` | 新規 | {このファイルで何を実装したか} | {補足あれば} |
+| 1 | `plugins/work/templates/.work/tasks/yymmdd_xxx/yymmdd-日本語タイトル.md` | 新規（リネーム） | ブランチ文書テンプレート。ブランチ名行を追加 | `yymmdd-branch-name.md` からリネーム |
+| 2 | `plugins/work/scripts/setup-task.py` | 編集 | `--ja-title` パラメータ追加、`{日本語タイトル}` / `{branch-name}` プレースホルダー対応 | - |
+| 3 | `plugins/work/scripts/index-tool.py` | 編集 | `--branch` パラメータ追加、PR 言語をブランチ用語に統一 | - |
+| 4 | `plugins/work/templates/.work/tasks/index.yaml` | 編集 | PR 表記修正、branch フィールド追加、YYYYMMDD→YYMMDD 修正 | - |
+| 5 | `plugins/work/templates/.work/tasks/index.archive.yaml` | 編集 | 同上 | - |
+| 6 | `plugins/work/skills/start/SKILL.md` | 編集 | Step 2 に日本語タイトル収集追加、Step 3/6/7 をファイル名変更に合わせて更新 | - |
+| 7 | `plugins/work/skills/start/SKILL.jp.md` | 編集 | 〃 | - |
+| 8 | `plugins/work/skills/branch-reserve/SKILL.md` | 編集 | ブランチ文書パス表記を更新 | - |
+| 9 | `plugins/work/skills/branch-reserve/SKILL.jp.md` | 編集 | 〃 | - |
+| 10 | `plugins/work/skills/merge/SKILL.md` | 編集 | ブランチ文書パス表記を全件更新 | 3 箇所 |
+| 11 | `plugins/work/skills/merge/SKILL.jp.md` | 編集 | 〃 | - |
+| 12 | `plugins/work/skills/qa-review/SKILL.md` | 編集 | ブランチ文書パス表記を更新 | - |
+| 13 | `plugins/work/skills/qa-review/SKILL.jp.md` | 編集 | 〃 | - |
+| 14 | `plugins/work/hooks/prompts/user-prompt-submit.md` | 編集 | ブランチ文書パス表記を更新 | - |
+| 15 | `plugins/work/hooks/prompts/user-prompt-submit.jp.md` | 編集 | 〃 | - |
+| 16 | `plugins/work/references/work-dot-work-dir.md` | 編集 | ディレクトリ構成表とテキストのパス表記を更新 | - |
+| 17 | `plugins/work/references/work-dot-work-dir.jp.md` | 編集 | 〃 | - |
+| 18 | `plugins/work/references/work-start-skill-sync.md` | 編集 | PR 言語をブランチ用語に修正 | - |
+| 19 | `plugins/work/references/work-start-skill-sync.jp.md` | 編集 | 〃 | - |
+| 20 | `plugins/work/CLAUDE.md` | 編集 | Branch Document Structure のパス・changelog 追記 | - |
+| 21 | `plugins/work/CLAUDE.jp.md` | 編集 | 〃 | - |
 
 ## テスト
 
