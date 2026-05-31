@@ -1,16 +1,12 @@
-# ノート仕様書化とフォルダ構成REF-inject移行
+# ノート再定義とspecs統合（現在の仕様書化）
 
 > ブランチ: `refactor/notes-spec-and-ref-inject`
 
 ## 概要
 
-work プラグインの `.work/` 運用とリファレンス構成を、以下の方針で全面的に見直す大規模リファクタ。
+ノートの意味を「現在の仕様書（スナップショット）」へ再定義し、`.work/specs/` を `.work/notes/` へ統合して廃止する。本ブランチは一連の大規模リファクタの**起点**であり、references / notes のカテゴリフォルダ化、templates 廃止＆タスク生成の REF-inject 化は後続ブランチへ分離した（`## 次ブランチ候補` 参照）。
 
-1. **`.work/specs/` 廃止** — 内容を `.work/notes/` へ統合し、specs フォルダを削除する。
-2. **ノートの意味を「現在の仕様書」に再定義** — ノートは「今どういう仕様・構成か」だけを書くスナップショット仕様書とする。過去の履歴・経緯・「なぜこうなったか」は書かない。何かが変わったら古い記述はさっぱり消して上書きする。
-3. **`plugins/work/references/` をカテゴリフォルダ化** — 平置きのリファレンスをカテゴリ別サブフォルダに分け、`_index.md` も合わせて分割する。
-4. **`.work/notes/` をカテゴリフォルダ化** — `_index.md` のカテゴリごとに日本語名サブフォルダを切り、各ノートを振り分ける。
-5. **`plugins/work/templates/` 廃止** — 固定テンプレート方式をやめ、フォルダ構成・配置ルールを REF-inject（リファレンス自動注入）で定義する。「対象フォルダ配下を編集したら構成定義リファレンスが注入される」形にする。`setup` / `start` スキルと `setup.py` / `setup-task.py` を、テンプレートに依存せず Claude が 1 から生成する形へ改修する。
+**ノートの新しい意味**: ノートは「今どういう仕様・構成になっているか」だけを書くスナップショット仕様書。本文には過去の経緯・「なぜこうなったか」を書かない。何かが変わったら本文の古い記述はさっぱり消して上書きする。変更の足跡は末尾の `## 変更履歴` テーブルにのみ残す。
 
 ### 実施条件
 
@@ -18,26 +14,24 @@ work プラグインの `.work/` 運用とリファレンス構成を、以下�
 
 ## 作業内容
 
-> QA-001〜QA-003 を解決してから Phase 1 以降に着手する。
-
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | `## QA` の未解決事項（ノートテンプレート案・specs 統合方針・カテゴリ分類）をユーザーと解決する |
-| 2 | - | このブランチの作業を `.work/notes/` の関連ノートへ反映する |
-| 3 | - | **Phase 1**: `references/` をカテゴリフォルダ化（`notes/` `work-dir/` `skill-sync/`）。`.md`/`.jp.md` 移動、`_index.yaml`/`_index.jp.yaml`/`_injection_rules.yaml` のパス更新、`_index.md` 再構成、`inject_references.py` の解決確認 |
-| 4 | - | **Phase 2**: ノートを「現在の仕様書」に再定義。`work-dot-work-dir.md` の notes 節を全面改稿（旧 lifecycle / `notes-to-claude` 記述削除）。`notes-naming-rules.md` 改稿。新規 `notes-content-rules.md`（ノートに書く内容のルール＋固定テンプレート）作成。各 `.jp.md` ミラーも更新 |
-| 5 | - | **Phase 3**: `.work/notes/` を日本語カテゴリフォルダ化。各ノートを振り分け移動し `_index.md` をフォルダ構成に合わせて更新。frontmatter の履歴（`created_at`/`updates`）を除去 |
-| 6 | - | **Phase 4**: `.work/specs/*` を 1 件ずつ精査し、notes 未収録の内容を新スタイルでノート化。`.work/specs/` 削除。`work-merge-skill-sync.md` 等の specs 参照を notes へ付け替え |
-| 7 | - | **Phase 5**: `plugins/work/templates/` 削除。`setup.py` をテンプレート非依存の dir 生成へ改修。`setup-task.py` をブランチ文書インライン生成へ改修。`setup`/`start`/`plugin-migrate` スキル改修。`.work/` 各フォルダの構成定義 REF-inject ルール追加。`work-todo-template-sync.md` の扱い見直し |
-| 8 | - | CLAUDE.md（changelog・スキル表）更新、バージョン bump、全体整合チェック |
+| 1 | 済 | `## QA`（テンプレート案・specs統合方針・カテゴリ分類）をユーザーと解決する |
+| 2 | - | 本ブランチの作業を `.work/notes/` の関連ノートへ反映する |
+| 3 | - | `work-dot-work-dir.md` の `notes/` 節を全面改稿（旧 lifecycle・廃止済み `notes-to-claude` 記述を削除、「現在の仕様書」定義へ）。`.jp.md` も更新 |
+| 4 | - | `notes-naming-rules.md` を改稿（命名規則は維持しつつ「現在の仕様書」前提に。`_index.md` 規則も）。`.jp.md` も更新 |
+| 5 | - | 新規 `notes-content-rules.md` 作成（ノートに書く内容のルール＋固定テンプレート）。`.jp.md` も。`_index.yaml`/`_index.jp.yaml`/`_injection_rules.yaml` 登録 |
+| 6 | - | `.work/specs/*`（20件）を精査し、現在仕様として有用な内容を新スタイルでノート化。既存 notes・本体ドキュメントで賄えるものは破棄（破棄リストを下記に記録） |
+| 7 | - | `.work/specs/` 削除。`work-merge-skill-sync.md` の `.work/specs/work-kit-merge-flow.md` 参照を notes へ付け替え |
+| 8 | - | `_index.md` 更新、CLAUDE.md changelog 更新、バージョン bump |
 
 ## 変更内容
 
-実装したファイル（テスト以外）。コミットに積まれる全ファイルを列挙する。Phase 着手時に記入する。
+実装したファイル（テスト以外）。コミットに積まれる全ファイルを列挙する。
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | (Phase 着手時に記入) | - | - | - |
+| 1 | (着手時に記入) | - | - | - |
 
 ## テスト
 
@@ -45,95 +39,72 @@ work プラグインの `.work/` 運用とリファレンス構成を、以下�
 
 | # | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | `inject_references.py` がサブフォルダ配下のリファレンスを正しく注入する | (未実施) | - |
-| 2 | `setup.py` がテンプレート無しで `.work/` を生成する | (未実施) | - |
-| 3 | `setup-task.py` がテンプレート無しでブランチ文書を生成する | (未実施) | - |
+| 1 | `inject_references.py` が新規 `notes-content-rules.md` を `.work/notes/**` 編集時に注入する | (未実施) | - |
 
 ## QA
 
-このブランチのスコープの未決定事項を QA-XXX として記録する。決定後は本文の該当箇所に反映する。
+### QA-001: ノートの新「現在の仕様書」テンプレート（解決済）
 
-### QA-001: ノートの新「現在の仕様書」テンプレート案
-
-**背景**: ノートの意味を「現在の仕様書（スナップショット）」に変える。固定テンプレートを 1 つ用意したい（ユーザーが案を要望）。履歴・経緯・理由は書かず、今の状態だけを書く形にする。frontmatter の `created_at`/`updates` は履歴なので廃止する。
-
-| # | 案 | 内容 |
-|---|---|---|
-| 1 | A（推奨） | 下記の 3 セクション構成。frontmatter 無し |
-| 2 | B | frontmatter に `related`（関連パス）だけ残し、本文は A と同じ |
-
-**案 A テンプレート**:
+**決定**: frontmatter は使わない（人がレビューする `.jp` ミラー等で frontmatter が見えにくいため）。構成は以下。本文は現在状態のみ。変更の足跡は末尾 `## 変更履歴` テーブルに集約し、`関連タスク` 列にはタスクフォルダ名（git ブランチ名ではない）を書く。
 
 ```markdown
 # {対象名} — {一行サマリ}
-
-> 関連: `path/to/related`, `skill-name`（任意・無ければ削除）
 
 ## 概要
 
 これは何か。今どういう仕様・構成になっているかを 1〜3 行で。
 
-## 仕様
+## {セクション名（自由）}
 
-今の状態だけを箇条書き／表で記述する。
-過去の経緯・変更履歴・「なぜこうなったか」は書かない。
-
-## 補足
-
-既知の制約・注意点があれば。なければセクションごと削除。
-```
-
-**推奨方式**: A。frontmatter は履歴を誘発しやすく「現在の仕様書」の意図に反するため持たない。関連リンクは本文冒頭の `> 関連:` 行で十分。
-
-**状態**: 未解決
-
-**決定したら反映先**: `references/notes/notes-content-rules.md`（新規）＋ `work-dot-work-dir.md` の notes 節
-
-### QA-002: specs の notes 統合方針
-
-**背景**: `.work/specs/` には 20 件の設計仕様書がある。多くは既に実装・出荷済みのプラグイン機能の仕様。「notes に未収録の内容だけ notes 側に合わせる」方針。だが旧 specs は履歴込みで、新ノート方針（現在仕様のみ）と相反する。
-
-| # | 案 | 内容 |
-|---|---|---|
-| 1 | A（推奨） | specs を 1 件ずつ精査。現行プラグインの「今の仕様」として有用なものだけ新スタイルのノートに書き起こす（履歴は捨てる）。既に notes やプラグイン本体ドキュメントで賄えているものは破棄。判断は Claude が自律的に行い、結果を報告 |
-| 2 | B | specs を機械的に全件 notes へ移動してから内容整理 |
-
-**推奨方式**: A。現在仕様として価値があるものだけを残す方が「現在の仕様書」方針に合致する。破棄したものは一覧で報告する。
-
-**状態**: 未解決
-
-**決定したら反映先**: `.work/notes/`（カテゴリ別）＋ 破棄リストを本ドキュメントに記録
-
-### QA-003: カテゴリ分類
-
-**背景**: references と notes をカテゴリフォルダ化する。フォルダ名を確定したい。
-
-| # | 案 | 内容 |
-|---|---|---|
-| 1 | A（推奨） | references: `notes/` `work-dir/` `skill-sync/`（英語）。notes: 既存 `_index.md` の 7 カテゴリの日本語名（フック・自動化 / スキル設計 / プラグイン構成・統合 / 環境・設定・ポリシー / バグ・不具合 / ワークフロー・マージ / 構想・企画）＋ specs 統合で必要なら追加 |
-
-**推奨方式**: A。references は英語フォルダ（既存 `.md` 命名に合わせる）、notes はユーザー指定どおり日本語フォルダ。
-
-**状態**: 未解決
-
-**決定したら反映先**: `references/` 配下フォルダ構成 ＋ `.work/notes/` 配下フォルダ構成
+今の状態だけを箇条書き／表で記述する。経緯・「なぜこうなったか」は書かない。
 
 ## 参考ドキュメント
 
-- `plugins/work/references/work-dot-work-dir.md`: `.work/` 構成定義（今回 notes 節を全面改稿）
-- `plugins/work/references/notes-naming-rules.md`: ノート命名・index 規則（今回改稿）
+- `path/to/related`: 何の資料か
+
+## 変更履歴
+
+| # | 日付 | 変更内容 | 関連タスク |
+|---|---|---|---|
+| 1 | 260531 | 新規作成 | 260531_notes-spec-and-ref-inject |
+```
+
+**状態**: 解決済
+
+**反映先**: `references/notes-content-rules.md`（新規）＋ `work-dot-work-dir.md` の notes 節
+
+### QA-002: specs の notes 統合方針（解決済）
+
+**決定**: 案 A。specs を 1 件ずつ精査し、現在仕様として有用な内容だけ新スタイルでノート化（履歴は捨てる）。既に notes・本体ドキュメントで賄えるものは破棄し、破棄リストを報告する。
+
+**状態**: 解決済
+
+**反映先**: `.work/notes/`（当面フラット。フォルダ化は後続 B2）
+
+### QA-003: カテゴリ分類とブランチ分割（解決済）
+
+**決定**: 推奨案（references=英語フォルダ `notes/`/`work-dir/`/`skill-sync/`、notes=既存 `_index.md` の日本語カテゴリ）。ただしカテゴリ化作業自体は別ブランチへ分離（B1・B2）。タスクフォルダ日本語名化も別ブランチ（B3）。順序は `## 次ブランチ候補` のとおり。
+
+**状態**: 解決済
+
+**反映先**: `## 次ブランチ候補`
+
+## 参考ドキュメント
+
+- `plugins/work/references/work-dot-work-dir.md`: `.work/` 構成定義（notes 節を全面改稿）
+- `plugins/work/references/notes-naming-rules.md`: ノート命名・index 規則（改稿）
 - `plugins/work/references/.ref-injects/_injection_rules.yaml`: REF-inject パターン定義
 
 ## 関連ブランチ
 
-直接関連するブランチ（先行・分割兄弟・後続）を列挙する。
-
 | # | ブランチ | 概要 |
 |---|---|---|
-| 1 | refactor/branch-doc-filename-to-ja-title | 直前ブランチ。ブランチ文書ファイル名を日本語タイトル基準に変更（前提となる現行仕様） |
+| 1 | refactor/branch-doc-filename-to-ja-title | 直前ブランチ。ブランチ文書ファイル名を日本語タイトル基準に変更 |
 
 ## 次ブランチ候補
 
 | # | タイトル | 概要 | 実施条件 |
 |---|---|---|---|
-| 1 | 既存ノート全件の新スタイル書き換え | Phase 5 まででルール・構成は整うが、既存 39 ノートの本文を「現在の仕様書」スタイルへ揃える作業は分量が大きいため別ブランチ化を検討 | 「本ブランチ」が完了したら |
+| 1 | references カテゴリ化 | `plugins/work/references/` を `notes/`・`work-dir/`・`skill-sync/` のサブフォルダに分割。`_index.yaml`/`_index.jp.yaml`/`_injection_rules.yaml` のパス更新、`_index.md` 再構成、`inject_references.py` の解決確認。※master で既に一部実施済みの可能性あり要確認 | 「本ブランチ」が完了したら |
+| 2 | notes カテゴリ化 | `.work/notes/` を `_index.md` のカテゴリごとに日本語名サブフォルダへ分割。各ノート移動、`_index.md` 追従、frontmatter 履歴除去 | 「本ブランチ」が完了したら（references カテゴリ化と並行可） |
+| 3 | templates廃止＋タスク生成REF-inject化＋タスクフォルダ日本語名化 | `plugins/work/templates/` 削除。`setup.py`/`setup-task.py`/`setup`/`start`/`plugin-migrate` をテンプレート非依存・REF-inject 参照へ改修。`.work/` 各フォルダの構成定義リファレンスを追加し編集時に注入。`.work/tasks/` のタスクフォルダ名を日本語化（生成ロジック・start/setup スキル・リファレンスを合わせて修正） | 「references カテゴリ化」が完了したら |
