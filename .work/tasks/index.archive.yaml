@@ -1130,3 +1130,10 @@ branches:
   summary: 全4プラグインに必須の setup-wizard スキルを追加する
   task: 260531_setup-wizard-skill
   completed: true
+- branch: docs/issue-problem-flow-fix-table
+  created: '2026-05-31'
+  title: イシューテンプレート問題手順・修正案テーブル化
+  type: docs
+  summary: イシューテンプレートの問題セクションに発生手順を追加し、修正案セクションをメリデメ表形式に改善
+  task: 260531_イシューテンプレート問題手順・修正案テーブル化
+  completed: true
