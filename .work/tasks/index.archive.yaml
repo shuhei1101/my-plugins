@@ -1137,3 +1137,10 @@ branches:
   summary: イシューテンプレートの問題セクションに発生手順を追加し、修正案セクションをメリデメ表形式に改善
   task: 260531_イシューテンプレート問題手順・修正案テーブル化
   completed: true
+- branch: fix/jp-mirror-toml-blank-lines
+  created: '2026-05-31'
+  title: JPミラーTOMLコードブロック空行修正
+  type: fix
+  summary: pyproject設定.jp.md のTOMLコードブロック内セクション区切り前の空行を英語ソースに合わせて2行に修正
+  task: 260531_JPミラーTOMLコードブロック空行修正
+  completed: true
