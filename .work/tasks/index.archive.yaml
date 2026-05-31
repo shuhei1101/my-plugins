@@ -1040,3 +1040,31 @@ branches:
   summary: claude-kit プラグインの規約に合わせてリポジトリ内の成果物を同期する
   task: 260531_claude-kit成果物同期
   completed: true
+- id: 238
+  title: fix/merge-skill-commit-order
+  type: fix
+  tags: []
+  summary: work:merge の Step 10/11 順序入れ替えでコミット分離を解消
+  task: 260531_merge-skill-commit-order
+  completed: true
+- id: 240
+  title: fix/merge-skill-branch-first
+  type: fix
+  tags: []
+  summary: mergeスキルがmasterに直接コンフリクトを流し込む問題を修正
+  task: 260531_merge-skill-branch-first
+  completed: true
+- id: 239
+  title: chore/sync-ref-inject-template
+  type: chore
+  tags: []
+  summary: ref-inject テンプレートをコンシューマーの最新版に同期し _common.py コメントも更新
+  task: 260531_ref-inject-テンプレート同期
+  completed: true
+- id: 233
+  title: chore/update-branch-doc-h1-title
+  type: chore
+  tags: []
+  summary: ブランチドキュメントの H1 をブランチ名からタイトル（日本語）に変更
+  task: 260531_work-template-update
+  completed: true

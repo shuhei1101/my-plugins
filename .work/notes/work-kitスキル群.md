@@ -7,6 +7,8 @@ updates:
   - 2026-05-30 — PR172: プラグインを work-kit → workspace にリネーム、env var も WORK_KIT_* → WORKSPACE_* に変更
   - 2026-05-31 — #219: merge スキル Step 3 を master 取り込み必須フローに変更
   - 2026-05-31 — #226: タスクドキュメントのファイル名に日付プレフィックスを追加、作業内容テーブル構造を改訂
+  - 2026-05-31 — #238: merge スキル Step 11（branch-reserve 呼び出し）を Step 10（完了報告）より前に移動しコミット分離を解消
+  - 2026-05-31 — #240: merge スキル Step 3 の git コマンドにワークツリーパスを明示（実行コンテキスト不明による master 汚染を防止）
 related_prs:
   - PR91
   - PR109
@@ -85,6 +87,27 @@ work-start Step 4 がこの env var を読んで分岐する（従来の「workt
 3. コンフリクトなし → Step 4 へ進む
 4. コンフリクトあり → ユーザーに報告して停止（手動解消を待つ）
 
+## merge スキル — Step 10/11 順序入れ替え（#238）
+
+### 問題
+
+`work:merge` の Step 10（完了報告）でターンが終了するため、その後のストップフックが
+`notify-aituber` を呼んで新ターンが開始される。このため、Step 11（`branch-reserve` →
+`work:start`）で発生するノートコミットが次のターンに分離してしまっていた。
+
+### 変更
+
+Step 11（`branch-reserve` 自動呼び出し）を Step 10（完了報告）より前に移動。
+
+| 変更前 | 変更後 |
+|---|---|
+| Step 9: QA確認・コミット | Step 9: QA確認・コミット（変更なし） |
+| Step 10: 完了報告 → ターン終了 | Step 10: branch-reserve 呼び出し（ノートコミット） |
+| Step 11: branch-reserve（次ターンで実行） | Step 11: 完了報告 → ターン終了 |
+| Step 12: branch-show | Step 12: branch-show |
+
+これにより全コミットがターン終了前に完了し、ストップフック後のターンではコミットが発生しなくなる。
+
 ## タスクドキュメントのファイル命名規則（#226）
 
 ### 変更前
@@ -104,6 +127,31 @@ work-start Step 4 がこの env var を読んで分岐する（従来の「workt
 - `plugins/work/templates/.work/tasks/yymmdd_xxx/type-title.md` → `yymmdd-branch-name.md` にリネーム
 - `plugins/work/scripts/setup-task.py`: ファイル名生成ロジックと参照テンプレートパスを更新
 - `plugins/work/skills/start/SKILL.md` / `SKILL.jp.md`: 命名規則説明とテーブル仕様を更新
+
+## ブランチドキュメントの H1 をタイトル（日本語）に変更（#233）
+
+### 変更前
+
+```markdown
+# chore/update-branch-doc-h1-title
+```
+
+H1 見出しにブランチ名（`{type}/{title}`）を機械的に埋め込んでいた。
+
+### 変更後
+
+```markdown
+# {日本語タイトル}
+```
+
+H1 はそのブランチ作業を表す日本語タイトルを書くプレースホルダーに変更。
+`work:start` の Step 7 で Claude が適切な日本語タイトルを記入する。
+
+### 変更ファイル
+
+- `plugins/work/templates/.work/tasks/yymmdd_xxx/yymmdd-branch-name.md`: H1 プレースホルダーを変更
+- `plugins/work/scripts/setup-task.py`: `{ブランチ名}` 置換エントリを削除
+- `plugins/work/skills/start/SKILL.md` / `SKILL.jp.md`: Step 7 に H1 記入指示を追記
 
 ## plugin-update スキルと .work/ テンプレート同期（#232）
 

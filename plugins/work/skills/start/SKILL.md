@@ -92,7 +92,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --id {N} \
-  --title "{type}/{title}" \
+  --title "{branch}" \
   --type {type} \
   --summary "{summary}" \
   --task "{YYMMDD}_{title}"
@@ -241,9 +241,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Process
 
-Open the created `{YYMMDD}-{type}-{title}.md` in the worktree and replace the template placeholder content
+Open the created `{YYMMDD}-{branch-hyphenated}.md` in the worktree and replace the template placeholder content
 with the actual plan. The document holds every section for this branch — TODO, variations, QA, and
 references — all in one file.
+
+**`# タイトル`（H1）** — write a descriptive Japanese title for this branch work (not the branch name). Example: `# ブランチドキュメントの H1 をタイトルに変更`
 
 **`## 概要`** — write the goal / background, plus the `### 実施条件` sub-section:
 
@@ -328,7 +330,7 @@ follow-ups) (table format: `| # | ブランチ | 概要 |`). Leave the placehold
 
 #### Process
 
-1. Commit all created files inside the worktree (branch: `{type}/{title}`)
+1. Commit all created files inside the worktree (branch: `{branch}`)
 2. Report what was created: branch name, worktree path, branch document path, note path
 3. Start implementation:
    - **If QA entries exist** → ask the user for confirmation before starting
@@ -338,7 +340,7 @@ follow-ups) (table format: `| # | ブランチ | 概要 |`). Leave the placehold
 
 ##### Prohibitions
 
-- Never commit to anywhere other than the created worktree (`{type}/{title}` branch)
+- Never commit to anywhere other than the created worktree (`{branch}` branch)
 
 ##### Commit granularity
 

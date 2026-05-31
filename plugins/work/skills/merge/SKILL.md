@@ -73,13 +73,15 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### Step 3: Merge the target branch into this branch
+### Step 3: Merge the target branch into this branch (inside the worktree)
 
 #### Condition
 
 - Step 2 complete
 
 #### Process
+
+All commands in this step must be run **inside the worktree** (`{WORKTREE_PATH}`), not in the main repository.
 
 1. Identify the merge target branch (`PARENT_BRANCH`) — the branch this branch will be merged into.
    In most cases this is `master`; for feature branches off `develop` it is `develop`.
@@ -88,7 +90,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 2. Check whether the target branch has new commits since this branch diverged:
 
 ```bash
-git log HEAD..<PARENT_BRANCH> --oneline
+git -C {WORKTREE_PATH} log HEAD..<PARENT_BRANCH> --oneline
 ```
 
 If no output → the target branch has not moved; skip to Step 4.
@@ -96,13 +98,13 @@ If no output → the target branch has not moved; skip to Step 4.
 3. Merge the target branch into this branch:
 
 ```bash
-git merge <PARENT_BRANCH>
+git -C {WORKTREE_PATH} merge <PARENT_BRANCH>
 ```
 
 4. Check whether the merge completed cleanly:
 
 ```bash
-git status
+git -C {WORKTREE_PATH} status
 ```
 
    - **No conflicts** (clean merge) → proceed to Step 4
@@ -291,28 +293,28 @@ git commit -m "docs: post-merge update"
 
 ---
 
-### Step 10: Report merge completion
-
-#### Process
-
-1. Report the merge as complete to the user
-   - Include the merged branch name, internal ID, and task folder
-
-→ Proceed to Step 11
-
----
-
-### Step 11: Delegate next branch candidates to branch-reserve
+### Step 10: Delegate next branch candidates to branch-reserve
 
 #### Condition
 
-- `WORK_MERGE_AUTO_HANDOFF` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip this step and proceed to Step 12
+- `WORK_MERGE_AUTO_HANDOFF` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip this step and proceed to Step 11
 
 #### Process
 
 1. Read the merged branch document and inspect its `## 次ブランチ候補` section
 2. **If next branch candidates exist**: invoke `/work:branch-reserve` (no user confirmation needed). Delegate all classification and reservation logic to that skill
 3. **If next branch candidates are empty**: skip branch-reserve
+
+→ Proceed to Step 11
+
+---
+
+### Step 11: Report merge completion
+
+#### Process
+
+1. Report the merge as complete to the user
+   - Include the merged branch name and task folder
 
 → Proceed to Step 12
 
