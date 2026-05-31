@@ -21,7 +21,7 @@ references:
     description: .work/tasks/index.yaml（進行中ブランチ索引・git 管理外）と index.archive.yaml（アーカイブ済み）のスキーマ。通常は index-tool.py と merge スキルが管理する。
 
   - path: work-dir/イシュー.md
-    description: イシューファイル構成（.work/issues/ISSUE-{N}.md）と _index.yaml / _index.archive.yaml スキーマ。issue-save / issue-scan / issue-create がこのテンプレートからイシューファイルを作成する。
+    description: イシューファイル構成（.work/issues/ISSUE-{N}.md）と _index.yaml / _index.archive.yaml スキーマ。issue-scan / issue-create がこのテンプレートからイシューファイルを作成する。
 
   - path: notes/ノート命名規則.md
     description: .work/notes/ ファイルの命名・インデックス管理ルール。ファイル名と H1 タイトルは日本語（技術識別子はそのまま）。ノートを新規作成・リネーム・削除したときは同じコミットで _index.md も更新する。

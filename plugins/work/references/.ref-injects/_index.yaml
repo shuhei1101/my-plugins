@@ -23,7 +23,7 @@ references:
     description: Schema for .work/tasks/index.yaml (active branch index, git-ignored) and index.archive.yaml (archived branches). Normally maintained by index-tool.py and the merge skill.
 
   - path: work-dir/イシュー.md
-    description: Issue file format (.work/issues/ISSUE-{N}.md) and the _index.yaml / _index.archive.yaml schema. issue-save / issue-scan / issue-create author issue files from this template.
+    description: Issue file format (.work/issues/ISSUE-{N}.md) and the _index.yaml / _index.archive.yaml schema. issue-scan / issue-create author issue files from this template.
 
   - path: notes/ノート命名規則.md
     description: Naming and index rules for .work/notes/ files. File names and H1 titles must be in Japanese (technical identifiers stay as-is). Always update _index.md in the same commit when creating, renaming, or deleting a note.
