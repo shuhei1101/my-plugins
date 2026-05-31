@@ -1,40 +1,41 @@
 """
-trim-index — Move completed PR entries from index.yaml to index.archive.yaml.
+trim-index — 完了済みブランチエントリを index.yaml から index.archive.yaml に移動する。
 
-Usage:
+使い方:
   python trim-index.py [index_yaml]
 
-  index_yaml  Path to index.yaml (default: .work/tasks/index.yaml)
+  index_yaml  index.yaml のパス（デフォルト: .work/tasks/index.yaml）
 
-Reads index.yaml, moves all `completed: true` entries to index.archive.yaml
-in the same directory, and rewrites index.yaml with only active entries.
-The `last_id` field is preserved so PR numbering remains correct after
-completed entries are removed.
+index.yaml を読み込み、`completed: true` のエントリを全て同ディレクトリの
+index.archive.yaml に移動し、アクティブなエントリだけを残して index.yaml を書き直す。
+`last_id` フィールドは完了済みエントリを削除した後も保持されるため、ブランチ採番は継続できる。
 """
 
-# ── stdlib ──────────────────────────────────────────────────
+from __future__ import annotations
+
+# ── 標準ライブラリ ──────────────────────────────────────────
 import argparse
 import sys
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-# ── third-party ─────────────────────────────────────────────
+# ── サードパーティ ──────────────────────────────────────────
 try:
     import yaml  # pip install pyyaml
 except ImportError:
-    print("Error: PyYAML not installed. Run: pip install pyyaml", file=sys.stderr)
+    print("エラー: PyYAML がインストールされていません。`pip install pyyaml` を実行してください。", file=sys.stderr)
     sys.exit(1)
 
-# ── constants ───────────────────────────────────────────────
+# ── 定数 ────────────────────────────────────────────────────
 DEFAULT_INDEX = Path(".work/tasks/index.yaml")
 ARCHIVE_NAME = "index.archive.yaml"
 HEADER_COMMENT = "# .work/tasks/index.archive.yaml — Archived (completed) PR entries\n\n"
 
 
-# ── private helpers ─────────────────────────────────────────
+# ── 内部ヘルパ ──────────────────────────────────────────────
 def _load(path: Path) -> dict:
-    """Load a YAML file and return its content as a dict (empty dict if missing)."""
+    """YAML ファイルを読み込んで dict を返す。ファイルが存在しない場合は空 dict を返す。"""
     if not path.exists():
         return {}
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
@@ -45,7 +46,7 @@ def _dump(data: dict) -> str:
 
 
 def _header_comment(text: str) -> str:
-    """Return the leading comment block from a YAML file."""
+    """YAML ファイル先頭のコメントブロックを返す。"""
     lines = []
     for line in text.splitlines():
         if line.startswith("#"):
@@ -56,13 +57,14 @@ def _header_comment(text: str) -> str:
 
 
 # ── main ────────────────────────────────────────────────────
-def main(args: argparse.Namespace) -> None:
+def main() -> int:
+    args = parse_args()
     index_path = Path(args.index_yaml)
     archive_path = index_path.parent / ARCHIVE_NAME
 
     if not index_path.exists():
-        print(f"Error: {index_path} not found", file=sys.stderr)
-        sys.exit(1)
+        print(f"エラー: {index_path} が見つかりません。", file=sys.stderr)
+        return 1
 
     raw = index_path.read_text(encoding="utf-8")
     data = yaml.safe_load(raw) or {}
@@ -74,10 +76,10 @@ def main(args: argparse.Namespace) -> None:
     done = [p for p in branches if p.get("completed", False)]
 
     if not done:
-        print("Nothing to archive - no completed entries found.")
-        return
+        print("アーカイブ対象なし — 完了済みエントリが見つかりませんでした。")
+        return 0
 
-    # Merge into archive (skip duplicates by id)
+    # アーカイブにマージ（ID 重複はスキップ）
     archive_data = _load(archive_path)
     existing: list[dict] = archive_data.get("branches", [])
     existing_ids = {p["id"] for p in existing}
@@ -87,12 +89,13 @@ def main(args: argparse.Namespace) -> None:
     prefix = HEADER_COMMENT if not archive_path.exists() else ""
     archive_path.write_text(prefix + _dump({"branches": merged}), encoding="utf-8")
 
-    # Rewrite index.yaml: preserve header comment + last_id + active entries only
+    # index.yaml を書き直す（ヘッダーコメント + last_id + アクティブエントリのみ保持）
     comment = _header_comment(raw)
     index_path.write_text(comment + _dump({"last_id": last_id, "branches": active}), encoding="utf-8")
 
-    print(f"Archived {len(done)} completed PR(s) to {archive_path}")
-    print(f"index.yaml now has {len(active)} active PR(s), last_id={last_id}")
+    print(f"{len(done)} 件の完了済みブランチを {archive_path} にアーカイブしました。")
+    print(f"index.yaml: アクティブ {len(active)} 件、last_id={last_id}")
+    return 0
 
 
 def parse_args() -> argparse.Namespace:
@@ -104,11 +107,10 @@ def parse_args() -> argparse.Namespace:
         "index_yaml",
         nargs="?",
         default=str(DEFAULT_INDEX),
-        help=f"Path to index.yaml (default: {DEFAULT_INDEX})",
+        help=f"index.yaml のパス（デフォルト: {DEFAULT_INDEX}）",
     )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    main(args)
+    sys.exit(main())

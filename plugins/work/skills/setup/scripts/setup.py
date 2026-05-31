@@ -8,27 +8,24 @@ setup.py — workspace セットアップスクリプト
   python setup.py
 """
 
-# ── stdlib ──────────────────────────────────────────────────
+from __future__ import annotations
+
+# ── 標準ライブラリ ──────────────────────────────────────────
 import shutil
 import sys
 from pathlib import Path
 
-# ── constants ───────────────────────────────────────────────
+# ── 定数 ────────────────────────────────────────────────────
 # scripts/ → setup/ → skills/ → workspace/ → templates/.work/
 TEMPLATE_DIR = Path(__file__).parent.parent.parent.parent / "templates" / ".work"
 TARGET_DIR = Path.cwd() / ".work"
 
-# ── private helpers ─────────────────────────────────────────
-def _expand(template_dir: Path, target_dir: Path) -> None:
-    """
-    テンプレートディレクトリをターゲットに再帰コピーする。
-    既存ファイルはスキップし、.gitkeep はコピーしない。
 
-    :param template_dir: コピー元テンプレートのパス
-    :param target_dir: コピー先のパス
-    """
+# ── 内部ヘルパ ──────────────────────────────────────────────
+def _expand(template_dir: Path, target_dir: Path) -> None:
+    """テンプレートディレクトリをターゲットに再帰コピーする。既存ファイルはスキップし、.gitkeep はコピーしない。"""
     if not template_dir.exists():
-        print(f"Error: template not found: {template_dir}", file=sys.stderr)
+        print(f"エラー: テンプレートが見つかりません: {template_dir}", file=sys.stderr)
         sys.exit(1)
 
     for src in sorted(template_dir.rglob("*")):
@@ -45,32 +42,34 @@ def _expand(template_dir: Path, target_dir: Path) -> None:
 
         dst.parent.mkdir(parents=True, exist_ok=True)
         if dst.exists():
-            print(f"  skip (exists): {relative}")
+            print(f"  スキップ（既存）: {relative}")
         else:
             shutil.copy2(src, dst)
-            print(f"  created:       {relative}")
+            print(f"  作成:       {relative}")
+
 
 # ── main ────────────────────────────────────────────────────
-def main() -> None:
+def main() -> int:
     """メイン処理。.work/ をカレントディレクトリに展開する。"""
     TARGET_DIR.mkdir(exist_ok=True)
-    print(f"Expanding template to: {TARGET_DIR}")
+    print(f"テンプレートを展開中: {TARGET_DIR}")
     _expand(TEMPLATE_DIR, TARGET_DIR)
 
     # tasks/ は動的生成フォルダなのでテンプレートには含めずここで作成する
     (TARGET_DIR / "tasks").mkdir(exist_ok=True)
-    print(f"  created:       tasks/")
+    print("  作成:       tasks/")
 
     # _index.yaml は issues/.gitignore で git 管理外のため、テンプレートに置けない → ここで生成する
     index_yaml = TARGET_DIR / "issues" / "_index.yaml"
     if not index_yaml.exists():
-        index_yaml.write_text("# Managed by issue-scan / issue-create. Git-ignored (do not commit).\nlast_id: 0\nissues: []\n")
-        print(f"  created:       issues/_index.yaml")
+        index_yaml.write_text("# issue-scan / issue-create が管理する。Git 管理外（コミットしない）。\nlast_id: 0\nissues: []\n")
+        print("  作成:       issues/_index.yaml")
     else:
-        print(f"  skip (exists): issues/_index.yaml")
+        print("  スキップ（既存）: issues/_index.yaml")
 
-    print(f"\nSetup complete: {TARGET_DIR}")
+    print(f"\nセットアップ完了: {TARGET_DIR}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
