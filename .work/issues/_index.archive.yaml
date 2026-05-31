@@ -17,3 +17,7 @@ scan_records:
     skill: issue-scan
     scope: "pattern:hook-scripts-py"
     issues_found: [ISSUE-092, ISSUE-093, ISSUE-094, ISSUE-095, ISSUE-096, ISSUE-097]
+  - date: 2026-05-31
+    skill: issue-scan
+    scope: "folder:claude-kit/references"
+    issues_found: [ISSUE-122, ISSUE-123, ISSUE-124, ISSUE-125, ISSUE-126, ISSUE-127, ISSUE-128, ISSUE-129]
