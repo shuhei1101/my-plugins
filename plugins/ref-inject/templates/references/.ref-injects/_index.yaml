@@ -4,5 +4,5 @@
 #   description : shown in the injected pointer (and as the section heading)
 # Keep this in sync with _index.jp.yaml (JP mirror) and injection_rules.yaml.
 references:
-  - path: example/getting-started.md
+  - path: example/はじめに.md
     description: Example reference. Replace these with your real conventions.

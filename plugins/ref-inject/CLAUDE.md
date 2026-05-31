@@ -43,7 +43,7 @@ ref-inject/
         ├── _index.yaml (+ _index.jp.yaml)
         ├── _injection_rules.yaml
         ├── CLAUDE.md (+ CLAUDE.jp.md)
-        └── example/getting-started.md
+        └── example/はじめに.md
 ```
 
 There are no `plugin.json` / root-`CLAUDE.md` templates — those are plugin-level (owned by

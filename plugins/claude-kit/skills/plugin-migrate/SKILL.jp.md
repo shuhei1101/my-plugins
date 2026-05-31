@@ -29,14 +29,14 @@ claude-kit はテンプレを project に展開しない（各 creator スキル
 
 | プロジェクト側パターン | リファレンス（auto-inject される） |
 |---|---|
-| `**/skills/*/SKILL{.jp,}.md` | `references/skill/skills.md` + `common/common.md` |
-| `**/.claude/rules/**/*.md`, `**/.claude/rules-jp/**/*.md` | `references/claude-md/rules.md` + `common/common.md` |
-| `**/CLAUDE{.local,.jp,}.md` | `references/claude-md/claude-md.md` + `common/common.md` |
-| `plugins/*/CLAUDE{.jp,}.md` | `references/plugin/plugin-claude-md.md` + `references/plugin/version-sync.md` 追加 |
-| `**/hooks/hooks.json` | `references/hook/hooks.md` + `common/common.md` + `common/environment.md` |
-| `**/.claude/settings{.local,}.json` | `references/hook/hooks.md` + `common/common.md` + `common/environment.md` |
-| `**/hooks/prompts/*.md` | `references/hook/hooks.md` |
-| `**/.claude-plugin/{plugin,marketplace}.json` | `references/plugin/plugin-structure.md` + `common/common.md` + `plugin/version-sync.md` |
+| `**/skills/*/SKILL{.jp,}.md` | `references/skill/スキル.md` + `common/共通ガイド.md` |
+| `**/.claude/rules/**/*.md`, `**/.claude/rules-jp/**/*.md` | `references/claude-md/記述ルール.md` + `common/共通ガイド.md` |
+| `**/CLAUDE{.local,.jp,}.md` | `references/claude-md/CLAUDE-md記述ガイド.md` + `common/共通ガイド.md` |
+| `plugins/*/CLAUDE{.jp,}.md` | `references/plugin/プラグインCLAUDE-md.md` + `references/plugin/バージョン同期.md` 追加 |
+| `**/hooks/hooks.json` | `references/hook/フック.md` + `common/共通ガイド.md` + `common/環境変数.md` |
+| `**/.claude/settings{.local,}.json` | `references/hook/フック.md` + `common/共通ガイド.md` + `common/環境変数.md` |
+| `**/hooks/prompts/*.md` | `references/hook/フック.md` |
+| `**/.claude-plugin/{plugin,marketplace}.json` | `references/plugin/プラグイン構造.md` + `common/共通ガイド.md` + `plugin/バージョン同期.md` |
 | `~/.claude/settings.json` の `statusLine` ブロック | `scripts/apply-statusline.py` の定義 |
 
 `agents/` は claude-kit に対応リファレンスがないため、common.md の「ファイル種別判定 +

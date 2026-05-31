@@ -26,7 +26,7 @@ mirrors common browser console categories).
 Read for context:
 
 ```
-{plugin_root}/references/html/principles.md   # see Section 3 (JS Rules) and Section 1 (DRY)
+{plugin_root}/references/html/基本方針.md   # see Section 3 (JS Rules) and Section 1 (DRY)
 ```
 
 The plugin root is two levels above this skill file.
@@ -185,5 +185,5 @@ window.addEventListener("unhandledrejection", (e) => {
 
 ## References
 
-- `{plugin_root}/references/html/principles.md` — Section 3 (JS Rules) and Section 1 (Centralization)
+- `{plugin_root}/references/html/基本方針.md` — Section 3 (JS Rules) and Section 1 (Centralization)
 - `{plugin_root}/skills/debug-fab/SKILL.md` — debug widget that surfaces these logs in-screen

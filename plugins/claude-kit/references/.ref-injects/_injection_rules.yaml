@@ -4,93 +4,93 @@
 #              名前ベースのフォルダ指定は `**/` を前置してサブプロジェクトでもマッチさせる
 #   required : 本文ごとフル注入されるリファレンスのパス（必ず読むべき執筆ガイド）
 #   optional : パス＋説明のみが注入されるリファレンス（Claude が必要に応じて Read する）
-# マッチしたルールはすべて寄与する（重複排除あり）。common/common.md は共通ベース
+# マッチしたルールはすべて寄与する（重複排除あり）。common/共通ガイド.md は共通ベース
 # （ファイル種別の判断、JP/EN ミラーのルール）。
-# common/environment.md（環境変数による設定方法）は、すべての Claude 用成果物（Write/Edit）に対して
+# common/環境変数.md（環境変数による設定方法）は、すべての Claude 用成果物（Write/Edit）に対して
 # 注入する — 設定可能な挙動が存在することを著者に意識させるため。実際に env を設定する場所
 # （hooks.json / settings.json）ではフル本文で、それ以外では pointer-only（optional）で出す。
 rules:
   # ---- Skills: SKILL.md（あるいはその JP ミラー）を編集する場合 ----
   - pattern: "**/skills/*/SKILL{.jp,}.md"
     required:
-      - common/common.md
-      - skill/skills.md
+      - common/共通ガイド.md
+      - skill/スキル.md
     optional:
-      - common/subagents.md
-      - common/environment.md
-      - plugin/plugin-config.md
-      - common/askuserquestion.md
+      - common/サブエージェント.md
+      - common/環境変数.md
+      - plugin/プラグイン設定.md
+      - common/AskUserQuestion制約.md
 
   # ---- References: プラグインのリファレンスファイルを編集する場合 ----
   - pattern: "plugins/*/references/**/*.md"
     required:
-      - common/references-sync.md
+      - common/リファレンス同期.md
     optional: []
 
   # ---- *-kit 注入構造ファイル: dev-kit / claude-kit の共有構造を編集する場合 ----
   - pattern: "plugins/*-kit/hooks/scripts/*.py"
     required:
-      - hook/kit-hooks-sync.md
+      - hook/キットフック同期.md
     optional: []
   - pattern: "plugins/*-kit/hooks/templates/*.j2"
     required:
-      - hook/kit-hooks-sync.md
-      - hook/jinja2/authoring.md
+      - hook/キットフック同期.md
+      - hook/jinja2/執筆ガイド.md
     optional: []
 
   # ---- Jinja2 テンプレート（任意プラグインの hooks/templates/*.j2）：Markdown 出力時の落とし穴 ----
   - pattern: "**/hooks/templates/*.j2"
     required:
-      - hook/jinja2/templates.md
+      - hook/jinja2/テンプレート注意点.md
     optional: []
   - pattern: "plugins/*-kit/references/.ref-injects/{_index,_injection_rules,CLAUDE}{.jp,}.{yaml,md}"
     required:
-      - hook/kit-hooks-sync.md
+      - hook/キットフック同期.md
     optional: []
 
   # ---- CLAUDE.md: プロジェクト／サブフォルダのメモリファイル ----
   - pattern: "**/CLAUDE{.local,.jp,}.md"
     required:
-      - common/common.md
-      - claude-md/claude-md.md
+      - common/共通ガイド.md
+      - claude-md/CLAUDE-md記述ガイド.md
     optional:
-      - common/environment.md
+      - common/環境変数.md
 
   # ---- Hooks: プラグインの hooks.json、プロジェクト設定（JSON はスタンプなし）、プロンプトファイル（.md） ----
-  # settings.json / hooks.json は env ブロックを持つため、ここでは environment.md をフル注入する。
+  # settings.json / hooks.json は env ブロックを持つため、ここでは 環境変数.md をフル注入する。
   - pattern: "**/hooks/hooks.json"
     required:
-      - common/common.md
-      - hook/hooks.md
-      - common/environment.md
+      - common/共通ガイド.md
+      - hook/フック.md
+      - common/環境変数.md
   - pattern: "**/.claude/settings{.local,}.json"
     required:
-      - common/common.md
-      - hook/hooks.md
-      - common/environment.md
+      - common/共通ガイド.md
+      - hook/フック.md
+      - common/環境変数.md
   - pattern: "**/hooks/prompts/*.md"
     required:
-      - hook/hooks.md
+      - hook/フック.md
     optional:
-      - common/environment.md
+      - common/環境変数.md
 
   # ---- Plugins: マニフェスト／マーケットプレイス（JSON はスタンプなし） ----
   - pattern: "**/.claude-plugin/{plugin,marketplace}.json"
     required:
-      - common/common.md
-      - plugin/plugin-structure.md
-      - plugin/setup-wizard.md
-      - plugin/version-sync.md
+      - common/共通ガイド.md
+      - plugin/プラグイン構造.md
+      - plugin/セットアップウィザード.md
+      - plugin/バージョン同期.md
     optional:
-      - common/environment.md
-      - plugin/plugin-config.md
+      - common/環境変数.md
+      - plugin/プラグイン設定.md
 
   # ---- プラグインの CLAUDE.md: プラグインディレクトリ直下の CLAUDE.md ----
   # 上の汎用 **/CLAUDE.md パターンに、プラグイン固有の執筆ガイドを上乗せする。
-  # version-sync.md を required にすることで、CLAUDE.md 編集時もバージョン同期 reminder が出る。
+  # バージョン同期.md を required にすることで、CLAUDE.md 編集時もバージョン同期 reminder が出る。
   - pattern: "plugins/*/CLAUDE{.jp,}.md"
     required:
-      - plugin/plugin-claude-md.md
-      - plugin/version-sync.md
+      - plugin/プラグインCLAUDE-md.md
+      - plugin/バージョン同期.md
     optional:
-      - common/environment.md
+      - common/環境変数.md

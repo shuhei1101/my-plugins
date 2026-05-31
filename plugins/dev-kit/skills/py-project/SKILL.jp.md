@@ -1,9 +1,6 @@
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — dev-kit:py-project（日本語ミラー）
 
-> このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
-> 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
-
 ---
 
 **スキル名**: dev-kit:py-project
@@ -39,15 +36,15 @@ Python プロジェクトを扱う。
 `{plugin_root}/references/python/injection_rules.yaml` の `rules:` で「どの編集対象パスにどの reference を割り当てるか」が定義されている。
 
 このスキルで常に読むべきもの:
-- `{plugin_root}/references/python/core/naming.md`
-- `{plugin_root}/references/python/core/comments.md`
-- `{plugin_root}/references/python/core/type-hints.md`
-- `{plugin_root}/references/python/core/language-rules.md`
-- `{plugin_root}/references/python/core/style.md`
-- `{plugin_root}/references/python/architecture/layout.md`
-- `{plugin_root}/references/python/architecture/ts-style.md`
-- `{plugin_root}/references/python/architecture/composition-root.md`
-- `{plugin_root}/references/python/architecture/dependencies.md`
+- `{plugin_root}/references/python/core/命名規則.md`
+- `{plugin_root}/references/python/core/コメント.md`
+- `{plugin_root}/references/python/core/型ヒント.md`
+- `{plugin_root}/references/python/core/言語ルール.md`
+- `{plugin_root}/references/python/core/スタイル.md`
+- `{plugin_root}/references/python/architecture/レイアウト.md`
+- `{plugin_root}/references/python/architecture/TypeScriptスタイル適用.md`
+- `{plugin_root}/references/python/architecture/コンポジションルート.md`
+- `{plugin_root}/references/python/architecture/依存関係管理.md`
 
 タスクに応じて以下も:
 - 新規プロジェクト → `testing/strategy.md`, `packaging/pyproject.md`, `packaging/dependencies.md`

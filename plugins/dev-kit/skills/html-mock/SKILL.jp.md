@@ -1,7 +1,6 @@
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — dev-kit:html-mock(日本語ミラー)
 
-> このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更時は JP ミラーを先に更新し、その後 `SKILL.md` にも反映する。
 
 ---
@@ -30,8 +29,8 @@
 1. 全文読み込み:
 
    ```
-   {plugin_root}/references/html/principles.md   # FLOCSS、デザイントークン、JS 規約
-   {plugin_root}/references/html/ui-design.md    # 画面タイプ別 UX パターン
+   {plugin_root}/references/html/基本方針.md   # FLOCSS、デザイントークン、JS 規約
+   {plugin_root}/references/html/UIデザイン.md    # 画面タイプ別 UX パターン
    ```
 
 2. **プロジェクトの共通リソースを棚卸しする**(モックでも必須 — 各案が並行に別物を作らないため):
@@ -215,6 +214,6 @@
 
 ## 参考資料
 
-- `{plugin_root}/references/html/principles.md` — FLOCSS、デザイントークン、JS 規約
-- `{plugin_root}/references/html/ui-design.md` — 画面タイプ別 UX パターン
+- `{plugin_root}/references/html/基本方針.md` — FLOCSS、デザイントークン、JS 規約
+- `{plugin_root}/references/html/UIデザイン.md` — 画面タイプ別 UX パターン
 - `{plugin_root}/skills/mock/templates/mock-skeleton.html` — モック雛形 HTML

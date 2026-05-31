@@ -1,9 +1,6 @@
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — work:setup スキル（日本語ミラー）
 
-> このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
-> 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
-
 ---
 
 **スキル名**: setup
@@ -19,7 +16,7 @@
 展開される構造:
 ```
 .work/
-├── tasks/      # タスク・PR フォルダ（動的生成）
+├── tasks/      # タスク・ブランチフォルダ（動的生成）
 ├── notes/      # 設計メモ・検討ノート（空フォルダ）
 └── issues/     # issue-scan・issue-create で管理するイシューファイル
 ```
