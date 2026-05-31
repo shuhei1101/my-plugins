@@ -20,25 +20,34 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | 未解決事項を `## QA` に記録 |
-| 2 | - | work プラグイン references のカテゴリ分類を決める（例: `notes/`＝ノート命名規則・ノート記述内容ルール、`work-dir/`＝ドットワークディレクトリ構成、`skill-sync/`＝マージスキル同期・スタートスキル同期・ストッププロンプト同期・TODOテンプレート同期）。日本語/英語フォルダ名の方針も確認 |
-| 3 | - | 各 `.md`/`.jp.md` をカテゴリサブフォルダへ `git mv`。`_index.yaml`/`_index.jp.yaml`/`_injection_rules.yaml` のパスをサブフォルダ込みに更新 |
-| 4 | - | リファレンス内部リンク（相互参照・`Japanese mirror:` 等）のパスを更新 |
-| 5 | - | `inject_references.py` がサブフォルダ配下を正しく注入することを確認（実ファイル編集で検証） |
-| 6 | - | 他プラグイン（claude-kit/dev-kit 等）の references 構造と規約を揃えるか確認。揃える場合は別作業として切り出すか本ブランチ範囲を明示 |
-| 7 | - | バージョン bump（plugin.json/marketplace.json/CLAUDE.md changelog 同期） |
+| 1 | x | 未解決事項を `## QA` に記録 |
+| 2 | x | work プラグイン references のカテゴリ分類を決める（例: `notes/`＝ノート命名規則・ノート記述内容ルール、`work-dir/`＝ドットワークディレクトリ構成、`skill-sync/`＝マージスキル同期・スタートスキル同期・ストッププロンプト同期・TODOテンプレート同期）。日本語/英語フォルダ名の方針も確認 |
+| 3 | x | 各 `.md`/`.jp.md` をカテゴリサブフォルダへ `git mv`。`_index.yaml`/`_index.jp.yaml`/`_injection_rules.yaml` のパスをサブフォルダ込みに更新 |
+| 4 | x | リファレンス内部リンク（相互参照・`Japanese mirror:` 等）のパスを更新 |
+| 5 | x | `inject_references.py` がサブフォルダ配下を正しく注入することを確認（実ファイル編集で検証） |
+| 6 | x | 他プラグイン（claude-kit/dev-kit 等）の references 構造と規約を揃えるか確認。揃える場合は別作業として切り出すか本ブランチ範囲を明示 |
+| 7 | x | バージョン bump（plugin.json/marketplace.json/CLAUDE.md changelog 同期） |
 
 ## 変更内容
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | (着手時に記入) | - | - | - |
+| 1 | `plugins/work/references/notes/` | 新規 | ノート命名規則・ノート記述内容ルール を移動 | git mv |
+| 2 | `plugins/work/references/work-dir/` | 新規 | ドットワークディレクトリ構成 を移動 | git mv |
+| 3 | `plugins/work/references/skill-sync/` | 新規 | マージスキル同期・スタートスキル同期・ストッププロンプト同期・TODOテンプレート同期 を移動 | git mv |
+| 4 | `plugins/work/references/.ref-injects/_index.yaml` | 編集 | path をサブフォルダ込みに更新 | |
+| 5 | `plugins/work/references/.ref-injects/_index.jp.yaml` | 編集 | 〃 | |
+| 6 | `plugins/work/references/.ref-injects/_injection_rules.yaml` | 編集 | required パスをサブフォルダ込みに更新 | |
+| 7 | 各 `.md`（7ファイル）| 編集 | `Japanese mirror:` パスをサブフォルダ込みに更新 | |
+| 8 | `plugins/work/.claude-plugin/plugin.json` | 編集 | v2.53.1 にバンプ | |
+| 9 | `.claude-plugin/marketplace.json` | 編集 | 〃 | |
+| 10 | `plugins/work/CLAUDE.md` / `CLAUDE.jp.md` | 編集 | changelog に v2.53.1 を追加 | |
 
 ## テスト
 
 | # | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | サブフォルダ配下リファレンスが編集時に注入される | (未実施) | - |
+| 1 | サブフォルダ配下リファレンスが編集時に注入される | inject_references.py を直接実行し skill-sync/マージスキル同期.md の注入を確認 | OK |
 
 ## QA
 
