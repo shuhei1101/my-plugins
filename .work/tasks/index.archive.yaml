@@ -1064,11 +1064,10 @@ branches:
   summary: issue-scanスキルに自動ブランチ・マージとサブエージェント並列制御を追加
   task: 260531_issue-scan-auto-loop
   completed: true
-- id: 9
-  branch: refactor/issue-scanner-return-content
-  title: イシュースキャナーコンテンツ返却リファクタ
+- branch: refactor/notes-folder-categorize
+  title: notesカテゴリフォルダ分割
   type: refactor
-  tags: []
-  summary: issue-scanner がファイルを書かずにコンテンツを返し、メインがファイル書き込みを担う設計に変更
-  task: 260531_issue-scanner-refactor
+  summary: .work/notes/ を _index.md のカテゴリごとに日本語名サブフォルダへ分割。各ノート移動・_index.md 追従・旧スタイルノートの
+    frontmatter 履歴除去
+  task: 260531_notes-folder-categorize
   completed: true
