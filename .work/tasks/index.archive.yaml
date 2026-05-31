@@ -1054,3 +1054,10 @@ branches:
   summary: mergeスキルがmasterに直接コンフリクトを流し込む問題を修正
   task: 260531_merge-skill-branch-first
   completed: true
+- id: 239
+  title: chore/sync-ref-inject-template
+  type: chore
+  tags: []
+  summary: ref-inject テンプレートをコンシューマーの最新版に同期し _common.py コメントも更新
+  task: 260531_ref-inject-テンプレート同期
+  completed: true
