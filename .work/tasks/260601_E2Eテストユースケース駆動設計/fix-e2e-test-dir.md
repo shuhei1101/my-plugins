@@ -26,7 +26,7 @@
 | 済 | `_injection_rules.yaml` のフック条件を確認（変更不要） | - `plugins/dev-kit/references/.ref-injects/_injection_rules.yaml` |
 | 済 | `_index.yaml` の description 修正・JP ミラーエントリ追加 | - `plugins/dev-kit/references/.ref-injects/_index.yaml` |
 | 済 | `.work/notes/` のノートを更新 | - `.work/notes/コーディング規約・スタイル/E2Eテスト設計方針.md` |
-| - | ルール / CLAUDE.md を更新 | - |
+| 済 | ルール / CLAUDE.md を更新（変更不要） | - |
 
 ## 変更内容
 
