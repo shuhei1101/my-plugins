@@ -2,8 +2,8 @@
 name: issue-scan
 description: |
   Pick one source file at random from the project and Read it; compare it against the references
-  that the matching `*-kit` plugin's auto-injection hook returns, and record any rule violations
-  or improvements as issues in `.work/issues/`.
+  that ref-inject hooks auto-inject, and record any rule violations or improvements as issues
+  in `.work/issues/`.
   Excludes already-scanned files via `_index.archive.yaml`.
   Trigger when the user says "issue-scan", "scan for issues", "find problems in the code",
   "コードをスキャン", "イシューを探して", or invokes `/work:issue-scan` explicitly.
@@ -11,9 +11,9 @@ description: |
 
 # work:issue-scan — Scan Codebase for Issues
 
-Picks one project file at random per invocation and Reads it. The `*-kit` plugins'
-`PreToolUse(Read)` hooks auto-inject the applicable references. The skill then compares
-the file against those references and records discovered problems via `/work:issue-save`.
+Picks one project file at random per invocation and Reads it. ref-inject hooks
+auto-inject the applicable references. The skill then compares the file against those
+references and records discovered problems via `/work:issue-save`.
 
 ---
 
@@ -21,14 +21,10 @@ the file against those references and records discovered problems via `/work:iss
 
 **Prerequisites**:
 - `.work/issues/` must exist (run `/work:setup` if it doesn't)
-- At least one `*-kit` plugin with a `PreToolUse(Read)` reference auto-injection hook
-  (dev-kit, etc.) must be installed
 
 **Approach**:
-- The `*-kit` `PreToolUse(Read)` hooks resolve and inject the relevant references based on file type
+- ref-inject hooks resolve and inject the relevant references based on file type
 - This skill therefore only needs to pick one target file and Read it
-- The hook reads `_injection_rules.yaml` to decide which references apply; the skill does not
-  re-implement pattern matching or YAML parsing
 - The hook's session+file-hash token ensures each file is injected once per session
 
 ---
@@ -92,7 +88,7 @@ the file against those references and records discovered problems via `/work:iss
 #### Process
 
 1. Read the file chosen in Step 2 (the primary scan target)
-2. If a `*-kit` `PreToolUse(Read)` hook matches, its `decision: block` response will inject the
+2. If a ref-inject `PreToolUse(Read)` hook matches, its `decision: block` response will inject the
    applicable reference bodies into the conversation as `reason`
    - The injection contains the required / optional reference bodies for this file
 3. **Also Read related files to build context**:
@@ -101,7 +97,7 @@ the file against those references and records discovered problems via `/work:iss
    - The whole related layer when the issue might span a layer (e.g. read the rest of the LLM folder)
    - Keep the related-file set as small as needed for sound judgement — do not over-expand
    - Related files are not the scan target, so do NOT record them in `scan_records.scope`
-4. If no injection occurred, treat the file as "no applicable `*-kit` reference" and skip to Step 6
+4. If no injection occurred, treat the file as "no applicable ref-inject reference" and skip to Step 6
    (still write the scan record)
 
 → Injection present → Step 4 / No injection → Step 6
@@ -127,10 +123,14 @@ the file against those references and records discovered problems via `/work:iss
    - Convention violations (naming, types, comments, style)
    - Architectural violations (dependency direction, layer boundaries)
    - Improvement opportunities (DRY violations, dead code, outdated patterns — anything the references call out)
+   - Maintainability issues (duplicated logic, dual-source management, uncentralized configuration, shared boilerplate not extracted to a utility)
+   - Cross-cutting problems (issues likely to exist in similar form across other files — note these for horizontal expansion)
 2. Related files are used as judgement material; the issues themselves are raised against the
    primary target file (mention related-file problems inline, or defer them to a later scan)
 3. Drop findings that match an already-`wontfix` closed issue
 4. Group findings into independently actionable units
+5. For each finding, note whether the same pattern likely appears elsewhere in the codebase
+   (horizontal expansion candidate)
 
 → Proceed to Step 5
 
@@ -149,7 +149,7 @@ the file against those references and records discovered problems via `/work:iss
 #### Process
 
 1. For each discovered problem, invoke `/work:issue-save`:
-   - Pass title / type / priority / tags / scope (= chosen file path) / problem description / suggested fix
+   - Pass title / type / priority / tags / scope (= chosen file path) / problem description / horizontal expansion notes / suggested fix
    - Collect the ISSUE IDs returned by issue-save
 
 → Proceed to Step 6
@@ -192,7 +192,7 @@ the file against those references and records discovered problems via `/work:iss
 
 1. Report to the user:
    - The scanned file path
-   - Whether references were injected (if not, no matching `*-kit` exists for this file)
+   - Whether references were injected (if not, no ref-inject hook applies to this file)
    - Number of issues created and their list (ID / title / priority)
    - If zero issues, state that the file looks clean
 2. Mention that issues can be closed with `resolution: wontfix` if no fix is planned
@@ -200,5 +200,4 @@ the file against those references and records discovered problems via `/work:iss
 #### Notes
 
 - Do NOT run `git commit` in this skill — the user reviews before committing
-- Each file's injection slightly enlarges the context, but the `*-kit` session+file-hash token
-  prevents re-injection on the same file within one session
+- The ref-inject session+file-hash token prevents re-injection on the same file within one session
