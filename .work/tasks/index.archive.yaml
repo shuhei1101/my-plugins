@@ -1158,3 +1158,10 @@ branches:
   summary: 全 Next.js + Python リファレンスを精読し quest-pay 同様の関数型・type 優先スタイルへの準拠を監査。非準拠は修正
   task: 260601_リファレンス関数型スタイル監査
   completed: true
+- completed: true
+  id: 12
+  summary: E2Eテスト.md のディレクトリを tests/e2e/ に統一し JP ミラーを追加
+  tags: []
+  task: 260601_E2Eテスト参照更新
+  title: fix/e2e-test-dir
+  type: fix
