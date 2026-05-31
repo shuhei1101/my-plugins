@@ -104,3 +104,29 @@ work-start Step 4 がこの env var を読んで分岐する（従来の「workt
 - `plugins/work/templates/.work/tasks/yymmdd_xxx/type-title.md` → `yymmdd-branch-name.md` にリネーム
 - `plugins/work/scripts/setup-task.py`: ファイル名生成ロジックと参照テンプレートパスを更新
 - `plugins/work/skills/start/SKILL.md` / `SKILL.jp.md`: 命名規則説明とテーブル仕様を更新
+
+## plugin-update スキルと .work/ テンプレート同期（#232）
+
+`/work:plugin-update` スキルは、work プラグインの `.work/` 内テンプレートファイルを最新版に同期する。
+
+### 対象ファイル
+
+| # | ファイル | 内容 |
+|---|---|---|
+| 1 | `.work/CLAUDE.md` | ワークスペース CLAUDE 指示（テンプレートが存在する場合） |
+| 2 | `.work/CLAUDE.jp.md` | 〃 日本語版（テンプレートが存在する場合） |
+| 3 | `.work/tasks/.gitignore` | `index.yaml` を gitignore |
+| 4 | `.work/issues/.gitignore` | `_index.yaml` を gitignore |
+
+### v2.48.0 時点の状況
+
+- テンプレートに `CLAUDE.md` / `CLAUDE.jp.md` は存在しないためスキップ
+- `tasks/.gitignore` は既存プロジェクトと同一内容
+- `issues/.gitignore` は新規追加（既存プロジェクトに `issues/` フォルダが未作成の場合は作成）
+
+### v2.48.0 以降の変更（#232 追記）
+
+- `.work/CLAUDE.md` / `.work/CLAUDE.jp.md` は **削除対象**（ref-inject に移行済みで不要）
+- `plugin-update` スキルの Step 2 を改訂:
+  - 旧: CLAUDE.md・CLAUDE.jp.md を上書きコピー
+  - 新: CLAUDE.md・CLAUDE.jp.md が存在すれば `git rm` で削除し、`.gitignore` のみを同期
