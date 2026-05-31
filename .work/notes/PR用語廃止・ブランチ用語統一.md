@@ -5,7 +5,7 @@ updates:
   - 2026-05-30 — PR188: work-start の PR 用語をブランチ用語に統一
   - 2026-05-30 — PR190: index.yaml / index.archive.yaml の prs: キーを branches: に改名
   - 2026-05-31 — #230: pr-handoff → branch-reserve、pr-show → branch-show にリネーム
-related_specs: []
+related_notes: []
 related_prs:
   - PR188
   - PR189
