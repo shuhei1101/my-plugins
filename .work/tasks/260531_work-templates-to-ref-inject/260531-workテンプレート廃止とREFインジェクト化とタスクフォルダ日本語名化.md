@@ -4,13 +4,27 @@
 
 ## 概要
 
-`plugins/work/templates/` を廃止し、タスク文書生成・スキル・スクリプトをテンプレートファイル参照からREF-inject 参照へ移行する。
+`plugins/work/templates/` を廃止し、ブランチドキュメント等のテンプレート／構成定義を **`references/work-dir/` のリファレンス群へ移行**する。ref-inject の Write/Edit フックを使い、`.work/` 配下の各パスを編集・作成するとき該当リファレンス（テンプレート全文を含む）が自動注入される設計にする。スクリプトでテンプレートをコピーするのではなく、Claude が注入されたテンプレートを元にファイルを直接作成するワークフローへ転換する。
 
 ### このブランチが必要な理由・前ブランチとの関係
 
-- 前ブランチ `refactor/references-subfolder-split` で work references/ のサブフォルダ分割が完了し、REF-inject 機構がサブフォルダを正しく解決できることを確認済み。
-- `plugins/work/templates/` は現状 `setup-task.py` などのスクリプトが参照するタスク文書テンプレートを保管している。これを廃止して REF-inject 参照へ移行することで、templates/ を削除できる。
+- 前ブランチ `refactor/references-subfolder-split` で work references/ のサブフォルダ分割が完了し、ref-inject 機構がサブフォルダを正しく解決できることを確認済み。
+- `plugins/work/templates/` は `setup-task.py` などが参照するタスク文書テンプレートを保管していた。これを廃止し、テンプレートを `references/work-dir/` のリファレンスに移して ref-inject 注入で配信する。
+- ref-inject は **Write フックでも発火する**ため、新規ファイル作成時（ブランチドキュメント生成）でもテンプレートが注入される。
+- タスクフォルダはユーザーの任意ファイルも格納できる汎用フォルダにするため、ブランチドキュメントは `.branch.md` 拡張子で他ファイルと区別する。
 - タスクフォルダ名の日本語化は別ブランチ（次ブランチ候補参照）で実施する。
+
+### 設計方針（当初のインライン化を撤回）
+
+当初 `setup-task.py` に `_BRANCH_DOC_TEMPLATE` 定数としてテンプレートをインライン化したが、これは ref-inject の主旨に反するため撤回する。テンプレートはリファレンス化し、ref-inject 注入で配信する。
+
+| 項目 | 方針 |
+|---|---|
+| ブランチドキュメントのテンプレート | `references/work-dir/タスクドキュメント.md` に全文を置き、`.work/tasks/**/*.branch.md` 編集時に注入 |
+| `.work/` 各サブフォルダの定義 | パス別にリファレンスを細分化（tasks / notes / issues） |
+| `setup-task.py` | 廃止。`work:start` で Claude が注入テンプレートを元に直接 Write |
+| `setup.py`（`work:setup`） | ブートストラップ（空ディレクトリ + 最小スケルトン生成）専用として残す |
+| ブランチドキュメントのファイル名 | `{YYMMDD}-{日本語タイトル}.branch.md` |
 
 ### 実施条件
 
@@ -21,40 +35,37 @@
 | # | 完了 | 作業内容 |
 |---|---|---|
 | 1 | 済 | 未解決事項を `## QA` に記録（QA-001 を B で解決） |
-| 2 | 済 | `plugins/work/templates/` の全ファイルを確認し、参照元（スクリプト・スキル）を列挙 |
-| 3 | 済 | `_injection_rules.yaml` を更新（`templates/**` → `scripts/setup-task.py`）および `_index.yaml`/`.jp.yaml` 説明を更新 |
-| 4 | 済 | `setup-task.py` / `setup.py` をテンプレートファイル非依存に改修（インライン定数へ切り替え） |
-| 5 | 済 | `plugin-migrate/SKILL.md` のテンプレート参照をハードコード内容記述に更新（SKILL.jp.md 同期） |
-| 6 | 済 | `plugins/work/templates/` を削除（git rm） |
-| 7 | 済 | バージョン bump（plugin.json/marketplace.json/CLAUDE.md/CLAUDE.jp.md → v2.54.0） |
-| 8 | 済 | `.work/notes/` の関連ノートを更新 |
+| 2 | 済 | `plugins/work/templates/` の全ファイルを確認し、参照元を列挙 |
+| 3 | 済 | `plugins/work/templates/` を削除（git rm） |
+| 4 | - | 【撤回】`setup-task.py` への `_BRANCH_DOC_TEMPLATE` インライン化を取り消し、リファレンス化へ転換 |
+| 5 | - | `references/work-dir/タスクドキュメント.md`(+jp) を新規作成（ブランチドキュメントテンプレート全文 + 記入ガイド） |
+| 6 | - | `references/work-dir/タスクインデックス.md`(+jp) を新規作成（index.yaml / index.archive.yaml スキーマ） |
+| 7 | - | `references/work-dir/イシュー.md`(+jp) を新規作成（`.work/issues/` 構成・スキーマ） |
+| 8 | - | `ドットワークディレクトリ構成.md`(+jp) → `ワークディレクトリ構成.md`(+jp) にリネーム + スリム化（詳細は各サブフォルダリファレンスへ委譲） |
+| 9 | - | `setup-task.py` を廃止（git rm）。`work:start` SKILL.md/.jp.md を「Claude が注入テンプレートを元に直接 Write」へ変更 |
+| 10 | - | ブランチドキュメントのファイル名を `{YYMMDD}-{日本語タイトル}.branch.md` に変更（skill・リファレンスの記述更新） |
+| 11 | - | `_injection_rules.yaml` をパス別に細分化（tasks doc / tasks index / notes / issues / 全体） |
+| 12 | - | `TODOテンプレート同期.md`(+jp) を廃止（`タスクドキュメント.md` に統合） |
+| 13 | - | `setup.py` を最小ブートストラップに整理（リッチなスキーマ定義はリファレンスへ移管） |
+| 14 | - | `plugin-migrate/SKILL.md`(+jp) のテンプレート参照を更新 |
+| 15 | - | `_index.yaml`/`.jp.yaml` のリファレンス一覧を更新 |
+| 16 | - | バージョン bump（plugin.json/marketplace.json/CLAUDE.md/CLAUDE.jp.md） |
+| 17 | - | 現ブランチドキュメント自身を `.branch.md` 拡張子へリネーム（ドッグフーディング） |
+| 18 | - | `.work/notes/` の関連ノートを更新 |
 
 ## 変更内容
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | `plugins/work/skills/setup/scripts/setup.py` | 編集 | shutil.copy2 → インライン定数で各ファイルを直接生成 | `_TASKS_GITIGNORE` / `_TASKS_INDEX_YAML` 等の定数を追加 |
-| 2 | `plugins/work/scripts/setup-task.py` | 編集 | `_BRANCH_DOC_TEMPLATE` 定数を追加、テンプレートファイル読み込みを削除 | `--plugin-root` は後方互換で残す |
-| 3 | `plugins/work/skills/plugin-migrate/SKILL.md` | 編集 | Step 2 のテンプレートディレクトリ参照を削除し、.gitignore 内容をハードコード記述に変更 | 〃 |
-| 4 | `plugins/work/skills/plugin-migrate/SKILL.jp.md` | 編集 | SKILL.md の JP ミラーを同期 | - |
-| 5 | `plugins/work/references/skill-sync/TODOテンプレート同期.md` | 編集 | 関連ファイルを `templates/note.md` → `scripts/setup-task.py` に変更 | 〃 |
-| 6 | `plugins/work/references/skill-sync/TODOテンプレート同期.jp.md` | 編集 | JP ミラーを同期 | - |
-| 7 | `plugins/work/references/.ref-injects/_injection_rules.yaml` | 編集 | `templates/**` → `scripts/setup-task.py` にパターン更新 | - |
-| 8 | `plugins/work/references/.ref-injects/_index.yaml` | 編集 | TODOテンプレート同期の description を更新 | - |
-| 9 | `plugins/work/references/.ref-injects/_index.jp.yaml` | 編集 | JP ミラーを同期 | - |
-| 10 | `plugins/work/templates/` | 削除 | ディレクトリ全体を git rm | 8 ファイル削除 |
-| 11 | `plugins/work/.claude-plugin/plugin.json` | 編集 | v2.53.1 → v2.54.0 | - |
-| 12 | `.claude-plugin/marketplace.json` | 編集 | work エントリを v2.54.0 に更新 | - |
-| 13 | `plugins/work/CLAUDE.md` | 編集 | changelog に v2.54.0 行を追加 | 〃 |
-| 14 | `plugins/work/CLAUDE.jp.md` | 編集 | JP ミラーを同期 | - |
+| 1 | (実装中に記入) | - | - | - |
 
 ## テスト
 
 | # | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | `setup.py` が templates/ 参照なしで .work/ 構造を正しく生成する | 全ファイル（tasks/.gitignore, index.yaml 等）が正しく作成されることを確認 | OK |
-| 2 | `setup-task.py` がテンプレートファイル不要でブランチドキュメントを生成する | `_BRANCH_DOC_TEMPLATE` から正しいドキュメントが生成されることを確認 | OK |
-| 3 | `--plugin-root` 引数を渡しても警告なく動作する（後方互換） | 正常終了を確認 | OK |
+| 1 | `setup.py` が .work/ 構造を正しくブートストラップする | (未実施) | - |
+| 2 | ブランチドキュメント `.branch.md` 編集時に `タスクドキュメント.md` が注入される | (未実施) | - |
+| 3 | `.work/issues/**` 編集時に `イシュー.md` が注入される | (未実施) | - |
 
 ## QA
 
