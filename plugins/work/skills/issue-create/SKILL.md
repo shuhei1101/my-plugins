@@ -10,7 +10,7 @@ description: |
 
 Interprets a user's description of problems, splits it into discrete actionable issues, and writes
 each as an issue file in `.work/issues/`. The issue file format, ID numbering, and index update are
-governed by the `イシュー記述ルール` reference, which is auto-injected when you write a
+governed by the `work-dir/イシュー.md` reference, which is auto-injected when you write a
 `.work/issues/ISSUE-*.md` file — follow it directly; there is no separate save skill.
 
 Example: "The chat history is hard to read, and settings reset on restart"
@@ -64,7 +64,7 @@ Example: "The chat history is hard to read, and settings reset on restart"
 2. Split it into discrete problem units:
    - Independently fixable problems → separate issues
    - Same component or same root cause → merge into one issue
-3. For each problem, determine title / type / priority / tags (see the injected `イシュー記述ルール`
+3. For each problem, determine title / type / priority / tags (see the injected `work-dir/イシュー.md`
    reference for the meaning of each field)
 4. Present the split to the user for confirmation:
    - "I will split this into N issues. Does this look right?"
@@ -89,7 +89,7 @@ Example: "The chat history is hard to read, and settings reset on restart"
 
 1. For each confirmed issue, allocate the next ID (`last_id + 1`, incrementing as you go) and write
    `.work/issues/ISSUE-{N}.md`.
-   - Writing the file auto-injects the `イシュー記述ルール` reference — **follow its format exactly**.
+   - Writing the file auto-injects the `work-dir/イシュー.md` reference — **follow its format exactly**.
      The body is Japanese: `# ISSUE-{N}: {タイトル}`, a `**作成日**` line, `## 問題`, optional
      `## 修正案`. Do not write Type/Priority/Tags lines or a User's words section.
 2. After writing all files, update `_index.yaml` per the reference: append each issue's entry
@@ -119,5 +119,5 @@ Example: "The chat history is hard to read, and settings reset on restart"
 #### Notes
 
 - Do NOT run `git commit` in this skill — the user reviews before committing
-- File format, numbering, and index rules all live in the `イシュー記述ルール` reference — do not
+- File format, numbering, and index rules all live in the `work-dir/イシュー.md` reference — do not
   duplicate them here; the reference is injected when you write the file

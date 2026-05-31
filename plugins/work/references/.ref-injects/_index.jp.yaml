@@ -11,17 +11,20 @@ references:
   - path: skill-sync/スタートスキル同期.md
     description: work-start・worktree-create・vscode-workspace-sync スキルの同期ルール。work-start の Step 4 は worktree-create に委譲するため、インターフェースを常に整合させること。
 
-  - path: skill-sync/TODOテンプレート同期.md
-    description: work TODO テンプレートと work-start SKILL.md の同期ルール。テンプレートのセクション構成は work-start SKILL.md Step 7 の記入ガイドと一致させること。
+  - path: work-dir/ワークディレクトリ構成.md
+    description: .work/ の俯瞰図 — ディレクトリ構成・各サブフォルダ（tasks/notes/issues）の役割・コミット規約（.work/ 配下の変更は実装コードと別コミットにすること）。各サブフォルダの詳細リファレンスへの入り口。
 
-  - path: work-dir/ドットワークディレクトリ構成.md
-    description: .work/ 配下のファイルを編集する際のガイド — ディレクトリ構成・ブランチドキュメントのセクション構成・notes の「現在の仕様書」としての立ち位置・コミット規約（.work/ 配下の変更は実装コードと別コミットにすること）。
+  - path: work-dir/タスクドキュメント.md
+    description: ブランチドキュメントのテンプレートとセクション記入ガイド。ブランチドキュメントは 1 ブランチの正本で、.work/tasks/{folder}/{YYMMDD}-{日本語タイトル}.branch.md に作成する。注入されたテンプレートを元に直接作成する。
+
+  - path: work-dir/タスクインデックス.md
+    description: .work/tasks/index.yaml（進行中ブランチ索引・git 管理外）と index.archive.yaml（アーカイブ済み）のスキーマ。通常は index-tool.py と merge スキルが管理する。
+
+  - path: work-dir/イシュー.md
+    description: イシューファイル構成（.work/issues/ISSUE-{N}.md）と _index.yaml / _index.archive.yaml スキーマ。issue-save / issue-scan / issue-create がこのテンプレートからイシューファイルを作成する。
 
   - path: notes/ノート命名規則.md
     description: .work/notes/ ファイルの命名・インデックス管理ルール。ファイル名と H1 タイトルは日本語（技術識別子はそのまま）。ノートを新規作成・リネーム・削除したときは同じコミットで _index.md も更新する。
 
   - path: notes/ノート記述内容ルール.md
     description: .work/notes/ のノートに書く内容と固定ノートテンプレート。ノートは現在の仕様書（スナップショット） — 本文には現在状態のみを書き履歴・理由は書かない。変更は末尾の変更履歴テーブルにのみ残す。YAML frontmatter は付けない。
-
-  - path: issues/イシュー記述ルール.md
-    description: .work/issues/ 配下のイシューファイルの書き方 — ファイル命名・採番（_index.yaml の last_id）・イシューファイルのフォーマット/テンプレート・index 更新。.work/issues/ISSUE-*.md を読み・書き・編集する際に自動注入される。
