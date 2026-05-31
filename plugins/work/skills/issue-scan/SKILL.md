@@ -44,11 +44,13 @@ read source or analyze code.
 
 ---
 
-## Note: UserPromptSubmit hook
+## Note: work hook overrides
 
-This skill manages its own branch/worktree lifecycle. The instruction injected by the
-`UserPromptSubmit` hook — "if no working branch is in progress, run `/work:start`" — should be
-**ignored while this skill is running**.
+This skill manages its own branch/worktree lifecycle. Instructions injected by the following hooks
+should be **ignored while this skill is running**:
+
+- **`UserPromptSubmit` hook**: "if no working branch is in progress, run `/work:start`"
+- **`Stop` hook**: "update the `## 作業内容` table in the branch document" / "run `/work:merge`"
 
 ---
 
