@@ -1,0 +1,7 @@
+closed_issues: []
+
+scan_records:
+  - date: 2026-05-31
+    skill: issue-scan
+    scope: "consistency:plugin-manifests"
+    issues_found: [ISSUE-002, ISSUE-003]
