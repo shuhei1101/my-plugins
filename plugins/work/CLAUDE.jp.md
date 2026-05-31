@@ -13,7 +13,7 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 | 5 | `work:qa-review` | 現在のブランチドキュメントの QA 項目をレビュー |
 | 6 | `work:plugin-config` | `settings.json` の work env トグルを対話的に設定 |
 | 7 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
-| 8 | `work:issue-scan` | ランダムなソースファイルをスキャンしてルール違反をイシューとして記録 |
+| 8 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
 | 9 | `work:issue-save` | 会話中のイシューを保存 |
 | 10 | `work:impl-review` | ブランチドキュメントに照らして実装をレビュー |
 | 11 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
@@ -21,6 +21,12 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 | 13 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
 | 14 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
 | 15 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
+
+## エージェント
+
+| # | エージェント | 役割 |
+|---|---|---|
+| 1 | `work:issue-scanner` | 1 つの観点（フォルダ / grep / レイヤー / ファイル群）を ref-inject の reference と照合してスキャンし、ISSUE ファイルを書き出す。`work:issue-scan` が起動する |
 
 ## フック
 
@@ -46,6 +52,7 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 | 8 | `DEV_KIT_INJECTION_DISABLE` | (off) | dev-kit リファレンス注入を無効化 |
 | 9 | `WORK_COMMIT_LANG` | `JP` | コミットメッセージの言語：`JP` = 日本語、`EN` = 英語 |
 | 10 | `WORK_COMMIT_TYPE` | `true` | Conventional commit タイププレフィックス（`feat:`、`fix:`、`chore:` など）を付与するか |
+| 11 | `ISSUE_SCAN_AGENTS` | `1` | `issue-scan` 1 回あたりのスキャン観点数（= 並列 `issue-scanner` サブエージェント数） |
 
 ## ブランチドキュメント構造
 
@@ -62,6 +69,7 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
+| 1 | 2.54.0 | 2026-05-31 | `issue-scan` を並列 `work:issue-scanner` サブエージェント（新規エージェント）へ委譲するオーケストレーターに再設計。単一ファイルでなく観点（フォルダ/grep/レイヤー/ファイル群）でスキャン。`ISSUE_SCAN_AGENTS` env var 追加 |
 | 1 | 2.53.1 | 2026-05-31 | `references/` をカテゴリ別サブフォルダへ分割：`notes/`・`work-dir/`・`skill-sync/` |
 | 2 | 2.53.0 | 2026-05-31 | ノートを「現在の仕様書」に再定義（スナップショット。本文に履歴を書かず `## 変更履歴` テーブルのみ・frontmatter 無し）、`ノート記述内容ルール` リファレンス追加、`.work/specs` を notes へ統合しフォルダ削除 |
 | 2 | 2.52.0 | 2026-05-31 | ブランチ文書ファイル名を日本語タイトル基準に変更（`{YYMMDD}-{日本語タイトル}.md`）、`index.yaml` に `branch` フィールド追加 |

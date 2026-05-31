@@ -318,18 +318,20 @@ scan_records:
 
 ### `/work:issue-scan`
 
+`issue-scan` はオーケストレーター専用。メインはソースもイシュー本文も読まず、分析は全て `work:issue-scanner` サブエージェント内で行う。
+
 ```
-Step 0. 一時スキャンブランチを作成（ISSUE_SCAN_AGENTS を読んで N を決定）
-Step 1. _index.archive.yaml の scan_records を確認し、スキャン済みファイルを除外
-Step 2. 未スキャンファイルから N 個をランダムに選ぶ
-Step 3. N=1: メインエージェントがファイルを Read（ref-inject フックが参照を自動注入）
-         N≥2: N 個のサブエージェントを並列起動して各ファイルをスキャン、発見内容を集約
-Step 4. reference と照合してイシューを発見（N=1 パス）
-Step 5. 発見内容を /work:issue-save で保存
-Step 6. _index.archive.yaml の scan_records を更新
-Step 7. スキャンブランチへコミット → master に --no-ff マージ → ブランチ削除
-Step 8. スキャン結果をレポート
+Step 0. master 確認 → 一時スキャンブランチ作成、ISSUE_SCAN_AGENTS=N を読む
+Step 1. _index.archive.yaml の scan_records（スキャン済み観点）と _index.yaml の last_id=L を読む
+Step 2. スキャン観点を N 個選ぶ（フォルダ/grep/レイヤー/ファイル群/パターン — 観点カタログから巡回選択）
+Step 3. 各観点に ID ブロック割当（START_i = L+1+i*SLOT, SLOT=30）→ work:issue-scanner を N 個並列起動
+        各サブエージェント: 観点をスキャン → ISSUE-{N}.md を作成（先採番ブロック使用）→ メタデータのみ返す
+Step 4. 戻り値（メタデータのみ）を集約し _index.yaml / _index.archive.yaml を更新
+Step 5. スキャンブランチへコミット → master に --no-ff マージ → ブランチ削除
+Step 6. スキャン結果をレポート
 ```
+
+責務分担: サブエージェントは「ISSUE ファイル作成まで」（共有 index には触れず・コミットしない）、メインは「ID 先採番・index 更新・コミット・マージ」を集約する。並列で同一 worktree にコミットすると git 競合するため、コミットはメインに一本化している。
 
 ---
 
@@ -360,11 +362,11 @@ Step 8. スキャン結果をレポート
 - ユーザーが `wontfix` でクローズ可能
 
 ### スキャン頻度
-- `issue-scan` は単発でも `/ loop /work:issue-scan` による連続ループでも実行可能
+- `issue-scan` は単発でも `/loop /work:issue-scan` による連続ループでも実行可能
 - 毎回実行でスキャンブランチ（`chore/issue-scan-YYMMDD-HHMMSS`）を自動作成し、master に `--no-ff` でマージして終了
-- `ISSUE_SCAN_AGENTS=N` で 1 回の実行当たりのスキャンファイル数を制御（デフォルト 1）
-  - N=1: メインエージェントで 1 ファイルをスキャン
-  - N≥2: N 個のサブエージェントを並列起動し、各エージェントが 1 ファイルをスキャン。発見内容はメインエージェントが集約して保存する
+- `ISSUE_SCAN_AGENTS=N` で 1 回の実行当たりのスキャン観点数を制御（デフォルト 1）
+  - N=1 でも必ず 1 つの `work:issue-scanner` サブエージェントを別コンテキストで起動する（メインは分析しない）
+  - N≥2: N 個のサブエージェントを並列起動し、各エージェントが 1 観点をスキャン
 
 ---
 
@@ -378,7 +380,7 @@ PR135 / PR140 の成果により、フック自動注入の基盤は py-kit / ne
 | タスク | 状態 | 備考 |
 |---|---|---|
 | PR-D: merge スキルにイシュークローズ処理を統合 | ✅ PR146 完了 | work-kit issue-scan/create が前提（PR131 完了済み） |
-| issue-scan の自動ループ対応（ブランチ作成・マージ・サブエージェント制御） | ✅ feat/issue-scan-auto-loop 完了 | ISSUE_SCAN_AGENTS 環境変数で並列数制御、/loop と組み合わせて継続スキャン可能 |
+| issue-scan の自動ループ＋オーケストレーター化 | ✅ feat/issue-scan-auto-loop 完了 | `work:issue-scanner` エージェント新設。観点ベースのスキャン、ISSUE_SCAN_AGENTS で並列数制御、ブランチ自動作成・マージ、/loop で継続スキャン |
 | issue-scan の references 参照精度向上 | 未検討 | next-kit / py-kit references が 1 ファイル = 1 ユースケース化された今、scan 時の粒度を合わせる |
 | スキャン対象の拡張（Next.js フロントエンド） | 未検討 | 現在は HTML / backend が対象。next-kit プロジェクトへの適用を検討 |
 
