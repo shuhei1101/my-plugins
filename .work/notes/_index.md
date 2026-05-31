@@ -4,6 +4,17 @@
 
 ---
 
+## コーディング規約・スタイル
+
+コーディング規約・スタイルガイドに関するメモ。
+
+| # | ファイル | タイトル |
+|---|---|---|
+| 1 | [Pythonスクリプトスタイル規約.md](コーディング規約・スタイル/Pythonスクリプトスタイル規約.md) | Python スクリプトスタイル規約 — my-plugins 内スクリプトの統一方針 |
+| 2 | [マークダウンテーブル規約.md](コーディング規約・スタイル/マークダウンテーブル規約.md) | マークダウンテーブル規約 — Noカラムと繰り返し値の記法 |
+
+---
+
 ## フック・自動化
 
 フックの実装・設計・修正に関するメモ。
@@ -57,12 +68,13 @@
 | 3 | [言語プラグイン統合メモ.md](プラグイン構成・統合/言語プラグイン統合メモ.md) | py-kit / html-kit / next-kit → dev-kit 統合 (PR166) |
 | 4 | [プラグインCLAUDE標準構成.md](プラグイン構成・統合/プラグインCLAUDE標準構成.md) | プラグイン CLAUDE.md 標準構成 — 標準セクション定義 |
 | 5 | [claude-kit-references-structure.md](プラグイン構成・統合/claude-kit-references-structure.md) | claude-kit リファレンス構造整理 — サブフォルダ分割設計メモ |
-| 6 | [plugin-migrate-rename.md](プラグイン構成・統合/plugin-migrate-rename.md) | plugin-migrate スキル命名規則 — plugin-update から plugin-migrate へのリネーム |
-| 7 | [marketplace-upgradeコマンド.md](プラグイン構成・統合/marketplace-upgradeコマンド.md) | marketplace-upgradeコマンド — インストール済みプラグインの一括更新 |
-| 8 | [リファレンスファイル名日本語化.md](プラグイン構成・統合/リファレンスファイル名日本語化.md) | リファレンスファイル名日本語化 — 全プラグインの references/ ファイル名を日本語に統一する |
-| 9 | [remove-unused-references.md](プラグイン構成・統合/remove-unused-references.md) | remove-unused-references — claude-kit の未使用リファレンスファイル削除 |
-| 10 | [setup-wizard-pattern.md](プラグイン構成・統合/setup-wizard-pattern.md) | setup-wizard パターン — プラグイン初回オンボーディングの規約 |
-| 11 | [zero-plugin-dependency.md](プラグイン構成・統合/zero-plugin-dependency.md) | プラグイン間依存ゼロ — 棚卸しノート |
+| 6 | [workリファレンスサブフォルダ構造.md](プラグイン構成・統合/workリファレンスサブフォルダ構造.md) | work リファレンスサブフォルダ構造 — notes/・work-dir/・skill-sync/ のカテゴリ定義と injection ルール |
+| 7 | [plugin-migrate-rename.md](プラグイン構成・統合/plugin-migrate-rename.md) | plugin-migrate スキル命名規則 — plugin-update から plugin-migrate へのリネーム |
+| 8 | [marketplace-upgradeコマンド.md](プラグイン構成・統合/marketplace-upgradeコマンド.md) | marketplace-upgradeコマンド — インストール済みプラグインの一括更新 |
+| 9 | [リファレンスファイル名日本語化.md](プラグイン構成・統合/リファレンスファイル名日本語化.md) | リファレンスファイル名日本語化 — 全プラグインの references/ ファイル名を日本語に統一する |
+| 10 | [remove-unused-references.md](プラグイン構成・統合/remove-unused-references.md) | remove-unused-references — claude-kit の未使用リファレンスファイル削除 |
+| 11 | [setup-wizard-pattern.md](プラグイン構成・統合/setup-wizard-pattern.md) | setup-wizard パターン — プラグイン初回オンボーディングの規約 |
+| 12 | [zero-plugin-dependency.md](プラグイン構成・統合/zero-plugin-dependency.md) | プラグイン間依存ゼロ — 棚卸しノート |
 
 ---
 
@@ -101,6 +113,7 @@ env 設定・運用ポリシー・用語規約に関するメモ。
 | 2 | [マージStep12-次PR一覧.md](ワークフロー・マージ/マージStep12-次PR一覧.md) | マージ Step 12 — 次 PR 一覧の出力フォーマット |
 | 3 | [ノートインデックス同期ルール.md](ワークフロー・マージ/ノートインデックス同期ルール.md) | ノートインデックス同期ルール — _index.md 自動更新促進の設計メモ |
 | 4 | [インシデント — マージスキルStep3スキップによるmaster上コンフリクト.md](ワークフロー・マージ/インシデント%20—%20マージスキルStep3スキップによるmaster上コンフリクト.md) | インシデント — マージスキル Step 3 スキップによる master 上コンフリクト |
+| 5 | [ブランチインデックススキーマ.md](ワークフロー・マージ/ブランチインデックススキーマ.md) | ブランチインデックススキーマ — `.work/tasks/index.yaml` の構造と運用 |
 
 ---
 

@@ -2,23 +2,29 @@
 index-tool — CLI for workspace index.yaml operations.
 
 Usage:
-  python index-tool.py next-id [index_yaml]
-  python index-tool.py add [index_yaml] --id N --branch B --title T --type T --summary S --task T
+  python index-tool.py add [index_yaml] --branch B --title T --type T --summary S --task T [--created YYYY-MM-DD]
   python index-tool.py list-active [index_yaml]
-  python index-tool.py set-completed [index_yaml] --id N
+  python index-tool.py completed-count [index_yaml]
+  python index-tool.py set-completed [index_yaml] --branch B
   python index-tool.py archive [index_yaml] [archive_yaml]
 
   index_yaml   Path to index.yaml (default: .work/tasks/index.yaml)
   archive_yaml Path to index.archive.yaml (default: .work/tasks/index.archive.yaml)
 
 Subcommands:
-  next-id        Print the next available ID (last_id + 1, or 1 if absent)
-  add            Append a new branch entry and update last_id
-  list-active    Print active (completed: false) branch entries as lines:
-                   id|title|type|task
-  set-completed  Mark a branch entry as completed: true
-  archive        Move completed entries from index.yaml to index.archive.yaml.
-                 Prints the number of entries moved.
+  add              Append a new branch entry
+  list-active      Print active (completed: false) entries as lines:
+                     branch|title|type|task
+  completed-count  Print the number of completed entries
+  set-completed    Mark a branch entry (matched by --branch) as completed: true
+  archive          Move completed entries from index.yaml to index.archive.yaml.
+                   Prints the number of entries moved.
+
+The branch index is keyed by the `branch` name. Each entry has the fields:
+  branch, created, title, type, summary, task, completed
+The top-level document is `{branches: [...]}` — there is no numeric id or last_id.
+`created` (YYYY-MM-DD, set at add time) is a surrogate that disambiguates same-named
+branches recurring over time in the archive; it is not a counter.
 
 By routing index.yaml operations through this script, Claude Code avoids
 loading the full YAML file into its context window.
@@ -26,6 +32,7 @@ loading the full YAML file into its context window.
 
 # ── stdlib ──────────────────────────────────────────────────
 import argparse
+import datetime
 import sys
 from pathlib import Path
 
@@ -59,47 +66,38 @@ def _save(path: Path, data: dict, original_text: str) -> None:
 
 
 # ── subcommand handlers ──────────────────────────────────────
-def cmd_next_id(args: argparse.Namespace) -> None:
-    """Print the next available ID."""
-    index_path = Path(args.index_yaml)
-    data = _load(index_path)
-    branches: list[dict] = data.get("branches", [])
-    last_id: int = data.get("last_id") or (max((p["id"] for p in branches), default=0))
-    print(last_id + 1)
-
-
 def cmd_add(args: argparse.Namespace) -> None:
-    """Append a new branch entry and update last_id."""
+    """Append a new branch entry."""
+    if not args.created:
+        args.created = datetime.date.today().isoformat()
     index_path = Path(args.index_yaml)
     original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
     data = yaml.safe_load(original) or {} if original else {}
 
     branches: list[dict] = data.get("branches", [])
     new_entry = {
-        "id": args.id,
         "branch": args.branch,
+        "created": args.created,
         "title": args.title,
         "type": args.type,
-        "tags": [],
         "summary": args.summary,
         "task": args.task,
         "completed": False,
     }
     branches.append(new_entry)
     data["branches"] = branches
-    data["last_id"] = args.id
 
     _save(index_path, data, original)
-    print(f"Added entry {args.id} to {index_path}")
+    print(f"Added entry {args.branch} to {index_path}")
 
 
 def cmd_list_active(args: argparse.Namespace) -> None:
-    """Print active branch entries, one per line: id|title|type|task"""
+    """Print active branch entries, one per line: branch|title|type|task"""
     index_path = Path(args.index_yaml)
     data = _load(index_path)
     active = [p for p in data.get("branches", []) if not p.get("completed", False)]
     for p in active:
-        print(f"{p['id']}|{p['title']}|{p['type']}|{p['task']}")
+        print(f"{p.get('branch', '')}|{p.get('title', '')}|{p.get('type', '')}|{p.get('task', '')}")
 
 
 def cmd_completed_count(args: argparse.Namespace) -> None:
@@ -111,21 +109,21 @@ def cmd_completed_count(args: argparse.Namespace) -> None:
 
 
 def cmd_set_completed(args: argparse.Namespace) -> None:
-    """Mark a specific branch entry as completed: true in index.yaml."""
+    """Mark a specific branch entry (matched by --branch) as completed: true."""
     index_path = Path(args.index_yaml)
     original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
     data = yaml.safe_load(original) or {} if original else {}
 
     branches: list[dict] = data.get("branches", [])
-    target = next((p for p in branches if p["id"] == args.id), None)
+    target = next((p for p in branches if p.get("branch") == args.branch), None)
     if target is None:
-        print(f"Error: entry {args.id} not found in {index_path}", file=sys.stderr)
+        print(f"Error: branch {args.branch} not found in {index_path}", file=sys.stderr)
         sys.exit(1)
 
     target["completed"] = True
     data["branches"] = branches
     _save(index_path, data, original)
-    print(f"Entry {args.id} marked as completed in {index_path}")
+    print(f"Branch {args.branch} marked as completed in {index_path}")
 
 
 def cmd_archive(args: argparse.Namespace) -> None:
@@ -163,7 +161,6 @@ def cmd_archive(args: argparse.Namespace) -> None:
 # ── main ────────────────────────────────────────────────────
 def main(args: argparse.Namespace) -> None:
     handlers = {
-        "next-id": cmd_next_id,
         "add": cmd_add,
         "list-active": cmd_list_active,
         "completed-count": cmd_completed_count,
@@ -180,19 +177,20 @@ def parse_args() -> argparse.Namespace:
     )
     sub = parser.add_subparsers(dest="subcommand", required=True)
 
-    # next-id
-    p_next = sub.add_parser("next-id", help="Print next available ID")
-    p_next.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
-
     # add
     p_add = sub.add_parser("add", help="Add a new branch entry")
     p_add.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
-    p_add.add_argument("--id", type=int, required=True)
-    p_add.add_argument("--branch", default="")
+    p_add.add_argument("--branch", required=True)
     p_add.add_argument("--title", required=True)
     p_add.add_argument("--type", required=True, dest="type")
     p_add.add_argument("--summary", required=True)
     p_add.add_argument("--task", required=True)
+    p_add.add_argument(
+        "--created",
+        default=None,
+        help="Creation date YYYY-MM-DD. Defaults to today. Acts as a surrogate to "
+             "disambiguate same-named branches across time in the archive.",
+    )
 
     # list-active
     p_list = sub.add_parser("list-active", help="List active (not completed) branches")
@@ -205,7 +203,7 @@ def parse_args() -> argparse.Namespace:
     # set-completed
     p_set = sub.add_parser("set-completed", help="Mark a branch entry as completed")
     p_set.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
-    p_set.add_argument("--id", type=int, required=True)
+    p_set.add_argument("--branch", required=True)
 
     # archive
     p_archive = sub.add_parser("archive", help="Move completed entries to archive file")

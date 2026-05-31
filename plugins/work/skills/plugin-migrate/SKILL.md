@@ -55,12 +55,10 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 1. If `.work/CLAUDE.md` exists, remove it with `git rm`
    - `.work/CLAUDE.md` was a static file that is now handled by ref-inject; it is no longer shipped in the template
    - If `.work/CLAUDE.jp.md` exists, remove it the same way
-2. Locate the work plugin template root: `${CLAUDE_PLUGIN_ROOT}/templates/.work/`
-3. Copy the following `.gitignore` files from the template into the project (overwrite):
-   - `tasks/.gitignore` → `.work/tasks/.gitignore`
-   - `issues/.gitignore` → `.work/issues/.gitignore` (if present in the template)
-     - Create `.work/issues/` first if it does not exist
-4. Report which files were changed
+2. Write the following `.gitignore` files with the hardcoded content below (overwrite):
+   - `.work/tasks/.gitignore` → content: `index.yaml`
+   - `.work/issues/.gitignore` → content: `_index.yaml` (create `.work/issues/` first if it does not exist)
+3. Report which files were changed
 
 → Proceed to Step 3
 
@@ -71,7 +69,7 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 ---
 
-### Step 3: Migrate `.work/tasks/index.yaml` (add `last_id` if missing)
+### Step 3: Migrate `.work/tasks/index.yaml` to the branch-keyed schema
 
 #### Condition
 
@@ -80,25 +78,27 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 #### Process
 
-1. Read `.work/tasks/index.yaml`
-2. If `last_id` is already present → skip this step
-3. If `last_id` is absent:
-   - Compute `last_id` = `max(id)` across all entries (0 if empty)
-   - Add `last_id: {N}` to the top of the index file
-   - Write the updated file
+1. Read `.work/tasks/index.yaml` (and `.work/tasks/index.archive.yaml` if present)
+2. If no entry has `id` or `tags` and there is no top-level `last_id` → already migrated, skip
+3. Otherwise migrate to the branch-keyed schema:
+   - Remove `id` and `tags` from every entry
+   - Remove the top-level `last_id` key
+   - Keep only `branch`, `title`, `type`, `summary`, `task`, `completed`
+   - Apply the same normalization to `index.archive.yaml`
+   - Write the updated file(s)
 
 → Proceed to Step 4
 
 #### Output
 
-- `last_id` present in `index.yaml`
-- If already present: report "index.yaml already has last_id — skipped"
+- `index.yaml` (and `index.archive.yaml`) use the branch-keyed schema (no `id` / `last_id` / `tags`)
+- If already migrated: report "index.yaml already uses the branch-keyed schema — skipped"
 
 #### Notes
 
-- `index.yaml` is gitignored — no commit needed for it
-- This is the only schema migration this skill performs; deeper rewrites belong in dedicated
-  one-off scripts shipped alongside the breaking version bump
+- The branch index is keyed by `branch`; there is no numeric `id` or `last_id`
+- `index.yaml` is gitignored — no commit needed for it; `index.archive.yaml` is git-tracked
+- The migration is idempotent — running it again after migration is a no-op
 
 ---
 

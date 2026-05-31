@@ -14,14 +14,19 @@ reminds task updates on stop, manages worktrees, and guards force-operations on 
 | 5 | `work:qa-review` | Review QA items in the current branch document |
 | 6 | `work:plugin-config` | Interactively configure work env toggles in `settings.json` |
 | 7 | `work:issue-create` | Create issue files under `.work/issues/` |
-| 8 | `work:issue-scan` | Scan a random source file for rule violations, record as issues |
-| 9 | `work:issue-save` | Save a one-off issue from conversation |
-| 10 | `work:impl-review` | Review implementation against the branch document |
-| 11 | `work:setup` | Initialize `.work/` directory structure from templates |
-| 12 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
-| 13 | `work:worktree-create` | Create a git worktree for a branch |
-| 14 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
-| 15 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
+| 8 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
+| 9 | `work:impl-review` | Review implementation against the branch document |
+| 10 | `work:setup` | Initialize `.work/` directory structure from templates |
+| 11 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
+| 12 | `work:worktree-create` | Create a git worktree for a branch |
+| 13 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
+| 14 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
+
+## Agents
+
+| # | Agent | Purpose |
+|---|---|---|
+| 1 | `work:issue-scanner` | Scan one perspective (folder / grep / layer / file-group) against ref-inject references and write ISSUE files; spawned by `work:issue-scan` |
 
 ## Hooks
 
@@ -47,6 +52,7 @@ reminds task updates on stop, manages worktrees, and guards force-operations on 
 | 8 | `DEV_KIT_INJECTION_DISABLE` | (off) | Disable dev-kit reference injection |
 | 9 | `WORK_COMMIT_LANG` | `JP` | Language of commit messages: `JP` = Japanese, `EN` = English |
 | 10 | `WORK_COMMIT_TYPE` | `true` | Include conventional commit type prefix (`feat:`, `fix:`, `chore:`, etc.) |
+| 11 | `ISSUE_SCAN_AGENTS` | `1` | Perspectives scanned per `issue-scan` run (= parallel `issue-scanner` subagents) |
 
 ## Branch Document Structure
 
@@ -63,7 +69,11 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.53.0 | 2026-05-31 | Redefine notes as a current spec sheet (snapshot; no history in the body, `## 変更履歴` table only, no frontmatter); add `ノート記述内容ルール` reference; merge `.work/specs` into notes and remove the folder |
+| 1 | 2.56.0 | 2026-05-31 | Redesign `issue-scan` as an orchestrator delegating to parallel `work:issue-scanner` subagents (new agent); scan by perspective (folder/grep/layer/file-group); add `ISSUE_SCAN_AGENTS`; remove `issue-save` skill — issue file format now in the `work-dir/イシュー` reference, authored by `issue-create` and `issue-scanner` |
+| 2 | 2.55.0 | 2026-05-31 | Remove `plugins/work/templates/` and `setup-task.py`; move templates/structure defs into `references/work-dir/` (`タスクドキュメント` / `タスクインデックス` / `イシュー` / `ワークディレクトリ構成`), injected by ref-inject on the matching `.work/` path. `work:start` authors the branch doc from the injected template; branch doc filename gains `.branch.md`. Rename `ドットワークディレクトリ構成`→`ワークディレクトリ構成`; remove `TODOテンプレート同期` |
+| 3 | 2.54.0 | 2026-05-31 | index.yaml branch index keyed by `branch` (drop id/last_id/tags); add `created` surrogate; legacy backlog migrated to `index.archive.yaml`; `next-id` removed and `set-completed` switched to `--branch` |
+| 4 | 2.53.1 | 2026-05-31 | Split `references/` into category subfolders: `notes/`, `work-dir/`, `skill-sync/` |
+| 2 | 2.53.0 | 2026-05-31 | Redefine notes as a current spec sheet (snapshot; no history in the body, `## 変更履歴` table only, no frontmatter); add `ノート記述内容ルール` reference; merge `.work/specs` into notes and remove the folder |
 | 2 | 2.52.0 | 2026-05-31 | Branch doc filename uses Japanese title (`{YYMMDD}-{日本語タイトル}.md`); add `branch` field to `index.yaml` |
 | 2 | 2.51.0 | 2026-05-31 | Add `WORK_COMMIT_LANG` / `WORK_COMMIT_TYPE` env vars — configurable commit message language and type prefix |
 | 2 | 2.50.0 | 2026-05-31 | Add `WORK_BRANCH_AUTHOR` env var — insert author name into branch names |

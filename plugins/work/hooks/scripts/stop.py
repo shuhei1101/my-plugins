@@ -1,9 +1,9 @@
-# workspace Stop hook — emit a TODO/QA reminder when a response ends.
+# workspace Stop フック — レスポンス終了時に TODO/QA リマインダーを出力する。
 #
-# Env toggles:
-#   WORK_STOP_REMINDER (default truthy) — set falsy to disable entirely
-#   WORK_MERGE_PROPOSAL (default truthy) — set falsy to drop the merge
-#     suggestion (uses stop-no-merge.md instead of stop.md)
+# env トグル:
+#   WORK_STOP_REMINDER（デフォルト truthy）— falsy で全体を無効化する
+#   WORK_MERGE_PROPOSAL（デフォルト truthy）— falsy でマージ提案を省略する
+#     （stop.md の代わりに stop-no-merge.md を使用）
 
 from __future__ import annotations
 

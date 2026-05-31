@@ -1,4 +1,6 @@
-"""Apply the predefined statusLine configuration to ~/.claude/settings.json."""
+"""~/.claude/settings.json に定義済みの statusLine 設定を適用する。"""
+
+from __future__ import annotations
 
 import json
 import sys
@@ -41,10 +43,10 @@ STATUS_LINE = {
 }
 
 
-def main() -> None:
+def main() -> int:
     if not SETTINGS_PATH.exists():
-        print(f"Error: {SETTINGS_PATH} not found", file=sys.stderr)
-        sys.exit(1)
+        print(f"エラー: {SETTINGS_PATH} が見つかりません。", file=sys.stderr)
+        return 1
 
     with open(SETTINGS_PATH, encoding="utf-8") as f:
         settings = json.load(f)
@@ -55,8 +57,9 @@ def main() -> None:
         json.dump(settings, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
-    print(f"statusLine applied to {SETTINGS_PATH}")
+    print(f"statusLine を {SETTINGS_PATH} に適用しました。")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
