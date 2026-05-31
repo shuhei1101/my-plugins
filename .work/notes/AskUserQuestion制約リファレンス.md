@@ -2,7 +2,7 @@
 created_at: 2026-05-31
 updates:
   - 2026-05-31 — 初版作成
-related_specs: []
+related_notes: []
 related_branches:
   - feat/document-askuserquestion-limits
 ---
