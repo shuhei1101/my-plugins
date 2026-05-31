@@ -1110,3 +1110,10 @@ branches:
   summary: workプラグイン内のPR→ブランチ用語統一とuser-prompt-submit.py古い表記修正
   task: 260531_workプラグイン用語修正
   completed: true
+- id: 246
+  title: chore/rename-related-specs-to-notes
+  type: chore
+  tags: []
+  summary: ノートフロントマターの related_specs を related_notes にリネーム
+  task: 260531_ノートフロントマター修正
+  completed: true
