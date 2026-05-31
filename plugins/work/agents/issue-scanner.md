@@ -108,10 +108,11 @@ Rules:
 
 For finding number `k` (0-indexed), write `.work/issues/ISSUE-{START + k}.md`.
 
-Writing the file auto-injects the `イシュー記述ルール` reference — **follow its format exactly**
-(the `# ISSUE-{N}: {title}` header, the `Type` / `Priority` / `Created` / `Tags` / `Scan scope`
-metadata, `## Problem`, optional `## Horizontal expansion`, optional `## Suggested fix`).
-Use `date +%Y-%m-%d` via Bash for the `Created` date.
+Writing the file auto-injects the `イシュー記述ルール` reference — **follow its format exactly**.
+The issue body is **Japanese**: a `# ISSUE-{N}: {タイトル}` header, a `**作成日**` line, `## 問題`,
+optional `## 水平展開`, optional `## 修正案`. Do **not** write `Type` / `Priority` / `Tags` /
+`Scan scope` lines or a `User's words` section — classification goes only into `_index.yaml`, which
+the orchestrator updates from your returned metadata. Use `date +%Y-%m-%d` via Bash for `**作成日**`.
 
 - The full problem description and suggested fix live **in the file only** — they never go in your
   return value.

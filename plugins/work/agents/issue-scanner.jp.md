@@ -104,9 +104,10 @@ model: sonnet
 `k` 番目（0-indexed）の発見について、`.work/issues/ISSUE-{START + k}.md` を書く。
 
 ファイル書き込み時に `イシュー記述ルール` リファレンスが自動注入される — **そのフォーマットに正確に
-従う**（`# ISSUE-{N}: {タイトル}` ヘッダ、`Type` / `Priority` / `Created` / `Tags` / `Scan scope`
-メタデータ、`## Problem`、任意の `## Horizontal expansion`、任意の `## Suggested fix`）。
-`Created` の日付は Bash 経由で `date +%Y-%m-%d` を使う。
+従う**。イシュー本文は**日本語**: `# ISSUE-{N}: {タイトル}` ヘッダ、`**作成日**` 行、`## 問題`、
+任意の `## 水平展開`、任意の `## 修正案`。`Type` / `Priority` / `Tags` / `Scan scope` 行や
+`User's words` セクションは**書かない** — 分類は `_index.yaml` のみに置き、あなたが返したメタデータから
+オーケストレーターが更新する。`**作成日**` は Bash 経由で `date +%Y-%m-%d` を使う。
 
 - 問題の詳細説明と修正案は**ファイル内にのみ**書く — 戻り値には決して含めない。
 - `_index.yaml` / `_index.archive.yaml` は更新しない。これがリファレンスの「index を更新する」手順から

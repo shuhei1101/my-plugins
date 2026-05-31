@@ -89,11 +89,12 @@ Example: "The chat history is hard to read, and settings reset on restart"
 
 1. For each confirmed issue, allocate the next ID (`last_id + 1`, incrementing as you go) and write
    `.work/issues/ISSUE-{N}.md`.
-   - Writing the file auto-injects the `イシュー記述ルール` reference — **follow its format exactly**
-     (header, `## Problem`, optional `## User's words` with the user's verbatim report, optional
-     `## Suggested fix`).
-2. After writing all files, update `_index.yaml` per the reference: append each issue's entry to
-   `issues` and set `last_id` to the highest ID used.
+   - Writing the file auto-injects the `イシュー記述ルール` reference — **follow its format exactly**.
+     The body is Japanese: `# ISSUE-{N}: {タイトル}`, a `**作成日**` line, `## 問題`, optional
+     `## 修正案`. Do not write Type/Priority/Tags lines or a User's words section.
+2. After writing all files, update `_index.yaml` per the reference: append each issue's entry
+   (`type` / `priority` / `tags` / `scan_scope` are recorded here, not in the file) and set
+   `last_id` to the highest ID used.
 3. Collect the created ISSUE IDs.
 
 → Proceed to Step 4
