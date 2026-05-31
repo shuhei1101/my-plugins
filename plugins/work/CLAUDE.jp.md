@@ -44,6 +44,8 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 | 6 | `WORK_BRANCH_AUTHOR` | （空） | ブランチ名に作者名を追加：`{type}/{author}/{title}` 形式になる |
 | 7 | `CLAUDE_KIT_INJECTION_DISABLE` | (off) | リファレンス注入を無効化（kill switch） |
 | 8 | `DEV_KIT_INJECTION_DISABLE` | (off) | dev-kit リファレンス注入を無効化 |
+| 9 | `WORK_COMMIT_LANG` | `JP` | コミットメッセージの言語：`JP` = 日本語、`EN` = 英語 |
+| 10 | `WORK_COMMIT_TYPE` | `true` | Conventional commit タイププレフィックス（`feat:`、`fix:`、`chore:` など）を付与するか |
 
 ## ブランチドキュメント構造
 
@@ -60,7 +62,8 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.50.0 | 2026-05-31 | `WORK_BRANCH_AUTHOR` env var を追加 — ブランチ名に作者名セグメントを挿入 |
+| 1 | 2.51.0 | 2026-05-31 | `WORK_COMMIT_LANG` / `WORK_COMMIT_TYPE` env var を追加 — コミットメッセージの言語とタイププレフィックスを設定可能に |
+| 2 | 2.50.0 | 2026-05-31 | `WORK_BRANCH_AUTHOR` env var を追加 — ブランチ名に作者名セグメントを挿入 |
 | 2 | 2.48.0 | 2026-05-30 | `work:notes-to-claude` スキルを削除 — プラグイン間依存を排除 |
 | 3 | 2.47.0 | 2026-05-30 | `work:plugin-config` 管理対象トグルに `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` を追加 |
 | 4 | 2.46.2 | 2026-05-30 | `issue-scan` スキルの古い `py-kit`/`next-kit` 記述を削除、`_injection_rules.yaml` に更新 |
