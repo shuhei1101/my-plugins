@@ -291,28 +291,28 @@ git commit -m "docs: post-merge update"
 
 ---
 
-### Step 10: Report merge completion
-
-#### Process
-
-1. Report the merge as complete to the user
-   - Include the merged branch name, internal ID, and task folder
-
-→ Proceed to Step 11
-
----
-
-### Step 11: Delegate next branch candidates to branch-reserve
+### Step 10: Delegate next branch candidates to branch-reserve
 
 #### Condition
 
-- `WORK_MERGE_AUTO_HANDOFF` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip this step and proceed to Step 12
+- `WORK_MERGE_AUTO_HANDOFF` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip this step and proceed to Step 11
 
 #### Process
 
 1. Read the merged branch document and inspect its `## 次ブランチ候補` section
 2. **If next branch candidates exist**: invoke `/work:branch-reserve` (no user confirmation needed). Delegate all classification and reservation logic to that skill
 3. **If next branch candidates are empty**: skip branch-reserve
+
+→ Proceed to Step 11
+
+---
+
+### Step 11: Report merge completion
+
+#### Process
+
+1. Report the merge as complete to the user
+   - Include the merged branch name and task folder
 
 → Proceed to Step 12
 
