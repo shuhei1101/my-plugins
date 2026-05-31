@@ -16,17 +16,6 @@ project/
     └── _common.py        # shared helpers (optional)
 ```
 
-Optional launchers and README can sit alongside:
-
-```
-project/
-├── scripts/
-│   └── my-script.py
-├── run.bat               # Windows launcher (optional)
-├── run.sh                # UNIX launcher (optional)
-└── README.md             # usage (recommended)
-```
-
 No `pyproject.toml` needed. Promote to **`py-project`** once the whole project needs packaging.
 
 ---
@@ -41,8 +30,8 @@ No `pyproject.toml` needed. Promote to **`py-project`** once the whole project n
 - 入力: CSV ファイル（path で指定）
 - 出力: 集計済み JSON を stdout へ
 
-Usage:
-    python my-script.py --input data.csv --output result.json
+# 入力 CSV を集計して JSON に出力する
+python my-script.py --input data.csv --output result.json
 """
 from __future__ import annotations
 import argparse
@@ -102,11 +91,16 @@ if __name__ == "__main__":
     sys.exit(main())
 ```
 
+The usage in the docstring: write the command **without indentation** so it can be copy-pasted
+and run directly, with a `#` comment line **above** the command describing what it does. Show
+optional arguments in `[brackets]` (e.g. `python my-script.py --input data.csv [--verbose]`).
+
 ---
 
 ## Required elements
 
-1. **Module docstring**: first line states what it does, followed by details
+1. **Module docstring**: first line states what it does, followed by details and a usage example
+   (un-indented command with a `#` description above it; optional args in `[brackets]`)
 2. **`from __future__ import annotations`**: at the top of every file
 3. **`argparse`**: always parse arguments via argparse (no hardcoded literals)
 4. **`main() -> int`**: main processing is a function that returns an exit code
@@ -114,66 +108,6 @@ if __name__ == "__main__":
 6. **Use `print`**: stdout for normal output, `print(..., file=sys.stderr)` for errors — no logging module needed
 7. **Exception handling**: catch expected exceptions; use `traceback.print_exc()` for unexpected ones to preserve the traceback
 8. **Japanese for comments and print messages**: write all inline comments and `print` message strings in Japanese — not English
-
----
-
-## Log output destination
-
-Even for simple scripts, you often want file output during development.
-Rather than **writing it in Python**, it's easier to `tee` in a bat/sh launcher (easier to grep later):
-
-```bat
-:: run.bat
-@echo off
-chcp 65001 > nul
-setlocal
-set TS=%date:~0,4%%date:~5,2%%date:~8,2%-%time:~0,2%%time:~3,2%%time:~6,2%
-set LOG=log\script-%TS%.log
-if not exist log mkdir log
-python scripts\my-script.py %* > "%LOG%" 2>&1
-type "%LOG%"
-```
-
-```bash
-# run.sh
-#!/usr/bin/env bash
-set -euo pipefail
-mkdir -p log
-TS=$(date +%Y%m%d-%H%M%S)
-python scripts/my-script.py "$@" 2>&1 | tee "log/script-$TS.log"
-```
-
-See `scripts/launchers-windows.md` / `scripts/launchers-unix.md` for details.
-
----
-
-## When you need multiple files
-
-When the script grows beyond a single file:
-
-```
-project/
-└── scripts/
-    ├── my-script.py      # entry point
-    ├── _processing.py    # core processing
-    └── _formatting.py    # output formatting
-```
-
-The `_` prefix indicates "internal". When you see signs of further growth, promote to `py-project`.
-
----
-
-## Third-party dependencies
-
-If you need third-party dependencies, put a `requirements.txt` so they can be `pip install`ed:
-
-```
-# requirements.txt
-httpx>=0.27
-pydantic>=2.0
-```
-
-When this grows (5+ dependencies / large enough to need a venv), it's the threshold to promote to `py-project`.
 
 ---
 
@@ -200,7 +134,5 @@ logger.info("processing...")   # print を使う
 
 ## Related files
 
-- `scripts/launchers-windows.md` — bat launcher
-- `scripts/launchers-unix.md` — sh launcher
 - `scripts/tkinter.md` — when it's a GUI script
 - `core/comments.md` — how to write docstrings

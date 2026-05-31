@@ -19,17 +19,6 @@ project/
     └── _common.py        # 共通ヘルパー（任意）
 ```
 
-ランチャーや README は隣に並べる:
-
-```
-project/
-├── scripts/
-│   └── my-script.py
-├── run.bat               # Windows ランチャー（任意）
-├── run.sh                # UNIX ランチャー（任意）
-└── README.md             # 使い方（推奨）
-```
-
 `pyproject.toml` は不要。プロジェクト全体のパッケージ化が必要になったら **`py-project`** に昇格させる。
 
 ---
@@ -44,8 +33,8 @@ project/
 - 入力: CSV ファイル（path で指定）
 - 出力: 集計済み JSON を stdout へ
 
-Usage:
-    python my-script.py --input data.csv --output result.json
+# 入力 CSV を集計して JSON に出力する
+python my-script.py --input data.csv --output result.json
 """
 from __future__ import annotations
 import argparse
@@ -105,11 +94,16 @@ if __name__ == "__main__":
     sys.exit(main())
 ```
 
+docstring の使い方（Usage）は、**インデントを付けず**にコマンドを書いてそのままコピペ実行できるようにし、
+コマンドの**上**に `#` コメントで何をするかの説明を書く。任意引数は `[角括弧]` で示す
+（例: `python my-script.py --input data.csv [--verbose]`）。
+
 ---
 
 ## 必須要素
 
-1. **モジュール docstring**: 1 行目で何をするか、続けて詳細
+1. **モジュール docstring**: 1 行目で何をするか、続けて詳細と使い方の例
+   （インデントなしのコマンド＋その上に `#` で説明。任意引数は `[角括弧]`）
 2. **`from __future__ import annotations`**: 全ファイル冒頭
 3. **`argparse`**: 引数は必ず argparse でパース（即値ハードコード禁止）
 4. **`main() -> int`**: メイン処理は関数化、終了コードを返す
@@ -117,66 +111,6 @@ if __name__ == "__main__":
 6. **`print` を使う**: 通常の出力は stdout へ、エラーは `print(..., file=sys.stderr)` — logging モジュール不要
 7. **例外処理**: 想定例外を捕まえ、未捕捉例外は `traceback.print_exc()` で traceback ごと残す
 8. **コメント・print メッセージは日本語で書く**: インラインコメントおよび `print` のメッセージ文字列は英語でなく日本語で書く
-
----
-
-## ログ出力先
-
-簡易スクリプトでも開発時はファイル出力したいことが多い。
-**Python 側で書かず**、bat / sh ランチャーで `tee` する方式が楽（後で grep しやすい）:
-
-```bat
-:: run.bat
-@echo off
-chcp 65001 > /dev/null
-setlocal
-set TS=%date:~0,4%%date:~5,2%%date:~8,2%-%time:~0,2%%time:~3,2%%time:~6,2%
-set LOG=log\script-%TS%.log
-if not exist log mkdir log
-python scripts\my-script.py %* > "%LOG%" 2>&1
-type "%LOG%"
-```
-
-```bash
-# run.sh
-#!/usr/bin/env bash
-set -euo pipefail
-mkdir -p log
-TS=$(date +%Y%m%d-%H%M%S)
-python scripts/my-script.py "$@" 2>&1 | tee "log/script-$TS.log"
-```
-
-詳細は `scripts/launchers-windows.md` / `scripts/launchers-unix.md`。
-
----
-
-## 複数ファイル化が必要になったら
-
-スクリプトが 1 ファイルに収まらなくなったら:
-
-```
-project/
-└── scripts/
-    ├── my-script.py      # entry point
-    ├── _processing.py    # 処理本体
-    └── _formatting.py    # 出力整形
-```
-
-`_` プレフィックスで「内部」を示す。さらに大きくなる兆しが見えたら `py-project` に昇格。
-
----
-
-## 依存ライブラリ
-
-サードパーティ依存が要るなら `requirements.txt` を置いて `pip install` できるようにする:
-
-```
-# requirements.txt
-httpx>=0.27
-pydantic>=2.0
-```
-
-これも増えてきたら（5 個以上 / venv が要る規模）`py-project` に昇格する目安。
 
 ---
 
@@ -203,7 +137,5 @@ logger.info("processing...")   # print を使う
 
 ## 関連ファイル
 
-- `scripts/launchers-windows.md` — bat ランチャー
-- `scripts/launchers-unix.md` — sh ランチャー
 - `scripts/tkinter.md` — GUI スクリプトの場合
 - `core/comments.md` — docstring の書き方
