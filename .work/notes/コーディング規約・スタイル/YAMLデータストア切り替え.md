@@ -36,14 +36,14 @@ data/dev/*.yaml                 # ローカルデータ（gitignore）
 ## 型定義スタイル
 
 ```ts
-// types.ts
-export type FetchResource = (args: { id: string }) => Promise<Resource | null>
-export type InsertResource = (args: { record: ResourceInsert }) => Promise<{ id: string }>
+// types.ts — db を引数に含める（quest-pay 準拠）
+export type FetchResource = (args: { db: Db; id: string }) => Promise<Resource | null>
+export type InsertResource = (args: { db: Db; record: ResourceInsert }) => Promise<{ id: string }>
 ```
 
 ```ts
 // query.drizzle.ts / query.yaml.ts どちらも同じ型を満たす
-export const fetchResource: FetchResource = async ({ id }) => { ... }
+export const fetchResource: FetchResource = async ({ db, id }) => { ... }
 ```
 
 ## 切り替え
@@ -56,11 +56,18 @@ const impl = process.env.USE_YAML_DB === "true" ? yaml : drizzle
 export const insertResource = impl.insertResource
 ```
 
+## トランザクション
+
+- `db` を引数で受け渡す。トランザクション境界は `service.ts` が `transaction()` で持つ（quest-pay 準拠）
+- 本番（Drizzle）: `db.transaction(tx => ...)`。途中失敗で自動ロールバック
+- ローカル（YAML）: `runYamlTransaction` が `data/dev/` 全体をスナップショット → 失敗時に巻き戻す
+- 同時実行は in-process ロックで直列化（単一プロセス・ローカル開発専用）
+- leaf 関数は `db` を引数に取るが YAML 実装は未使用（型を揃えるためシグネチャには含める）
+
 ## 注意事項
 
 - `data/dev/` は必ず `.gitignore` に追加する
-- 実装ファイル（`*.drizzle.ts` / `*.yaml.ts`）は env を見ない。切り替えは `query.ts` / `db.ts` の re-export のみ
-- YAML モードはトランザクション非対応（複数テーブル整合性が必要な処理は本番 Drizzle 側に閉じる）
+- 実装ファイル（`*.drizzle.ts` / `*.yaml.ts`）は env を見ない。切り替えは `query.ts` / `db.ts` の re-export と `transaction.ts` のみ
 
 ---
 
@@ -72,3 +79,4 @@ export const insertResource = impl.insertResource
 | 2 | 〃 | クラス/interface 廃止・type + ファクトリ関数スタイルに変更 |
 | 3 | 〃 | データ置き場を `dev-data/` → `data/dev/` に変更 |
 | 4 | 〃 | quest-pay 準拠に全面見直し（関数ごとの type 定義・素の関数・query.ts/db.ts 分離）。ファイル名を `ローカルYAML開発DB.md` にリネーム |
+| 5 | 〃 | トランザクション対応（db 引数の受け渡し維持・YAML はスナップショット/ロールバック + ロック） |

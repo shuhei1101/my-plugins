@@ -2,23 +2,24 @@
 
 > 関数ごとに `type` で型を定義し、`query.ts` / `db.ts` の実装を本番（Drizzle）と
 > ローカル（YAML ファイル）で差し替える。クラス・`interface`・Repository は使わない。
-> データアクセスは `fetch{Feature}` / `insert{Feature}` などの素の関数。
+> データアクセスは `fetch{Feature}` / `insert{Feature}` などの素の関数で、`db` を引数で受け渡す（quest-pay 準拠）。
+> トランザクション境界は `service.ts` が持つ。
 
 ---
 
 ## コンセプト
 
 ```
-service.ts
-   ↓ import { fetchResource } from "./query"
-   ↓ import { insertResource } from "./db"
+service.ts（transaction() でトランザクション境界）
+   ↓ fetchResource({ db, id }) / insertResource({ db, record })
 query.ts / db.ts  ← env で実装を切り替え
-   ├─ *.drizzle.ts  → 本番（Supabase / Drizzle）
-   └─ *.yaml.ts     → ローカル（data/dev/*.yaml）
+   ├─ *.drizzle.ts  → 本番（Supabase / Drizzle）。渡された db(tx) を使う
+   └─ *.yaml.ts     → ローカル（data/dev/*.yaml）。db は無視
 ```
 
-- 関数の型（`FetchResource` 等）を 1 か所（`types.ts`）に定義し、両実装が同じ型を満たす
+- 関数の型（`FetchResource` 等）を `types.ts` に定義し、両実装が同じ型を満たす
 - `USE_YAML_DB=true` を `.env.local` に設定するだけで切り替わる
+- **トランザクション維持**：本番は Drizzle の `db.transaction`、ローカルは YAML スナップショット/ロールバック + ロック
 - YAML ファイルはスキーマと同じフィールドを持つ → 移行コストなし
 
 ---
@@ -47,13 +48,14 @@ data/dev/
 app/api/v1/resources/
 ├── types.ts          # 関数ごとの型定義
 ├── query.ts          # 読み取りの切り替え（re-export）
-├── query.drizzle.ts  # 本番（Drizzle）
-├── query.yaml.ts     # ローカル（YAML）
+├── query.drizzle.ts  / query.yaml.ts
 ├── db.ts             # 書き込みの切り替え（re-export）
-├── db.drizzle.ts     # 本番（Drizzle）
-└── db.yaml.ts        # ローカル（YAML）
-app/(shared)/lib/yamlStore.ts   # 汎用 YAML 読み書きヘルパー
-data/dev/resources.yaml         # ローカル開発データ（gitignore）
+├── db.drizzle.ts     / db.yaml.ts
+└── service.ts        # トランザクション境界
+app/(shared)/lib/
+├── yamlStore.ts      # readTable / writeTable / runYamlTransaction（ロック+ロールバック）
+└── transaction.ts    # transaction() / baseDb の env 切り替え
+data/dev/resources.yaml   # ローカル開発データ（gitignore）
 ```
 
 ---
@@ -61,37 +63,40 @@ data/dev/resources.yaml         # ローカル開発データ（gitignore）
 ## 関数ごとの型定義
 
 関数 1 つにつき型を 1 つ定義する。型名と関数名を対応させる（`FetchResource` ↔ `fetchResource`）。
+quest-pay 同様に `db` を引数に含める。
 
 ```ts
 // app/api/v1/resources/types.ts
+import type { Db } from "@/drizzle/db"
 import type { Resource, ResourceInsert, ResourceUpdate } from "@/drizzle/schema"
 
 // ----- 読み取り（query.ts） -----
-export type FetchResource = (args: { id: string }) => Promise<Resource | null>
-export type FetchResources = (args?: { isPublic?: boolean }) => Promise<Resource[]>
+export type FetchResource = (args: { db: Db; id: string }) => Promise<Resource | null>
+export type FetchResources = (args: { db: Db; isPublic?: boolean }) => Promise<Resource[]>
 
 // ----- 書き込み（db.ts） -----
-export type InsertResource = (args: { record: ResourceInsert }) => Promise<{ id: string }>
-export type UpdateResource = (args: { id: string; updatedAt: string; record: ResourceUpdate }) => Promise<void>
-export type DeleteResource = (args: { id: string }) => Promise<void>
+export type InsertResource = (args: { db: Db; record: ResourceInsert }) => Promise<{ id: string }>
+export type UpdateResource = (args: { db: Db; id: string; updatedAt: string; record: ResourceUpdate }) => Promise<void>
+export type DeleteResource = (args: { db: Db; id: string }) => Promise<void>
 ```
 
-スキーマ型（`Resource` / `ResourceInsert` / `ResourceUpdate`）は Drizzle schema から import する。
-両実装が同じ型を import するため、シグネチャの乖離が起きない。
+`db` は本番では Drizzle のトランザクションハンドル（`tx`）。YAML 実装は `db` を使わない（ロールバックは
+`runYamlTransaction` が担う）が、型を合わせるためシグネチャには含める。
 
 ---
 
 ## 本番実装（Drizzle）
 
+渡された `db`（= `service.ts` の `transaction` が渡す `tx`）を使う。
+
 ```ts
 // app/api/v1/resources/query.drizzle.ts
 import { eq } from "drizzle-orm"
-import { db } from "@/drizzle/db"
 import { resources } from "@/drizzle/schema"
 import { QueryError } from "@/app/(shared)/errors/appError"
 import type { FetchResource, FetchResources } from "./types"
 
-export const fetchResource: FetchResource = async ({ id }) => {
+export const fetchResource: FetchResource = async ({ db, id }) => {
   try {
     const [row] = await db.select().from(resources).where(eq(resources.id, id))
     return row ?? null
@@ -100,10 +105,10 @@ export const fetchResource: FetchResource = async ({ id }) => {
   }
 }
 
-export const fetchResources: FetchResources = async (args) => {
+export const fetchResources: FetchResources = async ({ db, isPublic }) => {
   try {
-    return args?.isPublic !== undefined
-      ? db.select().from(resources).where(eq(resources.isPublic, args.isPublic))
+    return isPublic !== undefined
+      ? db.select().from(resources).where(eq(resources.isPublic, isPublic))
       : db.select().from(resources)
   } catch {
     throw new QueryError("リソース一覧の取得に失敗しました。")
@@ -114,12 +119,11 @@ export const fetchResources: FetchResources = async (args) => {
 ```ts
 // app/api/v1/resources/db.drizzle.ts
 import { and, eq } from "drizzle-orm"
-import { db } from "@/drizzle/db"
 import { resources } from "@/drizzle/schema"
 import { DatabaseError, VersionConflictError } from "@/app/(shared)/errors/appError"
 import type { InsertResource, UpdateResource, DeleteResource } from "./types"
 
-export const insertResource: InsertResource = async ({ record }) => {
+export const insertResource: InsertResource = async ({ db, record }) => {
   try {
     const [row] = await db.insert(resources).values(record).returning({ id: resources.id })
     return { id: row.id }
@@ -128,7 +132,7 @@ export const insertResource: InsertResource = async ({ record }) => {
   }
 }
 
-export const updateResource: UpdateResource = async ({ id, updatedAt, record }) => {
+export const updateResource: UpdateResource = async ({ db, id, updatedAt, record }) => {
   try {
     const [row] = await db.update(resources)
       .set({ ...record, updatedAt: new Date().toISOString() })
@@ -141,7 +145,7 @@ export const updateResource: UpdateResource = async ({ id, updatedAt, record }) 
   }
 }
 
-export const deleteResource: DeleteResource = async ({ id }) => {
+export const deleteResource: DeleteResource = async ({ db, id }) => {
   try {
     await db.delete(resources).where(eq(resources.id, id))
   } catch {
@@ -154,15 +158,16 @@ export const deleteResource: DeleteResource = async ({ id }) => {
 
 ## ローカル実装（YAML）
 
-汎用の読み書きヘルパーを 1 つ用意し、各関数はそれを使う。
+`yamlStore.ts` が読み書きとトランザクション（ロック + スナップショット/ロールバック）を提供する。
 
 ```ts
 // app/(shared)/lib/yamlStore.ts
 import { parse, stringify } from "yaml"
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs"
-import { join, dirname } from "path"
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, rmSync } from "fs"
+import { join } from "path"
 
-const tablePath = (table: string) => join(process.cwd(), "data", "dev", `${table}.yaml`)
+const DIR = join(process.cwd(), "data", "dev")
+const tablePath = (table: string) => join(DIR, `${table}.yaml`)
 
 export const readTable = <T>(table: string): T[] => {
   const path = tablePath(table)
@@ -171,9 +176,38 @@ export const readTable = <T>(table: string): T[] => {
 }
 
 export const writeTable = <T>(table: string, rows: T[]) => {
-  const path = tablePath(table)
-  mkdirSync(dirname(path), { recursive: true })
-  writeFileSync(path, stringify(rows))
+  mkdirSync(DIR, { recursive: true })
+  writeFileSync(tablePath(table), stringify(rows))
+}
+
+// ----- 簡易トランザクション（ロック + スナップショット/ロールバック） -----
+
+let lock: Promise<unknown> = Promise.resolve()   // in-process ロック（同時に 1 件だけ実行）
+
+const snapshot = (): Record<string, string> => {
+  if (!existsSync(DIR)) return {}
+  return Object.fromEntries(readdirSync(DIR).map((f) => [f, readFileSync(join(DIR, f), "utf8")]))
+}
+
+const restore = (snap: Record<string, string>) => {
+  mkdirSync(DIR, { recursive: true })
+  for (const f of readdirSync(DIR)) if (!(f in snap)) rmSync(join(DIR, f))   // 新規作成分を削除
+  for (const [f, body] of Object.entries(snap)) writeFileSync(join(DIR, f), body)   // 中身を巻き戻す
+}
+
+export const runYamlTransaction = async <T>(fn: () => Promise<T>): Promise<T> => {
+  const run = async () => {
+    const snap = snapshot()
+    try {
+      return await fn()
+    } catch (e) {
+      restore(snap)   // どこかで失敗したら全テーブルを巻き戻す
+      throw e
+    }
+  }
+  const result = lock.then(run, run)   // 直前のトランザクション完了後に直列実行
+  lock = result.catch(() => {})
+  return result
 }
 ```
 
@@ -188,9 +222,9 @@ const TABLE = "resources"
 export const fetchResource: FetchResource = async ({ id }) =>
   readTable<Resource>(TABLE).find((r) => r.id === id) ?? null
 
-export const fetchResources: FetchResources = async (args) => {
+export const fetchResources: FetchResources = async ({ isPublic }) => {
   const rows = readTable<Resource>(TABLE)
-  return args?.isPublic !== undefined ? rows.filter((r) => r.isPublic === args.isPublic) : rows
+  return isPublic !== undefined ? rows.filter((r) => r.isPublic === isPublic) : rows
 }
 ```
 
@@ -220,11 +254,30 @@ export const deleteResource: DeleteResource = async ({ id }) => {
 }
 ```
 
-`types.ts` の型を付けているため、YAML 実装が Drizzle 実装とシグネチャ不一致なら型エラーになる。
+YAML 実装は `db` を destructure しない（型には含まれるが未使用）。トランザクション内の書き込みは即座に
+ファイルへ反映されるため、同一トランザクション内の後続 read は自分の書き込みを見られる。失敗時は
+`runYamlTransaction` がスナップショットへ巻き戻す。
 
 ---
 
-## 切り替え（re-export）
+## トランザクションと実装の切り替え
+
+```ts
+// app/(shared)/lib/transaction.ts
+import { db } from "@/drizzle/db"
+import type { Db } from "@/drizzle/db"
+import { runYamlTransaction } from "./yamlStore"
+
+const useYaml = process.env.USE_YAML_DB === "true"
+const YAML_DB = {} as Db   // YAML モードで leaf に渡すダミー（leaf 側は使わない）
+
+/** トランザクション境界。本番=Drizzle tx、ローカル=YAML スナップショット/ロールバック */
+export const transaction = <T>(fn: (db: Db) => Promise<T>): Promise<T> =>
+  useYaml ? runYamlTransaction(() => fn(YAML_DB)) : db.transaction(fn)
+
+/** トランザクション外の単発呼び出し用 db */
+export const baseDb: Db = useYaml ? YAML_DB : db
+```
 
 ```ts
 // app/api/v1/resources/query.ts
@@ -253,22 +306,32 @@ export const deleteResource = impl.deleteResource
 
 ## service.ts での使い方
 
-`service.ts` は `./query` / `./db` から import するだけ。実装の差し替えを意識しない。
+`service.ts` がトランザクション境界を持つ（quest-pay と同じ）。`transaction()` が渡す `db` を
+各関数にスレッドする。失敗すれば本番は Drizzle がロールバック、ローカルは YAML がスナップショット復元。
 
 ```ts
 // app/api/v1/resources/service.ts
+import { transaction, baseDb } from "@/app/(shared)/lib/transaction"
 import { fetchResource } from "./query"
 import { insertResource } from "./db"
+import { insertResourceTags } from "../tags/db"
+import type { ResourceInsert } from "@/drizzle/schema"
 import { NotFoundError } from "@/app/(shared)/errors/appError"
 
+/** 単発取得（トランザクション不要） */
 export const getResource = async ({ id }: { id: string }) => {
-  const resource = await fetchResource({ id })
+  const resource = await fetchResource({ db: baseDb, id })
   if (!resource) throw new NotFoundError("リソースが見つかりません。")
   return resource
 }
 
-export const registerResource = async ({ record }: { record: ResourceInsert }) =>
-  insertResource({ record })
+/** 登録（リソース + タグを 1 トランザクションで。途中失敗は全て巻き戻る） */
+export const registerResource = ({ record, tags }: { record: ResourceInsert; tags: string[] }) =>
+  transaction(async (db) => {
+    const { id } = await insertResource({ db, record })
+    if (tags.length > 0) await insertResourceTags({ db, resourceId: id, tags })
+    return { id }
+  })
 ```
 
 ---
@@ -297,10 +360,10 @@ export const registerResource = async ({ record }: { record: ResourceInsert }) =
 
 - 関数 1 つにつき `type` を 1 つ定義する（`FetchResource` ↔ `fetchResource`）。`interface`・クラスは使わない
 - データアクセスは素の関数。命名は `fetch{Feature}`（読み取り）/ `insert`・`update`・`delete{Feature}`（書き込み）
-- 引数はオブジェクトで受ける（`{ id }` / `{ record }`）
+- 引数はオブジェクトで受け、`db` を含める（quest-pay 準拠）。本番は渡された `db`(tx) を使い、YAML は無視する
 - 読み取りは `query.ts`、書き込みは `db.ts` に分離（既存の `クエリ-ts.md` / `DB-ts.md` 準拠）
-- 切り替えは `query.ts` / `db.ts` の re-export 層のみ。実装ファイル（`*.drizzle.ts` / `*.yaml.ts`）は env を見ない
+- 切り替えは `query.ts` / `db.ts` の re-export と `transaction.ts` のみ。実装ファイル（`*.drizzle.ts` / `*.yaml.ts`）は env を見ない
+- トランザクション境界は `service.ts` が `transaction()` で持つ。複数テーブルの更新は必ず `transaction()` 内で行う
+- YAML のロールバックは `data/dev/` 全体のスナップショット復元、同時実行は in-process ロックで直列化（単一プロセス・ローカル開発専用。分散ロックは想定しない）
 - `data/dev/` は必ず `.gitignore` に追加する（機密データ流出防止）
-- YAML の I/O は同期（`readFileSync` / `writeFileSync`）で可。ローカル開発専用のため
-- YAML モードはトランザクション非対応（各書き込みが即時永続）。複数テーブルにまたがる整合性が要る処理は本番 Drizzle 側で `service.ts` のトランザクションに閉じる
 - 本番ビルドに YAML 実装を混入させない（`USE_YAML_DB` のガードを守る）
