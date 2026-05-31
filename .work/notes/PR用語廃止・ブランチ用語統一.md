@@ -7,7 +7,7 @@ updates:
   - 2026-05-31 — #230: pr-handoff → branch-reserve、pr-show → branch-show にリネーム
   - 2026-05-31 — #244: ブランチ文書ファイル名を日本語タイトル基準に変更、index.yaml に branch フィールド追加
   - 2026-05-31 — #248: user-prompt-submit.py・trim-index.py・issue-tool.py・plugin-config スキル・setup スキル内の残存 PR 用語をブランチ用語に統一
-related_specs: []
+related_notes: []
 related_prs:
   - PR188
   - PR189

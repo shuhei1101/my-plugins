@@ -3,7 +3,7 @@ created_at: 2026-05-31
 updates:
   - 2026-05-31 — 初版作成（plugin-update → plugin-migrate リネーム）
   - 2026-05-31 — plugin-migrate の冗長ブランチチェック Step 削除（chore/remove-plugin-update-step1）
-related_specs:
+related_notes:
   - plugin-config-reference.md
 related_branches:
   - refactor/rename-plugin-update-to-migrate

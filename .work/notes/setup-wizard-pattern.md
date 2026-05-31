@@ -2,7 +2,7 @@
 created_at: 2026-05-30
 updates:
   - 2026-05-30 — 初版（PR199 設計メモ）
-related_specs:
+related_notes:
   - ../../plugins/claude-kit/references/setup-wizard.md
   - ../../plugins/claude-kit/references/plugin-structure.md
 related_prs:

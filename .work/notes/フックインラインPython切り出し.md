@@ -2,7 +2,7 @@
 created_at: 2026-05-30
 updates:
   - 2026-05-30 — 作成（PR180）
-related_specs: []
+related_notes: []
 related_prs:
   - PR180
 ---
