@@ -1103,3 +1103,10 @@ branches:
   summary: work プラグインの qa-review スキルをより適切な名称 qa-wizard にリネームする
   task: 260531_rename-qa-review-to-qa-wizard
   completed: true
+- branch: fix/jp-mirror-header-comment
+  created: '2026-05-31'
+  title: JPミラー標準ヘッダーコメント修正
+  type: fix
+  summary: 10件のJPミラーファイルに標準ヘッダーコメントを追加・修正する
+  task: 260531_jp-mirror-header-comment
+  completed: true
