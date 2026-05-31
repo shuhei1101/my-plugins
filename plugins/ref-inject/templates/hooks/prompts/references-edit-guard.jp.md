@@ -1,4 +1,4 @@
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of references-edit-guard.md. When updating the English original, update this file too. -->
 このプラグインの `references/` 配下にあるリファレンスファイルを **これから** 編集または作成しようとしています。編集を実行する前に、下記の登録漏れがないか確認してください:
 
 ## 確認事項
