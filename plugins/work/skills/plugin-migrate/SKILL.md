@@ -55,12 +55,10 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 1. If `.work/CLAUDE.md` exists, remove it with `git rm`
    - `.work/CLAUDE.md` was a static file that is now handled by ref-inject; it is no longer shipped in the template
    - If `.work/CLAUDE.jp.md` exists, remove it the same way
-2. Locate the work plugin template root: `${CLAUDE_PLUGIN_ROOT}/templates/.work/`
-3. Copy the following `.gitignore` files from the template into the project (overwrite):
-   - `tasks/.gitignore` → `.work/tasks/.gitignore`
-   - `issues/.gitignore` → `.work/issues/.gitignore` (if present in the template)
-     - Create `.work/issues/` first if it does not exist
-4. Report which files were changed
+2. Write the following `.gitignore` files with the hardcoded content below (overwrite):
+   - `.work/tasks/.gitignore` → content: `index.yaml`
+   - `.work/issues/.gitignore` → content: `_index.yaml` (create `.work/issues/` first if it does not exist)
+3. Report which files were changed
 
 → Proceed to Step 3
 

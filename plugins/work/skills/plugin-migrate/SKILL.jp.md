@@ -57,12 +57,10 @@ description: |
 1. `.work/CLAUDE.md` が存在する場合、`git rm` で削除する
    - このファイルは ref-inject に移行済みのため不要
    - `.work/CLAUDE.jp.md` が存在する場合も同様に削除する
-2. work プラグインテンプレートルート `${CLAUDE_PLUGIN_ROOT}/templates/.work/` を探索
-3. テンプレートから以下の `.gitignore` ファイルをプロジェクトにコピー（上書き）:
-   - `tasks/.gitignore` → `.work/tasks/.gitignore`
-   - `issues/.gitignore` → `.work/issues/.gitignore`（テンプレートに存在する場合）
-     - `.work/issues/` が存在しない場合は作成してからコピー
-4. どのファイルが変更されたかを報告
+2. 以下の `.gitignore` ファイルをハードコードされた内容で書き込む（上書き）:
+   - `.work/tasks/.gitignore` → 内容: `index.yaml`
+   - `.work/issues/.gitignore` → 内容: `_index.yaml`（`.work/issues/` が存在しない場合は作成してから書き込む）
+3. どのファイルが変更されたかを報告
 
 → ステップ 3 へ
 

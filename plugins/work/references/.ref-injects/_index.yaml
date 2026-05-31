@@ -13,11 +13,17 @@ references:
   - path: skill-sync/スタートスキル同期.md
     description: Sync rule for work-start, worktree-create, and vscode-workspace-sync skills. work-start Step 4 delegates to worktree-create, so their interfaces must stay aligned.
 
-  - path: skill-sync/TODOテンプレート同期.md
-    description: Sync rule for work TODO templates and work-start SKILL.md. The section structure in templates must match the fill-in guidance in work-start SKILL.md Step 7.
+  - path: work-dir/ワークディレクトリ構成.md
+    description: High-level map of .work/ — directory structure, the role of each subfolder (tasks/notes/issues), and commit conventions (keep .work/ changes in a separate commit from implementation code). Points to the per-subfolder detail references.
 
-  - path: work-dir/ドットワークディレクトリ構成.md
-    description: Guide for editing files under .work/ — directory structure, branch document sections, the notes spec-sheet role, and commit conventions (keep .work/ changes in a separate commit from implementation code).
+  - path: work-dir/タスクドキュメント.md
+    description: Branch document template and section fill-in guide. The branch document is the single source of truth for one branch; created at .work/tasks/{folder}/{YYMMDD}-{日本語タイトル}.branch.md. Author it directly from the injected template.
+
+  - path: work-dir/タスクインデックス.md
+    description: Schema for .work/tasks/index.yaml (active branch index, git-ignored) and index.archive.yaml (archived branches). Normally maintained by index-tool.py and the merge skill.
+
+  - path: work-dir/イシュー.md
+    description: Issue file format (.work/issues/ISSUE-{N}.md) and the _index.yaml / _index.archive.yaml schema. issue-save / issue-scan / issue-create author issue files from this template.
 
   - path: notes/ノート命名規則.md
     description: Naming and index rules for .work/notes/ files. File names and H1 titles must be in Japanese (technical identifiers stay as-is). Always update _index.md in the same commit when creating, renaming, or deleting a note.

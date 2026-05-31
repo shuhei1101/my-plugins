@@ -1050,3 +1050,10 @@ branches:
   summary: ブランチインデックスから id/last_id/tags を撤廃し branch を識別キーに統一。index-tool/関連スキル/データを追従移行
   task: 260531_index-yaml-schema-overhaul
   completed: true
+- branch: refactor/work-templates-to-ref-inject
+  title: workテンプレート廃止とREFインジェクト化とタスクフォルダ日本語名化
+  type: refactor
+  summary: plugins/work/templates/ 削除。スクリプト/スキルをテンプレート非依存に改修し REF-inject 参照へ移行。.work/
+    各フォルダの構成定義リファレンス追加。.work/tasks/ タスクフォルダ名を日本語化。
+  task: 260531_work-templates-to-ref-inject
+  completed: true

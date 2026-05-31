@@ -81,29 +81,12 @@ Called by `issue-scan` and `issue-create` with the issue information to record.
 
 #### Process
 
-1. Create `.work/issues/ISSUE-{N}.md` with this structure:
-
-   ```markdown
-   # {ISSUE-N}: {タイトル}
-
-   **作成日**: {YYYY-MM-DD}
-
-   ## 問題
-
-   {問題の説明}
-
-   ## 修正案
-
-   {修正案}   ← 提供されなかった場合はこのセクション自体を省略
-
-   ## 水平展開
-
-   {水平展開メモ}   ← 提供されなかった場合はこのセクション自体を省略
-
-   ## 関連ドキュメント
-
-   {関連リファレンス・ノートへのリンク}   ← 提供されなかった場合はこのセクション自体を省略
-   ```
+1. `Write` `.work/issues/ISSUE-{N}.md`. The issue-file structure is **auto-injected** from
+   `references/work-dir/イシュー.md` the moment you write a file under `.work/issues/` (the first
+   write is blocked once and the template appears). Author the file from that injected template,
+   filling in the fields from the caller; omit the `## 修正案` / `## 水平展開` / `## 関連ドキュメント`
+   sections when their data was not provided. Type / Priority / Tags / Scan scope live in
+   `_index.yaml` only — not in the issue file.
 
 → Proceed to Step 4
 
