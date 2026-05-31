@@ -1140,3 +1140,11 @@ branches:
   summary: work:startスキルのコミット積み順を「ブランチ文書→実装→最終更新」に修正
   task: 260531_fix-work-start-commit-order
   completed: true
+- id: 254
+  branch: fix/merge-skill-sync-before-merge
+  title: マージスキル — master取り込みを必須化
+  type: fix
+  tags: []
+  summary: Step3のスキップ分岐を削除し、master取り込みを常に実行するよう強制
+  task: 260531_マージスキルmaster取り込み必須化
+  completed: true
