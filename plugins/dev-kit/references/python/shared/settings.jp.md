@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of settings.md. When updating the English original, update this file too. -->
 # settings — pydantic-settings による設定管理
 
-> このファイルは `settings.md` の日本語ミラーです。
-
 `.env` ファイル / 環境変数を `pydantic-settings` で読み込んで型安全な `Settings` オブジェクトにする。
 
 ---
@@ -15,7 +13,6 @@ from __future__ import annotations
 from pathlib import Path
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 class Settings(BaseSettings):
     """環境変数 + .env を読み込む設定。"""

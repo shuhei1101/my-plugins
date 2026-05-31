@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of refactoring-judgement.md. When updating the English original, update this file too. -->
 # リファクタ判断基準
 
-> このファイルは `refactoring-judgement.md` の日本語ミラーです。
-
 「いつ DRY 化するか」「いつ抽象化するか」「いつ設定外出しするか」の判断基準。
 
 ---

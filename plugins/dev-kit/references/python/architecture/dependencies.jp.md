@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of dependencies.md. When updating the English original, update this file too. -->
 # 依存方向のルール
 
-> このファイルは `dependencies.md` の日本語ミラーです。
-
 ---
 
 ## 一方向の依存

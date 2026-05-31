@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of language-rules.md. When updating the English original, update this file too. -->
 # 言語ルール
 
-> このファイルは `language-rules.md` の日本語ミラーです。
-
 ---
 
 ## 文字種・言語の使い分け

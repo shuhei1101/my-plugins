@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of providers.md. When updating the English original, update this file too. -->
 # llm/providers — LLM プロバイダ実装
 
-> このファイルは `providers.md` の日本語ミラーです。
-
 LLM API（Claude / OpenAI / Gemini 等）を **関数で抽象化** して、注入できる形にする。
 
 ---
@@ -14,16 +12,13 @@ LLM API（Claude / OpenAI / Gemini 等）を **関数で抽象化** して、注
 from __future__ import annotations
 from typing import Awaitable, Callable, TypedDict
 
-
 # ----- メッセージ型 -----
 class Message(TypedDict):
     role: str        # "user" / "assistant" / "system"
     content: str
 
-
 type ChatRequest = list[Message]
 type ChatResponse = str
-
 
 # ----- 関数の型 -----
 type AsyncChatFn = Callable[[ChatRequest], Awaitable[ChatResponse]]
@@ -50,7 +45,6 @@ from {pkg}.shared.logger import get_logger
 from .types import ChatRequest, ChatResponse
 
 logger = get_logger(__name__)
-
 
 def make_openai_chat(
     *,
@@ -117,7 +111,6 @@ from .types import ChatRequest, ChatResponse
 
 logger = get_logger(__name__)
 
-
 def make_anthropic_chat(
     *,
     api_key: str,
@@ -175,7 +168,6 @@ def make_anthropic_chat(
 from __future__ import annotations
 from .types import ChatRequest, ChatResponse, AsyncChatFn
 
-
 def make_mock_chat(*responses: str) -> AsyncChatFn:
     """テスト用 Mock。順番に固定文字列を返す。"""
     queue = list(responses) or ["[mocked response]"]
@@ -201,7 +193,6 @@ from {pkg}.shared.settings import Settings
 from {pkg}.integrations.llm.openai_client import make_openai_chat
 from {pkg}.integrations.llm.anthropic_client import make_anthropic_chat
 from {pkg}.features.chat.service import generate_response
-
 
 def build_handlers(settings: Settings) -> Handlers:
     # 主要プロバイダを 1 つ選ぶ
@@ -252,7 +243,6 @@ async def chat_with_fallback(req: ChatRequest) -> ChatResponse:
 from typing import AsyncIterator
 
 type AsyncChatStreamFn = Callable[[ChatRequest], AsyncIterator[str]]
-
 
 # 実装
 def make_openai_chat_stream(*, api_key: str, model: str) -> AsyncChatStreamFn:

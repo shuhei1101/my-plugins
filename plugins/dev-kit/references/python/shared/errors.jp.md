@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of errors.md. When updating the English original, update this file too. -->
 # errors — 例外階層
 
-> このファイルは `errors.md` の日本語ミラーです。
-
 すべてのドメイン例外は **`AppError` を継承** する単一階層にする。
 
 ---
@@ -13,59 +11,46 @@
 # src/{pkg}/shared/errors.py
 from __future__ import annotations
 
-
 class AppError(Exception):
     """アプリケーション共通の例外基底クラス。"""
-
 
 # ----- 入力・検証 -----
 class ValidationError(AppError):
     """入力検証エラー。"""
 
-
 # ----- 業務状態 -----
 class NotFoundError(AppError):
     """対象が見つからない。"""
 
-
 class ConflictError(AppError):
     """状態競合（重複・整合性違反・楽観ロック失敗等）。"""
 
-
 class ForbiddenError(AppError):
     """操作が許可されていない（権限不足）。"""
-
 
 # ----- 認証・認可 -----
 class UnauthorizedError(AppError):
     """未認証 / 認証失敗。"""
 
-
 # ----- 外部連携 -----
 class IntegrationError(AppError):
     """外部サービス連携の包括エラー。"""
 
-
 class IntegrationTimeoutError(IntegrationError):
     """外部サービス連携でタイムアウト。"""
-
 
 # ----- LLM 個別 -----
 class LlmError(IntegrationError):
     """LLM API 由来のエラー。"""
 
-
 class LlmRateLimitError(LlmError):
     """レート制限超過。"""
-
 
 class LlmServerError(LlmError):
     """LLM サーバ側のエラー（5xx）。"""
 
-
 class LlmBadRequestError(LlmError):
     """LLM リクエストが不正（4xx）。"""
-
 
 class LlmContentFilterError(LlmError):
     """コンテンツフィルタによる拒否。"""
@@ -88,7 +73,6 @@ class LlmContentFilterError(LlmError):
 # {pkg}/integrations/llm/openai_client.py
 import openai
 from {pkg}.shared.errors import LlmError, LlmRateLimitError, LlmServerError
-
 
 async def chat_with_openai(req: ChatRequest) -> ChatResponse:
     try:
@@ -121,7 +105,6 @@ from {pkg}.shared.errors import (
     AppError, ValidationError, NotFoundError, ConflictError,
     ForbiddenError, UnauthorizedError, IntegrationError,
 )
-
 
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(ValidationError)
@@ -181,7 +164,6 @@ def main() -> int:
     except Exception as e:
         logger.exception("unexpected error")
         return 99
-
 
 if __name__ == "__main__":
     sys.exit(main())

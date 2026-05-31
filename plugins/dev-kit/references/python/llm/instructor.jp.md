@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of instructor.md. When updating the English original, update this file too. -->
 # llm/instructor — Instructor + Pydantic で構造化出力
 
-> このファイルは `instructor.md` の日本語ミラーです。
-
 LLM の出力を Pydantic モデルとして受け取るには [Instructor](https://python.useinstructor.com/) を使う。
 スキーマ検証 + リトライが組み込まれている。
 
@@ -21,7 +19,6 @@ OpenAI クライアントを `instructor` でラップする:
 from __future__ import annotations
 import instructor
 from openai import AsyncOpenAI
-
 
 def make_structured_openai(api_key: str) -> instructor.AsyncInstructor:
     """構造化出力対応の OpenAI クライアントを作る。"""
@@ -48,7 +45,6 @@ def make_structured_anthropic(api_key: str) -> instructor.AsyncInstructor:
 from pydantic import BaseModel, Field
 from typing import Literal
 
-
 class ExtractedEvent(BaseModel):
     """ニュース記事から抽出したイベント情報。"""
 
@@ -68,7 +64,6 @@ class ExtractedEvent(BaseModel):
 from __future__ import annotations
 import instructor
 from {pkg}.features.extract.types import ExtractedEvent
-
 
 async def extract_event(
     article: str,
@@ -103,7 +98,6 @@ from functools import partial
 from {pkg}.integrations.llm.structured_client import make_structured_openai
 from {pkg}.features.extract.service import extract_event
 
-
 def build_handlers(settings: Settings) -> Handlers:
     structured = make_structured_openai(settings.openai_api_key.get_secret_value())
 
@@ -119,7 +113,6 @@ def build_handlers(settings: Settings) -> Handlers:
 ```python
 from pydantic import ValidationError
 from {pkg}.shared.errors import LlmError
-
 
 async def extract_event_safe(
     article: str,
@@ -144,7 +137,6 @@ async def extract_event_safe(
 class Speaker(BaseModel):
     name: str
     affiliation: str | None = None
-
 
 class ConferenceEvent(BaseModel):
     title: str
@@ -180,7 +172,6 @@ LLM を「ある特定タスクに特化した関数」として封じる:
 # 関数の型エイリアス
 type ExtractEventFn = Callable[[str], Awaitable[ExtractedEvent]]
 
-
 def make_extract_event_fn(
     *,
     client: instructor.AsyncInstructor,
@@ -212,17 +203,14 @@ import instructor
 from pydantic import BaseModel, Field
 from typing import Literal
 
-
 # ----- スキーマ -----
 class ExtractedEvent(BaseModel):
     title: str
     date: str
     category: Literal["concert", "exhibition", "sports", "other"]
 
-
 # ----- プロンプト（短いものはコード内、長ければ prompts/ に） -----
 _SYSTEM = "ニュース記事から構造化されたイベント情報を抽出してください。"
-
 
 # ----- 関数 -----
 async def extract_event(

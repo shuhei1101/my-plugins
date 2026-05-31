@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of comments.md. When updating the English original, update this file too. -->
 # コメントルール
 
-> このファイルは `comments.md` の日本語ミラーです。
-
 dev-kit Next の `frontend/conventions/comments.md` と同じ思想で Python に適用する。
 
 ---

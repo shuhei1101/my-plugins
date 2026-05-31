@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of type-hints.md. When updating the English original, update this file too. -->
 # 型ヒント
 
-> このファイルは `type-hints.md` の日本語ミラーです。
-
 Python 3.12+ 必須。PEP 695 で書く。
 
 ---

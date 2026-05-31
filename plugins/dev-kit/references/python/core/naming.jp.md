@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of naming.md. When updating the English original, update this file too. -->
 # 命名規約
 
-> このファイルは `naming.md` の日本語ミラーです。
-
 ## 基本ルール
 
 | 対象 | 規則 | 例 |

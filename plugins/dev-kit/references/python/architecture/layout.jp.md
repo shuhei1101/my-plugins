@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of layout.md. When updating the English original, update this file too. -->
 # トップレベルレイアウト + feature 内構造
 
-> このファイルは `layout.md` の日本語ミラーです。
-
 dev-kit Python の標準は **機能フォルダ型レイアウト**。純 DDD（domain / application / infrastructure / interface）は廃止。
 
 ---

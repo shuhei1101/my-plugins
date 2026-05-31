@@ -1,7 +1,6 @@
 <!-- This file is a Japanese mirror of principles.md. When updating the English original, update this file too. -->
 # UI 規約 — dev-kit (HTML) 共通リファレンス(日本語ミラー)
 
-> このファイルは `principles.md` の日本語ミラーです。Claude Code には読み込まれません。
 > 変更時は JP ミラーを先に更新し、その後 `principles.md` にも反映する。
 
 開発支援画面(管理画面・内部ツール・デバッグ画面)向け規約。

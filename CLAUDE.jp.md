@@ -1,15 +1,11 @@
 <!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # CLAUDE.jp.md — my-plugins 開発者ガイド（日本語訳）
 
-> このファイルは `CLAUDE.md` の日本語翻訳です。Claude Code には自動読み込みされません。内容を確認するための参照用ファイルです。
-> 変更を加える場合は、まずこのファイルを更新し、その後 `CLAUDE.md`（本体）にも同じ変更を反映してください。
-
 ---
 
 このリポジトリは Claude Code のプラグインマーケットプレイスです。スキルをプラグインとして配布・管理し、`/plugin` コマンドでインストールできます。
 
 ---
-
 
 ## リポジトリ構成
 

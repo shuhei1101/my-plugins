@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of launchers-windows.md. When updating the English original, update this file too. -->
 # launchers-windows — bat ランチャー
 
-> このファイルは `launchers-windows.md` の日本語ミラーです。
-
 Windows で Python スクリプトを起動する `.bat` ファイルの規約。
 
 ---

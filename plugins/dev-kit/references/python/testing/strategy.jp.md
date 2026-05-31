@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of strategy.md. When updating the English original, update this file too. -->
 # testing/strategy — テスト方針
 
-> このファイルは `strategy.md` の日本語ミラーです。
-
 dev-kit Python の方針: **単体テストは書かない。** 結合テストとスモークテストの 2 種類だけ書く。
 
 ---
@@ -42,7 +40,6 @@ dev-kit Python の方針: **単体テストは書かない。** 結合テスト�
 import pytest
 from {pkg}.features.chat.service import generate_response
 
-
 @pytest.mark.asyncio
 async def test_generate_response_success() -> None:
     """通常入力に対して LLM レスポンスが返る。"""
@@ -52,7 +49,6 @@ async def test_generate_response_success() -> None:
     result = await generate_response("hi", chat=chat_mock)
 
     assert result == "hello world"
-
 
 @pytest.mark.asyncio
 async def test_generate_response_strips_markdown() -> None:
@@ -122,7 +118,6 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="run smoke tests against real external services",
     )
 
-
 def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
     if not config.getoption("--run-smoke"):
         skip = pytest.mark.skip(reason="need --run-smoke")
@@ -150,9 +145,7 @@ import pytest
 import os
 from {pkg}.integrations.llm.openai_client import chat_with_openai
 
-
 pytestmark = pytest.mark.smoke
-
 
 @pytest.mark.asyncio
 async def test_openai_smoke() -> None:

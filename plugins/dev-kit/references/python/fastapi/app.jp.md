@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of app.md. When updating the English original, update this file too. -->
 # fastapi/app — FastAPI アプリ構成
 
-> このファイルは `app.md` の日本語ミラーです。
-
 `server/app.py` で `build_fastapi(settings) -> FastAPI` を作る。
 依存配線は `main.py` の `build_handlers(settings)` から流す。
 
@@ -22,7 +20,6 @@ from {pkg}.shared.errors import AppError
 from {pkg}.main import build_handlers, Handlers
 from {pkg}.server.routes import chat, health
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """起動・終了時の処理。"""
@@ -31,7 +28,6 @@ async def lifespan(app: FastAPI):
     app.state.handlers = build_handlers(settings)
     yield
     # cleanup（必要なら）
-
 
 def build_fastapi() -> FastAPI:
     """FastAPI アプリを組み立てる。`uvicorn --factory` で呼ぶ。"""
@@ -107,7 +103,6 @@ from {pkg}.features.chat.types import ChatRequest, ChatResponse
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
-
 @router.post("", response_model=ChatResponse)
 async def post_chat(request: Request, body: ChatRequest) -> ChatResponse:
     handlers: Handlers = request.app.state.handlers
@@ -126,7 +121,6 @@ def get_handlers(request: Request) -> Handlers:
     return request.app.state.handlers
 
 HandlersDep = Annotated[Handlers, Depends(get_handlers)]
-
 
 # routes 側
 @router.post("")
@@ -163,7 +157,6 @@ app.add_middleware(
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-
 class RequestIdMiddleware(BaseHTTPMiddleware):
     """X-Request-Id ヘッダを付与・ログに残す。"""
 
@@ -174,7 +167,6 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         response.headers["x-request-id"] = rid
         return response
-
 
 # 登録
 app.add_middleware(RequestIdMiddleware)
@@ -192,7 +184,6 @@ app.add_middleware(RequestIdMiddleware)
 from fastapi import APIRouter
 
 router = APIRouter(tags=["health"])
-
 
 @router.get("/healthz")
 async def healthz() -> dict[str, str]:

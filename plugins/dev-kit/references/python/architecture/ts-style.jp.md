@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of ts-style.md. When updating the English original, update this file too. -->
 # TypeScript 風 Python — 関数ファースト設計
 
-> このファイルは `ts-style.md` の日本語ミラーです。
-
 dev-kit Python の中心ドキュメント。**関数ファースト + 型エイリアス + DTO + Protocol** で TypeScript の主要機能を Python で再現する。
 
 ---
