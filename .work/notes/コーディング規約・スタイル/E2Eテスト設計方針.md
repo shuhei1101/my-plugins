@@ -1,53 +1,44 @@
-# E2Eテスト設計方針 — ユースケース駆動設計
+# E2Eテスト設計方針 — tests/e2e/ 統一構造
 
-dev-kit の Next.js E2E テストリファレンスで採用する設計方針。
+dev-kit の Next.js E2E テストリファレンスで採用するディレクトリ設計方針。
 
 ---
 
 ## 概要
 
-E2E テストは「画面単位フォルダ」ではなく「ユースケース駆動設計」で構成する。
-テストが読める仕様書になることを最優先とし、CIで壊れにくい構造を目指す。
+E2E テストは `tests/` 共通構造に準拠し、`tests/e2e/` 以下に spec ファイルを配置する。
+ユニットテスト（`tests/unit/`）・コンポーネントテスト（`tests/components/`）・
+fixtures（`tests/fixtures/`）・helpers（`tests/helpers/`）との一貫性を最優先とする。
 
 ---
 
 ## ディレクトリ構成
 
 ```
-e2e/
-├── scenarios/    # ユースケース単位（ドメイン分類）
-├── pages/        # Page Object Model
-├── fixtures/     # テスト前提条件・共通前処理
-├── utils/        # ドメイン別共通処理（db/mail/factories）
-├── data/         # 固定テストデータ
-├── snapshots/    # visual regression 用
-├── reports/      # CI レポート
-├── global.setup.ts
-├── global.teardown.ts
-└── playwright.config.ts
+tests/
+├── e2e/                  # E2E spec files（画面・ドメイン単位フォルダ）
+│   ├── auth/
+│   ├── checkout/
+│   ├── usecases/         # 横断ユースケース
+│   ├── .auth/            # Storage State（.gitignore）
+│   ├── global.setup.ts
+│   └── global.teardown.ts
+├── pages/                # Page Object Model
+├── fixtures/             # テストデータ Factory
+└── helpers/              # 共通操作（auth, db, server）
 ```
 
 ## 設計原則
 
-1. **ユースケース中心** — 「ページ」ではなく「行動」で scenarios/ を分ける
-2. **Page Object は薄く** — UI 操作のみ。業務フローを持たせない
-3. **fixtures でテストを短くする** — login 処理の重複を排除
-4. **utils はドメイン別に整理** — helper 地獄を防ぐ
-5. **data は固定値専用** — 動的生成は factory へ
-
-## 旧構成との対応
-
-| 旧 | 新 | 変更点 |
-|---|---|---|
-| `tests/e2e/resources/` | `e2e/scenarios/{domain}/` | 画面名 → ユースケース名 |
-| `tests/helpers/` | `e2e/utils/` | 責務ごとにファイル分割 |
-| `tests/fixtures/` | `e2e/fixtures/` + `e2e/data/` | 前処理と固定値を分離 |
-| `tests/global-setup.ts` | `e2e/global.setup.ts` + `e2e/global.teardown.ts` | teardown を追加 |
-
----
+1. **tests/ 統一** — unit / components / e2e / pages / fixtures / helpers を同じ `tests/` 下に置く
+2. **画面・ドメイン単位フォルダ** — `tests/e2e/{screen}/` でスペックを整理
+3. **Page Object は薄く** — UI 操作のみ。業務フローを持たせない
+4. **helpers で共通化** — login 処理・DB シードは helpers に集約
+5. **fixtures は固定値専用** — 動的生成は Factory（`フィクスチャー.md`）
 
 ## 変更履歴
 
 | # | 日付 | 概要 |
 |---|---|---|
-| 1 | 2026-06-01 | 初版作成（ユースケース駆動設計への更新） |
+| 1 | 2026-06-01 | 初版：ユースケース駆動設計（`e2e/scenarios/`）として作成 |
+| 2 | 2026-06-01 | 方針変更：`tests/e2e/` 統一構造へ（テスト戦略.md との整合性優先） |
