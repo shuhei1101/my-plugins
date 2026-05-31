@@ -76,3 +76,8 @@ scan_records:
   - ISSUE-127
   - ISSUE-128
   - ISSUE-129
+- date: 2026-05-31
+  skill: issue-scan
+  scope: glob:hooks.json
+  issues_found:
+  - ISSUE-130
