@@ -7,7 +7,6 @@ Usage (new task folder):
         --branch <{type}/{title}> \\
         --ja-title <日本語タイトル> \\
         --date <YYMMDD> \\
-        --plugin-root <plugin_root_path> \\
         [--title <kebab-case-title>] \\
         [--id <N>]
 
@@ -16,7 +15,6 @@ Usage (existing task folder):
         --branch <{type}/{title}> \\
         --ja-title <日本語タイトル> \\
         --task-dir <YYMMDD_existing-title> \\
-        --plugin-root <plugin_root_path> \\
         [--id <N>]
 
 Creates:
@@ -33,11 +31,97 @@ When --task-dir is provided, --date and --title are optional (used only in the d
 --id is the internal numeric ID tracked in index.yaml (archive cross-reference). It is accepted for
 interface compatibility but is NOT written into the document or the file name. Legacy invocations
 with --pr are accepted as an alias for --id.
+--plugin-root is accepted for backward compatibility but is no longer used.
 """
 
 import argparse
 import pathlib
 import sys
+
+# ── ブランチドキュメントテンプレート ────────────────────────
+_BRANCH_DOC_TEMPLATE = """\
+# {日本語タイトル}
+
+> ブランチ: `{branch-name}`
+
+## 概要
+
+{このブランチの目的・背景を書く}
+
+### 実施条件
+
+{例: 即時実施可 / 「{他ブランチ名}」が完了してから}
+
+## 作業内容
+
+| # | 完了 | 作業内容 |
+|---|---|---|
+| 1 | 済 | {何をするか（サンプル行 — 実際の作業に書き換える）} |
+| 2 | - | {何をするか} |
+
+## 変更内容
+
+実装したファイル（テスト以外）。コミットに積まれる全ファイルを列挙する。
+
+| # | ファイル名 | 新規/編集 | 内容 | 補足 |
+|---|---|---|---|---|
+| 1 | `{file/path}` | 新規 | {このファイルで何を実装したか} | {補足あれば} |
+| 2 | `{file/path2}` | 編集 | {何を変更したか} | - |
+
+## テスト
+
+手動テスト・動作確認の実施記録。
+
+| # | 確認内容 | 実測結果 | 判定 |
+|---|---|---|---|
+| 1 | {確認内容} | (未実施) | - |
+
+## QA
+
+このブランチのスコープの未決定事項を QA-XXX として記録する。決定後は本文の該当箇所に反映する。
+
+### QA-001: {タイトル}
+
+**背景**: {なぜこれを判断する必要があるか}
+
+| # | 案 | 内容 |
+|---|---|---|
+| 1 | A | {案 A の説明} |
+| 2 | B | {案 B の説明} |
+
+**推奨方式**: {A/B のどちらか + 理由を 1〜2 行。「後で決める」は禁止}
+
+**状態**: 未解決
+
+**決定したら反映先**: {ドキュメントの該当セクション}
+
+## 参考ドキュメント
+
+- `{path/to/spec.md}`: {何の資料か}
+
+## 関連イシュー
+
+このブランチが解決する `.work/issues/` のイシュー一覧。merge 実行時に自動でクローズされる。
+イシューがない場合は表ごと削除してよい。
+
+| # | ID | 概要 | resolution |
+|---|---|---|---|
+| 1 | ISSUE-{N} | {イシューのタイトル} | resolved |
+
+## 関連ブランチ
+
+直接関連するブランチ（先行・分割兄弟・後続）を列挙する。
+
+| # | ブランチ | 概要 |
+|---|---|---|
+| 1 | {type/title} | {概要} |
+
+## 次ブランチ候補
+
+| # | タイトル | 概要 | 実施条件 |
+|---|---|---|---|
+| 1 | {次にやること} | {背景・目的} | {例: 即時実施可 / 「{他候補タイトル}」が完了したら} |
+"""
 
 
 def main() -> None:
@@ -76,11 +160,10 @@ def main() -> None:
         help="Existing task folder name (e.g. 260515_my-task). "
              "When omitted, a new folder is created from --date and --title.",
     )
-    parser.add_argument("--plugin-root", required=True, help="Plugin root path")
+    parser.add_argument("--plugin-root", default="", help="Accepted for backward compatibility; no longer used.")
     args = parser.parse_args()
 
     worktree = pathlib.Path(args.worktree)
-    plugin_root = pathlib.Path(args.plugin_root)
 
     if args.task_dir:
         task_folder_name = args.task_dir
@@ -126,24 +209,7 @@ def main() -> None:
     file_stem = f"{date_prefix}-{name_stem}" if date_prefix else name_stem
     dest_path = task_dir / f"{file_stem}.md"
 
-    template_path = (
-        plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "yymmdd-日本語タイトル.md"
-    )
-    if not template_path.exists():
-        # Back-compat: fall back to legacy template names.
-        template_path = (
-            plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "yymmdd-branch-name.md"
-        )
-    if not template_path.exists():
-        template_path = (
-            plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "type-title.md"
-        )
-    if not template_path.exists():
-        template_path = (
-            plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "PRNNN-type-title.md"
-        )
     _create_from_template(
-        template_path,
         dest_path,
         {
             "{日本語タイトル}": args.ja_title or title_for_heading,
@@ -157,15 +223,10 @@ def main() -> None:
 
 
 def _create_from_template(
-    template_path: pathlib.Path,
     dest_path: pathlib.Path,
     replacements: dict[str, str],
 ) -> None:
-    if not template_path.exists():
-        print(f"ERROR: template not found: {template_path}", file=sys.stderr)
-        sys.exit(1)
-
-    content = template_path.read_text(encoding="utf-8")
+    content = _BRANCH_DOC_TEMPLATE
     for placeholder, value in replacements.items():
         content = content.replace(placeholder, value)
     dest_path.write_text(content, encoding="utf-8")

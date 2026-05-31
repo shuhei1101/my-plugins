@@ -14,7 +14,7 @@ references:
     description: Sync rule for work-start, worktree-create, and vscode-workspace-sync skills. work-start Step 4 delegates to worktree-create, so their interfaces must stay aligned.
 
   - path: skill-sync/TODOテンプレート同期.md
-    description: Sync rule for work TODO templates and work-start SKILL.md. The section structure in templates must match the fill-in guidance in work-start SKILL.md Step 7.
+    description: Sync rule for work branch document template (_BRANCH_DOC_TEMPLATE in setup-task.py) and work-start SKILL.md. The section structure in the template must match the fill-in guidance in work-start SKILL.md Step 7.
 
   - path: work-dir/ドットワークディレクトリ構成.md
     description: Guide for editing files under .work/ — directory structure, branch document sections, the notes spec-sheet role, and commit conventions (keep .work/ changes in a separate commit from implementation code).

@@ -9,57 +9,84 @@ setup.py — workspace セットアップスクリプト
 """
 
 # ── stdlib ──────────────────────────────────────────────────
-import shutil
 import sys
 from pathlib import Path
 
 # ── constants ───────────────────────────────────────────────
-# scripts/ → setup/ → skills/ → workspace/ → templates/.work/
-TEMPLATE_DIR = Path(__file__).parent.parent.parent.parent / "templates" / ".work"
 TARGET_DIR = Path.cwd() / ".work"
 
+_TASKS_GITIGNORE = "index.yaml\n"
+
+_TASKS_INDEX_YAML = """\
+# .work/tasks/index.yaml — ブランチ索引
+#
+# フィールド説明:
+#   id        : 連番（アーカイブ参照用）
+#   branch    : git ブランチ名（例: feat/my-feature）
+#   title     : ブランチ文書の H1 タイトルそのまま
+#   type      : feat / fix / docs / refactor / chore / test
+#   tags      : 自由形式タグ（省略可）
+#   summary   : ファイルを開かずに内容がわかる一行説明
+#   task      : タスクフォルダ名（YYMMDD_{title}）
+#   completed : false = 進行中、true = マージ済み / 廃止済み
+
+last_id: 0
+branches: []
+"""
+
+_TASKS_INDEX_ARCHIVE_YAML = """\
+# Managed by workspace merge skill. Archived (completed / abandoned) branches.
+#
+# フィールド説明:
+#   id        : 連番
+#   branch    : git ブランチ名
+#   title     : ブランチ文書の H1 タイトルそのまま
+#   type      : feat / fix / docs / refactor / chore / test
+#   tags      : 自由形式タグ（省略可）
+#   summary   : 一行説明
+#   task      : タスクフォルダ名（YYMMDD_{title}）
+#   archived  : アーカイブ日（YYYY-MM-DD）
+#   resolution: merged / abandoned
+
+branches: []
+"""
+
+_ISSUES_GITIGNORE = "_index.yaml\n"
+
+_ISSUES_INDEX_ARCHIVE_YAML = """\
+# Managed by issue-scan / issue-create / merge. Committed to git.
+closed_issues: []
+scan_records: []
+"""
+
 # ── private helpers ─────────────────────────────────────────
-def _expand(template_dir: Path, target_dir: Path) -> None:
-    """
-    テンプレートディレクトリをターゲットに再帰コピーする。
-    既存ファイルはスキップし、.gitkeep はコピーしない。
+def _write_if_new(path: Path, content: str) -> None:
+    if path.exists():
+        print(f"  skip (exists): {path.relative_to(TARGET_DIR)}")
+    else:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+        print(f"  created:       {path.relative_to(TARGET_DIR)}")
 
-    :param template_dir: コピー元テンプレートのパス
-    :param target_dir: コピー先のパス
-    """
-    if not template_dir.exists():
-        print(f"Error: template not found: {template_dir}", file=sys.stderr)
-        sys.exit(1)
-
-    for src in sorted(template_dir.rglob("*")):
-        relative = src.relative_to(template_dir)
-        dst = target_dir / relative
-
-        if src.is_dir():
-            dst.mkdir(parents=True, exist_ok=True)
-            continue
-
-        if src.name == ".gitkeep":
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            continue
-
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        if dst.exists():
-            print(f"  skip (exists): {relative}")
-        else:
-            shutil.copy2(src, dst)
-            print(f"  created:       {relative}")
 
 # ── main ────────────────────────────────────────────────────
 def main() -> None:
     """メイン処理。.work/ をカレントディレクトリに展開する。"""
     TARGET_DIR.mkdir(exist_ok=True)
-    print(f"Expanding template to: {TARGET_DIR}")
-    _expand(TEMPLATE_DIR, TARGET_DIR)
+    print(f"Setting up: {TARGET_DIR}")
 
-    # tasks/ は動的生成フォルダなのでテンプレートには含めずここで作成する
     (TARGET_DIR / "tasks").mkdir(exist_ok=True)
     print(f"  created:       tasks/")
+    _write_if_new(TARGET_DIR / "tasks" / ".gitignore", _TASKS_GITIGNORE)
+    _write_if_new(TARGET_DIR / "tasks" / "index.yaml", _TASKS_INDEX_YAML)
+    _write_if_new(TARGET_DIR / "tasks" / "index.archive.yaml", _TASKS_INDEX_ARCHIVE_YAML)
+
+    (TARGET_DIR / "notes").mkdir(exist_ok=True)
+    print(f"  created:       notes/")
+
+    (TARGET_DIR / "issues").mkdir(exist_ok=True)
+    _write_if_new(TARGET_DIR / "issues" / ".gitignore", _ISSUES_GITIGNORE)
+    _write_if_new(TARGET_DIR / "issues" / "_index.archive.yaml", _ISSUES_INDEX_ARCHIVE_YAML)
 
     # _index.yaml は issues/.gitignore で git 管理外のため、テンプレートに置けない → ここで生成する
     index_yaml = TARGET_DIR / "issues" / "_index.yaml"

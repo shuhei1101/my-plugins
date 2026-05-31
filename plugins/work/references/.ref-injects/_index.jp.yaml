@@ -12,7 +12,7 @@ references:
     description: work-start・worktree-create・vscode-workspace-sync スキルの同期ルール。work-start の Step 4 は worktree-create に委譲するため、インターフェースを常に整合させること。
 
   - path: skill-sync/TODOテンプレート同期.md
-    description: work TODO テンプレートと work-start SKILL.md の同期ルール。テンプレートのセクション構成は work-start SKILL.md Step 7 の記入ガイドと一致させること。
+    description: work ブランチドキュメントテンプレート（setup-task.py の _BRANCH_DOC_TEMPLATE 定数）と work-start SKILL.md の同期ルール。テンプレートのセクション構成は work-start SKILL.md Step 7 の記入ガイドと一致させること。
 
   - path: work-dir/ドットワークディレクトリ構成.md
     description: .work/ 配下のファイルを編集する際のガイド — ディレクトリ構成・ブランチドキュメントのセクション構成・notes の「現在の仕様書」としての立ち位置・コミット規約（.work/ 配下の変更は実装コードと別コミットにすること）。

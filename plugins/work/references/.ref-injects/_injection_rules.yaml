@@ -20,7 +20,7 @@ rules:
       - skill-sync/スタートスキル同期.md
 
   # ---- TODO テンプレート: work-start SKILL.md のステップ構成と一致させる ----
-  - pattern: "plugins/work/templates/**"
+  - pattern: "plugins/work/scripts/setup-task.py"
     required:
       - skill-sync/TODOテンプレート同期.md
   - pattern: "plugins/work/skills/{start,pr-handoff}/SKILL{.jp,}.md"
