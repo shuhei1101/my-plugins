@@ -1110,3 +1110,10 @@ branches:
   summary: 10件のJPミラーファイルに標準ヘッダーコメントを追加・修正する
   task: 260531_jp-mirror-header-comment
   completed: true
+- branch: fix/missing-jp-mirrors
+  created: '2026-05-31'
+  title: JPミラー不足・フォーマット乖離を修正
+  type: fix
+  summary: 'ISSUE-062: 7件のJPミラー新規作成、ISSUE-065: git-guard.jp.md構造修正'
+  task: 260531_missing-jp-mirrors
+  completed: true
