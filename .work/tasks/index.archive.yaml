@@ -1103,3 +1103,10 @@ branches:
   summary: ブランチドキュメントテンプレートのテスト表列をファイル名・メソッド名・期待値・実値・判定・補足に更新
   task: 260531_テスト表列更新
   completed: true
+- id: 248
+  title: refactor/fix-terminology-in-work-plugin
+  type: refactor
+  tags: []
+  summary: workプラグイン内のPR→ブランチ用語統一とuser-prompt-submit.py古い表記修正
+  task: 260531_workプラグイン用語修正
+  completed: true
