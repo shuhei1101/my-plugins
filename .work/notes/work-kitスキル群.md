@@ -128,6 +128,31 @@ Step 11（`branch-reserve` 自動呼び出し）を Step 10（完了報告）よ
 - `plugins/work/scripts/setup-task.py`: ファイル名生成ロジックと参照テンプレートパスを更新
 - `plugins/work/skills/start/SKILL.md` / `SKILL.jp.md`: 命名規則説明とテーブル仕様を更新
 
+## ブランチドキュメントの H1 をタイトル（日本語）に変更（#233）
+
+### 変更前
+
+```markdown
+# chore/update-branch-doc-h1-title
+```
+
+H1 見出しにブランチ名（`{type}/{title}`）を機械的に埋め込んでいた。
+
+### 変更後
+
+```markdown
+# {日本語タイトル}
+```
+
+H1 はそのブランチ作業を表す日本語タイトルを書くプレースホルダーに変更。
+`work:start` の Step 7 で Claude が適切な日本語タイトルを記入する。
+
+### 変更ファイル
+
+- `plugins/work/templates/.work/tasks/yymmdd_xxx/yymmdd-branch-name.md`: H1 プレースホルダーを変更
+- `plugins/work/scripts/setup-task.py`: `{ブランチ名}` 置換エントリを削除
+- `plugins/work/skills/start/SKILL.md` / `SKILL.jp.md`: Step 7 に H1 記入指示を追記
+
 ## plugin-update スキルと .work/ テンプレート同期（#232）
 
 `/work:plugin-update` スキルは、work プラグインの `.work/` 内テンプレートファイルを最新版に同期する。

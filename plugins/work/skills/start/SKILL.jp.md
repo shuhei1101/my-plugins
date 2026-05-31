@@ -96,7 +96,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --id {N} \
-  --title "{type}/{title}" \
+  --title "{branch}" \
   --type {type} \
   --summary "{summary}" \
   --task "{YYMMDD}_{title}"
@@ -246,9 +246,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### 処理
 
-作成された `{YYMMDD}-{type}-{title}.md` をワークツリーで開き、テンプレートプレースホルダーコンテンツを
+作成された `{YYMMDD}-{branch-hyphenated}.md` をワークツリーで開き、テンプレートプレースホルダーコンテンツを
 実際の計画で置き換えます。このドキュメントはこのブランチのすべてのセクション
 — TODO、バリエーション、QA、参考資料 — を 1 つのファイルに保持します。
+
+**`# タイトル`（H1）** — このブランチ作業を表す日本語タイトルを記述してください（ブランチ名ではなく）。例: `# ブランチドキュメントの H1 をタイトルに変更`
 
 **`## 概要`** — 目標/背景と `### 実施条件` サブセクションを記述してください：
 
@@ -336,7 +338,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### 処理
 
-1. ワークツリー内のすべての作成ファイルをコミット（ブランチ：`{type}/{title}`）
+1. ワークツリー内のすべての作成ファイルをコミット（ブランチ：`{branch}`）
 2. 作成内容をレポート：ブランチ名、ワークツリーパス、ブランチドキュメントパス、ノートパス
 3. 実装開始：
    - **QA エントリが存在する場合** → 開始前にユーザーの確認を求める
@@ -346,7 +348,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 ##### 禁止事項
 
-- 作成されたワークツリー（`{type}/{title}` ブランチ）以外にコミットしないでください
+- 作成されたワークツリー（`{branch}` ブランチ）以外にコミットしないでください
 
 ##### コミット粒度
 
@@ -359,4 +361,4 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 - このスキルが生成するすべてのコミットメッセージは **日本語** で書かれなければなりません
 - サブジェクトとボディの両方が日本語です（`Co-Authored-By:` などのメタデータ行は英語のままでも可）
 - 従来のコミットプレフィックス（`feat:` `fix:` `chore:` など）は英語のままでもかまいません
-- 例：`chore: {type}/{title} のブランチドキュメントを作成`
+- 例：`chore: {branch} のブランチドキュメントを作成`
