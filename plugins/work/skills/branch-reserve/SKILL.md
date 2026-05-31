@@ -50,7 +50,7 @@ branch-reserve runs again, the dependent candidate becomes the next immediate ta
 
 1. Read the current branch document:
    ```
-   .work/tasks/{task_folder}/{branch-hyphenated}.md
+   .work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.md
    ```
 
 2. Read its `## 次ブランチ候補` table (columns: title / summary / 実施条件):

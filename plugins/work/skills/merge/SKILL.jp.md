@@ -66,7 +66,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 処理
 
-1. `.work/tasks/{date}_{title}/{branch-hyphenated}.md` のブランチドキュメント内の
+1. `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md` のブランチドキュメント内の
    `## 作業内容` テーブルを読み込み
 2. すべての行の `完了` 列に `済` があることを確認
 
@@ -134,7 +134,7 @@ git -C {WORKTREE_PATH} status
 
 #### 処理
 
-1. ワークツリーの `.work/tasks/{date}_{title}/{branch-hyphenated}.md`
+1. ワークツリーの `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md`
    ブランチドキュメントの `## 関連イシュー` セクションを読み込み
 2. **セクションが存在しない、空である、またはテンプレートプレースホルダー行のみを含む**
    （`| ISSUE-{N} | ... |`）→ このステップの残りをスキップして Step 5 に進む
@@ -305,7 +305,7 @@ git branch -d {BRANCH_NAME}
 
 #### 処理
 
-1. `.work/tasks/{date}_{title}/{branch-hyphenated}.md`
+1. `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md`
    ブランチドキュメントの `## QA` セクションを確認し、残存する未解決エントリを
    ユーザーと確認
 2. 変更がある場合はコミット：

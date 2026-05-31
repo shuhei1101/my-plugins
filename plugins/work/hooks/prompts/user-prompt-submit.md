@@ -32,7 +32,7 @@ Check whether a working branch is in progress in **the current Claude Code conve
 #### Process
 
 1. Use `git worktree list` to locate the in-progress branch's worktree and navigate to it
-2. Read the branch document at `.work/tasks/{YYMMDD}_{title}/{branch-hyphenated}.md`
+2. Read the branch document at `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.md` (the single `.md` file in the task folder)
 3. If its `## QA` section has unresolved entries — **stop here** — ask the user to resolve them; do nothing further
 4. If `## QA` is clear (or empty), read the `## 作業内容` section of the same branch document
 5. If the user's requested task is not already listed in `## 作業内容`, add it and commit before proceeding

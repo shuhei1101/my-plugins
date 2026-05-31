@@ -5,23 +5,26 @@ setup-task.py -- Initialize task folder and document for a new branch.
 Usage (new task folder):
     python setup-task.py <worktree_path> \\
         --branch <{type}/{title}> \\
-        --title <kebab-case-title> \\
+        --ja-title <日本語タイトル> \\
         --date <YYMMDD> \\
         --plugin-root <plugin_root_path> \\
+        [--title <kebab-case-title>] \\
         [--id <N>]
 
 Usage (existing task folder):
     python setup-task.py <worktree_path> \\
         --branch <{type}/{title}> \\
+        --ja-title <日本語タイトル> \\
         --task-dir <YYMMDD_existing-title> \\
         --plugin-root <plugin_root_path> \\
         [--id <N>]
 
 Creates:
-    <worktree>/.work/tasks/<task_dir>/<YYMMDD>-<branch-hyphenated>.md
+    <worktree>/.work/tasks/<task_dir>/<YYMMDD>-<日本語タイトル>.md
 
-The branch name is hyphenated by replacing every slash with a hyphen
-(e.g. refactor/rename-pr-to-branch -> refactor-rename-pr-to-branch).
+When --ja-title is provided, the file name uses the Japanese title.
+When --ja-title is omitted, the branch name is hyphenated and used as a fallback
+(e.g. refactor/rename-pr-to-branch -> YYMMDD-refactor-rename-pr-to-branch.md).
 The date prefix is taken from --date, or extracted from --task-dir (the 6-digit YYMMDD prefix).
 
 When --task-dir is omitted, the folder name is built from --date and --title.
@@ -55,9 +58,17 @@ def main() -> None:
         "--branch",
         required=True,
         help="Full branch name (e.g. refactor/rename-pr-to-branch). "
-             "Slashes are converted to hyphens to form the file name.",
+             "Used in the document header. When --ja-title is omitted, slashes are converted "
+             "to hyphens to form the file name.",
     )
-    parser.add_argument("--title", default="", help="Task title (kebab-case); used in the document heading")
+    parser.add_argument(
+        "--ja-title",
+        default="",
+        dest="ja_title",
+        help="Japanese title used as the file name stem (e.g. ブランチ文書ファイル名変更). "
+             "When provided, the file is named <YYMMDD>-<ja-title>.md.",
+    )
+    parser.add_argument("--title", default="", help="Task title (kebab-case); used in the folder name when creating a new folder")
     parser.add_argument("--date", default="", help="Date in YYMMDD format")
     parser.add_argument(
         "--task-dir",
@@ -107,15 +118,23 @@ def main() -> None:
         if len(prefix) == 6 and prefix.isdigit():
             date_prefix = prefix
 
-    branch_stem = args.branch.replace("/", "-")
-    file_stem = f"{date_prefix}-{branch_stem}" if date_prefix else branch_stem
+    # Determine file name stem: Japanese title takes priority; fall back to hyphenated branch name.
+    if args.ja_title:
+        name_stem = args.ja_title
+    else:
+        name_stem = args.branch.replace("/", "-")
+    file_stem = f"{date_prefix}-{name_stem}" if date_prefix else name_stem
     dest_path = task_dir / f"{file_stem}.md"
 
     template_path = (
-        plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "yymmdd-branch-name.md"
+        plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "yymmdd-日本語タイトル.md"
     )
     if not template_path.exists():
-        # Back-compat: fall back to the legacy template name if the new one is not yet deployed.
+        # Back-compat: fall back to legacy template names.
+        template_path = (
+            plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "yymmdd-branch-name.md"
+        )
+    if not template_path.exists():
         template_path = (
             plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "type-title.md"
         )
@@ -129,6 +148,8 @@ def main() -> None:
         dest_path,
         {
             "{N}": id_for_heading,
+            "{日本語タイトル}": args.ja_title or title_for_heading,
+            "{branch-name}": args.branch,
             "{タイトル}": title_for_heading,
         },
     )

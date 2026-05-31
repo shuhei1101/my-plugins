@@ -10,7 +10,7 @@ Japanese mirror: `references/work-start-skill-sync.jp.md`
 
 | Edited file | Also verify / update |
 |---|---|
-| `plugins/work/skills/start/SKILL.md` | `plugins/work/skills/worktree-create/SKILL.md` — confirm the interface (PR number / branch args) matches Step 4 |
+| `plugins/work/skills/start/SKILL.md` | `plugins/work/skills/worktree-create/SKILL.md` — confirm the interface (branch name / args) matches Step 4 |
 | `plugins/work/skills/worktree-create/SKILL.md` | `plugins/work/skills/start/SKILL.md` — confirm Step 4 call form matches |
 | `plugins/work/skills/vscode-workspace-sync/SKILL.md` | confirm the namespace is `work:` |
 

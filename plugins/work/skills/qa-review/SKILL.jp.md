@@ -32,7 +32,7 @@ description: |
    ```bash
    git worktree list
    ```
-5. ブランチドキュメントのパスを確定する（パターン: `.work/tasks/{YYMMDD}_{title}/{branch-hyphenated}.md`）
+5. ブランチドキュメントのパスを確定する（パターン: `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.md`）
 
 → ステップ 2 へ
 

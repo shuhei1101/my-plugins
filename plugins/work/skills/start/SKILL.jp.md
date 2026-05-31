@@ -18,8 +18,8 @@ description: |
 > `WORK_BRANCH_AUTHOR` が設定されている場合は作者名セグメントが追加されます：
 > `{type}/{author}/{title}`（例：`feat/nishikawa/test-update`）。
 > ワークツリーはブランチ名のスラッシュをハイフンに変換したパスになります：`{repo}-wt-{branch-hyphenated}`。
-> ブランチドキュメントのファイル名は `{YYMMDD}-{branch-hyphenated}.md` 形式です
-> （例：260531 に作成した `refactor/foo-bar` → `260531-refactor-foo-bar.md`）。
+> ブランチドキュメントのファイル名は `{YYMMDD}-{日本語タイトル}.md` 形式です（Step 2 で収集する日本語タイトルを使用）。
+> git ブランチ名は文書内のヘッダー行に記録されます。
 > 内部 ID `{N}` は `index.yaml` 内でアーカイブメタデータとして追跡されます。ブランチ名、ワークツリーパス、ブランチドキュメントファイル名には表示されません。
 
 ---
@@ -71,6 +71,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 #### 処理
 
 1. 以下を決定します：
+   - **日本語タイトル**: このブランチ作業を表す日本語の説明タイトル — 文書の H1 およびファイル名に使用（例：`ブランチ文書ファイル名変更`）
    - **TODO リスト**: このブランチで何をするか（チェックリストになります）
    - **ノート**: `.work/notes/` に関連するノートが存在しますか？または作成が必要ですか？
    - **未解決の質問**: 不明瞭な点や未決定の事項はありますか？
@@ -79,7 +80,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 #### 出力
 
-- TODO リスト、ノート情報、未解決の質問が確認されました
+- 日本語タイトル `{日本語タイトル}`、TODO リスト、ノート情報、未解決の質問が確認されました
 
 ---
 
@@ -96,7 +97,8 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --id {N} \
-  --title "{branch}" \
+  --branch "{full-branch-name}" \
+  --title "{日本語タイトル}" \
   --type {type} \
   --summary "{summary}" \
   --task "{YYMMDD}_{title}"
@@ -114,7 +116,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 - 6 桁の `YYMMDD`（例：`260530`）を使用してください。8 桁の `YYYYMMDD` 形式は使用しないでください
 - `--id {N}` は Step 1 で予約した内部 ID です。YAML 行に記録されますが、
   ブランチ/ワークツリー/ファイル名には埋め込まれません
-- `--title` はブランチ名を行タイトルとして記録します（`PR{N}` プレフィックスなし）
+- `--branch` は git ブランチ名を記録します。`--title` は日本語の文書タイトルを記録します
 
 ---
 
@@ -201,9 +203,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### 処理
 
 Step 5 での選択に応じて、以下のいずれかを実行してください。`--branch` 引数は完全なブランチ名です
-（例：`feat/nishikawa/test-update` または `feat/test-update`）。スクリプトは日付プレフィックスを付加し、
-スラッシュをハイフンに変換してファイル名を形成します
-（例：260531 に作成した `refactor/rename-pr-to-branch` → `260531-refactor-rename-pr-to-branch.md`）。
+（例：`feat/nishikawa/test-update` または `feat/test-update`）。`--ja-title` は Step 2 で収集した日本語タイトルで、
+スクリプトはこれをファイル名に使用します
+（例：`ブランチ文書ファイル名変更` on 260531 → `260531-ブランチ文書ファイル名変更.md`）。
 ワークツリーパス `{wt}` は `../$(basename $(pwd))-wt-{branch-hyphenated}` です（ブランチ名のスラッシュをハイフンに変換）。
 
 **新しいタスクフォルダ:**
@@ -213,6 +215,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   {wt} \
   --id {N} \
   --branch {full-branch-name} \
+  --ja-title "{日本語タイトル}" \
   --title {title} \
   --date {YYMMDD} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -225,8 +228,8 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   {wt} \
   --id {N} \
   --branch {full-branch-name} \
+  --ja-title "{日本語タイトル}" \
   --task-dir {existing_folder_name} \
-  --title {title} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
 ```
 
@@ -234,7 +237,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### 出力
 
-- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{branch-hyphenated}.md` が作成されました
+- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.md` が作成されました
 
 ---
 
@@ -246,11 +249,12 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### 処理
 
-作成された `{YYMMDD}-{branch-hyphenated}.md` をワークツリーで開き、テンプレートプレースホルダーコンテンツを
+作成された `{YYMMDD}-{日本語タイトル}.md` をワークツリーで開き、テンプレートプレースホルダーコンテンツを
 実際の計画で置き換えます。このドキュメントはこのブランチのすべてのセクション
 — TODO、バリエーション、QA、参考資料 — を 1 つのファイルに保持します。
 
-**`# タイトル`（H1）** — このブランチ作業を表す日本語タイトルを記述してください（ブランチ名ではなく）。例: `# ブランチドキュメントの H1 をタイトルに変更`
+**H1 タイトル**と**ブランチ行**はスクリプトが `--ja-title` と `--branch` から自動入力します。
+正しいことを確認してください（上書きしないでください）。
 
 **`## 概要`** — 目標/背景と `### 実施条件` サブセクションを記述してください：
 
