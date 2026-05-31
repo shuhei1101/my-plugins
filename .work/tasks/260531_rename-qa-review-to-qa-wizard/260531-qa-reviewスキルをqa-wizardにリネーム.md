@@ -15,10 +15,10 @@ work プラグインの `qa-review` スキルは「QA をレビューする」�
 | # | 完了 | 作業内容 |
 |---|---|---|
 | 1 | 済 | `## QA` に未決定事項を記録する |
-| 2 | - | スキルディレクトリを `qa-review` → `qa-wizard` にリネーム |
-| 3 | - | `SKILL.md` / `SKILL.jp.md` の `name` フィールドと本文内参照を更新 |
-| 4 | - | `plugins/work/CLAUDE.md` / `CLAUDE.jp.md` の `work:qa-review` 参照を更新 |
-| 5 | - | `.work/notes/` のノートを更新 |
+| 2 | 済 | スキルディレクトリを `qa-review` → `qa-wizard` にリネーム |
+| 3 | 済 | `SKILL.md` / `SKILL.jp.md` の `name` フィールドと本文内参照を更新 |
+| 4 | 済 | `plugins/work/CLAUDE.md` / `CLAUDE.jp.md` の `work:qa-review` 参照を更新 |
+| 5 | 済 | `.work/notes/` のノートを更新 |
 
 ## 変更内容
 
@@ -47,7 +47,7 @@ work プラグインの `qa-review` スキルは「QA をレビューする」�
 
 ## 参考ドキュメント
 
-- `{path/to/spec.md}`: {何の資料か}
+- `.work/notes/スキル設計/インタラクティブレビュースキル.md`: qa-wizard（旧 qa-review）と impl-review の設計メモ
 
 ## 関連ブランチ
 
