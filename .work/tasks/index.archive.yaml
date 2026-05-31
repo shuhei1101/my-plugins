@@ -1026,3 +1026,10 @@ branches:
   summary: plugin-update スキルを plugin-migrate にリネームし、依存箇所を全更新
   task: 260531_plugin-update-to-migrate
   completed: true
+- id: 232
+  title: chore/sync-work-plugin-templates
+  type: chore
+  tags: []
+  summary: work プラグインの .work/ テンプレートを最新版に同期
+  task: 260531_sync-work-plugin-templates
+  completed: true
