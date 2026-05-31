@@ -1103,3 +1103,40 @@ branches:
   summary: ブランチドキュメントテンプレートのテスト表列をファイル名・メソッド名・期待値・実値・判定・補足に更新
   task: 260531_テスト表列更新
   completed: true
+- id: 248
+  title: refactor/fix-terminology-in-work-plugin
+  type: refactor
+  tags: []
+  summary: workプラグイン内のPR→ブランチ用語統一とuser-prompt-submit.py古い表記修正
+  task: 260531_workプラグイン用語修正
+  completed: true
+- id: 246
+  title: chore/rename-related-specs-to-notes
+  type: chore
+  tags: []
+  summary: ノートフロントマターの related_specs を related_notes にリネーム
+  task: 260531_ノートフロントマター修正
+  completed: true
+- id: 250
+  title: chore/jp-md-comment-normalize
+  type: chore
+  tags: []
+  summary: .jp.md ファイル冒頭のコメントを HTML コメント形式のみに統一
+  task: 260531_jpmd_comment_normalize
+  completed: true
+- id: 251
+  branch: refactor/reference-filename-to-japanese
+  title: 全プラグインリファレンスファイル名を日本語化
+  type: refactor
+  tags: []
+  summary: 全プラグインのreferencesディレクトリ配下のファイル名を日本語に変更する
+  task: 260531_全プラグインリファレンスファイル名を日本語化
+  completed: true
+- id: 253
+  branch: refactor/fix-work-start-commit-order
+  title: work-startコミット順序修正
+  type: refactor
+  tags: []
+  summary: work:startスキルのコミット積み順を「ブランチ文書→実装→最終更新」に修正
+  task: 260531_fix-work-start-commit-order
+  completed: true

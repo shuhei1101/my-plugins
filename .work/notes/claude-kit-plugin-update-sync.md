@@ -2,7 +2,7 @@
 created_at: 2026-05-31
 updates:
   - 2026-05-31 — 初版作成
-related_specs:
+related_notes:
   - claude-kit-references-structure.md
 related_branches:
   - chore/sync-claude-kit-artifacts

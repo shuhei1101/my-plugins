@@ -89,7 +89,7 @@ Substitute placeholders in text files; copy binaries verbatim.
 | `references/_index.yaml` / `_index.jp.yaml` | `references/…` (same names) |
 | `references/_injection_rules.yaml` | `references/_injection_rules.yaml` |
 | `references/CLAUDE.md` / `CLAUDE.jp.md` | `references/…` (same names) |
-| `references/example/getting-started.md` | `references/example/getting-started.md` |
+| `references/example/はじめに.md` | `references/example/はじめに.md` |
 
 Notes:
 - Paths mirror the template — no relocation.

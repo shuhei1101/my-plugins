@@ -24,8 +24,8 @@ duplication** that creeps in when each screen is implemented in isolation.
 Read:
 
 ```
-{plugin_root}/references/html/principles.md   # DRY/centralization, FLOCSS, JS rules
-{plugin_root}/references/html/ui-design.md    # UX patterns, shared-component mandate
+{plugin_root}/references/html/基本方針.md   # DRY/centralization, FLOCSS, JS rules
+{plugin_root}/references/html/UIデザイン.md    # UX patterns, shared-component mandate
 ```
 
 → Proceed to Step 2
@@ -187,7 +187,7 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 
 ## References
 
-- `{plugin_root}/references/html/principles.md` — DRY, FLOCSS, JS rules
-- `{plugin_root}/references/html/ui-design.md` — UX patterns, shared-component mandate
+- `{plugin_root}/references/html/基本方針.md` — DRY, FLOCSS, JS rules
+- `{plugin_root}/references/html/UIデザイン.md` — UX patterns, shared-component mandate
 - `{plugin_root}/skills/mock/SKILL.md` — companion mock generation
 - `{plugin_root}/skills/logging/SKILL.md` — logger conventions

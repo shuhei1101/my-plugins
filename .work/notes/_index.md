@@ -58,6 +58,7 @@
 | [claude-kit-references-structure.md](claude-kit-references-structure.md) | claude-kit リファレンス構造整理 — サブフォルダ分割設計メモ |
 | [plugin-migrate-rename.md](plugin-migrate-rename.md) | plugin-migrate スキル命名規則 — plugin-update から plugin-migrate へのリネーム |
 | [marketplace-upgradeコマンド.md](marketplace-upgradeコマンド.md) | marketplace-upgradeコマンド — インストール済みプラグインの一括更新 |
+| [リファレンスファイル名日本語化.md](リファレンスファイル名日本語化.md) | リファレンスファイル名日本語化 — 全プラグインの references/ ファイル名を日本語に統一する |
 
 ---
 
@@ -70,7 +71,9 @@ env 設定・運用ポリシー・用語規約に関するメモ。
 | [保護ブランチenv化.md](保護ブランチenv化.md) | 保護ブランチ env 化 — PR177 |
 | [envトグル実装メモ.md](envトグル実装メモ.md) | env トグル実装メモ（PR164 / feat/commit-message-options） |
 | [JPミラーポリシー.md](JPミラーポリシー.md) | JP ミラーポリシー — .md 作成時の .jp.md 強制 |
+| [jpミラーファイルヘッダー規約.md](jpミラーファイルヘッダー規約.md) | JP ミラーファイルヘッダー規約 — HTML コメント形式に統一 |
 | [PR用語廃止・ブランチ用語統一.md](PR用語廃止・ブランチ用語統一.md) | PR 用語廃止・ブランチ用語統一 |
+| [ノートフロントマタースキーマ.md](ノートフロントマタースキーマ.md) | ノートフロントマタースキーマ — `.work/notes/` ファイルの YAML ヘッダー仕様 |
 
 ---
 

@@ -27,21 +27,21 @@ First, read the references index:
 The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-script` → plugin root is `.../dev-kit/`).
 
 Read the following for this skill:
-- `{plugin_root}/references/python/core/naming.md` — naming conventions
-- `{plugin_root}/references/python/core/comments.md` — docstrings and field descriptions
-- `{plugin_root}/references/python/core/type-hints.md` — PEP 695 / type annotations
-- `{plugin_root}/references/python/core/language-rules.md` — Japanese comments / English logs
-- `{plugin_root}/references/python/core/style.md` — ruff / line length
-- `{plugin_root}/references/python/scripts/python-script.md` — script structure
+- `{plugin_root}/references/python/core/命名規則.md` — naming conventions
+- `{plugin_root}/references/python/core/コメント.md` — docstrings and field descriptions
+- `{plugin_root}/references/python/core/型ヒント.md` — PEP 695 / type annotations
+- `{plugin_root}/references/python/core/言語ルール.md` — Japanese comments / English logs
+- `{plugin_root}/references/python/core/スタイル.md` — ruff / line length
+- `{plugin_root}/references/python/scripts/Pythonスクリプト.md` — script structure
 
 If a bat launcher is also needed:
 - `{plugin_root}/references/python/scripts/launchers-windows.md`
 
 For a UNIX launcher:
-- `{plugin_root}/references/python/scripts/launchers-unix.md`
+- `{plugin_root}/references/python/scripts/ランチャー-Unix.md`
 
 For a tkinter GUI:
-- `{plugin_root}/references/python/scripts/tkinter.md`
+- `{plugin_root}/references/python/scripts/Tkinter.md`
 
 → Proceed to Step 2
 

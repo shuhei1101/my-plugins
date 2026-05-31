@@ -1,0 +1,162 @@
+<!-- This file is a Japanese mirror of useActionState.md. When updating the English original, update this file too. -->
+# Server Action をクライアントから呼ぶ — useTransition / useActionState / useFormStatus
+
+mutation の **第一選択は Server Action 直接呼び**。React 19 の Hook と組み合わせる。
+
+---
+
+## useTransition + 自前ハンドラ（最も汎用）
+
+```tsx
+'use client'
+
+import { useTransition } from "react"
+import { toast } from "sonner"
+import { updateResourceAction } from "../actions"
+
+const [isPending, startTransition] = useTransition()
+
+const onSubmit = (data: ResourceFormType) => {
+  startTransition(async () => {
+    const result = await updateResourceAction(id, data, updatedAt)
+    if (!result.ok) {
+      if (result.error.field) form.setError(result.error.field as any, { message: result.error.message })
+      else toast.error(result.error.message)
+      return
+    }
+    toast.success("更新しました")
+    form.reset(data)
+  })
+}
+
+<Button type="submit" disabled={isPending}>保存</Button>
+```
+
+最も柔軟で、ほとんどのケースはこれで OK。
+
+---
+
+## useActionState — `<form action={...}>` 連携
+
+プログレッシブエンハンスメント（JS なしで動く）が必要なら:
+
+```tsx
+'use client'
+import { useActionState } from "react"
+import { registerResourceAction } from "../actions"
+
+const initialState = { ok: true as const, data: { id: "" } }
+const [state, formAction, isPending] = useActionState(registerResourceAction, initialState)
+
+<form action={formAction}>
+  <input name="name" />
+  <button type="submit" disabled={isPending}>登録</button>
+</form>
+
+{!state.ok && <p className="text-destructive">{state.error.message}</p>}
+```
+
+Server Action 側は **FormData も受け取れる** ように書く（任意）:
+
+```ts
+'use server'
+
+export async function registerResourceAction(prevState, formData: FormData) {
+  const name = formData.get("name") as string
+  // ...
+}
+```
+
+---
+
+## useFormStatus — `<form>` 内の子ボタン
+
+```tsx
+'use client'
+import { useFormStatus } from "react-dom"
+
+const SubmitButton = () => {
+  const { pending } = useFormStatus()
+  return <Button type="submit" disabled={pending}>{pending ? "送信中..." : "送信"}</Button>
+}
+```
+
+`<form>` の中で使う。useActionState と組み合わせ可能。
+
+---
+
+## useOptimistic — 楽観 UI
+
+```tsx
+'use client'
+import { useOptimistic, useTransition } from "react"
+import { toggleFavoriteAction } from "../actions"
+
+const [optimisticFav, setOptimisticFav] = useOptimistic(resource.isFavorite)
+const [, startTransition] = useTransition()
+
+const toggle = () => {
+  startTransition(async () => {
+    setOptimisticFav(!optimisticFav)
+    await toggleFavoriteAction(resource.id, !resource.isFavorite)
+  })
+}
+
+<HeartIcon className={optimisticFav ? "fill-red-500" : ""} onClick={toggle} />
+```
+
+---
+
+## 使い分け
+
+| ケース | 推奨 |
+|---|---|
+| フォーム送信（リッチ UI） | `useTransition` + 自前ハンドラ |
+| プログレッシブエンハンスメント必要 | `useActionState` + `<form action>` |
+| `<form>` 内のサブミットボタン | `useFormStatus` |
+| 楽観 UI | `useOptimistic` (+ useTransition) |
+| 複雑な楽観更新 / キャンセル | useMutation（`useMutationパターン.md`） |
+
+---
+
+## エラーハンドリング
+
+Server Action 戻り値 `ActionResult<T>` を判定:
+
+```tsx
+const result = await someAction(data)
+
+if (!result.ok) {
+  // field エラーなら form にセット
+  if (result.error.field) form.setError(result.error.field as any, { message: result.error.message })
+  // それ以外は toast
+  else toast.error(result.error.message)
+  return
+}
+
+toast.success("成功")
+```
+
+---
+
+## ルール
+
+- mutation の第一選択は **Server Action 直接呼び**
+- 単純なフォームは `useTransition` + 自前ハンドラ
+- 削除のみ確認ダイアログ（`useConfirmDialog`、PR135 QA-027）
+- 失敗時は **toast or フィールドエラー** で必ず通知
+- 成功時の toast も忘れない
+
+## 関連 references
+
+- `backend/アクション-ts.md` — Server Action 定義
+- `frontend/useMutationパターン.md` — useMutation を使う場合
+- `frontend/確認ダイアログ.md` — 削除確認
+- `frontend/編集スクリーン-tsx.md` — 完全な実装例
+
+## 禁止
+
+- 戻り値が `ActionResult<T>` の Action で `result.ok` を確認しない
+- Server Action 内の `redirect()` を try で catch（`NEXT_REDIRECT` を握り潰す）
+- 失敗 / 成功 toast を省略
+- 確認ダイアログを登録・更新で出す（削除のみ）

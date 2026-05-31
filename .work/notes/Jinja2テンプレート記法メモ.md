@@ -2,7 +2,7 @@
 created_at: 2026-05-31
 updates:
   - 2026-05-31 — 初版作成（PR227）
-related_specs: []
+related_notes: []
 related_branches:
   - feat/claude-kit-jinja2-authoring-rule
 ---

@@ -2,7 +2,7 @@
 created_at: 2026-05-30
 updates:
   - 2026-05-30 — 初版（PR177 pr-handoff から着手）
-related_specs:
+related_notes:
   - integrate-guard-kit-into-workspace.md
   - env-toggles-for-hooks-and-steps.md
 related_prs:

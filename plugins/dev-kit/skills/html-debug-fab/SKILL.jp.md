@@ -1,9 +1,6 @@
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — dev-kit:html-debug-fab(日本語ミラー)
 
-> このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
-> 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
-
 ---
 
 **スキル名**: dev-kit:html-debug-fab
@@ -32,7 +29,7 @@
 参照:
 
 ```
-{plugin_root}/references/html/principles.md   # UI 規約(必読 — DRY / CSS / JS / frontend-design)
+{plugin_root}/references/html/基本方針.md   # UI 規約(必読 — DRY / CSS / JS / frontend-design)
 ```
 
 加えてログスキルの規約も:
@@ -184,6 +181,6 @@ XPath は短縮形式 / 相対で固定。`Esc` でキャンセル。
 
 ## 参考資料
 
-- `{plugin_root}/references/html/principles.md` — UI 規約(必読)
+- `{plugin_root}/references/html/基本方針.md` — UI 規約(必読)
 - `{plugin_root}/skills/logging/SKILL.md` — ログ規約
 - `{plugin_root}/skills/debug-fab/templates/CLAUDE.md` — ウィジェット使い方詳細(フォルダ作業時に自動読み込み)

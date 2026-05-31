@@ -1,6 +1,6 @@
 """workspace / user-prompt-submit — UserPromptSubmit hook.
 
-ユーザープロンプトが送信されるたびに、PR 在中チェックや QA/TODO 確認手順を
+ユーザープロンプトが送信されるたびに、ブランチ文書の QA・作業内容確認手順を
 プロンプト本体の前に注入する。
 内容は完全にプロンプト Markdown ファイルに委ねており、このスクリプトは
 ファイル中身を標準出力にそのまま流し込むだけ。
@@ -18,7 +18,7 @@ import sys
 
 
 def main() -> None:
-    if os.environ.get("WORK_PR_ENFORCEMENT", "true").lower() in ("false", "0", "no", "off"):
+    if os.environ.get("WORK_BRANCH_ENFORCEMENT", "true").lower() in ("false", "0", "no", "off"):
         return
     prompt_path = pathlib.Path(sys.argv[1])
     if not prompt_path.exists():

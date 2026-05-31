@@ -10,6 +10,7 @@ updates:
   - 2026-05-31 — #238: merge スキル Step 11（branch-reserve 呼び出し）を Step 10（完了報告）より前に移動しコミット分離を解消
   - 2026-05-31 — #240: merge スキル Step 3 の git コマンドにワークツリーパスを明示（実行コンテキスト不明による master 汚染を防止）
   - 2026-05-31 — #245: work:start のブランチドキュメントテンプレートから行4「ルール/CLAUDE.md 更新」を削除、Step 2 の QA 観点を補強
+  - 2026-05-31 — #253: work:start のコミット順序を修正（Step 8 = QA、Step 9 = ブランチ文書のみ first commit、Step 10 = ノート＋ブランチ文書 final commit）
 related_prs:
   - PR91
   - PR109
