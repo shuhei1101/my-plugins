@@ -1,5 +1,5 @@
 ---
-name: plugin-config
+name: work:plugin-config
 description: |
   /work:plugin-config が呼び出されたとき。
   またはユーザーが「設定を変えたい」「env を設定したい」「トグルを切り替えたい」「plugin config」「workspace config」と言ったとき。

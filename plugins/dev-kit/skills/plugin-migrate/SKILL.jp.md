@@ -1,5 +1,5 @@
 ---
-name: plugin-migrate
+name: dev-kit:plugin-migrate
 description: |
   プロジェクト内の dev-kit 生成物（静的テンプレと dev-kit 規約に従って作られたコード・設定ファイル）が
   現在インストール済みの dev-kit バージョンの規約を満たしているかを検査・修正する。

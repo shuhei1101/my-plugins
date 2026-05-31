@@ -1117,3 +1117,10 @@ branches:
   summary: 'ISSUE-062: 7件のJPミラー新規作成、ISSUE-065: git-guard.jp.md構造修正'
   task: 260531_missing-jp-mirrors
   completed: true
+- branch: fix/skill-name-prefix-unification
+  created: '2026-05-31'
+  title: スキル名プレフィックス統一
+  type: fix
+  summary: dev-kit・work・ref-injectの各スキルのnameフィールドにプラグインプレフィックスを付与し命名規則を統一する
+  task: 260531_スキル名プレフィックス統一
+  completed: true

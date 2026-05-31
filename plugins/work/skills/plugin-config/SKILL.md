@@ -1,5 +1,5 @@
 ---
-name: plugin-config
+name: work:plugin-config
 description: |
   When /work:plugin-config is invoked.
   Or when the user says "設定を変えたい", "env を設定したい", "トグルを切り替えたい", "plugin config", or "workspace config".
