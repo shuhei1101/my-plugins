@@ -1040,3 +1040,10 @@ branches:
   summary: claude-kit プラグインの規約に合わせてリポジトリ内の成果物を同期する
   task: 260531_claude-kit成果物同期
   completed: true
+- id: 240
+  title: fix/merge-skill-branch-first
+  type: fix
+  tags: []
+  summary: mergeスキルがmasterに直接コンフリクトを流し込む問題を修正
+  task: 260531_merge-skill-branch-first
+  completed: true
