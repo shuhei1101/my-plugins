@@ -16,22 +16,24 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | 未解決事項を `## QA` に記録する |
-| 2 | - | `claude-kit/references/skill/スキル.md` に「descriptionは短くていい・triggerは不要」という方針を追記する |
-| 3 | - | ISSUE-034・ISSUE-035 をクローズ（関連イシューとして登録） |
-| 4 | - | `.work/notes/` の関連ノートを更新する |
+| 1 | 済 | 未解決事項を `## QA` に記録する |
+| 2 | 済 | `claude-kit/references/skill/スキル.md` に「descriptionは短くていい・triggerは不要」という方針を追記する |
+| 3 | 済 | ISSUE-034・ISSUE-035 をクローズ（関連イシューとして登録） |
+| 4 | 済 | `.work/notes/` の関連ノートを更新する |
 
 ## 変更内容
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | `plugins/claude-kit/references/skill/スキル.md` | 編集 | description・trigger記述方針を追記 | |
+| 1 | `plugins/claude-kit/references/skill/スキル.md` | 編集 | description・trigger記述方針を更新 | |
+| 2 | `plugins/claude-kit/references/skill/スキル.jp.md` | 編集 | JPミラーを同期 | |
+| 3 | `.work/notes/スキル設計/skill-template-standards.md` | 編集 | description方針セクションを追記 | |
 
 ## テスト
 
 | # | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | スキルリファレンスに方針が記載されている | (未実施) | - |
+| 1 | `スキル.md` Step 3 がtriggerフレーズ不要の記述に変わっている | 変更確認済み | OK |
 
 ## QA
 
@@ -39,7 +41,7 @@
 
 ## 参考ドキュメント
 
-- （最終コミット時に追記）
+- `.work/notes/スキル設計/skill-template-standards.md`: スキルdescription方針（triggerフレーズ不要）
 
 ## 関連イシュー
 
