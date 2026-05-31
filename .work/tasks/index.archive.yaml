@@ -1033,3 +1033,10 @@ branches:
   summary: work プラグインの .work/ テンプレートを最新版に同期
   task: 260531_sync-work-plugin-templates
   completed: true
+- id: 237
+  title: chore/sync-claude-kit-artifacts
+  type: chore
+  tags: []
+  summary: claude-kit プラグインの規約に合わせてリポジトリ内の成果物を同期する
+  task: 260531_claude-kit成果物同期
+  completed: true
