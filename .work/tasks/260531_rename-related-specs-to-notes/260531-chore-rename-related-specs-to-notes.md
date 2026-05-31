@@ -16,10 +16,10 @@
 | # | 完了 | 作業内容 |
 |---|---|---|
 | 1 | 済 | QA を `## QA` に記録する |
-| 2 | - | ノートを `.work/notes/` に更新する |
-| 3 | - | `plugins/work/templates/note.md` の `related_specs:` を `related_notes:` に変更 |
-| 4 | - | 既存ノート23件の `related_specs:` を `related_notes:` に一括変更 |
-| 5 | - | ルール / CLAUDE.md を更新する |
+| 2 | 済 | ノートを `.work/notes/` に更新する |
+| 3 | 済 | `plugins/work/templates/note.md` の `related_specs:` を `related_notes:` に変更 |
+| 4 | 済 | 既存ノート23件の `related_specs:` を `related_notes:` に一括変更 |
+| 5 | 済 | ルール / CLAUDE.md — 変更不要（フロントマターはコードレベルの規約のため） |
 
 ## 変更内容
 
