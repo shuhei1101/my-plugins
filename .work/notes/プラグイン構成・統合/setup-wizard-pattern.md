@@ -36,8 +36,23 @@
 - QA-001: version 情報は持たせない（規約でカバー）
 - QA-002: 各プラグインが独自 `plugin-config` を持つことを必須化
 
-## 関連
+## 実装済みプラグイン
 
-- **次 PR**: AskUserQuestion 制約の汎用リファレンス化
-- **次 PR**: `workspace:config` → `workspace:plugin-config` リネーム
-- **次 PR**: 既存プラグインへの setup-wizard 遡及追加
+| プラグイン | バージョン | SessionStart フック | 備考 |
+|---|---|---|---|
+| `work` | 2.57.0 | `hooks/scripts/setup_check.py` | env 委任先: `work:plugin-config` |
+| `dev-kit` | 4.12.0 | 〃 | env 委任先: `dev-kit:plugin-config` |
+| `claude-kit` | 3.50.0 | 〃 | env 委任先: `claude-kit:config` |
+| `ref-inject` | 1.8.0 | 〃 | env なし版（3 ステップのみ） |
+
+## 水平展開
+
+- `claude-kit:plugin-creator` スキルに setup-wizard 生成ステップを追加（3.50.0）
+- `ref-inject:plugin-migrate` Step 5 に setup-wizard 実装確認を追加（1.8.0）
+
+## 変更履歴
+
+| 日付 | 概要 |
+|---|---|
+| 2026-05-31 | 全4プラグインへの rollout 完了（feat/setup-wizard-skill ブランチ） |
+| 2026-05-30 | 設計・リファレンス整備（260530_add-setup-wizard-reference ブランチ） |
