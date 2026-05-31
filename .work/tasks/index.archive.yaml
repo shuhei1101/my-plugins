@@ -1061,3 +1061,10 @@ branches:
   summary: ref-inject テンプレートをコンシューマーの最新版に同期し _common.py コメントも更新
   task: 260531_ref-inject-テンプレート同期
   completed: true
+- id: 233
+  title: chore/update-branch-doc-h1-title
+  type: chore
+  tags: []
+  summary: ブランチドキュメントの H1 をブランチ名からタイトル（日本語）に変更
+  task: 260531_work-template-update
+  completed: true
