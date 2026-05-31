@@ -223,8 +223,35 @@ git ブランチと `index.yaml` / `index.archive.yaml` の乖離を整理する
 - archive コマンドはメインリポジトリの `index.yaml` を読み、worktree の `index.archive.yaml` に書き込む。worktree でコミットし `--no-ff` マージで master に取り込む。
 - `python index-tool.py set-completed [index_yaml] --id N` で対象エントリの `completed` を `true` に更新して上書き保存（対象が無ければエラー終了）。
 
+## issue-create / issue-scan — イシューファイルフォーマット
+
+### 修正案セクションの構造
+
+`## 修正案` を含める場合、以下の3サブセクションが必須。内容なしは「なし」と記載する。
+
+```markdown
+## 修正案
+
+### 暫定対応
+
+{暫定対応の説明。なければ「なし」}
+
+### 恒久対策
+
+{恒久対策の説明。なければ「なし」}
+
+### 再発防止
+
+{再発防止策。なければ「なし」}
+```
+
+### 横展開セクション
+
+`## 水平展開` は `## 横展開` に改名。提供されなかった場合はセクション自体を省略する。
+
 ## 変更履歴
 
 | # | 日付 | 変更内容 | 関連タスク |
 |---|---|---|---|
 | 1 | 260531 | branch-index-cleanup / merge archive フローの現行仕様を specs から追記 | 260531_notes-spec-and-ref-inject |
+| 2 | 260531 | 修正案サブセクション細分化・横展開改名を追記 | 260531_issueスキル改善 |
