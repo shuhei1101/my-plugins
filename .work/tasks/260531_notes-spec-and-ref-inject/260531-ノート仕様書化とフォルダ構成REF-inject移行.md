@@ -23,7 +23,7 @@
 | 5 | 済 | 新規 `notes-content-rules.md` 作成（ノートに書く内容のルール＋固定テンプレート）。`.jp.md` も。`_index.yaml`/`_index.jp.yaml`/`_injection_rules.yaml` 登録 |
 | 6 | 済 | `.work/specs/*`（20件）を精査し、新規ノート5件・既存マージ3系統・破棄9件に振り分け（下記） |
 | 7 | 済 | `.work/specs/` 削除。`work-merge-skill-sync.md` の参照を notes へ付け替え |
-| 8 | - | CLAUDE.md changelog 更新、バージョン bump |
+| 8 | 済 | CLAUDE.md changelog 更新、バージョン bump（plugin.json/marketplace.json/CLAUDE.md+jp を v2.53.0 同期） |
 
 ### specs 処理結果
 
