@@ -169,7 +169,7 @@ plugins/html-kit/
 plugins/work-kit/skills/
 ├── ...（既存スキル）
 ├── issue-scan/     # コードベース自動スキャン
-└── issue-create/   # ユーザーの口頭説明からイシューを生成
+└── issue-create/   # ユーザーの口頭説明からイシューを生成（issue-save は廃止、フォーマットは references/issues/イシュー記述ルール.md へ集約）
 ```
 
 ### .work/issues/（対象プロジェクト側・work-kit setup で作成）
@@ -355,27 +355,36 @@ scan_records:
 
 ---
 
-### `/work-kit:issue-scan`
+### `/work:issue-scan`
+
+`issue-scan` はオーケストレーター専用。メインはソースもイシュー本文も読まず、分析は全て `work:issue-scanner` サブエージェント内で行う。
 
 ```
-1. _index.archive.yaml の scan_records を確認し、未スキャン箇所を特定
-2. 今回スキャンする対象をユーザーに提示（frontend画面 / backend-layer / ルール系）
-3. 対象領域の py-kit / next-kit / html-kit references を参照（フック注入と同じ粒度で読む）
-4. プロジェクトコードを読んで規約と照合
-5. 問題あり → ISSUE-{N}.md を作成、_index.yaml に追記
-6. scan_records に記録（日時・スコープ・検出イシュー）
-7. 新規イシュー一覧をレポート
+Step 0. master 確認 → 一時スキャンブランチ作成、ISSUE_SCAN_AGENTS=N を読む
+Step 1. _index.archive.yaml の scan_records（スキャン済み観点）と _index.yaml の last_id=L を読む
+Step 2. スキャン観点を N 個選ぶ（フォルダ/grep/レイヤー/ファイル群/パターン — 観点カタログから巡回選択）
+Step 3. 各観点に ID ブロック割当（START_i = L+1+i*SLOT, SLOT=30）→ work:issue-scanner を N 個並列起動
+        各サブエージェント: 観点をスキャン → ISSUE-{N}.md を作成（先採番ブロック使用）→ メタデータのみ返す
+Step 4. 戻り値（メタデータのみ）を集約し _index.yaml / _index.archive.yaml を更新
+Step 5. スキャンブランチへコミット → master に --no-ff マージ → ブランチ削除
+Step 6. スキャン結果をレポート
 ```
+
+責務分担: サブエージェントは「ISSUE ファイル作成まで」（共有 index には触れず・コミットしない）、メインは「ID 先採番・index 更新・コミット・マージ」を集約する。並列で同一 worktree にコミットすると git 競合するため、コミットはメインに一本化している。
 
 ---
 
-### `/work-kit:issue-create`
+### `/work:issue-create`
+
+issue-save スキルは廃止。イシューファイルのフォーマット・採番・index 更新は ref-inject の
+`issues/イシュー記述ルール.md` リファレンスが定め、`.work/issues/ISSUE-*.md` を書く際に自動注入される。
+issue-create / issue-scanner はこの注入リファレンスに従って直接ファイルを書く。
 
 ```
 1. ユーザーが困りごとを口頭で説明する
 2. AI が内容を解釈し、独立した問題に分割
-3. 各問題を ISSUE-{N}.md に整形して保存
-4. _index.yaml に追記
+3. 各問題を ISSUE-{N}.md に整形して書き出す（注入される イシュー記述ルール のフォーマットに従う）
+4. _index.yaml に追記（last_id 更新）
 5. 作成したイシュー一覧をレポート
 ```
 
@@ -396,8 +405,11 @@ scan_records:
 - ユーザーが `wontfix` でクローズ可能
 
 ### スキャン頻度
-- `issue-scan` は手動呼び出しが基本
-- 定期実行は外部プログラムから Claude Code に投げる形で対応（プラグイン外）
+- `issue-scan` は単発でも `/loop /work:issue-scan` による連続ループでも実行可能
+- 毎回実行でスキャンブランチ（`chore/issue-scan-YYMMDD-HHMMSS`）を自動作成し、master に `--no-ff` でマージして終了
+- `ISSUE_SCAN_AGENTS=N` で 1 回の実行当たりのスキャン観点数を制御（デフォルト 1）
+  - N=1 でも必ず 1 つの `work:issue-scanner` サブエージェントを別コンテキストで起動する（メインは分析しない）
+  - N≥2: N 個のサブエージェントを並列起動し、各エージェントが 1 観点をスキャン
 
 ---
 
@@ -411,6 +423,7 @@ PR135 / PR140 の成果により、フック自動注入の基盤は py-kit / ne
 | タスク | 状態 | 備考 |
 |---|---|---|
 | PR-D: merge スキルにイシュークローズ処理を統合 | ✅ PR146 完了 | work-kit issue-scan/create が前提（PR131 完了済み） |
+| issue-scan の自動ループ＋オーケストレーター化 | ✅ feat/issue-scan-auto-loop 完了 | `work:issue-scanner` エージェント新設。観点ベースのスキャン、ISSUE_SCAN_AGENTS で並列数制御、ブランチ自動作成・マージ、/loop で継続スキャン |
 | issue-scan の references 参照精度向上 | 未検討 | next-kit / py-kit references が 1 ファイル = 1 ユースケース化された今、scan 時の粒度を合わせる |
 | スキャン対象の拡張（Next.js フロントエンド） | 未検討 | 現在は HTML / backend が対象。next-kit プロジェクトへの適用を検討 |
 
