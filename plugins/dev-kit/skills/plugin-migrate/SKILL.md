@@ -1,5 +1,5 @@
 ---
-name: plugin-migrate
+name: dev-kit:plugin-migrate
 description: |
   Inspect and fix dev-kit-generated artifacts in the project (both static templates and
   source files that were created following dev-kit conventions) to ensure they comply with

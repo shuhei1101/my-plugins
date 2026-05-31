@@ -17,6 +17,7 @@ Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown を 1 プラグ�
 | `dev-kit:next-implement` | Next.js 実装ワークフロー |
 | `dev-kit:next-plan` | Next.js 計画ドキュメント生成 |
 | `dev-kit:plugin-migrate` | プロジェクトに展開済みの dev-kit 生成物（html-implement のルール / html-debug-fab のウィジェット）をインストール済み dev-kit のバージョンに同期する（手動 `/dev-kit:plugin-migrate` のみ） |
+| `dev-kit:setup-wizard` | 初回オンボーディング: 言語 opt-in の設定と主要機能の紹介 |
 
 ## フック
 
@@ -73,6 +74,7 @@ references/
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.12.0 | 2026-05-31 | `dev-kit:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を追加。言語 opt-in 設定の初回オンボーディング |
 | 4.11.1 | 2026-05-31 | `plugin-migrate` のブランチチェックステップ（master/main ガード）を削除 — work ハーネスの UserPromptSubmit フックと責務が重複しているため |
 | 4.11.0 | 2026-05-31 | `dev-kit:plugin-config` スキルを追加 — 6 つの env トグル（`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` デフォルト ON）を番号付きリストループで対話的に設定（PR229） |
 | 4.10.0 | 2026-05-31 | `markdown_frontmatter_check.py` フックを削除。ルールは `**/*.md` 編集時の `references/markdown/マークダウン編集.md` 自動注入で代替（PR228） |

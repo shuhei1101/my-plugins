@@ -1,7 +1,7 @@
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 ---
-name: plugin-migrate
+name: work:plugin-migrate
 description: |
   カレントプロジェクトのプラグイン生成物を、現在インストール済みのプラグインバージョンに合わせて更新する:
   work の `.work/.gitignore` ファイルを同期し、レガシーの `.work/CLAUDE.md` を削除し、

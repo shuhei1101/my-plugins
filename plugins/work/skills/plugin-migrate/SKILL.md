@@ -1,5 +1,5 @@
 ---
-name: plugin-migrate
+name: work:plugin-migrate
 description: |
   Bring the current project's plugin-generated artifacts in line with the currently installed
   plugin versions: sync work's `.work/.gitignore` files, remove legacy `.work/CLAUDE.md`, and
