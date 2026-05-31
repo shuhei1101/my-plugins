@@ -1140,3 +1140,11 @@ branches:
   summary: work:startスキルのコミット積み順を「ブランチ文書→実装→最終更新」に修正
   task: 260531_fix-work-start-commit-order
   completed: true
+- id: 252
+  branch: refactor/notes-spec-and-ref-inject
+  title: ノート仕様書化とフォルダ構成REF-inject移行
+  type: refactor
+  tags: []
+  summary: specsをnotesへ統合し廃止、references/notesをカテゴリフォルダ化、ノートを現在仕様書の意味に再定義、templates廃止しフォルダ構成をREF-injectで定義してsetup/startスキルを改修
+  task: 260531_ノート仕様書化とフォルダ構成REF-inject移行
+  completed: true
