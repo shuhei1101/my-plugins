@@ -1117,3 +1117,10 @@ branches:
   summary: 'ISSUE-062: 7件のJPミラー新規作成、ISSUE-065: git-guard.jp.md構造修正'
   task: 260531_missing-jp-mirrors
   completed: true
+- branch: feat/setup-wizard-skill
+  created: '2026-05-31'
+  title: 全プラグインへのセットアップウィザードスキル実装
+  type: feat
+  summary: 全4プラグインに必須の setup-wizard スキルを追加する
+  task: 260531_setup-wizard-skill
+  completed: true
