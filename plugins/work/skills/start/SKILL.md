@@ -70,7 +70,14 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
    - **日本語タイトル**: descriptive Japanese title for this branch work — used in the document H1 and as the file name (e.g. `ブランチ文書ファイル名変更`)
    - **TODO list**: what will be done on this branch (becomes the checklist)
    - **Note**: does a related note exist in `.work/notes/`? Or does one need to be created?
-   - **Open questions**: anything unclear or undecided
+   - **Open questions**: anything that needs to be confirmed or decided before starting implementation.
+     Check from these angles:
+     - **Maintainability / extensibility**: Is this approach manageable long-term? Is there a simpler alternative?
+     - **Scope / cost**: Is the implementation over-engineered for the requirement?
+     - **Performance**: Are there concerns about processing load, speed, or token consumption?
+     - **Library / tool selection**: When multiple options exist, which one to use?
+     - **Alternative implementation**: Is there a better approach than what the user described?
+     - **Breaking changes**: Does this affect existing behavior or interfaces?
 
 → Proceed to Step 3
 
@@ -260,10 +267,9 @@ Verify they are correct; do not overwrite them.
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | Record open questions in `## QA` (this same document) |
+| 1 | - | Record unresolved questions in `## QA` (this same document) |
 | 2 | - | Update the note document in `.work/notes/` |
 | 3 | - | (Implementation tasks: replace with branch-specific work) |
-| 4 | - | Update rules / CLAUDE.md |
 
 **`## 変更内容`** — the implementation files this branch adds or modifies (excluding tests). Fill in
 once implementation starts — every file that lands in a commit goes here:
