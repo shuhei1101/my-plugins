@@ -1040,3 +1040,10 @@ branches:
   summary: claude-kit プラグインの規約に合わせてリポジトリ内の成果物を同期する
   task: 260531_claude-kit成果物同期
   completed: true
+- id: 238
+  title: fix/merge-skill-commit-order
+  type: fix
+  tags: []
+  summary: work:merge の Step 10/11 順序入れ替えでコミット分離を解消
+  task: 260531_merge-skill-commit-order
+  completed: true
