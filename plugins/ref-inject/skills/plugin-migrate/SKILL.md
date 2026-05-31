@@ -1,5 +1,5 @@
 ---
-name: plugin-migrate
+name: ref-inject:plugin-migrate
 description: |
   Inspect every plugin that has ref-inject applied (detected by the presence of
   hooks/scripts/inject_references.py) and update its injection mechanism files to match the

@@ -1,5 +1,5 @@
 ---
-name: plugin-config
+name: dev-kit:plugin-config
 description: |
   When /dev-kit:plugin-config is invoked.
   Or when the user says "設定を変えたい", "env を設定したい", "トグルを切り替えたい", "言語を有効にしたい", "TypeScript チェックを無効にしたい", "Markdown チェックを無効にしたい".
