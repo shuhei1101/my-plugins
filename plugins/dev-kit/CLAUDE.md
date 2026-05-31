@@ -59,7 +59,7 @@ references/
 ├── python/      # Python conventions (47 files: architecture/, core/, fastapi/, llm/, etc.)
 ├── html/        # HTML/CSS/JS principles (principles.md, ui-design.md)
 ├── next/        # Next.js conventions (90 files: backend/, frontend/, testing/, etc.)
-├── markdown/    # Markdown conventions (markdown-table.md, markdown-editing.md)
+├── markdown/    # Markdown conventions (markdown-table.md, マークダウン編集.md)
 ├── _index.yaml   # path + lang + description per reference (merged from all langs)
 ├── _injection_rules.yaml   # pattern + lang + required/optional per rule
 └── ...
@@ -76,10 +76,10 @@ prevents duplicate injection.
 |---|---|---|
 | 4.11.1 | 2026-05-31 | Remove branch-check step (master/main guard) from `plugin-migrate` — redundant with the work harness UserPromptSubmit hook |
 | 4.11.0 | 2026-05-31 | Add `dev-kit:plugin-config` skill — interactively configures 6 env toggles (`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` default-on) via numbered-list loop (PR229) |
-| 4.10.0 | 2026-05-31 | Remove `markdown_frontmatter_check.py` hook; rule is already enforced via `references/markdown/markdown-editing.md` auto-injection on `**/*.md` (PR228) |
+| 4.10.0 | 2026-05-31 | Remove `markdown_frontmatter_check.py` hook; rule is already enforced via `references/markdown/マークダウン編集.md` auto-injection on `**/*.md` (PR228) |
 | 4.9.0 | 2026-05-31 | Add `references-edit-guard` PreToolUse hook (via ref-inject v1.7.0) that reminds to update `_index.yaml` / `_injection_rules.yaml` **before** editing or creating files under `references/` (PR206) |
 | 4.8.0 | 2026-05-31 | Remove `dev-kit:yaml` skill, `references/yaml/`, and the `yaml_skill_dispatch.py` hook (+ prompts); drop `**/index.yaml` / `**/settings.yaml(.sample)` injection patterns; the YAML conventions are out of scope for dev-kit (PR202) |
-| 4.7.0 | 2026-05-31 | Add Markdown frontmatter placement check hook and reference; move `markdown-editing.md` into `markdown/` subfolder; wire into `_injection_rules.yaml` alongside `markdown-table.md`; add `DEV_KIT_MARKDOWN` opt-in support (PR198) |
+| 4.7.0 | 2026-05-31 | Add Markdown frontmatter placement check hook and reference; move `マークダウン編集.md` into `markdown/` subfolder; wire into `_injection_rules.yaml` alongside `markdown-table.md`; add `DEV_KIT_MARKDOWN` opt-in support (PR198) |
 | 4.6.0 | 2026-05-30 | Move `yaml.md` / `yaml.jp.md` into `yaml/` subfolder to match `html/`, `next/`, `python/`, `markdown/` structure; register `yaml/yaml.md` in `_index.yaml` and add `**/index.yaml` / `**/settings.yaml(.sample)` injection rules (PR199) |
 | 4.5.0 | 2026-05-30 | Move `css-js-link.md` / `common-component-first.md` from `templates/html/rules/` to `references/html/`; wire them into `_injection_rules.yaml` html patterns; remove static-copy steps from `html-implement` (Step 7) and `plugin-migrate` (Step 2) (PR200) |
 | 4.4.0 | 2026-05-30 | Add `markdown/` reference subfolder with Markdown table conventions (`#` column rule, `〃` ditto mark for repeated values); injected on `**/*.md` edits (PR196) |

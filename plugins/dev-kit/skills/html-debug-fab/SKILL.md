@@ -22,7 +22,7 @@ into individual screens.
 Read for context:
 
 ```
-{plugin_root}/references/html/principles.md   # UI principles (DRY, CSS, JS, frontend-design)
+{plugin_root}/references/html/基本方針.md   # UI principles (DRY, CSS, JS, frontend-design)
 ```
 
 Plus the logging skill's conventions:
@@ -173,6 +173,6 @@ If the clipboard copy fails (e.g. non-HTTPS context), an alert is shown and pick
 
 See:
 
-- `{plugin_root}/references/html/principles.md` — UI principles (mandatory)
+- `{plugin_root}/references/html/基本方針.md` — UI principles (mandatory)
 - `{plugin_root}/skills/logging/SKILL.md` — logging conventions
 - `{plugin_root}/skills/debug-fab/templates/CLAUDE.md` — widget usage details (auto-loaded when working in that folder)

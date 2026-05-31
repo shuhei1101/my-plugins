@@ -250,6 +250,6 @@ uv run pytest -x
 
 ## 関連ファイル
 
-- `testing/strategy.md` — テストの種類と方針
-- `testing/mocks.md` — Mock の作り方
-- `packaging/pyproject.md` — pytest 設定の完全例
+- `testing/テスト戦略.md` — テストの種類と方針
+- `testing/モック.md` — Mock の作り方
+- `packaging/pyproject設定.md` — pytest 設定の完全例

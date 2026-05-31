@@ -4,20 +4,20 @@
 #   description : shown in the injected pointer (and as the section heading)
 # Keep this in sync with _index.jp.yaml and _injection_rules.yaml.
 references:
-  - path: work-stop-prompt-sync.md
+  - path: ストッププロンプト同期.md
     description: Sync rule for work stop.md and stop-no-merge.md. The two files are a paired set; steps 1-3 must stay in sync between them. When editing either file, apply the same change to the other.
 
-  - path: work-merge-skill-sync.md
+  - path: マージスキル同期.md
     description: Sync rule for work merge SKILL.md and the merge-flow spec. When adding or removing steps in SKILL.md, update step-number references in .work/specs/work-kit-merge-flow.md too.
 
-  - path: work-start-skill-sync.md
+  - path: スタートスキル同期.md
     description: Sync rule for work-start, worktree-create, and vscode-workspace-sync skills. work-start Step 4 delegates to worktree-create, so their interfaces must stay aligned.
 
-  - path: work-todo-template-sync.md
+  - path: TODOテンプレート同期.md
     description: Sync rule for work TODO templates and work-start SKILL.md. The section structure in templates must match the fill-in guidance in work-start SKILL.md Step 7.
 
-  - path: work-dot-work-dir.md
+  - path: ドットワークディレクトリ構成.md
     description: Guide for editing files under .work/ — directory structure, branch document sections, notes lifecycle, and commit conventions (keep .work/ changes in a separate commit from implementation code).
 
-  - path: notes-naming-rules.md
+  - path: ノート命名規則.md
     description: Naming and index rules for .work/notes/ files. File names and H1 titles must be in Japanese (technical identifiers stay as-is). Always update _index.md in the same commit when creating, renaming, or deleting a note.

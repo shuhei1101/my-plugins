@@ -60,7 +60,7 @@ references/
 ├── python/      # Python 規約（47ファイル: architecture/, core/, fastapi/, llm/ など）
 ├── html/        # HTML/CSS/JS 原則（principles.md, ui-design.md）
 ├── next/        # Next.js 規約（90ファイル: backend/, frontend/, testing/ など）
-├── markdown/    # Markdown 規約（markdown-table.md, markdown-editing.md）
+├── markdown/    # Markdown 規約（markdown-table.md, マークダウン編集.md）
 ├── _index.yaml   # 各リファレンスの path + lang + description
 ├── _injection_rules.yaml   # 各ルールの pattern + lang + required/optional
 └── ...
@@ -75,10 +75,10 @@ references/
 |---|---|---|
 | 4.11.1 | 2026-05-31 | `plugin-migrate` のブランチチェックステップ（master/main ガード）を削除 — work ハーネスの UserPromptSubmit フックと責務が重複しているため |
 | 4.11.0 | 2026-05-31 | `dev-kit:plugin-config` スキルを追加 — 6 つの env トグル（`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` デフォルト ON）を番号付きリストループで対話的に設定（PR229） |
-| 4.10.0 | 2026-05-31 | `markdown_frontmatter_check.py` フックを削除。ルールは `**/*.md` 編集時の `references/markdown/markdown-editing.md` 自動注入で代替（PR228） |
+| 4.10.0 | 2026-05-31 | `markdown_frontmatter_check.py` フックを削除。ルールは `**/*.md` 編集時の `references/markdown/マークダウン編集.md` 自動注入で代替（PR228） |
 | 4.9.0 | 2026-05-31 | `references-edit-guard` PreToolUse フックを追加（ref-inject v1.7.0 経由）。`references/` 配下のファイルを **編集／作成する直前** に `_index.yaml` / `_injection_rules.yaml` の更新も忘れていないかリマインド（PR206） |
 | 4.8.0 | 2026-05-31 | `dev-kit:yaml` スキル・`references/yaml/`・`yaml_skill_dispatch.py` フック（+ プロンプト）を削除; `**/index.yaml` / `**/settings.yaml(.sample)` の注入パターンも削除; YAML 規約は dev-kit の対象外（PR202） |
-| 4.7.0 | 2026-05-31 | Markdown フロントマター配置チェックフックとリファレンスを追加; `markdown-editing.md` を `markdown/` サブフォルダへ移動; `markdown-table.md` と並んで `_injection_rules.yaml` に登録; `DEV_KIT_MARKDOWN` opt-in サポートを追加（PR198） |
+| 4.7.0 | 2026-05-31 | Markdown フロントマター配置チェックフックとリファレンスを追加; `マークダウン編集.md` を `markdown/` サブフォルダへ移動; `markdown-table.md` と並んで `_injection_rules.yaml` に登録; `DEV_KIT_MARKDOWN` opt-in サポートを追加（PR198） |
 | 4.6.0 | 2026-05-30 | `yaml.md` / `yaml.jp.md` を `yaml/` サブフォルダへ移動し、`html/`・`next/`・`python/`・`markdown/` と構造を統一; `yaml/yaml.md` を `_index.yaml` に登録し `**/index.yaml` / `**/settings.yaml(.sample)` の注入ルールを追加（PR199） |
 | 4.5.0 | 2026-05-30 | `css-js-link.md` / `common-component-first.md` を `templates/html/rules/` から `references/html/` へ移動し `_injection_rules.yaml` の html パターンに紐付け; `html-implement`（ステップ7）と `plugin-migrate`（ステップ2）の静的コピー手順を削除（PR200） |
 | 4.4.0 | 2026-05-30 | `markdown/` リファレンスサブフォルダを追加。Markdown テーブル規約（`#` カラムルール・`〃` ダイトーマーク）を収録し、`**/*.md` 編集時に注入（PR196） |

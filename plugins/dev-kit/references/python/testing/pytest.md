@@ -247,6 +247,6 @@ uv run pytest -x
 
 ## Related files
 
-- `testing/strategy.md` — Kinds of tests and policy
-- `testing/mocks.md` — How to write mocks
-- `packaging/pyproject.md` — Complete example of pytest configuration
+- `testing/テスト戦略.md` — Kinds of tests and policy
+- `testing/モック.md` — How to write mocks
+- `packaging/pyproject設定.md` — Complete example of pytest configuration

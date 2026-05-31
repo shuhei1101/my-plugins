@@ -28,8 +28,8 @@
 参照:
 
 ```
-{plugin_root}/references/html/principles.md   # DRY / 共通化、FLOCSS、JS 規約
-{plugin_root}/references/html/ui-design.md    # UX パターン、共通コンポーネント化必須
+{plugin_root}/references/html/基本方針.md   # DRY / 共通化、FLOCSS、JS 規約
+{plugin_root}/references/html/UIデザイン.md    # UX パターン、共通コンポーネント化必須
 ```
 
 → ステップ2へ
@@ -189,7 +189,7 @@ export const createSubmitHandler = ({ api, logger }) => ({ /* ... */ });
 
 ## 参考資料
 
-- `{plugin_root}/references/html/principles.md` — DRY、FLOCSS、JS 規約
-- `{plugin_root}/references/html/ui-design.md` — UX パターン、共通コンポーネント化必須
+- `{plugin_root}/references/html/基本方針.md` — DRY、FLOCSS、JS 規約
+- `{plugin_root}/references/html/UIデザイン.md` — UX パターン、共通コンポーネント化必須
 - `{plugin_root}/skills/mock/SKILL.md` — モック生成(コンパニオン)
 - `{plugin_root}/skills/logging/SKILL.md` — ロガー規約

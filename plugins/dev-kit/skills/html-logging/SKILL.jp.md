@@ -30,7 +30,7 @@ JSON Lines 形式で下流ツール(Claude / ログビューア / `jq`)が読め
 参照:
 
 ```
-{plugin_root}/references/html/principles.md   # セクション 3(JS 規約)とセクション 1(DRY)
+{plugin_root}/references/html/基本方針.md   # セクション 3(JS 規約)とセクション 1(DRY)
 ```
 
 プラグインルートはこのスキルファイルの2階層上。
@@ -187,5 +187,5 @@ window.addEventListener("unhandledrejection", (e) => {
 
 ## 参考資料
 
-- `{plugin_root}/references/html/principles.md` — セクション 3(JS 規約)とセクション 1(共通化)
+- `{plugin_root}/references/html/基本方針.md` — セクション 3(JS 規約)とセクション 1(共通化)
 - `{plugin_root}/skills/debug-fab/SKILL.md` — ログを画面内に表示するデバッグウィジェット
