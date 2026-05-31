@@ -1032,3 +1032,15 @@ branches:
   summary: claude-kit と dev-kit の plugin-migrate スキルから冗長な Step 1（ブランチチェック）を削除
   task: 260531_remove-plugin-update-step1
   completed: true
+- branch: fix/issue-skills-improve
+  title: issueスキル改善
+  type: fix
+  summary: issue-scan の *-kit 記述削除・スキャン観点拡充。issue-save のテンプレートセクション日本語化・水平展開追加・メタ情報ファイル本文除去
+  task: 260531_issueスキル改善
+  completed: true
+- branch: docs/markdown-table-no-column
+  title: マークダウンテーブルNoカラムガイドライン
+  type: docs
+  summary: マークダウンテーブルの「#」カラムを「No」に変更し、Noカラムの省略条件ガイドラインを追加
+  task: 260531_markdown-table-no-column
+  completed: true
