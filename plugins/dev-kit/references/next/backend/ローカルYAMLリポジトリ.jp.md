@@ -1,8 +1,9 @@
 <!-- This file is a Japanese mirror of ローカルYAMLリポジトリ.md. When updating the English original, update this file too. -->
 # ローカル開発用 YAML リポジトリパターン
 
-> TypeScript インターフェースでデータアクセス層を抽象化し、
+> TypeScript の `type` でデータアクセス層を抽象化し、
 > 本番は Drizzle/Supabase、ローカル開発は YAML ファイルをストアとして差し替える。
+> クラスは使わず、ファクトリ関数が型を満たすオブジェクトを返す関数型スタイル。
 
 ---
 
@@ -10,13 +11,13 @@
 
 ```
 サービス層 (service.ts)
-    ↓ interface (IResourceRepository)
-本番: DrizzleResourceRepository  ←→  ローカル: YamlResourceRepository
-    ↓                                      ↓
-Supabase (Drizzle)                  dev-data/resources.yaml
+    ↓ type (ResourceRepository)
+本番: createDrizzleResourceRepository  ←→  ローカル: createYamlResourceRepository
+    ↓                                              ↓
+Supabase (Drizzle)                          dev-data/resources.yaml
 ```
 
-- サービス層はインターフェースにしか依存しない
+- サービス層は `ResourceRepository` 型にしか依存しない
 - `USE_YAML_DB=true` を `.env.local` に設定するだけで切り替わる
 - YAML ファイルはスキーマと同じ構造を持つ → 移行コストなし
 
@@ -45,77 +46,74 @@ dev-data/
 ```
 lib/
 └── repositories/
-    ├── types.ts                    # インターフェース定義
-    ├── index.ts                    # ファクトリ関数
-    ├── drizzle/
-    │   └── ResourceRepository.ts  # 本番実装（Drizzle）
-    └── yaml/
-        └── ResourceRepository.ts  # ローカル実装（YAML）
+    ├── types.ts     # ResourceRepository 型定義
+    ├── index.ts     # getResourceRepository（ファクトリ）
+    ├── drizzle.ts   # createDrizzleResourceRepository
+    └── yaml.ts      # createYamlResourceRepository
 dev-data/
-└── resources.yaml                 # ローカル開発データ（gitignore）
+└── resources.yaml   # ローカル開発データ（gitignore）
 ```
 
 ---
 
-## インターフェース定義
+## 型定義
 
 ```ts
 // lib/repositories/types.ts
-export interface IResourceRepository {
-  findById(id: string): Promise<Resource | null>
-  findAll(params?: { isPublic?: boolean }): Promise<Resource[]>
-  insert(record: ResourceInsert): Promise<Resource>
-  update(id: string, record: ResourceUpdate): Promise<Resource>
-  delete(id: string): Promise<void>
+import type { Resource, ResourceInsert, ResourceUpdate } from "@/drizzle/schema"
+
+export type ResourceRepository = {
+  findById: (id: string) => Promise<Resource | null>
+  findAll: (params?: { isPublic?: boolean }) => Promise<Resource[]>
+  insert: (record: ResourceInsert) => Promise<Resource>
+  update: (id: string, record: ResourceUpdate) => Promise<Resource>
+  delete: (id: string) => Promise<void>
 }
 ```
 
-スキーマ型（`Resource` / `ResourceInsert` / `ResourceUpdate`）は Drizzle schema から import する。
-YAML 実装でも同じ型を使うため、型の乖離が起きない。
+スキーマ型は Drizzle schema から import する。YAML 実装でも同じ型を使うため型の乖離が起きない。
 
 ---
 
 ## Drizzle 実装（本番）
 
 ```ts
-// lib/repositories/drizzle/ResourceRepository.ts
+// lib/repositories/drizzle.ts
 import { eq, and } from "drizzle-orm"
 import type { Db } from "@/drizzle/db"
 import { resources } from "@/drizzle/schema"
-import type { ResourceInsert, ResourceUpdate, Resource } from "@/drizzle/schema"
+import type { ResourceInsert, ResourceUpdate } from "@/drizzle/schema"
 import { DatabaseError } from "@/app/(shared)/errors/appError"
-import type { IResourceRepository } from "../types"
+import type { ResourceRepository } from "./types"
 
-export class DrizzleResourceRepository implements IResourceRepository {
-  constructor(private db: Db) {}
-
-  async findById(id: string) {
-    const [row] = await this.db.select().from(resources).where(eq(resources.id, id))
+export const createDrizzleResourceRepository = (db: Db): ResourceRepository => ({
+  findById: async (id) => {
+    const [row] = await db.select().from(resources).where(eq(resources.id, id))
     return row ?? null
-  }
+  },
 
-  async findAll(params?: { isPublic?: boolean }) {
+  findAll: async (params) => {
     const conditions = []
     if (params?.isPublic !== undefined) {
       conditions.push(eq(resources.isPublic, params.isPublic))
     }
     return conditions.length
-      ? this.db.select().from(resources).where(and(...conditions))
-      : this.db.select().from(resources)
-  }
+      ? db.select().from(resources).where(and(...conditions))
+      : db.select().from(resources)
+  },
 
-  async insert(record: ResourceInsert) {
+  insert: async (record: ResourceInsert) => {
     try {
-      const [row] = await this.db.insert(resources).values(record).returning()
+      const [row] = await db.insert(resources).values(record).returning()
       return row
     } catch {
       throw new DatabaseError("リソースの登録に失敗しました。")
     }
-  }
+  },
 
-  async update(id: string, record: ResourceUpdate) {
+  update: async (id, record: ResourceUpdate) => {
     try {
-      const [row] = await this.db
+      const [row] = await db
         .update(resources)
         .set({ ...record, updatedAt: new Date().toISOString() })
         .where(eq(resources.id, id))
@@ -126,16 +124,16 @@ export class DrizzleResourceRepository implements IResourceRepository {
       if (e instanceof DatabaseError) throw e
       throw new DatabaseError("リソースの更新に失敗しました。")
     }
-  }
+  },
 
-  async delete(id: string) {
+  delete: async (id) => {
     try {
-      await this.db.delete(resources).where(eq(resources.id, id))
+      await db.delete(resources).where(eq(resources.id, id))
     } catch {
       throw new DatabaseError("リソースの削除に失敗しました。")
     }
-  }
-}
+  },
+})
 ```
 
 ---
@@ -143,84 +141,74 @@ export class DrizzleResourceRepository implements IResourceRepository {
 ## YAML 実装（ローカル開発）
 
 ```ts
-// lib/repositories/yaml/ResourceRepository.ts
+// lib/repositories/yaml.ts
 import { parse, stringify } from "yaml"
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs"
 import { join } from "path"
-import type { ResourceInsert, ResourceUpdate, Resource } from "@/drizzle/schema"
-import type { IResourceRepository } from "../types"
+import type { Resource, ResourceInsert, ResourceUpdate } from "@/drizzle/schema"
+import type { ResourceRepository } from "./types"
 
-export class YamlResourceRepository implements IResourceRepository {
-  private readonly filePath = join(process.cwd(), "dev-data", "resources.yaml")
+export const createYamlResourceRepository = (): ResourceRepository => {
+  const filePath = join(process.cwd(), "dev-data", "resources.yaml")
 
-  private load(): Resource[] {
-    if (!existsSync(this.filePath)) return []
-    return (parse(readFileSync(this.filePath, "utf8")) as Resource[]) ?? []
+  const load = (): Resource[] => {
+    if (!existsSync(filePath)) return []
+    return (parse(readFileSync(filePath, "utf8")) as Resource[]) ?? []
   }
 
-  private save(records: Resource[]) {
+  const save = (records: Resource[]) => {
     mkdirSync(join(process.cwd(), "dev-data"), { recursive: true })
-    writeFileSync(this.filePath, stringify(records))
+    writeFileSync(filePath, stringify(records))
   }
 
-  async findById(id: string) {
-    return this.load().find((r) => r.id === id) ?? null
-  }
+  return {
+    findById: async (id) => load().find((r) => r.id === id) ?? null,
 
-  async findAll(params?: { isPublic?: boolean }) {
-    const records = this.load()
-    if (params?.isPublic !== undefined) {
-      return records.filter((r) => r.isPublic === params.isPublic)
-    }
-    return records
-  }
+    findAll: async (params) => {
+      const records = load()
+      return params?.isPublic !== undefined
+        ? records.filter((r) => r.isPublic === params.isPublic)
+        : records
+    },
 
-  async insert(record: ResourceInsert) {
-    const records = this.load()
-    const now = new Date().toISOString()
-    const newRecord: Resource = {
-      ...record,
-      id: crypto.randomUUID(),
-      createdAt: now,
-      updatedAt: now,
-    }
-    records.push(newRecord)
-    this.save(records)
-    return newRecord
-  }
+    insert: async (record: ResourceInsert) => {
+      const records = load()
+      const now = new Date().toISOString()
+      const newRecord: Resource = { ...record, id: crypto.randomUUID(), createdAt: now, updatedAt: now }
+      records.push(newRecord)
+      save(records)
+      return newRecord
+    },
 
-  async update(id: string, record: ResourceUpdate) {
-    const records = this.load()
-    const index = records.findIndex((r) => r.id === id)
-    if (index === -1) throw new Error(`Resource not found: ${id}`)
-    records[index] = { ...records[index], ...record, updatedAt: new Date().toISOString() }
-    this.save(records)
-    return records[index]
-  }
+    update: async (id, record: ResourceUpdate) => {
+      const records = load()
+      const index = records.findIndex((r) => r.id === id)
+      if (index === -1) throw new Error(`Resource not found: ${id}`)
+      records[index] = { ...records[index], ...record, updatedAt: new Date().toISOString() }
+      save(records)
+      return records[index]
+    },
 
-  async delete(id: string) {
-    this.save(this.load().filter((r) => r.id !== id))
+    delete: async (id) => save(load().filter((r) => r.id !== id)),
   }
 }
 ```
 
 ---
 
-## ファクトリ関数
+## ファクトリ（切り替えポイント）
 
 ```ts
 // lib/repositories/index.ts
 import { db } from "@/drizzle/db"
-import { DrizzleResourceRepository } from "./drizzle/ResourceRepository"
-import { YamlResourceRepository } from "./yaml/ResourceRepository"
-import type { IResourceRepository } from "./types"
+import { createDrizzleResourceRepository } from "./drizzle"
+import { createYamlResourceRepository } from "./yaml"
+import type { ResourceRepository } from "./types"
 
-export const getResourceRepository = (): IResourceRepository => {
-  if (process.env.USE_YAML_DB === "true") {
-    return new YamlResourceRepository()
-  }
-  return new DrizzleResourceRepository(db)
-}
+export const getResourceRepository = (): ResourceRepository =>
+  process.env.USE_YAML_DB === "true"
+    ? createYamlResourceRepository()
+    : createDrizzleResourceRepository(db)
 ```
 
 ---
@@ -272,20 +260,20 @@ export const createResource = async (record: ResourceInsert) => {
 
 | ファイル | 役割 | YAML 実装での対応 |
 |---|---|---|
-| `db.ts` | INSERT / UPDATE / DELETE | `YamlResourceRepository` に統合 |
+| `db.ts` | INSERT / UPDATE / DELETE | `createYamlResourceRepository` に統合 |
 | `query.ts` | SELECT / JOIN | 〃 |
-| `service.ts` | ビジネスロジック | **変更なし**（インターフェース経由） |
+| `service.ts` | ビジネスロジック | **変更なし**（`ResourceRepository` 型経由） |
 
-既存の `db.ts` / `query.ts` パターンを維持しつつ、
-リポジトリパターンに段階移行することもできる（`service.ts` → repo → `db.ts` の呼び出しをまとめる）。
+既存の `db.ts` / `query.ts` パターンを維持しつつ段階移行することもできる。
 
 ---
 
 ## Constraints
 
-- `IResourceRepository` インターフェースはスキーマ型（Drizzle の `$inferSelect`）に依存してよい
-- `YamlResourceRepository` は `process.env.USE_YAML_DB === "true"` のときのみ使用
+- `ResourceRepository` は `type` で定義する（`interface` / クラスは使わない）
+- ファクトリ関数名は `create{Store}{Resource}Repository` 形式
+- `createYamlResourceRepository` は `USE_YAML_DB === "true"` のときのみ呼ばれる
 - `dev-data/` は必ず `.gitignore` に追加する（機密データ流出防止）
-- ファクトリ関数（`getResourceRepository`）は Server Component / Route Handler からのみ呼ぶ
-- YAML ファイルへのアクセスは同期 I/O（`readFileSync` / `writeFileSync`）で可。並列リクエストが少ないローカル開発専用のため
-- 本番コードに `YamlResourceRepository` の依存を混入させない（`USE_YAML_DB` のガードを守る）
+- `getResourceRepository` は Server Component / Route Handler からのみ呼ぶ
+- YAML の I/O は同期（`readFileSync` / `writeFileSync`）で可。ローカル開発専用のため
+- 本番ビルドに YAML 依存を混入させない（`USE_YAML_DB` のガードを守る）
