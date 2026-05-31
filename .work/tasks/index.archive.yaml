@@ -1151,3 +1151,10 @@ branches:
   summary: dev-kit の next/testing/E2Eテスト.md をユースケース駆動設計の構成に更新
   task: 260601_E2Eテストユースケース駆動設計
   completed: true
+- branch: docs/reference-functional-style-audit
+  created: '2026-06-01'
+  title: リファレンス関数型スタイル監査
+  type: docs
+  summary: 全 Next.js + Python リファレンスを精読し quest-pay 同様の関数型・type 優先スタイルへの準拠を監査。非準拠は修正
+  task: 260601_リファレンス関数型スタイル監査
+  completed: true
