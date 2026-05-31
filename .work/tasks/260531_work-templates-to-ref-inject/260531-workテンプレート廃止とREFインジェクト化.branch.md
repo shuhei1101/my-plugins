@@ -37,35 +37,50 @@
 | 1 | 済 | 未解決事項を `## QA` に記録（QA-001 を B で解決） |
 | 2 | 済 | `plugins/work/templates/` の全ファイルを確認し、参照元を列挙 |
 | 3 | 済 | `plugins/work/templates/` を削除（git rm） |
-| 4 | - | 【撤回】`setup-task.py` への `_BRANCH_DOC_TEMPLATE` インライン化を取り消し、リファレンス化へ転換 |
-| 5 | - | `references/work-dir/タスクドキュメント.md`(+jp) を新規作成（ブランチドキュメントテンプレート全文 + 記入ガイド） |
-| 6 | - | `references/work-dir/タスクインデックス.md`(+jp) を新規作成（index.yaml / index.archive.yaml スキーマ） |
-| 7 | - | `references/work-dir/イシュー.md`(+jp) を新規作成（`.work/issues/` 構成・スキーマ） |
-| 8 | - | `ドットワークディレクトリ構成.md`(+jp) → `ワークディレクトリ構成.md`(+jp) にリネーム + スリム化（詳細は各サブフォルダリファレンスへ委譲） |
-| 9 | - | `setup-task.py` を廃止（git rm）。`work:start` SKILL.md/.jp.md を「Claude が注入テンプレートを元に直接 Write」へ変更 |
-| 10 | - | ブランチドキュメントのファイル名を `{YYMMDD}-{日本語タイトル}.branch.md` に変更（skill・リファレンスの記述更新） |
-| 11 | - | `_injection_rules.yaml` をパス別に細分化（tasks doc / tasks index / notes / issues / 全体） |
-| 12 | - | `TODOテンプレート同期.md`(+jp) を廃止（`タスクドキュメント.md` に統合） |
-| 13 | - | `setup.py` を最小ブートストラップに整理（リッチなスキーマ定義はリファレンスへ移管） |
-| 14 | - | `plugin-migrate/SKILL.md`(+jp) のテンプレート参照を更新 |
-| 15 | - | `_index.yaml`/`.jp.yaml` のリファレンス一覧を更新 |
-| 16 | - | バージョン bump（plugin.json/marketplace.json/CLAUDE.md/CLAUDE.jp.md） |
-| 17 | - | 現ブランチドキュメント自身を `.branch.md` 拡張子へリネーム（ドッグフーディング） |
+| 4 | 済 | 【撤回】`setup-task.py` への `_BRANCH_DOC_TEMPLATE` インライン化を取り消し、リファレンス化へ転換 |
+| 5 | 済 | `references/work-dir/タスクドキュメント.md`(+jp) を新規作成（ブランチドキュメントテンプレート全文 + 記入ガイド） |
+| 6 | 済 | `references/work-dir/タスクインデックス.md`(+jp) を新規作成（index.yaml / index.archive.yaml スキーマ） |
+| 7 | 済 | `references/work-dir/イシュー.md`(+jp) を新規作成（`.work/issues/` 構成・スキーマ） |
+| 8 | 済 | `ドットワークディレクトリ構成.md`(+jp) → `ワークディレクトリ構成.md`(+jp) にリネーム + スリム化（詳細は各サブフォルダリファレンスへ委譲） |
+| 9 | 済 | `setup-task.py` を廃止（git rm）。`work:start` SKILL.md/.jp.md を「Claude が注入テンプレートを元に直接 Write」へ変更（Step 5〜9 再構成・renumber） |
+| 10 | 済 | ブランチドキュメントのファイル名を `{YYMMDD}-{日本語タイトル}.branch.md` に変更（skill・リファレンスの記述更新） |
+| 11 | 済 | `_injection_rules.yaml` をパス別に細分化（`.work/**` / tasks branch.md / tasks index / notes / issues） |
+| 12 | 済 | `TODOテンプレート同期.md`(+jp) を廃止（`タスクドキュメント.md` に統合） |
+| 13 | 済 | `setup.py` はブートストラップ専用として維持（前コミットのインライン版で対応済み） |
+| 14 | 済 | `issue-save` SKILL.md(+jp) Step 3 をインラインテンプレ削除し注入依存へ |
+| 15 | 済 | `_index.yaml`/`.jp.yaml` / `_index.md` のリファレンス一覧を更新 |
+| 16 | 済 | バージョン記述更新（plugin.json/marketplace.json/CLAUDE.md/CLAUDE.jp.md, v2.54.0） |
+| 17 | 済 | 現ブランチドキュメント自身を `.branch.md` 拡張子へリネーム（ドッグフーディング） |
 | 18 | - | `.work/notes/` の関連ノートを更新 |
 
 ## 変更内容
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | (実装中に記入) | - | - | - |
+| 1 | `references/work-dir/タスクドキュメント.md`(+jp) | 新規 | ブランチドキュメントテンプレート全文 + 記入ガイド | `.work/tasks/**/*.branch.md` で注入 |
+| 2 | `references/work-dir/タスクインデックス.md`(+jp) | 新規 | index.yaml / index.archive.yaml スキーマ | `.work/tasks/index*.yaml` で注入 |
+| 3 | `references/work-dir/イシュー.md`(+jp) | 新規 | ISSUE-N.md 構成 + `_index` スキーマ | `.work/issues/**` で注入 |
+| 4 | `references/work-dir/ワークディレクトリ構成.md`(+jp) | リネーム+編集 | `ドットワークディレクトリ構成` から改名・俯瞰のみにスリム化 | `.work/**` で注入 |
+| 5 | `references/.ref-injects/_injection_rules.yaml` | 編集 | パス別に細分化（5 ルール） | - |
+| 6 | `references/.ref-injects/_index.yaml`(+jp) | 編集 | リファレンス一覧を更新 | - |
+| 7 | `references/_index.md` | 編集 | 人間向けインデックスを新構成へ更新 | - |
+| 8 | `references/skill-sync/TODOテンプレート同期.md`(+jp) | 削除 | `タスクドキュメント.md` に統合 | - |
+| 9 | `scripts/setup-task.py` | 削除 | リファレンス注入へ移行し不要に | - |
+| 10 | `skills/start/SKILL.md`(+jp) | 編集 | Step 5〜9 再構成・`.branch.md`・直接 Write 化・renumber | - |
+| 11 | `skills/issue-save/SKILL.md`(+jp) | 編集 | Step 3 をインラインテンプレ削除し注入依存へ | - |
+| 12 | `.claude-plugin/plugin.json` / `marketplace.json` | 編集 | v2.54.0 説明を最終設計へ更新 | - |
+| 13 | `CLAUDE.md` / `CLAUDE.jp.md` | 編集 | changelog v2.54.0 行を最終設計へ更新 | - |
+| 14 | `.work/tasks/.../*.branch.md` | リネーム | 本ブランチドキュメント自身を `.branch.md` 化 | ドッグフーディング |
 
 ## テスト
 
 | # | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | `setup.py` が .work/ 構造を正しくブートストラップする | (未実施) | - |
-| 2 | ブランチドキュメント `.branch.md` 編集時に `タスクドキュメント.md` が注入される | (未実施) | - |
-| 3 | `.work/issues/**` 編集時に `イシュー.md` が注入される | (未実施) | - |
+| 1 | `setup.py` が .work/ 構造を正しくブートストラップする | tasks/notes/issues + 各スケルトンが生成された | OK |
+| 2 | `.branch.md` 編集時に `ワークディレクトリ構成` + `タスクドキュメント`（テンプレ全文）が注入される | 両リファレンス注入・`# {日本語タイトル}` テンプレ確認 | OK |
+| 3 | `.work/issues/**` 編集時に `イシュー.md`（ISSUE テンプレ）が注入される | 注入・`# {ISSUE-N}: {title}` 確認 | OK |
+| 4 | `.work/tasks/index.yaml` 編集時に `タスクインデックス.md` が注入される | 注入確認 | OK |
+| 5 | `_injection_rules.yaml` / `_index.yaml`(+jp) が妥当な YAML | パース成功 | OK |
 
 ## QA
 
