@@ -51,7 +51,7 @@
 | 15 | 済 | `_index.yaml`/`.jp.yaml` / `_index.md` のリファレンス一覧を更新 |
 | 16 | 済 | バージョン記述更新（plugin.json/marketplace.json/CLAUDE.md/CLAUDE.jp.md, v2.54.0） |
 | 17 | 済 | 現ブランチドキュメント自身を `.branch.md` 拡張子へリネーム（ドッグフーディング） |
-| 18 | - | `.work/notes/` の関連ノートを更新 |
+| 18 | 済 | `.work/notes/` の関連ノートを更新 |
 
 ## 変更内容
 
