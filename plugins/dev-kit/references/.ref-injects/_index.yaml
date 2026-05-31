@@ -384,7 +384,7 @@ references:
   description: Unit / Component test (Vitest)。vitest.config.ts、Schema test、Pure function test、Component test (Testing Library + userEvent)、service.ts integration、MSW。
 - path: next/testing/E2Eテスト.md
   lang: next
-  description: E2E test (Playwright)。playwright.config.ts、画面単位フォルダ、Page Object Model、Storage State 認証、DB シード、視覚回帰 (Chromatic)、axe-core a11y。
+  description: E2E test (Playwright)。playwright.config.ts、ユースケース駆動設計（scenarios/）、Page Object Model、fixtures、utils/data 責務分離、Storage State 認証、DB シード、視覚回帰、axe-core a11y。
 - path: next/testing/フィクスチャー.md
   lang: next
   description: テストデータ Factory パターン。tests/fixtures/{resource,user,...}.ts、build*/seed*/clean*、nanoid で一意命名、DB cleanup (truncate)、テスト専用 API (NODE_ENV gate)。
