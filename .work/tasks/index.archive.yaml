@@ -1132,3 +1132,11 @@ branches:
   summary: 全プラグインのreferencesディレクトリ配下のファイル名を日本語に変更する
   task: 260531_全プラグインリファレンスファイル名を日本語化
   completed: true
+- id: 253
+  branch: refactor/fix-work-start-commit-order
+  title: work-startコミット順序修正
+  type: refactor
+  tags: []
+  summary: work:startスキルのコミット積み順を「ブランチ文書→実装→最終更新」に修正
+  task: 260531_fix-work-start-commit-order
+  completed: true
