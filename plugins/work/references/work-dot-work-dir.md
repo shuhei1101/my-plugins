@@ -26,8 +26,8 @@ The branch document is the single source of truth for what a branch does. Create
 - `## 作業内容` — task checklist (mark each completed row's `完了` column as `済`; all rows must be `済` before merging)
 - `## 変更内容` — list of every implementation file added or modified (excluding tests)
 - `## テスト` — test files added or modified alongside the implementation
-- `## QA` — unresolved questions scoped to this branch (resolve before merging; reflect decisions in the relevant spec / document)
-- `## 参考ドキュメント` — links to related notes / specs
+- `## QA` — unresolved questions scoped to this branch (resolve before merging; reflect decisions in the relevant note / document)
+- `## 参考ドキュメント` — links to related notes
 - `## 関連イシュー` — `.work/issues/` entries this branch resolves (auto-closed by merge)
 - `## 関連ブランチ` — predecessor / successor / sibling branches
 - `## 次ブランチ候補` — follow-up branches to reserve via `/work:branch-reserve`
