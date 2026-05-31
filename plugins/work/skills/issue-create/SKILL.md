@@ -91,7 +91,9 @@ Example: "The chat history is hard to read, and settings reset on restart"
    `.work/issues/ISSUE-{N}.md`.
    - Writing the file auto-injects the `work-dir/イシュー.md` reference — **follow its format exactly**.
      The body is Japanese: `# ISSUE-{N}: {タイトル}`, a `**作成日**` line, `## 問題`, optional
-     `## 修正案`. Do not write Type/Priority/Tags lines or a User's words section.
+     `## 修正案` (when included, it must contain three mandatory sub-sections: `### 暫定対応` /
+     `### 恒久対策` / `### 再発防止`; write「なし」when a sub-section has no content).
+     Do not write Type/Priority/Tags lines or a User's words section.
 2. After writing all files, update `_index.yaml` per the reference: append each issue's entry
    (`type` / `priority` / `tags` / `scan_scope` are recorded here, not in the file) and set
    `last_id` to the highest ID used.
