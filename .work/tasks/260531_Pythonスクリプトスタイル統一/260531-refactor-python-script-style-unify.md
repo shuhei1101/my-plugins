@@ -30,7 +30,7 @@ my-plugins 内の全 Python スクリプトを `dev-kit/references/python/script
 | 4 | 済 | コメント・ログメッセージを日本語に統一する |
 | 5 | 済 | 構造上の違反（`from __future__`・`main() -> int`等）を修正する |
 | 6 | 済 | CLAUDE.md / ルール類を更新する（既存ルールへの準拠のみ — 追記不要） |
-| 7 | - | `python-script.md` リファレンス自体を修正する（logger→print、ファイル構成を scripts/ 想定に変更） |
+| 7 | 済 | `python-script.md` リファレンス自体を修正する（logger→print、ファイル構成を scripts/ 想定に変更） |
 
 ## 変更内容
 
@@ -52,6 +52,8 @@ my-plugins 内の全 Python スクリプトを `dev-kit/references/python/script
 | 14 | `plugins/dev-kit/hooks/scripts/_common.py` | 編集 | モジュールコメント・関数docstring日本語化 | フックのため構造変更なし |
 | 15 | `plugins/dev-kit/hooks/scripts/inject_references.py` | 編集 | `_eprint`メッセージ日本語化 | 〃 |
 | 16 | `plugins/dev-kit/hooks/scripts/ts_check.py` | 編集 | セクションコメント日本語化 | 〃 |
+| 17 | `plugins/dev-kit/references/python/scripts/python-script.md` | 編集 | logger→print、ファイル構成を scripts/ フォルダ想定に修正 | - |
+| 18 | `plugins/dev-kit/references/python/scripts/python-script.jp.md` | 編集 | 〃（JP ミラー） | - |
 
 ## テスト
 
