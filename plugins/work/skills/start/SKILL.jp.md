@@ -46,19 +46,11 @@ description: |
    - `$author` が空でない場合: ブランチ名は `{type}/${author}/{title}`（例：`feat/nishikawa/test-update`）
    - `$author` が空または未設定の場合: ブランチ名は `{type}/{title}`（例：`feat/test-update`）
 
-3. 内部 ID を予約します（`index.yaml` の記簿管理に使用。アーカイブやコミット
-   クロスリファレンスで使用しますが、ブランチ名自体には表示されません）：
-
-```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yaml
-```
-
 → ステップ 2 へ
 
 #### 出力
 
 - ブランチ名が決定されました（作者名セグメントあり/なし）
-- 内部 ID `{N}` が予約されました
 
 ---
 
