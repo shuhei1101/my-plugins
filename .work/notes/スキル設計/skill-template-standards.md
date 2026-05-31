@@ -1,15 +1,3 @@
----
-created_at: 2026-05-30
-updates:
-  - 2026-05-30 — 初版作成（PR205）
-  - 2026-05-30 — サブエージェントガイドを subagents.md に分離・委譲マーカーを説明的テキストに変更（PR205）
-  - 2026-05-31 — PR217 完了：全 36 SKILL.jp.md のセクション名を新テンプレートに統一、サブエージェント委譲マーカーを 2 箇所追加
-related_notes: []
-related_prs:
-  - PR205
-  - PR217
----
-
 # skill-template-standards — SKILL.jp.md テンプレート標準とサブエージェントガイド
 
 ## 概要

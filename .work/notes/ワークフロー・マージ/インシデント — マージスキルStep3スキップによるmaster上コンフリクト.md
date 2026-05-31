@@ -1,13 +1,3 @@
----
-created_at: 2026-05-31
-updates:
-  - 2026-05-31 — fix/merge-skill-sync-before-merge: スキップ分岐を削除して再発防止
-related_notes: []
-related_branches:
-  - fix/merge-skill-sync-before-merge
-  - refactor/python-script-style-unify
----
-
 # インシデント — マージスキル Step 3 スキップによる master 上コンフリクト
 
 ## 何が起きたか

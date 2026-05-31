@@ -1,24 +1,3 @@
----
-created_at: 2026-05-29
-updates:
-  - 2026-05-29 — 初版（PR156 設計メモ）
-  - 2026-05-29 — PR157: py-kit を移行。トークンフィールドを injected_at → expires_at に変更
-  - 2026-05-29 — PR159: claude-kit を移行（creator スキル → reference 自動注入の拡張版）
-  - 2026-05-29 — PR161: mark-generated を provenance.md 化（薄ラッパー存置）、claude-refactor 薄化、j2/jp-mirror チェックフック削除
-  - 2026-05-30 — PR185: plugin-update スキルを追加（consumer 列挙 → フックファイル照合 → 更新）、1.5.0→1.6.0
-  - 2026-05-31 — PR224: references/ 配下の内部ファイル（_index*/_injection_rules*/CLAUDE*）を references/.ref-injects/ に移動。各プラグインに人間向け日本語インデックス references/_index.md を追加
-  - 2026-05-31 — #239: テンプレートとコンシューマーのドリフトを同期。TRUTHY 定数・キルスイッチ前置き（依存チェック前）をテンプレートに反映。_common.py コメントブロックをテンプレートに合わせて更新（全コンシューマー）
-related_notes:
-  - dev-kit-hooks.md
-  - fix-read-hook.md
-related_prs:
-  - PR156
-  - PR157
-  - PR147
-  - PR155
-  - PR185
----
-
 # ref-inject — リファレンス自動注入プラグインのジェネレータ
 
 ## 概要

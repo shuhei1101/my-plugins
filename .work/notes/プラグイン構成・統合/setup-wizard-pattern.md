@@ -1,14 +1,3 @@
----
-created_at: 2026-05-30
-updates:
-  - 2026-05-30 — 初版（PR199 設計メモ）
-related_notes:
-  - ../../plugins/claude-kit/references/setup-wizard.md
-  - ../../plugins/claude-kit/references/plugin-structure.md
-related_prs:
-  - PR199
----
-
 # setup-wizard パターン — プラグイン初回オンボーディングの規約
 
 ## 概要

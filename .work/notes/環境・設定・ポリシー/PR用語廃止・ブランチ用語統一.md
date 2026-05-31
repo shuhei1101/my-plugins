@@ -1,22 +1,3 @@
----
-created_at: 2026-05-30
-updates:
-  - 2026-05-30 — 初版作成
-  - 2026-05-30 — PR188: work-start の PR 用語をブランチ用語に統一
-  - 2026-05-30 — PR190: index.yaml / index.archive.yaml の prs: キーを branches: に改名
-  - 2026-05-31 — #230: pr-handoff → branch-reserve、pr-show → branch-show にリネーム
-  - 2026-05-31 — #244: ブランチ文書ファイル名を日本語タイトル基準に変更、index.yaml に branch フィールド追加
-  - 2026-05-31 — #248: user-prompt-submit.py・trim-index.py・issue-tool.py・plugin-config スキル・setup スキル内の残存 PR 用語をブランチ用語に統一
-related_notes: []
-related_prs:
-  - PR188
-  - PR189
-  - PR190
-  - PR191
-  - "#244"
-  - "#248"
----
-
 # PR用語廃止・ブランチ用語統一
 
 ## 概要

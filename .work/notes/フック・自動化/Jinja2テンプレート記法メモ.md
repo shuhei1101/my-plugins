@@ -1,12 +1,3 @@
----
-created_at: 2026-05-31
-updates:
-  - 2026-05-31 — 初版作成（PR227）
-related_notes: []
-related_branches:
-  - feat/claude-kit-jinja2-authoring-rule
----
-
 # Jinja2 テンプレート記法メモ — .j2 ファイル記述時の既知の罠と対処法
 
 ## 概要

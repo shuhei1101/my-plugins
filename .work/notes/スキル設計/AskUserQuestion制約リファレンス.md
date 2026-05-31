@@ -1,12 +1,3 @@
----
-created_at: 2026-05-31
-updates:
-  - 2026-05-31 — 初版作成
-related_notes: []
-related_branches:
-  - feat/document-askuserquestion-limits
----
-
 # AskUserQuestion 制約リファレンス — スキルからの呼び出しガイド
 
 ## 概要

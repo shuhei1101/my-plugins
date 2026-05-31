@@ -1,13 +1,3 @@
----
-created_at: 2026-05-25
-updates:
-  - 2026-05-25 — PR120: disable-model-invocation を削除
-related_notes:
-related_prs:
-  - PR109
-  - PR120
----
-
 # pr-show スキル — 次 PR 候補一覧の状況表示
 
 ## 概要

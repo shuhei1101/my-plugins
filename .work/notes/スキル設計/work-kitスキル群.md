@@ -1,23 +1,3 @@
----
-created_at: 2026-05-23
-updates:
-  - 2026-05-23 — PR91: pr-handoff スキルの追加
-  - 2026-05-24 — PR109: pr-show スキルを merge Step 12 から切り出し
-  - 2026-05-29 — PR163: worktree-kit を統合（work-add / vscode-workspace-sync を取り込み）
-  - 2026-05-30 — PR172: プラグインを work-kit → workspace にリネーム、env var も WORK_KIT_* → WORKSPACE_* に変更
-  - 2026-05-31 — #219: merge スキル Step 3 を master 取り込み必須フローに変更
-  - 2026-05-31 — #226: タスクドキュメントのファイル名に日付プレフィックスを追加、作業内容テーブル構造を改訂
-  - 2026-05-31 — #238: merge スキル Step 11（branch-reserve 呼び出し）を Step 10（完了報告）より前に移動しコミット分離を解消
-  - 2026-05-31 — #240: merge スキル Step 3 の git コマンドにワークツリーパスを明示（実行コンテキスト不明による master 汚染を防止）
-  - 2026-05-31 — #245: work:start のブランチドキュメントテンプレートから行4「ルール/CLAUDE.md 更新」を削除、Step 2 の QA 観点を補強
-  - 2026-05-31 — #253: work:start のコミット順序を修正（Step 8 = QA、Step 9 = ブランチ文書のみ first commit、Step 10 = ノート＋ブランチ文書 final commit）
-related_prs:
-  - PR91
-  - PR109
-  - PR163
-  - PR172
----
-
 # work-kit スキル群 — 設計メモ
 
 ## 概要

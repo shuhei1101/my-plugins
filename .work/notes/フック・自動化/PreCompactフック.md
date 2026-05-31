@@ -1,12 +1,3 @@
----
-created_at: 2026-05-28
-updates:
-  - 2026-05-28 — 初稿作成
-related_notes: []
-related_prs:
-  - PR152
----
-
 # PreCompact フック — conversation-to-claude 自動実行
 
 ## 概要

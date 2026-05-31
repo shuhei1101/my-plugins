@@ -1,12 +1,3 @@
----
-created_at: 2026-05-31
-updates:
-  - 2026-05-31 — 初版作成（chore/jp-md-comment-normalize）
-related_specs:
-related_branches:
-  - chore/jp-md-comment-normalize
----
-
 # JP ミラーファイルヘッダー規約
 
 ## 概要

@@ -1,13 +1,3 @@
----
-created_at: 2026-05-31
-updates:
-  - 2026-05-31 — 初版作成
-related_notes:
-  - claude-kit-references-structure.md
-related_branches:
-  - chore/sync-claude-kit-artifacts
----
-
 # claude-kit 成果物同期 — plugin-update スキルによるリポジトリ規約同期
 
 ## 概要

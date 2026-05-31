@@ -1,13 +1,3 @@
----
-created_at: 2026-05-28
-updates:
-  - 2026-05-28 — 初版作成
-related_notes: []
-related_prs:
-  - PR144
-  - PR135
----
-
 # next-kit:plan スキル — Next.js プロジェクト設計計画書生成
 
 ## 概要

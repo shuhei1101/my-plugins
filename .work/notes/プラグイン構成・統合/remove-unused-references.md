@@ -1,12 +1,3 @@
----
-created_at: 2026-05-30
-updates:
-  - 2026-05-30 — 初版作成（PR215）
-related_notes: []
-related_prs:
-  - PR215
----
-
 # remove-unused-references — claude-kit の未使用リファレンスファイル削除
 
 ## 概要

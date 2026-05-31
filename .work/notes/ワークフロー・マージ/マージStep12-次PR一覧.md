@@ -1,13 +1,3 @@
----
-created_at: 2026-05-24
-updates:
-  - 2026-05-24 — PR107: Step 12 出力をテーブル形式に変更
-related_notes: []
-related_prs:
-  - PR99
-  - PR107
----
-
 # マージ Step 12 — 次 PR 一覧の出力フォーマット
 
 ## 概要

@@ -1,21 +1,3 @@
----
-created_at: 2026-05-24
-updates:
-  - 2026-05-24 — 初版作成
-  - 2026-05-24 — 実装完了・未決事項を解決済みに更新
-  - 2026-05-24 — PR110: 冗長ルール・CLAUDE.mdセクション削除
-  - 2026-05-24 — PR121: UserPromptSubmit の限界を補う PreToolUse ブロック追加
-  - 2026-05-25 — PR124: dev-kit/ui-kit/work-kit から skill-creator-dispatch 重複削除
-  - 2026-05-25 — PR125: PreToolUse パターンを SKILL.jp.md / rules/*.md / CLAUDE.md に拡張
-related_notes: []
-related_prs:
-  - PR103
-  - PR110
-  - PR121
-  - PR124
-  - PR125
----
-
 # クリエータースキルフック (claude-kit) — UserPromptSubmit フック設計メモ
 
 ## 概要

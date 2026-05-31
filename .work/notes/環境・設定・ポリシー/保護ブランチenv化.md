@@ -1,17 +1,3 @@
----
-created_at: 2026-05-30
-updates:
-  - 2026-05-30 — 初版（PR177 pr-handoff から着手）
-related_notes:
-  - integrate-guard-kit-into-workspace.md
-  - env-toggles-for-hooks-and-steps.md
-related_prs:
-  - PR177
-  - PR169
-  - PR164
-  - PR163
----
-
 # 保護ブランチ env 化 — PR177
 
 ## 概要
