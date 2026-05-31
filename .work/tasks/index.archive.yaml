@@ -1082,3 +1082,10 @@ branches:
   summary: dev-kit / claude-kit の plugin-update スキルから Step 1 (ブランチチェック) を削除しステップ再番号付け
   task: 260531_plugin-update-step1削除
   completed: true
+- id: 245
+  title: docs/work-start-qa-improve
+  type: docs
+  tags: []
+  summary: work:start SKILL.md の行4（ルール/CLAUDE.md更新）を削除し、Step 2のQA観点を補強する
+  task: 260531_work-start-qa-improve
+  completed: true
