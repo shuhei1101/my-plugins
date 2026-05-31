@@ -360,17 +360,18 @@ scan_records:
 `issue-scan` はオーケストレーター専用。メインはソースもイシュー本文も読まず、分析は全て `work:issue-scanner` サブエージェント内で行う。
 
 ```
-Step 0. master 確認 → 一時スキャンブランチ作成、ISSUE_SCAN_AGENTS=N を読む
-Step 1. _index.archive.yaml の scan_records（スキャン済み観点）と _index.yaml の last_id=L を読む
-Step 2. スキャン観点を N 個選ぶ（フォルダ/grep/レイヤー/ファイル群/パターン — 観点カタログから巡回選択）
-Step 3. 各観点に ID ブロック割当（START_i = L+1+i*SLOT, SLOT=30）→ work:issue-scanner を N 個並列起動
-        各サブエージェント: 観点をスキャン → ISSUE-{N}.md を作成（先採番ブロック使用）→ メタデータのみ返す
-Step 4. 戻り値（メタデータのみ）を集約し _index.yaml / _index.archive.yaml を更新
-Step 5. スキャンブランチへコミット → master に --no-ff マージ → ブランチ削除
-Step 6. スキャン結果をレポート
+Step 0.  master 確認 → 一時スキャンブランチ作成、ISSUE_SCAN_AGENTS=N を読む
+Step 1.  _index.archive.yaml の scan_records（スキャン済み観点）と _index.yaml の last_id=L を読む
+Step 2.  スキャン観点を N 個選ぶ（フォルダ/grep/レイヤー/ファイル群/パターン — 観点カタログから巡回選択）
+Step 3.  work:issue-scanner を N 個並列起動
+         各サブエージェント: 観点をスキャン → 発見を [{title, type, priority, tags, scope, perspective, body}] として返す
+Step 3b. 全サブエージェントの発見を集約 → ISSUE-{L+1}, ISSUE-{L+2}, ... と連番で ISSUE-{N}.md を書き出す
+Step 4.  _index.yaml / _index.archive.yaml を更新（last_id = L + 発見総数 M）
+Step 5.  スキャンブランチへコミット → master に --no-ff マージ → ブランチ削除
+Step 6.  スキャン結果をレポート
 ```
 
-責務分担: サブエージェントは「ISSUE ファイル作成まで」（共有 index には触れず・コミットしない）、メインは「ID 先採番・index 更新・コミット・マージ」を集約する。並列で同一 worktree にコミットすると git 競合するため、コミットはメインに一本化している。
+責務分担: サブエージェントは「分析して発見を返す」（ファイルを書かず・共有 index に触れず・コミットしない）、メインは「ISSUE ファイル書き出し・連番 ID 付与・index 更新・コミット・マージ」を集約する。ID が連番になるため SLOT ブロックによるギャップがなくなった（refactor/issue-scanner-return-content で変更）。
 
 ---
 
