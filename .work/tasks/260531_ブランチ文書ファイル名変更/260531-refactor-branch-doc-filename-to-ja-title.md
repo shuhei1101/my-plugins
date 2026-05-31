@@ -1,6 +1,6 @@
 # ブランチ文書ファイル名を日本語タイトル基準に変更
 
-> 内部 ID: 244（index.yaml 採番用 — クロスリファレンス目的）
+> ブランチ: `refactor/branch-doc-filename-to-ja-title`
 
 ## 概要
 
@@ -26,7 +26,7 @@
 | 9 | 済 | JP ミラーも同様に更新 |
 | 10 | 済 | `CLAUDE.md` の changelog に追記 |
 | 11 | 済 | テンプレートから「内部 ID」見出し行を削除し、`setup-task.py` の `{N}` 置換を整理 |
-| 12 | - | rules / CLAUDE.md を更新する |
+| 12 | 済 | rules / CLAUDE.md を更新する（`plugins/work/CLAUDE.md` を更新済み） |
 
 ## 変更内容
 
@@ -62,7 +62,9 @@
 
 | # | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | {何を確認したか} | {実際どうなったか} | OK |
+| 1 | `index-tool.py add --branch feat/test-foo` で branch フィールドが出力されるか | `branch: feat/test-foo` が index.yaml に記録された | OK |
+| 2 | `setup-task.py --ja-title "テスト機能"` のファイル名 | `260531-テスト機能.md` が生成された | OK |
+| 3 | 生成文書のヘッダー（H1・ブランチ行・内部 ID 行なし） | `# テスト機能` / `> ブランチ: \`feat/test-foo\`` が入り、内部 ID 行なし | OK |
 
 ## QA
 
