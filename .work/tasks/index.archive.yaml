@@ -1096,3 +1096,10 @@ branches:
   summary: ブランチ文書ファイル名を日本語タイトル基準に変更し index.yaml に branch フィールドを追加
   task: 260531_ブランチ文書ファイル名変更
   completed: true
+- id: 247
+  title: docs/update-test-table-columns
+  type: docs
+  tags: []
+  summary: ブランチドキュメントテンプレートのテスト表列をファイル名・メソッド名・期待値・実値・判定・補足に更新
+  task: 260531_テスト表列更新
+  completed: true
