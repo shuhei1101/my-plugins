@@ -44,7 +44,7 @@ ref-inject/
         ├── _index.yaml (+ _index.jp.yaml)
         ├── _injection_rules.yaml
         ├── CLAUDE.md (+ CLAUDE.jp.md)
-        └── example/getting-started.md
+        └── example/はじめに.md
 ```
 
 `plugin.json` / ルート `CLAUDE.md` のテンプレートは無い — それらはプラグインレベル

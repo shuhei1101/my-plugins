@@ -29,7 +29,7 @@
 参照:
 
 ```
-{plugin_root}/references/html/principles.md   # UI 規約(必読 — DRY / CSS / JS / frontend-design)
+{plugin_root}/references/html/基本方針.md   # UI 規約(必読 — DRY / CSS / JS / frontend-design)
 ```
 
 加えてログスキルの規約も:
@@ -181,6 +181,6 @@ XPath は短縮形式 / 相対で固定。`Esc` でキャンセル。
 
 ## 参考資料
 
-- `{plugin_root}/references/html/principles.md` — UI 規約(必読)
+- `{plugin_root}/references/html/基本方針.md` — UI 規約(必読)
 - `{plugin_root}/skills/logging/SKILL.md` — ログ規約
 - `{plugin_root}/skills/debug-fab/templates/CLAUDE.md` — ウィジェット使い方詳細(フォルダ作業時に自動読み込み)

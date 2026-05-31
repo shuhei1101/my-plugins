@@ -26,8 +26,8 @@ top tabs. Each variant follows `principles.md` (FLOCSS + Design Tokens, JS rules
 1. Read in full:
 
    ```
-   {plugin_root}/references/html/principles.md   # FLOCSS, design tokens, JS rules
-   {plugin_root}/references/html/ui-design.md    # UX patterns by screen type
+   {plugin_root}/references/html/基本方針.md   # FLOCSS, design tokens, JS rules
+   {plugin_root}/references/html/UIデザイン.md    # UX patterns by screen type
    ```
 
 2. **Inventory shared resources in the project** (mandatory — applies to mocks too, so
@@ -213,6 +213,6 @@ Implementation rules:
 
 ## References
 
-- `{plugin_root}/references/html/principles.md` — FLOCSS, design tokens, JS rules
-- `{plugin_root}/references/html/ui-design.md` — UX patterns by screen type
+- `{plugin_root}/references/html/基本方針.md` — FLOCSS, design tokens, JS rules
+- `{plugin_root}/references/html/UIデザイン.md` — UX patterns by screen type
 - `{plugin_root}/skills/mock/templates/mock-skeleton.html` — starter HTML skeleton
