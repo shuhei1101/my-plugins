@@ -38,16 +38,14 @@ git branch --format='%(refname:short)'
 ```bash
 python -c "
 import yaml
-ids, titles = set(), set()
+branches = set()
 for path in ['.work/tasks/index.yaml', '.work/tasks/index.archive.yaml']:
     try:
         data = yaml.safe_load(open(path))
-        for entry in (data.get('prs') or []):
-            if 'id' in entry: ids.add(str(entry['id']))
-            if 'title' in entry: titles.add(str(entry['title']))
+        for entry in (data.get('branches') or []):
+            if entry.get('branch'): branches.add(str(entry['branch']))
     except: pass
-print('IDS:', ' '.join(sorted(ids)))
-print('TITLES:', ' '.join(sorted(titles)))
+print('BRANCHES:', ' '.join(sorted(branches)))
 "
 ```
 
@@ -125,17 +123,18 @@ path = '.work/tasks/index.archive.yaml'
 try:
     data = yaml.safe_load(open(path)) or {}
 except: data = {}
-prs = data.get('prs') or []
-prs.append({
-    'id': int(sys.argv[1]),
+branches = data.get('branches') or []
+branches.append({
+    'branch': sys.argv[1],
     'title': sys.argv[2],
     'type': sys.argv[3],
     'summary': sys.argv[4] if sys.argv[4] else '',
+    'task': sys.argv[5] if len(sys.argv) > 5 and sys.argv[5] else '',
     'completed': True,
 })
-data['prs'] = prs
+data['branches'] = branches
 yaml.dump(data, open(path, 'w'), allow_unicode=True, default_flow_style=False)
-" {id} {title} {type} "{summary}"
+" {branch} {title} {type} "{summary}" {task_dir}
 ```
 
 2. ブランチを削除:
@@ -148,7 +147,7 @@ git branch -d {branch}   # 未マージの場合は -D を使う
 
 ```bash
 python {PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
-  --id {id} \
+  --branch "{branch}" \
   --title "{title}" \
   --type {type} \
   --summary "{summary}" \

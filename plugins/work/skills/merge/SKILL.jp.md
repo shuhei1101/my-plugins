@@ -39,7 +39,7 @@ disable-model-invocation: true
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index.yaml
 ```
 
-   各出力行は：`id|title|type|task` — `title` は記録されたブランチ名です
+   各出力行は：`branch|title|type|task` — `title` は記録されたブランチ名です
    （新しいブランチ：`{type}/{title}`、レガシーエントリ：`PR{N} — {title}` の形式もサポート）
 3. 複数のアクティブエントリが存在する場合、マージするエントリをユーザーに確認
 4. 実際のブランチ名とワークツリーパスを解決します：
@@ -53,7 +53,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 出力
 
-- 内部 ID `{N}`、ブランチドキュメントパス、ブランチ名、ワークツリーパスが確認されました
+- ブランチドキュメントパス、ブランチ名、ワークツリーパスが確認されました
 
 ---
 

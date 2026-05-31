@@ -35,7 +35,7 @@ Runs the full merge flow: TODO checklist verification → master compatibility c
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index.yaml
 ```
 
-   Each output line is: `id|title|type|task` — `title` is the recorded branch name (for new branches:
+   Each output line is: `branch|title|type|task` — `title` is the recorded branch name (for new branches:
    `{type}/{title}`; for legacy entries it may still be `PR{N} — {title}`)
 3. If multiple active entries exist, ask the user which one to merge
 4. Resolve the actual branch name and worktree path:
@@ -47,7 +47,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Output
 
-- Internal ID `{N}`, branch document path, branch name, and worktree path confirmed
+- Branch document path, branch name, and worktree path confirmed
 
 ---
 
