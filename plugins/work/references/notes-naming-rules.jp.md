@@ -6,6 +6,9 @@
 `.work/notes/` 配下のファイル命名規約と `_index.md` 管理ルール。
 英語ミラー: `references/notes-naming-rules.md`
 
+> ノートに書く内容と固定テンプレートは `notes-content-rules.md` を参照。
+> ノートは**現在の仕様書** — 現在状態のみを書き、本文に履歴は書かない。
+
 ---
 
 ## ファイル命名
