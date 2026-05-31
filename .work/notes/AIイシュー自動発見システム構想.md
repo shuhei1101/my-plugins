@@ -316,16 +316,19 @@ scan_records:
 
 ---
 
-### `/work-kit:issue-scan`
+### `/work:issue-scan`
 
 ```
-1. _index.archive.yaml の scan_records を確認し、未スキャン箇所を特定
-2. 今回スキャンする対象をユーザーに提示（frontend画面 / backend-layer / ルール系）
-3. 対象領域の py-kit / next-kit / html-kit references を参照（フック注入と同じ粒度で読む）
-4. プロジェクトコードを読んで規約と照合
-5. 問題あり → ISSUE-{N}.md を作成、_index.yaml に追記
-6. scan_records に記録（日時・スコープ・検出イシュー）
-7. 新規イシュー一覧をレポート
+Step 0. 一時スキャンブランチを作成（ISSUE_SCAN_AGENTS を読んで N を決定）
+Step 1. _index.archive.yaml の scan_records を確認し、スキャン済みファイルを除外
+Step 2. 未スキャンファイルから N 個をランダムに選ぶ
+Step 3. N=1: メインエージェントがファイルを Read（ref-inject フックが参照を自動注入）
+         N≥2: N 個のサブエージェントを並列起動して各ファイルをスキャン、発見内容を集約
+Step 4. reference と照合してイシューを発見（N=1 パス）
+Step 5. 発見内容を /work:issue-save で保存
+Step 6. _index.archive.yaml の scan_records を更新
+Step 7. スキャンブランチへコミット → master に --no-ff マージ → ブランチ削除
+Step 8. スキャン結果をレポート
 ```
 
 ---
@@ -357,8 +360,11 @@ scan_records:
 - ユーザーが `wontfix` でクローズ可能
 
 ### スキャン頻度
-- `issue-scan` は手動呼び出しが基本
-- 定期実行は外部プログラムから Claude Code に投げる形で対応（プラグイン外）
+- `issue-scan` は単発でも `/ loop /work:issue-scan` による連続ループでも実行可能
+- 毎回実行でスキャンブランチ（`chore/issue-scan-YYMMDD-HHMMSS`）を自動作成し、master に `--no-ff` でマージして終了
+- `ISSUE_SCAN_AGENTS=N` で 1 回の実行当たりのスキャンファイル数を制御（デフォルト 1）
+  - N=1: メインエージェントで 1 ファイルをスキャン
+  - N≥2: N 個のサブエージェントを並列起動し、各エージェントが 1 ファイルをスキャン。発見内容はメインエージェントが集約して保存する
 
 ---
 
@@ -372,6 +378,7 @@ PR135 / PR140 の成果により、フック自動注入の基盤は py-kit / ne
 | タスク | 状態 | 備考 |
 |---|---|---|
 | PR-D: merge スキルにイシュークローズ処理を統合 | ✅ PR146 完了 | work-kit issue-scan/create が前提（PR131 完了済み） |
+| issue-scan の自動ループ対応（ブランチ作成・マージ・サブエージェント制御） | ✅ feat/issue-scan-auto-loop 完了 | ISSUE_SCAN_AGENTS 環境変数で並列数制御、/loop と組み合わせて継続スキャン可能 |
 | issue-scan の references 参照精度向上 | 未検討 | next-kit / py-kit references が 1 ファイル = 1 ユースケース化された今、scan 時の粒度を合わせる |
 | スキャン対象の拡張（Next.js フロントエンド） | 未検討 | 現在は HTML / backend が対象。next-kit プロジェクトへの適用を検討 |
 
