@@ -30,6 +30,7 @@ my-plugins 内の全 Python スクリプトを `dev-kit/references/python/script
 | 4 | 済 | コメント・ログメッセージを日本語に統一する |
 | 5 | 済 | 構造上の違反（`from __future__`・`main() -> int`等）を修正する |
 | 6 | 済 | CLAUDE.md / ルール類を更新する（既存ルールへの準拠のみ — 追記不要） |
+| 7 | - | `python-script.md` リファレンス自体を修正する（logger→print、ファイル構成を scripts/ 想定に変更） |
 
 ## 変更内容
 
