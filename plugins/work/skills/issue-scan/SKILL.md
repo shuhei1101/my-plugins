@@ -3,9 +3,9 @@ name: issue-scan
 description: |
   Orchestrator skill. Picks N scan perspectives (folders, grep patterns, layers, file groups)
   from the project, then spawns one `work:issue-scanner` subagent per perspective to scan the code
-  against ref-inject references and write findings as issues in `.work/issues/`. The main agent
-  only orchestrates: it creates a scan branch, allocates ID blocks, launches subagents, then
-  aggregates their metadata, updates the indexes, commits, and merges to master.
+  against ref-inject references and return findings as JSON with full issue content. The main agent
+  orchestrates: it creates a scan branch, launches subagents in parallel, receives their findings,
+  writes ISSUE files with sequential IDs, updates the indexes, commits, and merges to master.
   ISSUE_SCAN_AGENTS controls how many perspectives are scanned per invocation (default: 1).
   Trigger when the user says "issue-scan", "scan for issues", "find problems in the code",
   "コードをスキャン", "イシューを探して", or invokes `/work:issue-scan` explicitly.
@@ -15,11 +15,8 @@ description: |
 
 This skill is **orchestration only**. It never reads project source or analyzes code itself —
 that work is delegated to `work:issue-scanner` subagents (one per perspective), each running in its
-own context. The main agent's job is: pick perspectives → allocate ID blocks → launch scanners in
-parallel → aggregate their returned metadata → update indexes → commit → merge.
-
-Keeping analysis out of the main context is the whole point: issue bodies live in files written by
-the subagents and never enter the orchestrator's context.
+own context. The main agent's job is: pick perspectives → launch scanners in parallel → receive
+their findings → write ISSUE files → update indexes → commit → merge.
 
 ---
 
@@ -36,11 +33,11 @@ the subagents and never enter the orchestrator's context.
 
 | Actor | Owns |
 |---|---|
-| **Main agent (this skill)** | branch, perspective selection, ID-block allocation, `_index.yaml` / `_index.archive.yaml` updates, commit, merge |
-| **`work:issue-scanner` subagent** | reading source, receiving references, finding problems, writing `ISSUE-{N}.md` files |
+| **Main agent (this skill)** | branch, perspective selection, writing `ISSUE-{N}.md` files, sequential ID assignment, `_index.yaml` / `_index.archive.yaml` updates, commit, merge |
+| **`work:issue-scanner` subagent** | reading source, receiving references, finding problems, returning findings as JSON |
 
-The subagent does **not** touch the index files and does **not** commit; the main agent does **not**
-read source or analyze code.
+The subagent does **not** write files, does **not** touch index files, and does **not** commit;
+the main agent owns all file I/O and does **not** read source or analyze code.
 
 ---
 
@@ -161,26 +158,50 @@ Selection rules:
 
 #### Process
 
-1. Allocate a non-overlapping ID block to each perspective. With `SLOT = 30`, perspective `i`
-   (0-indexed) gets start ID `START_i = L + 1 + i * SLOT`. Each subagent uses `ISSUE-{START_i}`,
-   `ISSUE-{START_i + 1}`, … for its findings — blocks never overlap, so parallel writes never collide.
-2. [subagent: parallel · await all] For each perspective, spawn a `work:issue-scanner` subagent
+1. [subagent: parallel · await all] For each perspective, spawn a `work:issue-scanner` subagent
    (use the `Agent` tool with `subagent_type: "work:issue-scanner"`). In the prompt, pass:
    - The perspective description (what to scan, in words)
    - Its `scope` label
-   - Its start ID `START_i`
-   - Issue file output path: `{WT_PATH}/.work/issues/` when `AUTO_MERGE`,
-     or `.work/issues/` (relative to main repo cwd) otherwise
-   (return: the compact metadata array `[{id, title, type, priority, tags, scope, perspective}]`,
-   or `[]` with the scanned perspective named)
-3. Await all subagents. Collect every returned metadata array.
+   (return: `[{title, type, priority, tags, scope, perspective, body}]`, or `[]` with the scanned
+   perspective named)
+2. Await all subagents. Collect every returned array.
+
+→ Step 3b
+
+#### Output
+
+- All findings from all subagents (including `body` for each)
+- The set of perspectives actually scanned (including empty ones)
+
+---
+
+### Step 3b: Write ISSUE files with sequential IDs
+
+#### Process
+
+1. Flatten all findings from all subagents into a single ordered list.
+2. Get today's date once:
+   ```bash
+   date +%Y-%m-%d
+   ```
+3. For each finding at 0-indexed position `k`, assign ID `ISSUE-{L + 1 + k}` and write
+   `{issues_dir}/ISSUE-{L + 1 + k}.md` (`{issues_dir}` = `{WT_PATH}/.work/issues/` when
+   `AUTO_MERGE`, otherwise `.work/issues/`):
+   ```
+   # ISSUE-{N}: {title}
+
+   {body}
+   ```
+   (The `body` field from the subagent already contains `**作成日**` and subsequent sections;
+   just prepend the `# ISSUE-{N}: {title}` line and a blank line.)
+4. Record the actual IDs assigned for use in Step 4.
 
 → Step 4
 
 #### Output
 
-- Combined metadata for all created issues (bodies are already on disk — not in context)
-- The set of perspectives actually scanned (including empty ones)
+- `ISSUE-{N}.md` files written to `.work/issues/`
+- Total count `M` of issues written
 
 ---
 
@@ -188,11 +209,11 @@ Selection rules:
 
 #### Process
 
-The index file paths depend on `AUTO_MERGE`:
-- When `AUTO_MERGE`: `{WT_PATH}/.work/issues/_index.yaml` / `_index.archive.yaml`
-- Otherwise: `.work/issues/_index.yaml` / `_index.archive.yaml` (main repo)
+File and index paths depend on `AUTO_MERGE`:
+- When `AUTO_MERGE`: `{WT_PATH}/.work/issues/`
+- Otherwise: `.work/issues/` (relative to main repo cwd)
 
-1. For each returned issue metadata, append to `_index.yaml`'s `issues`:
+1. For each issue written in Step 3b, append to `_index.yaml`'s `issues`:
    ```yaml
    - id: ISSUE-{N}
      title: "{title}"
@@ -203,8 +224,7 @@ The index file paths depend on `AUTO_MERGE`:
      priority: {priority}
      tags: [{tags}]
    ```
-2. Set `_index.yaml`'s `last_id` to `L + N * SLOT` (the whole reserved range is consumed; IDs may be
-   non-contiguous across parallel scans — this is expected and harmless).
+2. Set `_index.yaml`'s `last_id` to `L + M` (where `M` is the total number of issues written).
 3. For each scanned perspective, append to `_index.archive.yaml`'s `scan_records`:
    ```yaml
    - date: {YYYY-MM-DD}
@@ -261,5 +281,5 @@ Mention that issues can be closed with `resolution: wontfix` if no fix is planne
 
 #### Notes
 
-- The main agent never reads project source or issue bodies — only subagent metadata.
-- IDs are intentionally non-contiguous under parallel scanning (each subagent owns a reserved block).
+- The main agent never reads project source — only subagent findings.
+- IDs are sequential (`L+1`, `L+2`, …) across all perspectives combined, with no gaps.
