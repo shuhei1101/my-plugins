@@ -18,8 +18,7 @@ disable-model-invocation: true
 > **命名規則**: 新しいブランチは `{type}/{title}` を使用（`PR{N}/` プレフィックスなし）。
 > 新しいワークツリーは `{repo}-wt-{type}-{title}` を使用します。
 > レガシーブランチは引き続き `PR{N}/{type}/{title}` で記録されており、ワークツリーは `{repo}-wt-PR{N}` です。
-> これらの記録された名前で処理してください — `index.yaml` と `git worktree list` から実際のブランチ/ワークツリーパスを読み取り、
-> `{N}` から再構成しないでください。`{N}` は `index.yaml` で追跡される内部 ID です（
+> これらの記録された名前で処理してください — `index.yaml` と `git worktree list` から実際のブランチ/ワークツリーパスを読み取ってください。
 
 ---
 
@@ -186,7 +185,7 @@ git -C {WORKTREE_PATH} commit -m "chore: close related issues"
 
 ```bash
 python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
-  .work/tasks/index.yaml --id {N}
+  .work/tasks/index.yaml --branch {full-branch-name}
 ```
 
 → ステップ 6 へ

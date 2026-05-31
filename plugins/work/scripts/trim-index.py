@@ -1,116 +1,72 @@
 """
-trim-index — 完了済みブランチエントリを index.yaml から index.archive.yaml に移動する。
+trim-index.py — keep index.yaml small by trimming completed entries.
 
-使い方:
-  python trim-index.py [index_yaml]
+Reads index.yaml, keeps all active (completed: false) entries plus the most
+recent N completed ones, and rewrites the file. Older completed entries are
+dropped (they remain in index.archive.yaml if they were archived).
 
-  index_yaml  index.yaml のパス（デフォルト: .work/tasks/index.yaml）
+Usage:
+    python trim-index.py [index_yaml] [--keep N]
 
-index.yaml を読み込み、`completed: true` のエントリを全て同ディレクトリの
-index.archive.yaml に移動し、アクティブなエントリだけを残して index.yaml を書き直す。
-`last_id` フィールドは完了済みエントリを削除した後も保持されるため、ブランチ採番は継続できる。
+Entries are keyed by `branch`; "most recent" means latest in list order.
 """
 
-from __future__ import annotations
-
-# ── 標準ライブラリ ──────────────────────────────────────────
 import argparse
 import sys
 from pathlib import Path
 
-sys.stdout.reconfigure(encoding="utf-8")
-
-# ── サードパーティ ──────────────────────────────────────────
 try:
-    import yaml  # pip install pyyaml
+    import yaml
 except ImportError:
-    print("エラー: PyYAML がインストールされていません。`pip install pyyaml` を実行してください。", file=sys.stderr)
+    print("Error: PyYAML not installed. Run: pip install pyyaml", file=sys.stderr)
     sys.exit(1)
 
-# ── 定数 ────────────────────────────────────────────────────
 DEFAULT_INDEX = Path(".work/tasks/index.yaml")
-ARCHIVE_NAME = "index.archive.yaml"
-HEADER_COMMENT = "# .work/tasks/index.archive.yaml — Archived (completed) branch entries\n\n"
-
-
-# ── 内部ヘルパ ──────────────────────────────────────────────
-def _load(path: Path) -> dict:
-    """YAML ファイルを読み込んで dict を返す。ファイルが存在しない場合は空 dict を返す。"""
-    if not path.exists():
-        return {}
-    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
 
 def _dump(data: dict) -> str:
     return yaml.dump(data, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
 
-def _header_comment(text: str) -> str:
-    """YAML ファイル先頭のコメントブロックを返す。"""
-    lines = []
-    for line in text.splitlines():
-        if line.startswith("#"):
-            lines.append(line)
-        else:
-            break
-    return "\n".join(lines) + "\n\n" if lines else ""
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
+    parser.add_argument("--keep", type=int, default=20)
+    args = parser.parse_args()
 
-
-# ── main ────────────────────────────────────────────────────
-def main() -> int:
-    args = parse_args()
     index_path = Path(args.index_yaml)
-    archive_path = index_path.parent / ARCHIVE_NAME
-
     if not index_path.exists():
-        print(f"エラー: {index_path} が見つかりません。", file=sys.stderr)
-        return 1
+        print(f"Error: {index_path} not found", file=sys.stderr)
+        sys.exit(1)
 
-    raw = index_path.read_text(encoding="utf-8")
-    data = yaml.safe_load(raw) or {}
+    original = index_path.read_text(encoding="utf-8")
+    data = yaml.safe_load(original) or {}
 
-    branches: list[dict] = data.get("branches", [])
-    last_id: int = data.get("last_id") or (max((p["id"] for p in branches), default=0))
-
+    branches = data.get("branches", [])
     active = [p for p in branches if not p.get("completed", False)]
     done = [p for p in branches if p.get("completed", False)]
 
-    if not done:
-        print("アーカイブ対象なし — 完了済みエントリが見つかりませんでした。")
-        return 0
+    # keep the most recent N completed entries (latest in list order)
+    kept_done = done[-args.keep:] if args.keep > 0 else []
 
-    # アーカイブにマージ（ID 重複はスキップ）
-    archive_data = _load(archive_path)
-    existing: list[dict] = archive_data.get("branches", [])
-    existing_ids = {p["id"] for p in existing}
-    merged = existing + [p for p in done if p["id"] not in existing_ids]
-    merged.sort(key=lambda p: p["id"])
+    # ── merge, preserving order: active first, then kept completed ──
+    merged = active + kept_done
 
-    prefix = HEADER_COMMENT if not archive_path.exists() else ""
-    archive_path.write_text(prefix + _dump({"branches": merged}), encoding="utf-8")
+    # de-dup by branch, keep first occurrence
+    seen = set()
+    deduped = []
+    for p in merged:
+        key = p.get("branch")
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(p)
 
-    # index.yaml を書き直す（ヘッダーコメント + last_id + アクティブエントリのみ保持）
-    comment = _header_comment(raw)
-    index_path.write_text(comment + _dump({"last_id": last_id, "branches": active}), encoding="utf-8")
-
-    print(f"{len(done)} 件の完了済みブランチを {archive_path} にアーカイブしました。")
-    print(f"index.yaml: アクティブ {len(active)} 件、last_id={last_id}")
-    return 0
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    parser.add_argument(
-        "index_yaml",
-        nargs="?",
-        default=str(DEFAULT_INDEX),
-        help=f"index.yaml のパス（デフォルト: {DEFAULT_INDEX}）",
-    )
-    return parser.parse_args()
+    # write back: comment header + branches
+    comment = "".join(l for l in original.splitlines(keepends=True) if l.lstrip().startswith("#"))
+    index_path.write_text(comment + _dump({"branches": deduped}), encoding="utf-8")
+    print(f"index.yaml: kept {len(active)} active + {len(kept_done)} completed")
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

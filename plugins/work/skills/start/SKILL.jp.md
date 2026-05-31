@@ -103,7 +103,6 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
-  --id {N} \
   --branch "{full-branch-name}" \
   --title "{日本語タイトル}" \
   --type {type} \
@@ -220,7 +219,6 @@ Step 5 での選択に応じて、以下のいずれかを実行してくださ�
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   {wt} \
-  --id {N} \
   --branch {full-branch-name} \
   --ja-title "{日本語タイトル}" \
   --title {title} \
@@ -233,7 +231,6 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
   {wt} \
-  --id {N} \
   --branch {full-branch-name} \
   --ja-title "{日本語タイトル}" \
   --task-dir {existing_folder_name} \
