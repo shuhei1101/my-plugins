@@ -14,7 +14,7 @@
     ↓ type (ResourceRepository)
 本番: createDrizzleResourceRepository  ←→  ローカル: createYamlResourceRepository
     ↓                                              ↓
-Supabase (Drizzle)                          dev-data/resources.yaml
+Supabase (Drizzle)                          data/dev/resources.yaml
 ```
 
 - サービス層は `ResourceRepository` 型にしか依存しない
@@ -36,7 +36,7 @@ USE_YAML_DB=true
 
 ```
 # .gitignore に追加
-dev-data/
+data/dev/
 ```
 
 ---
@@ -50,7 +50,7 @@ lib/
     ├── index.ts     # getResourceRepository（ファクトリ）
     ├── drizzle.ts   # createDrizzleResourceRepository
     └── yaml.ts      # createYamlResourceRepository
-dev-data/
+data/dev/
 └── resources.yaml   # ローカル開発データ（gitignore）
 ```
 
@@ -149,7 +149,7 @@ import type { Resource, ResourceInsert, ResourceUpdate } from "@/drizzle/schema"
 import type { ResourceRepository } from "./types"
 
 export const createYamlResourceRepository = (): ResourceRepository => {
-  const filePath = join(process.cwd(), "dev-data", "resources.yaml")
+  const filePath = join(process.cwd(), "data", "dev", "resources.yaml")
 
   const load = (): Resource[] => {
     if (!existsSync(filePath)) return []
@@ -157,7 +157,7 @@ export const createYamlResourceRepository = (): ResourceRepository => {
   }
 
   const save = (records: Resource[]) => {
-    mkdirSync(join(process.cwd(), "dev-data"), { recursive: true })
+    mkdirSync(join(process.cwd(), "data", "dev"), { recursive: true })
     writeFileSync(filePath, stringify(records))
   }
 
@@ -239,7 +239,7 @@ export const createResource = async (record: ResourceInsert) => {
 ## YAML データファイルの例
 
 ```yaml
-# dev-data/resources.yaml
+# data/dev/resources.yaml
 - id: "01935abc-1234-7000-a000-000000000001"
   name: テストリソース A
   isPublic: false
@@ -273,7 +273,7 @@ export const createResource = async (record: ResourceInsert) => {
 - `ResourceRepository` は `type` で定義する（`interface` / クラスは使わない）
 - ファクトリ関数名は `create{Store}{Resource}Repository` 形式
 - `createYamlResourceRepository` は `USE_YAML_DB === "true"` のときのみ呼ばれる
-- `dev-data/` は必ず `.gitignore` に追加する（機密データ流出防止）
+- `data/dev/` は必ず `.gitignore` に追加する（機密データ流出防止）
 - `getResourceRepository` は Server Component / Route Handler からのみ呼ぶ
 - YAML の I/O は同期（`readFileSync` / `writeFileSync`）で可。ローカル開発専用のため
 - 本番ビルドに YAML 依存を混入させない（`USE_YAML_DB` のガードを守る）

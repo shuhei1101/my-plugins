@@ -23,7 +23,7 @@ lib/
     ├── index.ts     # getResourceRepository（切り替えポイント）
     ├── drizzle.ts   # createDrizzleResourceRepository
     └── yaml.ts      # createYamlResourceRepository
-dev-data/            # YAML データ（gitignore）
+data/dev/            # YAML データ（gitignore）
 ```
 
 ## 切り替えポイント
@@ -44,7 +44,7 @@ export const getResourceRepository = (): ResourceRepository =>
 
 ## 注意事項
 
-- `dev-data/` は必ず `.gitignore` に追加する
+- `data/dev/` は必ず `.gitignore` に追加する
 - YAML 実装は同期 I/O（ローカル専用のため許容）
 - `service.ts` は `getResourceRepository()` 経由で使い、`db` を直接 import しない
 
@@ -56,3 +56,4 @@ export const getResourceRepository = (): ResourceRepository =>
 |---|---|---|
 | 1 | 2026-06-01 | 初版作成 |
 | 2 | 〃 | クラス/interface 廃止・type + ファクトリ関数スタイルに変更 |
+| 3 | 〃 | データ置き場を `dev-data/` → `data/dev/` に変更 |
