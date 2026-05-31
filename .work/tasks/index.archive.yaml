@@ -1057,3 +1057,49 @@ branches:
     各フォルダの構成定義リファレンス追加。.work/tasks/ タスクフォルダ名を日本語化。
   task: 260531_workテンプレートのref-inject化
   completed: true
+- branch: feat/issue-scan-auto-loop
+  created: '2026-05-31'
+  title: イシュースキャン自動ループ対応
+  type: feat
+  summary: issue-scanスキルに自動ブランチ・マージとサブエージェント並列制御を追加
+  task: 260531_issue-scan-auto-loop
+  completed: true
+- branch: refactor/notes-folder-categorize
+  title: notesカテゴリフォルダ分割
+  type: refactor
+  summary: .work/notes/ を _index.md のカテゴリごとに日本語名サブフォルダへ分割。各ノート移動・_index.md 追従・旧スタイルノートの
+    frontmatter 履歴除去
+  task: 260531_notes-folder-categorize
+  completed: true
+- branch: refactor/task-folder-ja-naming
+  created: '2026-05-31'
+  title: タスクフォルダ日本語名化
+  type: refactor
+  summary: .work/tasks/{YYMMDD}_{title} のフォルダ名を英語kebabから日本語へ変更。既存フォルダのリネーム + work:start
+    SKILL/ワークディレクトリ構成 リファレンスの記述更新（setup-task.py は廃止済みのため対象外）
+  task: 260531_task-folder-ja-naming
+  completed: true
+- id: 8
+  branch: fix/issue-scan-use-worktree
+  title: issue-scan ワークツリー対応
+  type: fix
+  tags: []
+  summary: issue-scan スキャンブランチを git checkout -b ではなく git worktree add で作成するよう修正
+  task: 260531_issue-scan-use-worktree
+  completed: true
+- id: 10
+  branch: refactor/issue-doc-sections
+  title: イシューファイル修正案セクション細分化と横展開名称変更
+  type: refactor
+  tags: []
+  summary: 修正案を暫定対応・恒久対策・再発防止に分割、水平展開を横展開に改名
+  task: 260531_イシューファイル修正案セクション細分化
+  completed: true
+- id: 11
+  branch: refactor/rename-qa-review-to-qa-wizard
+  title: qa-reviewスキルをqa-wizardにリネーム
+  type: refactor
+  tags: []
+  summary: work プラグインの qa-review スキルをより適切な名称 qa-wizard にリネームする
+  task: 260531_rename-qa-review-to-qa-wizard
+  completed: true

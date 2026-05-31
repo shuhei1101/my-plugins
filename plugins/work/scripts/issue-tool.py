@@ -12,7 +12,7 @@ issue-tool — workspace の `.work/issues/` 操作用 CLI。
 
 `.work/issues/` 配下の YAML 読み書きをこのスクリプト経由に集約することで、
 Claude Code のコンテキストに YAML ファイルを丸ごと読み込ませずに済み、
-issue-save と同じフォーマットで一貫した書き込みができる。
+イシュー記述ルール（work-dir/イシュー.md）に沿った一貫したフォーマットで書き込める。
 """
 
 from __future__ import annotations
