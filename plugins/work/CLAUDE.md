@@ -63,7 +63,7 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.54.0 | 2026-05-31 | Remove `plugins/work/templates/` — template content inlined into `setup.py` and `setup-task.py`; injection rule updated from `templates/**` to `scripts/setup-task.py` |
+| 1 | 2.54.0 | 2026-05-31 | Remove `plugins/work/templates/` and `setup-task.py`; move templates/structure defs into `references/work-dir/` (`タスクドキュメント` / `タスクインデックス` / `イシュー` / `ワークディレクトリ構成`), injected by ref-inject on the matching `.work/` path. `work:start` authors the branch doc from the injected template; branch doc filename gains `.branch.md`. Rename `ドットワークディレクトリ構成`→`ワークディレクトリ構成`; remove `TODOテンプレート同期` |
 | 2 | 2.53.1 | 2026-05-31 | Split `references/` into category subfolders: `notes/`, `work-dir/`, `skill-sync/` |
 | 2 | 2.53.0 | 2026-05-31 | Redefine notes as a current spec sheet (snapshot; no history in the body, `## 変更履歴` table only, no frontmatter); add `ノート記述内容ルール` reference; merge `.work/specs` into notes and remove the folder |
 | 2 | 2.52.0 | 2026-05-31 | Branch doc filename uses Japanese title (`{YYMMDD}-{日本語タイトル}.md`); add `branch` field to `index.yaml` |

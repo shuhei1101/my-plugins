@@ -15,8 +15,9 @@ This prevents task documents from being created in the main repository.
 > **Naming**: branches use `{type}/{title}` by default. If `WORK_BRANCH_AUTHOR` is set, the author
 > segment is inserted: `{type}/{author}/{title}` (e.g. `feat/nishikawa/test-update`).
 > The worktree mirrors the full branch name with slashes replaced by hyphens: `{repo}-wt-{branch-hyphenated}`.
-> The branch document filename is `{YYMMDD}-{日本語タイトル}.md` — the Japanese title collected in Step 2
-> (e.g. `260531-ブランチ文書ファイル名変更.md`). The git branch name is recorded inside the document header.
+> The branch document filename is `{YYMMDD}-{日本語タイトル}.branch.md` — the Japanese title collected in Step 2
+> (e.g. `260531-ブランチ文書ファイル名変更.branch.md`). The `.branch.md` extension marks it as the branch
+> document (the task folder may also hold user files). The git branch name is recorded inside the document header.
 > An internal numeric ID is still tracked in `index.yaml` for archive metadata, but it does not appear in branch names, worktree paths, or branch document filenames.
 
 ---
@@ -178,15 +179,16 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - **Add to existing folder**: an existing folder covers the same goal or feature area, and this branch fits naturally as part of it
      - Examples: splitting a feature across multiple branches, a follow-up fix, related refactoring
    - **Create new folder**: no existing folder is closely related, or `.work/tasks/` is empty
-3. Confirm the argument to pass to the next step:
-   - Adding to existing → use `--task-dir {folder_name}`
-   - Creating new → use `--date {YYMMDD} --title {title}`
+3. Decide the branch-document path inside the worktree `{wt}`
+   (`{wt}` = `../$(basename $(pwd))-wt-{branch-hyphenated}`, slashes in the full branch name → hyphens):
+   - New folder: `{wt}/.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.branch.md`
+   - Existing folder: `{wt}/.work/tasks/{existing_folder_name}/{YYMMDD}-{日本語タイトル}.branch.md`
 
 → Proceed to Step 6
 
 #### Output
 
-- Task folder strategy (new or existing) and the arguments to use are confirmed
+- Task folder strategy (new or existing) and the full branch-document path are confirmed
 
 #### Notes
 
@@ -196,7 +198,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### Step 6: Create the branch document (inside worktree)
+### Step 6: Create and fill in the branch document (inside worktree)
 
 #### Condition
 
@@ -204,46 +206,35 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Process
 
-Run one of the following depending on the choice in Step 5. The `--branch` argument is the full branch
-name (e.g. `feat/nishikawa/test-update` or `feat/test-update`). The `--ja-title` argument is the
-Japanese title collected in Step 2; the script uses it as the file name stem
-(e.g. `ブランチ文書ファイル名変更` on 260531 → `260531-ブランチ文書ファイル名変更.md`).
-The worktree path `{wt}` is `../$(basename $(pwd))-wt-{branch-hyphenated}` (slashes in the full branch name → hyphens).
+1. `Write` the branch document at the path decided in Step 5
+   (`{YYMMDD}-{日本語タイトル}.branch.md`).
+2. The **template is auto-injected** by the ref-inject hook the moment you write a `.branch.md`
+   file under `.work/tasks/` (your first write is blocked once and the full template +
+   section fill-in guide from `references/work-dir/タスクドキュメント.md` appears). Author the
+   document from that injected template — there is **no script** and no template file to copy.
+3. Fill in the real plan as you write:
+   - H1 = `{日本語タイトル}`; `> ブランチ:` = the full git branch name.
+   - `## 概要` (incl. `### 実施条件` — `即時実施可` or `「{other branch}」が完了してから`,
+     mirroring the triggering branch's `## 次ブランチ候補` row).
+   - `## 作業内容` — keep the mandatory rows (record QA / update note); add the implementation tasks.
+   - `## 変更内容` / `## テスト` — leave placeholder rows; fill in during implementation.
+   - `## QA` — open questions from Step 2 (Step 7 appends them).
+   - `## 参考ドキュメント` — leave empty; the note path is added in the final commit (Step 9).
+   - `## 関連イシュー` — issues this branch resolves; **delete the heading + table if none**.
+   - `## 関連ブランチ` / `## 次ブランチ候補` — fill from this session, or leave placeholders.
 
-**New task folder:**
-
-```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
-  {wt} \
-  --id {N} \
-  --branch {full-branch-name} \
-  --ja-title "{日本語タイトル}" \
-  --title {title} \
-  --date {YYMMDD} \
-  --plugin-root ${CLAUDE_PLUGIN_ROOT}
-```
-
-**Add to existing task folder:**
-
-```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
-  {wt} \
-  --id {N} \
-  --branch {full-branch-name} \
-  --ja-title "{日本語タイトル}" \
-  --task-dir {existing_folder_name} \
-  --plugin-root ${CLAUDE_PLUGIN_ROOT}
-```
+The injected `タスクドキュメント.md` reference is the single source of truth for the section
+structure and rules — follow it.
 
 → Proceed to Step 7
 
 #### Output
 
-- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.md` created
+- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.branch.md` created and filled with the plan
 
 ---
 
-### Step 7: Fill in the branch document with the work plan (inside worktree)
+### Step 7: Record open questions in the `## QA` section (inside worktree)
 
 #### Condition
 
@@ -251,75 +242,19 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Process
 
-Open the created `{YYMMDD}-{日本語タイトル}.md` in the worktree and replace the template placeholder content
-with the actual plan. The document holds every section for this branch — TODO, variations, QA, and
-references — all in one file.
-
-The **H1 title** and **ブランチ行** are pre-filled by the script from `--ja-title` and `--branch`.
-Verify they are correct; do not overwrite them.
-
-**`## 概要`** — write the goal / background, plus the `### 実施条件` sub-section:
-
-- `### 実施条件`: when this branch can be started. `即時実施可`, or `「{other branch name}」が完了してから`.
-  Mirrors the `実施条件` column from the triggering branch's `## 次ブランチ候補` row.
-
-**`## 作業内容`** — task checklist. The following rows are mandatory and must not be removed or skipped:
-
-| # | 完了 | 作業内容 |
-|---|---|---|
-| 1 | - | Record unresolved questions in `## QA` (this same document) |
-| 2 | - | (Implementation tasks: replace with branch-specific work) |
-| 3 | - | Update the note document in `.work/notes/` |
-
-**`## 変更内容`** — the implementation files this branch adds or modifies (excluding tests). Fill in
-once implementation starts — every file that lands in a commit goes here:
-
-| # | ファイル名 | 新規/編集 | 内容 | 補足 |
-
-**`## テスト`** — manual test / smoke-test execution log. Record each scenario checked, the actual
-result observed, and the verdict (OK / NG). Leave a single placeholder row if no tests were run.
-
-**`## QA`** — record open questions from Step 2 as QA-XXX entries here (Step 8 below appends them).
-
-**`## 参考ドキュメント`** — links to related notes. Leave empty for now; the note path is added in Step 10 (final commit).
-
-**`## 関連イシュー`** — list `.work/issues/ISSUE-{N}` entries this branch resolves
-(table format: `| # | ID | 概要 | resolution |`). `resolution` is `resolved` or `wontfix`.
-**If there are no related issues**: delete the `## 関連イシュー` heading and table entirely.
-
-**`## 関連ブランチ`** — list branches directly related to this one (predecessors, split siblings,
-follow-ups) (table format: `| # | ブランチ | 概要 |`). Leave the placeholder row if there are none.
-
-**`## 次ブランチ候補`** — list follow-up branches mentioned during this session
-(columns: `#` / title / summary / 実施条件):
-- `即時実施可` (or `-`) when the candidate has no dependency
-- `「{other candidate title}」が完了したら` when the candidate depends on another candidate in the same table
+1. Append any open questions from Step 2 to the `## QA` section of the branch document as QA-XXX entries
+2. Skip if there are no open questions
 
 → Proceed to Step 8
 
 ---
 
-### Step 8: Record open questions in the `## QA` section (inside worktree)
-
-#### Condition
-
-- Step 7 complete
-
-#### Process
-
-1. Append any open questions from Step 2 to the `## QA` section of the branch document as QA-XXX entries
-2. Skip if there are no open questions
-
-→ Proceed to Step 9
-
----
-
-### Step 9: First commit — create branch document, then start implementation
+### Step 8: First commit — create branch document, then start implementation
 
 #### Process
 
 1. Commit **only the branch document** inside the worktree (branch: `{branch}`)
-   - Do **not** include notes at this stage — notes are committed in the final Step 10
+   - Do **not** include notes at this stage — notes are committed in the final Step 9
 2. Report what was created: branch name, worktree path, branch document path
 3. Start implementation:
    - **If QA entries exist** → ask the user for confirmation before starting
@@ -342,7 +277,7 @@ follow-ups) (table format: `| # | ブランチ | 概要 |`). Leave the placehold
 
 This commit is always the **first** commit of the branch.
 Implementation commits follow in the middle.
-The final commit (Step 10) closes the branch with notes and branch document updates.
+The final commit (Step 9) closes the branch with notes and branch document updates.
 
 ##### Commit message language
 
@@ -365,7 +300,7 @@ use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no
 
 ---
 
-### Step 10: Final commit — update notes and branch document
+### Step 9: Final commit — update notes and branch document
 
 #### Condition
 

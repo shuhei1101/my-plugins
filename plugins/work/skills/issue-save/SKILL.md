@@ -80,29 +80,11 @@ Called by `issue-scan` and `issue-create` with the issue information to record.
 
 #### Process
 
-1. Create `.work/issues/ISSUE-{N}.md` with this structure:
-
-   ```markdown
-   # {ISSUE-N}: {title}
-
-   **Type**: {type}
-   **Priority**: {priority}
-   **Created**: {YYYY-MM-DD}
-   **Tags**: [{tags}]
-   **Scan scope**: {scope}   ← omit this line if no scope was provided
-
-   ## Problem
-
-   {problem description}
-
-   ## User's words
-
-   {user's words}   ← omit this section if not provided
-
-   ## Suggested fix
-
-   {suggested fix}   ← omit this section if not provided
-   ```
+1. `Write` `.work/issues/ISSUE-{N}.md`. The issue-file structure is **auto-injected** from
+   `references/work-dir/イシュー.md` the moment you write a file under `.work/issues/` (your first
+   write is blocked once and the template appears). Author the file from that injected template —
+   fill in the fields received from the caller; omit the `Scan scope` line / `User's words` /
+   `Suggested fix` sections when their data was not provided.
 
 → Proceed to Step 4
 
