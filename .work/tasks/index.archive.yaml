@@ -1110,3 +1110,10 @@ branches:
   summary: 10件のJPミラーファイルに標準ヘッダーコメントを追加・修正する
   task: 260531_jp-mirror-header-comment
   completed: true
+- branch: fix/skill-name-prefix-unification
+  created: '2026-05-31'
+  title: スキル名プレフィックス統一
+  type: fix
+  summary: dev-kit・work・ref-injectの各スキルのnameフィールドにプラグインプレフィックスを付与し命名規則を統一する
+  task: 260531_スキル名プレフィックス統一
+  completed: true
