@@ -1,18 +1,22 @@
 """
 setup.py — workspace セットアップスクリプト
 
-カレントディレクトリに .work/ ドキュメント構造を展開する。
-既存ファイルはスキップする（上書きしない）。
+カレントディレクトリに .work/ ドキュメント構造をブートストラップする。
+空ディレクトリと最小スケルトンを生成する（既存ファイルはスキップし、上書きしない）。
+テンプレート／構成定義の本体は references/work-dir/ にあり、ref-inject が該当パスの
+作成・編集時に注入する。
 
 使い方:
   python setup.py
 """
 
-# ── stdlib ──────────────────────────────────────────────────
+from __future__ import annotations
+
+# ── 標準ライブラリ ──────────────────────────────────────────
 import sys
 from pathlib import Path
 
-# ── constants ───────────────────────────────────────────────
+# ── 定数 ────────────────────────────────────────────────────
 TARGET_DIR = Path.cwd() / ".work"
 
 _TASKS_GITIGNORE = "index.yaml\n"
@@ -59,30 +63,32 @@ closed_issues: []
 scan_records: []
 """
 
-# ── private helpers ─────────────────────────────────────────
+
+# ── 内部ヘルパ ──────────────────────────────────────────────
 def _write_if_new(path: Path, content: str) -> None:
+    """ファイルが無ければ生成する。既存ならスキップ（上書きしない）。"""
     if path.exists():
-        print(f"  skip (exists): {path.relative_to(TARGET_DIR)}")
+        print(f"  スキップ（既存）: {path.relative_to(TARGET_DIR)}")
     else:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
-        print(f"  created:       {path.relative_to(TARGET_DIR)}")
+        print(f"  作成:       {path.relative_to(TARGET_DIR)}")
 
 
 # ── main ────────────────────────────────────────────────────
-def main() -> None:
-    """メイン処理。.work/ をカレントディレクトリに展開する。"""
+def main() -> int:
+    """メイン処理。.work/ をカレントディレクトリにブートストラップする。"""
     TARGET_DIR.mkdir(exist_ok=True)
-    print(f"Setting up: {TARGET_DIR}")
+    print(f"セットアップ中: {TARGET_DIR}")
 
     (TARGET_DIR / "tasks").mkdir(exist_ok=True)
-    print(f"  created:       tasks/")
+    print("  作成:       tasks/")
     _write_if_new(TARGET_DIR / "tasks" / ".gitignore", _TASKS_GITIGNORE)
     _write_if_new(TARGET_DIR / "tasks" / "index.yaml", _TASKS_INDEX_YAML)
     _write_if_new(TARGET_DIR / "tasks" / "index.archive.yaml", _TASKS_INDEX_ARCHIVE_YAML)
 
     (TARGET_DIR / "notes").mkdir(exist_ok=True)
-    print(f"  created:       notes/")
+    print("  作成:       notes/")
 
     (TARGET_DIR / "issues").mkdir(exist_ok=True)
     _write_if_new(TARGET_DIR / "issues" / ".gitignore", _ISSUES_GITIGNORE)
@@ -91,13 +97,17 @@ def main() -> None:
     # _index.yaml は issues/.gitignore で git 管理外のため、テンプレートに置けない → ここで生成する
     index_yaml = TARGET_DIR / "issues" / "_index.yaml"
     if not index_yaml.exists():
-        index_yaml.write_text("# Managed by issue-scan / issue-create. Git-ignored (do not commit).\nlast_id: 0\nissues: []\n")
-        print(f"  created:       issues/_index.yaml")
+        index_yaml.write_text(
+            "# issue-scan / issue-create が管理する。Git 管理外（コミットしない）。\nlast_id: 0\nissues: []\n",
+            encoding="utf-8",
+        )
+        print("  作成:       issues/_index.yaml")
     else:
-        print(f"  skip (exists): issues/_index.yaml")
+        print("  スキップ（既存）: issues/_index.yaml")
 
-    print(f"\nSetup complete: {TARGET_DIR}")
+    print(f"\nセットアップ完了: {TARGET_DIR}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

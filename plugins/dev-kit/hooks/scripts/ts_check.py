@@ -16,7 +16,7 @@ import pathlib
 import subprocess
 import sys
 
-# ── private helpers ────────────────────────────────────────────
+# ── 内部ヘルパ ────────────────────────────────────────────────
 
 
 def _eprint(msg: str) -> None:
@@ -37,7 +37,7 @@ def _find_tsconfig(start: pathlib.Path) -> pathlib.Path | None:
     return None
 
 
-# ── main ───────────────────────────────────────────────────────
+# ── main ──────────────────────────────────────────────────────
 
 
 def main() -> int:
