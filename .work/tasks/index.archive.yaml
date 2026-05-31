@@ -1103,3 +1103,10 @@ branches:
   summary: work プラグインの qa-review スキルをより適切な名称 qa-wizard にリネームする
   task: 260531_rename-qa-review-to-qa-wizard
   completed: true
+- branch: fix/missing-jp-mirrors
+  created: '2026-05-31'
+  title: JPミラー不足・フォーマット乖離を修正
+  type: fix
+  summary: 'ISSUE-062: 7件のJPミラー新規作成、ISSUE-065: git-guard.jp.md構造修正'
+  task: 260531_missing-jp-mirrors
+  completed: true
