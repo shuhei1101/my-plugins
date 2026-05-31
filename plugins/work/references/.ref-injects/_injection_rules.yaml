@@ -7,33 +7,33 @@ rules:
   # ---- Stop hook prompts: stop.md と stop-no-merge.md は対称な組として管理 ----
   - pattern: "plugins/work/hooks/prompts/{stop,stop-no-merge}{.jp,}.md"
     required:
-      - ストッププロンプト同期.md
+      - skill-sync/ストッププロンプト同期.md
 
   # ---- Merge skill: SKILL.md と仕様書のステップ番号が一致していること ----
   - pattern: "plugins/work/skills/merge/SKILL{.jp,}.md"
     required:
-      - マージスキル同期.md
+      - skill-sync/マージスキル同期.md
 
   # ---- work-start / worktree-create: インターフェースの整合性 ----
   - pattern: "plugins/work/skills/{start,worktree-create,vscode-workspace-sync}/SKILL{.jp,}.md"
     required:
-      - スタートスキル同期.md
+      - skill-sync/スタートスキル同期.md
 
   # ---- TODO テンプレート: work-start SKILL.md のステップ構成と一致させる ----
   - pattern: "plugins/work/templates/**"
     required:
-      - TODOテンプレート同期.md
+      - skill-sync/TODOテンプレート同期.md
   - pattern: "plugins/work/skills/{start,pr-handoff}/SKILL{.jp,}.md"
     required:
-      - TODOテンプレート同期.md
+      - skill-sync/TODOテンプレート同期.md
 
   # ---- .work/ ディレクトリ: 構成・規約（コミット分離ルール含む） ----
   - pattern: ".work/**"
     required:
-      - ドットワークディレクトリ構成.md
+      - work-dir/ドットワークディレクトリ構成.md
 
   # ---- notes/ ファイル命名・_index.md 管理・記述内容ルール ----
   - pattern: ".work/notes/**"
     required:
-      - ノート命名規則.md
-      - ノート記述内容ルール.md
+      - notes/ノート命名規則.md
+      - notes/ノート記述内容ルール.md
