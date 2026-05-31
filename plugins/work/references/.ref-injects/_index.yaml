@@ -17,7 +17,10 @@ references:
     description: Sync rule for work TODO templates and work-start SKILL.md. The section structure in templates must match the fill-in guidance in work-start SKILL.md Step 7.
 
   - path: work-dot-work-dir.md
-    description: Guide for editing files under .work/ — directory structure, branch document sections, notes lifecycle, and commit conventions (keep .work/ changes in a separate commit from implementation code).
+    description: Guide for editing files under .work/ — directory structure, branch document sections, the notes spec-sheet role, and commit conventions (keep .work/ changes in a separate commit from implementation code).
 
   - path: notes-naming-rules.md
     description: Naming and index rules for .work/notes/ files. File names and H1 titles must be in Japanese (technical identifiers stay as-is). Always update _index.md in the same commit when creating, renaming, or deleting a note.
+
+  - path: notes-content-rules.md
+    description: What to write in a .work/notes/ note, plus the fixed note template. A note is a current spec sheet (snapshot) — write only the present state, no history/rationale in the body; record change only in the trailing 変更履歴 table. No YAML frontmatter.

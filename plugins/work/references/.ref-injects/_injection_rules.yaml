@@ -32,7 +32,8 @@ rules:
     required:
       - work-dot-work-dir.md
 
-  # ---- notes/ ファイル命名・_index.md 管理 ----
+  # ---- notes/ ファイル命名・_index.md 管理・記述内容ルール ----
   - pattern: ".work/notes/**"
     required:
       - notes-naming-rules.md
+      - notes-content-rules.md
