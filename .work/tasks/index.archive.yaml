@@ -1044,3 +1044,9 @@ branches:
   summary: マークダウンテーブルの「#」カラムを「No」に変更し、Noカラムの省略条件ガイドラインを追加
   task: 260531_markdown-table-no-column
   completed: true
+- branch: refactor/index-yaml-schema-overhaul
+  title: index.yaml スキーマ刷新
+  type: refactor
+  summary: ブランチインデックスから id/last_id/tags を撤廃し branch を識別キーに統一。index-tool/関連スキル/データを追従移行
+  task: 260531_index-yaml-schema-overhaul
+  completed: true
