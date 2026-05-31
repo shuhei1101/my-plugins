@@ -219,3 +219,32 @@ H1 はそのブランチ作業を表す日本語タイトルを書くプレー�
 ### 変更ファイル
 
 - `plugins/work/templates/.work/tasks/yymmdd_xxx/yymmdd-日本語タイトル.md`: テスト表の列を更新
+
+## branch-index-cleanup スキル — 現行仕様
+
+git ブランチと `index.yaml` / `index.archive.yaml` の乖離を整理するワークフロー。`git branch` に存在し両 index に未登録のブランチを「未登録ブランチ」として収集し、A/B/C に分類して処置する。
+
+| 分類 | 意味 | 処置 |
+|---|---|---|
+| A | 完了済み・不要 | ブランチ削除のみ |
+| B | 完了済み・記録したい | `index.archive.yaml` に追記 → ブランチ削除 |
+| C | 作業中・継続 | `index.yaml` に追記（`completed: false`） |
+
+- B はブランチ名（例 `PR42/feat/some-feature`）から `id` / `title` / `type` を自動推定し（`summary` は空欄）、ユーザーが確認・修正できるインタラクティブフロー。
+
+## merge フロー — index archive の現行仕様
+
+| ファイル | git 管理 | 存在場所 |
+|---|---|---|
+| `index.yaml` | gitignore（非追跡） | メインリポジトリのみ |
+| `index.archive.yaml` | 追跡済み | メインリポジトリ・worktree 双方 |
+
+- archive は `completed: true` のエントリのみを移動するため、merge では先に `set-completed` で `true` をセットする。
+- archive コマンドはメインリポジトリの `index.yaml` を読み、worktree の `index.archive.yaml` に書き込む。worktree でコミットし `--no-ff` マージで master に取り込む。
+- `python index-tool.py set-completed [index_yaml] --id N` で対象エントリの `completed` を `true` に更新して上書き保存（対象が無ければエラー終了）。
+
+## 変更履歴
+
+| # | 日付 | 変更内容 | 関連タスク |
+|---|---|---|---|
+| 1 | 260531 | branch-index-cleanup / merge archive フローの現行仕様を specs から追記 | 260531_notes-spec-and-ref-inject |

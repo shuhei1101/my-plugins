@@ -1148,3 +1148,11 @@ branches:
   summary: Step3のスキップ分岐を削除し、master取り込みを常に実行するよう強制
   task: 260531_マージスキルmaster取り込み必須化
   completed: true
+- id: 252
+  branch: refactor/notes-spec-and-ref-inject
+  title: ノート仕様書化とフォルダ構成REF-inject移行
+  type: refactor
+  tags: []
+  summary: specsをnotesへ統合し廃止、references/notesをカテゴリフォルダ化、ノートを現在仕様書の意味に再定義、templates廃止しフォルダ構成をREF-injectで定義してsetup/startスキルを改修
+  task: 260531_ノート仕様書化とフォルダ構成REF-inject移行
+  completed: true

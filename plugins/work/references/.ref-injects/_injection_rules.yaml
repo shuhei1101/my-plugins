@@ -32,7 +32,8 @@ rules:
     required:
       - ドットワークディレクトリ構成.md
 
-  # ---- notes/ ファイル命名・_index.md 管理 ----
+  # ---- notes/ ファイル命名・_index.md 管理・記述内容ルール ----
   - pattern: ".work/notes/**"
     required:
       - ノート命名規則.md
+      - ノート記述内容ルール.md

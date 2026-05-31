@@ -73,3 +73,20 @@ def emit_block_reason(prompt_path: Path) -> None: ...
 - `statusline-python-quote-nesting`: インライン Python の引用符ネスト破綻
 - `premature-cross-plugin-centralization`: プラグイン間早期共通化禁止
 - `ref-inject-overbuilt-script-and-hook`: 消費者不在で機構を作るな
+
+## Stop フック（`stop.py`）— 現行仕様
+
+応答完了直前に発火し、進行中ブランチに対して以下を確認させる。
+
+- 作業内容テーブルの更新（完了した作業の「完了」列を「済」にする）
+- QA に未解決（保留中）のエントリが残っていないかの確認
+
+全チェックが充足した場合にのみ、`/work:merge` の実行を**提案するだけ**にする（自動実行しない）。
+
+ループ防止: 入力 JSON の `stop_hook_active` が真のときは何もせず終了する（これがないと「Stop → block → 再開 → Stop」を繰り返す）。
+
+## 変更履歴
+
+| # | 日付 | 変更内容 | 関連タスク |
+|---|---|---|---|
+| 1 | 260531 | Stop フックの現行仕様を specs から追記 | 260531_notes-spec-and-ref-inject |

@@ -281,7 +281,7 @@ result observed, and the verdict (OK / NG). Leave a single placeholder row if no
 
 **`## QA`** — record open questions from Step 2 as QA-XXX entries here (Step 8 below appends them).
 
-**`## 参考ドキュメント`** — links to related notes / specs. Leave empty for now; the note path is added in Step 10 (final commit).
+**`## 参考ドキュメント`** — links to related notes. Leave empty for now; the note path is added in Step 10 (final commit).
 
 **`## 関連イシュー`** — list `.work/issues/ISSUE-{N}` entries this branch resolves
 (table format: `| # | ID | 概要 | resolution |`). `resolution` is `resolved` or `wontfix`.
@@ -374,8 +374,8 @@ use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no
 #### Process
 
 1. Check `.work/notes/` inside the worktree for a related note
-2. If found → update the relevant sections to reflect this branch's changes
-3. If not found → create a new note using the template at `${CLAUDE_PLUGIN_ROOT}/templates/note.md`
+2. If found → update it to reflect the current state (a note is a **current spec sheet** — overwrite stale text, don't append history)
+3. If not found → create a new note following `ノート記述内容ルール.md` (auto-injected when you edit a file under `.work/notes/`): present state only, no YAML frontmatter, fixed template ending in a `## 変更履歴` table
    - The note H1 title must be written **entirely in Japanese** (e.g. `# 機能名 — 一行説明`)
    - Technical identifiers (plugin names, command names, file paths) may remain in their original form
 4. Add a link to the note in the branch document's `## 参考ドキュメント` section
