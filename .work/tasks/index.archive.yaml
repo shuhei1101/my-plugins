@@ -1123,4 +1123,10 @@ branches:
   type: fix
   summary: dev-kit・work・ref-injectの各スキルのnameフィールドにプラグインプレフィックスを付与し命名規則を統一する
   task: 260531_スキル名プレフィックス統一
+- branch: feat/setup-wizard-skill
+  created: '2026-05-31'
+  title: 全プラグインへのセットアップウィザードスキル実装
+  type: feat
+  summary: 全4プラグインに必須の setup-wizard スキルを追加する
+  task: 260531_setup-wizard-skill
   completed: true
