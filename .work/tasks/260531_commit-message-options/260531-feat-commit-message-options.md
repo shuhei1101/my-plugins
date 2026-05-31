@@ -26,6 +26,9 @@
 | 8 | 済 | `plugins/work/skills/plugin-config/SKILL.jp.md` を同期 |
 | 9 | 済 | `plugins/work/.claude-plugin/plugin.json` のバージョンを 2.51.0 に更新 |
 | 10 | 済 | ルール / CLAUDE.md を更新する（変更なし） |
+| 11 | 済 | ブランチ文書テンプレートの `## テスト` 列をテスト実施結果形式に変更 |
+| 12 | 済 | `plugins/work/skills/start/SKILL.md` の `## テスト` 説明を更新 |
+| 13 | 済 | `plugins/work/skills/start/SKILL.jp.md` を同期 |
 
 ## 変更内容
 
@@ -38,12 +41,17 @@
 | 5 | `plugins/work/skills/plugin-config/SKILL.md` | 編集 | WORK_COMMIT_TYPE をトグル一覧に追加 | - |
 | 6 | `plugins/work/skills/plugin-config/SKILL.jp.md` | 編集 | 上記の JP ミラー | - |
 | 7 | `plugins/work/.claude-plugin/plugin.json` | 編集 | バージョンを 2.51.0 に更新 | - |
+| 8 | `plugins/work/templates/.work/tasks/yymmdd_xxx/yymmdd-branch-name.md` | 編集 | `## テスト` 列をテスト実施結果形式（確認内容・実測結果・判定）に変更 | - |
+| 9 | `plugins/work/skills/start/SKILL.md` | 編集 | `## テスト` セクション説明をテスト実施記録形式に更新 | - |
+| 10 | `plugins/work/skills/start/SKILL.jp.md` | 編集 | 上記の JP ミラー | - |
 
 ## テスト
 
-| # | ファイル名 | 新規/編集 | 内容 | 補足 |
-|---|---|---|---|---|
-| 1 | — | — | テスト変更なし | — |
+手動テスト・動作確認の実施記録。
+
+| # | 確認内容 | 実測結果 | 判定 |
+|---|---|---|---|
+| 1 | テスト変更なし | — | — |
 
 ## QA
 
