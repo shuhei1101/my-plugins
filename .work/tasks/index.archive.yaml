@@ -1168,3 +1168,9 @@ branches:
     のパス更新と注入のサブフォルダ解決確認
   task: 260531_references-subfolder-split
   completed: true
+- branch: fix/issue-skills-improve
+  title: issueスキル改善
+  type: fix
+  summary: issue-scan の *-kit 記述削除・スキャン観点拡充。issue-save のテンプレートセクション日本語化・水平展開追加・メタ情報ファイル本文除去
+  task: 260531_issueスキル改善
+  completed: true
