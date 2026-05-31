@@ -44,6 +44,14 @@ read source or analyze code.
 
 ---
 
+## Note: UserPromptSubmit hook
+
+This skill manages its own branch/worktree lifecycle. The instruction injected by the
+`UserPromptSubmit` hook — "if no working branch is in progress, run `/work:start`" — should be
+**ignored while this skill is running**.
+
+---
+
 ## Tasks
 
 ### Step 0: Initialize scan branch
@@ -54,17 +62,19 @@ read source or analyze code.
 2. Check the current branch (`git branch --show-current`):
    - On `master`/`main` → `AUTO_MERGE = true`
    - Otherwise → `AUTO_MERGE = false` (commit to the current branch at the end, no auto-merge)
-3. If `AUTO_MERGE`, create and switch to a temporary scan branch:
+3. If `AUTO_MERGE`, create a **worktree** for the temporary scan branch (main repo branch unchanged):
    ```bash
    BRANCH="chore/issue-scan-$(date +%Y%m%d-%H%M%S)"
-   git checkout -b "$BRANCH"
+   WT_SUFFIX="${BRANCH//\//-}"
+   WT_PATH="../$(basename $(pwd))-wt-${WT_SUFFIX}"
+   git worktree add -b "$BRANCH" "$WT_PATH"
    ```
 
 → Step 1
 
 #### Output
 
-- `N`, `AUTO_MERGE`, `BRANCH`
+- `N`, `AUTO_MERGE`, `BRANCH`, `WT_PATH` (only when `AUTO_MERGE`)
 
 ---
 
@@ -157,6 +167,8 @@ Selection rules:
    - The perspective description (what to scan, in words)
    - Its `scope` label
    - Its start ID `START_i`
+   - Issue file output path: `{WT_PATH}/.work/issues/` when `AUTO_MERGE`,
+     or `.work/issues/` (relative to main repo cwd) otherwise
    (return: the compact metadata array `[{id, title, type, priority, tags, scope, perspective}]`,
    or `[]` with the scanned perspective named)
 3. Await all subagents. Collect every returned metadata array.
@@ -173,6 +185,10 @@ Selection rules:
 ### Step 4: Update the indexes
 
 #### Process
+
+The index file paths depend on `AUTO_MERGE`:
+- When `AUTO_MERGE`: `{WT_PATH}/.work/issues/_index.yaml` / `_index.archive.yaml`
+- Otherwise: `.work/issues/_index.yaml` / `_index.archive.yaml` (main repo)
 
 1. For each returned issue metadata, append to `_index.yaml`'s `issues`:
    ```yaml
@@ -204,22 +220,26 @@ Selection rules:
 
 #### Process
 
-1. Stage everything under `.work/issues/`:
+1. If `AUTO_MERGE`: stage and commit inside the worktree (`{WT_PATH}`):
    ```bash
+   cd {WT_PATH}
    git add .work/issues/
-   ```
-2. Commit on the scan branch:
-   ```bash
    git commit -m "chore: issue-scan — {N} perspective(s), {M} issue(s) found"
    ```
    (Commit even when `M = 0` — the scan-record update is still worth recording.)
-3. If `AUTO_MERGE`:
+   Then merge and clean up from the main repo:
    ```bash
-   git checkout master
+   cd {main_repo}
    git merge --no-ff {BRANCH} -m "chore: merge issue-scan results from {BRANCH}"
    git branch -d {BRANCH}
+   git worktree remove {WT_PATH}
    ```
-4. If not `AUTO_MERGE`: leave the branch as-is and tell the user a manual merge is needed.
+2. If not `AUTO_MERGE`: stage and commit in the main repo:
+   ```bash
+   git add .work/issues/
+   git commit -m "chore: issue-scan — {N} perspective(s), {M} issue(s) found"
+   ```
+   Leave the branch as-is and tell the user a manual merge is needed.
 
 → Step 6
 

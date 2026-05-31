@@ -45,6 +45,14 @@ description: |
 
 ---
 
+## 注意: UserPromptSubmit フック
+
+このスキルは独自のブランチ/ワークツリー管理を持つ。`UserPromptSubmit` フックによる
+「作業ブランチがなければ `/work:start` を実行してください」という指示は、
+**このスキルの実行中は無視してよい**。
+
+---
+
 ## タスク
 
 ### ステップ0: スキャンブランチを初期化する
@@ -55,17 +63,19 @@ description: |
 2. 現在のブランチを確認（`git branch --show-current`）:
    - `master`/`main` 上 → `AUTO_MERGE = true`
    - それ以外 → `AUTO_MERGE = false`（最後に現在のブランチへコミット、自動マージなし）
-3. `AUTO_MERGE` なら一時スキャンブランチを作成して切り替える:
+3. `AUTO_MERGE` なら一時スキャンブランチ用の**ワークツリーを作成する**（メインリポのブランチは変更しない）:
    ```bash
    BRANCH="chore/issue-scan-$(date +%Y%m%d-%H%M%S)"
-   git checkout -b "$BRANCH"
+   WT_SUFFIX="${BRANCH//\//-}"
+   WT_PATH="../$(basename $(pwd))-wt-${WT_SUFFIX}"
+   git worktree add -b "$BRANCH" "$WT_PATH"
    ```
 
 → ステップ1
 
 #### 出力
 
-- `N`・`AUTO_MERGE`・`BRANCH`
+- `N`・`AUTO_MERGE`・`BRANCH`・`WT_PATH`（`AUTO_MERGE` の場合のみ）
 
 ---
 
@@ -157,6 +167,8 @@ description: |
    - 観点の説明（何をスキャンするか、言葉で）
    - その `scope` ラベル
    - 開始 ID `START_i`
+   - イシューファイルの書き出し先: `AUTO_MERGE` の場合は `{WT_PATH}/.work/issues/`、
+     それ以外は `.work/issues/`（メインリポのカレントディレクトリ相対）
    （戻り値: コンパクトなメタデータ配列 `[{id, title, type, priority, tags, scope, perspective}]`、
    または空の場合は `[]` とスキャンした観点名）
 3. 全サブエージェントを await する。返ってきた全メタデータ配列を収集する。
@@ -173,6 +185,10 @@ description: |
 ### ステップ4: インデックスを更新する
 
 #### 処理
+
+インデックスファイルのパスは `AUTO_MERGE` によって異なる:
+- `AUTO_MERGE` の場合: `{WT_PATH}/.work/issues/_index.yaml` / `_index.archive.yaml`
+- `AUTO_MERGE` でない場合: `.work/issues/_index.yaml` / `_index.archive.yaml`（メインリポ）
 
 1. 返ってきた各イシューメタデータを `_index.yaml` の `issues` に追記する:
    ```yaml
@@ -204,22 +220,26 @@ description: |
 
 #### 処理
 
-1. `.work/issues/` 配下を全てステージする:
+1. `AUTO_MERGE` の場合: ワークツリー（`{WT_PATH}`）内でステージ・コミットする:
    ```bash
+   cd {WT_PATH}
    git add .work/issues/
-   ```
-2. スキャンブランチにコミットする:
-   ```bash
    git commit -m "chore: issue-scan — {N} 観点, {M} イシュー発見"
    ```
    （`M = 0` でもコミットする — スキャン記録の更新は残す価値がある）
-3. `AUTO_MERGE` の場合:
+   その後メインリポからマージしてワークツリーを削除する:
    ```bash
-   git checkout master
+   cd {main_repo}
    git merge --no-ff {BRANCH} -m "chore: merge issue-scan results from {BRANCH}"
    git branch -d {BRANCH}
+   git worktree remove {WT_PATH}
    ```
-4. `AUTO_MERGE` でない場合: ブランチはそのままにし、手動マージが必要な旨をユーザーに伝える。
+2. `AUTO_MERGE` でない場合: メインリポの `.work/issues/` をステージしてコミットする:
+   ```bash
+   git add .work/issues/
+   git commit -m "chore: issue-scan — {N} 観点, {M} イシュー発見"
+   ```
+   ブランチはそのままにし、手動マージが必要な旨をユーザーに伝える。
 
 → ステップ6
 
