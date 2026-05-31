@@ -1005,3 +1005,10 @@ branches:
   summary: claude-kit に config スキルを追加（INJECTION_LANG / JP_MIRROR / TTL が対象候補）
   task: 260531_claude-kitへのconfigスキル追加
   completed: true
+- id: 237
+  title: chore/sync-claude-kit-artifacts
+  type: chore
+  tags: []
+  summary: claude-kit プラグインの規約に合わせてリポジトリ内の成果物を同期する
+  task: 260531_claude-kit成果物同期
+  completed: true
