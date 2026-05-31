@@ -1096,3 +1096,10 @@ branches:
   summary: ブランチ文書ファイル名を日本語タイトル基準に変更し index.yaml に branch フィールドを追加
   task: 260531_ブランチ文書ファイル名変更
   completed: true
+- id: 249
+  title: refactor/python-script-style-unify
+  type: refactor
+  tags: []
+  summary: my-plugins内の全Pythonスクリプトをpython-scriptリファレンスに準拠させる（日本語コメント・logger・argparse等）
+  task: 260531_Pythonスクリプトスタイル統一
+  completed: true
