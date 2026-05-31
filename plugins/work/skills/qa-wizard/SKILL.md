@@ -1,11 +1,11 @@
 ---
-name: qa-review
+name: qa-wizard
 description: |
-  When /work:qa-review is invoked.
-  Or when the user says "review QA", "check QA items", or "answer the QA".
+  When /work:qa-wizard is invoked.
+  Or when the user says "review QA", "check QA items", "answer the QA", or "resolve QA items".
 ---
 
-# work:qa-review — Interactive QA Review
+# work:qa-wizard — Interactive QA Wizard
 
 Reads the `## QA` section of a branch document and presents unresolved items via the `AskUserQuestion` tool, batching up to 4 questions per call. After all responses are collected, updates the branch document in a single pass.
 

@@ -1095,3 +1095,11 @@ branches:
   summary: 修正案を暫定対応・恒久対策・再発防止に分割、水平展開を横展開に改名
   task: 260531_イシューファイル修正案セクション細分化
   completed: true
+- id: 11
+  branch: refactor/rename-qa-review-to-qa-wizard
+  title: qa-reviewスキルをqa-wizardにリネーム
+  type: refactor
+  tags: []
+  summary: work プラグインの qa-review スキルをより適切な名称 qa-wizard にリネームする
+  task: 260531_rename-qa-review-to-qa-wizard
+  completed: true

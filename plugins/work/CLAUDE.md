@@ -11,7 +11,7 @@ reminds task updates on stop, manages worktrees, and guards force-operations on 
 | 2 | `work:pr-handoff` | Reserve the next branch after the current one is complete |
 | 3 | `work:pr-show` | Show next branch candidates in 3 categories (ready / in-progress / conditional) |
 | 4 | `work:merge` | Merge the current branch, close related issues, archive the branch document |
-| 5 | `work:qa-review` | Review QA items in the current branch document |
+| 5 | `work:qa-wizard` | Present unresolved QA items and collect decisions |
 | 6 | `work:plugin-config` | Interactively configure work env toggles in `settings.json` |
 | 7 | `work:issue-create` | Create issue files under `.work/issues/` |
 | 8 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |

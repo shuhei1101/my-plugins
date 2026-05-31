@@ -1,12 +1,12 @@
 ---
-name: qa-review
+name: qa-wizard
 description: |
-  /work:qa-review が呼び出されたとき。
-  またはユーザーが「QA をレビューしたい」「QA の内容を確認したい」「QA に回答したい」と言ったとき。
+  /work:qa-wizard が呼び出されたとき。
+  またはユーザーが「QA をレビューしたい」「QA の内容を確認したい」「QA に回答したい」「QA 項目を解決したい」と言ったとき。
 ---
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# work:qa-review — インタラクティブ QA レビュー
+# work:qa-wizard — インタラクティブ QA ウィザード
 
 対象ブランチのブランチドキュメントの `## QA` セクションを読み込み、未解決の各項目を `AskUserQuestion` ツールで最大 4 件ずつまとめて提示する。全質問への回答が完了した後、一括でブランチドキュメントに決定内容を反映する。
 

@@ -10,7 +10,7 @@ Claude Code 向けのフックベースのプロジェクトライフサイク�
 | 2 | `work:pr-handoff` | 現在のブランチ完了後に次のブランチを予約 |
 | 3 | `work:pr-show` | 次のブランチ候補を 3 カテゴリ（着手可能 / 進行中 / 条件あり）で表示 |
 | 4 | `work:merge` | 現在のブランチをマージし、関連イシューをクローズ、ブランチドキュメントをアーカイブ |
-| 5 | `work:qa-review` | 現在のブランチドキュメントの QA 項目をレビュー |
+| 5 | `work:qa-wizard` | 未解決の QA 項目を提示してユーザーの判断を収集 |
 | 6 | `work:plugin-config` | `settings.json` の work env トグルを対話的に設定 |
 | 7 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
 | 8 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
