@@ -22,6 +22,8 @@ TTL はデフォルト __DEFAULT_TTL__ 秒、環境変数 __ENV_PREFIX___INJECTI
 エントリ (now >= expires_at) を削除する (空になったファイルは削除)。期限切れ後に再びマッチ
 すれば再注入される。
 
+__ENV_PREFIX___INJECTION_DISABLE=true/1/yes/on で注入機構全体を停止できる (緊急停止用)。
+
 description は references/_index.yaml (英語) から path -> description として取得する。
 環境変数 __ENV_PREFIX___INJECTION_LANG=jp で _index.jp.yaml + injection.jp.md.j2 に切替。
 
@@ -42,6 +44,7 @@ PLUGIN_NAME = "__PLUGIN_NAME__"
 ENV_PREFIX = "__ENV_PREFIX__"
 LOG_TAG = "__LOG_TAG__"
 DEFAULT_TTL = __DEFAULT_TTL__
+TRUTHY = {"true", "1", "yes", "on"}
 
 
 def _eprint(msg: str) -> None:
@@ -183,16 +186,16 @@ def _cleanup_expired(token_dir: pathlib.Path, now: float, yaml) -> None:
 # main
 # --------------------------------------------------------------------------- #
 def main() -> int:
+    # ====== Master kill switch ======
+    if os.environ.get(f"{ENV_PREFIX}_INJECTION_DISABLE", "").lower() in TRUTHY:
+        return 0
+
     # 依存チェック (失敗時は静かに pass)
     try:
         import yaml
         from jinja2 import Environment, FileSystemLoader, StrictUndefined
     except ImportError as e:
         _eprint(f"missing dependency: {e}. install with: uv add --dev pyyaml jinja2")
-        return 0
-
-    # 注入完全 OFF (truthy = 無効化)
-    if os.environ.get(f"{ENV_PREFIX}_INJECTION_DISABLE", "").lower() in ("true", "1", "yes", "on"):
         return 0
 
     try:
