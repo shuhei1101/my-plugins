@@ -2,6 +2,7 @@
 created_at: 2026-05-31
 updates:
   - 2026-05-31 — 初版作成（refactor/python-script-style-unify）
+  - 2026-05-31 — python-script.md リファレンス自体を修正（logger→print・scripts/ フォルダ構成）
 related_specs:
   - plugins/dev-kit/references/python/scripts/python-script.jp.md
 related_branches:
