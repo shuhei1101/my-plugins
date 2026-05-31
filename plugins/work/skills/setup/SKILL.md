@@ -14,7 +14,7 @@ The Python script handles all file creation.
 Expanded structure:
 ```
 .work/
-├── tasks/      # Task / PR folders (created dynamically by work-start)
+├── tasks/      # Task / branch folders (created dynamically by work-start)
 ├── notes/      # Design notes and memos (empty initially)
 └── issues/     # Issue files managed by issue-scan and issue-create
 ```

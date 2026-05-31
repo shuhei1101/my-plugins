@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of Instructor.md. When updating the English original, update this file too. -->
 # llm/instructor — Instructor + Pydantic で構造化出力
 
-> このファイルは `Instructor.md` の日本語ミラーです。
-
 LLM の出力を Pydantic モデルとして受け取るには [Instructor](https://python.useinstructor.com/) を使う。
 スキーマ検証 + リトライが組み込まれている。
 

@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of Tkinter.md. When updating the English original, update this file too. -->
 # tkinter — GUI スクリプト規約
 
-> このファイルは `Tkinter.md` の日本語ミラーです。
-
 簡易 GUI が必要な場合の規約。本格的な GUI は別技術を検討（Electron / Tauri 等）するが、
 スクリプトに小さい操作画面を付ける程度なら tkinter で十分。
 

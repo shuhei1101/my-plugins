@@ -1,8 +1,6 @@
 <!-- This file is a Japanese mirror of Pythonバージョン.md. When updating the English original, update this file too. -->
 # packaging/python-versions — Python バージョン方針
 
-> このファイルは `Pythonバージョン.md` の日本語ミラーです。
-
 dev-kit Python の方針: **極力高いバージョンを採用する**。
 
 ---

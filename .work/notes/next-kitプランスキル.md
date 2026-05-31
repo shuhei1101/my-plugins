@@ -2,7 +2,7 @@
 created_at: 2026-05-28
 updates:
   - 2026-05-28 — 初版作成
-related_specs: []
+related_notes: []
 related_prs:
   - PR144
   - PR135

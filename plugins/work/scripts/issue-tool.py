@@ -2,13 +2,13 @@
 issue-tool — workspace の `.work/issues/` 操作用 CLI。
 
 使い方:
-  python issue-tool.py close --issue-id ISSUE-N --resolution {resolved|wontfix} --linked-pr N [--issues-dir .work/issues]
+  python issue-tool.py close --issue-id ISSUE-N --resolution {resolved|wontfix} --linked-branch N [--issues-dir .work/issues]
 
 サブコマンド:
   close          イシューを 1 件クローズする:
                    1. .work/issues/ISSUE-{N}.md を .work/issues/closed/ISSUE-{N}.md に移動
                    2. _index.yaml から該当エントリを削除
-                   3. _index.archive.yaml の closed_issues に linked_pr 付きで追記
+                   3. _index.archive.yaml の closed_issues に linked_branch 付きで追記
 
 `.work/issues/` 配下の YAML 読み書きをこのスクリプト経由に集約することで、
 Claude Code のコンテキストに YAML ファイルを丸ごと読み込ませずに済み、
@@ -58,7 +58,7 @@ def cmd_close(args: argparse.Namespace) -> None:
     issues_dir = Path(args.issues_dir)
     issue_id: str = args.issue_id
     resolution: str = args.resolution
-    linked_pr: int = args.linked_pr
+    linked_branch: int = args.linked_branch
 
     if not issues_dir.exists():
         print(f"Skip: {issues_dir} does not exist", file=sys.stderr)
@@ -101,7 +101,7 @@ def cmd_close(args: argparse.Namespace) -> None:
         "title": entry.get("title", ""),
         "closed": date.today().isoformat(),
         "resolution": resolution,
-        "linked_pr": linked_pr,
+        "linked_branch": linked_branch,
         "tags": entry.get("tags", []) or [],
     })
     archive_data["closed_issues"] = closed_issues
@@ -110,7 +110,7 @@ def cmd_close(args: argparse.Namespace) -> None:
     archive_path.parent.mkdir(parents=True, exist_ok=True)
     _save(archive_path, archive_data, archive_original)
 
-    print(f"Closed {issue_id} (resolution={resolution}, linked_pr=PR{linked_pr})")
+    print(f"Closed {issue_id} (resolution={resolution}, linked_branch={linked_branch})")
 
 
 # ── main ────────────────────────────────────────────────────
@@ -136,7 +136,7 @@ def parse_args() -> argparse.Namespace:
         choices=["resolved", "wontfix"],
         help="クローズ時の解決区分",
     )
-    p_close.add_argument("--linked-pr", required=True, type=int, help="このイシューをクローズした PR 番号")
+    p_close.add_argument("--linked-branch", required=True, type=int, help="このイシューをクローズしたブランチの内部 ID")
     p_close.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR), help=".work/issues/ のパス")
 
     return parser.parse_args()

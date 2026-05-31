@@ -1,5 +1,5 @@
 """
-trim-index — Move completed PR entries from index.yaml to index.archive.yaml.
+trim-index — Move completed branch entries from index.yaml to index.archive.yaml.
 
 Usage:
   python trim-index.py [index_yaml]
@@ -8,7 +8,7 @@ Usage:
 
 Reads index.yaml, moves all `completed: true` entries to index.archive.yaml
 in the same directory, and rewrites index.yaml with only active entries.
-The `last_id` field is preserved so PR numbering remains correct after
+The `last_id` field is preserved so branch ID numbering remains correct after
 completed entries are removed.
 """
 
@@ -29,7 +29,7 @@ except ImportError:
 # ── constants ───────────────────────────────────────────────
 DEFAULT_INDEX = Path(".work/tasks/index.yaml")
 ARCHIVE_NAME = "index.archive.yaml"
-HEADER_COMMENT = "# .work/tasks/index.archive.yaml — Archived (completed) PR entries\n\n"
+HEADER_COMMENT = "# .work/tasks/index.archive.yaml — Archived (completed) branch entries\n\n"
 
 
 # ── private helpers ─────────────────────────────────────────
@@ -91,8 +91,8 @@ def main(args: argparse.Namespace) -> None:
     comment = _header_comment(raw)
     index_path.write_text(comment + _dump({"last_id": last_id, "branches": active}), encoding="utf-8")
 
-    print(f"Archived {len(done)} completed PR(s) to {archive_path}")
-    print(f"index.yaml now has {len(active)} active PR(s), last_id={last_id}")
+    print(f"Archived {len(done)} completed branch(es) to {archive_path}")
+    print(f"index.yaml now has {len(active)} active branch(es), last_id={last_id}")
 
 
 def parse_args() -> argparse.Namespace:
