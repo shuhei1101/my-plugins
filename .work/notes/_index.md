@@ -37,6 +37,7 @@
 | [ref-injectジェネレータ.md](ref-injectジェネレータ.md) | ref-inject — リファレンス自動注入プラグインのジェネレータ |
 | [work-kitスキル群.md](work-kitスキル群.md) | work-kit スキル群 — 設計メモ |
 | [AskUserQuestion制約リファレンス.md](AskUserQuestion制約リファレンス.md) | AskUserQuestion 制約リファレンス — スキルからの呼び出しガイド |
+| [claude-kit-plugin-update-sync.md](claude-kit-plugin-update-sync.md) | claude-kit 成果物同期 — plugin-update スキルによるリポジトリ規約同期 |
 
 ---
 
@@ -51,6 +52,7 @@
 | [言語プラグイン統合メモ.md](言語プラグイン統合メモ.md) | py-kit / html-kit / next-kit → dev-kit 統合 (PR166) |
 | [プラグインCLAUDE標準構成.md](プラグインCLAUDE標準構成.md) | プラグイン CLAUDE.md 標準構成 — 標準セクション定義 |
 | [claude-kit-references-structure.md](claude-kit-references-structure.md) | claude-kit リファレンス構造整理 — サブフォルダ分割設計メモ |
+| [plugin-migrate-rename.md](plugin-migrate-rename.md) | plugin-migrate スキル命名規則 — plugin-update から plugin-migrate へのリネーム |
 
 ---
 

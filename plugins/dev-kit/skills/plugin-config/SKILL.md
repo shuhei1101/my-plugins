@@ -1,11 +1,11 @@
 ---
-name: config
+name: plugin-config
 description: |
-  When /dev-kit:config is invoked.
+  When /dev-kit:plugin-config is invoked.
   Or when the user says "設定を変えたい", "env を設定したい", "トグルを切り替えたい", "言語を有効にしたい", "TypeScript チェックを無効にしたい", "Markdown チェックを無効にしたい".
 ---
 
-# dev-kit:config — Plugin Toggle Configuration
+# dev-kit:plugin-config — Plugin Toggle Configuration
 
 Interactively configures env toggle variables.
 Loops through one-variable-at-a-time selection → value → scope → apply,

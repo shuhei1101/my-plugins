@@ -75,11 +75,11 @@ For each match, confirm it falls under "Acceptable exceptions" above; otherwise 
 
 ## Required skills
 
-### `plugin-update` (mandatory for every plugin)
+### `plugin-migrate` (mandatory for every plugin)
 
-Every plugin **must** ship a `plugin-update` skill that brings the project's plugin-related
+Every plugin **must** ship a `plugin-migrate` skill that brings the project's plugin-related
 artifacts into compliance with the currently installed plugin version. Manual invocation only
-(`/<plugin>:plugin-update`).
+(`/<plugin>:plugin-migrate`).
 
 **What "plugin-related artifacts" means**:
 
@@ -92,7 +92,7 @@ Two categories, handled differently:
 
 The static-copy part is easy. The convention-inspection part is the main value: when a plugin's
 references or guidelines change, existing project files written under the old conventions may
-now violate the new standards. `plugin-update` surfaces those violations and applies the fix.
+now violate the new standards. `plugin-migrate` surfaces those violations and applies the fix.
 
 **Why**: without this, version upgrades are silent. Users can install a newer plugin but their
 existing project files continue to follow the old conventions — invisible drift that produces
@@ -102,20 +102,20 @@ inconsistent outputs over time.
 
 | Item | Convention |
 |---|---|
-| Name | `plugin-update` (kebab-case literal — not `<plugin>-update`) |
-| Trigger | Manual only (no `description` auto-triggers; explicit `/<plugin>:plugin-update`) |
+| Name | `plugin-migrate` (kebab-case literal — not `<plugin>-update`) |
+| Trigger | Manual only (no `description` auto-triggers; explicit `/<plugin>:plugin-migrate`) |
 | First action | Refuse to run on `master` / `main` and ask the user to create a working branch first |
 | Branch management | Do **not** create branches, commit, or merge — leave all branch operations to the user |
 | Inter-plugin dependency | None — must not invoke skills or commands from other plugins |
 | Scope | Only this plugin's own artifacts; never modify files owned by other plugins |
 | Fix confirmation | Never modify convention-following files without explicit user confirmation |
 
-When creating a new plugin, generate `skills/plugin-update/SKILL.md` (and `.jp.md`), list the
+When creating a new plugin, generate `skills/plugin-migrate/SKILL.md` (and `.jp.md`), list the
 static templates to re-copy, and describe how to detect and fix deviations in files created by
 this plugin's skills. The skill must be self-contained.
 
 > **When you update a plugin, refresh `setup-wizard` in the same change** (use-case showcase,
-> env explanations, etc.). Add this to the plugin's `plugin-update` checklist.
+> env explanations, etc.). Add this to the plugin's `plugin-migrate` checklist.
 
 ### `setup-wizard` (mandatory for every plugin)
 
@@ -135,14 +135,14 @@ the cost of the first step.
 | Trigger | Manual (`/<plugin>:setup-wizard`) + SessionStart hook auto-prompt (only when the flag is unset) |
 | Completion mark | Write `setup_done: true` into the YAML frontmatter of `.claude/{plugin}.local.md` |
 | Scope | Only this plugin's own env / onboarding; never touch other plugins |
-| Related skill | If the plugin has env vars, also implement `config` (the wizard delegates to it) |
+| Related skill | If the plugin has env vars, also implement `plugin-config` (the wizard delegates to it) |
 | Reference | `references/plugin/setup-wizard.md` — full flow, skeleton, and checklist |
 
 See `setup-wizard.md` for the detailed authoring guide, skeleton, and SessionStart-hook implementation.
 
-### `config` (mandatory for plugins with env vars)
+### `plugin-config` (mandatory for plugins with env vars)
 
-Plugins that expose env vars **must** ship a `config` skill that lets the user edit
+Plugins that expose env vars **must** ship a `plugin-config` skill that lets the user edit
 them interactively via `AskUserQuestion`. Delegated to from `setup-wizard`. Not required for
 plugins without env vars.
 
@@ -150,8 +150,8 @@ plugins without env vars.
 
 | Item | Convention |
 |---|---|
-| Name | `config` (kebab-case literal — not `<plugin>-config`) |
-| Trigger | Manual (`/<plugin>:config`) + delegated invocation from `setup-wizard` |
+| Name | `plugin-config` (kebab-case literal) |
+| Trigger | Manual (`/<plugin>:plugin-config`) + delegated invocation from `setup-wizard` |
 | Scope | Only this plugin's own env vars; never touch other plugins' env |
 
 ---

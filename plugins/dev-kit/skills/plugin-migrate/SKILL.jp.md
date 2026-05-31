@@ -1,14 +1,14 @@
 ---
-name: plugin-update
+name: plugin-migrate
 description: |
   プロジェクト内の dev-kit 生成物（静的テンプレと dev-kit 規約に従って作られたコード・設定ファイル）が
   現在インストール済みの dev-kit バージョンの規約を満たしているかを検査・修正する。
   静的テンプレの再コピーと、既存プロジェクトファイルの規約逸脱の発見・修正が対象。
-  手動起動のみ — `/dev-kit:plugin-update` を使う。
+  手動起動のみ — `/dev-kit:plugin-migrate` を使う。
 ---
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# dev-kit:plugin-update — dev-kit 生成物を現行規約に揃える
+# dev-kit:plugin-migrate — dev-kit 生成物を現行規約に揃える
 
 ## 何をするか
 
