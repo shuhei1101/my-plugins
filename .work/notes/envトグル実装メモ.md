@@ -38,6 +38,28 @@
 
 ---
 
+# feat/commit-message-options — コミットメッセージオプション追加
+
+## 概要
+
+コミットメッセージの言語とタイププレフィックス付与を環境変数で設定可能にする。
+
+## 追加する env var
+
+| # | env 変数 | 型 | デフォルト | 動作 |
+|---|---|---|---|---|
+| 1 | `WORK_COMMIT_LANG` | 文字列 | `JP` | `JP` = 日本語、`EN` = 英語（任意の文字列も指定可能） |
+| 2 | `WORK_COMMIT_TYPE` | ブール型トグル | `true`（有効） | `false`/`0`/`no`/`off` でタイププレフィックスを省略 |
+
+## 設計メモ
+
+- `WORK_COMMIT_LANG` は文字列型（`WORK_BRANCH_AUTHOR` と同じパターン）— `plugin-config` の管理対象外
+- `WORK_COMMIT_TYPE` はブール型トグル（通常極性）— `plugin-config` の管理対象に追加
+- `start/SKILL.md` の「Commit message language」セクションで bash snippet を使って判定
+- 判定ロジック: `lang="${WORK_COMMIT_LANG:-JP}"` / `use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no|off) use_type=false;; *) use_type=true;; esac`
+
+---
+
 # PR173 — WORK_MERGE_PROPOSAL トグル追加
 
 ## 概要

@@ -22,6 +22,7 @@ env トグル変数をインタラクティブに設定するスキル。
 | `WORK_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
 | `WORK_MERGE_PROPOSAL` | Stop フックでの `/work:merge` 提案 | 有効 |
 | `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto branch-reserve | 有効 |
+| `WORK_COMMIT_TYPE` | コミットメッセージのタイププレフィックス付与 | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
 
 **通常極性**: キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
@@ -84,7 +85,8 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
   3. [{state}] WORK_USE_WORKTREE — work-start での worktree 作成
   4. [{state}] WORK_MERGE_PROPOSAL — Stop フックでの merge 提案
   5. [{state}] WORK_MERGE_AUTO_HANDOFF — merge Step 11 auto pr-handoff
-  6. [{state}] AITUBER_NOTIFY — Stop notify-aituber 通知
+  6. [{state}] WORK_COMMIT_TYPE — コミットメッセージのタイププレフィックス付与
+  7. [{state}] AITUBER_NOTIFY — Stop notify-aituber 通知
   0. 完了（終了）
 ```
 

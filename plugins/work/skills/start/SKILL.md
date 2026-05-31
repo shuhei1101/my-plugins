@@ -350,7 +350,19 @@ follow-ups) (table format: `| # | ブランチ | 概要 |`). Leave the placehold
 
 ##### Commit message language
 
-- All commit messages produced by this skill MUST be written in **Japanese**
-- Both subject and body are in Japanese (metadata lines like `Co-Authored-By:` may remain in English)
-- Conventional commit prefixes (`feat:` `fix:` `chore:` etc.) may stay in English
-- Example: `chore: {branch} のブランチドキュメントを作成`
+Read the following env vars before composing every commit message:
+
+```bash
+lang="${WORK_COMMIT_LANG:-JP}"
+use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no|off) use_type=false;; *) use_type=true;; esac
+```
+
+- **`WORK_COMMIT_LANG`** (default `JP`): `JP` → Japanese; `EN` → English. Both subject and body follow this setting. Metadata lines like `Co-Authored-By:` may remain in English regardless.
+- **`WORK_COMMIT_TYPE`** (default `true`): truthy → include `feat:` / `fix:` / `chore:` etc. prefix; falsy → omit the type prefix entirely.
+
+| `WORK_COMMIT_LANG` | `WORK_COMMIT_TYPE` | Example commit message |
+|---|---|---|
+| `JP` (default) | `true` (default) | `chore: feat/commit-message-options のブランチドキュメントを作成` |
+| `EN` | `true` | `chore: create branch document for feat/commit-message-options` |
+| `JP` | `false` | `feat/commit-message-options のブランチドキュメントを作成` |
+| `EN` | `false` | `create branch document for feat/commit-message-options` |

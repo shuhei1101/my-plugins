@@ -358,7 +358,19 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 ##### コミットメッセージ言語
 
-- このスキルが生成するすべてのコミットメッセージは **日本語** で書かれなければなりません
-- サブジェクトとボディの両方が日本語です（`Co-Authored-By:` などのメタデータ行は英語のままでも可）
-- 従来のコミットプレフィックス（`feat:` `fix:` `chore:` など）は英語のままでもかまいません
-- 例：`chore: {branch} のブランチドキュメントを作成`
+コミットメッセージを作成する前に、以下の env var を読み込む：
+
+```bash
+lang="${WORK_COMMIT_LANG:-JP}"
+use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no|off) use_type=false;; *) use_type=true;; esac
+```
+
+- **`WORK_COMMIT_LANG`**（デフォルト `JP`）：`JP` → 日本語、`EN` → 英語。サブジェクトとボディの両方がこの設定に従う。`Co-Authored-By:` などのメタデータ行は設定に関わらず英語のままでよい。
+- **`WORK_COMMIT_TYPE`**（デフォルト `true`）：truthy → `feat:` / `fix:` / `chore:` などのプレフィックスを付ける、falsy → タイププレフィックスを省略する。
+
+| `WORK_COMMIT_LANG` | `WORK_COMMIT_TYPE` | コミットメッセージ例 |
+|---|---|---|
+| `JP`（デフォルト） | `true`（デフォルト） | `chore: feat/commit-message-options のブランチドキュメントを作成` |
+| `EN` | `true` | `chore: create branch document for feat/commit-message-options` |
+| `JP` | `false` | `feat/commit-message-options のブランチドキュメントを作成` |
+| `EN` | `false` | `create branch document for feat/commit-message-options` |

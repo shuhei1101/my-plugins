@@ -1068,3 +1068,10 @@ branches:
   summary: ブランチドキュメントの H1 をブランチ名からタイトル（日本語）に変更
   task: 260531_work-template-update
   completed: true
+- id: 241
+  title: feat/commit-message-options
+  type: feat
+  tags: []
+  summary: コミットメッセージの言語とタイプ付与を環境変数で設定可能にする
+  task: 260531_commit-message-options
+  completed: true
