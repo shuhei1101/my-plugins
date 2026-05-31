@@ -25,7 +25,8 @@
 | 8 | 済 | 関連スキル・フック・リファレンスの `{branch-hyphenated}.md` パス表記を全件更新 |
 | 9 | 済 | JP ミラーも同様に更新 |
 | 10 | 済 | `CLAUDE.md` の changelog に追記 |
-| 11 | - | rules / CLAUDE.md を更新する |
+| 11 | 済 | テンプレートから「内部 ID」見出し行を削除し、`setup-task.py` の `{N}` 置換を整理 |
+| 12 | - | rules / CLAUDE.md を更新する |
 
 ## 変更内容
 

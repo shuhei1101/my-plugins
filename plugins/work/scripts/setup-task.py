@@ -30,9 +30,9 @@ The date prefix is taken from --date, or extracted from --task-dir (the 6-digit 
 When --task-dir is omitted, the folder name is built from --date and --title.
 When --task-dir is provided, --date and --title are optional (used only in the document heading).
 
---id is the internal numeric ID tracked in index.yaml. It is recorded in the document heading for
-cross-reference with commits and archive metadata; it is NOT embedded in the branch / worktree /
-filename. Legacy invocations with --pr are accepted as an alias for --id.
+--id is the internal numeric ID tracked in index.yaml (archive cross-reference). It is accepted for
+interface compatibility but is NOT written into the document or the file name. Legacy invocations
+with --pr are accepted as an alias for --id.
 """
 
 import argparse
@@ -51,8 +51,8 @@ def main() -> None:
         dest="id",
         default=None,
         type=int,
-        help="Internal numeric ID tracked in index.yaml (used in the document heading only). "
-             "--pr is accepted as an alias for back-compat.",
+        help="Internal numeric ID tracked in index.yaml (accepted for interface compatibility; "
+             "not written into the document). --pr is accepted as an alias for back-compat.",
     )
     parser.add_argument(
         "--branch",
@@ -142,12 +142,10 @@ def main() -> None:
         template_path = (
             plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "PRNNN-type-title.md"
         )
-    id_for_heading = str(args.id) if args.id is not None else ""
     _create_from_template(
         template_path,
         dest_path,
         {
-            "{N}": id_for_heading,
             "{日本語タイトル}": args.ja_title or title_for_heading,
             "{branch-name}": args.branch,
             "{タイトル}": title_for_heading,
