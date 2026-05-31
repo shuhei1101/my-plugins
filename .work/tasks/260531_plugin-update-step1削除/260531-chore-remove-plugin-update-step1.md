@@ -22,26 +22,31 @@ work プラグインの UserPromptSubmit フック（work:start チェック）�
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | QA に未決定事項を記録する（現状なし） |
-| 2 | - | `.work/notes/` のノートを更新する（必要なら新規作成） |
-| 3 | - | `plugins/dev-kit/skills/plugin-migrate/SKILL.md` の Step 1（ブランチチェック）を削除し Step を再番号付け |
-| 4 | - | `plugins/dev-kit/skills/plugin-migrate/SKILL.jp.md` を同期 |
-| 5 | - | `plugins/claude-kit/skills/plugin-migrate/SKILL.md` の Step 1 を削除し Step を再番号付け |
-| 6 | - | `plugins/claude-kit/skills/plugin-migrate/SKILL.jp.md` を同期 |
-| 7 | - | `work` / `ref-inject` の plugin-migrate Step 1 は機能の一部なので **触らない** ことを確認 |
-| 8 | - | 各 plugin.json の version を bump（プラグイン配布規約に従う） |
-| 9 | - | ルール / CLAUDE.md の更新（必要があれば） |
+| 1 | 済 | QA に未決定事項を記録する（現状なし） |
+| 2 | 済 | `.work/notes/` のノートを更新する（必要なら新規作成） |
+| 3 | 済 | `plugins/dev-kit/skills/plugin-migrate/SKILL.md` の Step 1（ブランチチェック）を削除し Step を再番号付け |
+| 4 | 済 | `plugins/dev-kit/skills/plugin-migrate/SKILL.jp.md` を同期 |
+| 5 | 済 | `plugins/claude-kit/skills/plugin-migrate/SKILL.md` の Step 1 を削除し Step を再番号付け |
+| 6 | 済 | `plugins/claude-kit/skills/plugin-migrate/SKILL.jp.md` を同期 |
+| 7 | 済 | `work` / `ref-inject` の plugin-migrate Step 1 は機能の一部なので **触らない** ことを確認 |
+| 8 | 済 | 各 plugin.json の version を bump（プラグイン配布規約に従う） |
+| 9 | 済 | ルール / CLAUDE.md の更新（必要があれば） |
 
 ## 変更内容
-
-実装予定ファイル（テスト以外）。実装着手時に確定する。
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
 | 1 | `plugins/dev-kit/skills/plugin-migrate/SKILL.md` | 編集 | Step 1「ブランチチェック」削除・再番号付け | 旧 Step 2-6 → 1-5 |
-| 2 | `plugins/dev-kit/skills/plugin-migrate/SKILL.jp.md` | 編集 | JP ミラー同期 | - |
+| 2 | 〃 `SKILL.jp.md` | 〃 | JP ミラー同期 | - |
 | 3 | `plugins/claude-kit/skills/plugin-migrate/SKILL.md` | 編集 | Step 1「ブランチチェック」削除・再番号付け | 旧 Step 2-4 → 1-3 |
-| 4 | `plugins/claude-kit/skills/plugin-migrate/SKILL.jp.md` | 編集 | JP ミラー同期 | - |
+| 4 | 〃 `SKILL.jp.md` | 〃 | JP ミラー同期 | - |
+| 5 | `plugins/dev-kit/.claude-plugin/plugin.json` | 編集 | v4.11.0 → v4.11.1 | - |
+| 6 | `plugins/dev-kit/CLAUDE.md` | 〃 | Changelog に 4.11.1 追加 | - |
+| 7 | 〃 `CLAUDE.jp.md` | 〃 | 〃 | - |
+| 8 | `plugins/claude-kit/.claude-plugin/plugin.json` | 編集 | v3.49.0 → v3.49.1 | - |
+| 9 | `plugins/claude-kit/CLAUDE.md` | 〃 | Changelog に 3.49.1 追加 | - |
+| 10 | 〃 `CLAUDE.jp.md` | 〃 | 〃 | - |
+| 11 | `.claude-plugin/marketplace.json` | 編集 | dev-kit / claude-kit バージョン更新 | - |
 
 ## テスト
 
