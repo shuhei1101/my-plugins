@@ -49,10 +49,13 @@
 | 13 | 済 | `setup.py` はブートストラップ専用として維持（前コミットのインライン版で対応済み） |
 | 14 | 済 | `issue-save` SKILL.md(+jp) Step 3 をインラインテンプレ削除し注入依存へ |
 | 15 | 済 | `_index.yaml`/`.jp.yaml` / `_index.md` のリファレンス一覧を更新 |
-| 16 | 済 | バージョン記述更新（plugin.json/marketplace.json/CLAUDE.md/CLAUDE.jp.md, v2.54.0） |
-| 17 | 済 | 現ブランチドキュメント自身を `.branch.md` 拡張子へリネーム（ドッグフーディング） |
-| 18 | 済 | `.work/notes/` の関連ノートを更新 |
-| 19 | 済 | 既存 `.work/tasks/` の全ブランチドキュメント（236件）を `{YYMMDD}-{H1タイトル}.branch.md` 形式へ移行（マージ前のドッグフーディング・案C）。`yyyymmdd_xxx` テンプレ残骸を削除。ネストの旧 QA/TODO ペア（PR174/PR175）は例外として保持 |
+| 16 | 済 | 現ブランチドキュメント自身を `.branch.md` 拡張子へリネーム（ドッグフーディング） |
+| 17 | 済 | `.work/notes/` の関連ノートを更新 |
+| 18 | 済 | 既存 `.work/tasks/` の全ブランチドキュメント（236件）を `{YYMMDD}-{H1タイトル}.branch.md` 形式へ移行（マージ前のドッグフーディング・案C）。`yyyymmdd_xxx` テンプレ残骸を削除。ネストの旧 QA/TODO ペア（PR174/PR175）は例外として保持 |
+| 19 | 済 | master（`index-yaml-schema-overhaul` マージ済み）を取り込み。新スキーマ（branch キー・id/last_id/tags 撤廃）へ寄せてコンフリクト解決: templates削除維持・`ドットワーク`削除維持・`start`/`issue-save` SKILL 統合・`setup.py` を python-style に整合 |
+| 20 | 済 | `タスクインデックス.md`(+jp) を新スキーマ（branch キー・`created` サロゲート・`index-tool` 新サブコマンド）に書き換え。`イシュー.md`(+jp) と issue-save Step3 を master の新イシュー形式（作成日/問題/修正案/水平展開/関連ドキュメント）に整合 |
+| 21 | 済 | バージョン衝突回避: work を **v2.55.0** に再バンプ（plugin.json/marketplace.json/CLAUDE.md/CLAUDE.jp.md）。CLAUDE changelog に欠落していた v2.54.0（スキーマ）行も補完 |
+| 22 | 済 | `.work/notes/ブランチインデックススキーマ.md` の関連ファイルを本ブランチの削除/リネームに整合 |
 
 ## 変更内容
 
@@ -79,9 +82,11 @@
 |---|---|---|---|
 | 1 | `setup.py` が .work/ 構造を正しくブートストラップする | tasks/notes/issues + 各スケルトンが生成された | OK |
 | 2 | `.branch.md` 編集時に `ワークディレクトリ構成` + `タスクドキュメント`（テンプレ全文）が注入される | 両リファレンス注入・`# {日本語タイトル}` テンプレ確認 | OK |
-| 3 | `.work/issues/**` 編集時に `イシュー.md`（ISSUE テンプレ）が注入される | 注入・`# {ISSUE-N}: {title}` 確認 | OK |
+| 3 | `.work/issues/**` 編集時に `イシュー.md`（新形式: 作成日/問題/修正案/水平展開/関連ドキュメント）が注入される | 注入・`作成日`/`水平展開` 確認 | OK |
 | 4 | `.work/tasks/index.yaml` 編集時に `タスクインデックス.md` が注入される | 注入確認 | OK |
 | 5 | `_injection_rules.yaml` / `_index.yaml`(+jp) が妥当な YAML | パース成功 | OK |
+| 6 | master 取り込み後もコンフリクトマーカー残存なし | `plugins/`・`.work/` 全体で 0 件 | OK |
+| 7 | master 取り込み後も `setup.py` ブートストラップ・注入が動作 | 正常動作確認 | OK |
 
 ## QA
 
