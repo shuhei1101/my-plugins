@@ -6,7 +6,7 @@ references:
     description: work の stop.md と stop-no-merge.md の同期ルール。この 2 ファイルは対称な組であり、ステップ 1〜3 を両ファイルで一致させること。いずれかを編集したら同じ変更をもう片方にも適用する。
 
   - path: work-merge-skill-sync.md
-    description: work の merge SKILL.md とマージフロー仕様書の同期ルール。SKILL.md でステップを追加・削除したら、.work/specs/work-kit-merge-flow.md のステップ番号参照も更新する。
+    description: work の merge SKILL.md とマージフローノートの同期ルール。SKILL.md でステップを追加・削除・並べ替えしたら、.work/notes/work-kitスキル群.md のマージフロー記述も更新し、ノートが実際の挙動を反映し続けるようにする。
 
   - path: work-start-skill-sync.md
     description: work-start・worktree-create・vscode-workspace-sync スキルの同期ルール。work-start の Step 4 は worktree-create に委譲するため、インターフェースを常に整合させること。

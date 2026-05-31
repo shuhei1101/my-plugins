@@ -8,7 +8,7 @@ references:
     description: Sync rule for work stop.md and stop-no-merge.md. The two files are a paired set; steps 1-3 must stay in sync between them. When editing either file, apply the same change to the other.
 
   - path: work-merge-skill-sync.md
-    description: Sync rule for work merge SKILL.md and the merge-flow spec. When adding or removing steps in SKILL.md, update step-number references in .work/specs/work-kit-merge-flow.md too.
+    description: Sync rule for work merge SKILL.md and the merge-flow note. When adding, removing, or reordering steps in SKILL.md, update the merge-flow description in .work/notes/work-kitスキル群.md so the note keeps reflecting the actual behavior.
 
   - path: work-start-skill-sync.md
     description: Sync rule for work-start, worktree-create, and vscode-workspace-sync skills. work-start Step 4 delegates to worktree-create, so their interfaces must stay aligned.
