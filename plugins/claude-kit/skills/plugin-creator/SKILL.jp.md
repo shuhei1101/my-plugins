@@ -25,3 +25,9 @@ description: |
    ref-inject の領分。plugin-creator は `plugin.json` / ルート `CLAUDE.md` / `marketplace.json` の領分）。
 4. 各生成ファイルを `references/provenance.md` に従ってスタンプする — ファイルを書く際に自動注入される
    ので、直接スタンプを書く（スキル呼び出し不要）。
+5. **必須スキルを生成する** — すべてのプラグインは `plugin-migrate`、`setup-wizard`、（env vars がある場合は）
+   `plugin-config` を同梱しなければならない。`setup-wizard` のスケルトンには（`plugin.json` と一緒に注入される）
+   `references/plugin/セットアップウィザード.md` を使う。具体的には:
+   - `skills/setup-wizard/SKILL.md` + `SKILL.jp.md` をスケルトンから作成する
+   - `hooks/hooks.json` に `hooks/scripts/setup_check.py` を参照する `SessionStart` エントリを追加する
+   - `hooks/scripts/setup_check.py` を実装して `.claude/{plugin}.local.md` から `setup_done` を読む

@@ -1,10 +1,10 @@
 ---
-name: plugin-config
+name: work:plugin-config
 description: |
   /work:plugin-config が呼び出されたとき。
   またはユーザーが「設定を変えたい」「env を設定したい」「トグルを切り替えたい」「plugin config」「workspace config」と言ったとき。
 ---
-<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:plugin-config — プラグイントグル設定
 

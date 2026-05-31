@@ -1,5 +1,5 @@
 ---
-name: plugin-migrate
+name: ref-inject:plugin-migrate
 description: |
   ref-inject が適用済みのプラグイン（hooks/scripts/inject_references.py の存在で判定）を検査し、
   注入の仕組みファイルを現行の ref-inject テンプレートに揃える。references/ の内容（ユーザー作成の
@@ -171,10 +171,15 @@ description: |
 1. コンシューマーごとに更新したファイルを一覧表示する。
 2. `git diff` を表示する（大きい場合は省略）。
 3. コンシューマーのファイルに変更がなかった場合は「Already up to date」と報告する。
-4. コミットメッセージ案を提示する:
+4. **setup-wizard 実装確認** — 各コンシューマーについて以下を確認する:
+   - `skills/setup-wizard/SKILL.md` が存在するか
+   - `hooks/hooks.json` に `SessionStart` エントリがあるか
+   - `hooks/scripts/setup_check.py` が存在するか
+   不足している項目は警告として報告する（自動修正しない — ユーザーが手動で実装する）。
+5. コミットメッセージ案を提示する:
    - `chore: sync ref-inject injection hook to v{N}`
    - `{N}` は `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` から取得
-5. **このスキルはコミットしない** — コミットはユーザーの責務。
+6. **このスキルはコミットしない** — コミットはユーザーの責務。
 
 → 完了
 

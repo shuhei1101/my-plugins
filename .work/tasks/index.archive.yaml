@@ -1103,3 +1103,30 @@ branches:
   summary: work プラグインの qa-review スキルをより適切な名称 qa-wizard にリネームする
   task: 260531_rename-qa-review-to-qa-wizard
   completed: true
+- branch: fix/jp-mirror-header-comment
+  created: '2026-05-31'
+  title: JPミラー標準ヘッダーコメント修正
+  type: fix
+  summary: 10件のJPミラーファイルに標準ヘッダーコメントを追加・修正する
+  task: 260531_jp-mirror-header-comment
+  completed: true
+- branch: fix/missing-jp-mirrors
+  created: '2026-05-31'
+  title: JPミラー不足・フォーマット乖離を修正
+  type: fix
+  summary: 'ISSUE-062: 7件のJPミラー新規作成、ISSUE-065: git-guard.jp.md構造修正'
+  task: 260531_missing-jp-mirrors
+  completed: true
+- branch: fix/skill-name-prefix-unification
+  created: '2026-05-31'
+  title: スキル名プレフィックス統一
+  type: fix
+  summary: dev-kit・work・ref-injectの各スキルのnameフィールドにプラグインプレフィックスを付与し命名規則を統一する
+  task: 260531_スキル名プレフィックス統一
+- branch: feat/setup-wizard-skill
+  created: '2026-05-31'
+  title: 全プラグインへのセットアップウィザードスキル実装
+  type: feat
+  summary: 全4プラグインに必須の setup-wizard スキルを追加する
+  task: 260531_setup-wizard-skill
+  completed: true

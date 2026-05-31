@@ -1,23 +1,83 @@
-closed_issues: []
-
+closed_issues:
+- id: ISSUE-062
+  title: ''
+  closed: '2026-05-31'
+  resolution: resolved
+  linked_branch: 0
+  tags: []
+- id: ISSUE-065
+  title: ''
+  closed: '2026-05-31'
+  resolution: resolved
+  linked_branch: 0
+  tags: []
+- id: ISSUE-066
+  title: ''
+  closed: '2026-05-31'
+  resolution: resolved
+  linked_branch: 0
+  tags: []
+- id: ISSUE-032
+  title: ''
+  closed: '2026-05-31'
+  resolution: resolved
+  linked_branch: 0
+  tags: []
+- id: ISSUE-033
+- id: ISSUE-003
+  title: ''
+  closed: '2026-05-31'
+  resolution: resolved
+  linked_branch: 0
+  tags: []
 scan_records:
-  - date: 2026-05-31
-    skill: issue-scan
-    scope: "consistency:plugin-manifests"
-    issues_found: [ISSUE-002, ISSUE-003]
-  - date: 2026-05-31
-    skill: issue-scan
-    scope: "glob:SKILL.md-frontmatter"
-    issues_found: [ISSUE-032, ISSUE-033, ISSUE-034, ISSUE-035]
-  - date: 2026-05-31
-    skill: issue-scan
-    scope: "consistency:jp-mirror-sync"
-    issues_found: [ISSUE-062, ISSUE-063, ISSUE-064, ISSUE-065, ISSUE-066]
-  - date: 2026-05-31
-    skill: issue-scan
-    scope: "pattern:hook-scripts-py"
-    issues_found: [ISSUE-092, ISSUE-093, ISSUE-094, ISSUE-095, ISSUE-096, ISSUE-097]
-  - date: 2026-05-31
-    skill: issue-scan
-    scope: "folder:claude-kit/references"
-    issues_found: [ISSUE-122, ISSUE-123, ISSUE-124, ISSUE-125, ISSUE-126, ISSUE-127, ISSUE-128, ISSUE-129]
+- date: 2026-05-31
+  skill: issue-scan
+  scope: consistency:plugin-manifests
+  issues_found:
+  - ISSUE-002
+  - ISSUE-003
+- date: 2026-05-31
+  skill: issue-scan
+  scope: glob:SKILL.md-frontmatter
+  issues_found:
+  - ISSUE-032
+  - ISSUE-033
+  - ISSUE-034
+  - ISSUE-035
+- date: 2026-05-31
+  skill: issue-scan
+  scope: consistency:jp-mirror-sync
+  issues_found:
+  - ISSUE-062
+  - ISSUE-063
+  - ISSUE-064
+  - ISSUE-065
+  - ISSUE-066
+- date: 2026-05-31
+  skill: issue-scan
+  scope: pattern:hook-scripts-py
+  issues_found:
+  - ISSUE-092
+  - ISSUE-093
+  - ISSUE-094
+  - ISSUE-095
+  - ISSUE-096
+  - ISSUE-097
+- date: 2026-05-31
+  skill: issue-scan
+  scope: folder:claude-kit/references
+  issues_found:
+  - ISSUE-122
+  - ISSUE-123
+  - ISSUE-124
+  - ISSUE-125
+  - ISSUE-126
+  - ISSUE-127
+  - ISSUE-128
+  - ISSUE-129
+- date: 2026-05-31
+  skill: issue-scan
+  scope: glob:hooks.json
+  issues_found:
+  - ISSUE-130
