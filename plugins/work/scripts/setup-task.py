@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-setup-task.py -- Initialize task folder and document for a new branch.
+setup-task.py — 新しいブランチのタスクフォルダとブランチドキュメントを初期化する。
 
-Usage (new task folder):
+使い方（新規タスクフォルダ）:
     python setup-task.py <worktree_path> \\
         --branch <{type}/{title}> \\
         --ja-title <日本語タイトル> \\
@@ -11,7 +11,7 @@ Usage (new task folder):
         [--title <kebab-case-title>] \\
         [--id <N>]
 
-Usage (existing task folder):
+使い方（既存タスクフォルダへ追加）:
     python setup-task.py <worktree_path> \\
         --branch <{type}/{title}> \\
         --ja-title <日本語タイトル> \\
@@ -19,64 +19,64 @@ Usage (existing task folder):
         --plugin-root <plugin_root_path> \\
         [--id <N>]
 
-Creates:
+作成先:
     <worktree>/.work/tasks/<task_dir>/<YYMMDD>-<日本語タイトル>.md
 
-When --ja-title is provided, the file name uses the Japanese title.
-When --ja-title is omitted, the branch name is hyphenated and used as a fallback
-(e.g. refactor/rename-pr-to-branch -> YYMMDD-refactor-rename-pr-to-branch.md).
-The date prefix is taken from --date, or extracted from --task-dir (the 6-digit YYMMDD prefix).
+--ja-title が指定された場合、ファイル名に日本語タイトルを使用する。
+--ja-title が省略された場合、ブランチ名をハイフン化してフォールバックとして使う
+（例: refactor/rename-pr-to-branch → YYMMDD-refactor-rename-pr-to-branch.md）。
+日付プレフィックスは --date から取得するか、--task-dir の 6 桁 YYMMDD プレフィックスから抽出する。
 
-When --task-dir is omitted, the folder name is built from --date and --title.
-When --task-dir is provided, --date and --title are optional (used only in the document heading).
+--task-dir が省略された場合、--date と --title からフォルダ名を生成する。
+--task-dir が指定された場合、--date と --title は任意（ドキュメントの見出しにのみ使用）。
 
---id is the internal numeric ID tracked in index.yaml (archive cross-reference). It is accepted for
-interface compatibility but is NOT written into the document or the file name. Legacy invocations
-with --pr are accepted as an alias for --id.
+--id はブランチの内部 ID（index.yaml のクロスリファレンス用）。インターフェース互換性のために
+受け付けるが、ドキュメントやファイル名には記載しない。--pr は --id の別名（後方互換）。
 """
+
+from __future__ import annotations
 
 import argparse
 import pathlib
 import sys
 
 
-def main() -> None:
+def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Create a branch task folder and initial document from template."
+        description="新しいブランチのタスクフォルダとブランチドキュメントをテンプレートから作成する。"
     )
-    parser.add_argument("worktree", help="Path to the git worktree")
+    parser.add_argument("worktree", help="git ワークツリーのパス")
     parser.add_argument(
         "--id",
         "--pr",
         dest="id",
         default=None,
         type=int,
-        help="Internal numeric ID tracked in index.yaml (accepted for interface compatibility; "
-             "not written into the document). --pr is accepted as an alias for back-compat.",
+        help="index.yaml で追跡する内部 ID（インターフェース互換性のために受け付けるが、ドキュメントには記載しない）。"
+             "--pr は後方互換の別名。",
     )
     parser.add_argument(
         "--branch",
         required=True,
-        help="Full branch name (e.g. refactor/rename-pr-to-branch). "
-             "Used in the document header. When --ja-title is omitted, slashes are converted "
-             "to hyphens to form the file name.",
+        help="フルブランチ名（例: refactor/rename-pr-to-branch）。ドキュメントヘッダーに使用する。"
+             "--ja-title が省略された場合、スラッシュをハイフンに変換してファイル名に使用する。",
     )
     parser.add_argument(
         "--ja-title",
         default="",
         dest="ja_title",
-        help="Japanese title used as the file name stem (e.g. ブランチ文書ファイル名変更). "
-             "When provided, the file is named <YYMMDD>-<ja-title>.md.",
+        help="ファイル名ステムに使う日本語タイトル（例: ブランチ文書ファイル名変更）。"
+             "指定した場合、ファイルは <YYMMDD>-<ja-title>.md になる。",
     )
-    parser.add_argument("--title", default="", help="Task title (kebab-case); used in the folder name when creating a new folder")
-    parser.add_argument("--date", default="", help="Date in YYMMDD format")
+    parser.add_argument("--title", default="", help="タスクタイトル（kebab-case）。新規フォルダ作成時にフォルダ名に使用する。")
+    parser.add_argument("--date", default="", help="YYMMDD 形式の日付")
     parser.add_argument(
         "--task-dir",
         default="",
-        help="Existing task folder name (e.g. 260515_my-task). "
-             "When omitted, a new folder is created from --date and --title.",
+        help="既存タスクフォルダ名（例: 260515_my-task）。"
+             "省略した場合、--date と --title から新規フォルダを作成する。",
     )
-    parser.add_argument("--plugin-root", required=True, help="Plugin root path")
+    parser.add_argument("--plugin-root", required=True, help="プラグインルートのパス")
     args = parser.parse_args()
 
     worktree = pathlib.Path(args.worktree)
@@ -88,10 +88,10 @@ def main() -> None:
     else:
         if not args.date or not args.title:
             print(
-                "ERROR: --date and --title are required when --task-dir is not specified.",
+                "エラー: --task-dir を省略する場合は --date と --title が必要です。",
                 file=sys.stderr,
             )
-            sys.exit(1)
+            return 1
         task_folder_name = f"{args.date}_{args.title}"
         title_for_heading = args.title
 
@@ -103,22 +103,22 @@ def main() -> None:
             p.name for p in tasks_root.iterdir() if p.is_dir() and p.name != ".gitignore"
         ) if tasks_root.exists() else []
         print(
-            f"ERROR: task folder '{task_folder_name}' does not exist.\n"
-            f"Existing folders: {existing or '(none)'}",
+            f"エラー: タスクフォルダ '{task_folder_name}' が存在しません。\n"
+            f"既存フォルダ: {existing or '(なし)'}",
             file=sys.stderr,
         )
-        sys.exit(1)
+        return 1
 
     task_dir.mkdir(parents=True, exist_ok=True)
 
-    # Determine date prefix: from --date, or extract from task folder name (YYMMDD_xxx format).
+    # 日付プレフィックスを決定: --date、またはタスクフォルダ名（YYMMDD_xxx 形式）から抽出する。
     date_prefix = args.date
     if not date_prefix and task_folder_name:
         prefix = task_folder_name.split("_")[0]
         if len(prefix) == 6 and prefix.isdigit():
             date_prefix = prefix
 
-    # Determine file name stem: Japanese title takes priority; fall back to hyphenated branch name.
+    # ファイル名ステムを決定: 日本語タイトル優先、なければブランチ名のハイフン化を使う。
     if args.ja_title:
         name_stem = args.ja_title
     else:
@@ -130,7 +130,7 @@ def main() -> None:
         plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "yymmdd-日本語タイトル.md"
     )
     if not template_path.exists():
-        # Back-compat: fall back to legacy template names.
+        # 後方互換: レガシーテンプレート名にフォールバック。
         template_path = (
             plugin_root / "templates" / ".work" / "tasks" / "yymmdd_xxx" / "yymmdd-branch-name.md"
         )
@@ -154,6 +154,7 @@ def main() -> None:
 
     print(f"Task folder : {task_dir}")
     print(f"Created     : {dest_path}")
+    return 0
 
 
 def _create_from_template(
@@ -162,7 +163,7 @@ def _create_from_template(
     replacements: dict[str, str],
 ) -> None:
     if not template_path.exists():
-        print(f"ERROR: template not found: {template_path}", file=sys.stderr)
+        print(f"エラー: テンプレートが見つかりません: {template_path}", file=sys.stderr)
         sys.exit(1)
 
     content = template_path.read_text(encoding="utf-8")
@@ -172,4 +173,4 @@ def _create_from_template(
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

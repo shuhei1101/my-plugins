@@ -70,7 +70,7 @@ def _ttl() -> int:
         try:
             return max(0, int(raw))
         except ValueError:
-            _eprint(f"invalid {ENV_PREFIX}_INJECTION_TTL={raw!r}, using default {DEFAULT_TTL}")
+            _eprint(f"{ENV_PREFIX}_INJECTION_TTL={raw!r} が不正な値です。デフォルト {DEFAULT_TTL} を使用します。")
     return DEFAULT_TTL
 
 
@@ -129,7 +129,7 @@ def _load_token(path: pathlib.Path, yaml) -> dict[str, dict]:
     try:
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     except Exception as e:
-        _eprint(f"token parse error ({path.name}): {e}")
+        _eprint(f"トークンパースエラー ({path.name}): {e}")
         return {}
     return data if isinstance(data, dict) else {}
 
@@ -138,7 +138,7 @@ def _save_token(path: pathlib.Path, data: dict[str, dict], yaml) -> None:
     try:
         path.write_text(yaml.safe_dump(data, allow_unicode=True, sort_keys=True), encoding="utf-8")
     except Exception as e:
-        _eprint(f"token write error ({path.name}): {e}")
+        _eprint(f"トークン書き込みエラー ({path.name}): {e}")
 
 
 def _cleanup_expired(token_dir: pathlib.Path, now: float, yaml) -> None:
@@ -186,7 +186,7 @@ def _cleanup_expired(token_dir: pathlib.Path, now: float, yaml) -> None:
 # main
 # --------------------------------------------------------------------------- #
 def main() -> int:
-    # ====== Master kill switch ======
+    # ====== 強制停止スイッチ ======
     if os.environ.get(f"{ENV_PREFIX}_INJECTION_DISABLE", "").lower() in TRUTHY:
         return 0
 
@@ -195,13 +195,13 @@ def main() -> int:
         import yaml
         from jinja2 import Environment, FileSystemLoader, StrictUndefined
     except ImportError as e:
-        _eprint(f"missing dependency: {e}. install with: uv add --dev pyyaml jinja2")
+        _eprint(f"依存ライブラリが見つかりません: {e}。`uv add --dev pyyaml jinja2` でインストールしてください。")
         return 0
 
     try:
         data = json.loads(sys.stdin.read())
     except Exception as e:
-        _eprint(f"stdin parse error: {e}")
+        _eprint(f"stdin パースエラー: {e}")
         return 0
 
     tool_name = data.get("tool_name", "")
@@ -224,17 +224,17 @@ def main() -> int:
     rules_yaml = ref_injects_dir / "_injection_rules.yaml"
     index_yaml = ref_injects_dir / index_filename
     if not rules_yaml.exists():
-        _eprint(f"_injection_rules.yaml not found at {rules_yaml}")
+        _eprint(f"_injection_rules.yaml が見つかりません: {rules_yaml}")
         return 0
     if not index_yaml.exists():
-        _eprint(f"{index_filename} not found at {index_yaml}")
+        _eprint(f"{index_filename} が見つかりません: {index_yaml}")
         return 0
 
     # ----- _injection_rules.yaml をロード -----
     try:
         rules_doc = yaml.safe_load(rules_yaml.read_text(encoding="utf-8")) or {}
     except Exception as e:
-        _eprint(f"_injection_rules.yaml parse error: {e}")
+        _eprint(f"_injection_rules.yaml パースエラー: {e}")
         return 0
     rules = rules_doc.get("rules") or []
 
@@ -248,7 +248,7 @@ def main() -> int:
             if p:
                 descriptions[p] = d
     except Exception as e:
-        _eprint(f"{index_filename} parse error: {e}")
+        _eprint(f"{index_filename} パースエラー: {e}")
 
     # ----- file_path の候補を作る (絶対パス + プロジェクトルートからの相対パス) -----
     norm: list[str] = [file_path.replace("\\", "/")]
@@ -337,7 +337,7 @@ def main() -> int:
             try:
                 body = p.read_text(encoding="utf-8")
             except Exception as e:
-                _eprint(f"reference read error ({rel_path}): {e}")
+                _eprint(f"リファレンス読み込みエラー ({rel_path}): {e}")
         return {
             "path": rel_path,
             "abs_path": p.as_posix(),
@@ -373,7 +373,7 @@ def main() -> int:
             optional=optional_data,
         )
     except Exception as e:
-        _eprint(f"template render error ({template_filename}): {e}")
+        _eprint(f"テンプレートレンダリングエラー ({template_filename}): {e}")
         lines = [f"# {PLUGIN_NAME} references (template error: {e})", "", f"target: {file_path}", ""]
         for r in required_data:
             lines.append(f"## {r['abs_path']} — {r['description']}")
