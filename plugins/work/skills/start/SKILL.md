@@ -18,7 +18,7 @@ This prevents task documents from being created in the main repository.
 > The branch document filename is `{YYMMDD}-{日本語タイトル}.branch.md` — the Japanese title collected in Step 2
 > (e.g. `260531-ブランチ文書ファイル名変更.branch.md`). The `.branch.md` extension marks it as the branch
 > document (the task folder may also hold user files). The git branch name is recorded inside the document header.
-> An internal numeric ID is still tracked in `index.yaml` for archive metadata, but it does not appear in branch names, worktree paths, or branch document filenames.
+> The branch index (`index.yaml`) is keyed by the branch name; there is no numeric ID or `last_id`.
 
 ---
 
@@ -44,18 +44,11 @@ This prevents task documents from being created in the main repository.
    - If `$author` is non-empty: branch name is `{type}/${author}/{title}` (e.g. `feat/nishikawa/test-update`)
    - If `$author` is empty or unset: branch name is `{type}/{title}` (e.g. `feat/test-update`)
 
-3. Reserve an internal ID for `index.yaml` bookkeeping (used in the archive — it does not appear in the branch name itself):
-
-```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yaml
-```
-
 → Proceed to Step 2
 
 #### Output
 
 - Branch name decided (with or without author segment)
-- Internal ID `{N}` reserved
 
 ---
 
@@ -100,7 +93,6 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
-  --id {N} \
   --branch "{full-branch-name}" \
   --title "{日本語タイトル}" \
   --type {type} \
@@ -112,14 +104,12 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Output
 
-- `.work/tasks/index.yaml` updated with the new branch entry and `last_id` (main repository)
+- `.work/tasks/index.yaml` updated with the new branch entry (main repository)
 
 #### Notes
 
 - `index.yaml` is excluded by `.work/tasks/.gitignore` — no commit to master is needed
 - Use a 6-digit `YYMMDD` (e.g. `260530`), not the 8-digit `YYYYMMDD` form
-- `--id {N}` is the internal numeric ID reserved in Step 1; it is recorded in the YAML row but
-  not embedded in the branch / worktree / filename
 - `--branch` records the git branch name; `--title` records the Japanese document title
 
 ---

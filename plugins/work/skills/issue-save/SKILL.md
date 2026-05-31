@@ -18,13 +18,14 @@ Called by `issue-scan` and `issue-create` with the issue information to record.
 
 **Information received from the caller**:
 - Title (required): one-sentence summary of the issue
-- Type (required): one of `refactor` / `rule-violation` / `ui` / `backend`
-- Priority (required): one of `high` / `medium` / `low`
-- Tags (optional): list of relevant keywords
-- Scan scope (optional): which file or layer was scanned (provided by issue-scan)
+- Type (required): one of `refactor` / `rule-violation` / `ui` / `backend` — recorded in `_index.yaml` only
+- Priority (required): one of `high` / `medium` / `low` — recorded in `_index.yaml` only
+- Tags (optional): list of relevant keywords — recorded in `_index.yaml` only
+- Scan scope (optional): which file or layer was scanned (provided by issue-scan) — recorded in `_index.yaml` only
 - Problem description (required): explanation of what the problem is
-- User's words (optional): quote from the user's input (provided by issue-create)
 - Suggested fix (optional): direction for a fix — omit if unknown
+- Horizontal expansion (optional): notes on whether the same problem exists elsewhere in the codebase (provided by issue-scan)
+- Related documents (optional): links to relevant references or notes
 
 **Return value**: the created issue ID (e.g. `ISSUE-003`), returned to the caller
 
@@ -81,10 +82,11 @@ Called by `issue-scan` and `issue-create` with the issue information to record.
 #### Process
 
 1. `Write` `.work/issues/ISSUE-{N}.md`. The issue-file structure is **auto-injected** from
-   `references/work-dir/イシュー.md` the moment you write a file under `.work/issues/` (your first
-   write is blocked once and the template appears). Author the file from that injected template —
-   fill in the fields received from the caller; omit the `Scan scope` line / `User's words` /
-   `Suggested fix` sections when their data was not provided.
+   `references/work-dir/イシュー.md` the moment you write a file under `.work/issues/` (the first
+   write is blocked once and the template appears). Author the file from that injected template,
+   filling in the fields from the caller; omit the `## 修正案` / `## 水平展開` / `## 関連ドキュメント`
+   sections when their data was not provided. Type / Priority / Tags / Scan scope live in
+   `_index.yaml` only — not in the issue file.
 
 → Proceed to Step 4
 
