@@ -3,7 +3,7 @@
 Keep the task document template in sync with the fill-in guidance in `work-start` SKILL.md Step 7.
 If the section structure in the template diverges from the fill-in guidance, generated task
 documents will not match the documented workflow.
-Japanese mirror: `references/TODOテンプレート同期.jp.md`
+Japanese mirror: `references/skill-sync/TODOテンプレート同期.jp.md`
 
 ---
 
