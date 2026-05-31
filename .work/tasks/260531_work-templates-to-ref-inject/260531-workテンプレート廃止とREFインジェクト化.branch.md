@@ -52,7 +52,7 @@
 | 16 | 済 | バージョン記述更新（plugin.json/marketplace.json/CLAUDE.md/CLAUDE.jp.md, v2.54.0） |
 | 17 | 済 | 現ブランチドキュメント自身を `.branch.md` 拡張子へリネーム（ドッグフーディング） |
 | 18 | 済 | `.work/notes/` の関連ノートを更新 |
-| 19 | - | 既存 `.work/tasks/` の全ブランチドキュメント（236件）を `{YYMMDD}-{H1タイトル}.branch.md` 形式へ移行（マージ前のドッグフーディング・案C）。`yyyymmdd_xxx` テンプレ残骸を削除 |
+| 19 | 済 | 既存 `.work/tasks/` の全ブランチドキュメント（236件）を `{YYMMDD}-{H1タイトル}.branch.md` 形式へ移行（マージ前のドッグフーディング・案C）。`yyyymmdd_xxx` テンプレ残骸を削除。ネストの旧 QA/TODO ペア（PR174/PR175）は例外として保持 |
 
 ## 変更内容
 
