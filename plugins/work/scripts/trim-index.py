@@ -30,7 +30,7 @@ except ImportError:
 # ── 定数 ────────────────────────────────────────────────────
 DEFAULT_INDEX = Path(".work/tasks/index.yaml")
 ARCHIVE_NAME = "index.archive.yaml"
-HEADER_COMMENT = "# .work/tasks/index.archive.yaml — Archived (completed) PR entries\n\n"
+HEADER_COMMENT = "# .work/tasks/index.archive.yaml — Archived (completed) branch entries\n\n"
 
 
 # ── 内部ヘルパ ──────────────────────────────────────────────

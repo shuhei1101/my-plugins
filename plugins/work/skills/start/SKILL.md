@@ -268,8 +268,8 @@ Verify they are correct; do not overwrite them.
 | # | 完了 | 作業内容 |
 |---|---|---|
 | 1 | - | Record unresolved questions in `## QA` (this same document) |
-| 2 | - | Update the note document in `.work/notes/` |
-| 3 | - | (Implementation tasks: replace with branch-specific work) |
+| 2 | - | (Implementation tasks: replace with branch-specific work) |
+| 3 | - | Update the note document in `.work/notes/` |
 
 **`## 変更内容`** — the implementation files this branch adds or modifies (excluding tests). Fill in
 once implementation starts — every file that lands in a commit goes here:
@@ -279,9 +279,9 @@ once implementation starts — every file that lands in a commit goes here:
 **`## テスト`** — manual test / smoke-test execution log. Record each scenario checked, the actual
 result observed, and the verdict (OK / NG). Leave a single placeholder row if no tests were run.
 
-**`## QA`** — record open questions from Step 2 as QA-XXX entries here (Step 9 below appends them).
+**`## QA`** — record open questions from Step 2 as QA-XXX entries here (Step 8 below appends them).
 
-**`## 参考ドキュメント`** — links to related notes / specs (the note from Step 8 is appended here).
+**`## 参考ドキュメント`** — links to related notes. Leave empty for now; the note path is added in Step 10 (final commit).
 
 **`## 関連イシュー`** — list `.work/issues/ISSUE-{N}` entries this branch resolves
 (table format: `| # | ID | 概要 | resolution |`). `resolution` is `resolved` or `wontfix`.
@@ -299,7 +299,7 @@ follow-ups) (table format: `| # | ブランチ | 概要 |`). Leave the placehold
 
 ---
 
-### Step 8: Maintain the note document (inside worktree)
+### Step 8: Record open questions in the `## QA` section (inside worktree)
 
 #### Condition
 
@@ -307,41 +307,20 @@ follow-ups) (table format: `| # | ブランチ | 概要 |`). Leave the placehold
 
 #### Process
 
-1. Check `.work/notes/` inside the worktree for a related note
-2. If found → update the relevant sections for this branch
-3. If not found → create a new note using the template at `${CLAUDE_PLUGIN_ROOT}/templates/note.md`
-   - The note H1 title must be written **entirely in Japanese** (e.g. `# 機能名 — 一行説明`)
-   - Technical identifiers (plugin names, command names, file paths) may remain in their original form
-4. Add a link to the note in the branch document's `## 参考ドキュメント` section
-5. Update (or create) `.work/notes/_index.md`:
-   - Add the new note to the appropriate category, or update the entry if the note already existed
-   - If `_index.md` does not exist, create it with all current notes grouped by category
+1. Append any open questions from Step 2 to the `## QA` section of the branch document as QA-XXX entries
+2. Skip if there are no open questions
 
 → Proceed to Step 9
 
 ---
 
-### Step 9: Record open questions in the `## QA` section (inside worktree)
-
-#### Condition
-
-- Step 8 complete
+### Step 9: First commit — create branch document, then start implementation
 
 #### Process
 
-1. Append any open questions from Step 2 to the `## QA` section of the branch document as QA-XXX entries
-2. Skip if there are no open questions
-
-→ Proceed to Step 10
-
----
-
-### Step 10: Commit created content, report to user, then start implementation
-
-#### Process
-
-1. Commit all created files inside the worktree (branch: `{branch}`)
-2. Report what was created: branch name, worktree path, branch document path, note path
+1. Commit **only the branch document** inside the worktree (branch: `{branch}`)
+   - Do **not** include notes at this stage — notes are committed in the final Step 10
+2. Report what was created: branch name, worktree path, branch document path
 3. Start implementation:
    - **If QA entries exist** → ask the user for confirmation before starting
    - **If no QA entries** → proceed with implementation immediately
@@ -351,12 +330,19 @@ follow-ups) (table format: `| # | ブランチ | 概要 |`). Leave the placehold
 ##### Prohibitions
 
 - Never commit to anywhere other than the created worktree (`{branch}` branch)
+- Never include notes or final updates in this first commit
 
 ##### Commit granularity
 
 - Commit in meaningful units that are easy for the user to understand
 - Do not split commits too finely
-- Do not mix planning documents (branch document, notes, etc.) and implementation code in the same commit
+- Do not mix planning documents (branch document) and implementation code in the same commit
+
+##### Commit ordering
+
+This commit is always the **first** commit of the branch.
+Implementation commits follow in the middle.
+The final commit (Step 10) closes the branch with notes and branch document updates.
 
 ##### Commit message language
 
@@ -376,3 +362,29 @@ use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no
 | `EN` | `true` | `chore: create branch document for feat/commit-message-options` |
 | `JP` | `false` | `feat/commit-message-options のブランチドキュメントを作成` |
 | `EN` | `false` | `create branch document for feat/commit-message-options` |
+
+---
+
+### Step 10: Final commit — update notes and branch document
+
+#### Condition
+
+- All implementation work is complete
+
+#### Process
+
+1. Check `.work/notes/` inside the worktree for a related note
+2. If found → update it to reflect the current state (a note is a **current spec sheet** — overwrite stale text, don't append history)
+3. If not found → create a new note following `ノート記述内容ルール.md` (auto-injected when you edit a file under `.work/notes/`): present state only, no YAML frontmatter, fixed template ending in a `## 変更履歴` table
+   - The note H1 title must be written **entirely in Japanese** (e.g. `# 機能名 — 一行説明`)
+   - Technical identifiers (plugin names, command names, file paths) may remain in their original form
+4. Add a link to the note in the branch document's `## 参考ドキュメント` section
+5. Update (or create) `.work/notes/_index.md`:
+   - Add the new note to the appropriate category, or update the entry if the note already existed
+   - If `_index.md` does not exist, create it with all current notes grouped by category
+6. Commit the updated notes + branch document together as the **final commit** of the branch
+
+#### Notes
+
+- This is always the **last** commit of the branch
+- Commit notes and branch document together — do not split them

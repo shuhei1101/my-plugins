@@ -29,6 +29,7 @@
 | [TypeScript型チェックフック.md](TypeScript型チェックフック.md) | TypeScript 型チェックフック (PR143) |
 | [Jinja2テンプレート記法メモ.md](Jinja2テンプレート記法メモ.md) | Jinja2 テンプレート記法メモ — .j2 ファイル記述時の既知の罠と対処法 |
 | [Jinja2テンプレート執筆ルール.md](Jinja2テンプレート執筆ルール.md) | Jinja2 テンプレート執筆ルール — Markdown 出力時の注意事項 (PR222) |
+| [vscode-workspace-syncスキル.md](vscode-workspace-syncスキル.md) | vscode-workspace-syncスキル — VS Code ワークスペースと worktree の同期 |
 
 ---
 
@@ -48,6 +49,9 @@
 | [work-kitスキル群.md](work-kitスキル群.md) | work-kit スキル群 — 設計メモ |
 | [AskUserQuestion制約リファレンス.md](AskUserQuestion制約リファレンス.md) | AskUserQuestion 制約リファレンス — スキルからの呼び出しガイド |
 | [claude-kit-plugin-update-sync.md](claude-kit-plugin-update-sync.md) | claude-kit 成果物同期 — plugin-update スキルによるリポジトリ規約同期 |
+| [env-syncスキル.md](env-syncスキル.md) | env-syncスキル — WSL ↔ Windows 間の Claude Code 設定同期 |
+| [debug-fabスキル.md](debug-fabスキル.md) | debug-fabスキル — 開発系画面のフロートデバッグボタン |
+| [html-kitスキル群.md](html-kitスキル群.md) | html-kitスキル群 — dev-kit の HTML/UI 系スキル群と規約 |
 
 ---
 
@@ -63,6 +67,8 @@
 | [プラグインCLAUDE標準構成.md](プラグインCLAUDE標準構成.md) | プラグイン CLAUDE.md 標準構成 — 標準セクション定義 |
 | [claude-kit-references-structure.md](claude-kit-references-structure.md) | claude-kit リファレンス構造整理 — サブフォルダ分割設計メモ |
 | [plugin-migrate-rename.md](plugin-migrate-rename.md) | plugin-migrate スキル命名規則 — plugin-update から plugin-migrate へのリネーム |
+| [marketplace-upgradeコマンド.md](marketplace-upgradeコマンド.md) | marketplace-upgradeコマンド — インストール済みプラグインの一括更新 |
+| [リファレンスファイル名日本語化.md](リファレンスファイル名日本語化.md) | リファレンスファイル名日本語化 — 全プラグインの references/ ファイル名を日本語に統一する |
 
 ---
 
@@ -75,7 +81,9 @@ env 設定・運用ポリシー・用語規約に関するメモ。
 | [保護ブランチenv化.md](保護ブランチenv化.md) | 保護ブランチ env 化 — PR177 |
 | [envトグル実装メモ.md](envトグル実装メモ.md) | env トグル実装メモ（PR164 / feat/commit-message-options） |
 | [JPミラーポリシー.md](JPミラーポリシー.md) | JP ミラーポリシー — .md 作成時の .jp.md 強制 |
+| [jpミラーファイルヘッダー規約.md](jpミラーファイルヘッダー規約.md) | JP ミラーファイルヘッダー規約 — HTML コメント形式に統一 |
 | [PR用語廃止・ブランチ用語統一.md](PR用語廃止・ブランチ用語統一.md) | PR 用語廃止・ブランチ用語統一 |
+| [ノートフロントマタースキーマ.md](ノートフロントマタースキーマ.md) | ノートフロントマタースキーマ — `.work/notes/` ファイルの YAML ヘッダー仕様 |
 
 ---
 
@@ -98,6 +106,7 @@ env 設定・運用ポリシー・用語規約に関するメモ。
 | [インシデント判定基準.md](インシデント判定基準.md) | インシデント判定基準ノート (PR112) |
 | [マージStep12-次PR一覧.md](マージStep12-次PR一覧.md) | マージ Step 12 — 次 PR 一覧の出力フォーマット |
 | [ノートインデックス同期ルール.md](ノートインデックス同期ルール.md) | ノートインデックス同期ルール — _index.md 自動更新促進の設計メモ |
+| [インシデント — マージスキルStep3スキップによるmaster上コンフリクト.md](インシデント — マージスキルStep3スキップによるmaster上コンフリクト.md) | インシデント — マージスキル Step 3 スキップによる master 上コンフリクト |
 
 ---
 

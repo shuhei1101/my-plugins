@@ -87,7 +87,7 @@ description: |
 | `references/_index.yaml` / `_index.jp.yaml` | `references/…`（同名） |
 | `references/_injection_rules.yaml` | `references/_injection_rules.yaml` |
 | `references/CLAUDE.md` / `CLAUDE.jp.md` | `references/…`（同名） |
-| `references/example/getting-started.md` | `references/example/getting-started.md` |
+| `references/example/はじめに.md` | `references/example/はじめに.md` |
 
 メモ:
 - パスはテンプレートをそのまま反映 — 移動なし。

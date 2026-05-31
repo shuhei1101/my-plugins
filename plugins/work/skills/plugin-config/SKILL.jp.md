@@ -17,7 +17,7 @@ env トグル変数をインタラクティブに設定するスキル。
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
-| `WORK_PR_ENFORCEMENT` | UserPromptSubmit work-start 強制注入 | 有効 |
+| `WORK_BRANCH_ENFORCEMENT` | UserPromptSubmit work-start 強制注入 | 有効 |
 | `WORK_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
 | `WORK_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
 | `WORK_MERGE_PROPOSAL` | Stop フックでの `/work:merge` 提案 | 有効 |
@@ -59,7 +59,7 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 | env 変数 | 状態 | 設定ファイル |
 |---|---|---|
-| WORK_PR_ENFORCEMENT | ON | .claude/settings.json |
+| WORK_BRANCH_ENFORCEMENT | ON | .claude/settings.json |
 | ...（以下同様）| | |
 ```
 
@@ -80,7 +80,7 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 ```
 設定する変数の番号を入力してください（0 で終了）:
 
-  1. [{state}] WORK_PR_ENFORCEMENT — UserPromptSubmit work-start 強制注入
+  1. [{state}] WORK_BRANCH_ENFORCEMENT — UserPromptSubmit work-start 強制注入
   2. [{state}] WORK_STOP_REMINDER — Stop TODO/QA リマインダー注入
   3. [{state}] WORK_USE_WORKTREE — work-start での worktree 作成
   4. [{state}] WORK_MERGE_PROPOSAL — Stop フックでの merge 提案

@@ -2,8 +2,8 @@
 created_at: YYYY-MM-DD
 updates:
   - YYYY-MM-DD — {更新内容}
-related_specs:
-  - {related-spec}.md
+related_notes:
+  - {related-note}.md
 related_branches:
   - {type}/{title}
 ---

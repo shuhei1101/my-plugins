@@ -2,7 +2,7 @@
 created_at: 2026-05-24
 updates:
   - 2026-05-24 — PR107: Step 12 出力をテーブル形式に変更
-related_specs: []
+related_notes: []
 related_prs:
   - PR99
   - PR107

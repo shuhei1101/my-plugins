@@ -10,6 +10,7 @@ updates:
   - 2026-05-31 — #238: merge スキル Step 11（branch-reserve 呼び出し）を Step 10（完了報告）より前に移動しコミット分離を解消
   - 2026-05-31 — #240: merge スキル Step 3 の git コマンドにワークツリーパスを明示（実行コンテキスト不明による master 汚染を防止）
   - 2026-05-31 — #245: work:start のブランチドキュメントテンプレートから行4「ルール/CLAUDE.md 更新」を削除、Step 2 の QA 観点を補強
+  - 2026-05-31 — #253: work:start のコミット順序を修正（Step 8 = QA、Step 9 = ブランチ文書のみ first commit、Step 10 = ノート＋ブランチ文書 final commit）
 related_prs:
   - PR91
   - PR109
@@ -200,3 +201,50 @@ H1 はそのブランチ作業を表す日本語タイトルを書くプレー�
 
 - `plugins/work/skills/start/SKILL.jp.md`: 行4削除・Step 2 観点補強・行1文言改善
 - `plugins/work/skills/start/SKILL.md`: 同上（EN 版）
+
+## ブランチドキュメントテンプレートのテスト表列更新（#247）
+
+### 変更前
+
+`## テスト` セクションが手動テスト・動作確認の記録向けで、列は「確認内容・実測結果・判定」だった。
+
+### 変更後
+
+単体テストのメソッド単位記録向けに列を変更した：
+
+| # | ファイル名 | メソッド名 | 期待値 | 実値 | 判定 | 補足 |
+
+セクション説明文も「手動テスト・動作確認の実施記録」に更新。
+
+### 変更ファイル
+
+- `plugins/work/templates/.work/tasks/yymmdd_xxx/yymmdd-日本語タイトル.md`: テスト表の列を更新
+
+## branch-index-cleanup スキル — 現行仕様
+
+git ブランチと `index.yaml` / `index.archive.yaml` の乖離を整理するワークフロー。`git branch` に存在し両 index に未登録のブランチを「未登録ブランチ」として収集し、A/B/C に分類して処置する。
+
+| 分類 | 意味 | 処置 |
+|---|---|---|
+| A | 完了済み・不要 | ブランチ削除のみ |
+| B | 完了済み・記録したい | `index.archive.yaml` に追記 → ブランチ削除 |
+| C | 作業中・継続 | `index.yaml` に追記（`completed: false`） |
+
+- B はブランチ名（例 `PR42/feat/some-feature`）から `id` / `title` / `type` を自動推定し（`summary` は空欄）、ユーザーが確認・修正できるインタラクティブフロー。
+
+## merge フロー — index archive の現行仕様
+
+| ファイル | git 管理 | 存在場所 |
+|---|---|---|
+| `index.yaml` | gitignore（非追跡） | メインリポジトリのみ |
+| `index.archive.yaml` | 追跡済み | メインリポジトリ・worktree 双方 |
+
+- archive は `completed: true` のエントリのみを移動するため、merge では先に `set-completed` で `true` をセットする。
+- archive コマンドはメインリポジトリの `index.yaml` を読み、worktree の `index.archive.yaml` に書き込む。worktree でコミットし `--no-ff` マージで master に取り込む。
+- `python index-tool.py set-completed [index_yaml] --id N` で対象エントリの `completed` を `true` に更新して上書き保存（対象が無ければエラー終了）。
+
+## 変更履歴
+
+| # | 日付 | 変更内容 | 関連タスク |
+|---|---|---|---|
+| 1 | 260531 | branch-index-cleanup / merge archive フローの現行仕様を specs から追記 | 260531_notes-spec-and-ref-inject |

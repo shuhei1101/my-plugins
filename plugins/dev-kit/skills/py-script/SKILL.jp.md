@@ -1,9 +1,6 @@
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 # SKILL.jp.md — dev-kit:py-script（日本語ミラー）
 
-> このファイルは `SKILL.md` の日本語ミラーです。Claude Code には読み込まれません。
-> 変更する場合は JP ミラーを先に更新し、その後 `SKILL.md` にも反映してください。
-
 ---
 
 **スキル名**: dev-kit:py-script
@@ -32,21 +29,21 @@ dev-kit Python 規約に従った単一ファイル / 数ファイルのスク�
 スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-script` → プラグインルートは `.../dev-kit/`）。
 
 このスキルで読むべきもの:
-- `{plugin_root}/references/python/core/naming.md` — 命名規約
-- `{plugin_root}/references/python/core/comments.md` — docstring とフィールド説明
-- `{plugin_root}/references/python/core/type-hints.md` — PEP 695 / 型注釈
-- `{plugin_root}/references/python/core/language-rules.md` — 日本語コメント / 英語ログ
-- `{plugin_root}/references/python/core/style.md` — ruff / 行長
-- `{plugin_root}/references/python/scripts/python-script.md` — スクリプト構造
+- `{plugin_root}/references/python/core/命名規則.md` — 命名規約
+- `{plugin_root}/references/python/core/コメント.md` — docstring とフィールド説明
+- `{plugin_root}/references/python/core/型ヒント.md` — PEP 695 / 型注釈
+- `{plugin_root}/references/python/core/言語ルール.md` — 日本語コメント / 英語ログ
+- `{plugin_root}/references/python/core/スタイル.md` — ruff / 行長
+- `{plugin_root}/references/python/scripts/Pythonスクリプト.md` — スクリプト構造
 
 bat ランチャーも作るなら:
 - `{plugin_root}/references/python/scripts/launchers-windows.md`
 
 UNIX ランチャーなら:
-- `{plugin_root}/references/python/scripts/launchers-unix.md`
+- `{plugin_root}/references/python/scripts/ランチャー-Unix.md`
 
 tkinter GUI なら:
-- `{plugin_root}/references/python/scripts/tkinter.md`
+- `{plugin_root}/references/python/scripts/Tkinter.md`
 
 → ステップ2へ
 

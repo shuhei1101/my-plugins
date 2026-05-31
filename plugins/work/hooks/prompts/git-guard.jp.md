@@ -1,9 +1,6 @@
 <!-- This file is a Japanese mirror of git-guard.md. When updating the English original, update this file too. -->
 # git-guard.jp.md — git-guard プロンプト（日本語ミラー）
 
-> このファイルは `git-guard.md` の日本語ミラーです。Claude Code には読み込まれません。
-> 変更する場合は JP ミラーを先に更新し、その後 `git-guard.md` にも反映してください。
-
 ---
 
 ## プロンプト内容（英語版 `git-guard.md` に反映すること）

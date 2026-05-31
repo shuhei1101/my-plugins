@@ -87,27 +87,22 @@ All commands in this step must be run **inside the worktree** (`{WORKTREE_PATH}`
    In most cases this is `master`; for feature branches off `develop` it is `develop`.
    Cross-check with Step 7 if unsure (Step 7 confirms the current branch is the parent before running the merge).
 
-2. Check whether the target branch has new commits since this branch diverged:
-
-```bash
-git -C {WORKTREE_PATH} log HEAD..<PARENT_BRANCH> --oneline
-```
-
-If no output → the target branch has not moved; skip to Step 4.
-
-3. Merge the target branch into this branch:
+2. Always merge the target branch into this branch — **do not check the log first, do not skip**:
 
 ```bash
 git -C {WORKTREE_PATH} merge <PARENT_BRANCH>
 ```
 
-4. Check whether the merge completed cleanly:
+   Running merge when already up to date is a harmless no-op (`Already up to date.`).
+   Skipping this when new commits exist causes conflicts to surface on master instead of here.
+
+3. Check whether the merge completed cleanly:
 
 ```bash
 git -C {WORKTREE_PATH} status
 ```
 
-   - **No conflicts** (clean merge) → proceed to Step 4
+   - **No conflicts** (clean merge or "Already up to date.") → proceed to Step 4
    - **Conflicts exist** → stop here; report the conflicting files to the user and wait for
      manual resolution before continuing
 
@@ -118,6 +113,7 @@ git -C {WORKTREE_PATH} status
 ##### Prohibitions
 
 - Do not skip this step — merging the target branch into this branch before merging back is required
+- **Never use `git log` output to decide whether to skip the merge** — always run `git merge <PARENT_BRANCH>` unconditionally
 
 ### Step 4: Close related issues (inside the worktree)
 
@@ -240,6 +236,8 @@ git -C {WORKTREE_PATH} commit -m "chore: archive to index.archive.yaml"
 ##### Prohibitions
 
 > Only merge if this skill was invoked in the user's **most recent message**. If the skill context is still present from a previous turn (not from the current message), do NOT merge — the previous invocation's permission does not carry over.
+
+> **Step 3 must have completed cleanly before this step runs.** `git merge <PARENT_BRANCH>` must have been executed inside the worktree and reported no conflicts (clean merge or "Already up to date."). If Step 3 was skipped or reported conflicts that were not resolved, do NOT proceed — abort and fix Step 3 first.
 
 #### Process
 
