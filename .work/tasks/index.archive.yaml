@@ -1012,10 +1012,31 @@ branches:
   summary: 全プラグインの config スキルを plugin-config にリネーム
   task: 260531_configスキルリネーム
   completed: true
+- id: 235
+  title: feat/branch-author-env
+  type: feat
+  tags: []
+  summary: ブランチ名に作者名を含める環境変数 WORK_BRANCH_AUTHOR を追加
+  task: 260531_branch-author-env
+  completed: true
 - id: 236
   title: refactor/rename-plugin-update-to-migrate
   type: refactor
   tags: []
   summary: plugin-update スキルを plugin-migrate にリネームし、依存箇所を全更新
   task: 260531_plugin-update-to-migrate
+  completed: true
+- id: 232
+  title: chore/sync-work-plugin-templates
+  type: chore
+  tags: []
+  summary: work プラグインの .work/ テンプレートを最新版に同期
+  task: 260531_sync-work-plugin-templates
+  completed: true
+- id: 237
+  title: chore/sync-claude-kit-artifacts
+  type: chore
+  tags: []
+  summary: claude-kit プラグインの規約に合わせてリポジトリ内の成果物を同期する
+  task: 260531_claude-kit成果物同期
   completed: true
