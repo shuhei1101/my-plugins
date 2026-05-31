@@ -1057,3 +1057,10 @@ branches:
     各フォルダの構成定義リファレンス追加。.work/tasks/ タスクフォルダ名を日本語化。
   task: 260531_work-templates-to-ref-inject
   completed: true
+- branch: feat/issue-scan-auto-loop
+  created: '2026-05-31'
+  title: イシュースキャン自動ループ対応
+  type: feat
+  summary: issue-scanスキルに自動ブランチ・マージとサブエージェント並列制御を追加
+  task: 260531_issue-scan-auto-loop
+  completed: true
