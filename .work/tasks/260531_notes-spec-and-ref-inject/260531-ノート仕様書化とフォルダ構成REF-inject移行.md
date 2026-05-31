@@ -17,13 +17,19 @@
 | # | 完了 | 作業内容 |
 |---|---|---|
 | 1 | 済 | `## QA`（テンプレート案・specs統合方針・カテゴリ分類）をユーザーと解決する |
-| 2 | - | 本ブランチの作業を `.work/notes/` の関連ノートへ反映する |
-| 3 | - | `work-dot-work-dir.md` の `notes/` 節を全面改稿（旧 lifecycle・廃止済み `notes-to-claude` 記述を削除、「現在の仕様書」定義へ）。`.jp.md` も更新 |
-| 4 | - | `notes-naming-rules.md` を改稿（命名規則は維持しつつ「現在の仕様書」前提に。`_index.md` 規則も）。`.jp.md` も更新 |
-| 5 | - | 新規 `notes-content-rules.md` 作成（ノートに書く内容のルール＋固定テンプレート）。`.jp.md` も。`_index.yaml`/`_index.jp.yaml`/`_injection_rules.yaml` 登録 |
-| 6 | - | `.work/specs/*`（20件）を精査し、現在仕様として有用な内容を新スタイルでノート化。既存 notes・本体ドキュメントで賄えるものは破棄（破棄リストを下記に記録） |
-| 7 | - | `.work/specs/` 削除。`work-merge-skill-sync.md` の `.work/specs/work-kit-merge-flow.md` 参照を notes へ付け替え |
-| 8 | - | `_index.md` 更新、CLAUDE.md changelog 更新、バージョン bump |
+| 2 | 済 | 本ブランチの作業を反映（ノートの定義・ルールは references に集約。`work-dot-work-dir.md`/`notes-content-rules.md`） |
+| 3 | 済 | `work-dot-work-dir.md` の `notes/` 節を全面改稿（旧 lifecycle・廃止済み `notes-to-claude` 記述を削除、「現在の仕様書」定義へ）。`.jp.md` も更新 |
+| 4 | 済 | `notes-naming-rules.md` を改稿（命名規則は維持しつつ「現在の仕様書」前提に。`_index.md` 規則も）。`.jp.md` も更新 |
+| 5 | 済 | 新規 `notes-content-rules.md` 作成（ノートに書く内容のルール＋固定テンプレート）。`.jp.md` も。`_index.yaml`/`_index.jp.yaml`/`_injection_rules.yaml` 登録 |
+| 6 | 済 | `.work/specs/*`（20件）を精査し、新規ノート5件・既存マージ3系統・破棄9件に振り分け（下記） |
+| 7 | 済 | `.work/specs/` 削除。`work-merge-skill-sync.md` の参照を notes へ付け替え |
+| 8 | - | CLAUDE.md changelog 更新、バージョン bump |
+
+### specs 処理結果
+
+- **新規ノート化（5）**: `env-syncスキル` / `marketplace-upgradeコマンド` / `vscode-workspace-syncスキル` / `debug-fabスキル` / `html-kitスキル群`
+- **既存ノートへマージ（3系統）**: `言語プラグイン統合メモ`（dev-kit-design・py-kit-design）/ `work-kitスキル群`（branch-index-cleanup・work-kit-merge-flow）/ `フックインラインPython切り出し`（work-kit-stop-hook）
+- **破棄（9）**: claude-kit-conversation-skills, guard-kit, plugin-kit, plugin-root-templates, plugin-split, rules-organizer, todo-next-pr-section, work-kit-update-skill, xxx
 
 ## 変更内容
 
