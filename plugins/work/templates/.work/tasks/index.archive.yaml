@@ -2,6 +2,7 @@
 #
 # フィールド説明:
 #   branch    : git ブランチ名
+#   created   : 作成日（YYYY-MM-DD。同名ブランチを時系列で識別するサロゲート）
 #   title     : ブランチ文書の H1 タイトルそのまま
 #   type      : feat / fix / docs / refactor / chore / test
 #   summary   : 一行説明

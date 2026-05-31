@@ -2,7 +2,7 @@
 index-tool — CLI for workspace index.yaml operations.
 
 Usage:
-  python index-tool.py add [index_yaml] --branch B --title T --type T --summary S --task T
+  python index-tool.py add [index_yaml] --branch B --title T --type T --summary S --task T [--created YYYY-MM-DD]
   python index-tool.py list-active [index_yaml]
   python index-tool.py completed-count [index_yaml]
   python index-tool.py set-completed [index_yaml] --branch B
@@ -21,8 +21,10 @@ Subcommands:
                    Prints the number of entries moved.
 
 The branch index is keyed by the `branch` name. Each entry has the fields:
-  branch, title, type, summary, task, completed
+  branch, created, title, type, summary, task, completed
 The top-level document is `{branches: [...]}` — there is no numeric id or last_id.
+`created` (YYYY-MM-DD, set at add time) is a surrogate that disambiguates same-named
+branches recurring over time in the archive; it is not a counter.
 
 By routing index.yaml operations through this script, Claude Code avoids
 loading the full YAML file into its context window.
@@ -30,6 +32,7 @@ loading the full YAML file into its context window.
 
 # ── stdlib ──────────────────────────────────────────────────
 import argparse
+import datetime
 import sys
 from pathlib import Path
 
@@ -65,6 +68,8 @@ def _save(path: Path, data: dict, original_text: str) -> None:
 # ── subcommand handlers ──────────────────────────────────────
 def cmd_add(args: argparse.Namespace) -> None:
     """Append a new branch entry."""
+    if not args.created:
+        args.created = datetime.date.today().isoformat()
     index_path = Path(args.index_yaml)
     original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
     data = yaml.safe_load(original) or {} if original else {}
@@ -72,6 +77,7 @@ def cmd_add(args: argparse.Namespace) -> None:
     branches: list[dict] = data.get("branches", [])
     new_entry = {
         "branch": args.branch,
+        "created": args.created,
         "title": args.title,
         "type": args.type,
         "summary": args.summary,
@@ -179,6 +185,12 @@ def parse_args() -> argparse.Namespace:
     p_add.add_argument("--type", required=True, dest="type")
     p_add.add_argument("--summary", required=True)
     p_add.add_argument("--task", required=True)
+    p_add.add_argument(
+        "--created",
+        default=None,
+        help="Creation date YYYY-MM-DD. Defaults to today. Acts as a surrogate to "
+             "disambiguate same-named branches across time in the archive.",
+    )
 
     # list-active
     p_list = sub.add_parser("list-active", help="List active (not completed) branches")
