@@ -19,13 +19,13 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | `## QA` に未解決事項を記録 |
-| 2 | - | `issue-scan` Step 0 を `git checkout -b` から `git worktree add` に変更 |
-| 3 | - | サブエージェントにワークツリーパスを渡し、`{WT_PATH}/.work/issues/` に書き出すよう修正 |
-| 4 | - | Step 4（インデックス更新）をワークツリー内ファイルへの操作に統一 |
-| 5 | - | Step 5（コミット/マージ）をワークツリーからのコミット + `git worktree remove` に変更 |
-| 6 | - | `SKILL.jp.md` と `SKILL.md` の両方を更新 |
-| 7 | - | `.work/notes/` のノートを更新 |
+| 1 | 済 | `## QA` に未解決事項を記録 |
+| 2 | 済 | `issue-scan` Step 0 を `git checkout -b` から `git worktree add` に変更 |
+| 3 | 済 | サブエージェントにワークツリーパスを渡し、`{WT_PATH}/.work/issues/` に書き出すよう修正 |
+| 4 | 済 | Step 4（インデックス更新）をワークツリー内ファイルへの操作に統一 |
+| 5 | 済 | Step 5（コミット/マージ）をワークツリーからのコミット + `git worktree remove` に変更 |
+| 6 | 済 | `SKILL.jp.md` と `SKILL.md` の両方を更新 |
+| 7 | 済 | `.work/notes/` のノートを更新 |
 
 ## 変更内容
 
@@ -47,6 +47,7 @@
 ## 参考ドキュメント
 
 - `plugins/work/skills/issue-scan/SKILL.jp.md`: 修正対象スキル
+- `.work/notes/AIイシュー自動発見システム構想.md`: issue-scan フロー設計ノート
 
 ## 関連ブランチ
 

@@ -360,17 +360,19 @@ scan_records:
 `issue-scan` はオーケストレーター専用。メインはソースもイシュー本文も読まず、分析は全て `work:issue-scanner` サブエージェント内で行う。
 
 ```
-Step 0. master 確認 → 一時スキャンブランチ作成、ISSUE_SCAN_AGENTS=N を読む
+Step 0. master 確認 → スキャン用ワークツリーを git worktree add で作成（git checkout -b はしない）、ISSUE_SCAN_AGENTS=N を読む
 Step 1. _index.archive.yaml の scan_records（スキャン済み観点）と _index.yaml の last_id=L を読む
 Step 2. スキャン観点を N 個選ぶ（フォルダ/grep/レイヤー/ファイル群/パターン — 観点カタログから巡回選択）
 Step 3. 各観点に ID ブロック割当（START_i = L+1+i*SLOT, SLOT=30）→ work:issue-scanner を N 個並列起動
-        各サブエージェント: 観点をスキャン → ISSUE-{N}.md を作成（先採番ブロック使用）→ メタデータのみ返す
-Step 4. 戻り値（メタデータのみ）を集約し _index.yaml / _index.archive.yaml を更新
-Step 5. スキャンブランチへコミット → master に --no-ff マージ → ブランチ削除
+        各サブエージェント: 観点をスキャン → {WT_PATH}/.work/issues/ に ISSUE-{N}.md を作成 → メタデータのみ返す
+Step 4. 戻り値（メタデータのみ）を集約し {WT_PATH}/.work/issues/ の _index.yaml / _index.archive.yaml を更新
+Step 5. ワークツリー内でコミット → メインリポから master に --no-ff マージ → ブランチ削除 → git worktree remove
 Step 6. スキャン結果をレポート
 ```
 
 責務分担: サブエージェントは「ISSUE ファイル作成まで」（共有 index には触れず・コミットしない）、メインは「ID 先採番・index 更新・コミット・マージ」を集約する。並列で同一 worktree にコミットすると git 競合するため、コミットはメインに一本化している。
+
+スキャンブランチはワークツリーとして作成するため、メインリポの現在ブランチが切り替わらない（`git checkout -b` は使用しない）。
 
 ---
 
@@ -424,6 +426,7 @@ PR135 / PR140 の成果により、フック自動注入の基盤は py-kit / ne
 |---|---|---|
 | PR-D: merge スキルにイシュークローズ処理を統合 | ✅ PR146 完了 | work-kit issue-scan/create が前提（PR131 完了済み） |
 | issue-scan の自動ループ＋オーケストレーター化 | ✅ feat/issue-scan-auto-loop 完了 | `work:issue-scanner` エージェント新設。観点ベースのスキャン、ISSUE_SCAN_AGENTS で並列数制御、ブランチ自動作成・マージ、/loop で継続スキャン |
+| issue-scan スキャンブランチをワークツリー化 | ✅ fix/issue-scan-use-worktree 完了 | `git checkout -b` → `git worktree add` に変更。メインリポのブランチを切り替えない設計に |
 | issue-scan の references 参照精度向上 | 未検討 | next-kit / py-kit references が 1 ファイル = 1 ユースケース化された今、scan 時の粒度を合わせる |
 | スキャン対象の拡張（Next.js フロントエンド） | 未検討 | 現在は HTML / backend が対象。next-kit プロジェクトへの適用を検討 |
 
