@@ -1156,3 +1156,12 @@ branches:
   summary: specsをnotesへ統合し廃止、references/notesをカテゴリフォルダ化、ノートを現在仕様書の意味に再定義、templates廃止しフォルダ構成をREF-injectで定義してsetup/startスキルを改修
   task: 260531_ノート仕様書化とフォルダ構成REF-inject移行
   completed: true
+- id: 255
+  branch: refactor/references-subfolder-split
+  title: referencesサブフォルダ分割
+  type: refactor
+  tags: []
+  summary: plugins/*/references/ をカテゴリ別サブフォルダに分割（master の日本語リネーム後、残作業はサブフォルダ化）。_index/_injection_rules
+    のパス更新と注入のサブフォルダ解決確認
+  task: 260531_references-subfolder-split
+  completed: true
