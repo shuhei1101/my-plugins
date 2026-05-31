@@ -998,3 +998,66 @@ branches:
   summary: 既存プラグインに config スキルを追加する（dev-kit:config を新規作成・work:config を整理）
   task: 260531_migrate-existing-plugins-to-have-config-skill
   completed: true
+- id: 231
+  title: feat/migrate-claude-kit-to-have-config-skill
+  type: feat
+  tags: []
+  summary: claude-kit に config スキルを追加（INJECTION_LANG / JP_MIRROR / TTL が対象候補）
+  task: 260531_claude-kitへのconfigスキル追加
+  completed: true
+- id: 234
+  title: refactor/rename-config-skill-to-plugin-config
+  type: refactor
+  tags: []
+  summary: 全プラグインの config スキルを plugin-config にリネーム
+  task: 260531_configスキルリネーム
+  completed: true
+- id: 235
+  title: feat/branch-author-env
+  type: feat
+  tags: []
+  summary: ブランチ名に作者名を含める環境変数 WORK_BRANCH_AUTHOR を追加
+  task: 260531_branch-author-env
+  completed: true
+- id: 236
+  title: refactor/rename-plugin-update-to-migrate
+  type: refactor
+  tags: []
+  summary: plugin-update スキルを plugin-migrate にリネームし、依存箇所を全更新
+  task: 260531_plugin-update-to-migrate
+  completed: true
+- id: 232
+  title: chore/sync-work-plugin-templates
+  type: chore
+  tags: []
+  summary: work プラグインの .work/ テンプレートを最新版に同期
+  task: 260531_sync-work-plugin-templates
+  completed: true
+- id: 237
+  title: chore/sync-claude-kit-artifacts
+  type: chore
+  tags: []
+  summary: claude-kit プラグインの規約に合わせてリポジトリ内の成果物を同期する
+  task: 260531_claude-kit成果物同期
+  completed: true
+- id: 238
+  title: fix/merge-skill-commit-order
+  type: fix
+  tags: []
+  summary: work:merge の Step 10/11 順序入れ替えでコミット分離を解消
+  task: 260531_merge-skill-commit-order
+  completed: true
+- id: 240
+  title: fix/merge-skill-branch-first
+  type: fix
+  tags: []
+  summary: mergeスキルがmasterに直接コンフリクトを流し込む問題を修正
+  task: 260531_merge-skill-branch-first
+  completed: true
+- id: 239
+  title: chore/sync-ref-inject-template
+  type: chore
+  tags: []
+  summary: ref-inject テンプレートをコンシューマーの最新版に同期し _common.py コメントも更新
+  task: 260531_ref-inject-テンプレート同期
+  completed: true

@@ -12,9 +12,11 @@ description: |
 Creates the worktree first, then creates the single per-branch task document inside it.
 This prevents task documents from being created in the main repository.
 
-> **Naming**: branches use `{type}/{title}` (no `PR{N}/` prefix). The worktree mirrors the branch as
-> `{repo}-wt-{branch-hyphenated}` (slashes → hyphens). The branch document filename is `{YYMMDD}-{branch-hyphenated}.md`
-> (e.g. `refactor/foo-bar` created on 260531 → `260531-refactor-foo-bar.md`).
+> **Naming**: branches use `{type}/{title}` by default. If `WORK_BRANCH_AUTHOR` is set, the author
+> segment is inserted: `{type}/{author}/{title}` (e.g. `feat/nishikawa/test-update`).
+> The worktree mirrors the full branch name with slashes replaced by hyphens: `{repo}-wt-{branch-hyphenated}`.
+> The branch document filename is `{YYMMDD}-{branch-hyphenated}.md`
+> (e.g. `refactor/foo-bar` → `260531-refactor-foo-bar.md`).
 > An internal numeric ID is still tracked in `index.yaml` for archive metadata, but it does not appear in branch names, worktree paths, or branch document filenames.
 
 ---
@@ -32,7 +34,15 @@ This prevents task documents from being created in the main repository.
 1. Determine the branch suffix from the requested work:
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **Title**: short kebab-case label that describes the work
-2. The full branch name is `{type}/{title}` (for example `refactor/rename-pr-to-branch`).
+2. Check `WORK_BRANCH_AUTHOR` to build the full branch name:
+
+   ```bash
+   author="${WORK_BRANCH_AUTHOR:-}"
+   ```
+
+   - If `$author` is non-empty: branch name is `{type}/${author}/{title}` (e.g. `feat/nishikawa/test-update`)
+   - If `$author` is empty or unset: branch name is `{type}/{title}` (e.g. `feat/test-update`)
+
 3. Reserve an internal ID for `index.yaml` bookkeeping (used in the archive — it does not appear in the branch name itself):
 
 ```bash
@@ -43,7 +53,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 #### Output
 
-- Branch name `{branch}` decided
+- Branch name decided (with or without author segment)
 - Internal ID `{N}` reserved
 
 ---
@@ -119,9 +129,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
    ```
 
-2. **If enabled**: invoke `/work:worktree-create` with the branch name:
+2. **If enabled**: invoke `/work:worktree-create` with the full branch name (including author if set):
 
-   > `/work:worktree-create {branch}`
+   > `/work:worktree-create {full-branch-name}`
+   >
+   > e.g. `/work:worktree-create feat/nishikawa/test-update` or `/work:worktree-create feat/test-update`
 
 3. **If disabled**: skip worktree creation and notify the user:
 
@@ -133,7 +145,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Output
 
-- (worktree enabled) Worktree created at `../{repo}-wt-{branch-hyphenated}`, branch `{branch}` exists
+- (worktree enabled) Worktree created at `../{repo}-wt-{branch-hyphenated}`, branch exists
 - (worktree disabled) No worktree; proceed with `.work/` folder management only
 
 #### Notes
@@ -183,17 +195,19 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Process
 
-Run one of the following depending on the choice in Step 5. The `--branch` argument is the branch
-name (`{branch}`); the script prepends the date and converts slashes to hyphens to form the file name
-(e.g. `refactor/rename-pr-to-branch` on 260531 → `260531-refactor-rename-pr-to-branch.md`):
+Run one of the following depending on the choice in Step 5. The `--branch` argument is the full branch
+name (e.g. `feat/nishikawa/test-update` or `feat/test-update`); the script prepends the date and
+converts slashes to hyphens to form the file name
+(e.g. `refactor/rename-pr-to-branch` on 260531 → `260531-refactor-rename-pr-to-branch.md`).
+The worktree path `{wt}` is `../$(basename $(pwd))-wt-{branch-hyphenated}` (slashes in the full branch name → hyphens).
 
 **New task folder:**
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
-  ../$(basename $(pwd))-wt-{branch-hyphenated} \
+  {wt} \
   --id {N} \
-  --branch {branch} \
+  --branch {full-branch-name} \
   --title {title} \
   --date {YYMMDD} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -203,9 +217,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
-  ../$(basename $(pwd))-wt-{branch-hyphenated} \
+  {wt} \
   --id {N} \
-  --branch {branch} \
+  --branch {full-branch-name} \
   --task-dir {existing_folder_name} \
   --title {title} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -215,7 +229,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### Output
 
-- `../{repo}-wt-{branch-hyphenated}/.work/tasks/{task_folder}/{YYMMDD}-{branch-hyphenated}.md` created
+- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{branch-hyphenated}.md` created
 
 ---
 

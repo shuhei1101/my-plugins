@@ -7,6 +7,7 @@ updates:
   - 2026-05-29 — PR161: mark-generated を provenance.md 化（薄ラッパー存置）、claude-refactor 薄化、j2/jp-mirror チェックフック削除
   - 2026-05-30 — PR185: plugin-update スキルを追加（consumer 列挙 → フックファイル照合 → 更新）、1.5.0→1.6.0
   - 2026-05-31 — PR224: references/ 配下の内部ファイル（_index*/_injection_rules*/CLAUDE*）を references/.ref-injects/ に移動。各プラグインに人間向け日本語インデックス references/_index.md を追加
+  - 2026-05-31 — #239: テンプレートとコンシューマーのドリフトを同期。TRUTHY 定数・キルスイッチ前置き（依存チェック前）をテンプレートに反映。_common.py コメントブロックをテンプレートに合わせて更新（全コンシューマー）
 related_specs:
   - dev-kit-hooks.md
   - fix-read-hook.md

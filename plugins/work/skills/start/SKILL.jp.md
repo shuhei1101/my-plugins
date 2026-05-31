@@ -14,8 +14,10 @@ description: |
 ワークツリーを作成してから、その中に単一のブランチごとのタスクドキュメントを作成します。
 これにより、タスクドキュメントがメインリポに作成されるのを防ぎます。
 
-> **命名規則**: ブランチは `{type}/{title}` を使用します（`PR{N}/` プレフィックスなし）。
-> ワークツリーはブランチを反映して `{repo}-wt-{branch-hyphenated}` となります（スラッシュ → ハイフン）。
+> **命名規則**: デフォルトでは `{type}/{title}` を使用します（`PR{N}/` プレフィックスなし）。
+> `WORK_BRANCH_AUTHOR` が設定されている場合は作者名セグメントが追加されます：
+> `{type}/{author}/{title}`（例：`feat/nishikawa/test-update`）。
+> ワークツリーはブランチ名のスラッシュをハイフンに変換したパスになります：`{repo}-wt-{branch-hyphenated}`。
 > ブランチドキュメントのファイル名は `{YYMMDD}-{branch-hyphenated}.md` 形式です
 > （例：260531 に作成した `refactor/foo-bar` → `260531-refactor-foo-bar.md`）。
 > 内部 ID `{N}` は `index.yaml` 内でアーカイブメタデータとして追跡されます。ブランチ名、ワークツリーパス、ブランチドキュメントファイル名には表示されません。
@@ -35,7 +37,15 @@ description: |
 1. リクエストされた作業からブランチサフィックスを決定します：
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **Title**: 作業を説明する簡潔な kebab-case ラベル
-2. 完全なブランチ名は `{type}/{title}` です（例：`refactor/rename-pr-to-branch`）。
+2. `WORK_BRANCH_AUTHOR` を確認して完全なブランチ名を決定します：
+
+   ```bash
+   author="${WORK_BRANCH_AUTHOR:-}"
+   ```
+
+   - `$author` が空でない場合: ブランチ名は `{type}/${author}/{title}`（例：`feat/nishikawa/test-update`）
+   - `$author` が空または未設定の場合: ブランチ名は `{type}/{title}`（例：`feat/test-update`）
+
 3. 内部 ID を予約します（`index.yaml` の記簿管理に使用。アーカイブやコミット
    クロスリファレンスで使用しますが、ブランチ名自体には表示されません）：
 
@@ -47,7 +57,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py next-id .work/tasks/index.yam
 
 #### 出力
 
-- ブランチ名 `{branch}` が決定されました
+- ブランチ名が決定されました（作者名セグメントあり/なし）
 - 内部 ID `{N}` が予約されました
 
 ---
@@ -123,9 +133,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
    ```
 
-2. **有効な場合**: `/work:worktree-create` をブランチ名で実行します：
+2. **有効な場合**: `/work:worktree-create` を完全なブランチ名（作者名セグメント含む）で実行します：
 
-   > `/work:worktree-create {branch}`
+   > `/work:worktree-create {full-branch-name}`
+   >
+   > 例：`/work:worktree-create feat/nishikawa/test-update` または `/work:worktree-create feat/test-update`
 
 3. **無効な場合**: ワークツリー作成をスキップしてユーザーに通知します：
 
@@ -137,8 +149,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### 出力
 
-- （ワークツリー有効）ワークツリーが `../{repo}-wt-{branch-hyphenated}` に作成され、
-  ブランチ `{branch}` が存在します
+- （ワークツリー有効）ワークツリーが `../{repo}-wt-{branch-hyphenated}` に作成され、ブランチが存在します
 - （ワークツリー無効）ワークツリーなし。`.work/` フォルダ管理のみで続行します
 
 #### 注記
@@ -189,17 +200,19 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### 処理
 
-Step 5 での選択に応じて、以下のいずれかを実行してください。`--branch` 引数はブランチ名（`{branch}`）です。
-スクリプトは日付プレフィックスを付加し、スラッシュをハイフンに変換してファイル名を形成します
-（例：260531 に作成した `refactor/rename-pr-to-branch` → `260531-refactor-rename-pr-to-branch.md`）：
+Step 5 での選択に応じて、以下のいずれかを実行してください。`--branch` 引数は完全なブランチ名です
+（例：`feat/nishikawa/test-update` または `feat/test-update`）。スクリプトは日付プレフィックスを付加し、
+スラッシュをハイフンに変換してファイル名を形成します
+（例：260531 に作成した `refactor/rename-pr-to-branch` → `260531-refactor-rename-pr-to-branch.md`）。
+ワークツリーパス `{wt}` は `../$(basename $(pwd))-wt-{branch-hyphenated}` です（ブランチ名のスラッシュをハイフンに変換）。
 
 **新しいタスクフォルダ:**
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
-  ../$(basename $(pwd))-wt-{branch-hyphenated} \
+  {wt} \
   --id {N} \
-  --branch {branch} \
+  --branch {full-branch-name} \
   --title {title} \
   --date {YYMMDD} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -209,9 +222,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
-  ../$(basename $(pwd))-wt-{branch-hyphenated} \
+  {wt} \
   --id {N} \
-  --branch {branch} \
+  --branch {full-branch-name} \
   --task-dir {existing_folder_name} \
   --title {title} \
   --plugin-root ${CLAUDE_PLUGIN_ROOT}
@@ -221,7 +234,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/setup-task.py \
 
 #### 出力
 
-- `../{repo}-wt-{branch-hyphenated}/.work/tasks/{task_folder}/{YYMMDD}-{branch-hyphenated}.md` が作成されました
+- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{branch-hyphenated}.md` が作成されました
 
 ---
 

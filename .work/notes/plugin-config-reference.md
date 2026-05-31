@@ -61,4 +61,12 @@ PR167 で確立した `work:config` スキルのパターンを、claude-kit の
   - Step 2 を AskUserQuestion 方式から番号付きリスト方式に移行（`plugin-config.md` ガイドに準拠）
   - work 2.47.0 → 2.48.0
 
-注: `claude-kit` と `ref-inject` は config スキルを必要とする user-facing トグルがないため対象外。
+注: 当時は `claude-kit` に user-facing トグルがないと判断したが、実際には `CLAUDE_KIT_JP_MIRROR`（ON/OFF）と `CLAUDE_KIT_INJECTION_LANG`（en/jp 選択）がある。
+
+## PR231 での実施内容（feat/migrate-claude-kit-to-have-config-skill）
+
+- `claude-kit:config` スキルを新規追加
+  - 管理対象: `CLAUDE_KIT_JP_MIRROR`（normal polarity、デフォルト ON）と `CLAUDE_KIT_INJECTION_LANG`（en/jp 選択）
+  - `CLAUDE_KIT_INJECTION_TTL`（整数値）は開発者向けとして対象外（QA-001 で決定）
+  - `CLAUDE_KIT_INJECTION_DISABLE`（逆極性キルスイッチ）は除外（ポリシー上の規定通り）
+  - `INJECTION_LANG` は ON/OFF でなく en/jp の 3 択（en / jp / デフォルトに戻す）— AskUserQuestion で専用分岐（QA-002 で決定）

@@ -1,0 +1,42 @@
+# Plugin Version Sync Invariant
+
+The three files below must **always** carry the same version number and stay in sync.
+Never let them drift.
+Japanese mirror: `references/plugin/version-sync.jp.md`
+
+---
+
+## The three files
+
+| # | File | What to update |
+|---|---|---|
+| 1 | `plugins/<name>/.claude-plugin/plugin.json` | Bump `version` |
+| 2 | `.claude-plugin/marketplace.json` | Bump the matching plugin's `version` |
+| 3 | `plugins/<name>/CLAUDE.md` | Reflect added/changed skills, hooks, env vars, or behavior; bump `## Changelog` |
+
+---
+
+## Pre-commit checklist
+
+Before committing any plugin change, verify:
+
+- [ ] `plugin.json` version bumped
+- [ ] `marketplace.json` version bumped to match
+- [ ] `CLAUDE.md` changelog row added with the new version
+
+---
+
+## Version bump rules
+
+| Change type | Bump |
+|---|---|
+| Bug fix / minor correction | PATCH (`1.x.y` → `1.x.y+1`) |
+| New skill or behavior change | MINOR (`1.x.0` → `1.x+1.0`) |
+| Complete redesign | MAJOR (`1.0.0` → `2.0.0`) |
+
+---
+
+## Parallel PR collision
+
+If two parallel branches bump the same plugin and one merges first, **rebump the other to the next
+version** on its branch before merging (see incident `parallel-pr-version-bump-collision`).
