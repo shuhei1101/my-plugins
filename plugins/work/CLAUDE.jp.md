@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # work — プロジェクトライフサイクル管理
 
 Claude Code 向けのフックベースのプロジェクトライフサイクル管理プラグイン。各プロンプト前にブランチコンテキストを注入し、Stop 時にタスク更新をリマインドし、ワークツリー管理と保護ブランチへの強制操作ガードを提供する。
