@@ -1047,3 +1047,10 @@ branches:
   summary: work:merge の Step 10/11 順序入れ替えでコミット分離を解消
   task: 260531_merge-skill-commit-order
   completed: true
+- id: 240
+  title: fix/merge-skill-branch-first
+  type: fix
+  tags: []
+  summary: mergeスキルがmasterに直接コンフリクトを流し込む問題を修正
+  task: 260531_merge-skill-branch-first
+  completed: true

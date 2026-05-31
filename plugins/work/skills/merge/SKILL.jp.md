@@ -80,13 +80,15 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### ステップ 3: マージ先ブランチをこのブランチに取り込む
+### ステップ 3: マージ先ブランチをこのブランチに取り込む（ワークツリー内）
 
 #### 条件
 
 - Step 2 完了
 
 #### 処理
+
+このステップのすべてのコマンドは、メインリポジトリ（master ブランチ）ではなく、**ワークツリー内**（`{WORKTREE_PATH}`）で実行すること。
 
 1. マージ先ブランチ（`PARENT_BRANCH`）を特定する — このブランチがマージされる先のブランチ。
    通常は `master`。`develop` ベースのブランチなら `develop`。
@@ -95,7 +97,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 2. マージ先ブランチに新しいコミットがあるかどうかを確認：
 
 ```bash
-git log HEAD..<PARENT_BRANCH> --oneline
+git -C {WORKTREE_PATH} log HEAD..<PARENT_BRANCH> --oneline
 ```
 
 出力がない場合 → マージ先ブランチは移動していません。Step 4 にスキップしてください。
@@ -103,13 +105,13 @@ git log HEAD..<PARENT_BRANCH> --oneline
 3. マージ先ブランチをこのブランチに取り込む：
 
 ```bash
-git merge <PARENT_BRANCH>
+git -C {WORKTREE_PATH} merge <PARENT_BRANCH>
 ```
 
 4. マージがクリーンに完了したか確認：
 
 ```bash
-git status
+git -C {WORKTREE_PATH} status
 ```
 
    - **コンフリクトなし**（クリーンなマージ）→ Step 4 に進む
