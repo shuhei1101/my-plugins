@@ -4,7 +4,7 @@ Design guide for the **mandatory** `setup-wizard` skill required when creating a
 Provides the initial-onboarding flow and use-case entry points the first time a user touches the plugin.
 Japanese mirror: `references/plugin/setup-wizard.jp.md`
 
-Counterpart to `plugin-update` (version sync) — `setup-wizard` covers initial setup.
+Counterpart to `plugin-migrate` (version sync) — `setup-wizard` covers initial setup.
 Read `common.md` and `skills.md` alongside this guide.
 
 ---
@@ -82,7 +82,7 @@ setup_done: true
 
 **No version field is stored.** Version drift is handled by convention, not by the flag:
 when a plugin is updated, its `setup-wizard` must be refreshed in the same change.
-This convention is stated in this reference; add the same item to the plugin's `plugin-update` checklist.
+This convention is stated in this reference; add the same item to the plugin's `plugin-migrate` checklist.
 
 ---
 
@@ -104,9 +104,9 @@ Present options via `AskUserQuestion`:
 
 | Label | Action |
 |---|---|
-| Configure all | Launch this plugin's `config` skill to walk through every env |
+| Configure all | Launch this plugin's `plugin-config` skill to walk through every env |
 | Essentials only | Configure only env keys the plugin marks as required |
-| Skip | Skip env setup; tell the user they can run `/<plugin>:config` later |
+| Skip | Skip env setup; tell the user they can run `/<plugin>:plugin-config` later |
 
 ### Step 3 — Use-case showcase
 
@@ -129,10 +129,10 @@ user they can re-run setup any time via `/<plugin>:setup-wizard`.
 
 | Skill | Role |
 |---|---|
-| `config` | Single-purpose skill that edits env vars one-by-one via `AskUserQuestion`. Delegated to from `setup-wizard` |
-| `plugin-update` | Version sync. See the "Required skills" section in this reference |
+| `plugin-config` | Single-purpose skill that edits env vars one-by-one via `AskUserQuestion`. Delegated to from `setup-wizard` |
+| `plugin-migrate` | Version sync. See the "Required skills" section in this reference |
 
-If the plugin has no env vars, `config` is not required, but the use-case showcase step in
+If the plugin has no env vars, `plugin-config` is not required, but the use-case showcase step in
 `setup-wizard` is still valuable — `setup-wizard` itself remains mandatory.
 
 ---
@@ -158,9 +158,9 @@ This skill drives <plugin>'s first-run onboarding. AskUserQuestion is used inter
 ### Step 1: Check existing setup state
 {Read `.claude/<plugin>.local.md` and branch on `setup_done`.}
 
-### Step 2: env config (delegate to config)
+### Step 2: env config (delegate to plugin-config)
 {Use AskUserQuestion to present "configure all / essentials only / skip"; on selection,
-invoke `config`.}
+invoke `plugin-config`.}
 
 ### Step 3: Use-case showcase
 {Use AskUserQuestion to present 2–4 use cases; summarize the chosen one and link to CLAUDE.md.}
@@ -177,6 +177,6 @@ Create the JP mirror `SKILL.jp.md` simultaneously (see `common.md` JP/EN mirror 
 
 - [ ] Created `skills/setup-wizard/SKILL.md` and `SKILL.jp.md`
 - [ ] Added a `SessionStart` entry to `hooks/hooks.json` and implemented `hooks/scripts/setup_check.py`
-- [ ] If the plugin has env vars, also implemented `skills/config/SKILL.md` (+ `.jp.md`)
+- [ ] If the plugin has env vars, also implemented `skills/plugin-config/SKILL.md` (+ `.jp.md`)
 - [ ] Added a one-liner to the plugin's `CLAUDE.md` pointing at the first-run setup flow
 - [ ] Bumped the version and noted "added setup-wizard" in the changelog

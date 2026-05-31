@@ -80,13 +80,15 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 ---
 
-### ステップ 3: マージ先ブランチをこのブランチに取り込む
+### ステップ 3: マージ先ブランチをこのブランチに取り込む（ワークツリー内）
 
 #### 条件
 
 - Step 2 完了
 
 #### 処理
+
+このステップのすべてのコマンドは、メインリポジトリ（master ブランチ）ではなく、**ワークツリー内**（`{WORKTREE_PATH}`）で実行すること。
 
 1. マージ先ブランチ（`PARENT_BRANCH`）を特定する — このブランチがマージされる先のブランチ。
    通常は `master`。`develop` ベースのブランチなら `develop`。
@@ -95,7 +97,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 2. マージ先ブランチに新しいコミットがあるかどうかを確認：
 
 ```bash
-git log HEAD..<PARENT_BRANCH> --oneline
+git -C {WORKTREE_PATH} log HEAD..<PARENT_BRANCH> --oneline
 ```
 
 出力がない場合 → マージ先ブランチは移動していません。Step 4 にスキップしてください。
@@ -103,13 +105,13 @@ git log HEAD..<PARENT_BRANCH> --oneline
 3. マージ先ブランチをこのブランチに取り込む：
 
 ```bash
-git merge <PARENT_BRANCH>
+git -C {WORKTREE_PATH} merge <PARENT_BRANCH>
 ```
 
 4. マージがクリーンに完了したか確認：
 
 ```bash
-git status
+git -C {WORKTREE_PATH} status
 ```
 
    - **コンフリクトなし**（クリーンなマージ）→ Step 4 に進む
@@ -317,23 +319,12 @@ git commit -m "docs: post-merge update"
 
 ---
 
-### ステップ 10: マージ完了を報告
-
-#### 処理
-
-1. ユーザーにマージが完了したことを報告
-   - マージされたブランチ名、内部 ID、タスクフォルダを含める
-
-→ ステップ 11 へ
-
----
-
-### ステップ 11: 次ブランチ候補を branch-reserve に委譲
+### ステップ 10: 次ブランチ候補を branch-reserve に委譲
 
 #### 条件
 
 - `WORK_MERGE_AUTO_HANDOFF` が `false`/`0`/`no`/`off` ではない場合
-  （デフォルト：有効）。無効な場合 → このステップをスキップして Step 12 に進む
+  （デフォルト：有効）。無効な場合 → このステップをスキップしてステップ 11 に進む
 
 #### 処理
 
@@ -341,6 +332,17 @@ git commit -m "docs: post-merge update"
 2. **次ブランチ候補が存在する場合**：`/work:branch-reserve` を実行
    （ユーザー確認は不要）。すべての分類と予約ロジックをそのスキルに委譲
 3. **次ブランチ候補が空の場合**: branch-reserve をスキップ
+
+→ ステップ 11 へ
+
+---
+
+### ステップ 11: マージ完了を報告
+
+#### 処理
+
+1. ユーザーにマージが完了したことを報告
+   - マージされたブランチ名とタスクフォルダを含める
 
 → ステップ 12 へ
 

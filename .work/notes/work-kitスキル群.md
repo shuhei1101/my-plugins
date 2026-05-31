@@ -7,6 +7,8 @@ updates:
   - 2026-05-30 — PR172: プラグインを work-kit → workspace にリネーム、env var も WORK_KIT_* → WORKSPACE_* に変更
   - 2026-05-31 — #219: merge スキル Step 3 を master 取り込み必須フローに変更
   - 2026-05-31 — #226: タスクドキュメントのファイル名に日付プレフィックスを追加、作業内容テーブル構造を改訂
+  - 2026-05-31 — #238: merge スキル Step 11（branch-reserve 呼び出し）を Step 10（完了報告）より前に移動しコミット分離を解消
+  - 2026-05-31 — #240: merge スキル Step 3 の git コマンドにワークツリーパスを明示（実行コンテキスト不明による master 汚染を防止）
 related_prs:
   - PR91
   - PR109
@@ -85,6 +87,27 @@ work-start Step 4 がこの env var を読んで分岐する（従来の「workt
 3. コンフリクトなし → Step 4 へ進む
 4. コンフリクトあり → ユーザーに報告して停止（手動解消を待つ）
 
+## merge スキル — Step 10/11 順序入れ替え（#238）
+
+### 問題
+
+`work:merge` の Step 10（完了報告）でターンが終了するため、その後のストップフックが
+`notify-aituber` を呼んで新ターンが開始される。このため、Step 11（`branch-reserve` →
+`work:start`）で発生するノートコミットが次のターンに分離してしまっていた。
+
+### 変更
+
+Step 11（`branch-reserve` 自動呼び出し）を Step 10（完了報告）より前に移動。
+
+| 変更前 | 変更後 |
+|---|---|
+| Step 9: QA確認・コミット | Step 9: QA確認・コミット（変更なし） |
+| Step 10: 完了報告 → ターン終了 | Step 10: branch-reserve 呼び出し（ノートコミット） |
+| Step 11: branch-reserve（次ターンで実行） | Step 11: 完了報告 → ターン終了 |
+| Step 12: branch-show | Step 12: branch-show |
+
+これにより全コミットがターン終了前に完了し、ストップフック後のターンではコミットが発生しなくなる。
+
 ## タスクドキュメントのファイル命名規則（#226）
 
 ### 変更前
@@ -104,3 +127,29 @@ work-start Step 4 がこの env var を読んで分岐する（従来の「workt
 - `plugins/work/templates/.work/tasks/yymmdd_xxx/type-title.md` → `yymmdd-branch-name.md` にリネーム
 - `plugins/work/scripts/setup-task.py`: ファイル名生成ロジックと参照テンプレートパスを更新
 - `plugins/work/skills/start/SKILL.md` / `SKILL.jp.md`: 命名規則説明とテーブル仕様を更新
+
+## plugin-update スキルと .work/ テンプレート同期（#232）
+
+`/work:plugin-update` スキルは、work プラグインの `.work/` 内テンプレートファイルを最新版に同期する。
+
+### 対象ファイル
+
+| # | ファイル | 内容 |
+|---|---|---|
+| 1 | `.work/CLAUDE.md` | ワークスペース CLAUDE 指示（テンプレートが存在する場合） |
+| 2 | `.work/CLAUDE.jp.md` | 〃 日本語版（テンプレートが存在する場合） |
+| 3 | `.work/tasks/.gitignore` | `index.yaml` を gitignore |
+| 4 | `.work/issues/.gitignore` | `_index.yaml` を gitignore |
+
+### v2.48.0 時点の状況
+
+- テンプレートに `CLAUDE.md` / `CLAUDE.jp.md` は存在しないためスキップ
+- `tasks/.gitignore` は既存プロジェクトと同一内容
+- `issues/.gitignore` は新規追加（既存プロジェクトに `issues/` フォルダが未作成の場合は作成）
+
+### v2.48.0 以降の変更（#232 追記）
+
+- `.work/CLAUDE.md` / `.work/CLAUDE.jp.md` は **削除対象**（ref-inject に移行済みで不要）
+- `plugin-update` スキルの Step 2 を改訂:
+  - 旧: CLAUDE.md・CLAUDE.jp.md を上書きコピー
+  - 新: CLAUDE.md・CLAUDE.jp.md が存在すれば `git rm` で削除し、`.gitignore` のみを同期
