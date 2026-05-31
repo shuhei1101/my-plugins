@@ -63,7 +63,8 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.52.0 | 2026-05-31 | Branch doc filename uses Japanese title (`{YYMMDD}-{日本語タイトル}.md`); add `branch` field to `index.yaml` |
+| 1 | 2.53.0 | 2026-05-31 | Redefine notes as a current spec sheet (snapshot; no history in the body, `## 変更履歴` table only, no frontmatter); add `notes-content-rules` reference; merge `.work/specs` into notes and remove the folder |
+| 2 | 2.52.0 | 2026-05-31 | Branch doc filename uses Japanese title (`{YYMMDD}-{日本語タイトル}.md`); add `branch` field to `index.yaml` |
 | 2 | 2.51.0 | 2026-05-31 | Add `WORK_COMMIT_LANG` / `WORK_COMMIT_TYPE` env vars — configurable commit message language and type prefix |
 | 2 | 2.50.0 | 2026-05-31 | Add `WORK_BRANCH_AUTHOR` env var — insert author name into branch names |
 | 2 | 2.48.0 | 2026-05-30 | Remove `work:notes-to-claude` skill — inter-plugin dependency eliminated |
