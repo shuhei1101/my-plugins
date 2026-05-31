@@ -18,13 +18,14 @@ Called by `issue-scan` and `issue-create` with the issue information to record.
 
 **Information received from the caller**:
 - Title (required): one-sentence summary of the issue
-- Type (required): one of `refactor` / `rule-violation` / `ui` / `backend`
-- Priority (required): one of `high` / `medium` / `low`
-- Tags (optional): list of relevant keywords
-- Scan scope (optional): which file or layer was scanned (provided by issue-scan)
+- Type (required): one of `refactor` / `rule-violation` / `ui` / `backend` — recorded in `_index.yaml` only
+- Priority (required): one of `high` / `medium` / `low` — recorded in `_index.yaml` only
+- Tags (optional): list of relevant keywords — recorded in `_index.yaml` only
+- Scan scope (optional): which file or layer was scanned (provided by issue-scan) — recorded in `_index.yaml` only
 - Problem description (required): explanation of what the problem is
-- User's words (optional): quote from the user's input (provided by issue-create)
 - Suggested fix (optional): direction for a fix — omit if unknown
+- Horizontal expansion (optional): notes on whether the same problem exists elsewhere in the codebase (provided by issue-scan)
+- Related documents (optional): links to relevant references or notes
 
 **Return value**: the created issue ID (e.g. `ISSUE-003`), returned to the caller
 
@@ -83,25 +84,25 @@ Called by `issue-scan` and `issue-create` with the issue information to record.
 1. Create `.work/issues/ISSUE-{N}.md` with this structure:
 
    ```markdown
-   # {ISSUE-N}: {title}
+   # {ISSUE-N}: {タイトル}
 
-   **Type**: {type}
-   **Priority**: {priority}
-   **Created**: {YYYY-MM-DD}
-   **Tags**: [{tags}]
-   **Scan scope**: {scope}   ← omit this line if no scope was provided
+   **作成日**: {YYYY-MM-DD}
 
-   ## Problem
+   ## 問題
 
-   {problem description}
+   {問題の説明}
 
-   ## User's words
+   ## 修正案
 
-   {user's words}   ← omit this section if not provided
+   {修正案}   ← 提供されなかった場合はこのセクション自体を省略
 
-   ## Suggested fix
+   ## 水平展開
 
-   {suggested fix}   ← omit this section if not provided
+   {水平展開メモ}   ← 提供されなかった場合はこのセクション自体を省略
+
+   ## 関連ドキュメント
+
+   {関連リファレンス・ノートへのリンク}   ← 提供されなかった場合はこのセクション自体を省略
    ```
 
 → Proceed to Step 4
