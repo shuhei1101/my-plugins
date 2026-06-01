@@ -131,13 +131,13 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
   --issues-dir {WORKTREE_PATH}/.work/issues \
   --issue-id ISSUE-{NNN} \
   --resolution {resolved|wontfix} \
-  --linked-pr {N}
+  --linked-branch {BRANCH_NAME}
 ```
 
    The script:
    - Moves `.work/issues/ISSUE-{NNN}.md` → `.work/issues/closed/ISSUE-{NNN}.md`
    - Removes the entry from `_index.yaml` (gitignored — no commit needed)
-   - Appends a `closed_issues` entry (with `linked_pr`) to `_index.archive.yaml`
+   - Appends a `closed_issues` entry (with `linked_branch`) to `_index.archive.yaml`
 4. If `.work/issues/` does not exist on the project (issue management not adopted), the script prints a skip message — treat as a no-op
 5. Commit the changes inside the worktree:
 
