@@ -186,14 +186,21 @@ Selection rules:
    ```
 3. For each finding at 0-indexed position `k`, assign ID `ISSUE-{L + 1 + k}` and write
    `{issues_dir}/ISSUE-{L + 1 + k}.md` (`{issues_dir}` = `{WT_PATH}/.work/issues/` when
-   `AUTO_MERGE`, otherwise `.work/issues/`):
+   `AUTO_MERGE`, otherwise `.work/issues/`). The file **opens with the default frontmatter** for a
+   fresh, unreviewed issue:
    ```
+   ---
+   decision: pending
+   status: not_started
+   branches: []
+   ---
+
    # ISSUE-{N}: {title}
 
    {body}
    ```
    (The `body` field from the subagent already contains `**作成日**` and subsequent sections;
-   just prepend the `# ISSUE-{N}: {title}` line and a blank line.)
+   prepend the frontmatter block, then the `# ISSUE-{N}: {title}` line and a blank line.)
 4. Record the actual IDs assigned for use in Step 4.
 
 → Step 4
@@ -223,6 +230,7 @@ File and index paths depend on `AUTO_MERGE`:
        - "{scope}"
      priority: {priority}
      tags: [{tags}]
+     status: not_started
    ```
 2. Set `_index.yaml`'s `last_id` to `L + M` (where `M` is the total number of issues written).
 3. For each scanned perspective, append to `_index.archive.yaml`'s `scan_records`:

@@ -185,14 +185,20 @@ description: |
    date +%Y-%m-%d
    ```
 3. 0-indexed の位置 `k` にある発見ごとに ID `ISSUE-{L + 1 + k}` を付与し、
-   `{issues_dir}/ISSUE-{L + 1 + k}.md` を書き出す（`{issues_dir}` は `AUTO_MERGE` の場合 `{WT_PATH}/.work/issues/`、それ以外は `.work/issues/`）:
+   `{issues_dir}/ISSUE-{L + 1 + k}.md` を書き出す（`{issues_dir}` は `AUTO_MERGE` の場合 `{WT_PATH}/.work/issues/`、それ以外は `.work/issues/`）。ファイルは**未レビューの初期フロントマターで始める**:
    ```
+   ---
+   decision: pending
+   status: not_started
+   branches: []
+   ---
+
    # ISSUE-{N}: {title}
 
    {body}
    ```
    （サブエージェントの `body` フィールドは既に `**作成日**` 以降のセクションを含む;
-   先頭に `# ISSUE-{N}: {title}` 行と空行を付加するだけ）
+   先頭にフロントマターブロック、続けて `# ISSUE-{N}: {title}` 行と空行を付加する）
 4. ステップ4 で使用するために実際に付与した ID を記録する。
 
 → ステップ4
@@ -222,6 +228,7 @@ description: |
        - "{scope}"
      priority: {priority}
      tags: [{tags}]
+     status: not_started
    ```
 2. `_index.yaml` の `last_id` を `L + M` に設定する（`M` は書き出したイシューの総数）。
 3. スキャンした各観点について `_index.archive.yaml` の `scan_records` に追記する:
