@@ -47,7 +47,7 @@ enforced by the project's `*-jp-mirror-sync` rules.
 
 | # | Version | Summary |
 |---|---|---|
-| 1 | `3.50.0` | Add `claude-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`); first-run onboarding with env config delegation to `claude-kit:config` |
+| 1 | `3.51.0` | Remove `claude-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
 | 2 | `3.49.1` | Remove branch-check step (master/main guard) from `plugin-migrate` — redundant with the work harness UserPromptSubmit hook |
 | 2 | `3.49.0` | Add `claude-kit:config` skill — interactively configures `CLAUDE_KIT_JP_MIRROR` / `CLAUDE_KIT_INJECTION_LANG` / `CLAUDE_KIT_INJECTION_TTL` via numbered-list loop and `AskUserQuestion` |
 | 3 | `3.48.0` | Reorganize `references/` into role-based subfolders (`common/`, `skill/`, `hook/`, `claude-md/`, `plugin/`); add `plugin/バージョン同期.md`; inject version-sync reminder on `plugins/*/CLAUDE.md` edits |

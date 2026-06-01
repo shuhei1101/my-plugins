@@ -24,9 +24,5 @@ skill is a thin wrapper, kept for explicit invocation.
    (it owns the injection files; plugin-creator owns `plugin.json` / root `CLAUDE.md` / `marketplace.json`).
 4. Stamp each generated file per `references/provenance.md` — it is auto-injected when you write the
    file, so write the stamp directly (no skill call needed).
-5. **Generate the required skills** — every plugin must ship `plugin-migrate`, `setup-wizard`, and
-   (if the plugin has env vars) `plugin-config`. Use `references/plugin/セットアップウィザード.md`
-   (injected with `plugin.json`) as the skeleton for `setup-wizard`. Specifically:
-   - Create `skills/setup-wizard/SKILL.md` + `SKILL.jp.md` from the skeleton
-   - Add a `SessionStart` entry to `hooks/hooks.json` referencing `hooks/scripts/setup_check.py`
-   - Implement `hooks/scripts/setup_check.py` to read `setup_done` from `.claude/{plugin}.local.md`
+5. **Generate the required skills** — every plugin must ship `plugin-migrate`, and
+   (if the plugin has env vars) `plugin-config`.

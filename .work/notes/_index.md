@@ -78,8 +78,7 @@
 | 8 | [marketplace-upgradeコマンド.md](プラグイン構成・統合/marketplace-upgradeコマンド.md) | marketplace-upgradeコマンド — インストール済みプラグインの一括更新 |
 | 9 | [リファレンスファイル名日本語化.md](プラグイン構成・統合/リファレンスファイル名日本語化.md) | リファレンスファイル名日本語化 — 全プラグインの references/ ファイル名を日本語に統一する |
 | 10 | [remove-unused-references.md](プラグイン構成・統合/remove-unused-references.md) | remove-unused-references — claude-kit の未使用リファレンスファイル削除 |
-| 11 | [setup-wizard-pattern.md](プラグイン構成・統合/setup-wizard-pattern.md) | setup-wizard パターン — プラグイン初回オンボーディングの規約 |
-| 12 | [zero-plugin-dependency.md](プラグイン構成・統合/zero-plugin-dependency.md) | プラグイン間依存ゼロ — 棚卸しノート |
+| 11 | [zero-plugin-dependency.md](プラグイン構成・統合/zero-plugin-dependency.md) | プラグイン間依存ゼロ — 棚卸しノート |
 
 ---
 
