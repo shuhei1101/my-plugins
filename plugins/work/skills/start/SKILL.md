@@ -63,6 +63,9 @@ This prevents task documents from being created in the main repository.
 1. Determine the following:
    - **日本語タイトル**: descriptive Japanese title for this branch work — used in the document H1 and as the file name (e.g. `ブランチ文書ファイル名変更`)
    - **TODO list**: what will be done on this branch (becomes the checklist)
+   - **Linked issue(s)**: is this branch addressing one or more `.work/issues/ISSUE-{N}`? (e.g. invoked
+     by `work:issue-resolve`, or the user said "start a branch for ISSUE-123"). If so, record the IDs —
+     Step 6 links them (sets `status: in_progress`, appends the branch, fills `## 関連イシュー`).
    - **Note**: does a related note exist in `.work/notes/`? Or does one need to be created?
    - **Open questions**: anything that needs to be confirmed or decided before starting implementation.
      Check from these angles:
@@ -212,6 +215,18 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - `## 参考ドキュメント` — leave empty; the note path is added in the final commit (Step 9).
    - `## 関連イシュー` — issues this branch resolves; **delete the heading + table if none**.
    - `## 関連ブランチ` / `## 次ブランチ候補` — fill from this session, or leave placeholders.
+4. **If this branch is linked to issue(s)** (from Step 2), link each `ISSUE-{N}` now:
+   - In the branch document's `## 関連イシュー` table, add a row for each linked issue.
+   - Edit the issue file **in the worktree** (`{wt}/.work/issues/ISSUE-{N}.md`, git-tracked): set
+     frontmatter `status: in_progress` and append the full branch name to `branches:`.
+   - Mirror the status into the **main repo's** `_index.yaml` (git-ignored, not present in the
+     worktree) so other sessions see it as in progress:
+     ```bash
+     python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
+       --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --status in_progress
+     ```
+     (`{MAIN_REPO}` = the original repo root, i.e. the worktree's parent checkout. Skip silently if
+     that path has no `.work/issues`.)
 
 The injected `タスクドキュメント.md` reference is the single source of truth for the section
 structure and rules — follow it.
