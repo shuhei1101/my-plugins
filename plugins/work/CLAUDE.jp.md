@@ -47,7 +47,6 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | 12 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
 | 13 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
 | 14 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
-| 15 | `work:setup-wizard` | 初回オンボーディング: env トグルの設定とキーワークフローの紹介 |
 
 ## エージェント
 
@@ -96,7 +95,7 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.58.0 | 2026-05-31 | `work:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を追加。初回オンボーディング完了時に `setup_done: true` を `.claude/work.local.md` に書き込む |
+| 1 | 2.59.0 | 2026-06-01 | `work:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
 | 2 | 2.56.0 | 2026-05-31 | `issue-scan` を並列 `work:issue-scanner` サブエージェント（新規エージェント）へ委譲するオーケストレーターに再設計。観点（フォルダ/grep/レイヤー/ファイル群）でスキャン・`ISSUE_SCAN_AGENTS` 追加。`issue-save` スキルを削除し、イシューファイルのフォーマットを `work-dir/イシュー` リファレンスへ集約（`issue-create`・`issue-scanner` が直接記述） |
 | 2 | 2.55.0 | 2026-05-31 | `plugins/work/templates/` と `setup-task.py` を削除。テンプレート／フォルダ別構成定義を `references/work-dir/`（`タスクドキュメント` / `タスクインデックス` / `イシュー` / `ワークディレクトリ構成`）へ移し、該当 `.work/` パスの作成・編集時に ref-inject で注入。`work:start` は注入テンプレートを元にブランチドキュメントを直接作成。ブランチドキュメントのファイル名に `.branch.md` 拡張子を付与。`ドットワークディレクトリ構成`→`ワークディレクトリ構成` にリネーム・`TODOテンプレート同期` を削除 |
 | 3 | 2.54.0 | 2026-05-31 | index.yaml のブランチ索引を `branch` キー化（id/last_id/tags 撤廃）、`created` サロゲート追加、レガシー分を `index.archive.yaml` へ移行、`next-id` 撤廃・`set-completed` を `--branch` 化 |

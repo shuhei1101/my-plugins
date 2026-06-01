@@ -175,12 +175,7 @@ For each consumer plugin:
 1. List every file updated per consumer.
 2. Show `git diff` (truncate if large).
 3. If no files changed for a consumer, report "Already up to date".
-4. **setup-wizard compliance check** — for each consumer, verify:
-   - `skills/setup-wizard/SKILL.md` exists
-   - `hooks/hooks.json` has a `SessionStart` entry
-   - `hooks/scripts/setup_check.py` exists
-   Report any missing items as a warning (do not auto-fix; the user must implement them manually).
-5. Suggest a commit message:
+4. Suggest a commit message:
    - `chore: sync ref-inject injection hook to v{N}`
    - Read `{N}` from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`
 6. **This skill never commits** — committing is the user's responsibility.

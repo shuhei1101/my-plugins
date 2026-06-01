@@ -44,13 +44,10 @@ references:
 
   # ---- plugin/ ----
   - path: plugin/プラグイン構造.md
-    description: プラグインの作成 / 更新の仕方。標準ディレクトリ構成、plugin.json フィールド、marketplace.json エントリ、新規 / 更新モード、必須スキル（plugin-update / setup-wizard / config）、ゼロ依存原則。
+    description: プラグインの作成 / 更新の仕方。標準ディレクトリ構成、plugin.json フィールド、marketplace.json エントリ、新規 / 更新モード、ゼロ依存原則。
 
   - path: plugin/プラグインCLAUDE-md.md
     description: プラグインのルート CLAUDE.md の書き方。必須セクション（Skills / Hooks / Environment Variables / Dependencies / Changelog）、各セクションのテーブル形式、コピペ用フルテンプレート。
-
-  - path: plugin/セットアップウィザード.md
-    description: 必須スキル `setup-wizard` の書き方 — SessionStart フックと `.claude/{plugin}.local.md` の `setup_done` フラグで駆動する初回オンボーディング。フロー、AskUserQuestion の options 制約（2〜4 個）、`config` との関係、SKILL.md コピペ用 skeleton を含む。
 
   - path: plugin/プラグイン設定.md
     description: プラグインに config スキルを追加する方法。AskUserQuestion ループパターン、管理トグルの規約（キーなし = ON / "false" = OFF）、スコープ選択、最小 SKILL.md テンプレート。

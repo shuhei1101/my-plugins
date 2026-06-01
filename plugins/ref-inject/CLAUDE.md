@@ -32,9 +32,6 @@ ref-inject/
 ├── CLAUDE.md / CLAUDE.jp.md
 ├── skills/apply/SKILL.md (+ .jp.md)           # /ref-inject:apply — Claude reads templates & writes them into the target plugin
 ├── skills/plugin-migrate/SKILL.md (+ .jp.md)  # /ref-inject:plugin-migrate — update injection files in all consumers
-├── skills/setup-wizard/SKILL.md (+ .jp.md)    # /ref-inject:setup-wizard — first-run onboarding (use-case showcase)
-├── hooks/hooks.json                            # SessionStart hook: checks setup_done flag
-└── hooks/scripts/setup_check.py               # Reads .claude/ref-inject.local.md; prompts setup-wizard if unset
 └── templates/                           # the injection files copied into a target plugin (injection part only)
     ├── hooks/
     │   ├── scripts/
@@ -116,6 +113,6 @@ hook/template files come from `ref-inject`).
 
 | Version | Date | Summary |
 |---|---|---|
-| 1.8.0 | 2026-05-31 | Add `ref-inject:setup-wizard` skill and `SessionStart` hook (`setup_check.py`); add setup-wizard compliance check to `plugin-migrate` Step 5 |
+| 1.9.0 | 2026-06-01 | Remove `ref-inject:setup-wizard` skill and `hooks/` directory (only contained `setup_check.py`) |
 | 1.6.0 | 2026-05-30 | Add `ref-inject:plugin-migrate` skill — enumerates consumers and updates injection hook files to current templates; leaves references/ untouched (PR185) |
 | 1.5.0 | — | Two-tier TTL token (pattern + reference tiers) to prevent double-injection of shared references across multiple patterns (PR160) |

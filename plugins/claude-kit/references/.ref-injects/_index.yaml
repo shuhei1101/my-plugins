@@ -46,13 +46,10 @@ references:
 
   # ---- plugin/ ----
   - path: plugin/プラグイン構造.md
-    description: How to author or update a plugin. Standard directory layout, plugin.json fields, marketplace.json entry, create-vs-update mode, version bump rules, required skills (plugin-update, setup-wizard, config), and zero inter-plugin dependency principle.
+    description: How to author or update a plugin. Standard directory layout, plugin.json fields, marketplace.json entry, create-vs-update mode, version bump rules, and zero inter-plugin dependency principle.
 
   - path: plugin/プラグインCLAUDE-md.md
     description: How to write a plugin's root CLAUDE.md. Required sections (Skills / Hooks / Environment Variables / Dependencies / Changelog), table formats for each section, and the full copy-paste template.
-
-  - path: plugin/セットアップウィザード.md
-    description: How to author the mandatory `setup-wizard` skill — first-run onboarding driven by a SessionStart hook plus the `setup_done` flag in `.claude/{plugin}.local.md`. Covers flow, AskUserQuestion option limits (2–4), the relationship with `config`, and a copy-paste SKILL.md skeleton.
 
   - path: plugin/プラグイン設定.md
     description: How to add a config skill to a plugin. The AskUserQuestion loop pattern, managed-toggle convention (absent = ON, "false" = OFF), scope selection, and a minimal SKILL.md template.
