@@ -3,6 +3,32 @@
 Hook-based project lifecycle management for Claude Code. Injects branch context on every prompt,
 reminds task updates on stop, manages worktrees, and guards force-operations on protected branches.
 
+## Lifecycle
+
+The plugin enforces a "one task = one branch" lifecycle through hooks. The full flow:
+
+1. **Prompt received → branch gate** (`UserPromptSubmit` hook / `hooks/prompts/user-prompt-submit.md`)
+   Determines whether a branch is in progress this session.
+   - **No branch** → `work:start` must run before editing or committing anything (editing/committing without a branch, and committing directly to master, are prohibited).
+   - **Branch in progress** → move to its worktree and read the branch document. If `## QA` has unresolved entries, **stop there** and ask the user to resolve them. If clear, add the new request to `## 作業内容`, then continue.
+
+2. **Branch creation** (`work:start` → `work:worktree-create`)
+   Decide the branch name (`{type}/{title}`, with an author segment when `WORK_BRANCH_AUTHOR` is set) → collect details (Japanese title, TODOs, note, open questions) → add an `index.yaml` entry in the main repo → create the worktree + branch → choose/create the task folder → author the branch document from the injected template → record open questions in `## QA` → **first commit (branch document only)**.
+
+3. **Implementation** (inside the worktree)
+   Edits and commits happen on the branch. Two `PreToolUse(Bash)` guards protect the repo: `master-commit-guard` blocks `git commit` on protected branches (`master` / `main` / `develop`), and `git-guard` confirms `git push` / non-upstream `git merge`.
+
+4. **Final commit** (`work:start` Step 9)
+   Update or create the related note in `.work/notes/`, link it from `## 参考ドキュメント`, update `_index.md`, and commit the note + branch document together as the last commit.
+
+5. **Response end → stop reminder** (`Stop` hook / `hooks/prompts/stop.md`)
+   Mark finished `## 作業内容` rows with `済`, confirm `## QA` is clear and the note is updated, then **suggest running `/work:merge`** (suppressed when `WORK_MERGE_PROPOSAL` is falsy → uses `stop-no-merge.md`).
+
+6. **Merge** (`work:merge`)
+   Verify the TODO checklist → merge the parent branch in → **close related issues** (each `## 関連イシュー` row via `issue-tool.py close`, moving it to `.work/issues/closed/` and recording it in `_index.archive.yaml`) → mark the branch completed in `index.yaml` → archive the branch document → `--no-ff` merge into the parent → remove the worktree → confirm remaining QA → auto-invoke `branch-reserve` for next candidates.
+
+**Issue sub-cycle**: issues live in `.work/issues/ISSUE-{N}.md`, are created by `issue-create` / `issue-scan`, and the ones listed in a branch's `## 関連イシュー` are closed automatically at merge time (above).
+
 ## Skills
 
 | # | Skill | Purpose |
