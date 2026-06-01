@@ -27,7 +27,16 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 6. **マージ**（`work:merge`）
    TODO チェックリスト検証 → 親ブランチを取り込み → **関連イシューをクローズ**（`## 関連イシュー` の各行を `issue-tool.py close` で `.work/issues/closed/` へ移動し `_index.archive.yaml` に記録）→ `index.yaml` でブランチを完了化 → ブランチ文書をアーカイブ → `--no-ff` で親ブランチへマージ → ワークツリー削除 → 残 QA 確認 → 次ブランチ候補があれば `branch-reserve` を自動起動。
 
-**イシューのサブサイクル**: イシューは `.work/issues/ISSUE-{N}.md` に存在し、`issue-create` / `issue-scan` が作成、ブランチの `## 関連イシュー` に列挙されたものは上記マージ時に自動クローズされる。
+**イシューのサブサイクル**: イシューは `.work/issues/ISSUE-{N}.md` に存在し、フロントマター
+`decision` / `status` / `branches` を持つ（source of truth。`status` は `_index.yaml` にミラー）。流れ：
+**作成**（`issue-create` / `issue-scan` → `decision: pending`、QA 提起）→
+**レビュー**（`issue-review`、スマホ主用途 → ユーザーが `decision` を accept/reject 設定、イシューの
+`## QA` に回答、`## 対応メモ` を記入）→
+**対応**（`issue-resolve`、`/loop` で 1 起動 1 イシュー → accept は `issue-resolver` サブエージェントを
+委譲し `work:start`→マージ待ちコミットで停止、reject は共有 `chore/rejected-issues` ブランチでクローズ）→
+**クローズ**（`merge` がブランチの `## 関連イシュー` を `resolved` でクローズ; reject ブランチは
+`wontfix` でクローズ）。QA はレビュー時にイシュー上で決着するため、resolver サブエージェントは
+質問で止まらず最終コミットまで到達できる。
 
 ## スキル
 
@@ -41,18 +50,21 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | 6 | `work:plugin-config` | `settings.json` の work env トグルを対話的に設定 |
 | 7 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
 | 8 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
-| 9 | `work:impl-review` | ブランチドキュメントに照らして実装をレビュー |
-| 10 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
-| 11 | `work:plugin-migrate` | `.work/` 静的テンプレートを現在の work バージョンに更新 |
-| 12 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
-| 13 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
-| 14 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
+| 9 | `work:issue-review` | 未レビューイシューを捌く（decision 設定・QA 回答・対応メモ）— スマホ主用途・AskUserQuestion |
+| 10 | `work:issue-resolve` | ループ駆動: レビュー済みイシューを消化 — accept→`issue-resolver` サブエージェント、reject→`chore/rejected-issues` |
+| 11 | `work:impl-review` | ブランチドキュメントに照らして実装をレビュー |
+| 12 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
+| 13 | `work:plugin-migrate` | `.work/` 静的テンプレートを現在の work バージョンに更新 |
+| 14 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
+| 15 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
+| 16 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
 
 ## エージェント
 
 | # | エージェント | 役割 |
 |---|---|---|
 | 1 | `work:issue-scanner` | 1 つの観点（フォルダ / grep / レイヤー / ファイル群）を ref-inject の reference と照合してスキャンし、ISSUE ファイルを書き出す。`work:issue-scan` が起動する |
+| 2 | `work:issue-resolver` | accept された 1 件のイシューを対応: `work:start` でブランチを切り、修正を実装し、マージ待ち最終コミットで止まる。`work:issue-resolve` が起動する |
 
 ## フック
 
@@ -95,7 +107,8 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.59.0 | 2026-06-01 | `work:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
+| 1 | 2.60.0 | 2026-06-01 | イシューのレビュー/対応ワークフロー: ISSUE にフロントマター（`decision` / `status` / `branches`）を追加し QA をイシューへ移設。`work:issue-review`（スマホ主用途・AskUserQuestion で捌く）+ `work:issue-resolve`（ループ駆動・1 起動 1 イシュー: accept→`issue-resolver` サブエージェント、reject→共有 `chore/rejected-issues`）+ `work:issue-resolver` エージェントを追加。`work:start` がイシュー連携（`status: in_progress` 設定・`branches` 追記・`## 関連イシュー` 記入）。`issue-tool.py` に `set-status` を追加、`close --linked-branch` は任意のブランチ名に変更。work ライフサイクルを CLAUDE.md に文書化 |
+| 2 | 2.59.0 | 2026-06-01 | `work:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
 | 2 | 2.56.0 | 2026-05-31 | `issue-scan` を並列 `work:issue-scanner` サブエージェント（新規エージェント）へ委譲するオーケストレーターに再設計。観点（フォルダ/grep/レイヤー/ファイル群）でスキャン・`ISSUE_SCAN_AGENTS` 追加。`issue-save` スキルを削除し、イシューファイルのフォーマットを `work-dir/イシュー` リファレンスへ集約（`issue-create`・`issue-scanner` が直接記述） |
 | 2 | 2.55.0 | 2026-05-31 | `plugins/work/templates/` と `setup-task.py` を削除。テンプレート／フォルダ別構成定義を `references/work-dir/`（`タスクドキュメント` / `タスクインデックス` / `イシュー` / `ワークディレクトリ構成`）へ移し、該当 `.work/` パスの作成・編集時に ref-inject で注入。`work:start` は注入テンプレートを元にブランチドキュメントを直接作成。ブランチドキュメントのファイル名に `.branch.md` 拡張子を付与。`ドットワークディレクトリ構成`→`ワークディレクトリ構成` にリネーム・`TODOテンプレート同期` を削除 |
 | 3 | 2.54.0 | 2026-05-31 | index.yaml のブランチ索引を `branch` キー化（id/last_id/tags 撤廃）、`created` サロゲート追加、レガシー分を `index.archive.yaml` へ移行、`next-id` 撤廃・`set-completed` を `--branch` 化 |

@@ -27,7 +27,17 @@ The plugin enforces a "one task = one branch" lifecycle through hooks. The full 
 6. **Merge** (`work:merge`)
    Verify the TODO checklist → merge the parent branch in → **close related issues** (each `## 関連イシュー` row via `issue-tool.py close`, moving it to `.work/issues/closed/` and recording it in `_index.archive.yaml`) → mark the branch completed in `index.yaml` → archive the branch document → `--no-ff` merge into the parent → remove the worktree → confirm remaining QA → auto-invoke `branch-reserve` for next candidates.
 
-**Issue sub-cycle**: issues live in `.work/issues/ISSUE-{N}.md`, are created by `issue-create` / `issue-scan`, and the ones listed in a branch's `## 関連イシュー` are closed automatically at merge time (above).
+**Issue sub-cycle**: issues live in `.work/issues/ISSUE-{N}.md` with a frontmatter
+`decision` / `status` / `branches` (source of truth; `status` mirrored to `_index.yaml`). The flow:
+**create** (`issue-create` / `issue-scan` → `decision: pending`, QA raised) →
+**review** (`issue-review`, mobile-first → user sets `decision` accept/reject, answers the issue's
+`## QA`, writes `## 対応メモ`) →
+**resolve** (`issue-resolve` under `/loop`, one issue per tick → accept dispatches an
+`issue-resolver` subagent that runs `work:start` and stops at the merge-waiting commit; reject closes
+on the shared `chore/rejected-issues` branch) →
+**close** (`merge` closes a branch's `## 関連イシュー` as `resolved`; the reject branch closes as
+`wontfix`). Because QA is settled on the issue at review time, the resolver subagent reaches the
+final commit without stopping for questions.
 
 ## Skills
 
@@ -41,18 +51,21 @@ The plugin enforces a "one task = one branch" lifecycle through hooks. The full 
 | 6 | `work:plugin-config` | Interactively configure work env toggles in `settings.json` |
 | 7 | `work:issue-create` | Create issue files under `.work/issues/` |
 | 8 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
-| 9 | `work:impl-review` | Review implementation against the branch document |
-| 10 | `work:setup` | Initialize `.work/` directory structure from templates |
-| 11 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
-| 12 | `work:worktree-create` | Create a git worktree for a branch |
-| 13 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
-| 14 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
+| 9 | `work:issue-review` | Triage un-reviewed issues (set decision, answer QA, memo) — mobile-first via AskUserQuestion |
+| 10 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→`chore/rejected-issues` |
+| 11 | `work:impl-review` | Review implementation against the branch document |
+| 12 | `work:setup` | Initialize `.work/` directory structure from templates |
+| 13 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
+| 14 | `work:worktree-create` | Create a git worktree for a branch |
+| 15 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
+| 16 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
 
 ## Agents
 
 | # | Agent | Purpose |
 |---|---|---|
 | 1 | `work:issue-scanner` | Scan one perspective (folder / grep / layer / file-group) against ref-inject references and write ISSUE files; spawned by `work:issue-scan` |
+| 2 | `work:issue-resolver` | Resolve one accepted issue: create a branch via `work:start`, implement the fix, stop at the merge-waiting final commit; spawned by `work:issue-resolve` |
 
 ## Hooks
 
@@ -95,7 +108,8 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.59.0 | 2026-06-01 | Remove `work:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
+| 1 | 2.60.0 | 2026-06-01 | Issue review/resolve workflow: add ISSUE frontmatter (`decision` / `status` / `branches`) and move QA onto the issue; add `work:issue-review` (mobile-first triage via AskUserQuestion) + `work:issue-resolve` (loop-driven, one issue/tick: accept→`issue-resolver` subagent, reject→shared `chore/rejected-issues`) + `work:issue-resolver` agent; `work:start` links issues (sets `status: in_progress`, appends `branches`, fills `## 関連イシュー`); `issue-tool.py` gains `set-status` and `close --linked-branch` is now an optional branch name; document the work lifecycle in CLAUDE.md |
+| 2 | 2.59.0 | 2026-06-01 | Remove `work:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
 | 2 | 2.56.0 | 2026-05-31 | Redesign `issue-scan` as an orchestrator delegating to parallel `work:issue-scanner` subagents (new agent); scan by perspective (folder/grep/layer/file-group); add `ISSUE_SCAN_AGENTS`; remove `issue-save` skill — issue file format now in the `work-dir/イシュー` reference, authored by `issue-create` and `issue-scanner` |
 | 2 | 2.55.0 | 2026-05-31 | Remove `plugins/work/templates/` and `setup-task.py`; move templates/structure defs into `references/work-dir/` (`タスクドキュメント` / `タスクインデックス` / `イシュー` / `ワークディレクトリ構成`), injected by ref-inject on the matching `.work/` path. `work:start` authors the branch doc from the injected template; branch doc filename gains `.branch.md`. Rename `ドットワークディレクトリ構成`→`ワークディレクトリ構成`; remove `TODOテンプレート同期` |
 | 3 | 2.54.0 | 2026-05-31 | index.yaml branch index keyed by `branch` (drop id/last_id/tags); add `created` surrogate; legacy backlog migrated to `index.archive.yaml`; `next-id` removed and `set-completed` switched to `--branch` |
