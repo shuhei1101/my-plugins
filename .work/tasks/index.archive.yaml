@@ -1165,3 +1165,10 @@ branches:
   task: 260601_E2Eテスト参照更新
   title: fix/e2e-test-dir
   type: fix
+- branch: docs/issue-template-section-descriptions
+  created: '2026-06-01'
+  title: イシューテンプレートセクション説明追加
+  type: docs
+  summary: イシューテンプレートの各セクション（修正案・横展開・再発防止・原因）に説明文を追加し、英語版を同期
+  task: 260601_イシューテンプレートセクション説明追加
+  completed: true
