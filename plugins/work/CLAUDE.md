@@ -21,7 +21,6 @@ reminds task updates on stop, manages worktrees, and guards force-operations on 
 | 12 | `work:worktree-create` | Create a git worktree for a branch |
 | 13 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
 | 14 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
-| 15 | `work:setup-wizard` | First-run onboarding: configure env toggles and introduce key workflows |
 
 ## Agents
 
@@ -70,7 +69,7 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.58.0 | 2026-05-31 | Add `work:setup-wizard` skill and `SessionStart` hook (`setup_check.py`); first-run onboarding completes when `setup_done: true` is written to `.claude/work.local.md` |
+| 1 | 2.59.0 | 2026-06-01 | Remove `work:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
 | 2 | 2.56.0 | 2026-05-31 | Redesign `issue-scan` as an orchestrator delegating to parallel `work:issue-scanner` subagents (new agent); scan by perspective (folder/grep/layer/file-group); add `ISSUE_SCAN_AGENTS`; remove `issue-save` skill — issue file format now in the `work-dir/イシュー` reference, authored by `issue-create` and `issue-scanner` |
 | 2 | 2.55.0 | 2026-05-31 | Remove `plugins/work/templates/` and `setup-task.py`; move templates/structure defs into `references/work-dir/` (`タスクドキュメント` / `タスクインデックス` / `イシュー` / `ワークディレクトリ構成`), injected by ref-inject on the matching `.work/` path. `work:start` authors the branch doc from the injected template; branch doc filename gains `.branch.md`. Rename `ドットワークディレクトリ構成`→`ワークディレクトリ構成`; remove `TODOテンプレート同期` |
 | 3 | 2.54.0 | 2026-05-31 | index.yaml branch index keyed by `branch` (drop id/last_id/tags); add `created` surrogate; legacy backlog migrated to `index.archive.yaml`; `next-id` removed and `set-completed` switched to `--branch` |

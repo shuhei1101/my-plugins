@@ -79,7 +79,6 @@ rules:
     required:
       - common/共通ガイド.md
       - plugin/プラグイン構造.md
-      - plugin/セットアップウィザード.md
       - plugin/バージョン同期.md
     optional:
       - common/環境変数.md

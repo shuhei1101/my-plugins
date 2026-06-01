@@ -16,7 +16,6 @@ Reference auto-injection is opt-in per language via `settings.json` env vars.
 | `dev-kit:next-implement` | Next.js implementation workflow |
 | `dev-kit:next-plan` | Next.js planning document generator |
 | `dev-kit:plugin-migrate` | Sync dev-kit-generated artifacts in the project (html-implement rules, html-debug-fab widget) to the installed dev-kit version (manual `/dev-kit:plugin-migrate` only) |
-| `dev-kit:setup-wizard` | First-run onboarding: configure language opt-ins and introduce key features |
 
 ## Hooks
 
@@ -75,7 +74,7 @@ prevents duplicate injection.
 
 | Version | Date | Summary |
 |---|---|---|
-| 4.12.0 | 2026-05-31 | Add `dev-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`); first-run onboarding for language opt-in configuration |
+| 4.13.0 | 2026-06-01 | Remove `dev-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
 | 4.11.1 | 2026-05-31 | Remove branch-check step (master/main guard) from `plugin-migrate` — redundant with the work harness UserPromptSubmit hook |
 | 4.11.0 | 2026-05-31 | Add `dev-kit:plugin-config` skill — interactively configures 6 env toggles (`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` default-on) via numbered-list loop (PR229) |
 | 4.10.0 | 2026-05-31 | Remove `markdown_frontmatter_check.py` hook; rule is already enforced via `references/markdown/マークダウン編集.md` auto-injection on `**/*.md` (PR228) |
