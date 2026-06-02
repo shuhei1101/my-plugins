@@ -1244,3 +1244,10 @@ branches:
   summary: issue-resolverエージェントがワークツリーを作成せずメインリポジトリに直接コミットしてしまうバグを修正
   task: 260602_issue-resolverワークツリー未作成バグ修正
   completed: true
+- branch: feat/glossary-incidents-content-restore
+  created: '2026-06-02'
+  title: 用語集・インシデントのコンテンツ選別復元
+  type: feat
+  summary: PR181 で消えた glossary 75語・incidents 48件のうち現在も有効なものを選別して復元。孤立 incident 8件の整理も含む。
+  task: 260602_用語集インシデント選別復元
+  completed: true
