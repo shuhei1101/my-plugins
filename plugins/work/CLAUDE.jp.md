@@ -59,6 +59,7 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | 14 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
 | 15 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
 | 16 | `work:conversation-to-claude` | セッションを解析し成果物を自動生成（skill / rule / hook / CLAUDE.md / incidents / glossary）。claude-kit creator スキルに委譲 |
+| 17 | `work:plugin-config` | work プラグインの env トグルをインタラクティブに設定（ブランチ強制、マージ提案、ワークツリー、コミットタイプなど） |
 
 ## エージェント
 
@@ -114,7 +115,8 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.65.1 | 2026-06-02 | `## スキル` テーブルの古いスキル名を修正: `work:pr-handoff` → `work:branch-reserve`、`work:pr-show` → `work:branch-show` |
+| 1 | 2.66.0 | 2026-06-02 | `work:plugin-config` スキルを復活 — work プラグイン変数のインタラクティブな env トグル設定 |
+| 2 | 2.65.1 | 2026-06-02 | `## スキル` テーブルの古いスキル名を修正: `work:pr-handoff` → `work:branch-reserve`、`work:pr-show` → `work:branch-show` |
 | 2 | 2.65.0 | 2026-06-02 | 対話式 `work:plugin-config` スキルを削除（env トグルは `settings.json` を直接編集）。`## 環境変数` テーブルを統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再フォーマット |
 | 1 | 2.64.0 | 2026-06-02 | 用語集記述ガイドのリファレンス `references/conversation/` を日本語ファイル名 `用語集.md`（+ `.jp.md`）にリネーム（カタカナ名を廃止）。`injection_rules` / `_index` / 相互リンク・各ポインタを更新 |
 | 1 | 2.63.0 | 2026-06-02 | イシューファイル形式を刷新: YAML フロントマターを廃止し、2 分割の Markdown（AI 記入の上半分 + `# ユーザー回答欄`〔`## 意思` / `## QA` / `## 自由記述`、回答候補を用意し `**回答**:` は空〕）に。`## 修正案`→`## 対応案` に改名し 問題点/詳細 セクションを廃止（背景/現状 で代替）。`status` / `branches` を `_index.yaml` へ移管（`issue-tool.py` に `add-branch` 追加）。`issue-create` / `issue-review` / `issue-resolve` / `issue-scan`・`issue-scanner` / `issue-resolver` エージェント・`work:start` のイシュー連携を更新 |
