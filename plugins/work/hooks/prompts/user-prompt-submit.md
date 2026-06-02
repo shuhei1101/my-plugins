@@ -47,7 +47,7 @@ Check whether a working branch is in progress in **the current Claude Code conve
 
 ---
 
-### Step 3: No branch in progress — choose the entry point
+### Step 3: Run work:start before doing anything
 
 #### Condition
 
@@ -55,21 +55,13 @@ Check whether a working branch is in progress in **the current Claude Code conve
 
 #### Process
 
-1. Judge whether the request **mainly edits source code**.
-   - **No** (investigation / confirmation / research / reading code / explaining behavior — "how does
-     this work?", "what is the status of X?", "look into Y") → run `/work:quick-task`. It creates a
-     branch + a lightweight task document recording the findings.
-   - **Yes** (source-code implementation) → run `/work:start` to create a branch, then proceed to Step 2.
+1. Run `/work:start` to create a branch
+2. Once the branch is created, proceed to Step 2
 
 #### Notes
 
-- Both entry points create a branch and a task document; the difference is the nature of the work
-  (investigation vs source-code implementation) and how light the lifecycle is.
-- If a `work:quick-task` turns into source-code implementation, continue under the `work:start`
-  lifecycle on the same branch.
-
 ##### Prohibitions
 
-- Editing or committing without running `work:start` or `work:quick-task` first
+- Editing or committing files without running work:start first
 - Committing directly to master
 - Skipping this check "just this once"

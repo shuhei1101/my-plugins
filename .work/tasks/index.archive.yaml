@@ -1329,3 +1329,38 @@ branches:
   task: 260531_claude-kitスキル名プレフィックス監査
   title: claude-kitスキル名プレフィックス監査
   type: fix
+- branch: docs/work-kit-skills-note-refresh
+  created: '2026-06-02'
+  title: work-kitスキル群ノートの現行化
+  type: docs
+  summary: work-kitスキル群.md のスキル一覧表を旧名・旧仕様から現行18スキルへ更新（quick-task 追加・用語統一反映）
+  task: 260602_work-kitスキル群ノート現行化
+  completed: true
+- branch: fix/work-plugin-description-sync
+  completed: true
+  created: '2026-05-31'
+  summary: plugin.jsonとmarketplace.jsonのdescriptionを同期し、claude-kitリファレンスに高級対策を追加
+  task: 260531_work-plugin-description-sync
+  title: workプラグインdescription同期修正
+  type: fix
+- branch: docs/read-cancel-hook-investigation
+  created: '2026-06-02'
+  title: Readキャンセル原因フック調査
+  type: docs
+  summary: Readツールがキャンセルされる原因となっているフックを特定する
+  task: 260602_read-cancel-hook-investigation
+  completed: true
+- branch: docs/remove-yosumiwa-from-issue-template
+  created: '2026-06-02'
+  title: イシューテンプレートから様子見選択肢を削除
+  type: docs
+  summary: イシュー.jp.md の回答行から '/ 様子見' を削除
+  task: 260602_イシューテンプレートから様子見選択肢を削除
+  completed: true
+- branch: refactor/remove-quick-task
+  created: '2026-06-02'
+  title: quick-taskスキルと関連フック変更の削除
+  type: refactor
+  summary: work:quick-taskスキルと関連するフック・プラグイン設定変更を削除し、追加前の状態に戻す
+  task: 260602_quick-taskスキルと関連フック変更の削除
+  completed: true

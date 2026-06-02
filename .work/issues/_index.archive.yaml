@@ -36,6 +36,12 @@ closed_issues:
   resolution: resolved
   linked_branch: 0
   tags: []
+- id: ISSUE-002
+  title: ''
+  closed: '2026-06-02'
+  resolution: resolved
+  tags: []
+  linked_branch: fix/work-plugin-description-sync
 scan_records:
 - date: 2026-05-31
   skill: issue-scan

@@ -387,9 +387,21 @@ def main() -> int:
             lines.append(r["body"])
         reason = "\n".join(lines)
 
-    sys.stdout.buffer.write(
-        json.dumps({"decision": "block", "reason": reason}, ensure_ascii=False).encode("utf-8")
-    )
+    if tool_name == "Read":
+        # Read はキャンセルせずコンテキストだけ注入する
+        sys.stdout.buffer.write(
+            json.dumps({
+                "hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "permissionDecision": "allow",
+                    "additionalContext": reason,
+                }
+            }, ensure_ascii=False).encode("utf-8")
+        )
+    else:
+        sys.stdout.buffer.write(
+            json.dumps({"decision": "block", "reason": reason}, ensure_ascii=False).encode("utf-8")
+        )
     return 0
 
 
