@@ -1371,3 +1371,10 @@ branches:
   summary: my-plugins 全プラグインのスキル name フィールドを横断チェックし、命名規則違反を修正する
   task: 260602_全プラグイン横断スキル名監査
   completed: true
+- branch: refactor/issue-answer-section-bottom
+  created: '2026-06-02'
+  title: イシュー回答欄を下部へ移動
+  type: refactor
+  summary: ユーザー回答欄を下部（ファイル末尾）へ戻す・用語集にイシューリファレンス場所を追加
+  task: 260602_イシュー回答欄を下部へ移動
+  completed: true
