@@ -2,7 +2,7 @@
 name: merge
 description: |
   ブランチをマージ：TODOチェックリスト検証、インデックスアーカイブ、関連イシューのクローズ、
-  --no-ff でマージ、ワークツリーとブランチの削除、ブランチドキュメント内の残存QAエントリ確認。
+  --no-ff でマージ、ワークツリーとブランチの削除、タスクドキュメント内の残存QAエントリ確認。
   「マージして」「merge して」「ブランチをマージしたい」でトリガー。
 disable-model-invocation: true
 ---
@@ -11,9 +11,9 @@ disable-model-invocation: true
 
 # work:merge — ブランチをマージ
 
-完全なマージフローを実行：TODO チェックリスト検証 → master 互換性確認 → 関連イシューのクローズ →
+完全なマージフローを実行：TODO チェックリスト検証 → master 互換性確認 → ワークツリー内で conversation-to-claude 実行（有効な場合） → 関連イシューのクローズ →
 インデックスアーカイブ → `--no-ff` マージ → ワークツリークリーンアップ →
-ブランチドキュメント内の残存 QA エントリ確認 → 次ブランチ候補用の branch-reserve 自動実行。
+タスクドキュメント内の残存 QA エントリ確認 → 次ブランチ候補用の branch-reserve 自動実行。
 
 > **命名規則**: 新しいブランチは `{type}/{title}` を使用（`PR{N}/` プレフィックスなし）。
 > 新しいワークツリーは `{repo}-wt-{type}-{title}` を使用します。
@@ -53,7 +53,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 出力
 
-- ブランチドキュメントパス、ブランチ名、ワークツリーパスが確認されました
+- タスクドキュメントパス、ブランチ名、ワークツリーパスが確認されました
 
 ---
 
@@ -65,7 +65,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 処理
 
-1. `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md` のブランチドキュメント内の
+1. `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md` のタスクドキュメント内の
    `## 作業内容` テーブルを読み込み
 2. すべての行の `完了` 列に `済` があることを確認
 
@@ -108,11 +108,11 @@ git -C {WORKTREE_PATH} merge <PARENT_BRANCH>
 git -C {WORKTREE_PATH} status
 ```
 
-   - **コンフリクトなし**（クリーンなマージ / `Already up to date.`）→ Step 4 に進む
+   - **コンフリクトなし**（クリーンなマージ / `Already up to date.`）→ Step 5 に進む
    - **コンフリクトあり** → ここで停止。コンフリクトが発生しているファイルをユーザーに報告し、
      手動での解消を待ってから続行
 
-→ ステップ 4 へ
+→ ステップ 5 へ
 
 #### 注記
 
@@ -121,18 +121,72 @@ git -C {WORKTREE_PATH} status
 - このステップをスキップしない — マージ先に戻す前にマージ先ブランチの内容を取り込むことは必須
 - **`git log` の出力を見てスキップを判断することを禁止** — `git merge <PARENT_BRANCH>` は必ず無条件で実行する
 
-### ステップ 4: 関連イシューをクローズ（ワークツリー内）
+### ステップ 4: ワークツリー内で conversation-to-claude を実行
 
 #### 条件
 
 - Step 3 完了
+- `WORK_MERGE_CONV2CLAUDE` が `false`/`0`/`no`/`off` ではない場合（デフォルト：有効）。無効な場合 → Step 5 にスキップ
 
 #### 処理
 
-1. ワークツリーの `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md`
-   ブランチドキュメントの `## 関連イシュー` セクションを読み込み
+ワークツリー内で実行し、生成された `.claude/` アーティファクトがブランチに落ちて、
+`--no-ff` マージでキャプチャされる状態にします — 親ブランチに直接コミットされないようにするため。
+
+1. ワークツリーディレクトリに移動：
+
+```bash
+cd {WORKTREE_PATH}
+```
+
+2. `/work:conversation-to-claude` を実行して完了を待つ。このセッションを分析し、価値のある知識を
+   アーティファクト（skills / rules / hooks / CLAUDE.md / incidents / glossary）として保存。
+   このスキルは独自の出力をコミット。
+3. `.claude/` の下に未コミットがあれば、ワークツリー内でコミット：
+
+```bash
+git add .claude/
+git commit -m "docs: conversation-to-claude artifacts"
+```
+
+4. メインリポジトリディレクトリに戻す：
+
+```bash
+cd -
+```
+
+→ ステップ 5 へ
+
+#### 注記
+
+- このステップはブランチが削除される前にセッション知識をキャプチャ — 短い会話でもスキップしない。
+  スキルに判断させる
+- このコミットは Step 8 の `--no-ff` マージに含まれます
+
+##### ワークツリー内で実行する理由
+
+conversation-to-claude をメインリポ（親ブランチ cwd）から実行すると、`.claude/` ファイルが
+親ブランチに直接書き込まれ、「ブランチ作業」と「セッション知識」が異なるコミット間に散乱。
+ワークツリー内で実行すると、ブランチに含まれるため、マージコミットですべてをまとめてキャプチャ。
+
+##### 禁止事項
+
+- conversation-to-claude を親ブランチ cwd から実行しない（親ブランチへの直接コミット原因）
+
+---
+
+### ステップ 5: 関連イシューをクローズ（ワークツリー内）
+
+#### 条件
+
+- Step 4 完了
+
+#### 処理
+
+1. ワークツリーの `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md`
+   タスクドキュメントの `## 関連イシュー` セクションを読み込み
 2. **セクションが存在しない、空である、またはテンプレートプレースホルダー行のみを含む**
-   （`| ISSUE-{N} | ... |`）→ このステップの残りをスキップして Step 5 に進む
+   （`| ISSUE-{N} | ... |`）→ このステップの残りをスキップして Step 6 に進む
 3. テーブルの各行について、**ワークツリー内** でクローズコマンドを実行します：
 
 ```bash
@@ -140,13 +194,13 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
   --issues-dir {WORKTREE_PATH}/.work/issues \
   --issue-id ISSUE-{NNN} \
   --resolution {resolved|wontfix} \
-  --linked-pr {N}
+  --linked-branch {BRANCH_NAME}
 ```
 
    スクリプトは以下を実行：
    - `.work/issues/ISSUE-{NNN}.md` → `.work/issues/closed/ISSUE-{NNN}.md` に移動
    - `_index.yaml` からエントリを削除（gitignored — コミット不要）
-   - `_index.archive.yaml` に `closed_issues` エントリを追加（`linked_pr` 付き）
+   - `_index.archive.yaml` に `closed_issues` エントリを追加（`linked_branch` 付き）
 4. プロジェクトに `.work/issues/` が存在しない場合（イシュー管理を採用していない）、
    スクリプトはスキップメッセージを出力 — これを no-op として扱う
 5. ワークツリー内の変更をコミット：
@@ -156,12 +210,12 @@ git -C {WORKTREE_PATH} add .work/issues/
 git -C {WORKTREE_PATH} commit -m "chore: close related issues"
 ```
 
-→ ステップ 5 へ
+→ ステップ 6 へ
 
 #### 注記
 
 - イシューファイル移動は git 追跡リネーム。`_index.yaml` は gitignored のまま
-- このコミットは Step 7 の `--no-ff` マージに含まれます
+- このコミットは Step 8 の `--no-ff` マージに含まれます
 - イシュー行が処理されない場合、空のコミットを作成しないでください
 
 ##### set-completed/archive の前に実行する理由
@@ -172,11 +226,11 @@ git -C {WORKTREE_PATH} commit -m "chore: close related issues"
 
 ---
 
-### ステップ 5: ブランチを index.yaml で完了とマーク
+### ステップ 6: ブランチを index.yaml で完了とマーク
 
 #### 条件
 
-- Step 4 完了
+- Step 5 完了
 
 #### 処理
 
@@ -188,7 +242,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
   .work/tasks/index.yaml --branch {full-branch-name}
 ```
 
-→ ステップ 6 へ
+→ ステップ 7 へ
 
 #### 注記
 
@@ -198,11 +252,11 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
 
 ---
 
-### ステップ 6: 完了したインデックスエントリをアーカイブ
+### ステップ 7: 完了したインデックスエントリをアーカイブ
 
 #### 条件
 
-- Step 5 完了
+- Step 6 完了
 
 #### 処理
 
@@ -225,29 +279,29 @@ git -C {WORKTREE_PATH} add .work/tasks/index.archive.yaml
 git -C {WORKTREE_PATH} commit -m "chore: archive to index.archive.yaml"
 ```
 
-→ ステップ 7 へ
+→ ステップ 8 へ
 
 #### 注記
 
 - `index.yaml` は gitignored のまま — コミットは不要
 - `index.archive.yaml` は git 追跡 — **ブランチ** にコミット（親ブランチではなく）。
-  Step 7 の --no-ff マージに含まれます
+  Step 8 の --no-ff マージに含まれます
 - アーカイブコマンドはメインリポの `index.yaml` から読み込み、ワークツリーの
   `index.archive.yaml` に書き込み
 
 ---
 
-### ステップ 7: マージを実行
+### ステップ 8: マージを実行
 
 #### 条件
 
-- Step 6 完了
+- Step 7 完了
 
 > ⚠️ **マージ前チェック必須**
-> Step 6 でワークツリー内に `index.archive.yaml` がコミットされなかった場合、
+> Step 7 でワークツリー内に `index.archive.yaml` がコミットされなかった場合、
 > アーカイブ変更がマージコミットから欠落します。
-> **Step 6 内のワークツリー内の `git commit` が完了してからマージコマンドを実行してください。**
-> （Step 6 が 0 エントリ移動を報告した場合のみこのチェックをスキップしてください —
+> **Step 7 内のワークツリー内の `git commit` が完了してからマージコマンドを実行してください。**
+> （Step 7 が 0 エントリ移動を報告した場合のみこのチェックをスキップしてください —
 > コミットは不要でした）
 
 #### 注記
@@ -273,11 +327,11 @@ git merge --no-ff -m "{type}: {title}" {BRANCH_NAME}
    ここで `{BRANCH_NAME}` は実際のブランチ名です（新形式：`{type}/{title}`、
    レガシー：`PR{N}/{type}/{title}`）。
 
-→ ステップ 8 へ
+→ ステップ 9 へ
 
 ---
 
-### ステップ 8: ワークツリーとブランチを削除
+### ステップ 9: ワークツリーとブランチを削除
 
 #### 処理
 
@@ -288,7 +342,7 @@ git worktree remove {WORKTREE_PATH}
 git branch -d {BRANCH_NAME}
 ```
 
-→ ステップ 9 へ
+→ ステップ 10 へ
 
 #### 注記
 
@@ -298,12 +352,12 @@ git branch -d {BRANCH_NAME}
 
 ---
 
-### ステップ 9: 残存 QA エントリを確認
+### ステップ 10: 残存 QA エントリを確認
 
 #### 処理
 
-1. `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md`
-   ブランチドキュメントの `## QA` セクションを確認し、残存する未解決エントリを
+1. `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md`
+   タスクドキュメントの `## QA` セクションを確認し、残存する未解決エントリを
    ユーザーと確認
 2. 変更がある場合はコミット：
 
@@ -312,44 +366,44 @@ git add .work/
 git commit -m "docs: post-merge update"
 ```
 
-→ ステップ 10 へ
-
----
-
-### ステップ 10: 次ブランチ候補を branch-reserve に委譲
-
-#### 条件
-
-- `WORK_MERGE_AUTO_HANDOFF` が `false`/`0`/`no`/`off` ではない場合
-  （デフォルト：有効）。無効な場合 → このステップをスキップしてステップ 11 に進む
-
-#### 処理
-
-1. マージされたブランチドキュメントを読み込み、その `## 次ブランチ候補` セクションを検査
-2. **次ブランチ候補が存在する場合**：`/work:branch-reserve` を実行
-   （ユーザー確認は不要）。すべての分類と予約ロジックをそのスキルに委譲
-3. **次ブランチ候補が空の場合**: branch-reserve をスキップ
-
 → ステップ 11 へ
 
 ---
 
-### ステップ 11: マージ完了を報告
+### ステップ 11: 次ブランチ候補を branch-reserve に委譲
+
+#### 条件
+
+- `WORK_MERGE_AUTO_HANDOFF` が `false`/`0`/`no`/`off` ではない場合
+  （デフォルト：有効）。無効な場合 → このステップをスキップしてステップ 12 に進む
+
+#### 処理
+
+1. マージされたタスクドキュメントを読み込み、その `## 次ブランチ候補` セクションを検査
+2. **次ブランチ候補が存在する場合**：`/work:branch-reserve` を実行
+   （ユーザー確認は不要）。すべての分類と予約ロジックをそのスキルに委譲
+3. **次ブランチ候補が空の場合**: branch-reserve をスキップ
+
+→ ステップ 12 へ
+
+---
+
+### ステップ 12: マージ完了を報告
 
 #### 処理
 
 1. ユーザーにマージが完了したことを報告
    - マージされたブランチ名とタスクフォルダを含める
 
-→ ステップ 12 へ
+→ ステップ 13 へ
 
 ---
 
-### ステップ 12: 次ブランチ候補を 3 カテゴリで提示
+### ステップ 13: 次ブランチ候補を 3 カテゴリで提示
 
 #### 処理
 
-マージされたブランチドキュメントパスをデータソースとして `/work:branch-show` を実行します。
+マージされたタスクドキュメントパスをデータソースとして `/work:branch-show` を実行します。
 
 #### 注記
 

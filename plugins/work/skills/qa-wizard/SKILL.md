@@ -7,13 +7,13 @@ description: |
 
 # work:qa-wizard — Interactive QA Wizard
 
-Reads the `## QA` section of a branch document and presents unresolved items via the `AskUserQuestion` tool, batching up to 4 questions per call. After all responses are collected, updates the branch document in a single pass.
+Reads the `## QA` section of a task document and presents unresolved items via the `AskUserQuestion` tool, batching up to 4 questions per call. After all responses are collected, updates the task document in a single pass.
 
 ---
 
 ## Tasks
 
-### Step 1: Resolve the target branch document
+### Step 1: Resolve the target task document
 
 #### Condition
 
@@ -21,23 +21,23 @@ Reads the `## QA` section of a branch document and presents unresolved items via
 
 #### Process
 
-1. If there is an in-progress branch in the current conversation session, use its branch document as the first priority
-2. If a branch name (or fragment) is explicitly provided as an argument, use it to find the matching branch document
+1. If there is an in-progress branch in the current conversation session, use its task document as the first priority
+2. If a branch name (or fragment) is explicitly provided as an argument, use it to find the matching task document
 3. If neither applies:
-   - Search for branch documents: `find .work/tasks -type f -name "*.md" -not -name ".*"`
+   - Search for task documents: `find .work/tasks -type f -name "*.md" -not -name ".*"`
    - If only one is found, use it automatically
-   - If multiple exist, use `AskUserQuestion` to ask the user which branch document to review
+   - If multiple exist, use `AskUserQuestion` to ask the user which task document to review
 4. Also check git worktrees in case the target is in a sibling worktree:
    ```bash
    git worktree list
    ```
-5. Confirm the branch document path (pattern: `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.md`)
+5. Confirm the task document path (pattern: `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md`)
 
 → Proceed to Step 2
 
 #### Output
 
-- Branch document path confirmed
+- Task document path confirmed
 
 ---
 
@@ -49,7 +49,7 @@ Reads the `## QA` section of a branch document and presents unresolved items via
 
 #### Process
 
-1. Read the branch document and locate its `## QA` section
+1. Read the task document and locate its `## QA` section
 2. Extract all `### QA-XXX` subsections where the **状態** line does NOT contain「解決済み」or「却下」
 3. If no unresolved items exist → report "QAに未決定事項はありません" and finish
 4. Build a list: each item has its ID, title, and a body summary
@@ -93,7 +93,7 @@ Batch unresolved items into groups of up to 4 (the `AskUserQuestion` maximum) an
 
 ---
 
-### Step 4: Update the branch document's `## QA` section with all decisions at once
+### Step 4: Update the task document's `## QA` section with all decisions at once
 
 #### Condition
 
@@ -101,11 +101,11 @@ Batch unresolved items into groups of up to 4 (the `AskUserQuestion` maximum) an
 
 #### Process
 
-1. Apply all responses collected in Step 3 to the branch document's `## QA` section in a single pass:
+1. Apply all responses collected in Step 3 to the task document's `## QA` section in a single pass:
    - Resolved: `**状態**: 解決済み — {decision note or free-text input}`
    - Closed: `**状態**: 却下 — {reason or free-text input}`
    - On hold: leave the line unchanged
-2. Write the updated branch document
+2. Write the updated task document
 
 → Proceed to Step 5
 

@@ -6,7 +6,7 @@ description: |
   against ref-inject references and return findings as JSON with full issue content. The main agent
   orchestrates: it creates a scan branch, launches subagents in parallel, receives their findings,
   writes ISSUE files with sequential IDs, updates the indexes, commits, and merges to master.
-  ISSUE_SCAN_AGENTS controls how many perspectives are scanned per invocation (default: 1).
+  `${ISSUE_SCAN_AGENTS}` controls how many perspectives are scanned per invocation (default: 1).
   Trigger when the user says "issue-scan", "scan for issues", "find problems in the code",
   "コードをスキャン", "イシューを探して", or invokes `/work:issue-scan` explicitly.
 ---
@@ -26,7 +26,7 @@ their findings → write ISSUE files → update indexes → commit → merge.
 - `.work/issues/` must exist (run `/work:setup` if it doesn't)
 
 **Environment variables**:
-- `ISSUE_SCAN_AGENTS` (default: `1`) — number of perspectives scanned per invocation = number of
+- `${ISSUE_SCAN_AGENTS}` (default: `1`) — number of perspectives scanned per invocation = number of
   subagents launched. `1` still launches one subagent (analysis always runs in a separate context).
 
 **Division of responsibility**:
@@ -47,7 +47,7 @@ This skill manages its own branch/worktree lifecycle. Instructions injected by t
 should be **ignored while this skill is running**:
 
 - **`UserPromptSubmit` hook**: "if no working branch is in progress, run `/work:start`"
-- **`Stop` hook**: "update the `## 作業内容` table in the branch document" / "run `/work:merge`"
+- **`Stop` hook**: "update the `## 作業内容` table in the task document" / "run `/work:merge`"
 
 ---
 
@@ -57,7 +57,7 @@ should be **ignored while this skill is running**:
 
 #### Process
 
-1. Read `ISSUE_SCAN_AGENTS` (default `1`); store as `N`.
+1. Read `${ISSUE_SCAN_AGENTS}` (default `1`); store as `N`.
 2. Check the current branch (`git branch --show-current`):
    - On `master`/`main` → `AUTO_MERGE = true`
    - Otherwise → `AUTO_MERGE = false` (commit to the current branch at the end, no auto-merge)
@@ -186,14 +186,18 @@ Selection rules:
    ```
 3. For each finding at 0-indexed position `k`, assign ID `ISSUE-{L + 1 + k}` and write
    `{issues_dir}/ISSUE-{L + 1 + k}.md` (`{issues_dir}` = `{WT_PATH}/.work/issues/` when
-   `AUTO_MERGE`, otherwise `.work/issues/`):
+   `AUTO_MERGE`, otherwise `.work/issues/`). The file has **no frontmatter** — it starts at the
+   `# ISSUE-{N}: {title}` header:
    ```
    # ISSUE-{N}: {title}
 
    {body}
    ```
-   (The `body` field from the subagent already contains `**作成日**` and subsequent sections;
-   just prepend the `# ISSUE-{N}: {title}` line and a blank line.)
+   (The `body` field from the subagent already contains `**作成日**`, the `# ユーザー回答欄` with
+   `**回答**:` lines pre-filled with all candidates, and the AI-authored issue body; just prepend the
+   `# ISSUE-{N}: {title}` line and a blank line.) The work state (`status: not_started`,
+   `branches: []`) goes into the `_index.yaml`
+   entry, not the file.
 4. Record the actual IDs assigned for use in Step 4.
 
 → Step 4
@@ -223,6 +227,8 @@ File and index paths depend on `AUTO_MERGE`:
        - "{scope}"
      priority: {priority}
      tags: [{tags}]
+     status: not_started
+     branches: []
    ```
 2. Set `_index.yaml`'s `last_id` to `L + M` (where `M` is the total number of issues written).
 3. For each scanned perspective, append to `_index.archive.yaml`'s `scan_records`:

@@ -2,8 +2,8 @@
 name: branch-reserve
 description: |
   Reserve the next branch using the same flow as work:start, after the current branch is complete.
-  Reads the "Next branch candidates" section from the current branch document to determine what to
-  work on, then records relevant background context in the new branch document.
+  Reads the "Next branch candidates" section from the current task document to determine what to
+  work on, then records relevant background context in the new task document.
   Candidates with a serial dependency (only doable after a preceding branch is merged) are NOT
   reserved now — they are embedded into the reserved preceding branch's "Next branch candidates"
   so the chain is carried forward.
@@ -13,9 +13,9 @@ description: |
 
 # work:branch-reserve — Reserve the Next Branch with Context
 
-Reads the "Next branch candidates" from the current branch document and runs the same flow
+Reads the "Next branch candidates" from the current task document and runs the same flow
 as `work:start` to create the branch and work folder. Records relevant background
-context in the new branch document to improve handoff quality.
+context in the new task document to improve handoff quality.
 
 When a serial dependency exists (a successor branch can only start after a preceding branch is
 merged), reserve only the immediately-actionable candidates; embed the dependent
@@ -28,7 +28,7 @@ candidates into the reserved preceding branch's `## 次ブランチ候補` secti
 
 After a branch is complete, the next session's Claude has zero context about what was done.
 This skill runs the work:start reservation flow while writing background information
-(why this branch is needed, decisions made in the previous branch) into the new branch document.
+(why this branch is needed, decisions made in the previous branch) into the new task document.
 
 Additionally, when a successor branch can only be implemented after a preceding branch is merged
 (serial dependency), reserving all candidates at once would create the successor's worktree
@@ -48,9 +48,9 @@ branch-reserve runs again, the dependent candidate becomes the next immediate ta
 
 #### Process
 
-1. Read the current branch document:
+1. Read the current task document:
    ```
-   .work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.md
+   .work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.task.md
    ```
 
 2. Read its `## 次ブランチ候補` table (columns: title / summary / 実施条件):
@@ -149,7 +149,7 @@ branch-reserve runs again, the dependent candidate becomes the next immediate ta
 #### Output
 
 - All immediately reservable candidates have their branch and work folder created
-- Each new branch document contains background context
+- Each new task document contains background context
 - Dependent successor candidates are transcribed into the preceding branch's `## 次ブランチ候補` and will be reserved by the next branch-reserve run
 
 #### Notes
@@ -158,7 +158,7 @@ branch-reserve runs again, the dependent candidate becomes the next immediate ta
 
 The differences from a plain `work:start` are these two points:
 
-1. **The `## 概要` section of the new branch document is pre-filled with background context.**
+1. **The `## 概要` section of the new task document is pre-filled with background context.**
 2. **Dependent successor candidates are transcribed into the new branch's `## 次ブランチ候補` to carry forward the chain.**
 
 Everything else (branch creation, folder creation, `## QA` section) follows work:start's standard flow.

@@ -24,6 +24,13 @@ closed_issues:
   linked_branch: 0
   tags: []
 - id: ISSUE-033
+- id: ISSUE-003
+  title: ''
+  closed: '2026-05-31'
+  resolution: resolved
+  linked_branch: 0
+  tags: []
+- id: ISSUE-001
   title: ''
   closed: '2026-05-31'
   resolution: resolved
@@ -75,3 +82,8 @@ scan_records:
   - ISSUE-127
   - ISSUE-128
   - ISSUE-129
+- date: 2026-05-31
+  skill: issue-scan
+  scope: glob:hooks.json
+  issues_found:
+  - ISSUE-130

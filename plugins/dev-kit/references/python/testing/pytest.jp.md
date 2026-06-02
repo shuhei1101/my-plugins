@@ -58,6 +58,7 @@ from __future__ import annotations
 import pytest
 from {pkg}.shared.settings import Settings
 
+
 @pytest.fixture
 def test_settings() -> Settings:
     """テスト用設定。env を上書き。"""
@@ -67,6 +68,7 @@ def test_settings() -> Settings:
         openai_api_key="sk-test",
         anthropic_api_key="sk-ant-test",
     )
+
 
 @pytest.fixture
 def freeze_time(monkeypatch: pytest.MonkeyPatch):
@@ -95,6 +97,7 @@ def chat_mock_ok():
         return "ok response"
     return _chat
 
+
 @pytest.fixture
 def chat_mock_rate_limited():
     from {pkg}.shared.errors import LlmRateLimitError
@@ -102,10 +105,12 @@ def chat_mock_rate_limited():
         raise LlmRateLimitError("rate limited")
     return _chat
 
+
 @pytest.mark.asyncio
 async def test_success(chat_mock_ok) -> None:
     result = await generate_response("hi", chat=chat_mock_ok)
     assert result == "ok response"
+
 
 @pytest.mark.asyncio
 async def test_rate_limited(chat_mock_rate_limited) -> None:
@@ -171,6 +176,7 @@ from fastapi.testclient import TestClient
 from {pkg}.server.app import build_fastapi
 from {pkg}.main import Handlers, build_handlers
 
+
 def test_post_chat_success() -> None:
     """POST /chat が 200 を返す。"""
     app = build_fastapi()
@@ -201,8 +207,10 @@ import pytest
 
 pytestmark = pytest.mark.smoke   # ファイル全体に
 
+
 @pytest.mark.slow                # 関数単位
 def test_heavy() -> None: ...
+
 
 @pytest.mark.skipif(
     not has_gpu(),

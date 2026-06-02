@@ -1123,4 +1123,202 @@ branches:
   type: fix
   summary: dev-kit・work・ref-injectの各スキルのnameフィールドにプラグインプレフィックスを付与し命名規則を統一する
   task: 260531_スキル名プレフィックス統一
+- branch: feat/setup-wizard-skill
+  created: '2026-05-31'
+  title: 全プラグインへのセットアップウィザードスキル実装
+  type: feat
+  summary: 全4プラグインに必須の setup-wizard スキルを追加する
+  task: 260531_setup-wizard-skill
+  completed: true
+- branch: docs/issue-problem-flow-fix-table
+  created: '2026-05-31'
+  title: イシューテンプレート問題手順・修正案テーブル化
+  type: docs
+  summary: イシューテンプレートの問題セクションに発生手順を追加し、修正案セクションをメリデメ表形式に改善
+  task: 260531_イシューテンプレート問題手順・修正案テーブル化
+  completed: true
+- branch: fix/jp-mirror-toml-blank-lines
+  created: '2026-05-31'
+  title: JPミラーTOMLコードブロック空行修正
+  type: fix
+  summary: pyproject設定.jp.md のTOMLコードブロック内セクション区切り前の空行を英語ソースに合わせて2行に修正
+  task: 260531_JPミラーTOMLコードブロック空行修正
+  completed: true
+- branch: docs/e2e-usecase-driven-design
+  created: '2026-06-01'
+  title: E2EテストユースケースドリブンD設計への更新
+  type: docs
+  summary: dev-kit の next/testing/E2Eテスト.md をユースケース駆動設計の構成に更新
+  task: 260601_E2Eテストユースケース駆動設計
+  completed: true
+- branch: docs/reference-functional-style-audit
+  created: '2026-06-01'
+  title: リファレンス関数型スタイル監査
+  type: docs
+  summary: 全 Next.js + Python リファレンスを精読し quest-pay 同様の関数型・type 優先スタイルへの準拠を監査。非準拠は修正
+  task: 260601_リファレンス関数型スタイル監査
+  completed: true
+- completed: true
+  id: 12
+  summary: E2Eテスト.md のディレクトリを tests/e2e/ に統一し JP ミラーを追加
+  tags: []
+  task: 260601_E2Eテスト参照更新
+  title: fix/e2e-test-dir
+  type: fix
+- branch: docs/issue-template-section-descriptions
+  created: '2026-06-01'
+  title: イシューテンプレートセクション説明追加
+  type: docs
+  summary: イシューテンプレートの各セクション（修正案・横展開・再発防止・原因）に説明文を追加し、英語版を同期
+  task: 260601_イシューテンプレートセクション説明追加
+  completed: true
+- branch: chore/remove-setup-wizard
+  created: '2026-06-01'
+  title: セットアップウィザード全削除
+  type: chore
+  summary: 全プラグインのsetup-wizardスキル・SessionStartフック・参考ドキュメント・setup_check.pyを削除する
+  task: 260601_セットアップウィザード全削除
+  completed: true
+- branch: feat/issue-resolve
+  created: '2026-06-01'
+  title: イシュー対応スキルとライフサイクル整備
+  type: feat
+  summary: work の現行ライフサイクルを CLAUDE.md に文書化し、ISSUE フロントマター + issue-resolve スキル + start
+    のイシュー連携を実装する
+  task: 260601_イシュー対応スキル
+  completed: true
+- branch: chore/migrate-existing-issues
+  created: '2026-06-02'
+  title: 既存イシューをフロントマター形式へ移行
+  type: chore
+  summary: 既存イシュー(my-plugins/aituber)に decision/status/branches/instruction フロントマターを付与
+  task: 260602_既存イシューフロントマター移行
+  completed: true
+- branch: feat/utils-jp-mirror-translator
+  created: '2026-06-02'
+  title: utils JP ミラー翻訳スキル
+  type: feat
+  summary: utils プラグインに JP ミラー→英語版の翻訳スキル・サブエージェントを追加
+  task: 260602_utils-JPミラー翻訳スキル
+  completed: true
+- branch: feat/base-branch-config
+  created: '2026-06-02'
+  title: ベースブランチ設定の追加
+  type: feat
+  summary: WORK_BASE_BRANCH 環境変数を追加し、worktree 作成時のベースブランチを設定可能にする
+  task: 260602_base-branch-config
+  completed: true
+- branch: feat/revive-conversation-to-claude
+  created: '2026-06-02'
+  title: 会話キャプチャスキル復活
+  type: feat
+  summary: conversation-to-claude スキル・PreCompact フック・merge 呼び出しステップを work プラグインに復活。glossary/incidents
+    の登録基準を見直す。プロジェクト固有コンテンツの復元はしない。
+  task: 260602_会話キャプチャスキル復活
+  completed: true
+- branch: docs/env-var-notation-reference
+  created: '2026-06-02'
+  title: 環境変数記法リファレンス追加
+  type: docs
+  summary: claude-kit references に環境変数記法リファレンスを追加し、スキル・ルール・CLAUDE.md への注入ルールを設定する
+  task: 260602_環境変数記法リファレンス追加
+  completed: true
+- branch: docs/incident-reference-examples
+  created: '2026-06-02'
+  title: インシデントリファレンス記録例強化
+  type: docs
+  summary: インシデントリファレンスの採用基準に Claude Code 側の意図齟齬ミス例を追加
+  task: 260602_インシデントリファレンス記録例強化
+  completed: true
+- branch: feat/issue-format-redesign
+  created: '2026-06-02'
+  title: イシュー形式刷新
+  type: feat
+  summary: イシューファイル形式の刷新（フロントマター廃止・上半分AI/下半分ユーザー回答欄の2分割・修正案→対応案）
+  task: 260602_イシュー形式刷新
+  completed: true
+- branch: fix/issue-resolve-worktree-bug
+  created: '2026-06-02'
+  title: issue-resolverワークツリー未作成バグ修正
+  type: fix
+  summary: issue-resolverエージェントがワークツリーを作成せずメインリポジトリに直接コミットしてしまうバグを修正
+  task: 260602_issue-resolverワークツリー未作成バグ修正
+  completed: true
+- branch: feat/glossary-incidents-content-restore
+  created: '2026-06-02'
+  title: 用語集・インシデントのコンテンツ選別復元
+  type: feat
+  summary: PR181 で消えた glossary 75語・incidents 48件のうち現在も有効なものを選別して復元。孤立 incident 8件の整理も含む。
+  task: 260602_用語集インシデント選別復元
+  completed: true
+- branch: fix/issue-resolve-step1-index-first
+  created: '2026-06-02'
+  title: issue-resolve Step1をindex.yaml優先に変更
+  type: fix
+  summary: _index.yamlをglob前に読み込みnot_startedのみイシューファイルを開くよう変更
+  task: 260602_issue-resolve-step1-index-first
+  completed: true
+- branch: refactor/rename-ref-injects-to-ref-inject
+  created: '2026-06-02'
+  title: ref-injectsをref-injectに単数形変更
+  type: refactor
+  summary: 全プラグインの .ref-injects ディレクトリとその参照を .ref-inject に単数形へリネーム
+  task: 260602_ref-injectsをref-injectに単数形変更
+  completed: true
+- branch: refactor/remove-utils-plugin
+  created: '2026-06-02'
+  title: utilsプラグイン削除
+  type: refactor
+  summary: utils プラグインの jp-mirror-sync スキルを claude-kit へ移動し、utils プラグインを削除する
+  task: 260602_utilsプラグイン削除
+  completed: true
+- branch: chore/remove-claude-kit-config-skill
+  created: '2026-06-02'
+  title: claude-kit configスキル削除
+  type: chore
+  summary: claude-kit:config スキルのファイルと参照を削除する
+  task: 260602_claude-kit-configスキル削除
+  completed: true
+- branch: refactor/plugin-config-removal
+  created: '2026-06-02'
+  title: plugin-config削除と環境変数テーブル統一
+  type: refactor
+  summary: 各プラグインから対話式 plugin-config スキルを削除し、CLAUDE.md の環境変数テーブルを3列フォーマットに統一
+  task: 260602_plugin-config削除と環境変数テーブル統一
+  completed: true
+- branch: fix/work-claude-md-skill-names
+  created: '2026-06-02'
+  title: CLAUDE.mdのスキル名修正
+  type: fix
+  summary: work:pr-handoff→branch-reserve、work:pr-show→branch-show に更新
+  task: 260602_CLAUDEmd-スキル名修正
+  completed: true
+- branch: feat/restore-plugin-config-skill
+  created: '2026-06-02'
+  title: plugin-configスキル復活
+  type: feat
+  summary: work/dev-kit/claude-kit の plugin-config スキルと構造ルールを復元
+  task: 260602_plugin-configスキル復活
+  completed: true
+- branch: refactor/work-issue-answer-section
+  created: '2026-06-02'
+  title: イシュー回答欄の再設計
+  type: refactor
+  summary: イシューテンプレートのユーザー回答欄を最上部へ移動・QAに推奨を必須化・自由記述削除・回答候補を回答化。依存skill/agent/CLAUDE.mdも整合しversion
+    bump
+  task: 260602_イシュー回答欄の再設計
+  completed: true
+- branch: refactor/issue-resolve-reject-immediate-merge
+  created: '2026-06-02'
+  title: issue-resolveのreject即マージ化
+  type: refactor
+  summary: reject を共有ブランチ蓄積から一時ブランチ即マージへ変更し整合性を維持
+  task: 260602_issue-resolveのreject即マージ化
+  completed: true
+- branch: refactor/branch-doc-ext-to-task
+  created: '2026-06-02'
+  title: ブランチドキュメント拡張子をtaskへ変更
+  type: refactor
+  summary: ブランチドキュメントの拡張子を .branch.md から .task.md に変更（既存266ファイルの一括リネーム + フック/リファレンス/スキル更新）
+  task: 260602_ブランチ文書拡張子をtaskへ変更
   completed: true

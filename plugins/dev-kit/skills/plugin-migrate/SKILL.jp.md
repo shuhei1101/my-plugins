@@ -21,7 +21,7 @@ dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱
 
 静的テンプレの再コピーは自動。規約の検査・修正は Claude が現行リファレンスを参照して判断する（injection hook が対象ファイルを `Read` する際に自動注入される）。
 
-どの言語の規約を検査するかは `settings.json` の env 変数（`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT`）で決まる。
+どの言語の規約を検査するかは `settings.json` の env 変数（`${DEV_KIT_PYTHON}` / `${DEV_KIT_HTML}` / `${DEV_KIT_NEXT}`）で決まる。
 
 このスキルはどの他プラグインにも依存しない。コミット・マージはユーザーの責務。
 
@@ -59,11 +59,11 @@ dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱
 
 ---
 
-### ステップ2: Python ソースファイルの規約検査（DEV_KIT_PYTHON が有効な場合）
+### ステップ2: Python ソースファイルの規約検査（`${DEV_KIT_PYTHON}` が有効な場合）
 
 #### 条件
 
-- `settings.json` の env で `DEV_KIT_PYTHON` が truthy
+- `settings.json` の env で `${DEV_KIT_PYTHON}` が truthy
 
 #### 処理
 
@@ -85,11 +85,11 @@ injection hook が `Read` 時に自動注入した Python リファレンス群�
 
 ---
 
-### ステップ3: HTML/CSS/JS ソースファイルの規約検査（DEV_KIT_HTML が有効な場合）
+### ステップ3: HTML/CSS/JS ソースファイルの規約検査（`${DEV_KIT_HTML}` が有効な場合）
 
 #### 条件
 
-- `settings.json` の env で `DEV_KIT_HTML` が truthy
+- `settings.json` の env で `${DEV_KIT_HTML}` が truthy
 
 #### 処理
 
@@ -105,11 +105,11 @@ injection hook が `Read` 時に自動注入した Python リファレンス群�
 
 ---
 
-### ステップ4: TypeScript/TSX ソースファイルの規約検査（DEV_KIT_NEXT が有効な場合）
+### ステップ4: TypeScript/TSX ソースファイルの規約検査（`${DEV_KIT_NEXT}` が有効な場合）
 
 #### 条件
 
-- `settings.json` の env で `DEV_KIT_NEXT` が truthy
+- `settings.json` の env で `${DEV_KIT_NEXT}` が truthy
 
 #### 処理
 

@@ -174,7 +174,7 @@ description: |
 4. コミットメッセージ案を提示する:
    - `chore: sync ref-inject injection hook to v{N}`
    - `{N}` は `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` から取得
-5. **このスキルはコミットしない** — コミットはユーザーの責務。
+6. **このスキルはコミットしない** — コミットはユーザーの責務。
 
 → 完了
 

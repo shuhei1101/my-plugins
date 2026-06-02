@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-129: セットアップウィザード.md の内部クロスリファレンス名称が不正確
 
 **作成日**: 2026-05-31

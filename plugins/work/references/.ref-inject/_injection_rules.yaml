@@ -1,0 +1,62 @@
+# work の注入ルール — 編集ファイルのパスパターン → リファレンス（言語非依存）
+#   pattern  : 編集ファイルのパスに対して glob でマッチさせる
+#   required : 本文ごとフル注入されるリファレンスのパス
+#   optional : パス＋説明のみが注入されるリファレンス
+# マッチしたルールはすべて寄与する（重複排除あり）。
+rules:
+  # ==== プラグイン本体のスキル間同期ルール ====
+
+  # ---- Stop hook prompts: stop.md と stop-no-merge.md は対称な組として管理 ----
+  - pattern: "plugins/work/hooks/prompts/{stop,stop-no-merge}{.jp,}.md"
+    required:
+      - skill-sync/ストッププロンプト同期.md
+
+  # ---- Merge skill: SKILL.md と仕様書のステップ番号が一致していること ----
+  - pattern: "plugins/work/skills/merge/SKILL{.jp,}.md"
+    required:
+      - skill-sync/マージスキル同期.md
+
+  # ---- work-start / worktree-create: インターフェースの整合性 ----
+  - pattern: "plugins/work/skills/{start,worktree-create,vscode-workspace-sync}/SKILL{.jp,}.md"
+    required:
+      - skill-sync/スタートスキル同期.md
+
+  # ==== .work/ 配下: サブフォルダごとに細分化したテンプレート／構成定義 ====
+
+  # ---- .work/ 全体: 構成俯瞰・コミット規約 ----
+  - pattern: ".work/**"
+    required:
+      - work-dir/ワークディレクトリ構成.md
+
+  # ---- .work/tasks/ タスクドキュメント: テンプレート全文 + 記入ガイド ----
+  - pattern: ".work/tasks/**/*.task.md"
+    required:
+      - work-dir/タスクドキュメント.md
+
+  # ---- .work/tasks/ 索引: index.yaml / index.archive.yaml スキーマ ----
+  - pattern: ".work/tasks/index*.yaml"
+    required:
+      - work-dir/タスクインデックス.md
+
+  # ---- .work/notes/ ファイル命名・_index.md 管理・記述内容ルール ----
+  - pattern: ".work/notes/**"
+    required:
+      - notes/ノート命名規則.md
+      - notes/ノート記述内容ルール.md
+
+  # ---- .work/issues/ イシューファイル構成・索引スキーマ ----
+  - pattern: ".work/issues/**"
+    required:
+      - work-dir/イシュー.md
+
+  # ==== conversation-to-claude が生成する用語集 / 再発防止ログ ====
+
+  # ---- glossary: 用語集の採用基準とファイル形式 ----
+  - pattern: ".claude/rules/glossary{.jp,}.md"
+    required:
+      - conversation/用語集.md
+
+  # ---- incidents: インデックス（rules）と詳細（references）の両方で発火 ----
+  - pattern: ".claude/{rules/incidents{.jp,}.md,references/incidents/**}"
+    required:
+      - conversation/インシデント.md

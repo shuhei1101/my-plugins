@@ -19,10 +19,10 @@ until the user chooses to finish.
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
-| `DEV_KIT_PYTHON` | Python 参照注入（`*.py` 等を編集時） | 無効 |
-| `DEV_KIT_HTML` | HTML/CSS/JS 参照注入（`*.html`/`*.css`/`*.js` 編集時） | 無効 |
-| `DEV_KIT_NEXT` | Next.js 参照注入（`*.ts`/`*.tsx` 等を編集時） | 無効 |
-| `DEV_KIT_MARKDOWN` | Markdown 参照注入（`*.md` 編集時） | 無効 |
+| `${DEV_KIT_PYTHON}` | Python 参照注入（`*.py` 等を編集時） | 無効 |
+| `${DEV_KIT_HTML}` | HTML/CSS/JS 参照注入（`*.html`/`*.css`/`*.js` 編集時） | 無効 |
+| `${DEV_KIT_NEXT}` | Next.js 参照注入（`*.ts`/`*.tsx` 等を編集時） | 無効 |
+| `${DEV_KIT_MARKDOWN}` | Markdown 参照注入（`*.md` 編集時） | 無効 |
 
 **Opt-in polarity**: キー不在 = OFF（デフォルト無効）。truthy（`"true"` など）に設定 = ON。OFF に戻すにはキーを削除する。
 
@@ -30,7 +30,7 @@ until the user chooses to finish.
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
-| `DEV_KIT_NEXT_TS_CHECK` | PostToolUse `tsc --noEmit`（`*.ts`/`*.tsx` 編集後） | 有効 |
+| `${DEV_KIT_NEXT_TS_CHECK}` | PostToolUse `tsc --noEmit`（`*.ts`/`*.tsx` 編集後） | 有効 |
 | `DEV_KIT_MARKDOWN_CHECK` | Markdown frontmatter チェック（`*.md` 書き込み後） | 有効 |
 
 **Normal polarity**: キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
@@ -56,12 +56,12 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 For each managed toggle, check the `env` block of both settings files (project takes precedence):
 
-**Opt-in polarity** (`DEV_KIT_PYTHON`, `DEV_KIT_HTML`, `DEV_KIT_NEXT`, `DEV_KIT_MARKDOWN`):
+**Opt-in polarity** (`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`):
 - Key absent → **OFF**（デフォルト無効）
 - Value in `("true", "1", "yes", "on")` → **ON**
 - Otherwise → **OFF**
 
-**Normal polarity** (`DEV_KIT_NEXT_TS_CHECK`, `DEV_KIT_MARKDOWN_CHECK`):
+**Normal polarity** (`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`):
 - Key absent → **ON**（デフォルト有効）
 - Value in `("false", "0", "no", "off")` → **OFF**
 - Otherwise → **ON**
@@ -128,14 +128,14 @@ Call `AskUserQuestion` tool with **2 questions in a single call**:
 
 **Question 1 — 値** (options differ by polarity):
 
-*Opt-in polarity vars* (`DEV_KIT_PYTHON`, `DEV_KIT_HTML`, `DEV_KIT_NEXT`, `DEV_KIT_MARKDOWN`):
+*Opt-in polarity vars* (`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`):
 - question: `"{VAR_NAME} の値を設定"`
 - header: `"値"`
 - options:
   1. `"有効にする（\"true\" に設定）"` — description: `"この言語の参照注入を有効化する"`
   2. `"デフォルトに戻す（キー削除 = OFF）"` — description: `"env キーを削除してデフォルト無効に戻す"`
 
-*Normal polarity vars* (`DEV_KIT_NEXT_TS_CHECK`, `DEV_KIT_MARKDOWN_CHECK`):
+*Normal polarity vars* (`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`):
 - question: `"{VAR_NAME} の値を設定"`
 - header: `"値"`
 - options:
@@ -170,10 +170,10 @@ Record both answers.
 2. Read JSON from target file (use `{}` if absent)
 3. Ensure `env` object exists
 4. Apply change:
-   - *Opt-in polarity vars* (`DEV_KIT_PYTHON`, `DEV_KIT_HTML`, `DEV_KIT_NEXT`, `DEV_KIT_MARKDOWN`):
+   - *Opt-in polarity vars* (`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`):
      - "有効にする" → set `env.{VAR_NAME}` to `"true"`
      - "デフォルトに戻す" → delete `env.{VAR_NAME}` key
-   - *Normal polarity vars* (`DEV_KIT_NEXT_TS_CHECK`, `DEV_KIT_MARKDOWN_CHECK`):
+   - *Normal polarity vars* (`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`):
      - "デフォルトに戻す" → delete `env.{VAR_NAME}` key
      - "OFF" → set `env.{VAR_NAME}` to `"false"`
 5. Write back with 2-space indent
@@ -210,4 +210,4 @@ If no changes were made, report "変更なし".
 ## Notes
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
-- `DEV_KIT_INJECTION_DISABLE` は逆極性のキルスイッチのため、このスキルでは管理しない（`plugin-config.md` 参照）
+- `${DEV_KIT_INJECTION_DISABLE}` は逆極性のキルスイッチのため、このスキルでは管理しない（`プラグイン設定.md` 参照）

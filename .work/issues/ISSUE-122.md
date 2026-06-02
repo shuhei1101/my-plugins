@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-122: incidents.md が _index.md に記載されているが実体が存在しない
 
 **作成日**: 2026-05-31
