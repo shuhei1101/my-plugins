@@ -1179,3 +1179,11 @@ branches:
   summary: 全プラグインのsetup-wizardスキル・SessionStartフック・参考ドキュメント・setup_check.pyを削除する
   task: 260601_セットアップウィザード全削除
   completed: true
+- branch: feat/issue-resolve
+  created: '2026-06-01'
+  title: イシュー対応スキルとライフサイクル整備
+  type: feat
+  summary: work の現行ライフサイクルを CLAUDE.md に文書化し、ISSUE フロントマター + issue-resolve スキル + start
+    のイシュー連携を実装する
+  task: 260601_イシュー対応スキル
+  completed: true
