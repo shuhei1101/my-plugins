@@ -42,6 +42,16 @@ closed_issues:
   resolution: resolved
   tags: []
   linked_branch: fix/work-plugin-description-sync
+- id: ISSUE-093
+  title: stop.py が sys.argv[1] を無防備に参照し、引数欠落で IndexError クラッシュ
+  closed: '2026-06-02'
+  resolution: resolved
+  tags:
+  - hook
+  - exception-handling
+  - stop
+  - argv
+  linked_branch: fix/stop-py-argv-guard
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
@@ -95,13 +105,25 @@ scan_records:
   - ISSUE-130
 - date: 2026-06-02
   skill: issue-scan
-  scope: "consistency:injection-rules-orphans"
-  issues_found: [ISSUE-131, ISSUE-132, ISSUE-133, ISSUE-134, ISSUE-135, ISSUE-136, ISSUE-137]
+  scope: consistency:injection-rules-orphans
+  issues_found:
+  - ISSUE-131
+  - ISSUE-132
+  - ISSUE-133
+  - ISSUE-134
+  - ISSUE-135
+  - ISSUE-136
+  - ISSUE-137
 - date: 2026-06-02
   skill: issue-scan
-  scope: "folder:work/skills"
-  issues_found: [ISSUE-138, ISSUE-139, ISSUE-140, ISSUE-141]
+  scope: folder:work/skills
+  issues_found:
+  - ISSUE-138
+  - ISSUE-139
+  - ISSUE-140
+  - ISSUE-141
 - date: 2026-06-02
   skill: issue-scan
-  scope: "consistency:marketplace-vs-plugin-json"
-  issues_found: [ISSUE-142]
+  scope: consistency:marketplace-vs-plugin-json
+  issues_found:
+  - ISSUE-142
