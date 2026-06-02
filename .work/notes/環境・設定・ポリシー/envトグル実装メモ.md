@@ -106,3 +106,36 @@ merge スキルがマージを提案するかどうかを env var でオフに�
 - ブール型トグルとは別種の「文字列型 env var」として位置付ける
 - `work:config` スキルはブール型トグル専用のため、このvarは対象外（手動設定）
 - ワークツリーパスは `{repo}-wt-{type}-{author}-{title}` に自動で展開される（スラッシュをハイフンに変換する既存ロジックに依存）
+
+---
+
+# feat/base-branch-config — WORK_BASE_BRANCH 追加
+
+## 概要
+
+ワークツリー作成時のベースブランチを env var で指定できるようにする文字列型環境変数。
+デフォルト（未設定）では従来通り `HEAD`（=master）から分岐する。
+
+## 仕様
+
+| # | env 変数 | 型 | デフォルト | 動作 |
+|---|---|---|---|---|
+| 1 | `WORK_BASE_BRANCH` | 文字列 | 空（未設定） | 設定時: `git worktree add -b "$BRANCH" "$PATH" "$base"` で指定ブランチから分岐、未設定: 従来通り |
+
+## 動作例
+
+- `WORK_BASE_BRANCH=nishikawa/master` のとき: `nishikawa/master` を起点に新ブランチを作成
+- `WORK_BASE_BRANCH=` （空）のとき: 従来通り HEAD から分岐
+
+## 実装箇所
+
+- `plugins/work/skills/worktree-create/SKILL.md` — Step 2 で変数を読み込み、分岐処理を追加
+- `plugins/work/skills/worktree-create/SKILL.jp.md` — 同上（JP ミラー）
+- `plugins/work/CLAUDE.md` — Environment Variables テーブルに追加（No.7、以降を繰り下げ）
+- `plugins/work/CLAUDE.jp.md` — 同上（JP ミラー）
+
+## 設計メモ
+
+- `WORK_BRANCH_AUTHOR` と同じ「文字列型 env var」パターン（`work:plugin-config` の管理対象外）
+- `git worktree add` は末尾に `[<commit-ish>]` を受け付けるため、追加オプションなしで対応可能
+- 一般的な命名: `dev/{name}`（最多）または `{name}/master`、`{name}/main` など
