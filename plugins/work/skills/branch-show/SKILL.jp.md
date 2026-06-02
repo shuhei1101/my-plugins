@@ -1,5 +1,5 @@
 ---
-name: branch-show
+name: work:branch-show
 description: 次ブランチ候補を 3 カテゴリで提示（開始準備完了 / 別で進行中 / 条件あり）。
 ---
 

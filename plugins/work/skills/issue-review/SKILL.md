@@ -1,5 +1,5 @@
 ---
-name: issue-review
+name: work:issue-review
 description: |
   Review un-reviewed issues one by one by narrowing their "ユーザー回答欄" (user answer section):
   set `## 意思` (対応する/対応しない) and answer the issue's `## QA` by narrowing each `**回答**:` line

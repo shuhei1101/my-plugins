@@ -1,5 +1,5 @@
 ---
-name: worktree-create
+name: work:worktree-create
 description: |
   Create a git worktree for a branch.
   Called by work:start (Step 4) to create the worktree, or invoked directly.

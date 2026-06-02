@@ -1,5 +1,5 @@
 ---
-name: qa-wizard
+name: work:qa-wizard
 description: |
   When /work:qa-wizard is invoked.
   Or when the user says "review QA", "check QA items", "answer the QA", or "resolve QA items".

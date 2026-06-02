@@ -1,5 +1,5 @@
 ---
-name: issue-scan
+name: work:issue-scan
 description: |
   オーケストレーター専用スキル。プロジェクトから N 個のスキャン観点（フォルダ・grep パターン・
   レイヤー・ファイル群）を選び、観点ごとに `work:issue-scanner` サブエージェントを起動して、

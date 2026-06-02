@@ -1,5 +1,5 @@
 ---
-name: jp-mirror-sync
+name: claude-kit:jp-mirror-sync
 description: |
   Accept one or more Japanese mirror (.jp.md) files and create or update the corresponding English
   counterparts (.md). Treats the JP mirror as the source of truth and spawns one

@@ -1,5 +1,5 @@
 ---
-name: issue-resolve
+name: work:issue-resolve
 description: |
   Autonomously work through reviewed issues in `.work/issues/`, top to bottom — one actionable
   issue per invocation. Issues whose `## 意思` is affirmative are dispatched to a

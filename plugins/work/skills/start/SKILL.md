@@ -1,5 +1,5 @@
 ---
-name: start
+name: work:start
 description: |
   Start a new branch: decide the branch name, collect details, add the index.yaml entry in the main
   repo, create a worktree, then create the single per-branch task document INSIDE the worktree.

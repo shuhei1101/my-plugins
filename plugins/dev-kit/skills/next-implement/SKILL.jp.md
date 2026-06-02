@@ -1,5 +1,5 @@
 ---
-name: implement
+name: dev-kit:next-implement
 description: |
   Next.js App Router でページ・コンポーネント・hook・API ルート・Server Action を新規作成・編集するとき。
   ユーザーが「画面を作って」「コンポーネントを実装して」「API を追加して」「Server Action を書いて」「Next.js の規約に従って」と言ったとき、または `/dev-kit:next-implement` を明示的に呼び出したとき。

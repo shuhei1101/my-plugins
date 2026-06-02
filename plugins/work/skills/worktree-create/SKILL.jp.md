@@ -1,5 +1,5 @@
 ---
-name: worktree-create
+name: work:worktree-create
 description: |
   ブランチ用のgitワークツリーを作成します。work:start（Step 4）から呼び出されてワークツリーを作成するか、
   直接実行されます。「ワークツリーを作って」「worktree を作成して」「work-add して」

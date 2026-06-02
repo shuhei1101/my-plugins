@@ -1364,3 +1364,10 @@ branches:
   summary: work:quick-taskスキルと関連するフック・プラグイン設定変更を削除し、追加前の状態に戻す
   task: 260602_quick-taskスキルと関連フック変更の削除
   completed: true
+- branch: fix/all-plugins-skill-name-audit
+  created: '2026-06-02'
+  title: 全プラグイン横断スキル名監査
+  type: fix
+  summary: my-plugins 全プラグインのスキル name フィールドを横断チェックし、命名規則違反を修正する
+  task: 260602_全プラグイン横断スキル名監査
+  completed: true

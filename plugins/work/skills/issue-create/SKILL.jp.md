@@ -1,5 +1,5 @@
 ---
-name: issue-create
+name: work:issue-create
 description: |
   ユーザーの問題説明を解釈し、独立したイシューファイルに分割して `.work/issues/` 配下に作成する。
   ユーザーが「イシューを作って」「問題を登録して」「これをイシューにして」「create an issue」「issue-create」と言ったとき、

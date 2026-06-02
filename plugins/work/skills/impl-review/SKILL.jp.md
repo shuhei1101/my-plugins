@@ -1,5 +1,5 @@
 ---
-name: impl-review
+name: work:impl-review
 description: |
   /work:impl-review が呼び出されたとき。
   またはユーザーが「実装内容を確認したい」「今回の変更をレビューしたい」「何を実装したか振り返りたい」と言ったとき。

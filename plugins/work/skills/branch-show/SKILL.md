@@ -1,5 +1,5 @@
 ---
-name: branch-show
+name: work:branch-show
 description: Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions).
 ---
 

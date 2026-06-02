@@ -1,5 +1,5 @@
 ---
-name: qa-wizard
+name: work:qa-wizard
 description: |
   /work:qa-wizard が呼び出されたとき。
   またはユーザーが「QA をレビューしたい」「QA の内容を確認したい」「QA に回答したい」「QA 項目を解決したい」と言ったとき。
