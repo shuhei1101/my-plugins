@@ -70,3 +70,14 @@ PR167 で確立した `work:config` スキルのパターンを、claude-kit の
   - `CLAUDE_KIT_INJECTION_TTL`（整数値）は開発者向けとして対象外（QA-001 で決定）
   - `CLAUDE_KIT_INJECTION_DISABLE`（逆極性キルスイッチ）は除外（ポリシー上の規定通り）
   - `INJECTION_LANG` は ON/OFF でなく en/jp の 3 択（en / jp / デフォルトに戻す）— AskUserQuestion で専用分岐（QA-002 で決定）
+
+## chore/remove-claude-kit-config-skill での実施内容（claude-kit v3.52.0）
+
+- `claude-kit:config` スキルを削除（`skills/config/SKILL.md` + `SKILL.jp.md`）
+- CLAUDE.md changelog から追加エントリを削除し v3.52.0 として記録
+
+## 変更履歴
+
+| # | 日付 | 概要 |
+|----|------|------|
+| 1 | 2026-06-02 | claude-kit:config スキル削除を記録 |
