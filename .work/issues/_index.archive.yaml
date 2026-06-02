@@ -81,6 +81,14 @@ closed_issues:
   - dead-link
   - references
   linked_branch: chore/reject-ISSUE-122
+- id: ISSUE-124
+  title: 環境変数.md が JP ミラーを宣言しているが 環境変数.jp.md が存在しない
+  closed: '2026-06-02'
+  resolution: resolved
+  tags:
+  - missing-jp-mirror
+  - jp-mirror-sync
+  linked_branch: fix/jp-mirror-kankyohensu
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
@@ -203,13 +211,24 @@ scan_records:
   - ISSUE-163
 - date: 2026-06-02
   skill: issue-scan
-  scope: "folder:claude-kit/hooks"
-  issues_found: [ISSUE-164, ISSUE-165, ISSUE-166]
+  scope: folder:claude-kit/hooks
+  issues_found:
+  - ISSUE-164
+  - ISSUE-165
+  - ISSUE-166
 - date: 2026-06-02
   skill: issue-scan
-  scope: "folder:dev-kit/skills"
-  issues_found: [ISSUE-167, ISSUE-168, ISSUE-169, ISSUE-170, ISSUE-171, ISSUE-172, ISSUE-173, ISSUE-174]
+  scope: folder:dev-kit/skills
+  issues_found:
+  - ISSUE-167
+  - ISSUE-168
+  - ISSUE-169
+  - ISSUE-170
+  - ISSUE-171
+  - ISSUE-172
+  - ISSUE-173
+  - ISSUE-174
 - date: 2026-06-02
   skill: issue-scan
-  scope: "layer:agent-definitions"
+  scope: layer:agent-definitions
   issues_found: []
