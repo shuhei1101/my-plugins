@@ -16,11 +16,11 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | 未解決事項を `## QA` に記録する |
-| 2 | - | `.ref-injects` ディレクトリを `.ref-inject` にリネーム（claude-kit / dev-kit / ref-inject テンプレート / work） |
-| 3 | - | `inject_references.py` の `.ref-injects` 参照を `.ref-inject` に更新（全4プラグイン） |
-| 4 | - | スキル定義・その他ファイルの参照を更新 |
-| 5 | - | `.work/notes/` にノートを新規作成し `_index.md` に登録 |
+| 1 | 済 | 未解決事項を `## QA` に記録する（なし） |
+| 2 | 済 | `.ref-injects` ディレクトリを `.ref-inject` にリネーム（claude-kit / dev-kit / ref-inject テンプレート / work） |
+| 3 | 済 | `inject_references.py` の `.ref-injects` 参照を `.ref-inject` に更新（全4プラグイン） |
+| 4 | 済 | `_injection_rules.yaml` 内のパターン参照を `.ref-inject` に更新（claude-kit） |
+| 5 | 済 | `.work/notes/` にノートを新規作成し `_index.md` に登録 |
 
 ## 変更内容
 
@@ -28,7 +28,15 @@
 
 | # | ファイル名 | 新規/編集 | 内容 | 補足 |
 |---|---|---|---|---|
-| 1 | (実装後に記録) | - | - | - |
+| 1 | `plugins/claude-kit/references/.ref-injects/` → `.ref-inject/` (5ファイル) | リネーム | ディレクトリ単数形化 | git mv |
+| 2 | `plugins/dev-kit/references/.ref-injects/` → `.ref-inject/` (3ファイル) | 〃 | 〃 | 〃 |
+| 3 | `plugins/ref-inject/templates/references/.ref-injects/` → `.ref-inject/` (5ファイル) | 〃 | 〃 | 〃 |
+| 4 | `plugins/work/references/.ref-injects/` → `.ref-inject/` (5ファイル) | 〃 | 〃 | 〃 |
+| 5 | `plugins/claude-kit/hooks/scripts/inject_references.py` | 編集 | `.ref-injects` → `.ref-inject` に変更 | |
+| 6 | `plugins/dev-kit/hooks/scripts/inject_references.py` | 〃 | 〃 | |
+| 7 | `plugins/ref-inject/templates/hooks/scripts/inject_references.py` | 〃 | 〃 | |
+| 8 | `plugins/work/hooks/scripts/inject_references.py` | 〃 | 〃 | |
+| 9 | `plugins/claude-kit/references/.ref-inject/_injection_rules.yaml` | 編集 | パターン内 `.ref-injects` → `.ref-inject` に更新 | |
 
 ## テスト
 
@@ -36,7 +44,7 @@
 
 | # | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | (実装後に記録) | - | - |
+| 1 | `.ref-injects` → `.ref-inject` にリネームした全プラグインで参照が切れないこと | `grep -r ".ref-injects" plugins/` → 0件 | OK |
 
 ## QA
 
@@ -46,7 +54,7 @@
 
 ## 参考ドキュメント
 
-- (最終コミットで追記)
+- [ref-inject ディレクトリ命名 — 単数形統一](.work/notes/プラグイン構成・統合/ref-injectディレクトリ単数形統一.md)
 
 ## 関連ブランチ
 
