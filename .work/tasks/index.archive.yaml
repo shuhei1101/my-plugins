@@ -1329,3 +1329,10 @@ branches:
   task: 260531_claude-kitスキル名プレフィックス監査
   title: claude-kitスキル名プレフィックス監査
   type: fix
+- branch: docs/work-kit-skills-note-refresh
+  created: '2026-06-02'
+  title: work-kitスキル群ノートの現行化
+  type: docs
+  summary: work-kitスキル群.md のスキル一覧表を旧名・旧仕様から現行18スキルへ更新（quick-task 追加・用語統一反映）
+  task: 260602_work-kitスキル群ノート現行化
+  completed: true
