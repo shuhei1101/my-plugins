@@ -28,3 +28,14 @@
 | 1 | [skill-sync/ストッププロンプト同期.md](skill-sync/ストッププロンプト同期.md) | `stop.md` と `stop-no-merge.md` の同期ルール。2 ファイルは対称な組・ステップ 1〜3 を常に一致させる |
 | 2 | [skill-sync/マージスキル同期.md](skill-sync/マージスキル同期.md) | `merge` SKILL.md とマージフローノートの同期ルール。ステップを追加・削除したらノートも更新 |
 | 3 | [skill-sync/スタートスキル同期.md](skill-sync/スタートスキル同期.md) | `work-start`・`worktree-create`・`vscode-workspace-sync` スキルの同期ルール。Step 4 の委譲インターフェース整合 |
+
+---
+
+## 会話キャプチャ（glossary / incidents 記述基準）
+
+`conversation-to-claude` が生成する用語集・再発防止ログを編集するときに自動注入される、採用基準とファイル形式。
+
+| # | ファイル | 注入パターン | 内容 |
+|---|---|---|---|
+| 1 | [conversation/グロッサリー.md](conversation/グロッサリー.md) | `.claude/rules/glossary.md` | 用語集の採用基準（プロジェクト固有・非自明・繰り返す・既出でない）とファイル形式 |
+| 2 | [conversation/インシデント.md](conversation/インシデント.md) | `.claude/rules/incidents.md`・`.claude/references/incidents/**` | 再発防止ログの採用基準（実際のミス・一般化可能・既存ルールで未強制）と二層構造の形式 |

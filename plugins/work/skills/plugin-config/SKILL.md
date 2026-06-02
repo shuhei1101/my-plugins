@@ -23,6 +23,8 @@ until the user chooses to finish.
 | `${WORK_MERGE_PROPOSAL}` | Stop フックでの `/work:merge` 提案 | 有効 |
 | `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto branch-reserve | 有効 |
 | `${WORK_COMMIT_TYPE}` | コミットメッセージのタイププレフィックス付与 | 有効 |
+| `${WORK_PRECOMPACT_CONV2CLAUDE}` | PreCompact で `/work:conversation-to-claude` 実行（`/compact` 前） | 有効 |
+| `${WORK_MERGE_CONV2CLAUDE}` | merge でワークツリー内 `/work:conversation-to-claude` 実行 | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
 
 **Normal polarity**: キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
@@ -86,7 +88,9 @@ Output a numbered list as plain text, then end the turn and wait for user input:
   4. [{state}] WORK_MERGE_PROPOSAL — Stop フックでの merge 提案
   5. [{state}] WORK_MERGE_AUTO_HANDOFF — merge Step 11 auto pr-handoff
   6. [{state}] WORK_COMMIT_TYPE — コミットメッセージのタイププレフィックス付与
-  7. [{state}] AITUBER_NOTIFY — Stop notify-aituber 通知
+  7. [{state}] WORK_PRECOMPACT_CONV2CLAUDE — PreCompact で conversation-to-claude 実行
+  8. [{state}] WORK_MERGE_CONV2CLAUDE — merge でワークツリー内 conversation-to-claude 実行
+  9. [{state}] AITUBER_NOTIFY — Stop notify-aituber 通知
   0. 完了（終了）
 ```
 

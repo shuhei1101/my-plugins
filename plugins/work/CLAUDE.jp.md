@@ -58,6 +58,7 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | 14 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
 | 15 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
 | 16 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
+| 17 | `work:conversation-to-claude` | セッションを解析し成果物を自動生成（skill / rule / hook / CLAUDE.md / incidents / glossary）。claude-kit creator スキルに委譲 |
 
 ## エージェント
 
@@ -75,6 +76,7 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | 3 | `PreToolUse` | Bash | `hooks/prompts/git-guard.md` — `git push` / `git merge` を確認 |
 | 4 | `UserPromptSubmit` | — | `hooks/prompts/user-prompt-submit.md` — 各プロンプト前にブランチコンテキストを注入 |
 | 5 | `Stop` | — | `hooks/prompts/stop.md` — タスク更新リマインド / マージ提案 |
+| 6 | `PreCompact` | — | `hooks/prompts/pre-compact.md` — `/compact` 前に `/work:conversation-to-claude` を実行 |
 
 ## 環境変数
 
@@ -92,6 +94,8 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | 10 | `${WORK_COMMIT_LANG}` | `JP` | コミットメッセージの言語：`JP` = 日本語、`EN` = 英語 |
 | 11 | `${WORK_COMMIT_TYPE}` | `true` | Conventional commit タイププレフィックス（`feat:`、`fix:`、`chore:` など）を付与するか |
 | 12 | `${ISSUE_SCAN_AGENTS}` | `1` | `issue-scan` 1 回あたりのスキャン観点数（= 並列 `issue-scanner` サブエージェント数） |
+| 13 | `${WORK_PRECOMPACT_CONV2CLAUDE}` | `true` | `/compact` 前に `/work:conversation-to-claude` を実行（`PreCompact` フックで制御） |
+| 14 | `${WORK_MERGE_CONV2CLAUDE}` | `true` | `work:merge` 実行時にワークツリー内で `/work:conversation-to-claude` を実行 |
 
 ## ブランチドキュメント構造
 
@@ -129,6 +133,7 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | 9 | 2.41.0 | 2026-05-30 | `impl-review` Step 4 をバッチ AskUserQuestion 方式に変更（最大 4 件/回） |
 | 10 | 2.40.0 | 2026-05-30 | `guard-kit` を work プラグインに統合 |
 | 11 | 2.39.0 | 2026-05-30 | env トグルを対話的に設定する `work:plugin-config` スキルを追加 |
+| 1 | 2.62.0 | 2026-06-02 | `work:conversation-to-claude` を復活（元は claude-kit、PR181 で削除）— セッションを解析し成果物を自動生成（skill / rule / hook / CLAUDE.md / incidents / glossary）。claude-kit creator スキルに委譲。glossary/incidents の取り込み基準を厳格化（CLAUDE.md / rule / フォルダ構造で既出の内容をスキップ）。`PreCompact` フック（`pre-compact.py`、トグル `${WORK_PRECOMPACT_CONV2CLAUDE}`）を追加し `/compact` 前に実行。`work:merge` 内ワークツリーで実行するステップを復活（トグル `WORK_MERGE_CONV2CLAUDE`）。`references/conversation/グロッサリー.md` + `インシデント.md`（glossary/incidents 記述ガイド）を追加し、`.claude/rules/glossary.md` / `.claude/rules/incidents.md` / `.claude/references/incidents/**` 編集時に ref-inject で自動注入 |
 | 1 | 2.57.0 | 2026-05-31 | タスクフォルダ名を日本語化（`{YYMMDD}_{日本語タイトル}`）。既存217件を一括リネームし、`index.archive.yaml` の `task:` を追従（8→6桁正規化）、`work:start`・`work-dir` リファレンスのフォルダ名記述を日本語名方針へ統一 |
 | 2 | 2.56.0 | 2026-05-31 | `issue-scan` を並列 `work:issue-scanner` サブエージェント（新規エージェント）へ委譲するオーケストレーターに再設計。観点（フォルダ/grep/レイヤー/ファイル群）でスキャン・`${ISSUE_SCAN_AGENTS}` 追加。`issue-save` スキルを削除し、イシューファイルのフォーマットを `work-dir/イシュー` リファレンスへ集約（`issue-create`・`issue-scanner` が直接記述） |
 | 3 | 2.55.0 | 2026-05-31 | `plugins/work/templates/` と `setup-task.py` を削除。テンプレート／フォルダ別構成定義を `references/work-dir/`（`タスクドキュメント` / `タスクインデックス` / `イシュー` / `ワークディレクトリ構成`）へ移し、該当 `.work/` パスの作成・編集時に ref-inject で注入。`work:start` は注入テンプレートを元にブランチドキュメントを直接作成。ブランチドキュメントのファイル名に `.branch.md` 拡張子を付与。`ドットワークディレクトリ構成`→`ワークディレクトリ構成` にリネーム・`TODOテンプレート同期` を削除 |
