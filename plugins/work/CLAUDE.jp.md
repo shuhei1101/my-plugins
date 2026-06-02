@@ -27,13 +27,14 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 6. **マージ**（`work:merge`）
    TODO チェックリスト検証 → 親ブランチを取り込み → **関連イシューをクローズ**（`## 関連イシュー` の各行を `issue-tool.py close` で `.work/issues/closed/` へ移動し `_index.archive.yaml` に記録）→ `index.yaml` でブランチを完了化 → ブランチ文書をアーカイブ → `--no-ff` で親ブランチへマージ → ワークツリー削除 → 残 QA 確認 → 次ブランチ候補があれば `branch-reserve` を自動起動。
 
-**イシューのサブサイクル**: イシューは `.work/issues/ISSUE-{N}.md` に存在し、フロントマター
-`decision` / `status` / `branches` を持つ（source of truth。`status` は `_index.yaml` にミラー）。流れ：
-**作成**（`issue-create` / `issue-scan` → `decision: pending`、QA 提起）→
-**レビュー**（`issue-review`、スマホ主用途 → ユーザーが `decision` を accept/reject 設定、イシューの
-`## QA` に回答、`instruction` フロントマターを記入）→
-**対応**（`issue-resolve`、`/loop` で 1 起動 1 イシュー → accept は `issue-resolver` サブエージェントを
-委譲し `work:start`→マージ待ちコミットで停止、reject は共有 `chore/rejected-issues` ブランチでクローズ）→
+**イシューのサブサイクル**: イシューは `.work/issues/ISSUE-{N}.md` に存在し、**フロントマターを持たない**
+2 分割の Markdown ファイル — AI 記入の上半分 + `# ユーザー回答欄`（`## 意思` / `## QA` / `## 自由記述`）。
+作業状態（`status` / `branches`）は `_index.yaml` のみが持つ。流れ：
+**作成**（`issue-create` / `issue-scan` → 上半分を記入、回答欄は回答候補のみで空、QA 提起）→
+**レビュー**（`issue-review`、スマホ主用途 → ユーザーが `## 意思`（対応する/対応しない）を記入、イシューの
+`## QA` に回答、`## 自由記述` を記入）→
+**対応**（`issue-resolve`、`/loop` で 1 起動 1 イシュー → 意思=肯定は `issue-resolver` サブエージェントを
+委譲し `work:start`→マージ待ちコミットで停止、意思=否定は共有 `chore/rejected-issues` ブランチでクローズ）→
 **クローズ**（`merge` がブランチの `## 関連イシュー` を `resolved` でクローズ; reject ブランチは
 `wontfix` でクローズ）。QA はレビュー時にイシュー上で決着するため、resolver サブエージェントは
 質問で止まらず最終コミットまで到達できる。
@@ -50,7 +51,7 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | 6 | `work:plugin-config` | `settings.json` の work env トグルを対話的に設定 |
 | 7 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
 | 8 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
-| 9 | `work:issue-review` | 未レビューイシューを捌く（decision 設定・QA 回答・instruction 記入）— スマホ主用途・AskUserQuestion |
+| 9 | `work:issue-review` | 未レビューイシューを捌く（`## 意思` 記入・QA 回答・`## 自由記述` 記入）— スマホ主用途・AskUserQuestion |
 | 10 | `work:issue-resolve` | ループ駆動: レビュー済みイシューを消化 — accept→`issue-resolver` サブエージェント、reject→`chore/rejected-issues` |
 | 11 | `work:impl-review` | ブランチドキュメントに照らして実装をレビュー |
 | 12 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
@@ -112,7 +113,8 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.61.0 | 2026-06-02 | `${WORK_BASE_BRANCH}` env var を追加 — 新規ワークツリー作成時のベースブランチを指定可能に |
+| 1 | 2.63.0 | 2026-06-02 | イシューファイル形式を刷新: YAML フロントマターを廃止し、2 分割の Markdown（AI 記入の上半分 + `# ユーザー回答欄`〔`## 意思` / `## QA` / `## 自由記述`、回答候補を用意し `**回答**:` は空〕）に。`## 修正案`→`## 対応案` に改名し 問題点/詳細 セクションを廃止（背景/現状 で代替）。`status` / `branches` を `_index.yaml` へ移管（`issue-tool.py` に `add-branch` 追加）。`issue-create` / `issue-review` / `issue-resolve` / `issue-scan`・`issue-scanner` / `issue-resolver` エージェント・`work:start` のイシュー連携を更新 |
+| 2 | 2.61.0 | 2026-06-02 | `${WORK_BASE_BRANCH}` env var を追加 — 新規ワークツリー作成時のベースブランチを指定可能に |
 | 2 | 2.60.0 | 2026-06-01 | イシューのレビュー/対応ワークフロー: ISSUE にフロントマター（`decision` / `status` / `branches` / 自由記述 `instruction`）を追加し QA をイシューへ移設。`work:issue-review`（スマホ主用途・AskUserQuestion で捌く）+ `work:issue-resolve`（ループ駆動・1 起動 1 イシュー: accept→`issue-resolver` サブエージェント。そのモデルはイシュー難易度で選択＝sonnet/opus・haiku 不使用、reject→共有 `chore/rejected-issues`）+ `work:issue-resolver` エージェントを追加。`work:start` がイシュー連携（`status: in_progress` 設定・`branches` 追記・`## 関連イシュー` 記入）。`issue-tool.py` に `set-status` を追加、`close --linked-branch` は任意のブランチ名に変更。work ライフサイクルを CLAUDE.md に文書化 |
 | 2 | 2.59.0 | 2026-06-01 | `work:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
 | 2 | 2.56.0 | 2026-05-31 | `issue-scan` を並列 `work:issue-scanner` サブエージェント（新規エージェント）へ委譲するオーケストレーターに再設計。観点（フォルダ/grep/レイヤー/ファイル群）でスキャン・`${ISSUE_SCAN_AGENTS}` 追加。`issue-save` スキルを削除し、イシューファイルのフォーマットを `work-dir/イシュー` リファレンスへ集約（`issue-create`・`issue-scanner` が直接記述） |
