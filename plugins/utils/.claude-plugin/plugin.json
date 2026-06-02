@@ -1,0 +1,5 @@
+{
+  "name": "utils",
+  "description": "General-purpose utility skills. v1.0.0: jp-mirror-sync (bulk JP-mirror → English translation via parallel Sonnet subagents) and jp-mirror-translator subagent.",
+  "version": "1.0.0"
+}
