@@ -25,32 +25,28 @@ _TASKS_INDEX_YAML = """\
 # .work/tasks/index.yaml — ブランチ索引
 #
 # フィールド説明:
-#   id        : 連番（アーカイブ参照用）
 #   branch    : git ブランチ名（例: feat/my-feature）
-#   title     : タスクドキュメントの H1 タイトルそのまま
+#   created   : 作成日（YYYY-MM-DD）
+#   title     : ブランチ文書の H1 タイトルそのまま
 #   type      : feat / fix / docs / refactor / chore / test
-#   tags      : 自由形式タグ（省略可）
 #   summary   : ファイルを開かずに内容がわかる一行説明
 #   task      : タスクフォルダ名（YYMMDD_{title}）
 #   completed : false = 進行中、true = マージ済み / 廃止済み
 
-last_id: 0
 branches: []
 """
 
 _TASKS_INDEX_ARCHIVE_YAML = """\
-# Managed by workspace merge skill. Archived (completed / abandoned) branches.
+# Managed by index-tool.py archive. Completed branches moved from index.yaml.
 #
 # フィールド説明:
-#   id        : 連番
 #   branch    : git ブランチ名
-#   title     : タスクドキュメントの H1 タイトルそのまま
+#   created   : 作成日（YYYY-MM-DD）
+#   title     : ブランチ文書の H1 タイトルそのまま
 #   type      : feat / fix / docs / refactor / chore / test
-#   tags      : 自由形式タグ（省略可）
 #   summary   : 一行説明
 #   task      : タスクフォルダ名（YYMMDD_{title}）
-#   archived  : アーカイブ日（YYYY-MM-DD）
-#   resolution: merged / abandoned
+#   completed : true（アーカイブ済みは常に true）
 
 branches: []
 """
