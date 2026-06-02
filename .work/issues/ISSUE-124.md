@@ -43,4 +43,4 @@ Japanese mirror: `references/common/環境変数.jp.md`
 
 このイシューに対応するか。
 
-**回答**: 対応する / 対応しない
+**回答**: 対応する
