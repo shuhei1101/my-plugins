@@ -87,8 +87,9 @@ Apply the criteria from the Step 1 references — do not re-derive them here.
 #### Process
 
 Apply only what the user approved. **Edit the target files directly** — the authoring guides
-(`skills.md` / `rules.md` / `claude-md.md` / `hooks.md` + `provenance.md`) are auto-injected by the
-`claude-kit-references-injection` hook when you write each file, so follow them in place.
+(`skills.md` / `rules.md` / `claude-md.md` / `hooks.md`) are auto-injected by the
+`claude-kit-references-injection` hook when you write each file, so follow them in place. They
+also carry the JP-mirror warning-comment format (in `共通ガイド.md`) for stamping edited files.
 
 - **rule folder restructure**: move with `git mv` (preserve history); generate an `_overview.md` per folder:
 
@@ -133,4 +134,5 @@ Apply only what the user approved. **Edit the target files directly** — the au
 ## References
 
 The criteria live in this plugin's `references/` (read in Step 1): `common.md`, `rules.md`,
-`skills.md`, `hooks.md`, `claude-md.md` — plus `provenance.md` for stamping edited files.
+`skills.md`, `hooks.md`, `claude-md.md`. `common.md` also carries the JP-mirror warning-comment
+format for stamping edited files.

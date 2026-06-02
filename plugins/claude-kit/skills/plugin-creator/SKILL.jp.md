@@ -23,7 +23,7 @@ description: |
    changelog の「構造の変更」セクションを書く。
 3. プラグインへのリファレンス自動注入機構の付与は `/ref-inject:apply <plugin>` を使う（注入ファイルは
    ref-inject の領分。plugin-creator は `plugin.json` / ルート `CLAUDE.md` / `marketplace.json` の領分）。
-4. 各生成ファイルを `references/provenance.md` に従ってスタンプする — ファイルを書く際に自動注入される
-   ので、直接スタンプを書く（スキル呼び出し不要）。
+4. 各 `.jp.md` ミラーの冒頭に JP ミラー警告コメントを付ける（フォーマットは `references/common/共通ガイド.md`、
+   ファイルを書く際に自動注入される）— 直接書く（スキル呼び出し不要）。
 5. **必須スキルを生成する** — すべてのプラグインは `plugin-migrate`、（env vars がある場合は）
    `plugin-config` を同梱しなければならない。

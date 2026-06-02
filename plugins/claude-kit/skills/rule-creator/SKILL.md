@@ -19,5 +19,5 @@ a thin wrapper, kept for explicit invocation and for callers (e.g. `notes-to-cla
    consolidation/separation criteria, folder structure, required sections, and the structure example.
 2. Create `.claude/rules-jp/<name>.md` first, then produce the English `.claude/rules/<name>.md`.
    Do **not** put the JP mirror inside `.claude/rules/` (it would auto-load).
-3. Stamp each file per `references/provenance.md` — it is auto-injected when you write the file, so
-   write the stamp directly (no skill call needed).
+3. Start each `.jp.md` mirror with the JP-mirror warning comment (format in `references/common/共通ガイド.md`,
+   auto-injected when you write the file) — write it directly (no skill call needed).

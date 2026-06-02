@@ -65,7 +65,8 @@ enforced by the project's `*-jp-mirror-sync` rules.
 
 | # | Version | Summary |
 |---|---|---|
-| 1 | `3.55.0` | Restore `claude-kit:plugin-config` skill (renamed from `config`); restore `プラグイン設定.md` authoring reference and `plugin-config` mandate in `プラグイン構造.md`; add to injection rules for SKILL.md and plugin.json patterns |
+| 1 | `3.56.0` | Remove the dead `provenance.md` concept — integrate the JP-mirror warning-comment format into `共通ガイド.md`'s JP/EN mirror section; rewrite all `provenance.md` references in `スキル.md`, the 5 creator skills, and `claude-refactor` to point there |
+| 2 | `3.55.0` | Restore `claude-kit:plugin-config` skill (renamed from `config`); restore `プラグイン設定.md` authoring reference and `plugin-config` mandate in `プラグイン構造.md`; add to injection rules for SKILL.md and plugin.json patterns |
 | 2 | `3.54.0` | Remove the interactive `work:plugin-config` / `dev-kit:plugin-config` skills and the `プラグイン設定.md` (config-skill) authoring reference; drop the `plugin-config` mandate from `plugin-creator` / `プラグイン構造.md`; redefine the env-table format in `プラグインCLAUDE-md.md` to the unified 3-column layout (Variable / Description / Values, default in **bold**) and reformat the `## Environment Variables` tables |
 | 2 | `3.53.0` | Remove `claude-kit:config` skill |
 | 3 | `3.52.0` | Add `claude-kit:jp-mirror-sync` skill (moved from `utils` plugin); remove `utils` plugin from marketplace |

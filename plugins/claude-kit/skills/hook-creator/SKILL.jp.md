@@ -23,5 +23,5 @@ description: |
 2. リファレンス自動注入フックは手作りせず `/ref-inject:apply <plugin>` を使う。
 3. プロンプトファイル（プラグインフックは `.jp.md` ミラーも）を作り、`hooks.json` / `settings.json` に
    配線し、`Stop` / `PreToolUse` ブロック型にはループガードを付ける。
-4. 各生成ファイルを `references/provenance.md` に従ってスタンプする — ファイルを書く際に自動注入される
-   ので、直接スタンプを書く（スキル呼び出し不要）。
+4. 各 `.jp.md` ミラーの冒頭に JP ミラー警告コメントを付ける（フォーマットは `references/common/共通ガイド.md`、
+   ファイルを書く際に自動注入される）— 直接書く（スキル呼び出し不要）。

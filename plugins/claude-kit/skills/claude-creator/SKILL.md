@@ -21,5 +21,5 @@ kept for explicit invocation and for callers (e.g. `notes-to-claude`).
    validation against other file types, the JP-mirror-first workflow, required sections, the
    structure example, and the line-count guideline.
 2. Write `CLAUDE.jp.md` first (Japanese, under ~200 lines), then produce the English `CLAUDE.md` from it.
-3. Stamp each file per `references/provenance.md` — it is auto-injected when you write the file, so
-   write the stamp directly (no skill call needed).
+3. Start each `.jp.md` mirror with the JP-mirror warning comment (format in `references/common/共通ガイド.md`,
+   auto-injected when you write the file) — write it directly (no skill call needed).

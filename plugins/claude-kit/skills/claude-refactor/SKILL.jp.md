@@ -88,8 +88,9 @@ Step1 の references の基準を適用する — ここで再導出しない。
 #### 処理
 
 ユーザーが承認したものだけ適用する。**対象ファイルを直接編集する** — オーサリングガイド
-（`skills.md` / `rules.md` / `claude-md.md` / `hooks.md` + `provenance.md`）は
+（`skills.md` / `rules.md` / `claude-md.md` / `hooks.md`）は
 `claude-kit-references-injection` フックがファイル書き込み時に自動注入するので、その場で従う。
+これらには編集ファイルのスタンプ用に JP ミラー警告コメントのフォーマット（`共通ガイド.md`）も含まれる。
 
 - **ルールフォルダ再編成**: `git mv` で移動（履歴保持）。各フォルダに `_overview.md` を生成:
 
@@ -134,4 +135,5 @@ Step1 の references の基準を適用する — ここで再導出しない。
 ## 参照
 
 判定基準は本プラグインの `references/`（Step1 で読む）にある: `common.md`, `rules.md`,
-`skills.md`, `hooks.md`, `claude-md.md` — 加えて編集ファイルのスタンプ用に `provenance.md`。
+`skills.md`, `hooks.md`, `claude-md.md`。`common.md` には編集ファイルのスタンプ用に
+JP ミラー警告コメントのフォーマットも含まれる。
