@@ -1336,3 +1336,17 @@ branches:
   summary: work-kitスキル群.md のスキル一覧表を旧名・旧仕様から現行18スキルへ更新（quick-task 追加・用語統一反映）
   task: 260602_work-kitスキル群ノート現行化
   completed: true
+- branch: fix/work-plugin-description-sync
+  completed: true
+  created: '2026-05-31'
+  summary: plugin.jsonとmarketplace.jsonのdescriptionを同期し、claude-kitリファレンスに高級対策を追加
+  task: 260531_work-plugin-description-sync
+  title: workプラグインdescription同期修正
+  type: fix
+- branch: docs/read-cancel-hook-investigation
+  created: '2026-06-02'
+  title: Readキャンセル原因フック調査
+  type: docs
+  summary: Readツールがキャンセルされる原因となっているフックを特定する
+  task: 260602_read-cancel-hook-investigation
+  completed: true
