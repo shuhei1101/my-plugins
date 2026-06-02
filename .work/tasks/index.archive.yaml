@@ -1350,3 +1350,10 @@ branches:
   summary: Readツールがキャンセルされる原因となっているフックを特定する
   task: 260602_read-cancel-hook-investigation
   completed: true
+- branch: docs/remove-yosumiwa-from-issue-template
+  created: '2026-06-02'
+  title: イシューテンプレートから様子見選択肢を削除
+  type: docs
+  summary: イシュー.jp.md の回答行から '/ 様子見' を削除
+  task: 260602_イシューテンプレートから様子見選択肢を削除
+  completed: true
