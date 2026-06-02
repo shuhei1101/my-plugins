@@ -16,16 +16,17 @@
 
 | # | 内容 | 状態 |
 |---|------|------|
-| 1 | `_index.yaml` の `E2Eテスト.jp.md` エントリ（3行）を削除 | 未 |
-| 2 | `_index.yaml` の他 `.jp.md` 誤登録チェック | 未 |
-| 3 | `_index.jp.yaml` に JP mirror エントリが欠けていれば追加 | 未 |
-| 4 | `_index.yaml` が有効な YAML としてパースできることを検証 | 未 |
+| 1 | `_index.yaml` の `E2Eテスト.jp.md` エントリ（3行）を削除 | 済 |
+| 2 | `_index.yaml` の他 `.jp.md` 誤登録チェック | 済 |
+| 3 | `_index.jp.yaml` に JP mirror エントリが欠けていれば追加 | 済 |
+| 4 | `_index.yaml` が有効な YAML としてパースできることを検証 | 済 |
 
 ---
 
 ## テスト
 
-- `python -c "import yaml; yaml.safe_load(open(...))"` による YAML パース検証
+- `python3 -c "import yaml; yaml.safe_load(open(...))"` による YAML パース検証: **OK**
+- `_index.yaml` 内の `.jp.md` エントリ grep チェック: **0 件（該当なし）**
 
 ---
 
@@ -41,4 +42,5 @@
 
 | ドキュメント | 説明 |
 |-------------|------|
+| [dev-kit-index-jp-mirror-misentry.md](../../../.work/notes/バグ・不具合/dev-kit-index-jp-mirror-misentry.md) | 誤登録の詳細と対応メモ |
 
