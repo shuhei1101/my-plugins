@@ -74,7 +74,7 @@ description: |
      --linked-branch chore/rejected-issues
    ```
    `ISSUE-{N}.md` を `closed/` へ移動し、`_index.archive.yaml` に `wontfix` 記録を追記する。
-3. reject ブランチ文書にイシュー ID・タイトル・reject 理由（イシューの `## 対応メモ` から）の行を追記。
+3. reject ブランチ文書にイシュー ID・タイトル・reject 理由（イシューの `instruction` キーから）の行を追記。
 4. `chore/rejected-issues` でコミット（イシュー移動 + ブランチ文書）。**マージはしない** — ユーザーが
    準備できたら行う。
 

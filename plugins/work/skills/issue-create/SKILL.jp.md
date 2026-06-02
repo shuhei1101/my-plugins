@@ -93,8 +93,8 @@ description: |
    - ファイル書き込み時に `work-dir/イシュー.md` リファレンスが自動注入される — **そのフォーマットに
      正確に従う**。
    - ファイルは**未レビューの初期値の YAML フロントマターで始める**:
-     `decision: pending`・`status: not_started`・`branches: []`。ここで accept/reject は設定しない
-     — それは後で `work:issue-review` でユーザーが行う。
+     `decision: pending`・`status: not_started`・`branches: []`・`instruction: ""`。ここで accept/reject は
+     設定しない — それは後で `work:issue-review` でユーザーが行う。
    - 本文は日本語で、注入テンプレートのセクション（`## 概要` / `## 背景` / `## 現状` / `## 問題点` /
      `## 原因` / `## 期待される状態` / `## 修正案` など）に従う。`Type` / `Priority` / `Tags` 行は
      書かない（`_index.yaml` に記録）。

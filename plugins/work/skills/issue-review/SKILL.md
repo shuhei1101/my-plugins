@@ -2,7 +2,8 @@
 name: issue-review
 description: |
   Review un-reviewed issues one by one and fill in their frontmatter decision (accept/reject),
-  answer the issue's QA, and record a handling memo. Mobile-first: presents a readable summary of
+  answer the issue's QA, and record a free-form handling instruction (the `instruction` key).
+  Mobile-first: presents a readable summary of
   each issue and collects answers via AskUserQuestion (tap-friendly), walking through every
   un-reviewed issue in one run. Trigger when the user says "イシューをレビューして",
   "イシューを捌きたい", "review issues", "issue-review", or invokes `/work:issue-review` explicitly.
@@ -12,12 +13,13 @@ description: |
 
 Walks every un-reviewed issue (`decision: pending`) in `.work/issues/`, top to bottom, and lets the
 user decide **対応する (accept) / 対応しない (reject) / 後で (skip)** for each — plus answer the
-issue's `## QA` and leave a handling memo. Built for phones: on a phone SSH session you can't
-comfortably open issue files, so this skill presents a compact summary and collects answers with
-`AskUserQuestion` (tap targets), not raw file viewing.
+issue's `## QA` and leave a free-form handling instruction. Built for phones: on a phone SSH session
+you can't comfortably open issue files, so this skill presents a compact summary and collects
+answers with `AskUserQuestion` (tap targets), not raw file viewing.
 
-The result is written into each issue's **frontmatter `decision`** (the source of truth) and its
-`## QA` / `## 対応メモ` sections. `work:issue-resolve` later acts on those decisions.
+The result is written into each issue's **frontmatter `decision`** (the source of truth), its
+`## QA` section, and the `instruction` frontmatter key. `work:issue-resolve` later acts on those
+decisions.
 
 > `AskUserQuestion` use is intentional and required for this skill (see the global AskUserQuestion
 > restriction — skills that define its use are exempt).
@@ -74,8 +76,8 @@ For each un-reviewed issue, in order:
       answer back: set the QA's `回答` and `状態: 解決`, and reflect the chosen option into
       `## 修正案` (採用案) or the relevant section.
    b. Set the frontmatter `decision` to `accept` or `reject`.
-   c. If the user gave a reason / extra instructions (from the decision step or a follow-up), write
-      them into the issue's `## 対応メモ` section (create the heading if absent; leave it out if empty).
+   c. If the user gave a free-form handling instruction / reason (from the decision step's free-input
+      or a follow-up), write it into the issue's `instruction` frontmatter key (leave `""` if none).
 5. Move to the next issue.
 
 → After the last issue, proceed to Step 3

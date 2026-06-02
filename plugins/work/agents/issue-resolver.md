@@ -23,12 +23,12 @@ You never merge.
 The orchestrator passes you, in the prompt:
 
 - **Issue id + path** — e.g. `ISSUE-042` at `.work/issues/ISSUE-042.md`.
-- **Resolved approach** — the issue's adopted fix (`## 修正案` 採用案) and `## 対応メモ`
-  (the user's reason / extra instructions from review).
+- **Resolved approach** — the issue's adopted fix (`## 修正案` 採用案) and the `instruction`
+  frontmatter key (the user's free-form handling instruction from review).
 - The instruction to stop at the merge-waiting final commit (do **not** merge).
 
 Read the full issue file yourself to confirm `## 問題点`, `## 期待される状態`, the adopted
-`## 修正案`, and `## 対応メモ`.
+`## 修正案`, and the `instruction` frontmatter key.
 
 ---
 
@@ -48,7 +48,7 @@ Follow the `work:start` skill flow (you may `Read`
    `status: in_progress`, append the branch to `branches:`, add it to the branch doc's
    `## 関連イシュー` table, and mirror `set-status in_progress` to the main repo `_index.yaml`.
 5. **First commit**: the branch document only.
-6. **Implement** the fix per the adopted `## 修正案` + `## 対応メモ`. Commit in meaningful units on
+6. **Implement** the fix per the adopted `## 修正案` + the `instruction` key. Commit in meaningful units on
    the branch. Verify / smoke-test where feasible and record it in the branch doc's `## テスト`.
 7. **Final commit** (work:start Step 9): update/create the related note in `.work/notes/`, link it
    from `## 参考ドキュメント`, mark all `## 作業内容` rows `済`, and commit the note + branch doc.

@@ -191,6 +191,7 @@ description: |
    decision: pending
    status: not_started
    branches: []
+   instruction: ""
    ---
 
    # ISSUE-{N}: {title}

@@ -91,8 +91,8 @@ Example: "The chat history is hard to read, and settings reset on restart"
    `.work/issues/ISSUE-{N}.md`.
    - Writing the file auto-injects the `work-dir/イシュー.md` reference — **follow its format exactly**.
    - The file **opens with the YAML frontmatter** defaulted for a fresh, unreviewed issue:
-     `decision: pending`, `status: not_started`, `branches: []`. Do not set accept/reject here —
-     the user does that later in `work:issue-review`.
+     `decision: pending`, `status: not_started`, `branches: []`, `instruction: ""`. Do not set
+     accept/reject here — the user does that later in `work:issue-review`.
    - The body is Japanese and follows the injected template sections (`## 概要` / `## 背景` /
      `## 現状` / `## 問題点` / `## 原因` / `## 期待される状態` / `## 修正案` etc.).
      Do not write Type/Priority/Tags lines (those live in `_index.yaml`).

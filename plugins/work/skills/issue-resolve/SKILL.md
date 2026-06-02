@@ -75,7 +75,7 @@ The issue frontmatter / lifecycle is governed by `work-dir/イシュー.md` (aut
    ```
    This moves `ISSUE-{N}.md` → `closed/` and appends a `wontfix` record to `_index.archive.yaml`.
 3. Append a row to the reject branch document recording the issue ID, title, and the reject reason
-   (from the issue's `## 対応メモ`).
+   (from the issue's `instruction` frontmatter key).
 4. Commit on `chore/rejected-issues` (issue move + branch doc). Do **not** merge — the user merges
    when ready.
 
