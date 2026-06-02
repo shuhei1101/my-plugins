@@ -110,6 +110,34 @@ merge スキルがマージを提案するかどうかを env var でオフに�
 
 ---
 
+# feat/issue-resolve-agents-env-var — ISSUE_RESOLVE_AGENTS 追加
+
+## 概要
+
+`work:issue-resolve` スキルが 1 回の呼び出しで処理するイシュー数を整数型の env var で設定可能にする。
+`ISSUE_SCAN_AGENTS` と同じパターン。
+
+## 仕様
+
+| # | env 変数 | 型 | デフォルト | 動作 |
+|---|---|---|---|---|
+| 1 | `ISSUE_RESOLVE_AGENTS` | 整数 | `1` | `issue-resolve` 1 起動で処理するアクション可能なイシューの最大件数。イシュー番号の昇順に順次処理する |
+
+## 実装箇所
+
+- `plugins/work/skills/issue-resolve/SKILL.md` — Step 1 で N を読み込み・イシュー間ループを追加
+- `plugins/work/skills/issue-resolve/SKILL.jp.md` — 同上（JP ミラー）
+- `plugins/work/CLAUDE.md` — Environment Variables テーブルに `ISSUE_RESOLVE_AGENTS` を追加
+- `plugins/work/CLAUDE.jp.md` — 同上（JP ミラー）
+
+## 設計メモ
+
+- `ISSUE_SCAN_AGENTS`（並列）と対称的な整数型 env var
+- issue-resolve はリジェクト処理が main repo で直列実行されるため、並列化はせず順次処理
+- N 件処理後 or 対応可能イシュー枯渇で Step 4（報告）へ進む
+
+---
+
 # feat/base-branch-config — WORK_BASE_BRANCH 追加
 
 ## 概要

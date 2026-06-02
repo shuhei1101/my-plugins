@@ -99,6 +99,7 @@ resolver サブエージェントは質問で止まらず最終コミットま�
 | `${WORK_COMMIT_LANG}` | コミットメッセージの言語（`JP`=日本語 / `EN`=英語） | - **JP**<br>- EN |
 | `${WORK_COMMIT_TYPE}` | Conventional Commits のタイププレフィックス（`feat:` / `fix:` / `chore:` など）を付与するか | - **true**<br>- false |
 | `${ISSUE_SCAN_AGENTS}` | `issue-scan` 1 回あたりのスキャン観点数（= 並列 `issue-scanner` サブエージェント数）。整数 | **1** |
+| `${ISSUE_RESOLVE_AGENTS}` | `issue-resolve` 1 起動で処理するアクション可能なイシューの最大件数（順次処理）。整数 | **1** |
 | `${WORK_PRECOMPACT_CONV2CLAUDE}` | `PreCompact`（`/compact` 前）で `/work:conversation-to-claude` を実行するか | - **true**<br>- false |
 | `${WORK_MERGE_CONV2CLAUDE}` | `work:merge` 中にワークツリー内で `/work:conversation-to-claude` を実行するか | - **true**<br>- false |
 
@@ -117,7 +118,8 @@ resolver サブエージェントは質問で止まらず最終コミットま�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.71.0 | 2026-06-02 | イシューのユーザー回答欄を**下部**へ移動（`---` の後、AI 記入本文の下）。`イシュー.md` テンプレート・`issue-create` / `issue-review` / `issue-resolve` スキル、`issue-scanner` エージェント・本 CLAUDE.md を更新 |
+| 1 | 2.72.0 | 2026-06-02 | `${ISSUE_RESOLVE_AGENTS}` 環境変数を追加（デフォルト `1`）— `issue-resolve` 1 起動で処理するアクション可能なイシューの最大件数。イシュー番号の昇順に順次処理。`issue-resolve` SKILL.md + JP ミラー・本 CLAUDE.md を更新 |
+| 〃 | 2.71.0 | 2026-06-02 | イシューのユーザー回答欄を**下部**へ移動（`---` の後、AI 記入本文の下）。`イシュー.md` テンプレート・`issue-create` / `issue-review` / `issue-resolve` スキル、`issue-scanner` エージェント・本 CLAUDE.md を更新 |
 | 1 | 2.70.0 | 2026-06-02 | `work:quick-task` スキルを削除し、UserPromptSubmit フックの Step 3 を `work:start` のみ実行する形に戻す |
 | 〃 | 2.69.0 | 2026-06-02 | タスクドキュメントのファイル拡張子を `.branch.md` → `.task.md` に変更（`tasks/` フォルダ名と整合）し既存 266 件を一括リネーム。概念名を **「ブランチドキュメント」→「タスクドキュメント」** に統一（全カレント仕様の references / skills / agents / hooks / CLAUDE.md。changelog 履歴は不変） |
 | 1 | 2.68.0 | 2026-06-02 | `issue-resolve` の REJECT フローを変更: reject を共有 `chore/rejected-issues` ブランチに蓄積する方式をやめ、各 reject を使い捨ての 1 イシュー専用ブランチ（`chore/reject-ISSUE-{N}`）でクローズし同一 tick 内で**即 master へマージ**する。close は**メインリポ**（ワークツリーではない）で実行し、gitignore な `_index.yaml`（Step 1 が読む正）を直接更新。その gitignore な編集は `master` 切替を生き残り、追跡上のファイル移動はマージコミットで master に届く — master とイシューインデックスが毎 tick で整合し乖離しない。`issue-resolve` SKILL + JP ミラー・本 CLAUDE.md（ライフサイクル記述 + Skills 表）を更新 |

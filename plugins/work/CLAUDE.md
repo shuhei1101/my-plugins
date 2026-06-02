@@ -101,6 +101,7 @@ the resolver subagent reaches the final commit without stopping for questions.
 | `${WORK_COMMIT_LANG}` | Commit message language (`JP` = Japanese, `EN` = English) | - **JP**<br>- EN |
 | `${WORK_COMMIT_TYPE}` | Include the conventional commit type prefix (`feat:` / `fix:` / `chore:` …) | - **true**<br>- false |
 | `${ISSUE_SCAN_AGENTS}` | Perspectives scanned per `issue-scan` run (= parallel `issue-scanner` subagents); integer | **1** |
+| `${ISSUE_RESOLVE_AGENTS}` | Maximum actionable issues processed per `issue-resolve` invocation (sequential); integer | **1** |
 | `${WORK_PRECOMPACT_CONV2CLAUDE}` | Run `/work:conversation-to-claude` on `PreCompact` (before `/compact`) | - **true**<br>- false |
 | `${WORK_MERGE_CONV2CLAUDE}` | Run `/work:conversation-to-claude` inside the worktree during `work:merge` | - **true**<br>- false |
 
@@ -119,7 +120,8 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.71.0 | 2026-06-02 | Move `# ユーザー回答欄` to the **bottom** of the issue file (after `---`, following the AI-authored body); update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve`, the `issue-scanner` agent, and this CLAUDE.md |
+| 1 | 2.72.0 | 2026-06-02 | Add `${ISSUE_RESOLVE_AGENTS}` env var (default `1`) — maximum actionable issues processed per `issue-resolve` invocation; issues are handled sequentially in ascending issue-number order; update `issue-resolve` SKILL.md + JP mirror and this CLAUDE.md |
+| 〃 | 2.71.0 | 2026-06-02 | Move `# ユーザー回答欄` to the **bottom** of the issue file (after `---`, following the AI-authored body); update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve`, the `issue-scanner` agent, and this CLAUDE.md |
 | 〃 | 2.70.0 | 2026-06-02 | Remove `work:quick-task` skill and revert the UserPromptSubmit hook Step 3 to always run `work:start` |
 | 〃 | 2.69.0 | 2026-06-02 | Rename the task-document file extension `.branch.md` → `.task.md` (matches the `tasks/` folder) and bulk-rename the 266 existing documents; rename the concept **"branch document" → "task document"** across all current-spec references / skills / agents / hooks / CLAUDE.md (changelog history left unchanged) |
 | 1 | 2.68.0 | 2026-06-02 | Change `issue-resolve`'s REJECT flow: instead of accumulating rejects on a shared `chore/rejected-issues` branch, each reject is closed on a throwaway per-issue branch (`chore/reject-ISSUE-{N}`) and **merged to master immediately** within the same tick. The close runs in the **main repo** (not a worktree) so it updates the gitignored `_index.yaml` (the source of truth Step 1 reads); the gitignored edit survives the `master` switch while the tracked file move reaches master via the merge commit — keeping master and the issue index consistent every tick (no drift). Update `issue-resolve` SKILL + JP mirror and this CLAUDE.md (lifecycle prose + Skills table) |

@@ -1,11 +1,12 @@
 ---
 name: work:issue-resolve
 description: |
-  Autonomously work through reviewed issues in `.work/issues/`, top to bottom — one actionable
-  issue per invocation. Issues whose `## 意思` is affirmative are dispatched to a
-  `work:issue-resolver` subagent that creates a branch and drives it to the merge-waiting final
-  commit; issues whose `## 意思` is negative are closed on a throwaway per-issue branch that is
-  merged to master immediately within the same invocation.
+  Autonomously work through reviewed issues in `.work/issues/`, top to bottom — up to
+  `${ISSUE_RESOLVE_AGENTS}` (default: `1`) actionable issues per invocation, processed sequentially.
+  Issues whose `## 意思` is affirmative are dispatched to a `work:issue-resolver` subagent that
+  creates a branch and drives it to the merge-waiting final commit; issues whose `## 意思` is
+  negative are closed on a throwaway per-issue branch that is merged to master immediately within
+  the same invocation.
   Designed to run under `/loop`. Trigger when the user says "イシューを対応して", "イシューを消化して",
   "resolve issues", "issue-resolve", or invokes `/loop /work:issue-resolve` / `/work:issue-resolve`
   explicitly.
@@ -14,8 +15,9 @@ description: |
 # work:issue-resolve — Work Through Reviewed Issues (loop-driven)
 
 Processes the issues that `work:issue-review` has triaged. Built to run under `/loop`: each
-invocation handles the **single top-most actionable issue**, so repeated loop ticks drain the queue
-while leaving a pile of merge-waiting branches (from accepts) for the user to review and merge.
+invocation handles up to **N actionable issues** (`${ISSUE_RESOLVE_AGENTS}`, default `1`),
+sequentially top-to-bottom. Repeated loop ticks drain the queue while leaving a pile of
+merge-waiting branches (from accepts) for the user to review and merge.
 
 - **意思 affirmative + status: not_started** → dispatch a `work:issue-resolver` subagent (one
   subagent per issue) that creates a branch via `work:start`, implements the fix, and stops at the
@@ -36,9 +38,14 @@ affirmative and "対応しない" is negative; a line still listing all candidat
 ## Overview
 
 - **Prerequisite**: issues have been triaged with `work:issue-review` (their `## 意思` is filled in).
-- **One actionable issue per invocation** keeps each loop tick to a single branch / merge unit.
+- **Up to N actionable issues per invocation** (`${ISSUE_RESOLVE_AGENTS}`, default `1`) — issues are
+  processed sequentially, keeping each handled unit (branch / close) atomic and auditable.
 - QA is resolved at review time (on the issue), so the resolver subagent should reach the final
   commit without stopping. **If a genuine blocker arises, the subagent stops** (see Step 3).
+
+**Environment variables**:
+- `${ISSUE_RESOLVE_AGENTS}` (default: `1`) — maximum number of actionable issues processed per
+  invocation. Issues are handled one by one in ascending issue-number order.
 
 ---
 
@@ -48,14 +55,15 @@ affirmative and "対応しない" is negative; a line still listing all candidat
 
 #### Process
 
-1. If `.work/issues/` does not exist → report and stop.
-2. Read `.work/issues/_index.yaml`. Collect entries with `status: not_started` and sort them
+1. Read `${ISSUE_RESOLVE_AGENTS}` (default `1`); store as `N`. Initialize `handled = 0`.
+2. If `.work/issues/` does not exist → report and stop.
+3. Read `.work/issues/_index.yaml`. Collect entries with `status: not_started` and sort them
    ascending by issue number. These are the only candidates worth opening.
-3. Walk the candidates top-down. For each, open the issue file and read `## 意思` `**回答**:`:
+4. Walk the candidates top-down. For each, open the issue file and read `## 意思` `**回答**:`:
    - `## 意思` negative (対応しない) → REJECT action (Step 2).
    - `## 意思` affirmative (対応する/様子見) → ACCEPT action (Step 3).
    - `## 意思` not narrowed (still listing all candidates → unreviewed) → skip.
-4. If no actionable issue exists → report "対応可能なイシューはありません" and stop (the loop can end).
+5. If no actionable issue exists → report "対応可能なイシューはありません" and stop (the loop can end).
 
 → Reject → Step 2 · Accept → Step 3
 
@@ -157,6 +165,15 @@ carried to `master` on a throwaway branch. The main repo's working tree must be 
 - One subagent per issue (= one branch). Under `/loop`, the next tick picks up the next issue.
 - The subagent owns the worktree/branch/commits via `work:start`; this orchestrator only selects,
   locks, dispatches, and reports.
+
+---
+
+### Between issues: loop until N
+
+After completing Step 2 or Step 3 for one issue, increment `handled`. If `handled < N` and
+the candidate list is not exhausted, **return to Step 1** (re-read the index to pick up any
+status changes) and handle the next issue. Once `handled == N` (or no more actionable issues
+remain), proceed to Step 4.
 
 ---
 
