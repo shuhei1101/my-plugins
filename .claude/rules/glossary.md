@@ -5,7 +5,7 @@ terms that are current, non-obvious from their name, and recur.
 
 Japanese mirror: `.claude/rules/glossary.jp.md`
 
-> Authoring bar and format: `plugins/work/references/conversation/グロッサリー.md`.
+> Authoring bar and format: `plugins/work/references/conversation/用語集.md`.
 
 ---
 

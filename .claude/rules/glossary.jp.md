@@ -6,7 +6,7 @@
 
 英語オリジナル: `.claude/rules/glossary.md`
 
-> 採用基準とフォーマット: `plugins/work/references/conversation/グロッサリー.md`。
+> 採用基準とフォーマット: `plugins/work/references/conversation/用語集.md`。
 
 ---
 

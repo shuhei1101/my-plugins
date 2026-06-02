@@ -318,7 +318,7 @@ CLAUDE.md / incidents / glossary）をすべて特定して、確認を求めず
 - どちらも迷ったら: **破棄**。
 
 採用基準とファイル形式の完全版は work リファレンスにもあり、対象ファイルの編集時に自動注入される:
-`references/conversation/グロッサリー.md`（`.claude/rules/glossary.md` 編集時）と
+`references/conversation/用語集.md`（`.claude/rules/glossary.md` 編集時）と
 `references/conversation/インシデント.md`（`.claude/rules/incidents.md` / `.claude/references/incidents/**` 編集時）。
 
 ### 公式ドキュメント
