@@ -114,6 +114,25 @@ closed_issues:
   - documentation
   - cross-reference
   linked_branch: chore/reject-ISSUE-129
+- id: ISSUE-135
+  title: 'dev-kit: references/ ルート直下に マークダウン編集.md の重複ファイルが残存'
+  closed: '2026-06-03'
+  resolution: resolved
+  tags:
+  - orphan
+  - dev-kit
+  - markdown
+  - duplicate
+  linked_branch: fix/delete-dev-kit-orphan-references
+- id: ISSUE-136
+  title: 'dev-kit: _index.yaml に JP mirror ファイル（E2Eテスト.jp.md）が誤登録'
+  closed: '2026-06-03'
+  resolution: resolved
+  tags:
+  - dev-kit
+  - index
+  - jp-mirror
+  linked_branch: fix/dev-kit-index-jp-mirror-misentry
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
@@ -257,3 +276,27 @@ scan_records:
   skill: issue-scan
   scope: layer:agent-definitions
   issues_found: []
+- date: 2026-06-02
+  skill: issue-scan
+  scope: folder:work/hooks
+  issues_found:
+  - ISSUE-175
+  - ISSUE-176
+  - ISSUE-177
+  - ISSUE-178
+  - ISSUE-179
+- date: 2026-06-02
+  skill: issue-scan
+  scope: folder:dev-kit/hooks
+  issues_found:
+  - ISSUE-180
+  - ISSUE-181
+  - ISSUE-182
+  - ISSUE-183
+- date: 2026-06-02
+  skill: issue-scan
+  scope: glob:plugin.json
+  issues_found:
+  - ISSUE-184
+  - ISSUE-185
+  - ISSUE-186

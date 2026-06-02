@@ -388,9 +388,6 @@ references:
 - path: next/testing/E2Eテスト.md
   lang: next
   description: E2E test (Playwright)。playwright.config.ts、tests/e2e/ 構造（テスト戦略.md 準拠）、Page Object Model (tests/pages/)、helpers (tests/helpers/)、Storage State 認証、DB シード、視覚回帰、axe-core a11y。
-- path: next/testing/E2Eテスト.jp.md
-  lang: next
-  description: JP mirror of E2Eテスト.md
 - path: next/testing/フィクスチャー.md
   lang: next
   description: テストデータ Factory パターン。tests/fixtures/{resource,user,...}.ts、build*/seed*/clean*、nanoid で一意命名、DB cleanup (truncate)、テスト専用 API (NODE_ENV gate)。
