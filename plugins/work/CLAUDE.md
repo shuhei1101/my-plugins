@@ -45,8 +45,8 @@ final commit without stopping for questions.
 | # | Skill | Purpose |
 |---|---|---|
 | 1 | `work:start` | Create a new branch + branch document in `.work/tasks/` |
-| 2 | `work:pr-handoff` | Reserve the next branch after the current one is complete |
-| 3 | `work:pr-show` | Show next branch candidates in 3 categories (ready / in-progress / conditional) |
+| 2 | `work:branch-reserve` | Reserve the next branch using the same flow as `work:start`, after the current branch is complete |
+| 3 | `work:branch-show` | Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions) |
 | 4 | `work:merge` | Merge the current branch, close related issues, archive the branch document |
 | 5 | `work:qa-wizard` | Present unresolved QA items and collect decisions |
 | 6 | `work:issue-create` | Create issue files under `.work/issues/` |
@@ -115,7 +115,8 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.65.0 | 2026-06-02 | Remove the interactive `work:plugin-config` skill (env toggles are edited directly in `settings.json`); reformat the `## Environment Variables` table to the unified 3-column layout (Variable / Description / Values, default in **bold**) |
+| 1 | 2.65.1 | 2026-06-02 | Fix stale skill names in `## Skills` table: `work:pr-handoff` → `work:branch-reserve`, `work:pr-show` → `work:branch-show` |
+| 2 | 2.65.0 | 2026-06-02 | Remove the interactive `work:plugin-config` skill (env toggles are edited directly in `settings.json`); reformat the `## Environment Variables` table to the unified 3-column layout (Variable / Description / Values, default in **bold**) |
 | 1 | 2.64.0 | 2026-06-02 | Rename the glossary authoring-guide reference `references/conversation/` file to a Japanese name `用語集.md` (+ `.jp.md`) — drop the katakana filename; update `injection_rules` / `_index` / cross-links and all pointers accordingly |
 | 1 | 2.63.0 | 2026-06-02 | Redesign the ISSUE file format: drop YAML frontmatter; two-part Markdown layout (AI-authored top half + `# ユーザー回答欄` with `## 意思` / `## QA` / `## 自由記述`, answer candidates pre-filled, `**回答**:` left blank); rename `## 修正案`→`## 対応案` and drop the 問題点/詳細 section (背景/現状 cover it); move `status` / `branches` to `_index.yaml` (`issue-tool.py` gains `add-branch`); update `issue-create` / `issue-review` / `issue-resolve` / `issue-scan`, the `issue-scanner` / `issue-resolver` agents, and `work:start` issue-linking accordingly |
 | 2 | 2.61.0 | 2026-06-02 | Add `${WORK_BASE_BRANCH}` env var — specify base branch for new worktrees; `git worktree add` branches from this commit-ish when set |

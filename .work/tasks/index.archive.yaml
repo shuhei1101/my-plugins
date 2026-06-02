@@ -1286,3 +1286,10 @@ branches:
   summary: 各プラグインから対話式 plugin-config スキルを削除し、CLAUDE.md の環境変数テーブルを3列フォーマットに統一
   task: 260602_plugin-config削除と環境変数テーブル統一
   completed: true
+- branch: fix/work-claude-md-skill-names
+  created: '2026-06-02'
+  title: CLAUDE.mdのスキル名修正
+  type: fix
+  summary: work:pr-handoff→branch-reserve、work:pr-show→branch-show に更新
+  task: 260602_CLAUDEmd-スキル名修正
+  completed: true

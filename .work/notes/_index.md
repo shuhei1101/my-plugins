@@ -49,7 +49,7 @@
 | 1 | [ジェネレーターメタデータ.md](スキル設計/ジェネレーターメタデータ.md) | ジェネレーターメタデータ — creator スキル生成物の出自トレース機構 |
 | 2 | [インタラクティブレビュースキル.md](スキル設計/インタラクティブレビュースキル.md) | インタラクティブレビュースキル — AskUserQuestion を使った 2 つのレビュー |
 | 3 | [next-kitプランスキル.md](スキル設計/next-kitプランスキル.md) | next-kit:plan スキル — Next.js プロジェクト設計計画書生成 |
-| 4 | [pr-showスキル.md](スキル設計/pr-showスキル.md) | pr-show スキル — 次 PR 候補一覧の状況表示 |
+| 4 | [pr-showスキル.md](スキル設計/pr-showスキル.md) | work:branch-show スキル — 次ブランチ候補一覧の状況表示 |
 | 5 | [ref-injectジェネレータ.md](スキル設計/ref-injectジェネレータ.md) | ref-inject — リファレンス自動注入プラグインのジェネレータ |
 | 6 | [work-kitスキル群.md](スキル設計/work-kitスキル群.md) | work-kit スキル群 — 設計メモ |
 | 7 | [AskUserQuestion制約リファレンス.md](スキル設計/AskUserQuestion制約リファレンス.md) | AskUserQuestion 制約リファレンス — スキルからの呼び出しガイド |
