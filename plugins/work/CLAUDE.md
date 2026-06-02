@@ -120,7 +120,8 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.72.0 | 2026-06-02 | Add `${ISSUE_RESOLVE_AGENTS}` env var (default `1`) — maximum actionable issues processed per `issue-resolve` invocation; issues are handled sequentially in ascending issue-number order; update `issue-resolve` SKILL.md + JP mirror and this CLAUDE.md |
+| 1 | 2.73.0 | 2026-06-02 | `issue-scan` Step 0 now copies uncommitted `.work/issues/` changes from the main repo into the scan worktree before committing, so user-answered issue files are committed together with the scan results |
+| 〃 | 2.72.0 | 2026-06-02 | Add `${ISSUE_RESOLVE_AGENTS}` env var (default `1`) — maximum actionable issues processed per `issue-resolve` invocation; issues are handled sequentially in ascending issue-number order; update `issue-resolve` SKILL.md + JP mirror and this CLAUDE.md |
 | 〃 | 2.71.0 | 2026-06-02 | Move `# ユーザー回答欄` to the **bottom** of the issue file (after `---`, following the AI-authored body); update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve`, the `issue-scanner` agent, and this CLAUDE.md |
 | 〃 | 2.70.0 | 2026-06-02 | Remove `work:quick-task` skill and revert the UserPromptSubmit hook Step 3 to always run `work:start` |
 | 〃 | 2.69.0 | 2026-06-02 | Rename the task-document file extension `.branch.md` → `.task.md` (matches the `tasks/` folder) and bulk-rename the 266 existing documents; rename the concept **"branch document" → "task document"** across all current-spec references / skills / agents / hooks / CLAUDE.md (changelog history left unchanged) |
