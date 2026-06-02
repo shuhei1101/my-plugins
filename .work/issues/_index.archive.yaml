@@ -52,6 +52,16 @@ closed_issues:
   - stop
   - argv
   linked_branch: fix/stop-py-argv-guard
+- id: ISSUE-094
+  title: already_dispatched_this_session() の check-then-touch が TOCTOU 競合を持つ
+  closed: '2026-06-02'
+  resolution: resolved
+  tags:
+  - hook
+  - race-condition
+  - toctou
+  - _common.py
+  linked_branch: fix/toctou-already-dispatched
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
@@ -129,13 +139,24 @@ scan_records:
   - ISSUE-142
 - date: 2026-06-02
   skill: issue-scan
-  scope: "folder:ref-inject"
-  issues_found: [ISSUE-143, ISSUE-144, ISSUE-145, ISSUE-146]
+  scope: folder:ref-inject
+  issues_found:
+  - ISSUE-143
+  - ISSUE-144
+  - ISSUE-145
+  - ISSUE-146
 - date: 2026-06-02
   skill: issue-scan
-  scope: "folder:dev-kit/references"
-  issues_found: [ISSUE-147, ISSUE-148, ISSUE-149, ISSUE-150]
+  scope: folder:dev-kit/references
+  issues_found:
+  - ISSUE-147
+  - ISSUE-148
+  - ISSUE-149
+  - ISSUE-150
 - date: 2026-06-02
   skill: issue-scan
-  scope: "layer:plugin-config-skills"
-  issues_found: [ISSUE-151, ISSUE-152, ISSUE-153]
+  scope: layer:plugin-config-skills
+  issues_found:
+  - ISSUE-151
+  - ISSUE-152
+  - ISSUE-153
