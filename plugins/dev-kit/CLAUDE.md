@@ -32,25 +32,27 @@ Hook scripts live under `hooks/scripts/` with a per-plugin `_common.py` for shar
 All toggles live in `settings.json` `env` (or `~/.claude/settings.json`).
 Truthy = `true`/`1`/`yes`/`on` (case-insensitive). Falsy = anything else.
 
+**Bold** = default value (applied when the key is unset). Booleans list `true` / `false` only (`1` / `yes` / `on` are also accepted as truthy).
+
 ### Language opt-in (reference auto-injection)
 
-| Env var | Default | Effect |
+| Variable | Description | Values |
 |---|---|---|
-| `${DEV_KIT_PYTHON}` | (off) | Inject Python references when editing matched `*.py` etc. |
-| `${DEV_KIT_HTML}` | (off) | Inject HTML references when editing `*.html`/`*.css`/`*.js` |
-| `${DEV_KIT_NEXT}` | (off) | Inject Next.js references when editing `*.ts`/`*.tsx` etc. |
-| `${DEV_KIT_MARKDOWN}` | (off) | Inject Markdown references when editing `*.md` |
+| `${DEV_KIT_PYTHON}` | Truthy injects Python references when editing matched `*.py` etc. | - true<br>- **false** |
+| `${DEV_KIT_HTML}` | Truthy injects HTML references when editing `*.html` / `*.css` / `*.js` | - true<br>- **false** |
+| `${DEV_KIT_NEXT}` | Truthy injects Next.js references when editing `*.ts` / `*.tsx` etc. | - true<br>- **false** |
+| `${DEV_KIT_MARKDOWN}` | Truthy injects Markdown references when editing `*.md` | - true<br>- **false** |
 
 Default is **all off**. Opt into each language your project uses.
 
 ### Other toggles
 
-| Env var | Default | Effect |
+| Variable | Description | Values |
 |---|---|---|
-| `${DEV_KIT_NEXT_TS_CHECK}` | on | `tsc --noEmit` on `*.ts`/`*.tsx` after edit |
-| `${DEV_KIT_INJECTION_DISABLE}` | off | **Truthy** disables all reference injection (kill switch) |
-| `${DEV_KIT_INJECTION_TTL}` | 3600 (sec) | TTL for the per-pattern/reference token cache |
-| `${DEV_KIT_INJECTION_LANG}` | `en` | Set to `jp` for Japanese reference bodies |
+| `${DEV_KIT_NEXT_TS_CHECK}` | Run `tsc --noEmit` on `*.ts` / `*.tsx` after edit | - **true**<br>- false |
+| `${DEV_KIT_INJECTION_DISABLE}` | Kill switch — a truthy value disables all reference injection | - true<br>- **false** |
+| `${DEV_KIT_INJECTION_TTL}` | TTL for the per-pattern / reference token cache; seconds (integer) | **3600** |
+| `${DEV_KIT_INJECTION_LANG}` | Language for injected reference bodies (`jp` for Japanese) | - **en**<br>- jp |
 
 ## Reference structure
 
@@ -74,6 +76,7 @@ prevents duplicate injection.
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.14.0 | 2026-06-02 | Remove the interactive `dev-kit:plugin-config` skill; reformat the env-toggle tables to the unified 3-column layout (Variable / Description / Values, default in **bold**) |
 | 4.13.0 | 2026-06-01 | Remove `dev-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
 | 4.11.1 | 2026-05-31 | Remove branch-check step (master/main guard) from `plugin-migrate` — redundant with the work harness UserPromptSubmit hook |
 | 4.11.0 | 2026-05-31 | Add `dev-kit:plugin-config` skill — interactively configures 6 env toggles (`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` default-on) via numbered-list loop (PR229) |

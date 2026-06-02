@@ -25,5 +25,4 @@ description: |
    ref-inject の領分。plugin-creator は `plugin.json` / ルート `CLAUDE.md` / `marketplace.json` の領分）。
 4. 各生成ファイルを `references/provenance.md` に従ってスタンプする — ファイルを書く際に自動注入される
    ので、直接スタンプを書く（スキル呼び出し不要）。
-5. **必須スキルを生成する** — すべてのプラグインは `plugin-migrate`、（env vars がある場合は）
-   `plugin-config` を同梱しなければならない。
+5. **必須スキルを生成する** — すべてのプラグインは `plugin-migrate` を同梱しなければならない。

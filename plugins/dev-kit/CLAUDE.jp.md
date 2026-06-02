@@ -33,25 +33,27 @@ Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown を 1 プラグ�
 `settings.json` の `env` （またはユーザー `~/.claude/settings.json`）に設定。
 truthy = `true`/`1`/`yes`/`on`（大文字小文字無視）、falsy = それ以外。
 
+**太字** = デフォルト値（キー未設定時に適用）。真偽値は `true` / `false` のみ記載（`1` / `yes` / `on` も truthy として扱われる）。
+
 ### 言語 opt-in（リファレンス自動注入）
 
-| env 変数 | デフォルト | 効果 |
+| 変数名 | 説明 | 値 |
 |---|---|---|
-| `${DEV_KIT_PYTHON}` | OFF | `*.py` 等を編集した時に Python リファレンスを注入 |
-| `${DEV_KIT_HTML}` | OFF | `*.html` / `*.css` / `*.js` 編集時に HTML リファレンス注入 |
-| `${DEV_KIT_NEXT}` | OFF | `*.ts` / `*.tsx` 等の編集時に Next.js リファレンス注入 |
-| `${DEV_KIT_MARKDOWN}` | OFF | `*.md` 編集時に Markdown リファレンス注入 |
+| `${DEV_KIT_PYTHON}` | truthy で `*.py` 等の編集時に Python リファレンスを注入 | - true<br>- **false** |
+| `${DEV_KIT_HTML}` | truthy で `*.html` / `*.css` / `*.js` 編集時に HTML リファレンスを注入 | - true<br>- **false** |
+| `${DEV_KIT_NEXT}` | truthy で `*.ts` / `*.tsx` 等の編集時に Next.js リファレンスを注入 | - true<br>- **false** |
+| `${DEV_KIT_MARKDOWN}` | truthy で `*.md` 編集時に Markdown リファレンスを注入 | - true<br>- **false** |
 
 デフォルトは **全 OFF**。プロジェクトで使用する言語のみ明示的に有効化する。
 
 ### その他のトグル
 
-| env 変数 | デフォルト | 効果 |
+| 変数名 | 説明 | 値 |
 |---|---|---|
-| `${DEV_KIT_NEXT_TS_CHECK}` | ON | `*.ts` / `*.tsx` 編集後の `tsc --noEmit` チェック |
-| `${DEV_KIT_INJECTION_DISABLE}` | OFF | **truthy** で全リファレンス注入を停止（緊急停止） |
-| `${DEV_KIT_INJECTION_TTL}` | 3600（秒） | パターン / リファレンスのトークンキャッシュ TTL |
-| `${DEV_KIT_INJECTION_LANG}` | `en` | `jp` で日本語版リファレンスを注入 |
+| `${DEV_KIT_NEXT_TS_CHECK}` | `*.ts` / `*.tsx` 編集後に `tsc --noEmit` チェックを実行するか | - **true**<br>- false |
+| `${DEV_KIT_INJECTION_DISABLE}` | キルスイッチ — truthy で全リファレンス注入を停止 | - true<br>- **false** |
+| `${DEV_KIT_INJECTION_TTL}` | パターン / リファレンスのトークンキャッシュ TTL。秒（整数） | **3600** |
+| `${DEV_KIT_INJECTION_LANG}` | 注入リファレンスの言語（`jp` で日本語版を注入） | - **en**<br>- jp |
 
 ## リファレンス構造
 
@@ -73,6 +75,7 @@ references/
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.14.0 | 2026-06-02 | 対話式 `dev-kit:plugin-config` スキルを削除。env トグルのテーブルを統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再フォーマット |
 | 4.13.0 | 2026-06-01 | `dev-kit:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
 | 4.11.1 | 2026-05-31 | `plugin-migrate` のブランチチェックステップ（master/main ガード）を削除 — work ハーネスの UserPromptSubmit フックと責務が重複しているため |
 | 4.11.0 | 2026-05-31 | `dev-kit:plugin-config` スキルを追加 — 6 つの env トグル（`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` デフォルト ON）を番号付きリストループで対話的に設定（PR229） |

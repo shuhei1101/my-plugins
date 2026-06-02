@@ -1279,3 +1279,10 @@ branches:
   summary: claude-kit:config スキルのファイルと参照を削除する
   task: 260602_claude-kit-configスキル削除
   completed: true
+- branch: refactor/plugin-config-removal
+  created: '2026-06-02'
+  title: plugin-config削除と環境変数テーブル統一
+  type: refactor
+  summary: 各プラグインから対話式 plugin-config スキルを削除し、CLAUDE.md の環境変数テーブルを3列フォーマットに統一
+  task: 260602_plugin-config削除と環境変数テーブル統一
+  completed: true
