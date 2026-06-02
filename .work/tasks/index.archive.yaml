@@ -1427,3 +1427,10 @@ branches:
   summary: 73件のイシューファイルを v2.75.0 形式（ユーザー回答欄先頭・チェックボックス）に一括変換
   task: 260603_イシューファイル v2.75 フォーマット移行
   completed: true
+- branch: feat/issue-intent-merge-choice
+  created: '2026-06-03'
+  title: イシュー意思のマージ選択肢追加とQA入力形式整理
+  type: feat
+  summary: '## 意思を3択化（自動マージ/マージはAIに任せる/対応しない）しdirect_mergeと連動、自由入力型QAのチェックボックス廃止'
+  task: 260603_イシュー意思マージ選択肢
+  completed: true
