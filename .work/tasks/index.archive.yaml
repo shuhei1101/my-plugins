@@ -1357,3 +1357,10 @@ branches:
   summary: イシュー.jp.md の回答行から '/ 様子見' を削除
   task: 260602_イシューテンプレートから様子見選択肢を削除
   completed: true
+- branch: refactor/remove-quick-task
+  created: '2026-06-02'
+  title: quick-taskスキルと関連フック変更の削除
+  type: refactor
+  summary: work:quick-taskスキルと関連するフック・プラグイン設定変更を削除し、追加前の状態に戻す
+  task: 260602_quick-taskスキルと関連フック変更の削除
+  completed: true

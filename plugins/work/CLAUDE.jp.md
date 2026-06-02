@@ -9,7 +9,7 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 1. **プロンプト受信 → ブランチゲート**（`UserPromptSubmit` フック / `hooks/prompts/user-prompt-submit.md`）
    このセッションでブランチが進行中かを判定する。
-   - **進行中でない** → 依頼が **ソースコードをメインに編集するか** を判断する。ソースコード実装は `work:start` を実行する。ソースコードをメインに編集しない作業（調査・確認・リサーチ）は代わりに `work:quick-task` を実行する。どちらもブランチ + タスクドキュメントを作成するが、quick-task はドキュメントとライフサイクルを軽量に保つ。ブランチ無しでのコミット、master への直接コミットは禁止。
+   - **進行中でない** → `/work:start` を実行してブランチを作成する。ブランチ無しでのコミット、master への直接コミットは禁止。
    - **進行中** → そのブランチのワークツリーへ移動しタスクドキュメントを読む。`## QA` に未解決項目があれば**そこで停止**しユーザーに解決を促す。クリアなら今回の依頼を `## 作業内容` に追記してから作業を続ける。
 
 2. **ブランチ作成**（`work:start` → `work:worktree-create`）
@@ -46,23 +46,22 @@ resolver サブエージェントは質問で止まらず最終コミットま�
 | # | スキル | 目的 |
 |---|---|---|
 | 1 | `work:start` | 新しいブランチと `.work/tasks/` 配下のタスクドキュメントを作成 |
-| 2 | `work:quick-task` | **ソースコードをメインに編集しない**作業（調査・確認・リサーチ）向けの軽量タスク — ブランチ + 軽量タスクドキュメントを作成。UserPromptSubmit フックから振り分けられる |
-| 3 | `work:branch-reserve` | `work:start` と同じフローで、現在のブランチ完了後に次のブランチを予約 |
-| 4 | `work:branch-show` | 次のブランチ候補を 3 カテゴリ（着手可能 / 他で進行中 / 条件あり）で表示 |
-| 5 | `work:merge` | 現在のブランチをマージし、関連イシューをクローズ、タスクドキュメントをアーカイブ |
-| 6 | `work:qa-wizard` | 未解決の QA 項目を提示してユーザーの判断を収集 |
-| 7 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
-| 8 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
-| 9 | `work:issue-review` | 未レビューイシューを捌く（`## 意思` と各 `## QA` の `**回答**:` を 1 つに絞る）— スマホ主用途・AskUserQuestion |
-| 10 | `work:issue-resolve` | ループ駆動: レビュー済みイシューを消化 — accept→`issue-resolver` サブエージェント、reject→使い捨てブランチで即 master マージ |
-| 11 | `work:impl-review` | タスクドキュメントに照らして実装をレビュー |
-| 12 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
-| 13 | `work:plugin-migrate` | `.work/` 静的テンプレートを現在の work バージョンに更新 |
-| 14 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
-| 15 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
-| 16 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
-| 17 | `work:conversation-to-claude` | セッションを解析し成果物を自動生成（skill / rule / hook / CLAUDE.md / incidents / glossary）。claude-kit creator スキルに委譲 |
-| 18 | `work:plugin-config` | work プラグインの env トグルをインタラクティブに設定（ブランチ強制、マージ提案、ワークツリー、コミットタイプなど） |
+| 2 | `work:branch-reserve` | `work:start` と同じフローで、現在のブランチ完了後に次のブランチを予約 |
+| 3 | `work:branch-show` | 次のブランチ候補を 3 カテゴリ（着手可能 / 他で進行中 / 条件あり）で表示 |
+| 4 | `work:merge` | 現在のブランチをマージし、関連イシューをクローズ、タスクドキュメントをアーカイブ |
+| 5 | `work:qa-wizard` | 未解決の QA 項目を提示してユーザーの判断を収集 |
+| 6 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
+| 7 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
+| 8 | `work:issue-review` | 未レビューイシューを捌く（`## 意思` と各 `## QA` の `**回答**:` を 1 つに絞る）— スマホ主用途・AskUserQuestion |
+| 9 | `work:issue-resolve` | ループ駆動: レビュー済みイシューを消化 — accept→`issue-resolver` サブエージェント、reject→使い捨てブランチで即 master マージ |
+| 10 | `work:impl-review` | タスクドキュメントに照らして実装をレビュー |
+| 11 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
+| 12 | `work:plugin-migrate` | `.work/` 静的テンプレートを現在の work バージョンに更新 |
+| 13 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
+| 14 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
+| 15 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
+| 16 | `work:conversation-to-claude` | セッションを解析し成果物を自動生成（skill / rule / hook / CLAUDE.md / incidents / glossary）。claude-kit creator スキルに委譲 |
+| 17 | `work:plugin-config` | work プラグインの env トグルをインタラクティブに設定（ブランチ強制、マージ提案、ワークツリー、コミットタイプなど） |
 
 ## エージェント
 
@@ -118,7 +117,8 @@ resolver サブエージェントは質問で止まらず最終コミットま�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.69.0 | 2026-06-02 | タスクドキュメントのファイル拡張子を `.branch.md` → `.task.md` に変更（`tasks/` フォルダ名と整合）し既存 266 件を一括リネーム。概念名を **「ブランチドキュメント」→「タスクドキュメント」** に統一（全カレント仕様の references / skills / agents / hooks / CLAUDE.md。changelog 履歴は不変）。ソースコードをメインに編集しない軽量作業（調査・確認・リサーチ）向けに `work:quick-task` スキルを新設（ブランチ + 軽量タスクドキュメントを作成）し、UserPromptSubmit フックから振り分け（ソースコード実装は `work:start`） |
+| 1 | 2.70.0 | 2026-06-02 | `work:quick-task` スキルを削除し、UserPromptSubmit フックの Step 3 を `work:start` のみ実行する形に戻す |
+| 〃 | 2.69.0 | 2026-06-02 | タスクドキュメントのファイル拡張子を `.branch.md` → `.task.md` に変更（`tasks/` フォルダ名と整合）し既存 266 件を一括リネーム。概念名を **「ブランチドキュメント」→「タスクドキュメント」** に統一（全カレント仕様の references / skills / agents / hooks / CLAUDE.md。changelog 履歴は不変） |
 | 1 | 2.68.0 | 2026-06-02 | `issue-resolve` の REJECT フローを変更: reject を共有 `chore/rejected-issues` ブランチに蓄積する方式をやめ、各 reject を使い捨ての 1 イシュー専用ブランチ（`chore/reject-ISSUE-{N}`）でクローズし同一 tick 内で**即 master へマージ**する。close は**メインリポ**（ワークツリーではない）で実行し、gitignore な `_index.yaml`（Step 1 が読む正）を直接更新。その gitignore な編集は `master` 切替を生き残り、追跡上のファイル移動はマージコミットで master に届く — master とイシューインデックスが毎 tick で整合し乖離しない。`issue-resolve` SKILL + JP ミラー・本 CLAUDE.md（ライフサイクル記述 + Skills 表）を更新 |
 | 1 | 2.67.0 | 2026-06-02 | イシューのユーザー回答欄を再設計: `# ユーザー回答欄`（`## 意思` / `## QA`）をファイル**上部**へ移動（スクロールせず回答済みか分かる）、AI 記入のイシュー本文は下に。各 QA に番号・タイトル・選択肢・AI `**推奨**:` を必須化。`## 自由記述` を廃止（自由補足は `## 意思` の回答に inline）。`回答候補`/空 `回答` 方式を廃止し、AI が各 `**回答**:` に全候補を事前記入→ユーザーが 1 つに絞る方式に。`イシュー.md` テンプレート・`issue-create` / `issue-review` / `issue-resolve` / `issue-scan`・`issue-scanner` / `issue-resolver` エージェント・本 CLAUDE.md を更新 |
 | 1 | 2.66.0 | 2026-06-02 | `work:plugin-config` スキルを復活 — work プラグイン変数のインタラクティブな env トグル設定 |
