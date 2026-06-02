@@ -6,12 +6,11 @@ work プラグイン（旧称 work-kit）に含まれるスキルの設計・目
 
 ## スキル一覧
 
-現行 18 スキル（`plugins/work/skills/` 配下のディレクトリと一致）。スキル名は `work:` プレフィックス付きで呼び出す（例: `/work:start`）。
+現行 17 スキル（`plugins/work/skills/` 配下のディレクトリと一致）。スキル名は `work:` プレフィックス付きで呼び出す（例: `/work:start`）。
 
 | スキル名 | 目的 |
 |---|---|
 | `start` | 新しいブランチを開始：ブランチ名決定・`index.yaml` エントリ追加・worktree 作成・タスクドキュメント作成 |
-| `quick-task` | ソースを主に編集しない軽量作業（調査・確認・リサーチ・コード読解）向け。ブランチ + 軽量タスクドキュメントを作成して保存（実装/QA ゲート・ノート必須・merge セレモニーなし） |
 | `merge` | ブランチをマージ：作業内容チェックリスト確認・index アーカイブ・`--no-ff` マージ・worktree/ブランチ削除・残 QA 確認 |
 | `worktree-create` | git worktree とブランチを作成（`work:start` Step 4 から呼ばれる、または直接） |
 | `setup` | `.work/` ドキュメント構造を初期化（`tasks/` `notes/` `issues/` `QA.md`） |
@@ -290,5 +289,6 @@ UserPromptSubmit フックの Step 3 が「ソースコードをメインに編�
 |---|---|---|---|
 | 1 | 260531 | branch-index-cleanup / merge archive フローの現行仕様を specs から追記 | 260531_notes-spec-and-ref-inject |
 | 2 | 260531 | 修正案サブセクション細分化・横展開改名を追記 | 260531_issueスキル改善 |
-| 3 | 260602 | 拡張子 .branch.md→.task.md・用語をタスクドキュメントに統一・work:quick-task 新設を追記 | 260602_ブランチ文書拡張子をtaskへ変更 |
+| 3 | 260602 | 拡張子 .branch.md→.task.md・用語をタスクドキュメントに統一を追記 | 260602_ブランチ文書拡張子をtaskへ変更 |
 | 4 | 260602 | スキル一覧表を現行 18 スキルへ刷新（旧名 work-start/work-add/update 等を是正・issue 系/impl-review/conversation-to-claude/plugin-* 等を追加）。env 変数 `WORK_KIT_USE_WORKTREE`→`WORK_USE_WORKTREE` 修正 | 260602_work-kitスキル群ノート現行化 |
+| 5 | 260602 | work:quick-task スキルを削除。スキル数 18→17 に更新 | 260602_quick-taskスキルと関連フック変更の削除 |
