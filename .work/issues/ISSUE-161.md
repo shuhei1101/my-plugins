@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -26,4 +26,3 @@ EN オリジナルの該当行を、JP ミラーの記述（使い捨て per-iss
 ## 対象ファイル
 
 - `plugins/work/references/work-dir/イシュー.md`: Lifecycle セクションの reject ブランチ記述を現行方式に修正
-

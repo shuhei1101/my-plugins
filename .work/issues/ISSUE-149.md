@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -32,4 +32,3 @@
 ## 対象ファイル
 
 - `plugins/dev-kit/references/.ref-inject/_index.yaml`: JP ミラーパスのエントリを削除
-

@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -31,4 +31,3 @@
 - `plugins/dev-kit/skills/plugin-config/SKILL.jp.md`: 同 JP ミラー修正
 - `plugins/work/skills/plugin-config/SKILL.md`: line 188 の dev-kit トグルリストに `${DEV_KIT_MARKDOWN_CHECK}` を追記
 - `plugins/work/skills/plugin-config/SKILL.jp.md`: 同 JP ミラー修正
-

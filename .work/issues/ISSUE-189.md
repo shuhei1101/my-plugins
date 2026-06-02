@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -26,4 +26,3 @@ Claude Code はスキルを呼び出す際に `SKILL.md` を読み込むため�
 ## 対象ファイル
 
 - `plugins/work/skills/impl-review/SKILL.md`: 新規作成（英語ソース）
-

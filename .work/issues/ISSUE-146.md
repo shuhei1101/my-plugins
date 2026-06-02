@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -49,4 +49,3 @@ plugin_root = pathlib.Path(plugin_root_env) if plugin_root_env else pathlib.Path
 ## 対象ファイル
 
 - `plugins/ref-inject/templates/hooks/scripts/references_edit_guard.py`: `plugin_root` 解決ロジックを修正
-

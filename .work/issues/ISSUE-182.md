@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -39,4 +39,3 @@ def read_hook_input() -> dict:
 ## 対象ファイル
 
 - `plugins/dev-kit/hooks/scripts/_common.py`: `read_hook_input()` に try/except を追加
-

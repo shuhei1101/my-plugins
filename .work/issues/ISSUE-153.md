@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -35,4 +35,3 @@
 
 - `plugins/claude-kit/references/plugin/プラグイン設定.md`: reference implementation 修正、opt-in polarity セクション追記
 - `plugins/claude-kit/references/plugin/プラグイン設定.jp.md`: JP ミラー同期
-

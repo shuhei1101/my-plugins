@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -38,4 +38,3 @@
 ## 対象ファイル
 
 - `plugins/work/CLAUDE.md`: 変数名を `WORK_STOP_REMINDER` / `WORK_MERGE_PROPOSAL` に修正
-

@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -33,6 +33,13 @@ if token.exists():
 token.touch()
 ```
 
+```output
+  File "C:\Users\shuhe\AppData\Local\Temp\temp_1780415908657.py", line 7
+    return           # �� �ǂ� push/merge �R�}���h�ł��ʉ�
+    ^^^^^^
+SyntaxError: 'return' outside function
+```
+
 ## 対応方針
 
 トークンをコマンド種別（push / merge）またはコマンド文字列のハッシュごとに分け、確認したコマンドと同じものだけを素通りさせる。
@@ -50,4 +57,3 @@ A) コマンド文字列のハッシュをトークン名に含める（完全�
 **推奨**: B — 実装がシンプルで、最も多い誤通過ケース（push確認→merge素通り）を防げる
 
 **回答**: <!-- A / B / C -->
-

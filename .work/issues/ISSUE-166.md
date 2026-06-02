@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -40,4 +40,3 @@
 
 - `plugins/claude-kit/hooks/templates/injection.md.j2`: `{% if not jp_mirror %}` の直後に空行を追加
 - `plugins/claude-kit/hooks/templates/injection.jp.md.j2`: 同上
-
