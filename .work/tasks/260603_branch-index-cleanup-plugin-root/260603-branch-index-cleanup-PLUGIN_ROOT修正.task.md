@@ -5,9 +5,9 @@
 
 ## 作業内容
 
-- [ ] `plugins/work/skills/branch-index-cleanup/SKILL.md` 行 148 の `{PLUGIN_ROOT}` を `${CLAUDE_PLUGIN_ROOT}` に修正
-- [ ] `plugins/work/skills/branch-index-cleanup/SKILL.md` 行 167 の `{PLUGIN_ROOT}` の説明文を更新
-- [ ] `plugins/work/skills/branch-index-cleanup/SKILL.jp.md` の同箇所を EN に合わせて修正
+- [x] `plugins/work/skills/branch-index-cleanup/SKILL.md` 行 148 の `{PLUGIN_ROOT}` を `${CLAUDE_PLUGIN_ROOT}` に修正 済
+- [x] `plugins/work/skills/branch-index-cleanup/SKILL.md` 行 167 の `{PLUGIN_ROOT}` の説明文を更新 済
+- [x] `plugins/work/skills/branch-index-cleanup/SKILL.jp.md` の同箇所を EN に合わせて修正 済
 
 ## QA
 
@@ -32,3 +32,4 @@ SKILL.jp.md 行 149, 168: 同上
 
 ## 参考ドキュメント
 
+- `.work/notes/バグ・不具合/branch-index-cleanup-plugin-root-fix.md`
