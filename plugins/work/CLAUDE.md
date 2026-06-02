@@ -28,11 +28,14 @@ The plugin enforces a "one task = one branch" lifecycle through hooks. The full 
    Verify the TODO checklist → merge the parent branch in → **close related issues** (each `## 関連イシュー` row via `issue-tool.py close`, moving it to `.work/issues/closed/` and recording it in `_index.archive.yaml`) → mark the branch completed in `index.yaml` → archive the branch document → `--no-ff` merge into the parent → remove the worktree → confirm remaining QA → auto-invoke `branch-reserve` for next candidates.
 
 **Issue sub-cycle**: issues live in `.work/issues/ISSUE-{N}.md` as a two-part Markdown file with
-**no frontmatter** — an AI-authored top half and a `# ユーザー回答欄` (user answer section: `## 意思`
-/ `## QA` / `## 自由記述`). Work state (`status` / `branches`) lives only in `_index.yaml`. The flow:
-**create** (`issue-create` / `issue-scan` → top half filled, answer section left blank with 回答候補, QA raised) →
-**review** (`issue-review`, mobile-first → user fills `## 意思` (対応する/対応しない), answers the
-issue's `## QA`, writes `## 自由記述`) →
+**no frontmatter** — a `# ユーザー回答欄` (user answer section: `## 意思` / `## QA`) placed near the
+**top** so answered-state is visible at a glance, then the AI-authored issue body below it. Each QA
+carries a number, title, options, and an AI 推奨. Work state (`status` / `branches`) lives only in
+`_index.yaml`. The flow:
+**create** (`issue-create` / `issue-scan` → body + answer-section scaffolding written, each `**回答**:`
+pre-filled with all candidates, QA raised) →
+**review** (`issue-review`, mobile-first → user narrows `## 意思` (対応する/対応しない) and each
+`## QA` `**回答**:` to one choice) →
 **resolve** (`issue-resolve` under `/loop`, one issue per tick → affirmative 意思 dispatches an
 `issue-resolver` subagent that runs `work:start` and stops at the merge-waiting commit; negative 意思
 closes on the shared `chore/rejected-issues` branch) →
@@ -51,7 +54,7 @@ final commit without stopping for questions.
 | 5 | `work:qa-wizard` | Present unresolved QA items and collect decisions |
 | 6 | `work:issue-create` | Create issue files under `.work/issues/` |
 | 7 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
-| 8 | `work:issue-review` | Triage un-reviewed issues (fill `## 意思`, answer QA, write `## 自由記述`) — mobile-first via AskUserQuestion |
+| 8 | `work:issue-review` | Triage un-reviewed issues (narrow `## 意思` and each `## QA` `**回答**:` to one choice) — mobile-first via AskUserQuestion |
 | 9 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→`chore/rejected-issues` |
 | 10 | `work:impl-review` | Review implementation against the branch document |
 | 11 | `work:setup` | Initialize `.work/` directory structure from templates |
@@ -116,6 +119,7 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
+| 1 | 2.67.0 | 2026-06-02 | Redesign the ISSUE user-answer section: move `# ユーザー回答欄` (`## 意思` / `## QA`) to the **top** of the file (answered-state visible without scrolling), AI-authored issue body below; each QA now carries a number, title, options, and an AI `**推奨**:`; drop `## 自由記述` (free-form notes go inline on the `## 意思` answer); replace the `回答候補`/blank-`回答` model — the AI pre-fills each `**回答**:` with all candidates and the user narrows it to one. Update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve` / `issue-scan`, the `issue-scanner` / `issue-resolver` agents, and this CLAUDE.md |
 | 1 | 2.66.0 | 2026-06-02 | Restore `work:plugin-config` skill — interactive env toggle configuration for work plugin variables |
 | 2 | 2.65.1 | 2026-06-02 | Fix stale skill names in `## Skills` table: `work:pr-handoff` → `work:branch-reserve`, `work:pr-show` → `work:branch-show` |
 | 2 | 2.65.0 | 2026-06-02 | Remove the interactive `work:plugin-config` skill (env toggles are edited directly in `settings.json`); reformat the `## Environment Variables` table to the unified 3-column layout (Variable / Description / Values, default in **bold**) |

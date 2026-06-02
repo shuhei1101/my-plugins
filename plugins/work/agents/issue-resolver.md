@@ -24,11 +24,12 @@ The orchestrator passes you, in the prompt:
 
 - **Issue id + path** — e.g. `ISSUE-042` at `.work/issues/ISSUE-042.md`.
 - **Resolved approach** — the issue's adopted option (the `## 対応案` chosen via the `## QA` answer)
-  and the `## 自由記述` answer (the user's free-form handling instruction from review).
+  and any inline note on the `## 意思` answer (the user's free-form handling instruction from review).
 - The instruction to stop at the merge-waiting final commit (do **not** merge).
 
 Read the full issue file yourself to confirm `## 概要` / `## 現状`, `## 期待される状態`, the adopted
-`## 対応案` (per the `## QA` answer), and the `## 自由記述` answer. Issue files have **no frontmatter**.
+`## 対応案` (per the `## QA` answer), and any inline note on the `## 意思` answer. Issue files have
+**no frontmatter**.
 
 ---
 
@@ -93,7 +94,7 @@ Read the full issue file yourself to confirm `## 概要` / `## 現状`, `## 期�
    cd "$WT" && git add .work/tasks/ && git commit -m "chore: $BRANCH のブランチドキュメントを作成"
    ```
 
-6. **Implement** the fix per the adopted `## 対応案` + the `## 自由記述` instruction. All edits
+6. **Implement** the fix per the adopted `## 対応案` + any inline note on the `## 意思` answer. All edits
    happen in `$WT`; all commits run from `$WT`. Verify / smoke-test where feasible and record
    results in the branch doc's `## テスト`.
 
@@ -111,8 +112,9 @@ final commit without stopping. But if a **genuine open question** arises that th
 pre-resolve, and guessing would risk the wrong implementation:
 
 - Do **not** guess or merge.
-- Record the blocker as a new `## QA` entry in the issue's `# ユーザー回答欄` (with `回答候補` and a
-  blank `**回答**:`), describing the question and the options.
+- Record the blocker as a new `### QA-N` entry in the issue's `# ユーザー回答欄` `## QA` (with a title,
+  the options summarized `A) … / B) …`, a `**推奨**:`, and a `**回答**:` line pre-filled with all
+  candidates), describing the question and the options.
 - Stop and return a **blocked** result. (The orchestrator reverts the issue to `not_started` so it
   can be re-reviewed.)
 

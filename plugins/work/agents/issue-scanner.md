@@ -108,11 +108,36 @@ Use `date +%Y-%m-%d` via Bash once to get today's date.
 
 The body must follow the `work-dir/イシュー.md` reference format exactly (no frontmatter),
 **excluding the `# ISSUE-{N}: {タイトル}` header line** (the orchestrator prepends that after
-assigning the ID). It has two halves: the AI-authored top half, then the `# ユーザー回答欄`
-(user answer section) with answer candidates and **blank** `**回答**:` for the human to fill later:
+assigning the ID). The `# ユーザー回答欄` (`## 意思` + `## QA`) sits near the **top**, right under the
+date; the AI-authored issue body follows below the `---`. Pre-fill every `**回答**:` line with **all
+candidates** for the human to later narrow to one:
 
 ```markdown
 **作成日**: {YYYY-MM-DD}
+
+# ユーザー回答欄
+
+> 各 `**回答**:` 行で不要な選択肢を消して 1 つだけ残す。
+
+## 意思
+
+このイシューに対応するか。
+
+**回答**: 対応する / 対応しない / 様子見
+
+## QA
+（着手前に決める判断があれば。各 QA は番号・タイトル・選択肢・推奨を持つ。対応案が複数なら
+「どの案で進めるか」を QA-1 に必須。無ければこの見出しごと削除）
+
+### QA-1: {タイトル}
+
+A) {選択肢 A の要点} / B) {選択肢 B の要点}
+
+**推奨**: A — {理由を 1 行}
+
+**回答**: A / B
+
+---
 
 ## 概要
 {この発見が何についてか}
@@ -130,29 +155,10 @@ assigning the ID). It has two halves: the AI-authored top half, then the `# ユ�
 {解決後に満たすべき状態}
 
 ## 対応案
-{修正の提案。複数案を出す場合は表で列挙し、下の「## QA」に「どの案で進めるか」を必ず立てる}
+{修正の提案。複数案を出す場合は表で列挙し、上の回答欄に「どの案で進めるか」の `### QA-N` を必ず立てる}
 
 ## 横展開
 {同様の問題が他のファイルにも波及する可能性がある場合に記述。省略可}
-
----
-
-# ユーザー回答欄
-
-## 意思
-
-回答候補: 対応する / 対応しない / 様子見
-
-**回答**:
-
-## QA
-（着手前に決める判断があれば。対応案が複数なら「どの案で進めるか」を必須。無ければこの見出しごと削除）
-
-**回答**:
-
-## 自由記述
-
-**回答**:
 ```
 
 Do **not** write a YAML frontmatter block, and do **not** include `Type` / `Priority` / `Tags` /
@@ -178,7 +184,7 @@ Return a JSON array — one element per finding. Include the full issue body as 
     "tags": ["..."],
     "scope": "src/...",
     "perspective": "{the perspective you were given}",
-    "body": "**作成日**: 2026-05-31\n\n## 概要\n...\n\n## 現状\n...\n\n## 対応案\n...\n\n---\n\n# ユーザー回答欄\n\n## 意思\n\n回答候補: 対応する / 対応しない / 様子見\n\n**回答**:\n\n## 自由記述\n\n**回答**:"
+    "body": "**作成日**: 2026-05-31\n\n# ユーザー回答欄\n\n## 意思\n\n**回答**: 対応する / 対応しない / 様子見\n\n## QA\n\n### QA-1: ...\n\nA) ... / B) ...\n\n**推奨**: A — ...\n\n**回答**: A / B\n\n---\n\n## 概要\n...\n\n## 現状\n...\n\n## 対応案\n..."
   }
 ]
 ```
