@@ -16,13 +16,13 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | 未解決事項を `## QA` に記録する |
-| 2 | - | `plugins/ref-inject/templates/hooks/scripts/_common.py` の `already_dispatched_this_session()` を原子的生成に修正 |
-| 3 | - | `plugins/claude-kit/hooks/scripts/_common.py` を同様に修正 |
-| 4 | - | `plugins/dev-kit/hooks/scripts/_common.py` を同様に修正 |
-| 5 | - | `plugins/work/hooks/scripts/_common.py` を同様に修正 |
-| 6 | - | 4 コピーの関数内容が一致することを確認 |
-| 7 | - | `.work/notes/` の関連ノートを更新する |
+| 1 | 済 | 未解決事項を `## QA` に記録する |
+| 2 | 済 | `plugins/ref-inject/templates/hooks/scripts/_common.py` の `already_dispatched_this_session()` を原子的生成に修正 |
+| 3 | 済 | `plugins/claude-kit/hooks/scripts/_common.py` を同様に修正 |
+| 4 | 済 | `plugins/dev-kit/hooks/scripts/_common.py` を同様に修正 |
+| 5 | 済 | `plugins/work/hooks/scripts/_common.py` を同様に修正 |
+| 6 | 済 | 4 コピーの関数内容が一致することを確認 |
+| 7 | 済 | `.work/notes/` の関連ノートを更新する |
 
 ## 変更内容
 
@@ -41,8 +41,8 @@
 
 | # | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | 4 コピーの `already_dispatched_this_session()` が `open("x")` を使用していること | (未実施) | - |
-| 2 | 差分が `already_dispatched_this_session()` 関数のみに限定されていること | (未実施) | - |
+| 1 | 4 コピーの `already_dispatched_this_session()` が `open("x")` を使用していること | 全コピーで `flag.open("x").close()` + `FileExistsError` パターンを確認 | OK |
+| 2 | 差分が `already_dispatched_this_session()` 関数のみに限定されていること | `git diff --stat` で 4 ファイル各 8 行差分、関数ボディのみ | OK |
 
 ## QA
 
@@ -50,7 +50,7 @@
 
 ## 参考ドキュメント
 
-- （最終コミット時に追記）
+- `.work/notes/バグ・不具合/already-dispatched-toctou修正.md`: TOCTOU修正の経緯と適用ファイル一覧
 
 ## 関連イシュー
 
