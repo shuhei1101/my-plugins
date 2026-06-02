@@ -15,7 +15,7 @@ references:
     description: .work/ の俯瞰図 — ディレクトリ構成・各サブフォルダ（tasks/notes/issues）の役割・コミット規約（.work/ 配下の変更は実装コードと別コミットにすること）。各サブフォルダの詳細リファレンスへの入り口。
 
   - path: work-dir/タスクドキュメント.md
-    description: ブランチドキュメントのテンプレートとセクション記入ガイド。ブランチドキュメントは 1 ブランチの正本で、.work/tasks/{folder}/{YYMMDD}-{日本語タイトル}.branch.md に作成する。注入されたテンプレートを元に直接作成する。
+    description: タスクドキュメントのテンプレートとセクション記入ガイド。タスクドキュメントは 1 ブランチの正本で、.work/tasks/{folder}/{YYMMDD}-{日本語タイトル}.task.md に作成する。注入されたテンプレートを元に直接作成する。
 
   - path: work-dir/タスクインデックス.md
     description: .work/tasks/index.yaml（進行中ブランチ索引・git 管理外）と index.archive.yaml（アーカイブ済み）のスキーマ。通常は index-tool.py と merge スキルが管理する。

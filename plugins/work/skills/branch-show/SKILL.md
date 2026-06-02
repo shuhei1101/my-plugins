@@ -5,7 +5,7 @@ description: Present next branch candidates in 3 categories (ready to start / in
 
 # work:branch-show — Show Next Branch Candidates
 
-Reads a branch document's `## 次ブランチ候補` table and classifies each candidate as ready to start, in progress elsewhere, or has conditions.
+Reads a task document's `## 次ブランチ候補` table and classifies each candidate as ready to start, in progress elsewhere, or has conditions.
 
 ---
 
@@ -13,7 +13,7 @@ Reads a branch document's `## 次ブランチ候補` table and classifies each c
 
 A standalone skill extracted from merge Step 12. Can be called at any time to check which branches are next — not only after a merge.
 
-**Data source**: the `## 次ブランチ候補` table in the specified branch document.
+**Data source**: the `## 次ブランチ候補` table in the specified task document.
 Never lists all git branches blindly — only candidates explicitly listed in the table are shown.
 
 ---
@@ -28,9 +28,9 @@ Never lists all git branches blindly — only candidates explicitly listed in th
 
 #### Process
 
-1. If called with a branch document path argument (e.g. from merge Step 12), use that file directly
+1. If called with a task document path argument (e.g. from merge Step 12), use that file directly
 2. If called standalone (no argument):
-   - Find all branch documents under `.work/tasks/`:
+   - Find all task documents under `.work/tasks/`:
      ```bash
      find .work/tasks -type f -name "*.md" -not -name ".*"
      ```
@@ -41,7 +41,7 @@ Never lists all git branches blindly — only candidates explicitly listed in th
 
 #### Output
 
-- Branch document path confirmed
+- Task document path confirmed
 
 ---
 
@@ -53,7 +53,7 @@ Never lists all git branches blindly — only candidates explicitly listed in th
 
 #### Process
 
-1. Read the `## 次ブランチ候補` section from the branch document
+1. Read the `## 次ブランチ候補` section from the task document
 2. If the table contains only a placeholder row (e.g., `{次にやること}` or a lone `-`)
    → output "No next branch candidates." and finish
 
@@ -139,7 +139,7 @@ For each candidate row:
 
 ### Data source rule
 
-Use only the specified branch document's `## 次ブランチ候補` table — never `git branch --list '*'` indiscriminately.
+Use only the specified task document's `## 次ブランチ候補` table — never `git branch --list '*'` indiscriminately.
 Unrelated reserved branches from other sessions are intentionally excluded.
 
 ### Classification knowledge
@@ -156,4 +156,4 @@ Hiding them entirely would create the impression "nothing is left." Surfacing th
 
 ### Why surface "has conditions"
 
-They do not appear as reserved branches, but they live in the branch document's `## 次ブランチ候補` as "next-next" items. Listing them alongside ready-to-start ensures the user does not overlook them.
+They do not appear as reserved branches, but they live in the task document's `## 次ブランチ候補` as "next-next" items. Listing them alongside ready-to-start ensures the user does not overlook them.

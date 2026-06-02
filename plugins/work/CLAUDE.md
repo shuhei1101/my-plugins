@@ -9,23 +9,23 @@ The plugin enforces a "one task = one branch" lifecycle through hooks. The full 
 
 1. **Prompt received → branch gate** (`UserPromptSubmit` hook / `hooks/prompts/user-prompt-submit.md`)
    Determines whether a branch is in progress this session.
-   - **No branch** → `work:start` must run before editing or committing anything (editing/committing without a branch, and committing directly to master, are prohibited).
-   - **Branch in progress** → move to its worktree and read the branch document. If `## QA` has unresolved entries, **stop there** and ask the user to resolve them. If clear, add the new request to `## 作業内容`, then continue.
+   - **No branch** → judge whether the request **mainly edits source code**. Source-code implementation runs `work:start`; work that does not mainly edit source code (investigation / confirmation / research) runs `work:quick-task` instead. Both create a branch + task document; quick-task keeps the document and lifecycle light. Committing without a branch, and committing directly to master, are prohibited.
+   - **Branch in progress** → move to its worktree and read the task document. If `## QA` has unresolved entries, **stop there** and ask the user to resolve them. If clear, add the new request to `## 作業内容`, then continue.
 
 2. **Branch creation** (`work:start` → `work:worktree-create`)
-   Decide the branch name (`{type}/{title}`, with an author segment when `${WORK_BRANCH_AUTHOR}` is set) → collect details (Japanese title, TODOs, note, open questions) → add an `index.yaml` entry in the main repo → create the worktree + branch → choose/create the task folder → author the branch document from the injected template → record open questions in `## QA` → **first commit (branch document only)**.
+   Decide the branch name (`{type}/{title}`, with an author segment when `${WORK_BRANCH_AUTHOR}` is set) → collect details (Japanese title, TODOs, note, open questions) → add an `index.yaml` entry in the main repo → create the worktree + branch → choose/create the task folder → author the task document from the injected template → record open questions in `## QA` → **first commit (task document only)**.
 
 3. **Implementation** (inside the worktree)
    Edits and commits happen on the branch. Two `PreToolUse(Bash)` guards protect the repo: `master-commit-guard` blocks `git commit` on protected branches (`master` / `main` / `develop`), and `git-guard` confirms `git push` / non-upstream `git merge`.
 
 4. **Final commit** (`work:start` Step 9)
-   Update or create the related note in `.work/notes/`, link it from `## 参考ドキュメント`, update `_index.md`, and commit the note + branch document together as the last commit.
+   Update or create the related note in `.work/notes/`, link it from `## 参考ドキュメント`, update `_index.md`, and commit the note + task document together as the last commit.
 
 5. **Response end → stop reminder** (`Stop` hook / `hooks/prompts/stop.md`)
    Mark finished `## 作業内容` rows with `済`, confirm `## QA` is clear and the note is updated, then **suggest running `/work:merge`** (suppressed when `${WORK_MERGE_PROPOSAL}` is falsy → uses `stop-no-merge.md`).
 
 6. **Merge** (`work:merge`)
-   Verify the TODO checklist → merge the parent branch in → **close related issues** (each `## 関連イシュー` row via `issue-tool.py close`, moving it to `.work/issues/closed/` and recording it in `_index.archive.yaml`) → mark the branch completed in `index.yaml` → archive the branch document → `--no-ff` merge into the parent → remove the worktree → confirm remaining QA → auto-invoke `branch-reserve` for next candidates.
+   Verify the TODO checklist → merge the parent branch in → **close related issues** (each `## 関連イシュー` row via `issue-tool.py close`, moving it to `.work/issues/closed/` and recording it in `_index.archive.yaml`) → mark the branch completed in `index.yaml` → archive the task document → `--no-ff` merge into the parent → remove the worktree → confirm remaining QA → auto-invoke `branch-reserve` for next candidates.
 
 **Issue sub-cycle**: issues live in `.work/issues/ISSUE-{N}.md` as a two-part Markdown file with
 **no frontmatter** — a `# ユーザー回答欄` (user answer section: `## 意思` / `## QA`) placed near the
@@ -47,23 +47,24 @@ the resolver subagent reaches the final commit without stopping for questions.
 
 | # | Skill | Purpose |
 |---|---|---|
-| 1 | `work:start` | Create a new branch + branch document in `.work/tasks/` |
-| 2 | `work:branch-reserve` | Reserve the next branch using the same flow as `work:start`, after the current branch is complete |
-| 3 | `work:branch-show` | Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions) |
-| 4 | `work:merge` | Merge the current branch, close related issues, archive the branch document |
-| 5 | `work:qa-wizard` | Present unresolved QA items and collect decisions |
-| 6 | `work:issue-create` | Create issue files under `.work/issues/` |
-| 7 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
-| 8 | `work:issue-review` | Triage un-reviewed issues (narrow `## 意思` and each `## QA` `**回答**:` to one choice) — mobile-first via AskUserQuestion |
-| 9 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→throwaway branch merged to master immediately |
-| 10 | `work:impl-review` | Review implementation against the branch document |
-| 11 | `work:setup` | Initialize `.work/` directory structure from templates |
-| 12 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
-| 13 | `work:worktree-create` | Create a git worktree for a branch |
-| 14 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
-| 15 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
-| 16 | `work:conversation-to-claude` | Analyze the session and auto-generate artifacts (skill / rule / hook / CLAUDE.md / incidents / glossary); delegates to claude-kit creator skills |
-| 17 | `work:plugin-config` | Interactively configure work plugin env toggles (branch enforcement, merge proposal, worktree, commit type, etc.) |
+| 1 | `work:start` | Create a new branch + task document in `.work/tasks/` |
+| 2 | `work:quick-task` | Lightweight task for work that does **not mainly edit source code** (investigation / confirmation / research) — creates a branch + a lightweight task document; routed from the UserPromptSubmit hook |
+| 3 | `work:branch-reserve` | Reserve the next branch using the same flow as `work:start`, after the current branch is complete |
+| 4 | `work:branch-show` | Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions) |
+| 5 | `work:merge` | Merge the current branch, close related issues, archive the task document |
+| 6 | `work:qa-wizard` | Present unresolved QA items and collect decisions |
+| 7 | `work:issue-create` | Create issue files under `.work/issues/` |
+| 8 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
+| 9 | `work:issue-review` | Triage un-reviewed issues (narrow `## 意思` and each `## QA` `**回答**:` to one choice) — mobile-first via AskUserQuestion |
+| 10 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→throwaway branch merged to master immediately |
+| 11 | `work:impl-review` | Review implementation against the task document |
+| 12 | `work:setup` | Initialize `.work/` directory structure from templates |
+| 13 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
+| 14 | `work:worktree-create` | Create a git worktree for a branch |
+| 15 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
+| 16 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
+| 17 | `work:conversation-to-claude` | Analyze the session and auto-generate artifacts (skill / rule / hook / CLAUDE.md / incidents / glossary); delegates to claude-kit creator skills |
+| 18 | `work:plugin-config` | Interactively configure work plugin env toggles (branch enforcement, merge proposal, worktree, commit type, etc.) |
 
 ## Agents
 
@@ -104,9 +105,9 @@ the resolver subagent reaches the final commit without stopping for questions.
 | `${WORK_PRECOMPACT_CONV2CLAUDE}` | Run `/work:conversation-to-claude` on `PreCompact` (before `/compact`) | - **true**<br>- false |
 | `${WORK_MERGE_CONV2CLAUDE}` | Run `/work:conversation-to-claude` inside the worktree during `work:merge` | - **true**<br>- false |
 
-## Branch Document Structure
+## Task Document Structure
 
-Each branch uses a single file at `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.md` with sections:
+Each branch uses a single file at `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md` with sections:
 
 - `## 作業内容` — task description and checklist
 - `## QA` — questions to resolve before implementation
@@ -119,6 +120,7 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
+| 1 | 2.69.0 | 2026-06-02 | Rename the task-document file extension `.branch.md` → `.task.md` (matches the `tasks/` folder) and bulk-rename the 266 existing documents; rename the concept **"branch document" → "task document"** across all current-spec references / skills / agents / hooks / CLAUDE.md (changelog history left unchanged); add the `work:quick-task` skill for lightweight work that does not mainly edit source code (investigation/confirmation/research) — it creates a branch + a lightweight task document — and route to it from the UserPromptSubmit hook (`work:start` for source-code implementation) |
 | 1 | 2.68.0 | 2026-06-02 | Change `issue-resolve`'s REJECT flow: instead of accumulating rejects on a shared `chore/rejected-issues` branch, each reject is closed on a throwaway per-issue branch (`chore/reject-ISSUE-{N}`) and **merged to master immediately** within the same tick. The close runs in the **main repo** (not a worktree) so it updates the gitignored `_index.yaml` (the source of truth Step 1 reads); the gitignored edit survives the `master` switch while the tracked file move reaches master via the merge commit — keeping master and the issue index consistent every tick (no drift). Update `issue-resolve` SKILL + JP mirror and this CLAUDE.md (lifecycle prose + Skills table) |
 | 1 | 2.67.0 | 2026-06-02 | Redesign the ISSUE user-answer section: move `# ユーザー回答欄` (`## 意思` / `## QA`) to the **top** of the file (answered-state visible without scrolling), AI-authored issue body below; each QA now carries a number, title, options, and an AI `**推奨**:`; drop `## 自由記述` (free-form notes go inline on the `## 意思` answer); replace the `回答候補`/blank-`回答` model — the AI pre-fills each `**回答**:` with all candidates and the user narrows it to one. Update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve` / `issue-scan`, the `issue-scanner` / `issue-resolver` agents, and this CLAUDE.md |
 | 1 | 2.66.0 | 2026-06-02 | Restore `work:plugin-config` skill — interactive env toggle configuration for work plugin variables |

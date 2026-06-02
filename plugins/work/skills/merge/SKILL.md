@@ -2,14 +2,14 @@
 name: merge
 description: |
   Merge a branch: verify TODO checklist, archive index, merge with --no-ff, remove worktree and
-  branch, and confirm any remaining QA entries in the branch document.
+  branch, and confirm any remaining QA entries in the task document.
   Trigger when the user says "マージして", "merge して", or "ブランチをマージしたい".
 disable-model-invocation: true
 ---
 
 # work:merge — Merge a Branch
 
-Runs the full merge flow: TODO checklist verification → master compatibility check → conversation-to-claude inside the worktree (if enabled) → close related issues → index archive → `--no-ff` merge → worktree cleanup → confirm remaining QA entries in the branch document → auto-invoke branch-reserve for any next branch candidates.
+Runs the full merge flow: TODO checklist verification → master compatibility check → conversation-to-claude inside the worktree (if enabled) → close related issues → index archive → `--no-ff` merge → worktree cleanup → confirm remaining QA entries in the task document → auto-invoke branch-reserve for any next branch candidates.
 
 > **Naming**: new branches use `{type}/{title}` (no `PR{N}/` prefix); new worktrees use
 > `{repo}-wt-{type}-{title}`. Legacy branches still on `PR{N}/{type}/{title}` with worktrees at
@@ -47,7 +47,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Output
 
-- Branch document path, branch name, and worktree path confirmed
+- Task document path, branch name, and worktree path confirmed
 
 ---
 
@@ -59,7 +59,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Process
 
-1. Read the `## 作業内容` table in the branch document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md`
+1. Read the `## 作業内容` table in the task document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md`
 2. Confirm all rows have `済` in the `完了` column
 
 → Proceed to Step 3 only if all rows are `済`
@@ -175,7 +175,7 @@ Running inside the worktree includes them in the branch so the merge commit capt
 
 #### Process
 
-1. Read the `## 関連イシュー` section of the branch document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md` in the worktree
+1. Read the `## 関連イシュー` section of the task document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md` in the worktree
 2. **If the section is absent, empty, or only contains the template placeholder row** (`| ISSUE-{N} | ... |`) → skip the rest of this step and proceed to Step 6
 3. For each row in the table, run the close command **inside the worktree**:
 
@@ -331,7 +331,7 @@ git branch -d {BRANCH_NAME}
 
 #### Process
 
-1. Review the `## QA` section of the branch document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md` and confirm any remaining unresolved entries with the user
+1. Review the `## QA` section of the task document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md` and confirm any remaining unresolved entries with the user
 2. Commit if there are changes:
 
 ```bash
@@ -351,7 +351,7 @@ git commit -m "docs: post-merge update"
 
 #### Process
 
-1. Read the merged branch document and inspect its `## 次ブランチ候補` section
+1. Read the merged task document and inspect its `## 次ブランチ候補` section
 2. **If next branch candidates exist**: invoke `/work:branch-reserve` (no user confirmation needed). Delegate all classification and reservation logic to that skill
 3. **If next branch candidates are empty**: skip branch-reserve
 
@@ -374,7 +374,7 @@ git commit -m "docs: post-merge update"
 
 #### Process
 
-Invoke `/work:branch-show` passing the merged branch document path as the data source.
+Invoke `/work:branch-show` passing the merged task document path as the data source.
 
 #### Notes
 

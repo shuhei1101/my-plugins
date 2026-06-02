@@ -11,7 +11,7 @@
 | # | ファイル | 注入パターン | 内容 |
 |---|---|---|---|
 | 1 | [work-dir/ワークディレクトリ構成.md](work-dir/ワークディレクトリ構成.md) | `.work/**` | `.work/` の俯瞰図・各サブフォルダの役割・コミット規約。詳細は各サブフォルダリファレンスへ |
-| 2 | [work-dir/タスクドキュメント.md](work-dir/タスクドキュメント.md) | `.work/tasks/**/*.branch.md` | ブランチドキュメントのテンプレート全文 + 記入ガイド |
+| 2 | [work-dir/タスクドキュメント.md](work-dir/タスクドキュメント.md) | `.work/tasks/**/*.task.md` | タスクドキュメントのテンプレート全文 + 記入ガイド |
 | 3 | [work-dir/タスクインデックス.md](work-dir/タスクインデックス.md) | `.work/tasks/index*.yaml` | `index.yaml` / `index.archive.yaml` スキーマ |
 | 4 | [work-dir/イシュー.md](work-dir/イシュー.md) | `.work/issues/**` | `ISSUE-{N}.md` 構成 + `_index.yaml` / `_index.archive.yaml` スキーマ |
 | 5 | [notes/ノート命名規則.md](notes/ノート命名規則.md) | `.work/notes/**` | `.work/notes/` ファイルの命名・`_index.md` 管理規則 |
