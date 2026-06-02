@@ -139,6 +139,15 @@ closed_issues:
   resolution: resolved
   tags: []
   linked_branch: fix/branch-show-step-reference
+- id: ISSUE-140
+  title: branch-index-cleanup の {PLUGIN_ROOT} が ${CLAUDE_PLUGIN_ROOT} と不統一・未定義
+  closed: '2026-06-03'
+  resolution: resolved
+  tags:
+  - path-reference
+  - CLAUDE_PLUGIN_ROOT
+  - branch-index-cleanup
+  linked_branch: fix/branch-index-cleanup-plugin-root
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
