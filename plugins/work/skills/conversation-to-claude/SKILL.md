@@ -101,8 +101,9 @@ provide). When in doubt, do **not** register it.
 
    **E. Lessons learned / recurrence prevention** (→ `incidents`)
 
-   An incident captures a **concrete mistake that actually happened this session** so it does
-   not recur. Record an entry **only if ALL of these hold**:
+   An incident captures a **concrete process mistake that actually happened this session** (an error
+   of operation or judgment — NOT a code defect/bug) so it does not recur. Record an entry **only if
+   ALL of these hold**:
 
    - A real failure occurred this session: a command/operation failed and the correct approach
      is now known; a file was accidentally deleted or overwritten; a task planned in the original
@@ -112,10 +113,14 @@ provide). When in doubt, do **not** register it.
    - The prevention is **not already captured** elsewhere (see the dedup check in Step 2).
 
    Do **NOT** record (these are the failure modes the old version suffered from):
+   - **The code bug itself / its fix** — the single most common mis-registration. A bug a bug-fix
+     branch resolved is done once fixed; it is a code defect, not a session process mistake, and
+     logging these explodes the entry count. "Which bug, fixed how" belongs in the branch document /
+     commit message.
    - **"That's already a rule / CLAUDE.md convention."** If the correct behavior is (or should be)
      enforced by an existing rule, CLAUDE.md, or hook, it is not an incident. If a rule *should*
      exist, create the rule (category B/D) instead of logging an incident.
-   - The PR/branch work content itself (what code was changed).
+   - The PR/branch work content itself (what feature was implemented, what code was changed).
    - Tasks the user newly added as scope expansion.
    - General best-practices already documented anywhere in the project or in well-known tooling docs.
    - A one-off slip with no generalizable prevention.
