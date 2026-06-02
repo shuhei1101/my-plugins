@@ -35,11 +35,12 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 **レビュー**（`issue-review`、スマホ主用途 → ユーザーが `## 意思`（対応する/対応しない）と各 `## QA` の
 `**回答**:` を 1 つに絞る）→
 **対応**（`issue-resolve`、`/loop` で 1 起動 1 イシュー → 意思=肯定は `issue-resolver` サブエージェントを
-委譲し `work:start`→マージ待ちコミットで停止、意思=否定は使い捨ての 1 イシュー専用ブランチでクローズし
-同一 tick 内で即 master へマージ）→
-**クローズ**（`merge` が accept ブランチの `## 関連イシュー` を `resolved` でクローズ; reject は
-`wontfix` でクローズされ対応時点で既にマージ済み）。QA はレビュー時にイシュー上で決着するため、
-resolver サブエージェントは質問で止まらず最終コミットまで到達できる。
+委譲。オーケストレーターが `_index.yaml` またはイシュー内容から `direct_merge` を判定
+（UI 系→false でマージ待ち停止、それ以外→true で即マージ）。意思=否定は使い捨ての 1 イシュー専用ブランチで
+クローズし同一 tick 内で即 master へマージ）→
+**クローズ**（`direct_merge: false` の accept ブランチは `merge` が `## 関連イシュー` を `resolved` でクローズ;
+`direct_merge: true` ならリゾルバー自身がクローズ; reject は `wontfix` でクローズ済み）。
+QA はレビュー時にイシュー上で決着するため、resolver サブエージェントは質問で止まらず最終コミットまで到達できる。
 
 ## スキル
 
@@ -68,7 +69,7 @@ resolver サブエージェントは質問で止まらず最終コミットま�
 | # | エージェント | 役割 |
 |---|---|---|
 | 1 | `work:issue-scanner` | 1 つの観点（フォルダ / grep / レイヤー / ファイル群）を ref-inject の reference と照合してスキャンし、ISSUE ファイルを書き出す。`work:issue-scan` が起動する |
-| 2 | `work:issue-resolver` | accept された 1 件のイシューを対応: `work:start` でブランチを切り、修正を実装し、マージ待ち最終コミットで止まる。`work:issue-resolve` が起動する |
+| 2 | `work:issue-resolver` | accept された 1 件のイシューを対応: ブランチを切り、修正を実装し、`direct_merge: true`（デフォルト）なら master へ直接マージ、`direct_merge: false` ならマージ待ち最終コミットで止まる。`work:issue-resolve` が起動する |
 
 ## フック
 
@@ -88,7 +89,7 @@ resolver サブエージェントは質問で止まらず最終コミットま�
 | 変数名 | 説明 | 値 |
 |---|---|---|
 | `${WORK_USE_WORKTREE}` | 新規ブランチごとに git ワークツリーを作成するか | - **true**<br>- false |
-| `${WORK_GUARD}` | git-guard フックを有効化（push / merge を確認） | - **true**<br>- false |
+| `${WORK_GUARD}` | git-guard フックを有効化（push / merge を確認）。`false` にすると `issue-resolver` の直接マージが確認プロンプトなしで実行される。 | - **true**<br>- false |
 | `${WORK_PROTECTED_BRANCHES}` | master-commit-guard が保護するブランチ（カンマ区切り） | **master,main,develop** |
 | `${WORKSPACE_STOP_REMINDER}` | Stop 時にタスク更新リマインダーを表示するか | - **true**<br>- false |
 | `${WORKSPACE_MERGE_PROPOSAL}` | Stop 時に `/work:merge` の実行を提案するか | - **true**<br>- false |
@@ -118,7 +119,8 @@ resolver サブエージェントは質問で止まらず最終コミットま�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.73.0 | 2026-06-02 | `issue-scan` ステップ0 でスキャン worktree 作成後、メインリポの未コミット `.work/issues/` 変更を worktree にコピーし、スキャン結果と一緒にコミットする |
+| 1 | 2.74.0 | 2026-06-02 | `issue-resolver` に `direct_merge` 引数（デフォルト `true`）を追加。`true` のとき最終コミット後に master へ直接マージしイシューをクローズ。`issue-resolve` が `_index.yaml` またはイシュー内容分析（UI 系→false、refactor/test/backend→true）から値を決定。`issue-scan` が単一案・非 UI イシューの `_index.yaml` エントリに `direct_merge: true` を記録。`_index.yaml` スキーマに `direct_merge` フィールドを追加。自動直接マージ時の merge-guard プロンプトスキップ方法として `WORK_GUARD=false` を文書化 |
+| 〃 | 2.73.0 | 2026-06-02 | `issue-scan` ステップ0 でスキャン worktree 作成後、メインリポの未コミット `.work/issues/` 変更を worktree にコピーし、スキャン結果と一緒にコミットする |
 | 〃 | 2.72.0 | 2026-06-02 | `${ISSUE_RESOLVE_AGENTS}` 環境変数を追加（デフォルト `1`）— `issue-resolve` 1 起動で処理するアクション可能なイシューの最大件数。イシュー番号の昇順に順次処理。`issue-resolve` SKILL.md + JP ミラー・本 CLAUDE.md を更新 |
 | 〃 | 2.71.0 | 2026-06-02 | イシューのユーザー回答欄を**下部**へ移動（`---` の後、AI 記入本文の下）。`イシュー.md` テンプレート・`issue-create` / `issue-review` / `issue-resolve` スキル、`issue-scanner` エージェント・本 CLAUDE.md を更新 |
 | 1 | 2.70.0 | 2026-06-02 | `work:quick-task` スキルを削除し、UserPromptSubmit フックの Step 3 を `work:start` のみ実行する形に戻す |

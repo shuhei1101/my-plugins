@@ -227,7 +227,11 @@ File and index paths depend on `AUTO_MERGE`:
 - When `AUTO_MERGE`: `{WT_PATH}/.work/issues/`
 - Otherwise: `.work/issues/` (relative to main repo cwd)
 
-1. For each issue written in Step 3b, append to `_index.yaml`'s `issues`:
+1. For each issue written in Step 3b, append to `_index.yaml`'s `issues`. Include
+   `direct_merge: true` when **all three** conditions hold: (a) the issue body has no `## QA`
+   section (single unambiguous solution, no choice required); (b) the issue type is `refactor`,
+   `test`, `fix`, or `backend`; (c) the body contains no mention of UI, screen, visual, or
+   frontend. Omit the field otherwise (the orchestrator will judge at resolve time).
    ```yaml
    - id: ISSUE-{N}
      title: "{title}"
@@ -239,6 +243,7 @@ File and index paths depend on `AUTO_MERGE`:
      tags: [{tags}]
      status: not_started
      branches: []
+     # direct_merge: true   # only when all three conditions are met (see above)
    ```
 2. Set `_index.yaml`'s `last_id` to `L + M` (where `M` is the total number of issues written).
 3. For each scanned perspective, append to `_index.archive.yaml`'s `scan_records`:

@@ -223,7 +223,12 @@ description: |
 - `AUTO_MERGE` の場合: `{WT_PATH}/.work/issues/`
 - `AUTO_MERGE` でない場合: `.work/issues/`（メインリポのカレントディレクトリ相対）
 
-1. ステップ3b で書き出した各イシューを `_index.yaml` の `issues` に追記する:
+1. ステップ3b で書き出した各イシューを `_index.yaml` の `issues` に追記する。
+   以下の**3 条件をすべて満たす**場合は `direct_merge: true` を含める:
+   (a) イシュー本文に `## QA` セクションがない（選択肢なしの単一案）;
+   (b) タイプが `refactor`・`test`・`fix`・`backend` のいずれか;
+   (c) 本文に UI・画面・ビジュアル・フロントエンドの記述がない。
+   条件を満たさない場合はフィールドを省略する（対応時にオーケストレーターが判断）。
    ```yaml
    - id: ISSUE-{N}
      title: "{title}"
@@ -235,6 +240,7 @@ description: |
      tags: [{tags}]
      status: not_started
      branches: []
+     # direct_merge: true   # 上記 3 条件を満たす場合のみ含める
    ```
 2. `_index.yaml` の `last_id` を `L + M` に設定する（`M` は書き出したイシューの総数）。
 3. スキャンした各観点について `_index.archive.yaml` の `scan_records` に追記する:
