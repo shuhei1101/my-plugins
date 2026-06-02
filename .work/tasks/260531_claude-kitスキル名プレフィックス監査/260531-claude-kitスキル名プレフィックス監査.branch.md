@@ -19,17 +19,17 @@
 
 | # | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | 未解決事項を `## QA` に記録する |
-| 2 | - | `claude-creator` SKILL.md / SKILL.jp.md の `name` を `claude-kit:claude-creator` に変更 |
-| 3 | - | `claude-refactor` SKILL.md / SKILL.jp.md の `name` を `claude-kit:claude-refactor` に変更 |
-| 4 | - | `config` SKILL.md / SKILL.jp.md の `name` を `claude-kit:config` に変更 |
-| 5 | - | `env-sync` SKILL.md / SKILL.jp.md の `name` を `claude-kit:env-sync` に変更 |
-| 6 | - | `hook-creator` SKILL.md / SKILL.jp.md の `name` を `claude-kit:hook-creator` に変更 |
-| 7 | - | `plugin-creator` SKILL.md / SKILL.jp.md の `name` を `claude-kit:plugin-creator` に変更 |
-| 8 | - | `plugin-migrate` SKILL.md / SKILL.jp.md の `name` を `claude-kit:plugin-migrate` に変更 |
-| 9 | - | `rule-creator` SKILL.md / SKILL.jp.md の `name` を `claude-kit:rule-creator` に変更 |
-| 10 | - | `skill-creator` SKILL.md / SKILL.jp.md の `name` を `claude-kit:skill-creator` に変更 |
-| 11 | - | `statusline-setup` SKILL.md / SKILL.jp.md の `name` を `claude-kit:statusline-setup` に変更 |
+| 1 | x | 未解決事項を `## QA` に記録する |
+| 2 | x | `claude-creator` SKILL.md / SKILL.jp.md の `name` を `claude-kit:claude-creator` に変更 |
+| 3 | x | `claude-refactor` SKILL.md / SKILL.jp.md の `name` を `claude-kit:claude-refactor` に変更 |
+| 4 | x | `config` SKILL.md / SKILL.jp.md の `name` を `claude-kit:config` に変更 |
+| 5 | x | `env-sync` SKILL.md / SKILL.jp.md の `name` を `claude-kit:env-sync` に変更 |
+| 6 | x | `hook-creator` SKILL.md / SKILL.jp.md の `name` を `claude-kit:hook-creator` に変更 |
+| 7 | x | `plugin-creator` SKILL.md / SKILL.jp.md の `name` を `claude-kit:plugin-creator` に変更 |
+| 8 | x | `plugin-migrate` SKILL.md / SKILL.jp.md の `name` を `claude-kit:plugin-migrate` に変更 |
+| 9 | x | `rule-creator` SKILL.md / SKILL.jp.md の `name` を `claude-kit:rule-creator` に変更 |
+| 10 | x | `skill-creator` SKILL.md / SKILL.jp.md の `name` を `claude-kit:skill-creator` に変更 |
+| 11 | x | `statusline-setup` SKILL.md / SKILL.jp.md の `name` を `claude-kit:statusline-setup` に変更 |
 | 12 | - | `.work/notes/` の関連ノートを更新する |
 
 ## 変更内容
@@ -65,7 +65,7 @@
 
 | # | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | 全スキルの `name` フィールドが `claude-kit:{skill}` 形式になっている | (未実施) | - |
+| 1 | 全スキルの `name` フィールドが `claude-kit:{skill}` 形式になっている | 10スキル全て `claude-kit:` プレフィックス付与を確認 | OK |
 
 ## QA
 
