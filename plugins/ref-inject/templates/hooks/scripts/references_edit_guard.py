@@ -45,6 +45,8 @@ def main() -> None:
     if already_dispatched_this_session(tag, session_id):
         return
 
+    if len(sys.argv) < 2:
+        return  # 引数なし: fail-open で静かに終了
     emit_block_reason(pathlib.Path(sys.argv[1]))
 
 

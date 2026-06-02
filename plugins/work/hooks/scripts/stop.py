@@ -25,6 +25,8 @@ def main() -> None:
     data = read_hook_input()
     exit_if_stop_loop(data)
 
+    if len(sys.argv) < 2:
+        return  # 引数なし: fail-open で静かに終了
     prompts_dir = pathlib.Path(sys.argv[1]).parent
     fname = (
         "stop.md"
