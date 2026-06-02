@@ -14,16 +14,17 @@
 
 | # | タスク | 状態 |
 |---|---|---|
-| 1 | `issue-resolver.md` のワークツリー作成手順を明確化・具体化 | 未 |
-| 2 | `issue-resolver.jp.md` を英語版に合わせて更新 | 未 |
+| 1 | `issue-resolver.md` のワークツリー作成手順を明確化・具体化 | 済 |
+| 2 | `issue-resolver.jp.md` を英語版に合わせて更新 | 済 |
 | 3 | QA を記録する | 済 |
-| 4 | ノートを更新する | 未 |
+| 4 | ノートを更新する | 済 |
 
 ## 変更内容
 
 | # | ファイル | 変更内容 |
 |---|---|---|
-| - | - | - |
+| 1 | `plugins/work/agents/issue-resolver.md` | Procedure を2ディレクトリモデルで書き直し、`git worktree add` 必須・`git checkout` 禁止を明記 |
+| 2 | `plugins/work/agents/issue-resolver.jp.md` | 英語版に合わせて JP ミラーを同期更新 |
 
 ## テスト
 
@@ -37,7 +38,7 @@
 
 ## 参考ドキュメント
 
-（なし）
+- [issue-resolverワークツリー未作成バグ.md](../../notes/バグ・不具合/issue-resolverワークツリー未作成バグ.md)
 
 ## 関連ブランチ
 
