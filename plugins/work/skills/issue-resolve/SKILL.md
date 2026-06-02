@@ -4,7 +4,8 @@ description: |
   Autonomously work through reviewed issues in `.work/issues/`, top to bottom — one actionable
   issue per invocation. Issues whose `## 意思` is affirmative are dispatched to a
   `work:issue-resolver` subagent that creates a branch and drives it to the merge-waiting final
-  commit; issues whose `## 意思` is negative are closed on a shared `chore/rejected-issues` branch.
+  commit; issues whose `## 意思` is negative are closed on a throwaway per-issue branch that is
+  merged to master immediately within the same invocation.
   Designed to run under `/loop`. Trigger when the user says "イシューを対応して", "イシューを消化して",
   "resolve issues", "issue-resolve", or invokes `/loop /work:issue-resolve` / `/work:issue-resolve`
   explicitly.
@@ -14,13 +15,15 @@ description: |
 
 Processes the issues that `work:issue-review` has triaged. Built to run under `/loop`: each
 invocation handles the **single top-most actionable issue**, so repeated loop ticks drain the queue
-while leaving a pile of merge-waiting branches for the user to review and merge.
+while leaving a pile of merge-waiting branches (from accepts) for the user to review and merge.
 
 - **意思 affirmative + status: not_started** → dispatch a `work:issue-resolver` subagent (one
   subagent per issue) that creates a branch via `work:start`, implements the fix, and stops at the
   **merge-waiting final commit** (merge is the user's call, separately).
-- **意思 negative** → close as `wontfix` on the shared `chore/rejected-issues` branch (file moved to
-  `closed/`), accumulating there until the user merges that branch.
+- **意思 negative** → close as `wontfix` on a throwaway per-issue branch and **merge it to master
+  immediately** within the same invocation (file moved to `closed/`). Nothing accumulates, so the
+  issue index and master never drift. (A reject is a pure status change — safe to finalize at once;
+  an accept is real work and still waits for the user to merge.)
 - **意思 not narrowed** (unreviewed — still listing all candidates) and **意思 affirmative + status:
   in_progress** (being worked, possibly another session) → skipped.
 
@@ -58,36 +61,61 @@ affirmative and "対応しない" is negative; a line still listing all candidat
 
 ---
 
-### Step 2: REJECT — close on the shared `chore/rejected-issues` branch
+### Step 2: REJECT — close on a throwaway branch and merge to master immediately
+
+Run all of this **in the main repository** (where this orchestrator runs, on `master`), not in a
+worktree. The close must touch the main repo's `_index.yaml` (it is gitignored and per-working-copy
+— this is the source of truth Step 1 reads), while the tracked change (the file move + archive) is
+carried to `master` on a throwaway branch. The main repo's working tree must be clean before starting.
 
 #### Process
 
-1. Ensure the shared reject branch + worktree exists:
-   - Check `git worktree list` for `chore/rejected-issues`.
-   - **If missing**: create it with `/work:start` (type `chore`, title `rejected-issues`). Its task
-     document states its sole purpose — *"reject されたイシューを `closed/` へ退避するための集約ブランチ。
-     マージするとリジェクトが確定する"* — and carries a table that each closed reject is appended to.
-     This makes the intent survive across sessions (context is otherwise lost).
-2. In the reject worktree, close the issue (its file is git-tracked and present there):
+1. Create and switch to a throwaway branch for this single reject (no task document — it lives only
+   for this invocation):
+   ```bash
+   git switch -c chore/reject-ISSUE-{N}
+   ```
+2. Close the issue **in the main repo's `.work/issues`** (relative path — cwd is the main repo).
+   This moves `ISSUE-{N}.md` → `closed/`, removes the entry from `_index.yaml`, and appends a
+   `wontfix` record to `_index.archive.yaml`:
    ```bash
    python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
-     --issues-dir {REJECT_WT}/.work/issues \
+     --issues-dir .work/issues \
      --issue-id ISSUE-{N} \
      --resolution wontfix \
-     --linked-branch chore/rejected-issues
+     --linked-branch chore/reject-ISSUE-{N}
    ```
-   This moves `ISSUE-{N}.md` → `closed/` and appends a `wontfix` record to `_index.archive.yaml`.
-3. Append a row to the reject task document recording the issue ID, title, and the reject reason
-   (from the issue's `## 意思` answer, including any inline note).
-4. Commit on `chore/rejected-issues` (issue move + task doc). Do **not** merge — the user merges
-   when ready.
+3. Commit the tracked change (file move + `_index.archive.yaml`) on the throwaway branch.
+   `_index.yaml` is gitignored, so it is not committed — but its entry-removed state persists
+   across the next branch switch (switch never touches gitignored files):
+   ```bash
+   git add .work/issues/
+   git commit -m "chore: reject ISSUE-{N} ({title})"
+   ```
+4. Switch back to `master` and merge the throwaway branch with `--no-ff`, then delete it:
+   ```bash
+   git switch master
+   git merge --no-ff -m "chore: reject ISSUE-{N} ({title})" chore/reject-ISSUE-{N}
+   git branch -d chore/reject-ISSUE-{N}
+   ```
+   The merge into `master` trips `git-guard` once — confirm it and let the retry through. (The
+   `master-commit-guard` does **not** fire here: it only matches `git commit`, and merge commits
+   are exempt anyway.)
 
 → Proceed to Step 4
 
 #### Notes
 
-- Never close rejects on `master` — the move/archive must be committed on a branch (master-commit
-  is guarded). The shared chore branch keeps all rejects together as one merge unit.
+- **Why immediate merge**: a reject is a pure status change (move to `closed/` + archive record),
+  so finalizing it at once keeps `master` and the issue index consistent every tick. The old shared
+  `chore/rejected-issues` accumulation branch let the main repo's `_index.yaml` (entry still
+  `not_started`) drift from the unmerged file move — exactly the inconsistency this avoids.
+- **Why in the main repo, not a worktree**: a fresh worktree would have no `_index.yaml` (gitignored,
+  never committed), so the close could not update the source-of-truth index. Running the close in the
+  main repo updates `_index.yaml` directly; the gitignored edit survives the `master` switch, while
+  the tracked move reaches `master` via the merge commit.
+- **Never `git commit` directly on `master`** (guarded). The close/archive lands on the throwaway
+  branch and reaches `master` only through the merge commit.
 
 ---
 
@@ -136,6 +164,7 @@ affirmative and "対応しない" is negative; a line still listing all candidat
 
 #### Process
 
-1. Report what this invocation did: the issue handled, the action (accept→branch / reject→closed),
-   and the branch name. List anything left for the user (branches awaiting merge, surfaced blockers).
+1. Report what this invocation did: the issue handled, the action (accept→merge-waiting branch /
+   reject→closed + merged to master), and the branch name. List anything left for the user
+   (accept branches awaiting merge, surfaced blockers).
 2. Under `/loop`, the loop re-invokes to handle the next issue.

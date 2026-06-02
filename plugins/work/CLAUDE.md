@@ -38,10 +38,10 @@ pre-filled with all candidates, QA raised) →
 `## QA` `**回答**:` to one choice) →
 **resolve** (`issue-resolve` under `/loop`, one issue per tick → affirmative 意思 dispatches an
 `issue-resolver` subagent that runs `work:start` and stops at the merge-waiting commit; negative 意思
-closes on the shared `chore/rejected-issues` branch) →
-**close** (`merge` closes a branch's `## 関連イシュー` as `resolved`; the reject branch closes as
-`wontfix`). Because QA is settled on the issue at review time, the resolver subagent reaches the
-final commit without stopping for questions.
+closes on a throwaway per-issue branch and merges it to master immediately within the same tick) →
+**close** (`merge` closes an accept branch's `## 関連イシュー` as `resolved`; a reject is closed as
+`wontfix` and already merged at resolve time). Because QA is settled on the issue at review time,
+the resolver subagent reaches the final commit without stopping for questions.
 
 ## Skills
 
@@ -56,7 +56,7 @@ final commit without stopping for questions.
 | 7 | `work:issue-create` | Create issue files under `.work/issues/` |
 | 8 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
 | 9 | `work:issue-review` | Triage un-reviewed issues (narrow `## 意思` and each `## QA` `**回答**:` to one choice) — mobile-first via AskUserQuestion |
-| 10 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→`chore/rejected-issues` |
+| 10 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→throwaway branch merged to master immediately |
 | 11 | `work:impl-review` | Review implementation against the task document |
 | 12 | `work:setup` | Initialize `.work/` directory structure from templates |
 | 13 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
@@ -120,7 +120,8 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.68.0 | 2026-06-02 | Rename the task-document file extension `.branch.md` → `.task.md` (matches the `tasks/` folder) and bulk-rename the 266 existing documents; rename the concept **"branch document" → "task document"** across all current-spec references / skills / agents / hooks / CLAUDE.md (changelog history left unchanged); add the `work:quick-task` skill for lightweight work that does not mainly edit source code (investigation/confirmation/research) — it creates a branch + a lightweight task document — and route to it from the UserPromptSubmit hook (`work:start` for source-code implementation) |
+| 1 | 2.69.0 | 2026-06-02 | Rename the task-document file extension `.branch.md` → `.task.md` (matches the `tasks/` folder) and bulk-rename the 266 existing documents; rename the concept **"branch document" → "task document"** across all current-spec references / skills / agents / hooks / CLAUDE.md (changelog history left unchanged); add the `work:quick-task` skill for lightweight work that does not mainly edit source code (investigation/confirmation/research) — it creates a branch + a lightweight task document — and route to it from the UserPromptSubmit hook (`work:start` for source-code implementation) |
+| 1 | 2.68.0 | 2026-06-02 | Change `issue-resolve`'s REJECT flow: instead of accumulating rejects on a shared `chore/rejected-issues` branch, each reject is closed on a throwaway per-issue branch (`chore/reject-ISSUE-{N}`) and **merged to master immediately** within the same tick. The close runs in the **main repo** (not a worktree) so it updates the gitignored `_index.yaml` (the source of truth Step 1 reads); the gitignored edit survives the `master` switch while the tracked file move reaches master via the merge commit — keeping master and the issue index consistent every tick (no drift). Update `issue-resolve` SKILL + JP mirror and this CLAUDE.md (lifecycle prose + Skills table) |
 | 1 | 2.67.0 | 2026-06-02 | Redesign the ISSUE user-answer section: move `# ユーザー回答欄` (`## 意思` / `## QA`) to the **top** of the file (answered-state visible without scrolling), AI-authored issue body below; each QA now carries a number, title, options, and an AI `**推奨**:`; drop `## 自由記述` (free-form notes go inline on the `## 意思` answer); replace the `回答候補`/blank-`回答` model — the AI pre-fills each `**回答**:` with all candidates and the user narrows it to one. Update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve` / `issue-scan`, the `issue-scanner` / `issue-resolver` agents, and this CLAUDE.md |
 | 1 | 2.66.0 | 2026-06-02 | Restore `work:plugin-config` skill — interactive env toggle configuration for work plugin variables |
 | 2 | 2.65.1 | 2026-06-02 | Fix stale skill names in `## Skills` table: `work:pr-handoff` → `work:branch-reserve`, `work:pr-show` → `work:branch-show` |
