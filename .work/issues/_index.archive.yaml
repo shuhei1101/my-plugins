@@ -105,3 +105,15 @@ scan_records:
   skill: issue-scan
   scope: "consistency:marketplace-vs-plugin-json"
   issues_found: [ISSUE-142]
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "folder:ref-inject"
+  issues_found: [ISSUE-143, ISSUE-144, ISSUE-145, ISSUE-146]
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "folder:dev-kit/references"
+  issues_found: [ISSUE-147, ISSUE-148, ISSUE-149, ISSUE-150]
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "layer:plugin-config-skills"
+  issues_found: [ISSUE-151, ISSUE-152, ISSUE-153]
