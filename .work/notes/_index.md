@@ -83,6 +83,7 @@
 | 10 | [remove-unused-references.md](プラグイン構成・統合/remove-unused-references.md) | remove-unused-references — claude-kit の未使用リファレンスファイル削除 |
 | 11 | [zero-plugin-dependency.md](プラグイン構成・統合/zero-plugin-dependency.md) | プラグイン間依存ゼロ — 棚卸しノート |
 | 12 | [用語集インシデント選別復元.md](プラグイン構成・統合/用語集インシデント選別復元.md) | 用語集・インシデント選別復元 — .claude/rules/ コンテンツの再構築 |
+| 13 | [ref-injectディレクトリ単数形統一.md](プラグイン構成・統合/ref-injectディレクトリ単数形統一.md) | ref-inject ディレクトリ命名 — 単数形統一（.ref-injects → .ref-inject） |
 
 ---
 
