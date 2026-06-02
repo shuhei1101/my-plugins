@@ -140,13 +140,13 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
   --issues-dir {WORKTREE_PATH}/.work/issues \
   --issue-id ISSUE-{NNN} \
   --resolution {resolved|wontfix} \
-  --linked-pr {N}
+  --linked-branch {BRANCH_NAME}
 ```
 
    スクリプトは以下を実行：
    - `.work/issues/ISSUE-{NNN}.md` → `.work/issues/closed/ISSUE-{NNN}.md` に移動
    - `_index.yaml` からエントリを削除（gitignored — コミット不要）
-   - `_index.archive.yaml` に `closed_issues` エントリを追加（`linked_pr` 付き）
+   - `_index.archive.yaml` に `closed_issues` エントリを追加（`linked_branch` 付き）
 4. プロジェクトに `.work/issues/` が存在しない場合（イシュー管理を採用していない）、
    スクリプトはスキップメッセージを出力 — これを no-op として扱う
 5. ワークツリー内の変更をコミット：
