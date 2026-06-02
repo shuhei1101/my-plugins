@@ -1237,3 +1237,10 @@ branches:
   summary: イシューファイル形式の刷新（フロントマター廃止・上半分AI/下半分ユーザー回答欄の2分割・修正案→対応案）
   task: 260602_イシュー形式刷新
   completed: true
+- branch: fix/issue-resolve-worktree-bug
+  created: '2026-06-02'
+  title: issue-resolverワークツリー未作成バグ修正
+  type: fix
+  summary: issue-resolverエージェントがワークツリーを作成せずメインリポジトリに直接コミットしてしまうバグを修正
+  task: 260602_issue-resolverワークツリー未作成バグ修正
+  completed: true
