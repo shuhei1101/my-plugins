@@ -20,6 +20,22 @@ This injection structure is shared across all `*-kit` plugins (dev-kit / claude-
 the `kit-hooks-index-sync` rule. Attach it to a plugin with `/ref-inject:apply <plugin>`; never
 hand-edit the mechanism per plugin (change the `ref-inject` templates and re-apply).
 
+## Skills
+
+| Skill | Purpose |
+|---|---|
+| `claude-kit:claude-creator` | Create `CLAUDE.md` files |
+| `claude-kit:claude-refactor` | Refactor existing `CLAUDE.md` files |
+| `claude-kit:rule-creator` | Create path-scoped rules |
+| `claude-kit:skill-creator` | Create skills |
+| `claude-kit:hook-creator` | Create prompt-injection hooks |
+| `claude-kit:plugin-creator` | Create or update plugins |
+| `claude-kit:plugin-migrate` | Sync plugin-level artifacts to the current claude-kit conventions |
+| `claude-kit:jp-mirror-sync` | Sync JP mirror files (`.jp.md`) from English originals |
+| `claude-kit:env-sync` | Sync env var declarations across plugin files |
+| `claude-kit:statusline-setup` | Configure the Claude Code status line |
+| `claude-kit:plugin-config` | Interactively configure claude-kit env variables (JP mirror, injection language, TTL) |
+
 ## Hooks
 
 claude-kit ships a single hook: the `claude-kit-references-injection` hook
@@ -49,7 +65,8 @@ enforced by the project's `*-jp-mirror-sync` rules.
 
 | # | Version | Summary |
 |---|---|---|
-| 1 | `3.54.0` | Remove the interactive `work:plugin-config` / `dev-kit:plugin-config` skills and the `プラグイン設定.md` (config-skill) authoring reference; drop the `plugin-config` mandate from `plugin-creator` / `プラグイン構造.md`; redefine the env-table format in `プラグインCLAUDE-md.md` to the unified 3-column layout (Variable / Description / Values, default in **bold**) and reformat the `## Environment Variables` tables |
+| 1 | `3.55.0` | Restore `claude-kit:plugin-config` skill (renamed from `config`); restore `プラグイン設定.md` authoring reference and `plugin-config` mandate in `プラグイン構造.md`; add to injection rules for SKILL.md and plugin.json patterns |
+| 2 | `3.54.0` | Remove the interactive `work:plugin-config` / `dev-kit:plugin-config` skills and the `プラグイン設定.md` (config-skill) authoring reference; drop the `plugin-config` mandate from `plugin-creator` / `プラグイン構造.md`; redefine the env-table format in `プラグインCLAUDE-md.md` to the unified 3-column layout (Variable / Description / Values, default in **bold**) and reformat the `## Environment Variables` tables |
 | 2 | `3.53.0` | Remove `claude-kit:config` skill |
 | 3 | `3.52.0` | Add `claude-kit:jp-mirror-sync` skill (moved from `utils` plugin); remove `utils` plugin from marketplace |
 | 4 | `3.51.0` | Remove `claude-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |

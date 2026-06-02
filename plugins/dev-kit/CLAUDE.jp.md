@@ -17,6 +17,7 @@ Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown を 1 プラグ�
 | `dev-kit:next-implement` | Next.js 実装ワークフロー |
 | `dev-kit:next-plan` | Next.js 計画ドキュメント生成 |
 | `dev-kit:plugin-migrate` | プロジェクトに展開済みの dev-kit 生成物（html-implement のルール / html-debug-fab のウィジェット）をインストール済み dev-kit のバージョンに同期する（手動 `/dev-kit:plugin-migrate` のみ） |
+| `dev-kit:plugin-config` | dev-kit の env トグル（言語 opt-in / TypeScript チェック / Markdown チェック）をインタラクティブに設定 |
 
 ## フック
 
@@ -75,6 +76,7 @@ references/
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.15.0 | 2026-06-02 | `dev-kit:plugin-config` スキルを復活 — 言語 opt-in / 機能トグルのインタラクティブな env 設定 |
 | 4.14.0 | 2026-06-02 | 対話式 `dev-kit:plugin-config` スキルを削除。env トグルのテーブルを統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再フォーマット |
 | 4.13.0 | 2026-06-01 | `dev-kit:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
 | 4.11.1 | 2026-05-31 | `plugin-migrate` のブランチチェックステップ（master/main ガード）を削除 — work ハーネスの UserPromptSubmit フックと責務が重複しているため |

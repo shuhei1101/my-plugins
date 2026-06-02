@@ -88,6 +88,16 @@ ref-inject/
 
 ---
 
+## スキル
+
+| スキル | 目的 |
+|---|---|
+| `ref-inject:apply` | 対象プラグインに注入機構を付与 |
+| `ref-inject:plugin-migrate` | 全消費プラグインの注入フックファイルを現在のテンプレートに更新 |
+| `ref-inject:plugin-config` | プレースホルダーの config スキル（現状ユーザー向けトグルなし） |
+
+---
+
 ## 使い方
 
 対象プラグイン（新規でも既存でも）に `/ref-inject:apply` を実行する。その後 `references/` を
@@ -112,6 +122,7 @@ consumer の `hooks/` に再適用する（references はそのまま。`ref-inj
 
 | バージョン | 日付 | 概要 |
 |---|---|---|
+| 1.10.0 | 2026-06-02 | `ref-inject:plugin-config` skeleton スキルを追加（管理トグルなし。将来用プレースホルダー） |
 | 1.9.0 | 2026-06-01 | `ref-inject:setup-wizard` スキルと `hooks/` ディレクトリを削除（`setup_check.py` のみ含まれていた） |
 | 1.6.0 | 2026-05-30 | `ref-inject:plugin-migrate` スキルを追加 — consumer を列挙し注入フックファイルを現行テンプレートに更新する; references/ は変更しない (PR185) |
 | 1.5.0 | — | 二層 TTL トークン（パターン層 + リファレンス層）導入 — 複数パターンで共有されるリファレンスの二重注入を防止 (PR160) |

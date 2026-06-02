@@ -20,6 +20,7 @@ rules:
       - common/環境変数.md
       - common/環境変数記法.md
       - common/AskUserQuestion制約.md
+      - plugin/プラグイン設定.md
 
   # ---- References: プラグインのリファレンスファイルを編集する場合 ----
   - pattern: "plugins/*/references/**/*.md"
@@ -84,6 +85,7 @@ rules:
       - plugin/バージョン同期.md
     optional:
       - common/環境変数.md
+      - plugin/プラグイン設定.md
 
   # ---- プラグインの CLAUDE.md: プラグインディレクトリ直下の CLAUDE.md ----
   # 上の汎用 **/CLAUDE.md パターンに、プラグイン固有の執筆ガイドを上乗せする。

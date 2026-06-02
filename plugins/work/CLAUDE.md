@@ -60,6 +60,7 @@ final commit without stopping for questions.
 | 14 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
 | 15 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
 | 16 | `work:conversation-to-claude` | Analyze the session and auto-generate artifacts (skill / rule / hook / CLAUDE.md / incidents / glossary); delegates to claude-kit creator skills |
+| 17 | `work:plugin-config` | Interactively configure work plugin env toggles (branch enforcement, merge proposal, worktree, commit type, etc.) |
 
 ## Agents
 
@@ -115,7 +116,8 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.65.1 | 2026-06-02 | Fix stale skill names in `## Skills` table: `work:pr-handoff` → `work:branch-reserve`, `work:pr-show` → `work:branch-show` |
+| 1 | 2.66.0 | 2026-06-02 | Restore `work:plugin-config` skill — interactive env toggle configuration for work plugin variables |
+| 2 | 2.65.1 | 2026-06-02 | Fix stale skill names in `## Skills` table: `work:pr-handoff` → `work:branch-reserve`, `work:pr-show` → `work:branch-show` |
 | 2 | 2.65.0 | 2026-06-02 | Remove the interactive `work:plugin-config` skill (env toggles are edited directly in `settings.json`); reformat the `## Environment Variables` table to the unified 3-column layout (Variable / Description / Values, default in **bold**) |
 | 1 | 2.64.0 | 2026-06-02 | Rename the glossary authoring-guide reference `references/conversation/` file to a Japanese name `用語集.md` (+ `.jp.md`) — drop the katakana filename; update `injection_rules` / `_index` / cross-links and all pointers accordingly |
 | 1 | 2.63.0 | 2026-06-02 | Redesign the ISSUE file format: drop YAML frontmatter; two-part Markdown layout (AI-authored top half + `# ユーザー回答欄` with `## 意思` / `## QA` / `## 自由記述`, answer candidates pre-filled, `**回答**:` left blank); rename `## 修正案`→`## 対応案` and drop the 問題点/詳細 section (背景/現状 cover it); move `status` / `branches` to `_index.yaml` (`issue-tool.py` gains `add-branch`); update `issue-create` / `issue-review` / `issue-resolve` / `issue-scan`, the `issue-scanner` / `issue-resolver` agents, and `work:start` issue-linking accordingly |
