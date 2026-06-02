@@ -4,9 +4,10 @@ description: |
   Autonomously work through reviewed issues in `.work/issues/`, top to bottom — up to
   `${ISSUE_RESOLVE_AGENTS}` (default: `1`) actionable issues per invocation, processed sequentially.
   Issues whose `## 意思` is affirmative are dispatched to a `work:issue-resolver` subagent that
-  creates a branch and drives it to the merge-waiting final commit; issues whose `## 意思` is
-  negative are closed on a throwaway per-issue branch that is merged to master immediately within
-  the same invocation.
+  creates a branch and — per the chosen merge mode (対応する（自動マージ）→ direct merge, 対応する
+  （マージはAIに任せる）→ AI-decided) — either merges to master or stops at the merge-waiting final
+  commit; issues whose `## 意思` is negative are closed on a throwaway per-issue branch that is
+  merged to master immediately within the same invocation.
   Designed to run under `/loop`. Trigger when the user says "イシューを対応して", "イシューを消化して",
   "resolve issues", "issue-resolve", or invokes `/loop /work:issue-resolve` / `/work:issue-resolve`
   explicitly.
@@ -30,8 +31,9 @@ merge-waiting branches (from accepts) for the user to review and merge.
   in_progress** (being worked, possibly another session) → skipped.
 
 The issue format (no frontmatter, answer section at the top) / lifecycle is governed by `work-dir/イシュー.md`
-(auto-injected) — follow it. The `## 意思` checkboxes are read by the AI: `- [x] 対応する` is
-affirmative and `- [x] 対応しない` is negative; all still unchecked (`- [ ]`) means unreviewed.
+(auto-injected) — follow it. The `## 意思` checkboxes are read by the AI: a checked line beginning
+with `対応する` is affirmative (`（自動マージ）` → `direct_merge: true`; `（マージはAIに任せる）` →
+AI-decided) and `- [x] 対応しない` is negative; all still unchecked (`- [ ]`) means unreviewed.
 
 ---
 
@@ -61,7 +63,8 @@ affirmative and `- [x] 対応しない` is negative; all still unchecked (`- [ ]
    ascending by issue number. These are the only candidates worth opening.
 4. Walk the candidates top-down. For each, open the issue file and read the `## 意思` checkboxes:
    - `- [x] 対応しない` → REJECT action (Step 2).
-   - `- [x] 対応する` → ACCEPT action (Step 3).
+   - `- [x] 対応する（自動マージ）` → ACCEPT action (Step 3) with `direct_merge: true`.
+   - `- [x] 対応する（マージはAIに任せる）` → ACCEPT action (Step 3) with `direct_merge` decided by the AI.
    - all `- [ ]` (none checked → unreviewed) → skip.
 5. If no actionable issue exists → report "対応可能なイシューはありません" and stop (the loop can end).
 
@@ -137,12 +140,15 @@ carried to `master` on a throwaway branch. The main repo's working tree must be 
    python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
      --issues-dir .work/issues --issue-id ISSUE-{N} --status in_progress
    ```
-2. **Determine `direct_merge`** for this issue:
-   1. Read the `_index.yaml` entry for ISSUE-{N}; if it has a `direct_merge` field, use that value.
-   2. Otherwise, analyze the issue content:
-      - Any mention of UI, screen, visual, frontend, or user-visible output → `direct_merge: false`
-      - Type is `refactor`, `test`, `docs`, or `backend`; no UI indicators → `direct_merge: true`
-      - Unclear → `direct_merge: true` (default)
+2. **Determine `direct_merge`** for this issue — the checked `## 意思` variant takes precedence:
+   1. `- [x] 対応する（自動マージ）` → `direct_merge: true` (the user's explicit choice; always merge
+      directly — ignore the `_index.yaml` field and the heuristic below).
+   2. `- [x] 対応する（マージはAIに任せる）` → the AI decides:
+      a. Read the `_index.yaml` entry for ISSUE-{N}; if it has a `direct_merge` field, use that value.
+      b. Otherwise, analyze the issue content:
+         - Any mention of UI, screen, visual, frontend, or user-visible output → `direct_merge: false`
+         - Type is `refactor`, `test`, `docs`, or `backend`; no UI indicators → `direct_merge: true`
+         - Unclear → `direct_merge: true` (default)
 3. **Pick the subagent model by issue difficulty** (you, the orchestrator, decide and pass it via
    the Agent tool's `model` parameter — the agent itself fixes no model):
    - **Easy / localized** (single-file edit, doc/typo/rename, narrow scope) → `model: sonnet`

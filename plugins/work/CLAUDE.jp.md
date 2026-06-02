@@ -28,16 +28,20 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
    TODO チェックリスト検証 → 親ブランチを取り込み → **関連イシューをクローズ**（`## 関連イシュー` の各行を `issue-tool.py close` で `.work/issues/closed/` へ移動し `_index.archive.yaml` に記録）→ `index.yaml` でブランチを完了化 → タスクドキュメントをアーカイブ → `--no-ff` で親ブランチへマージ → ワークツリー削除 → 残 QA 確認 → 次ブランチ候補があれば `branch-reserve` を自動起動。
 
 **イシューのサブサイクル**: イシューは `.work/issues/ISSUE-{N}.md` に存在し、**フロントマターを持たない**
-2 分割の Markdown ファイル — AI 記入のイシュー本文を先に置き、`---` の後、`# ユーザー回答欄`（`## 意思` / `## QA`）
-をファイルの**下部**に置く。各 QA は番号・タイトル・選択肢・AI 推奨を持つ。作業状態（`status` / `branches`）は
-`_index.yaml` のみが持つ。流れ：
-**作成**（`issue-create` / `issue-scan` → 本文と回答欄の雛形を記入、各 `**回答**:` に全候補を事前記入、QA 提起）→
-**レビュー**（`issue-review`、スマホ主用途 → ユーザーが `## 意思`（対応する/対応しない）と各 `## QA` の
-`**回答**:` を 1 つに絞る）→
+2 分割の Markdown ファイル — `# ユーザー回答欄`（`## 意思` / `## QA`）をファイルの**上部**（タイトル・作成日
+の直後）に置き、`---` の後に AI 記入のイシュー本文を置く。`## 意思` は 3 択 — `対応する（自動マージ）` /
+`対応する（マージはAIに任せる）` / `対応しない` — を未チェックのチェックボックス（`- [ ]`）で事前記入し、
+ユーザーが 1 つを `[x]` にする。各 QA は番号・タイトル・AI 推奨を持つ。**選択肢型** QA は選択肢を `- [ ]`
+チェックボックスで並べ（ユーザーが 1 つをチェック）、**入力型** QA は `**回答**:` 欄を残す（ユーザーが記入）。
+作業状態（`status` / `branches`）は `_index.yaml` のみが持つ。流れ：
+**作成**（`issue-create` / `issue-scan` → 上部に回答欄の雛形を記入、意思と QA を事前記入、その下に本文）→
+**レビュー**（`issue-review`、スマホ主用途 → ユーザーが `## 意思` の 1 つをチェックし各 `## QA` に回答
+— 選択肢型は 1 つをチェック、入力型は `**回答**:` に記入）→
 **対応**（`issue-resolve`、`/loop` で 1 起動 1 イシュー → 意思=肯定は `issue-resolver` サブエージェントを
-委譲。オーケストレーターが `_index.yaml` またはイシュー内容から `direct_merge` を判定
-（UI 系→false でマージ待ち停止、それ以外→true で即マージ）。意思=否定は使い捨ての 1 イシュー専用ブランチで
-クローズし同一 tick 内で即 master へマージ）→
+委譲。`direct_merge` は選んだ意思の変種が決める — `対応する（自動マージ）`→`true` で即マージ、
+`対応する（マージはAIに任せる）`→`_index.yaml` の `direct_merge` フィールドまたはイシュー内容から AI が判断
+（UI 系→false、それ以外→true）。意思=否定は使い捨ての 1 イシュー専用ブランチでクローズし同一 tick 内で即
+master へマージ）→
 **クローズ**（`direct_merge: false` の accept ブランチは `merge` が `## 関連イシュー` を `resolved` でクローズ;
 `direct_merge: true` ならリゾルバー自身がクローズ; reject は `wontfix` でクローズ済み）。
 QA はレビュー時にイシュー上で決着するため、resolver サブエージェントは質問で止まらず最終コミットまで到達できる。
@@ -53,7 +57,7 @@ QA はレビュー時にイシュー上で決着するため、resolver サブ�
 | 5 | `work:qa-wizard` | 未解決の QA 項目を提示してユーザーの判断を収集 |
 | 6 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
 | 7 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
-| 8 | `work:issue-review` | 未レビューイシューを捌く（`## 意思` と各 `## QA` の `**回答**:` を 1 つに絞る）— スマホ主用途・AskUserQuestion |
+| 8 | `work:issue-review` | 未レビューイシューを捌く（`## 意思` の 1 つをチェック、各 `## QA` に回答 — 選択肢型はチェックボックス、入力型は `**回答**:`）— スマホ主用途・AskUserQuestion |
 | 9 | `work:issue-resolve` | ループ駆動: レビュー済みイシューを消化 — accept→`issue-resolver` サブエージェント、reject→使い捨てブランチで即 master マージ |
 | 10 | `work:impl-review` | タスクドキュメントに照らして実装をレビュー |
 | 11 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
@@ -119,7 +123,9 @@ QA はレビュー時にイシュー上で決着するため、resolver サブ�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.74.0 | 2026-06-02 | `issue-resolver` に `direct_merge` 引数（デフォルト `true`）を追加。`true` のとき最終コミット後に master へ直接マージしイシューをクローズ。`issue-resolve` が `_index.yaml` またはイシュー内容分析（UI 系→false、refactor/test/backend→true）から値を決定。`issue-scan` が単一案・非 UI イシューの `_index.yaml` エントリに `direct_merge: true` を記録。`_index.yaml` スキーマに `direct_merge` フィールドを追加。自動直接マージ時の merge-guard プロンプトスキップ方法として `WORK_GUARD=false` を文書化 |
+| 1 | 2.76.0 | 2026-06-03 | `## 意思` の `対応する` をマージ方式の 2 択に分割 — `対応する（自動マージ）`（`direct_merge: true` を強制）と `対応する（マージはAIに任せる）`（`_index.yaml` の `direct_merge` フィールド／内容ヒューリスティックで AI が判断）。これによりユーザーの選択が `direct_merge` を駆動する（明示的な自動マージが優先、AI 委譲パスにはヒューリスティックを残す）。選択肢型 QA（チェックボックス）に加え**入力型 QA**（`**回答**:` 行に自由記述・チェックボックス無し）を追加。`イシュー.md` テンプレート + JP ミラー・`issue-create` / `issue-review` / `issue-resolve` / `issue-scan`・`issue-scanner` エージェント・本 CLAUDE.md を更新 |
+| 〃 | 2.75.0 | 2026-06-03 | `# ユーザー回答欄` をイシューファイル**上部**（AI 本文の前・タイトル/作成日の後）へ移動。`**回答**: 対応する / 対応しない` と QA `**回答**: A / B` を Markdown 未チェックチェックボックス（`- [ ]`）に置換。`> 回答方法:` 説明ブロックを削除。`イシュー.md` テンプレート・`issue-create` / `issue-review` / `issue-resolve` / `issue-scan` / `issue-scanner` エージェント / `issue-resolver` エージェント・本 CLAUDE.md を更新 |
+| 〃 | 2.74.0 | 2026-06-02 | `issue-resolver` に `direct_merge` 引数（デフォルト `true`）を追加。`true` のとき最終コミット後に master へ直接マージしイシューをクローズ。`issue-resolve` が `_index.yaml` またはイシュー内容分析（UI 系→false、refactor/test/backend→true）から値を決定。`issue-scan` が単一案・非 UI イシューの `_index.yaml` エントリに `direct_merge: true` を記録。`_index.yaml` スキーマに `direct_merge` フィールドを追加。自動直接マージ時の merge-guard プロンプトスキップ方法として `WORK_GUARD=false` を文書化 |
 | 〃 | 2.73.0 | 2026-06-02 | `issue-scan` ステップ0 でスキャン worktree 作成後、メインリポの未コミット `.work/issues/` 変更を worktree にコピーし、スキャン結果と一緒にコミットする |
 | 〃 | 2.72.0 | 2026-06-02 | `${ISSUE_RESOLVE_AGENTS}` 環境変数を追加（デフォルト `1`）— `issue-resolve` 1 起動で処理するアクション可能なイシューの最大件数。イシュー番号の昇順に順次処理。`issue-resolve` SKILL.md + JP ミラー・本 CLAUDE.md を更新 |
 | 〃 | 2.71.0 | 2026-06-02 | イシューのユーザー回答欄を**下部**へ移動（`---` の後、AI 記入本文の下）。`イシュー.md` テンプレート・`issue-create` / `issue-review` / `issue-resolve` スキル、`issue-scanner` エージェント・本 CLAUDE.md を更新 |
