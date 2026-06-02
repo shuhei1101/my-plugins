@@ -336,3 +336,21 @@ scan_records:
   scope: pattern:env-var-naming
   issues_found:
   - ISSUE-195
+- date: 2026-06-03
+  skill: issue-scan
+  scope: folder:ref-inject/templates
+  issues_found:
+  - ISSUE-196
+  - ISSUE-197
+  - ISSUE-198
+- date: 2026-06-03
+  skill: issue-scan
+  scope: pattern:markdown-broken-links
+  issues_found:
+  - ISSUE-199
+- date: 2026-06-03
+  skill: issue-scan
+  scope: consistency:jp-yaml-sync
+  issues_found:
+  - ISSUE-200
+  - ISSUE-201
