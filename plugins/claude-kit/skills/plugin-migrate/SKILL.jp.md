@@ -1,5 +1,5 @@
 ---
-name: plugin-migrate
+name: claude-kit:plugin-migrate
 description: |
   プロジェクト内の claude-kit 由来成果物（`.claude/skills/**` / `.claude/rules/**` /
   `.claude/hooks/**` / `**/CLAUDE.md` / `**/.claude-plugin/{plugin,marketplace}.json`）を、

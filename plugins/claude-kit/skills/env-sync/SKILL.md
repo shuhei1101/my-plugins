@@ -1,5 +1,5 @@
 ---
-name: env-sync
+name: claude-kit:env-sync
 description: |
   Sync Claude Code configuration files between WSL and Windows environments.
   Scans both sides, shows a diff, and copies selected files after user confirmation.

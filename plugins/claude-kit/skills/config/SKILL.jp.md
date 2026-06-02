@@ -1,5 +1,5 @@
 ---
-name: config
+name: claude-kit:config
 description: |
   /claude-kit:config が呼び出されたとき。
   またはユーザーが「設定を変えたい」「env を設定したい」「トグルを切り替えたい」「JP ミラーを無効にしたい」「注入言語を変えたい」と言ったとき。

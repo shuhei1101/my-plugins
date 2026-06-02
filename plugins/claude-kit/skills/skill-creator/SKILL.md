@@ -1,5 +1,5 @@
 ---
-name: skill-creator
+name: claude-kit:skill-creator
 description: |
   Create a new Claude Code skill under .claude/skills/ using the step-based structure.
   Trigger when the user says "スキルを作りたい", "新しいスキル作って", "create a skill", "make a skill for X", or claude-kit dispatches here.
