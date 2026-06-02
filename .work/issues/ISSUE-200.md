@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -31,4 +31,3 @@
 
 - `plugins/dev-kit/references/.ref-inject/_index.yaml`: `E2Eテスト.md` の description を実ファイルに合わせて修正
 - `plugins/dev-kit/references/.ref-inject/_index.jp.yaml`: 上記の日本語訳として統一
-

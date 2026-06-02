@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -36,4 +36,3 @@ Step 1 の読み込み指示・Step 2 のアノテーション・References セ�
 
 - `plugins/claude-kit/skills/claude-refactor/SKILL.md`: Step 1・Step 2・References の旧ショートネームを現行フルパスに修正
 - `plugins/claude-kit/skills/claude-refactor/SKILL.jp.md`: JP ミラー同期
-

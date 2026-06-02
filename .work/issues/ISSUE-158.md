@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -32,4 +32,3 @@ description に英語トリガーフレーズを追加する。例：`"change pl
 ## 対象ファイル
 
 - `plugins/claude-kit/skills/plugin-config/SKILL.md`: frontmatter の `description` フィールドに英語トリガーフレーズを追加
-

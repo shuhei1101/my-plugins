@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -44,4 +44,3 @@
 - `plugins/dev-kit/skills/html-logging/SKILL.jp.md`: 同上
 - `plugins/dev-kit/skills/html-implement/SKILL.md`: `skills/mock/SKILL.md` → `skills/html-mock/SKILL.md`、`skills/logging/SKILL.md` → `skills/html-logging/SKILL.md`
 - `plugins/dev-kit/skills/html-implement/SKILL.jp.md`: 同上
-

@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -40,4 +40,3 @@ claude-kit の `injection.md.j2` / `injection.jp.md.j2` と同一になるよう
 
 - `plugins/dev-kit/hooks/templates/injection.md.j2`: 見出しに `<!-- -->` 追加、`{% for %}` 内・`{% if optional %}` 内に空行挿入
 - `plugins/dev-kit/hooks/templates/injection.jp.md.j2`: 同上
-

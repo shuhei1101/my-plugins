@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -30,4 +30,3 @@ plugin-config/SKILL.md の「Feature toggles」テーブル（34行目）、Step
 
 - `plugins/dev-kit/skills/plugin-config/SKILL.md`: `DEV_KIT_MARKDOWN_CHECK` の全記述を削除
 - `plugins/dev-kit/skills/plugin-config/SKILL.jp.md`: 同上
-

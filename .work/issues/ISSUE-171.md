@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -30,4 +30,3 @@ v4.2.0 changelog:
 
 - `plugins/dev-kit/skills/next-plan/SKILL.md`: References セクションのファイル名を修正
 - `plugins/dev-kit/skills/next-plan/SKILL.jp.md`: 同上
-

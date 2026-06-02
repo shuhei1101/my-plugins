@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -25,4 +25,3 @@
 
 - `plugins/dev-kit/skills/py-project/SKILL.md`: 新規作成（`SKILL.jp.md` の英語翻訳）
 - `plugins/dev-kit/skills/py-project/SKILL.jp.md`: mirror 警告コメント・YAML frontmatter を追加
-

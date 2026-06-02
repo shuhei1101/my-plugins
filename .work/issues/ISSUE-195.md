@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -33,4 +33,3 @@
 
 - `plugins/work/CLAUDE.md`: `## Environment Variables` テーブルに 3 行を追加
 - `plugins/work/CLAUDE.jp.md`: JP ミラー同期
-

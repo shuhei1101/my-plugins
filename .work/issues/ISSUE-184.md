@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -41,4 +41,3 @@ A) marketplace.json を plugin.json の最新バージョンに揃える / B) pl
 **推奨**: A — plugin.json が source of truth
 
 **回答**: <!-- A / B -->
-

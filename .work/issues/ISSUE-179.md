@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -37,4 +37,3 @@ prompt_path = pathlib.Path(sys.argv[1])
 
 - `plugins/work/hooks/scripts/pre-compact.py`: `sys.argv[1]` アクセス前にガードを追加
 - `plugins/work/hooks/scripts/user-prompt-submit.py`: 同上
-

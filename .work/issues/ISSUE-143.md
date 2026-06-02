@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -44,4 +44,3 @@ Handlebars/Mustache 系パーサーが `}}` から次のコンテンツへスキ
 
 - `plugins/ref-inject/templates/hooks/templates/injection.md.j2`: 上記2箇所を修正
 - `plugins/ref-inject/templates/hooks/templates/injection.jp.md.j2`: 同様に修正
-

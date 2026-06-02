@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -35,4 +35,3 @@
 
 - `plugins/work/skills/plugin-config/SKILL.md`: 管理トグル表のvar名修正・`${}` ラッパー統一
 - `plugins/work/skills/plugin-config/SKILL.jp.md`: JP ミラー同期
-

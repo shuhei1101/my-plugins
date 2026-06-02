@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -49,5 +49,3 @@ description: How to author or update a plugin. Standard directory layout, plugin
 ## 横展開
 
 `_index.yaml` の description は本文変更時に見落とされやすい。本文のスキル名変更時に `_index.yaml` description も必ず確認するよう、`plugin-migrate` のチェックリストに追加することを推奨する。
-
-

@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -27,4 +27,3 @@
 
 - `plugins/dev-kit/skills/html-mock/SKILL.md`: References セクションのパスを修正
 - `plugins/dev-kit/skills/html-mock/SKILL.jp.md`: 同上
-

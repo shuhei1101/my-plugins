@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -33,4 +33,3 @@ CLAUDE.md の Environment Variables テーブルに `${WORK_BRANCH_ENFORCEMENT}`
 
 - `plugins/work/CLAUDE.md`: env 変数テーブルに `WORK_BRANCH_ENFORCEMENT` を追加
 - `plugins/work/CLAUDE.jp.md`: JP ミラー同期
-

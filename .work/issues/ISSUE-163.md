@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -30,4 +30,3 @@ v2.53.1 で `references/` がサブフォルダ（`notes/`・`work-dir/`・`skil
 - `plugins/work/references/work-dir/ワークディレクトリ構成.jp.md`: `ワークディレクトリ構成.md` → `references/work-dir/ワークディレクトリ構成.md`
 - `plugins/work/references/work-dir/タスクインデックス.jp.md`: `タスクインデックス.md` → `references/work-dir/タスクインデックス.md`
 - `plugins/work/references/work-dir/イシュー.jp.md`: `イシュー.md` → `references/work-dir/イシュー.md`
-

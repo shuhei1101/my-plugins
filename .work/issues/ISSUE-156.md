@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -29,4 +29,3 @@
 - `plugins/claude-kit/skills/rule-creator/SKILL.md`: 同上
 - `plugins/claude-kit/skills/skill-creator/SKILL.md`: 同上
 - 各 `SKILL.jp.md`: JP ミラー同期
-

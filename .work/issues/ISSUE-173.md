@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -29,4 +29,3 @@ JP ミラーは通常 auto-load されないので実害は小さいが、フォ
 - `plugins/dev-kit/skills/html-logging/SKILL.jp.md`: YAML frontmatter 追加
 - `plugins/dev-kit/skills/html-mock/SKILL.jp.md`: YAML frontmatter 追加
 - `plugins/dev-kit/skills/py-script/SKILL.jp.md`: YAML frontmatter 追加
-

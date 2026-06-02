@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -47,4 +47,3 @@
 - `plugins/claude-kit/skills/hook-creator/SKILL.jp.md`: JP ミラー同期
 - `plugins/claude-kit/skills/plugin-creator/SKILL.md`: 旧パス参照を修正
 - `plugins/claude-kit/skills/plugin-creator/SKILL.jp.md`: JP ミラー同期
-

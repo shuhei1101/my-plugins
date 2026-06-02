@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -25,4 +25,3 @@
 
 - `plugins/claude-kit/CLAUDE.md`: changelog の行番号列を連番に修正
 - `plugins/claude-kit/CLAUDE.jp.md`: 同上
-

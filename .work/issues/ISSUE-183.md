@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -30,4 +30,3 @@ WSL 環境で Claude Code がネイティブ Windows として動作し、フッ
 ## 対象ファイル
 
 - `plugins/dev-kit/hooks/scripts/inject_references.py`: トークンディレクトリ解決を `HOME` 環境変数優先に変更
-

@@ -18,7 +18,7 @@ A) CLAUDE.md の `WORKSPACE_STOP_REMINDER` / `WORKSPACE_MERGE_PROPOSAL` に統�
 **推奨**: B — `stop.py` / `user-prompt-submit.py` の実際の変数名が `WORK_STOP_REMINDER` / `WORK_BRANCH_ENFORCEMENT` / `WORK_MERGE_PROPOSAL` であり、コードを変えずドキュメント側を合わせる方が変更範囲が少ない
 
 - [ ] A
-- [ ] B
+- [x] B
 
 
 ---
