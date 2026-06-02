@@ -37,3 +37,4 @@
 | 23 | 〃 | template-under-gitignore | `.gitignore` のあるディレクトリにファイルを置く前に `git check-ignore -v` で追跡可能か確認する。無理ならセットアップスクリプトで実行時に書き出す。 |
 | 24 | 〃 | claude-plugin-root-unset-manual-steps | Bash ツールでスキル手順を手動実行するとき（`disable-model-invocation: true` のスキルなど）`${CLAUDE_PLUGIN_ROOT}` は未設定。work プラグインのスクリプトコマンドを実行する前に `find` でパスを特定する。 |
 | 25 | 〃 | pretooluse-read-block-cancels-tool | `PreToolUse(Read)` フックで `{"decision": "block"}` を返すと Read がキャンセルされファイル内容を Claude が受け取れない。Read 時は `hookSpecificOutput.permissionDecision: "allow"` + `additionalContext` でコンテキストを注入しつつ Read を通過させる。 |
+| 26 | Git / ブランチ / マージのワークフロー | migration-reruns-resets-processed-state | 一括変換スクリプトを変換済みファイルに再実行すると既存状態（`[x]` チェックボックスなど）が黙ってリセットされる。マージで新規ファイルが追加された後は、そのファイルのみにスクリプトを適用するか、冪等性を事前確認する。 |
