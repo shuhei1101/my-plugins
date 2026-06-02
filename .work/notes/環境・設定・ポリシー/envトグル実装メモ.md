@@ -55,7 +55,7 @@
 
 - `WORK_COMMIT_LANG` は文字列型（`WORK_BRANCH_AUTHOR` と同じパターン）
 - `WORK_COMMIT_TYPE` はブール型トグル（通常極性）
-- env トグルは `settings.json` の `env` ブロックを直接編集して設定する（対話式の plugin-config スキルは廃止）
+- env トグルは対話式の `work:plugin-config` スキル、または `settings.json` の `env` ブロックを直接編集して設定する（plugin-config は `feat/restore-plugin-config-skill` で復活。詳細は `スキル設計/plugin-configスキル.md`）
 - `start/SKILL.md` の「Commit message language」セクションで bash snippet を使って判定
 - 判定ロジック: `lang="${WORK_COMMIT_LANG:-JP}"` / `use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no|off) use_type=false;; *) use_type=true;; esac`
 

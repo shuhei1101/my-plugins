@@ -16,6 +16,7 @@ Reference auto-injection is opt-in per language via `settings.json` env vars.
 | `dev-kit:next-implement` | Next.js implementation workflow |
 | `dev-kit:next-plan` | Next.js planning document generator |
 | `dev-kit:plugin-migrate` | Sync dev-kit-generated artifacts in the project (html-implement rules, html-debug-fab widget) to the installed dev-kit version (manual `/dev-kit:plugin-migrate` only) |
+| `dev-kit:plugin-config` | Interactively configure dev-kit env toggles (language opt-ins, TypeScript check, Markdown check) |
 
 ## Hooks
 
@@ -76,6 +77,7 @@ prevents duplicate injection.
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.15.0 | 2026-06-02 | Restore `dev-kit:plugin-config` skill — interactive env toggle configuration for language opt-ins and feature toggles |
 | 4.14.0 | 2026-06-02 | Remove the interactive `dev-kit:plugin-config` skill; reformat the env-toggle tables to the unified 3-column layout (Variable / Description / Values, default in **bold**) |
 | 4.13.0 | 2026-06-01 | Remove `dev-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
 | 4.11.1 | 2026-05-31 | Remove branch-check step (master/main guard) from `plugin-migrate` — redundant with the work harness UserPromptSubmit hook |

@@ -20,6 +20,22 @@
 ルール参照。プラグインへの付与は `/ref-inject:apply <plugin>`。機構をプラグインごとに手編集しない
 （`ref-inject` テンプレを変えて再適用する）。
 
+## スキル
+
+| スキル | 目的 |
+|---|---|
+| `claude-kit:claude-creator` | `CLAUDE.md` ファイルを作成 |
+| `claude-kit:claude-refactor` | 既存の `CLAUDE.md` ファイルをリファクタ |
+| `claude-kit:rule-creator` | パススコープのルールを作成 |
+| `claude-kit:skill-creator` | スキルを作成 |
+| `claude-kit:hook-creator` | プロンプト注入フックを作成 |
+| `claude-kit:plugin-creator` | プラグインを作成・更新 |
+| `claude-kit:plugin-migrate` | プラグインレベルの成果物を現在の claude-kit 規約に同期 |
+| `claude-kit:jp-mirror-sync` | 英語原本から JP ミラーファイル（`.jp.md`）を同期 |
+| `claude-kit:env-sync` | プラグインファイル間で env 変数宣言を同期 |
+| `claude-kit:statusline-setup` | Claude Code のステータスラインを設定 |
+| `claude-kit:plugin-config` | claude-kit の env 変数（JP ミラー / 注入言語 / TTL）をインタラクティブに設定 |
+
 ## フック
 
 claude-kit のフックは 1 つだけ: `claude-kit-references-injection` フック
@@ -49,7 +65,8 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 
 | # | バージョン | 概要 |
 |---|---|---|
-| 1 | `3.54.0` | 対話式 `work:plugin-config` / `dev-kit:plugin-config` スキルと config スキル記述ガイド `プラグイン設定.md` を削除。`plugin-creator` / `プラグイン構造.md` から `plugin-config` 必須記載を除去。`プラグインCLAUDE-md.md` の env テーブル仕様を統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再定義し各プラグインの `## 環境変数` テーブルを再フォーマット |
+| 1 | `3.55.0` | `claude-kit:plugin-config` スキルを復活（`config` からリネーム）。`プラグイン設定.md` 記述ガイドと `プラグイン構造.md` の `plugin-config` 必須記載を復元。SKILL.md / plugin.json パターンの注入ルールに追加 |
+| 2 | `3.54.0` | 対話式 `work:plugin-config` / `dev-kit:plugin-config` スキルと config スキル記述ガイド `プラグイン設定.md` を削除。`plugin-creator` / `プラグイン構造.md` から `plugin-config` 必須記載を除去。`プラグインCLAUDE-md.md` の env テーブル仕様を統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再定義し各プラグインの `## 環境変数` テーブルを再フォーマット |
 | 2 | `3.53.0` | `claude-kit:config` スキルを削除 |
 | 3 | `3.52.0` | `claude-kit:jp-mirror-sync` スキルを追加（`utils` プラグインから移動）；`utils` プラグインを marketplace から削除 |
 | 4 | `3.51.0` | `claude-kit:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |

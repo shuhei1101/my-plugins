@@ -1293,3 +1293,10 @@ branches:
   summary: work:pr-handoff→branch-reserve、work:pr-show→branch-show に更新
   task: 260602_CLAUDEmd-スキル名修正
   completed: true
+- branch: feat/restore-plugin-config-skill
+  created: '2026-06-02'
+  title: plugin-configスキル復活
+  type: feat
+  summary: work/dev-kit/claude-kit の plugin-config スキルと構造ルールを復元
+  task: 260602_plugin-configスキル復活
+  completed: true
