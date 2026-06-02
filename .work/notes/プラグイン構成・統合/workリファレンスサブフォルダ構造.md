@@ -25,7 +25,7 @@ plugins/work/references/
 │   └── ノート記述内容ルール.md / .jp.md
 ├── work-dir/
 │   ├── ワークディレクトリ構成.md / .jp.md      # .work/ 俯瞰
-│   ├── タスクドキュメント.md / .jp.md          # ブランチドキュメントテンプレート
+│   ├── タスクドキュメント.md / .jp.md          # タスクドキュメントテンプレート
 │   ├── タスクインデックス.md / .jp.md          # index.yaml スキーマ
 │   └── イシュー.md / .jp.md                    # ISSUE-N.md 構成
 └── skill-sync/
@@ -53,7 +53,7 @@ plugins/work/references/
 | 2 | `plugins/work/skills/merge/SKILL*.md` | `skill-sync/マージスキル同期.md` |
 | 3 | `plugins/work/skills/{start,worktree-create,vscode-workspace-sync}/SKILL*.md` | `skill-sync/スタートスキル同期.md` |
 | 4 | `.work/**` | `work-dir/ワークディレクトリ構成.md` |
-| 5 | `.work/tasks/**/*.branch.md` | `work-dir/タスクドキュメント.md` |
+| 5 | `.work/tasks/**/*.task.md` | `work-dir/タスクドキュメント.md` |
 | 6 | `.work/tasks/index*.yaml` | `work-dir/タスクインデックス.md` |
 | 7 | `.work/notes/**` | `notes/ノート命名規則.md` + `notes/ノート記述内容ルール.md` |
 | 8 | `.work/issues/**` | `work-dir/イシュー.md` |

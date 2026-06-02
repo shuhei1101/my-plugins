@@ -12,11 +12,11 @@ description: |
 Creates the worktree first, then creates the single per-branch task document inside it.
 This prevents task documents from being created in the main repository.
 
-> **Naming**: branches use `{type}/{title}` by default. If `WORK_BRANCH_AUTHOR` is set, the author
+> **Naming**: branches use `{type}/{title}` by default. If `${WORK_BRANCH_AUTHOR}` is set, the author
 > segment is inserted: `{type}/{author}/{title}` (e.g. `feat/nishikawa/test-update`).
 > The worktree mirrors the full branch name with slashes replaced by hyphens: `{repo}-wt-{branch-hyphenated}`.
-> The branch document filename is `{YYMMDD}-{日本語タイトル}.branch.md` — the Japanese title collected in Step 2
-> (e.g. `260531-ブランチ文書ファイル名変更.branch.md`). The `.branch.md` extension marks it as the branch
+> The task document filename is `{YYMMDD}-{日本語タイトル}.task.md` — the Japanese title collected in Step 2
+> (e.g. `260531-タスクドキュメントファイル名変更.task.md`). The `.task.md` extension marks it as the task
 > document (the task folder may also hold user files). The git branch name is recorded inside the document header.
 > The branch index (`index.yaml`) is keyed by the branch name; there is no numeric ID or `last_id`.
 
@@ -35,7 +35,7 @@ This prevents task documents from being created in the main repository.
 1. Determine the branch suffix from the requested work:
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **Title**: short kebab-case label that describes the work
-2. Check `WORK_BRANCH_AUTHOR` to build the full branch name:
+2. Check `${WORK_BRANCH_AUTHOR}` to build the full branch name:
 
    ```bash
    author="${WORK_BRANCH_AUTHOR:-}"
@@ -61,8 +61,11 @@ This prevents task documents from being created in the main repository.
 #### Process
 
 1. Determine the following:
-   - **日本語タイトル**: descriptive Japanese title for this branch work — used in the document H1 and as the file name (e.g. `ブランチ文書ファイル名変更`)
+   - **日本語タイトル**: descriptive Japanese title for this branch work — used in the document H1 and as the file name (e.g. `タスクドキュメントファイル名変更`)
    - **TODO list**: what will be done on this branch (becomes the checklist)
+   - **Linked issue(s)**: is this branch addressing one or more `.work/issues/ISSUE-{N}`? (e.g. invoked
+     by `work:issue-resolve`, or the user said "start a branch for ISSUE-123"). If so, record the IDs —
+     Step 6 links them (sets `status: in_progress`, appends the branch, fills `## 関連イシュー`).
    - **Note**: does a related note exist in `.work/notes/`? Or does one need to be created?
    - **Open questions**: anything that needs to be confirmed or decided before starting implementation.
      Check from these angles:
@@ -123,7 +126,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### Process
 
 1. Check whether worktree usage is enabled. It is **enabled by default**; disabled only when the
-   `WORK_USE_WORKTREE` env var is set to a falsy value (`false` / `0` / `no` / `off`):
+   `${WORK_USE_WORKTREE}` env var is set to a falsy value (`false` / `0` / `no` / `off`):
 
    ```bash
    v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
@@ -137,9 +140,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 3. **If disabled**: skip worktree creation and notify the user:
 
-   > ⚠️ `WORK_USE_WORKTREE` が無効のため、ワークツリーの作成をスキップします。  
+   > ⚠️ `${WORK_USE_WORKTREE}` が無効のため、ワークツリーの作成をスキップします。  
    > `.work/` フォルダ管理のみで作業を続けます。  
-   > ワークツリーを使用したい場合は `settings.json` の `env` から `WORK_USE_WORKTREE` を外すか `true` に設定してください。
+   > ワークツリーを使用したい場合は `settings.json` の `env` から `${WORK_USE_WORKTREE}` を外すか `true` に設定してください。
 
 → Proceed to Step 5
 
@@ -171,8 +174,8 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - **Create new folder**: no existing folder is closely related, or `.work/tasks/` is empty
 3. Decide the branch-document path inside the worktree `{wt}`
    (`{wt}` = `../$(basename $(pwd))-wt-{branch-hyphenated}`, slashes in the full branch name → hyphens):
-   - New folder: `{wt}/.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.branch.md`
-   - Existing folder: `{wt}/.work/tasks/{existing_folder_name}/{YYMMDD}-{日本語タイトル}.branch.md`
+   - New folder: `{wt}/.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md`
+   - Existing folder: `{wt}/.work/tasks/{existing_folder_name}/{YYMMDD}-{日本語タイトル}.task.md`
 
 → Proceed to Step 6
 
@@ -188,7 +191,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### Step 6: Create and fill in the branch document (inside worktree)
+### Step 6: Create and fill in the task document (inside worktree)
 
 #### Condition
 
@@ -196,9 +199,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### Process
 
-1. `Write` the branch document at the path decided in Step 5
-   (`{YYMMDD}-{日本語タイトル}.branch.md`).
-2. The **template is auto-injected** by the ref-inject hook the moment you write a `.branch.md`
+1. `Write` the task document at the path decided in Step 5
+   (`{YYMMDD}-{日本語タイトル}.task.md`).
+2. The **template is auto-injected** by the ref-inject hook the moment you write a `.task.md`
    file under `.work/tasks/` (your first write is blocked once and the full template +
    section fill-in guide from `references/work-dir/タスクドキュメント.md` appears). Author the
    document from that injected template — there is **no script** and no template file to copy.
@@ -212,6 +215,19 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - `## 参考ドキュメント` — leave empty; the note path is added in the final commit (Step 9).
    - `## 関連イシュー` — issues this branch resolves; **delete the heading + table if none**.
    - `## 関連ブランチ` / `## 次ブランチ候補` — fill from this session, or leave placeholders.
+4. **If this branch is linked to issue(s)** (from Step 2), link each `ISSUE-{N}` now:
+   - In the task document's `## 関連イシュー` table, add a row for each linked issue.
+   - Issue files have **no frontmatter** — the work state (`status` / `branches`) lives in the
+     **main repo's** `_index.yaml` (git-ignored, not present in the worktree). Set the status and
+     append the branch there so other sessions see it as in progress:
+     ```bash
+     python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
+       --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --status in_progress
+     python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" add-branch \
+       --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --branch {full-branch-name}
+     ```
+     (`{MAIN_REPO}` = the original repo root, i.e. the worktree's parent checkout. Skip silently if
+     that path has no `.work/issues`.)
 
 The injected `タスクドキュメント.md` reference is the single source of truth for the section
 structure and rules — follow it.
@@ -220,7 +236,7 @@ structure and rules — follow it.
 
 #### Output
 
-- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.branch.md` created and filled with the plan
+- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.task.md` created and filled with the plan
 
 ---
 
@@ -232,20 +248,20 @@ structure and rules — follow it.
 
 #### Process
 
-1. Append any open questions from Step 2 to the `## QA` section of the branch document as QA-XXX entries
+1. Append any open questions from Step 2 to the `## QA` section of the task document as QA-XXX entries
 2. Skip if there are no open questions
 
 → Proceed to Step 8
 
 ---
 
-### Step 8: First commit — create branch document, then start implementation
+### Step 8: First commit — create task document, then start implementation
 
 #### Process
 
-1. Commit **only the branch document** inside the worktree (branch: `{branch}`)
+1. Commit **only the task document** inside the worktree (branch: `{branch}`)
    - Do **not** include notes at this stage — notes are committed in the final Step 9
-2. Report what was created: branch name, worktree path, branch document path
+2. Report what was created: branch name, worktree path, task document path
 3. Start implementation:
    - **If QA entries exist** → ask the user for confirmation before starting
    - **If no QA entries** → proceed with implementation immediately
@@ -261,13 +277,13 @@ structure and rules — follow it.
 
 - Commit in meaningful units that are easy for the user to understand
 - Do not split commits too finely
-- Do not mix planning documents (branch document) and implementation code in the same commit
+- Do not mix planning documents (task document) and implementation code in the same commit
 
 ##### Commit ordering
 
 This commit is always the **first** commit of the branch.
 Implementation commits follow in the middle.
-The final commit (Step 9) closes the branch with notes and branch document updates.
+The final commit (Step 9) closes the branch with notes and task document updates.
 
 ##### Commit message language
 
@@ -278,19 +294,19 @@ lang="${WORK_COMMIT_LANG:-JP}"
 use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no|off) use_type=false;; *) use_type=true;; esac
 ```
 
-- **`WORK_COMMIT_LANG`** (default `JP`): `JP` → Japanese; `EN` → English. Both subject and body follow this setting. Metadata lines like `Co-Authored-By:` may remain in English regardless.
-- **`WORK_COMMIT_TYPE`** (default `true`): truthy → include `feat:` / `fix:` / `chore:` etc. prefix; falsy → omit the type prefix entirely.
+- **`${WORK_COMMIT_LANG}`** (default `JP`): `JP` → Japanese; `EN` → English. Both subject and body follow this setting. Metadata lines like `Co-Authored-By:` may remain in English regardless.
+- **`${WORK_COMMIT_TYPE}`** (default `true`): truthy → include `feat:` / `fix:` / `chore:` etc. prefix; falsy → omit the type prefix entirely.
 
-| `WORK_COMMIT_LANG` | `WORK_COMMIT_TYPE` | Example commit message |
+| `${WORK_COMMIT_LANG}` | `${WORK_COMMIT_TYPE}` | Example commit message |
 |---|---|---|
-| `JP` (default) | `true` (default) | `chore: feat/commit-message-options のブランチドキュメントを作成` |
-| `EN` | `true` | `chore: create branch document for feat/commit-message-options` |
-| `JP` | `false` | `feat/commit-message-options のブランチドキュメントを作成` |
-| `EN` | `false` | `create branch document for feat/commit-message-options` |
+| `JP` (default) | `true` (default) | `chore: feat/commit-message-options のタスクドキュメントを作成` |
+| `EN` | `true` | `chore: create task document for feat/commit-message-options` |
+| `JP` | `false` | `feat/commit-message-options のタスクドキュメントを作成` |
+| `EN` | `false` | `create task document for feat/commit-message-options` |
 
 ---
 
-### Step 9: Final commit — update notes and branch document
+### Step 9: Final commit — update notes and task document
 
 #### Condition
 
@@ -303,13 +319,13 @@ use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no
 3. If not found → create a new note following `ノート記述内容ルール.md` (auto-injected when you edit a file under `.work/notes/`): present state only, no YAML frontmatter, fixed template ending in a `## 変更履歴` table
    - The note H1 title must be written **entirely in Japanese** (e.g. `# 機能名 — 一行説明`)
    - Technical identifiers (plugin names, command names, file paths) may remain in their original form
-4. Add a link to the note in the branch document's `## 参考ドキュメント` section
+4. Add a link to the note in the task document's `## 参考ドキュメント` section
 5. Update (or create) `.work/notes/_index.md`:
    - Add the new note to the appropriate category, or update the entry if the note already existed
    - If `_index.md` does not exist, create it with all current notes grouped by category
-6. Commit the updated notes + branch document together as the **final commit** of the branch
+6. Commit the updated notes + task document together as the **final commit** of the branch
 
 #### Notes
 
 - This is always the **last** commit of the branch
-- Commit notes and branch document together — do not split them
+- Commit notes and task document together — do not split them

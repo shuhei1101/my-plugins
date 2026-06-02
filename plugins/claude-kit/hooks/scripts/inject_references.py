@@ -214,7 +214,7 @@ def main() -> int:
 
     plugin_root = _plugin_root()
     refs_dir = plugin_root / "references"
-    ref_injects_dir = refs_dir / ".ref-injects"
+    ref_injects_dir = refs_dir / ".ref-inject"
 
     # 言語選択: 環境変数 CLAUDE_KIT_INJECTION_LANG=jp で日本語版
     lang = os.environ.get(f"{ENV_PREFIX}_INJECTION_LANG", "en").lower()

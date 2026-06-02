@@ -1,0 +1,61 @@
+# claude-kit reference index (English; parsed by inject_references.py).
+# Each entry maps a reference file to a one-line description.
+#   path        : path relative to this references/ directory
+#   description : shown in the injected pointer (and as the section heading)
+# Keep this in sync with _index.jp.yaml (JP mirror) and injection_rules.yaml.
+references:
+  # ---- common/ ----
+  - path: common/共通ガイド.md
+    description: Shared base for all Claude config authoring. File-type decision criteria (rule vs skill vs CLAUDE.md vs hook vs reference), anti-proliferation guard, and JP/EN mirror rules.
+
+  - path: common/環境変数.md
+    description: How to make a plugin's hooks/scripts configurable via environment variables — set in settings.json's env block (user/project/local scopes), read with os.environ, defaults/validation, the {PREFIX}_INJECTION_TTL / _INJECTION_LANG example, and env-vs-path-variable distinction. Markdown files cannot read env.
+
+  - path: common/環境変数記法.md
+    description: How to write and document env var names in Claude-read artifacts (skills, rules, CLAUDE.md, prompts). Always use ${VAR_NAME} notation in instruction text; ALL_CAPS_SNAKE_CASE with plugin-name prefix; documentation table format; and how the notation maps to Bash ${VAR} / Python os.environ.get("VAR").
+
+  - path: common/リファレンス同期.md
+    description: JP mirror sync rule for plugin references files. When editing plugins/*/references/**/*.md, the paired *.jp.md must also be updated in the same commit.
+
+  - path: common/サブエージェント.md
+    description: "When and how to delegate step processing to subagents. Delegation markers ([subagent: run · await] / parallel · await all / no-await), when to delegate vs run in main agent, and constraints (return-value only, await by default, empty context)."
+
+  - path: common/AskUserQuestion制約.md
+    description: When and how to call AskUserQuestion from skills. Usage restriction (only when a skill or user explicitly instructs it), options constraints (2–4 items, Other auto-added), multiSelect, and preview field rules.
+
+  # ---- skill/ ----
+  - path: skill/スキル.md
+    description: How to author a .claude/skills/<name>/SKILL.md. When a skill is the right type, checking for existing similar skills, the JP-mirror-first workflow, the step-based structure template, and description frontmatter rules.
+
+  # ---- claude-md/ ----
+  - path: claude-md/CLAUDE-md記述ガイド.md
+    description: How to author a CLAUDE.md (root or subfolder). When it loads, the thinness principle, extraction-destination guide, validation against other file types, the JP-mirror-first workflow, required sections, and the line-count guideline.
+
+  - path: claude-md/記述ルール.md
+    description: How to author a .claude/rules/<name>.md. When rules load, the two rule types (link / context), use-case-oriented path-pattern design, consolidation/separation criteria, folder structure, required sections, and the structure example.
+
+  # ---- hook/ ----
+  - path: hook/フック.md
+    description: How to author a prompt-injection hook. Hook events, the injection mechanism, when to use hooks, loop prevention (stop_hook_active / one-time token), ready-to-use hooks.json snippets, prompt-file placement, and path variables.
+
+  - path: hook/キットフック同期.md
+    description: Structural sync rule for dev-kit and claude-kit injection infrastructure. When changing the shared injection structure (inject_references.py, hooks.json, templates, _index.yaml, _injection_rules.yaml) in one kit, the other must be updated in the same commit.
+
+  - path: hook/jinja2/執筆ガイド.md
+    description: Jinja2 template authoring pitfalls. Known traps when writing .j2 files with trim_blocks=True and lstrip_blocks=True — setext heading from block-tag-above-dashes, {{ expr }} in ATX headings needing <!-- -->, blank-line requirements around block tags, and lost indentation.
+
+  - path: hook/jinja2/テンプレート注意点.md
+    description: Authoring rules for Jinja2 templates that emit Markdown (e.g. injection.md.j2). Covers the trim_blocks newline-eating rule, the {% endif %}{% if X %} + --- setext-heading bug, the }} + Handlebars-parser collision (fix with <!-- -->), and a quick checklist.
+
+  # ---- plugin/ ----
+  - path: plugin/プラグイン構造.md
+    description: How to author or update a plugin. Standard directory layout, plugin.json fields, marketplace.json entry, create-vs-update mode, version bump rules, and zero inter-plugin dependency principle.
+
+  - path: plugin/プラグインCLAUDE-md.md
+    description: How to write a plugin's root CLAUDE.md. Required sections (Skills / Hooks / Environment Variables / Dependencies / Changelog), table formats for each section, and the full copy-paste template.
+
+  - path: plugin/バージョン同期.md
+    description: Plugin version sync invariant — plugin.json / marketplace.json / CLAUDE.md must always carry the same version. Pre-commit checklist, version bump rules, and parallel PR rebump rule.
+
+  - path: plugin/プラグイン設定.md
+    description: How to add a config skill to a plugin. AskUserQuestion loop pattern (5 steps), managed-toggle convention (absent=ON/"false"=OFF), scope selection (project vs user), and minimal SKILL.md template.

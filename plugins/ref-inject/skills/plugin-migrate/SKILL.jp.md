@@ -1,5 +1,5 @@
 ---
-name: plugin-migrate
+name: ref-inject:plugin-migrate
 description: |
   ref-inject が適用済みのプラグイン（hooks/scripts/inject_references.py の存在で判定）を検査し、
   注入の仕組みファイルを現行の ref-inject テンプレートに揃える。references/ の内容（ユーザー作成の
@@ -174,7 +174,7 @@ description: |
 4. コミットメッセージ案を提示する:
    - `chore: sync ref-inject injection hook to v{N}`
    - `{N}` は `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` から取得
-5. **このスキルはコミットしない** — コミットはユーザーの責務。
+6. **このスキルはコミットしない** — コミットはユーザーの責務。
 
 → 完了
 

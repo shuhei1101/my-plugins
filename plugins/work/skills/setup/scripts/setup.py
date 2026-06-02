@@ -27,7 +27,7 @@ _TASKS_INDEX_YAML = """\
 # フィールド説明:
 #   id        : 連番（アーカイブ参照用）
 #   branch    : git ブランチ名（例: feat/my-feature）
-#   title     : ブランチ文書の H1 タイトルそのまま
+#   title     : タスクドキュメントの H1 タイトルそのまま
 #   type      : feat / fix / docs / refactor / chore / test
 #   tags      : 自由形式タグ（省略可）
 #   summary   : ファイルを開かずに内容がわかる一行説明
@@ -44,7 +44,7 @@ _TASKS_INDEX_ARCHIVE_YAML = """\
 # フィールド説明:
 #   id        : 連番
 #   branch    : git ブランチ名
-#   title     : ブランチ文書の H1 タイトルそのまま
+#   title     : タスクドキュメントの H1 タイトルそのまま
 #   type      : feat / fix / docs / refactor / chore / test
 #   tags      : 自由形式タグ（省略可）
 #   summary   : 一行説明

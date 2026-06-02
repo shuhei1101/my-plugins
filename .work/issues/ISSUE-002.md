@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-002: work プラグインの description が marketplace.json と plugin.json で不一致
 
 **作成日**: 2026-05-31

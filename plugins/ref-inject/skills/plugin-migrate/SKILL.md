@@ -1,5 +1,5 @@
 ---
-name: plugin-migrate
+name: ref-inject:plugin-migrate
 description: |
   Inspect every plugin that has ref-inject applied (detected by the presence of
   hooks/scripts/inject_references.py) and update its injection mechanism files to match the
@@ -178,7 +178,7 @@ For each consumer plugin:
 4. Suggest a commit message:
    - `chore: sync ref-inject injection hook to v{N}`
    - Read `{N}` from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`
-5. **This skill never commits** — committing is the user's responsibility.
+6. **This skill never commits** — committing is the user's responsibility.
 
 → Done
 

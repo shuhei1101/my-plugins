@@ -249,9 +249,34 @@ git ブランチと `index.yaml` / `index.archive.yaml` の乖離を整理する
 
 `## 水平展開` は `## 横展開` に改名。提供されなかった場合はセクション自体を省略する。
 
+## タスクドキュメント拡張子・用語統一と work:quick-task（v2.68.0）
+
+### 拡張子変更
+
+ブランチごとの正本ドキュメントのファイル拡張子を `.branch.md` → `.task.md` に変更（`.work/tasks/`
+フォルダ名と整合）。既存 266 件を `git mv` で一括リネーム。ref-inject の注入パターンも
+`.work/tasks/**/*.task.md` に更新。consumer プロジェクト向けに `work:plugin-migrate` が
+`.branch.md`→`.task.md` リネームを行う（Step 4 追加）。
+
+### 用語統一
+
+概念名を「ブランチドキュメント / branch document / ブランチ文書」→「タスクドキュメント /
+task document」に統一（全カレント仕様の references / skills / agents / hooks / CLAUDE.md）。
+changelog・変更履歴の過去エントリは事実記録として不変。git の「ブランチ」概念（`> ブランチ:`
+ヘッダー、ブランチ名等）は対象外。
+
+### work:quick-task スキル新設
+
+**ソースコードをメインに編集しない**軽量作業（調査・確認・リサーチ・コード読解・挙動の説明）向けの
+新スキル。ブランチ + 軽量タスクドキュメント（概要 + 調査結果）を作成して保存する（ブランチを切って
+保存するのが前提）。work:start より軽量で、実装/QA ゲート・ノート必須・merge セレモニーはない。
+UserPromptSubmit フックの Step 3 が「ソースコードをメインに編集するか」で `work:start`（する）と
+`work:quick-task`（しない）を振り分ける。
+
 ## 変更履歴
 
 | # | 日付 | 変更内容 | 関連タスク |
 |---|---|---|---|
 | 1 | 260531 | branch-index-cleanup / merge archive フローの現行仕様を specs から追記 | 260531_notes-spec-and-ref-inject |
 | 2 | 260531 | 修正案サブセクション細分化・横展開改名を追記 | 260531_issueスキル改善 |
+| 3 | 260602 | 拡張子 .branch.md→.task.md・用語をタスクドキュメントに統一・work:quick-task 新設を追記 | 260602_ブランチ文書拡張子をtaskへ変更 |

@@ -1,10 +1,10 @@
 ---
-name: plugin-config
+name: dev-kit:plugin-config
 description: |
   /dev-kit:plugin-config が呼び出されたとき。
   またはユーザーが「設定を変えたい」「env を設定したい」「トグルを切り替えたい」「言語を有効にしたい」「TypeScript チェックを無効にしたい」「Markdown チェックを無効にしたい」と言ったとき。
 ---
-<!-- This file is a Japanese mirror. When updating the English original (SKILL.md), update this file too. -->
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # dev-kit:plugin-config — プラグイントグル設定
 
@@ -19,10 +19,10 @@ env トグル変数をインタラクティブに設定するスキル。
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
-| `DEV_KIT_PYTHON` | Python 参照注入（`*.py` 等を編集時） | 無効 |
-| `DEV_KIT_HTML` | HTML/CSS/JS 参照注入（`*.html`/`*.css`/`*.js` 編集時） | 無効 |
-| `DEV_KIT_NEXT` | Next.js 参照注入（`*.ts`/`*.tsx` 等を編集時） | 無効 |
-| `DEV_KIT_MARKDOWN` | Markdown 参照注入（`*.md` 編集時） | 無効 |
+| `${DEV_KIT_PYTHON}` | Python 参照注入（`*.py` 等を編集時） | 無効 |
+| `${DEV_KIT_HTML}` | HTML/CSS/JS 参照注入（`*.html`/`*.css`/`*.js` 編集時） | 無効 |
+| `${DEV_KIT_NEXT}` | Next.js 参照注入（`*.ts`/`*.tsx` 等を編集時） | 無効 |
+| `${DEV_KIT_MARKDOWN}` | Markdown 参照注入（`*.md` 編集時） | 無効 |
 
 **Opt-in 極性**: キー不在 = OFF（デフォルト無効）。truthy（`"true"` など）に設定 = ON。OFF に戻すにはキーを削除する。
 
@@ -30,7 +30,7 @@ env トグル変数をインタラクティブに設定するスキル。
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
-| `DEV_KIT_NEXT_TS_CHECK` | PostToolUse `tsc --noEmit`（`*.ts`/`*.tsx` 編集後） | 有効 |
+| `${DEV_KIT_NEXT_TS_CHECK}` | PostToolUse `tsc --noEmit`（`*.ts`/`*.tsx` 編集後） | 有効 |
 | `DEV_KIT_MARKDOWN_CHECK` | Markdown frontmatter チェック（`*.md` 書き込み後） | 有効 |
 
 **通常極性**: キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
@@ -56,12 +56,12 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 両ファイルの `env` ブロックを確認し（プロジェクト設定が優先）:
 
-**Opt-in 極性**（`DEV_KIT_PYTHON`, `DEV_KIT_HTML`, `DEV_KIT_NEXT`, `DEV_KIT_MARKDOWN`）:
+**Opt-in 極性**（`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`）:
 - キー不在 → **OFF**（デフォルト無効）
 - 値が `("true", "1", "yes", "on")` → **ON**
 - それ以外 → **OFF**
 
-**通常極性**（`DEV_KIT_NEXT_TS_CHECK`, `DEV_KIT_MARKDOWN_CHECK`）:
+**通常極性**（`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`）:
 - キー不在 → **ON**（デフォルト有効）
 - 値が `("false", "0", "no", "off")` → **OFF**
 - それ以外 → **ON**
@@ -128,14 +128,14 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 **質問 1 — 値**（極性によって選択肢が異なる）:
 
-*Opt-in 極性変数*（`DEV_KIT_PYTHON`, `DEV_KIT_HTML`, `DEV_KIT_NEXT`, `DEV_KIT_MARKDOWN`）:
+*Opt-in 極性変数*（`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`）:
 - question: `"{VAR_NAME} の値を設定"`
 - header: `"値"`
 - options:
   1. `"有効にする（\"true\" に設定）"` — description: `"この言語の参照注入を有効化する"`
   2. `"デフォルトに戻す（キー削除 = OFF）"` — description: `"env キーを削除してデフォルト無効に戻す"`
 
-*通常極性変数*（`DEV_KIT_NEXT_TS_CHECK`, `DEV_KIT_MARKDOWN_CHECK`）:
+*通常極性変数*（`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`）:
 - question: `"{VAR_NAME} の値を設定"`
 - header: `"値"`
 - options:
@@ -170,10 +170,10 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 2. ターゲットファイルから JSON を読み込む（存在しない場合は `{}` を使用）
 3. `env` オブジェクトが存在することを確認
 4. 変更を適用:
-   - *Opt-in 極性変数*（`DEV_KIT_PYTHON`, `DEV_KIT_HTML`, `DEV_KIT_NEXT`, `DEV_KIT_MARKDOWN`）:
+   - *Opt-in 極性変数*（`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`）:
      - "有効にする" → `env.{VAR_NAME}` を `"true"` に設定
      - "デフォルトに戻す" → `env.{VAR_NAME}` キーを削除
-   - *通常極性変数*（`DEV_KIT_NEXT_TS_CHECK`, `DEV_KIT_MARKDOWN_CHECK`）:
+   - *通常極性変数*（`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`）:
      - "デフォルトに戻す" → `env.{VAR_NAME}` キーを削除
      - "OFF" → `env.{VAR_NAME}` を `"false"` に設定
 5. 2 スペースインデントで書き戻す
@@ -210,4 +210,4 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 ## 注意事項
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
-- `DEV_KIT_INJECTION_DISABLE` は逆極性のキルスイッチのため、このスキルでは管理しない（`plugin-config.md` 参照）
+- `${DEV_KIT_INJECTION_DISABLE}` は逆極性のキルスイッチのため、このスキルでは管理しない（`プラグイン設定.md` 参照）

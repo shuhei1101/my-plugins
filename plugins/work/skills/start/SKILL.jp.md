@@ -14,11 +14,11 @@ description: |
 ワークツリーを作成してから、その中に単一のブランチごとのタスクドキュメントを作成します。
 これにより、タスクドキュメントがメインリポに作成されるのを防ぎます。
 
-> **命名規則**: デフォルトでは `{type}/{title}` を使用します。`WORK_BRANCH_AUTHOR` が設定されている場合は、
+> **命名規則**: デフォルトでは `{type}/{title}` を使用します。`${WORK_BRANCH_AUTHOR}` が設定されている場合は、
 > 作者名セグメントが挿入されます：`{type}/{author}/{title}`（例：`feat/nishikawa/test-update`）。
 > ワークツリーはブランチ名のスラッシュをハイフンに変換したパスになります：`{repo}-wt-{branch-hyphenated}`。
-> ブランチドキュメントのファイル名は `{YYMMDD}-{日本語タイトル}.branch.md` 形式です（Step 2 で収集する日本語タイトルを使用）
->（例：`260531-ブランチ文書ファイル名変更.branch.md`）。`.branch.md` 拡張子はそれがブランチドキュメントであることを示します
+> タスクドキュメントのファイル名は `{YYMMDD}-{日本語タイトル}.task.md` 形式です（Step 2 で収集する日本語タイトルを使用）
+>（例：`260531-タスクドキュメントファイル名変更.task.md`）。`.task.md` 拡張子はそれがタスクドキュメントであることを示します
 >（タスクフォルダにはユーザーファイルも含まれることがあります）。git ブランチ名はドキュメントヘッダー内に記録されます。
 > ブランチインデックス（`index.yaml`）はブランチ名をキーとします。数値 ID や `last_id` は存在しません。
 
@@ -37,7 +37,7 @@ description: |
 1. リクエストされた作業からブランチサフィックスを決定します：
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **Title**: 作業を説明する簡潔な kebab-case ラベル
-2. `WORK_BRANCH_AUTHOR` を確認して完全なブランチ名を決定します：
+2. `${WORK_BRANCH_AUTHOR}` を確認して完全なブランチ名を決定します：
 
    ```bash
    author="${WORK_BRANCH_AUTHOR:-}"
@@ -63,8 +63,11 @@ description: |
 #### 処理
 
 1. 以下を決定します：
-   - **日本語タイトル**: このブランチ作業を表す日本語の説明タイトル — 文書の H1 およびファイル名に使用（例：`ブランチ文書ファイル名変更`）
+   - **日本語タイトル**: このブランチ作業を表す日本語の説明タイトル — 文書の H1 およびファイル名に使用（例：`タスクドキュメントファイル名変更`）
    - **TODO リスト**: このブランチで何をするか（チェックリストになります）
+   - **連携イシュー**: このブランチは `.work/issues/ISSUE-{N}` を 1 件以上対応するものか？
+     （例: `work:issue-resolve` から起動された、ユーザーが「ISSUE-123 のブランチを切って」と言った）。
+     該当する場合は ID を記録する — Step 6 で連携する（`status: in_progress` 設定・ブランチ追記・`## 関連イシュー` 記入）。
    - **ノート**: `.work/notes/` に関連するノートが存在しますか？または作成が必要ですか？
    - **未解決の質問**: 実装を進める前に確認・決定が必要な点はありますか？
      以下の観点で洗い出してください：
@@ -125,7 +128,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### 処理
 
 1. ワークツリーの使用が有効になっているかどうかを確認します。デフォルトでは **有効** です。
-   `WORK_USE_WORKTREE` 環境変数が偽値（`false` / `0` / `no` / `off`）に設定されている場合のみ無効です：
+   `${WORK_USE_WORKTREE}` 環境変数が偽値（`false` / `0` / `no` / `off`）に設定されている場合のみ無効です：
 
    ```bash
    v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
@@ -139,9 +142,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 3. **無効な場合**: ワークツリー作成をスキップしてユーザーに通知します：
 
-   > ⚠️ `WORK_USE_WORKTREE` が無効のため、ワークツリーの作成をスキップします。  
+   > ⚠️ `${WORK_USE_WORKTREE}` が無効のため、ワークツリーの作成をスキップします。  
    > `.work/` フォルダ管理のみで作業を続けます。  
-   > ワークツリーを使用したい場合は `settings.json` の `env` から `WORK_USE_WORKTREE` を外すか `true` に設定してください。
+   > ワークツリーを使用したい場合は `settings.json` の `env` から `${WORK_USE_WORKTREE}` を外すか `true` に設定してください。
 
 → ステップ 5 へ
 
@@ -172,16 +175,16 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
      このブランチがそれの一部として自然に適合する
      - 例：機能を複数ブランチに分割、フォローアップ修正、関連リファクタリング
    - **新しいフォルダを作成**: 関連する既存フォルダがない、または `.work/tasks/` が空
-3. ワークツリー `{wt}` 内のブランチドキュメントのパスを決定します
+3. ワークツリー `{wt}` 内のタスクドキュメントのパスを決定します
    （`{wt}` = `../$(basename $(pwd))-wt-{branch-hyphenated}`、フルブランチ名のスラッシュはハイフンに変換）：
-   - 新規フォルダ: `{wt}/.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.branch.md`
-   - 既存フォルダ: `{wt}/.work/tasks/{existing_folder_name}/{YYMMDD}-{日本語タイトル}.branch.md`
+   - 新規フォルダ: `{wt}/.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md`
+   - 既存フォルダ: `{wt}/.work/tasks/{existing_folder_name}/{YYMMDD}-{日本語タイトル}.task.md`
 
 → ステップ 6 へ
 
 #### 出力
 
-- タスクフォルダ戦略（新規または既存）とブランチドキュメントの完全なパスが確認されました
+- タスクフォルダ戦略（新規または既存）とタスクドキュメントの完全なパスが確認されました
 
 #### 注記
 
@@ -191,7 +194,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 ---
 
-### ステップ 6: ブランチドキュメントを作成・記入（ワークツリー内）
+### ステップ 6: タスクドキュメントを作成・記入（ワークツリー内）
 
 #### 条件
 
@@ -199,9 +202,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### 処理
 
-1. ステップ 5 で決定したパスに `Write` でブランチドキュメントを作成します
-   （`{YYMMDD}-{日本語タイトル}.branch.md`）。
-2. **テンプレートは自動注入されます** — `.work/tasks/` 配下の `.branch.md` ファイルを書き込んだ瞬間に ref-inject hook が起動し、
+1. ステップ 5 で決定したパスに `Write` でタスクドキュメントを作成します
+   （`{YYMMDD}-{日本語タイトル}.task.md`）。
+2. **テンプレートは自動注入されます** — `.work/tasks/` 配下の `.task.md` ファイルを書き込んだ瞬間に ref-inject hook が起動し、
    `references/work-dir/タスクドキュメント.md` の完全なテンプレート＋セクション記入ガイドが表示されます。
    **スクリプトはなく**、そのテンプレートから実装を進めてください。
 3. 実際の計画として記入してください：
@@ -214,6 +217,19 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - `## 参考ドキュメント` — 空のまま。ノートパスは最終コミット（ステップ 9）で追加されます。
    - `## 関連イシュー` — このブランチが解決するイシュー；**関連イシューがない場合は見出し+テーブルを削除**。
    - `## 関連ブランチ` / `## 次ブランチ候補` — このセッションから記入、またはプレースホルダーを残す。
+4. **このブランチが連携イシューを持つ場合**（ステップ 2 より）、各 `ISSUE-{N}` をここで連携する：
+   - タスクドキュメントの `## 関連イシュー` テーブルに各連携イシューの行を追加。
+   - イシューファイルは**フロントマターを持たない** — 作業状態（`status` / `branches`）は
+     **メインリポジトリ**の `_index.yaml`（git 管理外、ワークツリーには存在しない）にある。
+     他セッションが進行中と分かるよう、そこへ status と branch を設定する：
+     ```bash
+     python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
+       --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --status in_progress
+     python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" add-branch \
+       --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --branch {full-branch-name}
+     ```
+     （`{MAIN_REPO}` = 元のリポジトリルート = ワークツリーの親チェックアウト。そこに `.work/issues` が
+     無ければ黙ってスキップ）
 
 注入された `タスクドキュメント.md` リファレンスがセクション構造と規則の唯一の情報源です — それに従ってください。
 
@@ -221,7 +237,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### 出力
 
-- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.branch.md` が作成され、計画で記入されました
+- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.task.md` が作成され、計画で記入されました
 
 ---
 
@@ -233,20 +249,20 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 #### 処理
 
-1. ステップ 2 からの開いている質問をブランチドキュメントの `## QA` セクションに QA-XXX エントリとして追加
+1. ステップ 2 からの開いている質問をタスクドキュメントの `## QA` セクションに QA-XXX エントリとして追加
 2. 開いている質問がない場合はスキップ
 
 → ステップ 8 へ
 
 ---
 
-### ステップ 8: 最初のコミット — ブランチドキュメントを作成し、実装を開始
+### ステップ 8: 最初のコミット — タスクドキュメントを作成し、実装を開始
 
 #### 処理
 
-1. ワークツリー内の**ブランチドキュメントのみ**をコミット（ブランチ：`{branch}`）
+1. ワークツリー内の**タスクドキュメントのみ**をコミット（ブランチ：`{branch}`）
    - この段階ではノートを含めない — ノートは最終 ステップ 9 でコミットします
-2. 作成内容をレポート：ブランチ名、ワークツリーパス、ブランチドキュメントパス
+2. 作成内容をレポート：ブランチ名、ワークツリーパス、タスクドキュメントパス
 3. 実装開始：
    - **QA エントリが存在する場合** → 開始前にユーザーの確認を求める
    - **QA エントリがない場合** → すぐに実装を開始
@@ -262,13 +278,13 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 - ユーザーが理解しやすい意味のある単位でコミット
 - コミットを細かく分割しないでください
-- 計画ドキュメント（ブランチドキュメント）と実装コードを同じコミットに混ぜないでください
+- 計画ドキュメント（タスクドキュメント）と実装コードを同じコミットに混ぜないでください
 
 ##### コミット順序
 
 このコミットは常にブランチの**最初**のコミット。
 実装コミットが中間に続く。
-最終コミット（ステップ 9）はノートとブランチドキュメント更新でブランチを締める。
+最終コミット（ステップ 9）はノートとタスクドキュメント更新でブランチを締める。
 
 ##### コミットメッセージ言語
 
@@ -279,19 +295,19 @@ lang="${WORK_COMMIT_LANG:-JP}"
 use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no|off) use_type=false;; *) use_type=true;; esac
 ```
 
-- **`WORK_COMMIT_LANG`**（デフォルト `JP`）：`JP` → 日本語、`EN` → 英語。サブジェクトとボディの両方がこの設定に従う。`Co-Authored-By:` などのメタデータ行は設定に関わらず英語のままでよい。
-- **`WORK_COMMIT_TYPE`**（デフォルト `true`）：truthy → `feat:` / `fix:` / `chore:` などのプレフィックスを付ける、falsy → タイププレフィックスを省略する。
+- **`${WORK_COMMIT_LANG}`**（デフォルト `JP`）：`JP` → 日本語、`EN` → 英語。サブジェクトとボディの両方がこの設定に従う。`Co-Authored-By:` などのメタデータ行は設定に関わらず英語のままでよい。
+- **`${WORK_COMMIT_TYPE}`**（デフォルト `true`）：truthy → `feat:` / `fix:` / `chore:` などのプレフィックスを付ける、falsy → タイププレフィックスを省略する。
 
-| `WORK_COMMIT_LANG` | `WORK_COMMIT_TYPE` | コミットメッセージ例 |
+| `${WORK_COMMIT_LANG}` | `${WORK_COMMIT_TYPE}` | コミットメッセージ例 |
 |---|---|---|
-| `JP`（デフォルト） | `true`（デフォルト） | `chore: feat/commit-message-options のブランチドキュメントを作成` |
-| `EN` | `true` | `chore: create branch document for feat/commit-message-options` |
-| `JP` | `false` | `feat/commit-message-options のブランチドキュメントを作成` |
-| `EN` | `false` | `create branch document for feat/commit-message-options` |
+| `JP`（デフォルト） | `true`（デフォルト） | `chore: feat/commit-message-options のタスクドキュメントを作成` |
+| `EN` | `true` | `chore: create task document for feat/commit-message-options` |
+| `JP` | `false` | `feat/commit-message-options のタスクドキュメントを作成` |
+| `EN` | `false` | `create task document for feat/commit-message-options` |
 
 ---
 
-### ステップ 9: 最終コミット — ノートとブランチドキュメントを更新
+### ステップ 9: 最終コミット — ノートとタスクドキュメントを更新
 
 #### 条件
 
@@ -304,13 +320,13 @@ use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no
 3. 見つからない場合 → `ノート記述内容ルール.md`（`.work/notes/` 配下を編集すると自動注入される）に従って新しいノートを作成：現在状態のみ、YAML frontmatter なし、末尾に `## 変更履歴` テーブルを持つ固定テンプレート
    - ノートの H1 タイトルは**すべて日本語**で記述する（例：`# 機能名 — 一行説明`）
    - プラグイン名・コマンド名・ファイルパスなどの固有識別子は元の形式のまま使用可
-4. ブランチドキュメントの `## 参考ドキュメント` セクションにノートへのリンクを追加
+4. タスクドキュメントの `## 参考ドキュメント` セクションにノートへのリンクを追加
 5. `.work/notes/_index.md` を更新（または作成）する：
    - 新しいノートを適切なカテゴリに追加、または既存エントリを更新する
    - `_index.md` が存在しない場合は、現在のノートを全てカテゴリ別にまとめて新規作成する
-6. 更新したノート＋ブランチドキュメントをまとめて**ブランチの最終コミット**としてコミットする
+6. 更新したノート＋タスクドキュメントをまとめて**ブランチの最終コミット**としてコミットする
 
 #### 注記
 
 - これは常にブランチの**最後**のコミット
-- ノートとブランチドキュメントは一緒にコミットする — 分割しないこと
+- ノートとタスクドキュメントは一緒にコミットする — 分割しないこと

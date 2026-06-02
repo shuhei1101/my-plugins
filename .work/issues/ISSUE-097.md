@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-097: `setup.py` が生成する `index.yaml` テンプレートに廃止済みの `last_id` フィールドが残っている
 
 **作成日**: 2026-05-31

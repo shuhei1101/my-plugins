@@ -1,0 +1,59 @@
+# claude-kit リファレンス索引（日本語ミラー；人間用）。
+# CLAUDE_KIT_INJECTION_LANG=jp のとき inject_references.py が description をここから取る。
+# _index.yaml（英語・正本）と _injection_rules.yaml に常に同期させること。
+references:
+  # ---- common/ ----
+  - path: common/共通ガイド.md
+    description: 全 Claude 設定オーサリングの共通ベース。ファイル種別の判定基準（rule / skill / CLAUDE.md / hook / reference）、増殖防止ガード、JP/EN ミラー規則。
+
+  - path: common/環境変数.md
+    description: プラグインのフック/スクリプトを環境変数で設定可能にする方法 — settings.json の env ブロックで設定（ユーザー/プロジェクト/ローカルのスコープ）、os.environ で読む、デフォルト/検証、{PREFIX}_INJECTION_TTL / _INJECTION_LANG の実例、env とパス変数の区別。Markdown は env を読めない。
+
+  - path: common/環境変数記法.md
+    description: Claude が読む成果物（スキル・ルール・CLAUDE.md・プロンプト）での環境変数名の書き方・ドキュメント化。指示文書内では常に ${VAR_NAME} 表記を使う、ALL_CAPS_SNAKE_CASE + プラグイン名プレフィックス、ドキュメントテーブル形式、Bash の ${VAR} / Python の os.environ.get("VAR") との対応。
+
+  - path: common/リファレンス同期.md
+    description: プラグインリファレンスファイルの JP ミラー同期ルール。plugins/*/references/**/*.md を編集したら、ペアの *.jp.md も同じコミットで更新する。
+
+  - path: common/サブエージェント.md
+    description: ステップ処理のサブエージェント委譲ガイド。委譲マーカー（[サブエージェントで実行・完了を待つ] / 並列実行・完了を待つ / 完了を待たない）、委譲の判断基準、制約（戻り値のみ・完了を待つ・コンテキストは空）。
+
+  - path: common/AskUserQuestion制約.md
+    description: スキルから AskUserQuestion を呼ぶ際のガイド。使用制限（スキルまたはユーザーが明示した場合のみ）、options 制約（2〜4 個・Other 自動付与）、multiSelect、preview フィールドの規則。
+
+  # ---- skill/ ----
+  - path: skill/スキル.md
+    description: .claude/skills/<name>/SKILL.md の作り方。skill が適切な種別かの判定、既存類似スキルの確認、JP ミラー先行ワークフロー、ステップ構造テンプレ、description フロントマター規約。
+
+  # ---- claude-md/ ----
+  - path: claude-md/CLAUDE-md記述ガイド.md
+    description: CLAUDE.md（ルート / サブフォルダ）の作り方。読み込みタイミング、薄肉原則、抽出先ガイド、他ファイル種別との照合、JP ミラー先行ワークフロー、必須セクション、行数ガイドライン。
+
+  - path: claude-md/記述ルール.md
+    description: .claude/rules/<name>.md の作り方。ルールの読み込み条件、2 種類（リンク型 / コンテキスト型）、ユースケース指向の paths 設計、統合 / 分離基準、フォルダ構成、必須セクション、構造例。
+
+  # ---- hook/ ----
+  - path: hook/フック.md
+    description: プロンプト注入フックの作り方。フックイベント、注入メカニズム、使用時機、ループ防止（stop_hook_active / ワンタイムトークン）、すぐ使える hooks.json スニペット、プロンプトファイル配置、パス変数。
+
+  - path: hook/キットフック同期.md
+    description: dev-kit と claude-kit の注入インフラ構造同期ルール。inject_references.py・hooks.json・テンプレート・_index.yaml・_injection_rules.yaml の共有構造を片方の kit で変更したら、もう片方も同じコミットで更新する。
+
+  - path: hook/jinja2/執筆ガイド.md
+    description: Jinja2 テンプレート記法の落とし穴。trim_blocks=True / lstrip_blocks=True 有効時の既知の罠 — ブロックタグ直下の dashes による setext 見出し、ATX 見出し内の {{ expr }} に必要な <!-- -->、ブロックタグ周りの空行要件、インデントの消失。
+
+  - path: hook/jinja2/テンプレート注意点.md
+    description: Markdown を出力する Jinja2 テンプレート（例 injection.md.j2）のオーサリングルール。trim_blocks の改行食いルール、{% endif %}{% if X %} + --- の setext 見出しバグ、}} と Handlebars 系パーサーの衝突（<!-- --> で対処）、クイックチェックリスト。
+
+  # ---- plugin/ ----
+  - path: plugin/プラグイン構造.md
+    description: プラグインの作成 / 更新の仕方。標準ディレクトリ構成、plugin.json フィールド、marketplace.json エントリ、新規 / 更新モード、ゼロ依存原則。
+
+  - path: plugin/プラグインCLAUDE-md.md
+    description: プラグインのルート CLAUDE.md の書き方。必須セクション（Skills / Hooks / Environment Variables / Dependencies / Changelog）、各セクションのテーブル形式、コピペ用フルテンプレート。
+
+  - path: plugin/バージョン同期.md
+    description: プラグインバージョン同期不変条件 — plugin.json / marketplace.json / CLAUDE.md は常に同じバージョンを保つ。コミット前チェックリスト、バージョンバンプ規則、並行 PR 再バンプルール。
+
+  - path: plugin/プラグイン設定.md
+    description: プラグインに config スキルを追加する方法。AskUserQuestion ループパターン（5 ステップ）、管理トグルの規約（不在=ON/"false"=OFF）、スコープ選択（プロジェクト vs ユーザー）、最小 SKILL.md テンプレート。

@@ -89,6 +89,16 @@ bodies are back because the TTL token throttles re-injection.
 
 ---
 
+## Skills
+
+| Skill | Purpose |
+|---|---|
+| `ref-inject:apply` | Attach the injection mechanism to a target plugin |
+| `ref-inject:plugin-migrate` | Update injection hook files in all consumers to current templates |
+| `ref-inject:plugin-config` | Placeholder config skill (no user-facing toggles currently) |
+
+---
+
 ## Usage
 
 `/ref-inject:apply` against a target plugin (new or existing). Then fill `references/` with
@@ -113,5 +123,7 @@ hook/template files come from `ref-inject`).
 
 | Version | Date | Summary |
 |---|---|---|
+| 1.10.0 | 2026-06-02 | Add `ref-inject:plugin-config` skeleton skill (no managed toggles; placeholder for future use) |
+| 1.9.0 | 2026-06-01 | Remove `ref-inject:setup-wizard` skill and `hooks/` directory (only contained `setup_check.py`) |
 | 1.6.0 | 2026-05-30 | Add `ref-inject:plugin-migrate` skill — enumerates consumers and updates injection hook files to current templates; leaves references/ untouched (PR185) |
 | 1.5.0 | — | Two-tier TTL token (pattern + reference tiers) to prevent double-injection of shared references across multiple patterns (PR160) |

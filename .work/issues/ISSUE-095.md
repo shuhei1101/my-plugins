@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-095: `inject_references.py` が全フック発火ごとに `~/.claude/tokens/` を全件スキャンする
 
 **作成日**: 2026-05-31

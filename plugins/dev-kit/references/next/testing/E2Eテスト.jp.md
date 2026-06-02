@@ -1,7 +1,7 @@
 <!-- This file is a Japanese mirror of E2Eテスト.md. When updating the English original, update this file too. -->
 # Next.js App Router — E2E Tests (Playwright)
 
-> **Stack**: Playwright + Page Object Model + Fixtures。画面単位フォルダで構造化。
+> **Stack**: Playwright + Page Object Model。`tests/` 共通構造に準拠（テスト戦略.md）。
 
 ---
 
@@ -24,7 +24,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ["list"],
-    ["html", { open: "never" }],
+    ["html", { open: "never", outputFolder: "tests/e2e/reports" }],
   ],
   use: {
     baseURL: "http://localhost:3000",
@@ -32,10 +32,21 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "webkit", use: { ...devices["Desktop Safari"] } },
-    { name: "mobile-chrome", use: { ...devices["Pixel 7"] } },
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"], storageState: "tests/e2e/.auth/user.json" },
+    },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"], storageState: "tests/e2e/.auth/user.json" },
+    },
+    {
+      name: "mobile-chrome",
+      use: { ...devices["Pixel 7"], storageState: "tests/e2e/.auth/user.json" },
+    },
   ],
+  globalSetup: "./tests/e2e/global.setup.ts",
+  globalTeardown: "./tests/e2e/global.teardown.ts",
   webServer: {
     command: "pnpm dev",
     url: "http://localhost:3000",
@@ -47,97 +58,150 @@ export default defineConfig({
 
 ---
 
-## フォルダ構成（再掲）
+## フォルダ構成
 
 ```
 tests/
-├── e2e/
-│   ├── resources/             # 画面単位
-│   │   ├── list.spec.ts
-│   │   ├── create.spec.ts
-│   │   ├── view.spec.ts
-│   │   ├── edit.spec.ts
-│   │   └── delete.spec.ts
+├── e2e/                        # E2E spec files（画面・ドメイン単位フォルダ）
 │   ├── auth/
 │   │   ├── login.spec.ts
 │   │   └── signup.spec.ts
-│   └── usecases/              # 複数画面横断
-│       └── register-and-edit-flow.spec.ts
-├── pages/                     # Page Object Model
-│   ├── ResourceListPage.ts
-│   ├── ResourceEditPage.ts
-│   └── LoginPage.ts
-├── fixtures/                  # データ生成
-├── helpers/                   # 共通ヘルパー
-└── global-setup.ts            # 全テスト前のセットアップ
+│   ├── checkout/
+│   │   ├── apply-coupon.spec.ts
+│   │   └── complete-purchase.spec.ts
+│   ├── account/
+│   │   └── update-profile.spec.ts
+│   ├── usecases/               # 横断ユースケース
+│   │   └── register-and-purchase.spec.ts
+│   ├── .auth/                  # Storage State（.gitignore 対象）
+│   ├── reports/                # CI レポート出力先
+│   ├── snapshots/              # visual regression 用比較画像
+│   ├── global.setup.ts         # 認証 state 生成・DB 初期化
+│   └── global.teardown.ts      # テスト後の後片付け
+├── pages/                      # Page Object Model（E2E 専用）
+│   ├── LoginPage.ts
+│   ├── CartPage.ts
+│   └── DashboardPage.ts
+├── fixtures/                   # テストデータ Factory（→ フィクスチャー.md）
+│   ├── user.ts
+│   ├── resource.ts
+│   └── index.ts
+└── helpers/                    # 共通操作（→ テスト戦略.md）
+    ├── auth.ts                 # ログイン済み状態を作る
+    ├── db.ts                   # DB シード・クリーンアップ
+    └── server.ts               # MSW handlers
 ```
+
+---
+
+## 各フォルダの責務
+
+### tests/e2e/（スペックのみ）
+
+画面・ドメイン単位でフォルダを切り、その下にユースケース別ファイルを置く。
+ロケータや DB 操作は持たせない。
+
+```
+tests/e2e/checkout/
+├── apply-coupon.spec.ts
+└── complete-purchase.spec.ts
+```
+
+### tests/pages/（Page Object）
+
+UI 操作の抽象化レイヤー。メソッドは「操作単位」に留め、業務ロジックは持たせない。
+
+### tests/fixtures/（テストデータ）
+
+固定値・Factory 関数を集約。詳細は `フィクスチャー.md` を参照。
+
+### tests/helpers/（共通操作）
+
+ログイン済み状態作成（`auth.ts`）・DB シード（`db.ts`）・MSW（`server.ts`）。
+`helper.ts` 乱立は避け、責務ごとにファイルを分割する。
+
+### tests/e2e/global.setup.ts / global.teardown.ts
+
+- setup：Storage State 生成・DB 初期化
+- teardown：後片付け・データ削除
+
+---
+
+## 設計原則
+
+1. **画面・ドメイン単位フォルダ** — `tests/e2e/{screen}/` でフォルダを切る
+2. **Page Object は薄く** — UI 操作のみ。業務フローを持たせない
+3. **helpers でテストを短くする** — login 処理の重複を排除
+4. **fixtures はドメイン別に整理** — helper 地獄を防ぐ
+5. **tests/fixtures は固定値専用** — 動的生成は Factory へ
+
+---
+
+## 理想のテストイメージ
+
+```ts
+// tests/e2e/checkout/apply-coupon.spec.ts
+import { test, expect } from "@playwright/test"
+import { LoginPage } from "@/tests/pages/LoginPage"
+import { CartPage } from "@/tests/pages/CartPage"
+import { TEST_USER } from "@/tests/fixtures/user"
+
+test("ユーザーがクーポンを適用して購入できる", async ({ page }) => {
+  const loginPage = new LoginPage(page)
+  const cartPage = new CartPage(page)
+
+  await loginPage.login(TEST_USER.email, TEST_USER.password)
+  await cartPage.applyCoupon("DISCOUNT10")
+  await expect(page).toHaveURL("/checkout/complete")
+})
+```
+
+テストが「読める仕様書」になる。
 
 ---
 
 ## Page Object Model
 
 ```ts
-// tests/pages/ResourceListPage.ts
+// tests/pages/CartPage.ts
 import { Page, expect } from "@playwright/test"
 
-export class ResourceListPage {
+export class CartPage {
   constructor(public page: Page) {}
 
   async goto() {
-    await this.page.goto("/resources")
-    await expect(this.page).toHaveTitle(/リソース/)
+    await this.page.goto("/cart")
   }
 
-  async search(text: string) {
-    await this.page.getByPlaceholder("名前で検索").fill(text)
+  async addItem(productId: string) {
+    await this.page.getByTestId(`add-to-cart-${productId}`).click()
   }
 
-  async expectCount(count: number) {
-    await expect(this.page.getByTestId("resource-card")).toHaveCount(count)
+  async applyCoupon(code: string) {
+    await this.page.getByPlaceholder("クーポンコード").fill(code)
+    await this.page.getByRole("button", { name: "適用" }).click()
+    await expect(this.page.getByText("クーポンが適用されました")).toBeVisible()
   }
 
-  async openByName(name: string) {
-    await this.page.getByRole("link", { name }).click()
-  }
-
-  async clickNew() {
-    await this.page.getByRole("link", { name: "新規作成" }).click()
+  async checkout() {
+    await this.page.getByRole("button", { name: "購入する" }).click()
   }
 }
 ```
 
 ```ts
-// tests/pages/ResourceEditPage.ts
-import { Page, expect } from "@playwright/test"
+// tests/pages/LoginPage.ts
+import { Page } from "@playwright/test"
 
-export class ResourceEditPage {
+export class LoginPage {
   constructor(public page: Page) {}
 
-  async gotoNew() {
-    await this.page.goto("/resources/new")
-  }
-
-  async gotoEdit(id: string) {
-    await this.page.goto(`/resources/${id}/edit`)
-  }
-
-  async fillName(name: string) {
-    await this.page.getByLabel("名前").fill(name)
-  }
-
-  async addTag(tag: string) {
-    await this.page.getByPlaceholder("タグを追加...").fill(tag)
-    await this.page.getByPlaceholder("タグを追加...").press("Enter")
-  }
-
-  async save() {
-    await this.page.getByRole("button", { name: "保存" }).click()
-    await expect(this.page.getByText("保存しました")).toBeVisible()
-  }
-
-  async delete() {
-    await this.page.getByRole("button", { name: "削除" }).click()
-    await this.page.getByRole("button", { name: "削除する" }).click()
+  async login(email: string, password: string) {
+    await this.page.goto("/login")
+    await this.page.getByLabel("メール").fill(email)
+    await this.page.getByLabel("パスワード").fill(password)
+    await this.page.getByRole("button", { name: "ログイン" }).click()
+    await this.page.waitForURL("/home")
   }
 }
 ```
@@ -146,117 +210,39 @@ export class ResourceEditPage {
 
 ---
 
-## ユースケース別テスト
-
-```ts
-// tests/e2e/resources/create.spec.ts
-import { test, expect } from "@playwright/test"
-import { ResourceListPage } from "@/tests/pages/ResourceListPage"
-import { ResourceEditPage } from "@/tests/pages/ResourceEditPage"
-import { loginAsTestUser, cleanResources } from "@/tests/helpers"
-
-test.describe("リソース新規作成", () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAsTestUser(page)
-    await cleanResources()
-  })
-
-  test("一覧から新規作成 → 詳細遷移", async ({ page }) => {
-    const list = new ResourceListPage(page)
-    const edit = new ResourceEditPage(page)
-
-    await list.goto()
-    await list.expectCount(0)
-
-    await list.clickNew()
-    await edit.fillName("マイリソース")
-    await edit.addTag("テスト")
-    await edit.save()
-
-    // 詳細画面に遷移している
-    await expect(page).toHaveURL(/\/resources\/[a-f0-9-]+$/)
-    await expect(page.getByRole("heading", { name: "マイリソース" })).toBeVisible()
-  })
-
-  test("名前未入力でエラーが表示される", async ({ page }) => {
-    const edit = new ResourceEditPage(page)
-    await edit.gotoNew()
-    await edit.save()           // 名前空のまま保存
-
-    await expect(page.getByText("リソース名は必須です")).toBeVisible()
-  })
-})
-```
-
----
-
-## 横断ユースケース
-
-```ts
-// tests/e2e/usecases/register-and-edit-flow.spec.ts
-import { test, expect } from "@playwright/test"
-
-test("新規作成 → 編集 → 削除のフル CRUD", async ({ page }) => {
-  await loginAsTestUser(page)
-
-  // 1. 新規作成
-  await page.goto("/resources/new")
-  await page.getByLabel("名前").fill("CRUD テスト")
-  await page.getByRole("button", { name: "保存" }).click()
-
-  const url = page.url()
-  const id = url.split("/").pop()
-  expect(id).toBeTruthy()
-
-  // 2. 編集
-  await page.goto(`/resources/${id}/edit`)
-  await page.getByLabel("名前").fill("CRUD 編集後")
-  await page.getByRole("button", { name: "保存" }).click()
-  await expect(page.getByText("更新しました")).toBeVisible()
-
-  // 3. View 確認
-  await page.goto(`/resources/${id}`)
-  await expect(page.getByRole("heading", { name: "CRUD 編集後" })).toBeVisible()
-
-  // 4. 削除
-  await page.getByRole("button", { name: "編集" }).click()
-  await page.getByRole("button", { name: "削除" }).click()
-  await page.getByRole("button", { name: "削除する" }).click()
-  await expect(page.getByText("削除しました")).toBeVisible()
-  await expect(page).toHaveURL("/resources")
-})
-```
-
----
-
-## helpers
+## helpers でログインをスリム化
 
 ```ts
 // tests/helpers/auth.ts
-import { Page, BrowserContext } from "@playwright/test"
-
-const TEST_USER = { email: "test@example.com", password: "test1234" }
+import { Page } from "@playwright/test"
 
 export const loginAsTestUser = async (page: Page) => {
-  // Storage State 戦略：事前にログイン済み state を保存しておく
-  // ここでは UI 経由で簡易ログイン
-  await page.goto("/login")
-  await page.getByLabel("メール").fill(TEST_USER.email)
-  await page.getByLabel("パスワード").fill(TEST_USER.password)
-  await page.getByRole("button", { name: "ログイン" }).click()
-  await page.waitForURL("/home")
-}
-
-export const cleanResources = async () => {
-  // テスト用 API or DB 直接で削除
-  await fetch("http://localhost:3000/api/v1/test/clean-resources", { method: "POST" })
+  await page.context().addCookies([
+    { name: "session_token", value: TEST_SESSION_TOKEN, domain: "localhost", path: "/" },
+  ])
 }
 ```
 
-### Storage State で高速化
+```ts
+// tests/e2e/checkout/apply-coupon.spec.ts（helpers 利用版）
+import { test, expect } from "@playwright/test"
+import { loginAsTestUser } from "@/tests/helpers/auth"
+
+test("クーポンを適用して購入できる", async ({ page }) => {
+  await loginAsTestUser(page)
+  await page.goto("/cart")
+  await page.getByPlaceholder("クーポンコード").fill("DISCOUNT10")
+  await page.getByRole("button", { name: "適用" }).click()
+  await expect(page).toHaveURL("/checkout/complete")
+})
+```
+
+---
+
+## Storage State で高速化
 
 ```ts
-// global-setup.ts
+// tests/e2e/global.setup.ts
 import { chromium, FullConfig } from "@playwright/test"
 
 export default async (config: FullConfig) => {
@@ -268,30 +254,19 @@ export default async (config: FullConfig) => {
   await page.getByLabel("パスワード").fill("test1234")
   await page.getByRole("button", { name: "ログイン" }).click()
   await page.waitForURL("/home")
-  await ctx.storageState({ path: "tests/.auth/user.json" })
+  await ctx.storageState({ path: "tests/e2e/.auth/user.json" })
   await browser.close()
 }
 ```
 
-```ts
-// playwright.config.ts に
-projects: [
-  {
-    name: "chromium",
-    use: { ...devices["Desktop Chrome"], storageState: "tests/.auth/user.json" },
-  },
-],
-globalSetup: "./tests/global-setup.ts",
-```
-
-各 test がログイン処理を繰り返さず高速化。
+各 test がログイン処理を繰り返さず高速化。`.auth/` は `.gitignore` に追加する。
 
 ---
 
-## DB シード
+## DB シード（helpers/）
 
 ```ts
-// tests/fixtures/resource.ts
+// tests/helpers/db.ts
 import { db } from "@/drizzle/db"
 import { resources } from "@/drizzle/schema"
 
@@ -320,7 +295,7 @@ DB を直接シード → API 経由よりも高速・確実。
 pnpm playwright test --ui
 
 # デバッグ（DevTools 起動）
-pnpm playwright test --debug tests/e2e/resources/list.spec.ts
+pnpm playwright test --debug tests/e2e/auth/login.spec.ts
 
 # Trace を見る
 pnpm playwright show-trace test-results/.../trace.zip
@@ -341,10 +316,10 @@ pnpm playwright show-trace test-results/.../trace.zip
 ## 視覚回帰テスト
 
 ```ts
-await expect(page).toHaveScreenshot("resource-list.png", { maxDiffPixels: 100 })
+await expect(page).toHaveScreenshot("cart-page.png", { maxDiffPixels: 100 })
 ```
 
-Playwright が初回でスクショ保存、次回以降は diff 比較。UI 変更時に意図しないリグレッションを検知。
+スクショは `tests/e2e/snapshots/` に保存。Playwright が初回で生成し、次回以降は diff 比較。
 
 ---
 
@@ -357,25 +332,24 @@ pnpm add -D @axe-core/playwright
 ```ts
 import AxeBuilder from "@axe-core/playwright"
 
-test("ListScreen は a11y 違反なし", async ({ page }) => {
-  await page.goto("/resources")
+test("カートページは a11y 違反なし", async ({ page }) => {
+  await page.goto("/cart")
   const results = await new AxeBuilder({ page }).analyze()
   expect(results.violations).toEqual([])
 })
 ```
 
-a11y を CI で検証できる（QA-065 では a11y は不要としたが、テストでチェックするのは無害）。
-
 ---
 
 ## Constraints
 
-- 画面単位フォルダ + ユースケース別ファイル
-- セレクタは Page Object に集約
+- `tests/e2e/` に画面・ドメイン単位でスペックを配置
+- Page Object は `tests/pages/` に集約（UI 操作の抽象化のみ）
+- テストデータは `tests/fixtures/` に Factory パターンで集約（`フィクスチャー.md`）
+- 共通操作（ログイン・シード等）は `tests/helpers/` に
 - ロケータは `getByRole` / `getByLabel` / `getByText` 優先（`testid` は最後の手段）
-- ログインは storage state で高速化
-- DB シードは fixtures で集約
-- 視覚回帰・a11y は必要に応じて
+- Storage State でログインを高速化（`tests/e2e/.auth/user.json`）
 - `trace: "on-first-retry"` で失敗デバッグを容易に
 - 並列実行を前提に test 間で state を共有しない
 - CUJ（クリティカルパス）は必ず E2E でカバー
+- 視覚回帰・a11y は必要に応じて

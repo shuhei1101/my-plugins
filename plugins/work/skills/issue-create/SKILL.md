@@ -90,13 +90,23 @@ Example: "The chat history is hard to read, and settings reset on restart"
 1. For each confirmed issue, allocate the next ID (`last_id + 1`, incrementing as you go) and write
    `.work/issues/ISSUE-{N}.md`.
    - Writing the file auto-injects the `work-dir/イシュー.md` reference — **follow its format exactly**.
-     The body is Japanese: `# ISSUE-{N}: {タイトル}`, a `**作成日**` line, `## 問題`, optional
-     `## 修正案` (when included, it must contain three mandatory sub-sections: `### 暫定対応` /
-     `### 恒久対策` / `### 再発防止`; write「なし」when a sub-section has no content).
-     Do not write Type/Priority/Tags lines or a User's words section.
+   - The file has **no frontmatter** — it starts at `# ISSUE-{N}: {タイトル}`.
+   - Place the **`# ユーザー回答欄`** (`## 意思` + `## QA`) near the **top**, right after the title and
+     date; the **issue body (AI-authored)** (`## 概要` / `## 背景` / `## 現状` / (`## 原因` if a bug) /
+     `## 期待される状態` / `## 対応案` / `## 横展開` etc.) goes below the `---`. Write the body in
+     Japanese, following the injected template. Do not write Type/Priority/Tags lines (those live in
+     `_index.yaml`).
+   - In the **`# ユーザー回答欄`**, pre-fill each `**回答**:` line with **every candidate** (e.g.
+     `**回答**: 対応する / 対応しない / 様子見`) — do not narrow to one or decide accept/reject here (the
+     user does that later in `work:issue-review`). Always include `## 意思`. There is no `## 自由記述`.
+   - **Raise a `## QA` when there are multiple 対応案 options or a decision is needed before starting.**
+     Each QA is `### QA-N: {タイトル}` with its **options summarized** (`A) … / B) …`), a **`**推奨**:`**
+     line (which option the AI recommends + a one-line reason; never "decide later"), and a `**回答**:`
+     line pre-filled with all candidates. When you list multiple `## 対応案` options you MUST add a
+     "which option to take" QA as QA-1. Omit the `## QA` heading entirely if no decision is needed.
 2. After writing all files, update `_index.yaml` per the reference: append each issue's entry
-   (`type` / `priority` / `tags` / `scan_scope` are recorded here, not in the file) and set
-   `last_id` to the highest ID used.
+   (`type` / `priority` / `tags` / `scan_scope` / `status: not_started` / `branches: []` are recorded
+   here) and set `last_id` to the highest ID used.
 3. Collect the created ISSUE IDs.
 
 → Proceed to Step 4

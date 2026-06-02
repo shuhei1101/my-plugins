@@ -2,13 +2,24 @@
 issue-tool — workspace の `.work/issues/` 操作用 CLI。
 
 使い方:
-  python issue-tool.py close --issue-id ISSUE-N --resolution {resolved|wontfix} --linked-branch N [--issues-dir .work/issues]
+  python issue-tool.py close --issue-id ISSUE-N --resolution {resolved|wontfix} [--linked-branch BRANCH] [--issues-dir .work/issues]
+  python issue-tool.py set-status --issue-id ISSUE-N --status {not_started|in_progress} [--issues-dir .work/issues]
+  python issue-tool.py add-branch --issue-id ISSUE-N --branch BRANCH [--issues-dir .work/issues]
 
 サブコマンド:
   close          イシューを 1 件クローズする:
                    1. .work/issues/ISSUE-{N}.md を .work/issues/closed/ISSUE-{N}.md に移動
                    2. _index.yaml から該当エントリを削除
                    3. _index.archive.yaml の closed_issues に linked_branch 付きで追記
+                 --linked-branch は対応ブランチ名（任意・wontfix で未着手のまま閉じる場合は省略可）。
+  set-status     _index.yaml の該当エントリの status を更新する（作業状態の正である
+                 _index.yaml を AI 側が更新するために使用。エントリが無ければ警告のみ）。
+  add-branch     _index.yaml の該当エントリの branches 配列にブランチ名を追記する
+                 （イシューに対応するブランチ作成時に work:start が呼ぶ。重複は無視。
+                 エントリが無ければ警告のみ）。
+
+イシューファイルはフロントマターを持たない（# ISSUE-N から始まる）。作業状態（status / branches）は
+すべて _index.yaml が正で、このスクリプト経由で更新する。
 
 `.work/issues/` 配下の YAML 読み書きをこのスクリプト経由に集約することで、
 Claude Code のコンテキストに YAML ファイルを丸ごと読み込ませずに済み、
@@ -60,7 +71,7 @@ def cmd_close(args: argparse.Namespace) -> None:
     issues_dir = Path(args.issues_dir)
     issue_id: str = args.issue_id
     resolution: str = args.resolution
-    linked_branch: int = args.linked_branch
+    linked_branch: str | None = args.linked_branch
 
     if not issues_dir.exists():
         print(f"Skip: {issues_dir} does not exist", file=sys.stderr)
@@ -98,14 +109,16 @@ def cmd_close(args: argparse.Namespace) -> None:
     archive_original = archive_path.read_text(encoding="utf-8") if archive_path.exists() else ""
     archive_data: dict = yaml.safe_load(archive_original) or {} if archive_original else {}
     closed_issues: list[dict] = archive_data.get("closed_issues", [])
-    closed_issues.append({
+    record = {
         "id": issue_id,
         "title": entry.get("title", ""),
         "closed": date.today().isoformat(),
         "resolution": resolution,
-        "linked_branch": linked_branch,
         "tags": entry.get("tags", []) or [],
-    })
+    }
+    if linked_branch:
+        record["linked_branch"] = linked_branch
+    closed_issues.append(record)
     archive_data["closed_issues"] = closed_issues
     if "scan_records" not in archive_data:
         archive_data["scan_records"] = []
@@ -115,11 +128,68 @@ def cmd_close(args: argparse.Namespace) -> None:
     print(f"Closed {issue_id} (resolution={resolution}, linked_branch={linked_branch})")
 
 
+def cmd_set_status(args: argparse.Namespace) -> None:
+    """_index.yaml の該当イシューエントリの status を更新する。"""
+    issues_dir = Path(args.issues_dir)
+    issue_id: str = args.issue_id
+    status: str = args.status
+
+    index_path = issues_dir / "_index.yaml"
+    if not index_path.exists():
+        print(f"Skip: {index_path} does not exist", file=sys.stderr)
+        return
+
+    index_original = index_path.read_text(encoding="utf-8")
+    index_data: dict = yaml.safe_load(index_original) or {}
+    issues: list[dict] = index_data.get("issues", [])
+    entry = next((i for i in issues if i.get("id") == issue_id), None)
+    if entry is None:
+        print(f"Warning: {issue_id} not found in {index_path}", file=sys.stderr)
+        return
+
+    entry["status"] = status
+    index_data["issues"] = issues
+    _save(index_path, index_data, index_original)
+    print(f"Set {issue_id} status={status}")
+
+
+def cmd_add_branch(args: argparse.Namespace) -> None:
+    """_index.yaml の該当イシューエントリの branches 配列にブランチ名を追記する。"""
+    issues_dir = Path(args.issues_dir)
+    issue_id: str = args.issue_id
+    branch: str = args.branch
+
+    index_path = issues_dir / "_index.yaml"
+    if not index_path.exists():
+        print(f"Skip: {index_path} does not exist", file=sys.stderr)
+        return
+
+    index_original = index_path.read_text(encoding="utf-8")
+    index_data: dict = yaml.safe_load(index_original) or {}
+    issues: list[dict] = index_data.get("issues", [])
+    entry = next((i for i in issues if i.get("id") == issue_id), None)
+    if entry is None:
+        print(f"Warning: {issue_id} not found in {index_path}", file=sys.stderr)
+        return
+
+    branches: list[str] = entry.get("branches") or []
+    if branch in branches:
+        print(f"Skip: {issue_id} already has branch {branch}")
+        return
+    branches.append(branch)
+    entry["branches"] = branches
+    index_data["issues"] = issues
+    _save(index_path, index_data, index_original)
+    print(f"Added branch {branch} to {issue_id}")
+
+
 # ── main ────────────────────────────────────────────────────
 def main() -> int:
     args = parse_args()
     handlers = {
         "close": cmd_close,
+        "set-status": cmd_set_status,
+        "add-branch": cmd_add_branch,
     }
     try:
         handlers[args.subcommand](args)
@@ -147,8 +217,23 @@ def parse_args() -> argparse.Namespace:
         choices=["resolved", "wontfix"],
         help="クローズ時の解決区分",
     )
-    p_close.add_argument("--linked-branch", required=True, type=int, help="このイシューをクローズしたブランチの内部 ID")
+    p_close.add_argument("--linked-branch", default=None, help="このイシューをクローズしたブランチ名（任意）")
     p_close.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR), help=".work/issues/ のパス")
+
+    p_status = sub.add_parser("set-status", help="_index.yaml の status を更新する")
+    p_status.add_argument("--issue-id", required=True, help="例: ISSUE-001")
+    p_status.add_argument(
+        "--status",
+        required=True,
+        choices=["not_started", "in_progress"],
+        help="設定するステータス",
+    )
+    p_status.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR), help=".work/issues/ のパス")
+
+    p_branch = sub.add_parser("add-branch", help="_index.yaml の branches にブランチ名を追記する")
+    p_branch.add_argument("--issue-id", required=True, help="例: ISSUE-001")
+    p_branch.add_argument("--branch", required=True, help="追記するブランチ名（例: fix/foo）")
+    p_branch.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR), help=".work/issues/ のパス")
 
     return parser.parse_args()
 

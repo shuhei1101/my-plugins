@@ -14,7 +14,6 @@ dev-kit のようにトピック別サブフォルダに整理する。
 | `plugin-structure.md` | プラグイン作成・更新ガイド（version sync チェックリスト含む） |
 | `plugin-claude-md.md` | プラグインの CLAUDE.md 執筆ガイド |
 | `plugin-config.md` | config スキル設計ガイド |
-| `setup-wizard.md` | セットアップウィザードリファレンス |
 
 ### skill/ サブフォルダ候補
 
@@ -88,7 +87,7 @@ references/
 ├── skill/             # skill: skills.md
 ├── hook/              # hook: hooks.md, kit-hooks-sync.md, jinja2/
 ├── claude-md/         # CLAUDE.md/rules: claude-md.md, rules.md
-└── plugin/            # plugin: plugin-structure.md, plugin-claude-md.md, plugin-config.md, setup-wizard.md, version-sync.md（新規）
+└── plugin/            # plugin: plugin-structure.md, plugin-claude-md.md, plugin-config.md, version-sync.md
 ```
 
 ### version-sync.md について

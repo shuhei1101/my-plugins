@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-034: `work:branch-show` と `work:qa-review` の `description` にトリガー条件が不十分
 
 **作成日**: 2026-05-31

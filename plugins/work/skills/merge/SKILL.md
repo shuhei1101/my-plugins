@@ -2,14 +2,14 @@
 name: merge
 description: |
   Merge a branch: verify TODO checklist, archive index, merge with --no-ff, remove worktree and
-  branch, and confirm any remaining QA entries in the branch document.
+  branch, and confirm any remaining QA entries in the task document.
   Trigger when the user says "マージして", "merge して", or "ブランチをマージしたい".
 disable-model-invocation: true
 ---
 
 # work:merge — Merge a Branch
 
-Runs the full merge flow: TODO checklist verification → master compatibility check → close related issues → index archive → `--no-ff` merge → worktree cleanup → confirm remaining QA entries in the branch document → auto-invoke branch-reserve for any next branch candidates.
+Runs the full merge flow: TODO checklist verification → master compatibility check → conversation-to-claude inside the worktree (if enabled) → close related issues → index archive → `--no-ff` merge → worktree cleanup → confirm remaining QA entries in the task document → auto-invoke branch-reserve for any next branch candidates.
 
 > **Naming**: new branches use `{type}/{title}` (no `PR{N}/` prefix); new worktrees use
 > `{repo}-wt-{type}-{title}`. Legacy branches still on `PR{N}/{type}/{title}` with worktrees at
@@ -47,7 +47,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Output
 
-- Branch document path, branch name, and worktree path confirmed
+- Task document path, branch name, and worktree path confirmed
 
 ---
 
@@ -59,7 +59,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### Process
 
-1. Read the `## 作業内容` table in the branch document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md`
+1. Read the `## 作業内容` table in the task document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md`
 2. Confirm all rows have `済` in the `完了` column
 
 → Proceed to Step 3 only if all rows are `済`
@@ -84,7 +84,7 @@ All commands in this step must be run **inside the worktree** (`{WORKTREE_PATH}`
 
 1. Identify the merge target branch (`PARENT_BRANCH`) — the branch this branch will be merged into.
    In most cases this is `master`; for feature branches off `develop` it is `develop`.
-   Cross-check with Step 7 if unsure (Step 7 confirms the current branch is the parent before running the merge).
+   Cross-check with Step 8 if unsure (Step 8 confirms the current branch is the parent before running the merge).
 
 2. Always merge the target branch into this branch — **do not check the log first, do not skip**:
 
@@ -114,16 +114,69 @@ git -C {WORKTREE_PATH} status
 - Do not skip this step — merging the target branch into this branch before merging back is required
 - **Never use `git log` output to decide whether to skip the merge** — always run `git merge <PARENT_BRANCH>` unconditionally
 
-### Step 4: Close related issues (inside the worktree)
+### Step 4: Run conversation-to-claude inside the worktree
 
 #### Condition
 
 - Step 3 complete
+- `WORK_MERGE_CONV2CLAUDE` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip silently to Step 5
 
 #### Process
 
-1. Read the `## 関連イシュー` section of the branch document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md` in the worktree
-2. **If the section is absent, empty, or only contains the template placeholder row** (`| ISSUE-{N} | ... |`) → skip the rest of this step and proceed to Step 5
+Run **inside the worktree** so any generated `.claude/` artifacts land on the branch and are captured
+by the `--no-ff` merge — not committed straight to the parent branch.
+
+1. Change to the worktree directory:
+
+```bash
+cd {WORKTREE_PATH}
+```
+
+2. Invoke `/work:conversation-to-claude` and wait for it to complete. It analyzes this session and
+   persists any worthwhile knowledge as artifacts (skills / rules / hooks / CLAUDE.md / incidents /
+   glossary). The skill commits its own output.
+3. If anything generated under `.claude/` is still uncommitted, commit it inside the worktree:
+
+```bash
+git add .claude/
+git commit -m "docs: conversation-to-claude artifacts"
+```
+
+4. Return to the main repository directory:
+
+```bash
+cd -
+```
+
+→ Proceed to Step 5
+
+#### Notes
+
+- This step captures session knowledge before the branch is deleted — do not skip even if the conversation seems short; let the skill decide what to persist
+- This commit will be included in the `--no-ff` merge in Step 8
+
+##### Why run inside the worktree
+
+Running conversation-to-claude from the main repo (parent-branch cwd) writes `.claude/` files directly
+to the parent branch, scattering "branch work" and "session knowledge" across separate commits.
+Running inside the worktree includes them in the branch so the merge commit captures everything together.
+
+##### Prohibitions
+
+- Do not run conversation-to-claude from the parent-branch cwd (causes direct parent-branch commits)
+
+---
+
+### Step 5: Close related issues (inside the worktree)
+
+#### Condition
+
+- Step 4 complete
+
+#### Process
+
+1. Read the `## 関連イシュー` section of the task document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md` in the worktree
+2. **If the section is absent, empty, or only contains the template placeholder row** (`| ISSUE-{N} | ... |`) → skip the rest of this step and proceed to Step 6
 3. For each row in the table, run the close command **inside the worktree**:
 
 ```bash
@@ -131,13 +184,13 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" close \
   --issues-dir {WORKTREE_PATH}/.work/issues \
   --issue-id ISSUE-{NNN} \
   --resolution {resolved|wontfix} \
-  --linked-pr {N}
+  --linked-branch {BRANCH_NAME}
 ```
 
    The script:
    - Moves `.work/issues/ISSUE-{NNN}.md` → `.work/issues/closed/ISSUE-{NNN}.md`
    - Removes the entry from `_index.yaml` (gitignored — no commit needed)
-   - Appends a `closed_issues` entry (with `linked_pr`) to `_index.archive.yaml`
+   - Appends a `closed_issues` entry (with `linked_branch`) to `_index.archive.yaml`
 4. If `.work/issues/` does not exist on the project (issue management not adopted), the script prints a skip message — treat as a no-op
 5. Commit the changes inside the worktree:
 
@@ -146,12 +199,12 @@ git -C {WORKTREE_PATH} add .work/issues/
 git -C {WORKTREE_PATH} commit -m "chore: close related issues"
 ```
 
-→ Proceed to Step 5
+→ Proceed to Step 6
 
 #### Notes
 
 - The issue file moves are git-tracked renames; `_index.yaml` stays gitignored
-- This commit will be included in the `--no-ff` merge in Step 7
+- This commit will be included in the `--no-ff` merge in Step 8
 - If no issue rows were processed, do not create an empty commit
 
 ##### Why before mark-completed / archive
@@ -160,11 +213,11 @@ Running this step **before** `set-completed` / `archive` keeps the issue-close c
 
 ---
 
-### Step 5: Mark the branch as completed in index.yaml
+### Step 6: Mark the branch as completed in index.yaml
 
 #### Condition
 
-- Step 4 complete
+- Step 5 complete
 
 #### Process
 
@@ -175,7 +228,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
   .work/tasks/index.yaml --branch {full-branch-name}
 ```
 
-→ Proceed to Step 6
+→ Proceed to Step 7
 
 #### Notes
 
@@ -184,11 +237,11 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" set-completed \
 
 ---
 
-### Step 6: Archive completed index entries
+### Step 7: Archive completed index entries
 
 #### Condition
 
-- Step 5 complete
+- Step 6 complete
 
 #### Process
 
@@ -209,26 +262,26 @@ git -C {WORKTREE_PATH} add .work/tasks/index.archive.yaml
 git -C {WORKTREE_PATH} commit -m "chore: archive to index.archive.yaml"
 ```
 
-→ Proceed to Step 7
+→ Proceed to Step 8
 
 #### Notes
 
 - `index.yaml` remains gitignored — no commit needed for it
-- `index.archive.yaml` is git-tracked — commit it to the **branch** (not directly to the parent branch); it will be included in the --no-ff merge in Step 7
+- `index.archive.yaml` is git-tracked — commit it to the **branch** (not directly to the parent branch); it will be included in the --no-ff merge in Step 8
 - The archive command reads from the main repo's `index.yaml` and writes to the worktree's `index.archive.yaml`
 
 ---
 
-### Step 7: Execute the merge
+### Step 8: Execute the merge
 
 #### Condition
 
-- Step 6 complete
+- Step 7 complete
 
 > ⚠️ **Pre-merge check required**
-> If `index.archive.yaml` was not committed in the worktree in Step 6, the archive changes will be missing from the merge commit.
-> **Confirm that the `git commit` inside the worktree in Step 6 has completed before running the merge command.**
-> (Skip this check only if Step 6 reported 0 entries moved — no commit was needed.)
+> If `index.archive.yaml` was not committed in the worktree in Step 7, the archive changes will be missing from the merge commit.
+> **Confirm that the `git commit` inside the worktree in Step 7 has completed before running the merge command.**
+> (Skip this check only if Step 7 reported 0 entries moved — no commit was needed.)
 
 #### Notes
 
@@ -249,11 +302,11 @@ git merge --no-ff -m "{type}: {title}" {BRANCH_NAME}
 
    Where `{BRANCH_NAME}` is the actual branch name (new format: `{type}/{title}`; legacy: `PR{N}/{type}/{title}`).
 
-→ Proceed to Step 8
+→ Proceed to Step 9
 
 ---
 
-### Step 8: Remove the worktree and branch
+### Step 9: Remove the worktree and branch
 
 #### Process
 
@@ -264,7 +317,7 @@ git worktree remove {WORKTREE_PATH}
 git branch -d {BRANCH_NAME}
 ```
 
-→ Proceed to Step 9
+→ Proceed to Step 10
 
 #### Notes
 
@@ -274,11 +327,11 @@ git branch -d {BRANCH_NAME}
 
 ---
 
-### Step 9: Confirm remaining QA entries
+### Step 10: Confirm remaining QA entries
 
 #### Process
 
-1. Review the `## QA` section of the branch document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md` and confirm any remaining unresolved entries with the user
+1. Review the `## QA` section of the task document at `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md` and confirm any remaining unresolved entries with the user
 2. Commit if there are changes:
 
 ```bash
@@ -286,42 +339,42 @@ git add .work/
 git commit -m "docs: post-merge update"
 ```
 
-→ Proceed to Step 10
-
----
-
-### Step 10: Delegate next branch candidates to branch-reserve
-
-#### Condition
-
-- `WORK_MERGE_AUTO_HANDOFF` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip this step and proceed to Step 11
-
-#### Process
-
-1. Read the merged branch document and inspect its `## 次ブランチ候補` section
-2. **If next branch candidates exist**: invoke `/work:branch-reserve` (no user confirmation needed). Delegate all classification and reservation logic to that skill
-3. **If next branch candidates are empty**: skip branch-reserve
-
 → Proceed to Step 11
 
 ---
 
-### Step 11: Report merge completion
+### Step 11: Delegate next branch candidates to branch-reserve
+
+#### Condition
+
+- `WORK_MERGE_AUTO_HANDOFF` is not `false`/`0`/`no`/`off` (default: enabled); if disabled → skip this step and proceed to Step 12
+
+#### Process
+
+1. Read the merged task document and inspect its `## 次ブランチ候補` section
+2. **If next branch candidates exist**: invoke `/work:branch-reserve` (no user confirmation needed). Delegate all classification and reservation logic to that skill
+3. **If next branch candidates are empty**: skip branch-reserve
+
+→ Proceed to Step 12
+
+---
+
+### Step 12: Report merge completion
 
 #### Process
 
 1. Report the merge as complete to the user
    - Include the merged branch name and task folder
 
-→ Proceed to Step 12
+→ Proceed to Step 13
 
 ---
 
-### Step 12: Present next branch candidates in 3 categories
+### Step 13: Present next branch candidates in 3 categories
 
 #### Process
 
-Invoke `/work:branch-show` passing the merged branch document path as the data source.
+Invoke `/work:branch-show` passing the merged task document path as the data source.
 
 #### Notes
 
