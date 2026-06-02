@@ -106,24 +106,58 @@ Rules:
 For each finding, produce the Markdown body that will become the issue file content.
 Use `date +%Y-%m-%d` via Bash once to get today's date.
 
-The body must follow the `work-dir/イシュー.md` reference format exactly, **excluding the
-`# ISSUE-{N}: {タイトル}` header line** (the orchestrator prepends that after assigning the ID):
+The body must follow the `work-dir/イシュー.md` reference format exactly (no frontmatter),
+**excluding the `# ISSUE-{N}: {タイトル}` header line** (the orchestrator prepends that after
+assigning the ID). It has two halves: the AI-authored top half, then the `# ユーザー回答欄`
+(user answer section) with answer candidates and **blank** `**回答**:` for the human to fill later:
 
 ```markdown
 **作成日**: {YYYY-MM-DD}
 
-## 問題
-{具体的な問題の説明。ファイル名・行番号など具体的な位置を引用すること}
+## 概要
+{この発見が何についてか}
 
-## 修正案
-{修正の提案。省略可}
+## 背景
+{なぜ問題か。関連リファレンス・規約・技術的背景}
 
-## 水平展開
+## 現状
+{現在のコードの状態。ファイル名・行番号など具体的な位置を引用すること}
+
+## 原因
+{なぜこうなっているか。省略可}
+
+## 期待される状態
+{解決後に満たすべき状態}
+
+## 対応案
+{修正の提案。複数案を出す場合は表で列挙し、下の「## QA」に「どの案で進めるか」を必ず立てる}
+
+## 横展開
 {同様の問題が他のファイルにも波及する可能性がある場合に記述。省略可}
+
+---
+
+# ユーザー回答欄
+
+## 意思
+
+回答候補: 対応する / 対応しない / 様子見
+
+**回答**:
+
+## QA
+（着手前に決める判断があれば。対応案が複数なら「どの案で進めるか」を必須。無ければこの見出しごと削除）
+
+**回答**:
+
+## 自由記述
+
+**回答**:
 ```
 
-Do **not** include `Type` / `Priority` / `Tags` / `Scan scope` lines — classification goes only
-into `_index.yaml`, which the orchestrator updates from your returned metadata.
+Do **not** write a YAML frontmatter block, and do **not** include `Type` / `Priority` / `Tags` /
+`Scan scope` lines — classification goes only into `_index.yaml`, which the orchestrator updates
+from your returned metadata.
 
 #### Output
 
@@ -144,7 +178,7 @@ Return a JSON array — one element per finding. Include the full issue body as 
     "tags": ["..."],
     "scope": "src/...",
     "perspective": "{the perspective you were given}",
-    "body": "**作成日**: 2026-05-31\n\n## 問題\n...\n\n## 修正案\n..."
+    "body": "**作成日**: 2026-05-31\n\n## 概要\n...\n\n## 現状\n...\n\n## 対応案\n...\n\n---\n\n# ユーザー回答欄\n\n## 意思\n\n回答候補: 対応する / 対応しない / 様子見\n\n**回答**:\n\n## 自由記述\n\n**回答**:"
   }
 ]
 ```

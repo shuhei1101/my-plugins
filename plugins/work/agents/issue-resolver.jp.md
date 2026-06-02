@@ -24,35 +24,81 @@ tools: Read, Write, Edit, Glob, Grep, Bash
 オーケストレーターがプロンプトで渡すもの：
 
 - **イシュー id + パス** — 例: `ISSUE-042`（`.work/issues/ISSUE-042.md`）。
-- **確定した方針** — イシューの採用修正案（`## 修正案` 採用案）と `instruction` フロントマターキー
+- **確定した方針** — イシューの採用案（`## QA` の回答で選ばれた `## 対応案`）と `## 自由記述` の回答
   （レビュー時のユーザーの自由記述の対応指示）。
 - マージ待ち最終コミットで止まる指示（**マージしない**）。
 
-イシューファイル全体を自分で `Read` し、`## 問題点`・`## 期待される状態`・採用 `## 修正案`・
-`instruction` フロントマターキーを確認すること。
+イシューファイル全体を自分で `Read` し、`## 概要`・`## 現状`・`## 期待される状態`・採用 `## 対応案`
+（`## QA` の回答に従う）・`## 自由記述` の回答を確認すること。イシューファイルは**フロントマターを持たない**。
 
 ---
 
 ## 手順
 
-`work:start` スキルのフローに従う（正確な手順は `plugins/work/skills/start/SKILL.md` を `Read` してよい）。
-要約：
+> **2 ディレクトリモデル**: 起動時のカレントディレクトリが `MAIN_DIR`（メインリポジトリのルート）。
+> Step 2d 以降は、**全ファイル操作と全 git コマンドを `WT`（ワークツリー）で実行する**。混在厳禁。
 
 1. **ブランチを決める**（イシューから）: `type` はイシューの種別（fix / refactor / feat / …）、
-   タイトルはイシューから導く短い kebab-case。`WORK_BRANCH_AUTHOR` 設定時は尊重。
-2. **ブランチ + ワークツリーを作成**: `index.yaml` エントリを追加（`index-tool.py add`）、続けて
-   ワークツリー作成（`git worktree add -b {branch} ../{repo}-wt-{branch-hyphenated}`）。
-   `WORK_USE_WORKTREE` が falsy ならワークツリーは省略。
-3. **ブランチ文書を作成**（ワークツリー内、`.branch.md`、注入 `タスクドキュメント.md` テンプレートから）。
-   `## 作業内容` をイシューの採用方針から埋める。
-4. **イシューを連携**（work:start Step 6）: ワークツリー内でイシューのフロントマター
-   `status: in_progress` を設定、`branches:` にブランチを追記、ブランチ文書の `## 関連イシュー`
-   テーブルに追加、メインリポジトリの `_index.yaml` へ `set-status in_progress` をミラー。
-5. **初回コミット**: ブランチ文書のみ。
-6. **実装**: 採用 `## 修正案` + `instruction` キーに沿って修正。ブランチ上で意味のある単位でコミット。
-   可能なら検証・スモークテストしてブランチ文書の `## テスト` に記録。
-7. **最終コミット**（work:start Step 9）: `.work/notes/` の関連ノートを更新／作成し、`## 参考ドキュメント`
-   からリンク、`## 作業内容` の全行を `済` にして、ノート + ブランチ文書をコミット。
+   タイトルはイシューから導く短い kebab-case。`WORK_BRANCH_AUTHOR` 設定時は尊重:
+   ```bash
+   BRANCH_AUTHOR="${WORK_BRANCH_AUTHOR:-}"
+   # 著者なし: BRANCH="fix/personal-chat-tuning"
+   # 著者あり: BRANCH="fix/nishikawa/personal-chat-tuning"
+   ```
+
+2. **ブランチ + ワークツリーを作成** — ファイルに触る前に全サブステップを完了すること:
+
+   a. メインリポジトリルートを記録しパスを計算:
+      ```bash
+      MAIN_DIR="$(pwd)"
+      WT_SUFFIX="${BRANCH//\//-}"   # スラッシュ → ハイフン (例: fix-personal-chat-tuning)
+      WT="${MAIN_DIR}/../$(basename "$MAIN_DIR")-wt-${WT_SUFFIX}"
+      ```
+   b. `WORK_USE_WORKTREE` を確認（デフォルト `true`）:
+      ```bash
+      v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
+      ```
+   c. `MAIN_DIR` に `index.yaml` エントリを追加:
+      ```bash
+      python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" add "$MAIN_DIR/.work/tasks/index.yaml" \
+        --branch "$BRANCH" --title "{日本語タイトル}" --type {type} \
+        --summary "{summary}" --task "{YYMMDD}_{task-title}"
+      ```
+   d. **ワークツリー有効なら** — `git worktree add` で作成:
+      ```bash
+      git worktree add -b "$BRANCH" "$WT"
+      ```
+      > ⛔ `$MAIN_DIR` で `git checkout`・`git switch -c`・`git branch` を実行して
+      > ブランチを切ることは**絶対禁止**。ブランチはワークツリー内にのみ存在する。
+
+   e. **この時点以降、全 Write/Edit 操作と全 git コマンド（`git add`・`git commit`・
+      `git status`）は `$WT` で実行すること — `$MAIN_DIR` は使わない。**
+
+3. **ブランチ文書を作成**（パス: `{WT}/.work/tasks/{YYMMDD}_{task-title}/{YYMMDD}-{日本語タイトル}.branch.md`、
+   注入 `タスクドキュメント.md` テンプレートから）。`## 作業内容` をイシューの採用方針から埋める。
+
+4. **イシューを連携**: ブランチ文書の `## 関連イシュー` テーブルに行を追加（`$WT` 内）。続けて
+   **メインリポジトリ**の `_index.yaml`（git 管理外・ワークツリーには無い）に対して
+   `issue-tool.py` でステータスとブランチを更新する。イシューファイルは**フロントマターを持たない**ため
+   連携のためにファイル内を編集することはない:
+   ```bash
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
+     --issues-dir "$MAIN_DIR/.work/issues" --issue-id ISSUE-{N} --status in_progress
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" add-branch \
+     --issues-dir "$MAIN_DIR/.work/issues" --issue-id ISSUE-{N} --branch "$BRANCH"
+   ```
+
+5. **初回コミット** — `$WT` から実行、ブランチ文書のみ:
+   ```bash
+   cd "$WT" && git add .work/tasks/ && git commit -m "chore: $BRANCH のブランチドキュメントを作成"
+   ```
+
+6. **実装**: 採用 `## 対応案` + `## 自由記述` の指示に沿って `$WT` 内を修正。全コミットを `$WT`
+   から実行。可能なら検証・スモークテストしてブランチ文書の `## テスト` に記録。
+
+7. **最終コミット** — `$WT` から実行: `$WT/.work/notes/` の関連ノートを更新／作成し、
+   `## 参考ドキュメント` からリンク、`## 作業内容` の全行を `済` にして、ノート + ブランチ文書をコミット。
+
 8. **停止 — マージしない。** ブランチはマージ待ちでユーザーに残す。
 
 ---
@@ -63,7 +109,8 @@ QA は `work:issue-review` でイシュー上で解決される建付けなの�
 ただし、イシューが事前解決していない**真の未決事項**が生じ、当て推量すると誤実装のリスクがある場合：
 
 - 当て推量やマージを**しない**。
-- ブロッカーをイシューファイルの新しい `## QA` エントリ（`状態: 未解決`）として記録し、質問と選択肢を書く。
+- ブロッカーをイシューの `# ユーザー回答欄` に新しい `## QA` エントリ（`回答候補` 付き・`**回答**:` は空）
+  として記録し、質問と選択肢を書く。
 - 停止し、**ブロック**の結果を返す。（オーケストレーターがイシューを `not_started` に戻し、再レビュー可能にする）
 
 ---

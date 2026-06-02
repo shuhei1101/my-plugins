@@ -27,14 +27,15 @@ The plugin enforces a "one task = one branch" lifecycle through hooks. The full 
 6. **Merge** (`work:merge`)
    Verify the TODO checklist → merge the parent branch in → **close related issues** (each `## 関連イシュー` row via `issue-tool.py close`, moving it to `.work/issues/closed/` and recording it in `_index.archive.yaml`) → mark the branch completed in `index.yaml` → archive the branch document → `--no-ff` merge into the parent → remove the worktree → confirm remaining QA → auto-invoke `branch-reserve` for next candidates.
 
-**Issue sub-cycle**: issues live in `.work/issues/ISSUE-{N}.md` with a frontmatter
-`decision` / `status` / `branches` (source of truth; `status` mirrored to `_index.yaml`). The flow:
-**create** (`issue-create` / `issue-scan` → `decision: pending`, QA raised) →
-**review** (`issue-review`, mobile-first → user sets `decision` accept/reject, answers the issue's
-`## QA`, writes the `instruction` frontmatter key) →
-**resolve** (`issue-resolve` under `/loop`, one issue per tick → accept dispatches an
-`issue-resolver` subagent that runs `work:start` and stops at the merge-waiting commit; reject closes
-on the shared `chore/rejected-issues` branch) →
+**Issue sub-cycle**: issues live in `.work/issues/ISSUE-{N}.md` as a two-part Markdown file with
+**no frontmatter** — an AI-authored top half and a `# ユーザー回答欄` (user answer section: `## 意思`
+/ `## QA` / `## 自由記述`). Work state (`status` / `branches`) lives only in `_index.yaml`. The flow:
+**create** (`issue-create` / `issue-scan` → top half filled, answer section left blank with 回答候補, QA raised) →
+**review** (`issue-review`, mobile-first → user fills `## 意思` (対応する/対応しない), answers the
+issue's `## QA`, writes `## 自由記述`) →
+**resolve** (`issue-resolve` under `/loop`, one issue per tick → affirmative 意思 dispatches an
+`issue-resolver` subagent that runs `work:start` and stops at the merge-waiting commit; negative 意思
+closes on the shared `chore/rejected-issues` branch) →
 **close** (`merge` closes a branch's `## 関連イシュー` as `resolved`; the reject branch closes as
 `wontfix`). Because QA is settled on the issue at review time, the resolver subagent reaches the
 final commit without stopping for questions.
@@ -51,7 +52,7 @@ final commit without stopping for questions.
 | 6 | `work:plugin-config` | Interactively configure work env toggles in `settings.json` |
 | 7 | `work:issue-create` | Create issue files under `.work/issues/` |
 | 8 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
-| 9 | `work:issue-review` | Triage un-reviewed issues (set decision, answer QA, write `instruction`) — mobile-first via AskUserQuestion |
+| 9 | `work:issue-review` | Triage un-reviewed issues (fill `## 意思`, answer QA, write `## 自由記述`) — mobile-first via AskUserQuestion |
 | 10 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→`chore/rejected-issues` |
 | 11 | `work:impl-review` | Review implementation against the branch document |
 | 12 | `work:setup` | Initialize `.work/` directory structure from templates |
@@ -113,8 +114,9 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.63.0 | 2026-06-02 | Rename the glossary authoring-guide reference `references/conversation/` file to a Japanese name `用語集.md` (+ `.jp.md`) — drop the katakana filename; update `injection_rules` / `_index` / cross-links and all pointers accordingly |
-| 1 | 2.61.0 | 2026-06-02 | Add `${WORK_BASE_BRANCH}` env var — specify base branch for new worktrees; `git worktree add` branches from this commit-ish when set |
+| 1 | 2.64.0 | 2026-06-02 | Rename the glossary authoring-guide reference `references/conversation/` file to a Japanese name `用語集.md` (+ `.jp.md`) — drop the katakana filename; update `injection_rules` / `_index` / cross-links and all pointers accordingly |
+| 1 | 2.63.0 | 2026-06-02 | Redesign the ISSUE file format: drop YAML frontmatter; two-part Markdown layout (AI-authored top half + `# ユーザー回答欄` with `## 意思` / `## QA` / `## 自由記述`, answer candidates pre-filled, `**回答**:` left blank); rename `## 修正案`→`## 対応案` and drop the 問題点/詳細 section (背景/現状 cover it); move `status` / `branches` to `_index.yaml` (`issue-tool.py` gains `add-branch`); update `issue-create` / `issue-review` / `issue-resolve` / `issue-scan`, the `issue-scanner` / `issue-resolver` agents, and `work:start` issue-linking accordingly |
+| 2 | 2.61.0 | 2026-06-02 | Add `${WORK_BASE_BRANCH}` env var — specify base branch for new worktrees; `git worktree add` branches from this commit-ish when set |
 | 2 | 2.60.0 | 2026-06-01 | Issue review/resolve workflow: add ISSUE frontmatter (`decision` / `status` / `branches` / free-form `instruction`) and move QA onto the issue; add `work:issue-review` (mobile-first triage via AskUserQuestion) + `work:issue-resolve` (loop-driven, one issue/tick: accept→`issue-resolver` subagent whose model is chosen by issue difficulty — sonnet/opus, never haiku; reject→shared `chore/rejected-issues`) + `work:issue-resolver` agent; `work:start` links issues (sets `status: in_progress`, appends `branches`, fills `## 関連イシュー`); `issue-tool.py` gains `set-status` and `close --linked-branch` is now an optional branch name; document the work lifecycle in CLAUDE.md |
 | 1 | 2.62.0 | 2026-06-02 | Revive `work:conversation-to-claude` (formerly claude-kit, removed in PR181) — analyzes the session and auto-generates artifacts (skill / rule / hook / CLAUDE.md / incidents / glossary), delegating skill/rule/hook/CLAUDE.md to claude-kit creator skills; tighten the glossary/incidents inclusion bars (skip what is already in CLAUDE.md / a rule / the folder structure, and code bug fixes are not incidents). Add the `PreCompact` hook (`pre-compact.py`, toggle `${WORK_PRECOMPACT_CONV2CLAUDE}`) to run it before `/compact`, and restore the `work:merge` step that runs it inside the worktree (toggle `WORK_MERGE_CONV2CLAUDE`). Add `references/conversation/用語集.md` + `インシデント.md` (glossary/incidents authoring guides) auto-injected via ref-inject when editing `.claude/rules/glossary.md` / `.claude/rules/incidents.md` / `.claude/references/incidents/**` |
 | 2 | 2.59.0 | 2026-06-01 | Remove `work:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |

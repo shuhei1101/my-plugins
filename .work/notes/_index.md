@@ -108,6 +108,7 @@ env 設定・運用ポリシー・用語規約に関するメモ。
 |---|---|---|
 | 1 | [ステータスライン非表示バグ.md](バグ・不具合/ステータスライン非表示バグ.md) | ステータスライン非表示バグ — PR116 後の不具合メモ |
 | 2 | [incident-marketplace-json-merge-conflict-sed-mistake.md](バグ・不具合/incident-marketplace-json-merge-conflict-sed-mistake.md) | インシデント — marketplace.json マージコンフリクトを sed で解消した結果 version 行が重複 |
+| 3 | [issue-resolverワークツリー未作成バグ.md](バグ・不具合/issue-resolverワークツリー未作成バグ.md) | issue-resolver ワークツリー未作成バグ — 原因と修正 |
 
 ---
 
