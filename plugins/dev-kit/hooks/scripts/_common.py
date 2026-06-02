@@ -51,12 +51,14 @@ def already_dispatched_this_session(tag: str, session_id: str) -> bool:
 
     フラグが既に存在する場合は True を返す。存在しない場合はフラグを作成して False を返す。
     呼び出し元が早期リターンするかどうかを決定する。
+    `open("x")` による排他的生成で TOCTOU 競合を防ぐ。
     """
     flag = pathlib.Path(tempfile.gettempdir()) / f"{tag}-{session_id}"
-    if flag.exists():
+    try:
+        flag.open("x").close()  # 排他的作成: 既存なら FileExistsError
+        return False
+    except FileExistsError:
         return True
-    flag.touch()
-    return False
 
 
 def emit_block_reason(prompt_path: pathlib.Path) -> None:
