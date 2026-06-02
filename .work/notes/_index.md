@@ -38,6 +38,7 @@
 | 8 | [Jinja2テンプレート記法メモ.md](フック・自動化/Jinja2テンプレート記法メモ.md) | Jinja2 テンプレート記法メモ — .j2 ファイル記述時の既知の罠と対処法 |
 | 9 | [Jinja2テンプレート執筆ルール.md](フック・自動化/Jinja2テンプレート執筆ルール.md) | Jinja2 テンプレート執筆ルール — Markdown 出力時の注意事項 (PR222) |
 | 10 | [vscode-workspace-syncスキル.md](フック・自動化/vscode-workspace-syncスキル.md) | vscode-workspace-syncスキル — VS Code ワークスペースと worktree の同期 |
+| 11 | [マージ後プッシュ・アップグレードフック.md](フック・自動化/マージ後プッシュ・アップグレードフック.md) | マージ後プッシュ・アップグレードフック — masterマージ後の自動push+upgrade |
 
 ---
 
