@@ -68,6 +68,16 @@ should be **ignored while this skill is running**:
    WT_PATH="../$(basename $(pwd))-wt-${WT_SUFFIX}"
    git worktree add -b "$BRANCH" "$WT_PATH"
    ```
+4. If `AUTO_MERGE`, carry any **uncommitted issue-file changes** from the main repo into the worktree
+   so they are committed together with the scan results. Run in the main repo root:
+   ```bash
+   # Modified tracked files
+   git diff --name-only HEAD -- .work/issues/
+   # Untracked new files
+   git ls-files --others --exclude-standard .work/issues/
+   ```
+   For each path returned, copy `{main_repo}/{path}` → `{WT_PATH}/{path}` (overwrite). Skip if both
+   lists are empty.
 
 → Step 1
 
