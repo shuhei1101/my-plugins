@@ -59,6 +59,7 @@
 | 12 | [debug-fabスキル.md](スキル設計/debug-fabスキル.md) | debug-fabスキル — 開発系画面のフロートデバッグボタン |
 | 13 | [html-kitスキル群.md](スキル設計/html-kitスキル群.md) | html-kitスキル群 — dev-kit の HTML/UI 系スキル群と規約 |
 | 14 | [skill-template-standards.md](スキル設計/skill-template-standards.md) | skill-template-standards — SKILL.jp.md テンプレート標準とサブエージェントガイド |
+| 15 | [会話キャプチャスキル.md](スキル設計/会話キャプチャスキル.md) | 会話キャプチャスキル — work:conversation-to-claude（セッションからアーティファクト自動生成） |
 
 ---
 
