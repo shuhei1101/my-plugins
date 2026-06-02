@@ -1201,3 +1201,10 @@ branches:
   summary: utils プラグインに JP ミラー→英語版の翻訳スキル・サブエージェントを追加
   task: 260602_utils-JPミラー翻訳スキル
   completed: true
+- branch: feat/base-branch-config
+  created: '2026-06-02'
+  title: ベースブランチ設定の追加
+  type: feat
+  summary: WORK_BASE_BRANCH 環境変数を追加し、worktree 作成時のベースブランチを設定可能にする
+  task: 260602_base-branch-config
+  completed: true
