@@ -2,33 +2,44 @@
 
 ## 概要
 
-work-kit プラグインに含まれるスキルの設計・目的・相互関係を記録するノート。
+work プラグイン（旧称 work-kit）に含まれるスキルの設計・目的・相互関係を記録するノート。
 
 ## スキル一覧
 
+現行 18 スキル（`plugins/work/skills/` 配下のディレクトリと一致）。スキル名は `work:` プレフィックス付きで呼び出す（例: `/work:start`）。
+
 | スキル名 | 目的 |
 |---|---|
-| `work-start` | 新しいPRを開始：ワークツリー・タスクフォルダ・TODO.md・QA.mdを作成 |
-| `merge` | PRをマージ：TODO確認・git merge・index.yaml更新・ワークツリー削除 |
-| `update` | work-kit スキルを手動更新する |
-| `setup` | `.work/` ディレクトリを初期化する（プロジェクトに初回導入） |
-| `branch-index-cleanup` | 古いブランチとindex.yamlエントリをクリーンアップ |
-| `branch-reserve` | 次ブランチをコンテキスト付きで予約（PR91で追加、#230でリネーム） |
-| `branch-show` | 次ブランチ候補を3カテゴリ（着手可能・進行中・条件あり）で一覧表示（PR109で追加、#230でリネーム） |
-| `work-add` | git worktree とブランチを作成（PR163 で worktree-kit から統合） |
-| `vscode-workspace-sync` | VS Code `.code-workspace` の `folders` を worktree と同期する PostToolUse フックを設定（PR163 で worktree-kit から統合） |
+| `start` | 新しいブランチを開始：ブランチ名決定・`index.yaml` エントリ追加・worktree 作成・タスクドキュメント作成 |
+| `quick-task` | ソースを主に編集しない軽量作業（調査・確認・リサーチ・コード読解）向け。ブランチ + 軽量タスクドキュメントを作成して保存（実装/QA ゲート・ノート必須・merge セレモニーなし） |
+| `merge` | ブランチをマージ：作業内容チェックリスト確認・index アーカイブ・`--no-ff` マージ・worktree/ブランチ削除・残 QA 確認 |
+| `worktree-create` | git worktree とブランチを作成（`work:start` Step 4 から呼ばれる、または直接） |
+| `setup` | `.work/` ドキュメント構造を初期化（`tasks/` `notes/` `issues/` `QA.md`） |
+| `branch-reserve` | 現ブランチ完了後、`## 次ブランチ候補` を読んで次ブランチを予約し、背景コンテキストを新タスクドキュメントに記録 |
+| `branch-show` | 次ブランチ候補を 3 カテゴリ（着手可能・他所で進行中・条件あり）で一覧表示 |
+| `branch-index-cleanup` | git ブランチと `index.yaml` / `index.archive.yaml` の乖離を監査し、未登録ブランチを A（削除）/ B（アーカイブ + 削除）/ C（index 追加）に分類して整理 |
+| `issue-create` | ユーザーの問題説明を解釈し `.work/issues/` 配下の個別イシューファイルに分割 |
+| `issue-review` | 未レビューのイシューを 1 件ずつレビュー：`## 意思`（対応する/しない）と `## QA` を AskUserQuestion で確定（モバイル前提） |
+| `issue-resolve` | レビュー済みイシューを上から 1 件ずつ自律対応。肯定は `work:issue-resolver` サブエージェントへ、否定は使い捨てブランチで即 master マージしてクローズ（`/loop` 前提） |
+| `issue-scan` | オーケストレーター。N 個のスキャン観点を選び `work:issue-scanner` サブエージェントを並列起動してコードを ref-inject リファレンスと突合、ISSUE ファイルを生成 |
+| `impl-review` | 今回の実装内容を振り返ってレビューする（「実装内容を確認したい」「今回の変更をレビューしたい」）※現状 `SKILL.jp.md` のみで英語正本 `SKILL.md` が欠落 |
+| `qa-wizard` | タスクドキュメントの `## QA` 項目をレビュー・回答・解決する |
+| `conversation-to-claude` | 現セッションの会話履歴を分析し、知見/手順を永続化する成果物（skill / rule / hook / CLAUDE.md / incidents / glossary）を自動生成 |
+| `plugin-config` | work プラグインの env トグルを対話設定 |
+| `plugin-migrate` | プロジェクトの work 生成物を現行バージョンに整合：`.work/.gitignore` 同期・レガシー `.work/CLAUDE.md` 削除・`index.yaml` スキーマ移行 |
+| `vscode-workspace-sync` | VS Code `.code-workspace` の `folders` を git worktree と同期する PostToolUse フックを設定 |
 
 ## worktree-kit 統合（PR163）
 
-worktree-kit プラグインを廃止し、`work-add` / `vscode-workspace-sync` を work-kit に取り込んだ。
-work-kit ← worktree-kit の片方向依存しかなく、別プラグインに分ける利点がなかったため。
+worktree-kit プラグインを廃止し、`worktree-create`（旧 `work-add`）/ `vscode-workspace-sync` を work に取り込んだ。
+work ← worktree-kit の片方向依存しかなく、別プラグインに分ける利点がなかったため。
 
-ワークツリーの利用可否は環境変数 `WORK_KIT_USE_WORKTREE` で切り替える:
+ワークツリーの利用可否は環境変数 `WORK_USE_WORKTREE` で切り替える:
 
 - 未設定 / `true` 等 → ワークツリーを使用（デフォルト）
-- `false` / `0` / `no` → ワークツリー作成をスキップし `.work/` 管理のみで継続
+- `false` / `0` / `no` / `off` → ワークツリー作成をスキップし `.work/` 管理のみで継続
 
-work-start Step 4 がこの env var を読んで分岐する（従来の「worktree-kit インストール有無」判定を置き換え）。
+`work:start` Step 4 がこの env var を読んで分岐する（従来の「worktree-kit インストール有無」判定を置き換え）。
 
 ## branch-reserve スキルの設計（旧 pr-handoff）
 
@@ -280,3 +291,4 @@ UserPromptSubmit フックの Step 3 が「ソースコードをメインに編�
 | 1 | 260531 | branch-index-cleanup / merge archive フローの現行仕様を specs から追記 | 260531_notes-spec-and-ref-inject |
 | 2 | 260531 | 修正案サブセクション細分化・横展開改名を追記 | 260531_issueスキル改善 |
 | 3 | 260602 | 拡張子 .branch.md→.task.md・用語をタスクドキュメントに統一・work:quick-task 新設を追記 | 260602_ブランチ文書拡張子をtaskへ変更 |
+| 4 | 260602 | スキル一覧表を現行 18 スキルへ刷新（旧名 work-start/work-add/update 等を是正・issue 系/impl-review/conversation-to-claude/plugin-* 等を追加）。env 変数 `WORK_KIT_USE_WORKTREE`→`WORK_USE_WORKTREE` 修正 | 260602_work-kitスキル群ノート現行化 |
