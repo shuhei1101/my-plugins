@@ -257,3 +257,15 @@ scan_records:
   skill: issue-scan
   scope: layer:agent-definitions
   issues_found: []
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "folder:work/hooks"
+  issues_found: [ISSUE-175, ISSUE-176, ISSUE-177, ISSUE-178, ISSUE-179]
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "folder:dev-kit/hooks"
+  issues_found: [ISSUE-180, ISSUE-181, ISSUE-182, ISSUE-183]
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "glob:plugin.json"
+  issues_found: [ISSUE-184, ISSUE-185, ISSUE-186]
