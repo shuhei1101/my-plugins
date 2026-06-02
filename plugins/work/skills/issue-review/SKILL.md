@@ -31,7 +31,7 @@ and each `## QA` entry's `**回答**:` to a single choice. Any free-form note is
 - **Un-reviewed** = an issue whose `## 意思` `**回答**:` still lists multiple candidates (not narrowed
   to one — e.g. it still reads `対応する / 対応しない / 様子見`). Issues narrowed to a single 意思 are
   skipped; `closed/` is ignored.
-- The issue file format (no frontmatter, answer section on top) is governed by `work-dir/イシュー.md`
+- The issue file format (no frontmatter, answer section at the bottom) is governed by `work-dir/イシュー.md`
   (auto-injected when you edit a `.work/issues/` file) — follow it.
 
 ---

@@ -91,9 +91,9 @@ Example: "The chat history is hard to read, and settings reset on restart"
    `.work/issues/ISSUE-{N}.md`.
    - Writing the file auto-injects the `work-dir/イシュー.md` reference — **follow its format exactly**.
    - The file has **no frontmatter** — it starts at `# ISSUE-{N}: {タイトル}`.
-   - Place the **`# ユーザー回答欄`** (`## 意思` + `## QA`) near the **top**, right after the title and
-     date; the **issue body (AI-authored)** (`## 概要` / `## 背景` / `## 現状` / (`## 原因` if a bug) /
-     `## 期待される状態` / `## 対応案` / `## 横展開` etc.) goes below the `---`. Write the body in
+   - Write the **issue body (AI-authored)** (`## 概要` / `## 背景` / `## 現状` / (`## 原因` if a bug) /
+     `## 期待される状態` / `## 対応案` / `## 横展開` etc.) right after the title and date; place the
+     **`# ユーザー回答欄`** (`## 意思` + `## QA`) at the **bottom**, after the `---`. Write the body in
      Japanese, following the injected template. Do not write Type/Priority/Tags lines (those live in
      `_index.yaml`).
    - In the **`# ユーザー回答欄`**, pre-fill each `**回答**:` line with **every candidate** (e.g.

@@ -22,3 +22,9 @@ Japanese mirror: `.claude/rules/glossary.jp.md`
 | Term | Description |
 |---|---|
 | ref-inject | The reference auto-injection mechanism (the `ref-inject` plugin and the `*-kit` hooks it seeds). On a matching Write/Edit/Read, the hook injects `required` references **full-body** and `optional` ones as **path + description only**, throttled by a per-session two-tier TTL token (`patterns` + `references` namespaces) so the same body is not re-injected until the TTL elapses. |
+
+## work plugin
+
+| Term | Description |
+|---|---|
+| イシューテンプレート (issue template) | The issue file format, lifecycle, and `_index.yaml` schema are defined in `plugins/work/references/work-dir/イシュー.md`. Edit this file when changing the template structure — not individual issue files. |

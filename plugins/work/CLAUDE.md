@@ -28,8 +28,8 @@ The plugin enforces a "one task = one branch" lifecycle through hooks. The full 
    Verify the TODO checklist → merge the parent branch in → **close related issues** (each `## 関連イシュー` row via `issue-tool.py close`, moving it to `.work/issues/closed/` and recording it in `_index.archive.yaml`) → mark the branch completed in `index.yaml` → archive the task document → `--no-ff` merge into the parent → remove the worktree → confirm remaining QA → auto-invoke `branch-reserve` for next candidates.
 
 **Issue sub-cycle**: issues live in `.work/issues/ISSUE-{N}.md` as a two-part Markdown file with
-**no frontmatter** — a `# ユーザー回答欄` (user answer section: `## 意思` / `## QA`) placed near the
-**top** so answered-state is visible at a glance, then the AI-authored issue body below it. Each QA
+**no frontmatter** — the AI-authored issue body first, then a `# ユーザー回答欄` (user answer section:
+`## 意思` / `## QA`) at the **bottom** after `---`. Each QA
 carries a number, title, options, and an AI 推奨. Work state (`status` / `branches`) lives only in
 `_index.yaml`. The flow:
 **create** (`issue-create` / `issue-scan` → body + answer-section scaffolding written, each `**回答**:`
@@ -119,7 +119,8 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.70.0 | 2026-06-02 | Remove `work:quick-task` skill and revert the UserPromptSubmit hook Step 3 to always run `work:start` |
+| 1 | 2.71.0 | 2026-06-02 | Move `# ユーザー回答欄` to the **bottom** of the issue file (after `---`, following the AI-authored body); update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve`, the `issue-scanner` agent, and this CLAUDE.md |
+| 〃 | 2.70.0 | 2026-06-02 | Remove `work:quick-task` skill and revert the UserPromptSubmit hook Step 3 to always run `work:start` |
 | 〃 | 2.69.0 | 2026-06-02 | Rename the task-document file extension `.branch.md` → `.task.md` (matches the `tasks/` folder) and bulk-rename the 266 existing documents; rename the concept **"branch document" → "task document"** across all current-spec references / skills / agents / hooks / CLAUDE.md (changelog history left unchanged) |
 | 1 | 2.68.0 | 2026-06-02 | Change `issue-resolve`'s REJECT flow: instead of accumulating rejects on a shared `chore/rejected-issues` branch, each reject is closed on a throwaway per-issue branch (`chore/reject-ISSUE-{N}`) and **merged to master immediately** within the same tick. The close runs in the **main repo** (not a worktree) so it updates the gitignored `_index.yaml` (the source of truth Step 1 reads); the gitignored edit survives the `master` switch while the tracked file move reaches master via the merge commit — keeping master and the issue index consistent every tick (no drift). Update `issue-resolve` SKILL + JP mirror and this CLAUDE.md (lifecycle prose + Skills table) |
 | 1 | 2.67.0 | 2026-06-02 | Redesign the ISSUE user-answer section: move `# ユーザー回答欄` (`## 意思` / `## QA`) to the **top** of the file (answered-state visible without scrolling), AI-authored issue body below; each QA now carries a number, title, options, and an AI `**推奨**:`; drop `## 自由記述` (free-form notes go inline on the `## 意思` answer); replace the `回答候補`/blank-`回答` model — the AI pre-fills each `**回答**:` with all candidates and the user narrows it to one. Update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve` / `issue-scan`, the `issue-scanner` / `issue-resolver` agents, and this CLAUDE.md |

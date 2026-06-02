@@ -28,9 +28,9 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
    TODO チェックリスト検証 → 親ブランチを取り込み → **関連イシューをクローズ**（`## 関連イシュー` の各行を `issue-tool.py close` で `.work/issues/closed/` へ移動し `_index.archive.yaml` に記録）→ `index.yaml` でブランチを完了化 → タスクドキュメントをアーカイブ → `--no-ff` で親ブランチへマージ → ワークツリー削除 → 残 QA 確認 → 次ブランチ候補があれば `branch-reserve` を自動起動。
 
 **イシューのサブサイクル**: イシューは `.work/issues/ISSUE-{N}.md` に存在し、**フロントマターを持たない**
-2 分割の Markdown ファイル — `# ユーザー回答欄`（`## 意思` / `## QA`）を**上部**に置き（回答済みか
-一目で分かるように）、その下に AI 記入のイシュー本文。各 QA は番号・タイトル・選択肢・AI 推奨を持つ。
-作業状態（`status` / `branches`）は `_index.yaml` のみが持つ。流れ：
+2 分割の Markdown ファイル — AI 記入のイシュー本文を先に置き、`---` の後、`# ユーザー回答欄`（`## 意思` / `## QA`）
+をファイルの**下部**に置く。各 QA は番号・タイトル・選択肢・AI 推奨を持つ。作業状態（`status` / `branches`）は
+`_index.yaml` のみが持つ。流れ：
 **作成**（`issue-create` / `issue-scan` → 本文と回答欄の雛形を記入、各 `**回答**:` に全候補を事前記入、QA 提起）→
 **レビュー**（`issue-review`、スマホ主用途 → ユーザーが `## 意思`（対応する/対応しない）と各 `## QA` の
 `**回答**:` を 1 つに絞る）→
@@ -117,6 +117,7 @@ resolver サブエージェントは質問で止まらず最終コミットま�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
+| 1 | 2.71.0 | 2026-06-02 | イシューのユーザー回答欄を**下部**へ移動（`---` の後、AI 記入本文の下）。`イシュー.md` テンプレート・`issue-create` / `issue-review` / `issue-resolve` スキル、`issue-scanner` エージェント・本 CLAUDE.md を更新 |
 | 1 | 2.70.0 | 2026-06-02 | `work:quick-task` スキルを削除し、UserPromptSubmit フックの Step 3 を `work:start` のみ実行する形に戻す |
 | 〃 | 2.69.0 | 2026-06-02 | タスクドキュメントのファイル拡張子を `.branch.md` → `.task.md` に変更（`tasks/` フォルダ名と整合）し既存 266 件を一括リネーム。概念名を **「ブランチドキュメント」→「タスクドキュメント」** に統一（全カレント仕様の references / skills / agents / hooks / CLAUDE.md。changelog 履歴は不変） |
 | 1 | 2.68.0 | 2026-06-02 | `issue-resolve` の REJECT フローを変更: reject を共有 `chore/rejected-issues` ブランチに蓄積する方式をやめ、各 reject を使い捨ての 1 イシュー専用ブランチ（`chore/reject-ISSUE-{N}`）でクローズし同一 tick 内で**即 master へマージ**する。close は**メインリポ**（ワークツリーではない）で実行し、gitignore な `_index.yaml`（Step 1 が読む正）を直接更新。その gitignore な編集は `master` 切替を生き残り、追跡上のファイル移動はマージコミットで master に届く — master とイシューインデックスが毎 tick で整合し乖離しない。`issue-resolve` SKILL + JP ミラー・本 CLAUDE.md（ライフサイクル記述 + Skills 表）を更新 |
