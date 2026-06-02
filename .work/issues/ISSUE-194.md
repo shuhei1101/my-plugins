@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/dev-kit/references/.ref-inject/_index.yaml`（機械可読インデックス）には `next/backend/ローカルYAML開発DB.md` が登録されており、ファイルも実在するが、`plugins/dev-kit/references/_index.md`（人間向けインデックス）には掲載されていない。
@@ -18,8 +29,3 @@
 
 - `plugins/dev-kit/references/_index.md`: `next/backend/ローカルYAML開発DB.md` のエントリを追記
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

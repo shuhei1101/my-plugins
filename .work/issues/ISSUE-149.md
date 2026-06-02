@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/dev-kit/references/.ref-inject/_index.yaml`（EN 側）に `next/testing/E2Eテスト.jp.md` という JP ミラーファイルのパスが直接登録されている。JP ミラーは人間参照用で AI 注入対象外のはずであり、`_index.yaml` に含めるべきではない。
@@ -22,8 +33,3 @@
 
 - `plugins/dev-kit/references/.ref-inject/_index.yaml`: JP ミラーパスのエントリを削除
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

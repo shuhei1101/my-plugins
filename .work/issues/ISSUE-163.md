@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 v2.53.1 で `references/` がサブフォルダ（`notes/`・`work-dir/`・`skill-sync/`）に分割されたが、JP ミラーの「英語原文」参照行が旧パス（サブフォルダなし）のまま残っている。これは人間が手動で参照する際に混乱を招く（ファイルは実際には別の場所にある）。
@@ -20,8 +31,3 @@ v2.53.1 で `references/` がサブフォルダ（`notes/`・`work-dir/`・`skil
 - `plugins/work/references/work-dir/タスクインデックス.jp.md`: `タスクインデックス.md` → `references/work-dir/タスクインデックス.md`
 - `plugins/work/references/work-dir/イシュー.jp.md`: `イシュー.md` → `references/work-dir/イシュー.md`
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

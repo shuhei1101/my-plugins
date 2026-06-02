@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/claude-kit/hooks/templates/injection.md.j2` と `injection.jp.md.j2` の `{% if not jp_mirror %}` ブロックが、Jinja2 テンプレート執筆ガイド（`references/hook/jinja2/テンプレート注意点.md` Pitfall 3）で定義した「ブロックタグ直後に空行なしのブロックレベル要素」アンチパターンに該当している。
@@ -30,8 +41,3 @@
 - `plugins/claude-kit/hooks/templates/injection.md.j2`: `{% if not jp_mirror %}` の直後に空行を追加
 - `plugins/claude-kit/hooks/templates/injection.jp.md.j2`: 同上
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

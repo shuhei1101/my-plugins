@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/work/agents/issue-scanner.md` の Step 5「Return findings as JSON」セクションにある JSON サンプルの `body` 文字列が、v2.71.0 で変更された現行フォーマットと一致していない。
@@ -25,8 +36,3 @@ JSON サンプル（Step 5）の `body` を Step 4 テンプレートおよび `
 
 - `plugins/work/agents/issue-scanner.md`: Step 5 の JSON body サンプルを現行フォーマットに修正
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

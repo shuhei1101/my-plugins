@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/claude-kit/scripts/apply-statusline.py` の 9 行目で `SETTINGS_PATH = Path.home() / ".claude" / "settings.json"` がモジュールレベルの定数として宣言されている。
@@ -18,8 +29,3 @@ SKILL.md (`statusline-setup/SKILL.md`) には環境確認の警告注記があ�
 
 - `plugins/claude-kit/scripts/apply-statusline.py`: `SETTINGS_PATH` を `main()` 内に移動し、適用前にパスを stderr 出力する
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

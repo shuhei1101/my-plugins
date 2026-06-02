@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/ref-inject/templates/hooks/scripts/references_edit_guard.py` はプラグインルートを `pathlib.Path(__file__).resolve().parents[2]` のみで解決している。
@@ -39,8 +50,3 @@ plugin_root = pathlib.Path(plugin_root_env) if plugin_root_env else pathlib.Path
 
 - `plugins/ref-inject/templates/hooks/scripts/references_edit_guard.py`: `plugin_root` 解決ロジックを修正
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

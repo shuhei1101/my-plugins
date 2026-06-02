@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [x] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 概要
 
 `plugins/dev-kit/.claude-plugin/plugin.json` の `description` フィールドが `v4.11.1` の変更記述で終わっており、`v4.13.0` 以降の変更（setup-wizard 削除、plugin-config 削除と復元）が反映されていない。一方 `.claude-plugin/marketplace.json` の同エントリは `v4.13.0` まで含んだより新しい本文になっており、両ファイルの description が乖離している。
@@ -42,14 +53,4 @@
 
 `plugins/dev-kit/.claude-plugin/plugin.json` の description を `marketplace.json` の本文に合わせた上で、v4.14.0・v4.15.0 の変更行を両ファイルに追記して揃える。
 
----
 
-# ユーザー回答欄
-
-> 各 `**回答**:` 行で不要な選択肢を消して 1 つだけ残す。
-
-## 意思
-
-このイシューに対応するか。
-
-**回答**: 対応する

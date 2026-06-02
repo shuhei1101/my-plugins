@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `work:plugin-config` スキルが管理するトグル名と、`plugins/work/CLAUDE.md` の `## Environment Variables` 表に記載されている名前が複数箇所で一致していない。スキルが存在しない変数を設定したり、CLAUDE.md に記載された変数がスキルで管理されないという矛盾が生じている。
@@ -25,8 +36,3 @@
 - `plugins/work/skills/plugin-config/SKILL.md`: 管理トグル表のvar名修正・`${}` ラッパー統一
 - `plugins/work/skills/plugin-config/SKILL.jp.md`: JP ミラー同期
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

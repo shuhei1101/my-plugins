@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `dev-kit:next-plan` の `References` セクションが `references/injection_rules.yaml`（アンダースコアなし）を参照しているが、v4.2.0 でこのファイルは `_injection_rules.yaml` に改名されている。旧名のファイルは存在しない。
@@ -20,8 +31,3 @@ v4.2.0 changelog:
 - `plugins/dev-kit/skills/next-plan/SKILL.md`: References セクションのファイル名を修正
 - `plugins/dev-kit/skills/next-plan/SKILL.jp.md`: 同上
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

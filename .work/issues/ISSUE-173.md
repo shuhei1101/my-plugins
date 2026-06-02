@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `SKILL.jp.md` に YAML frontmatter（`name` / `description`）を持つスキルと持たないスキルが混在している。`html-implement` / `html-logging` / `html-mock` / `py-script` の `SKILL.jp.md` には frontmatter がなく、代わりに `**スキル名**:` / `**トリガー**:` 等のインライン Markdown 記述でメタデータを表現している。
@@ -19,8 +30,3 @@ JP ミラーは通常 auto-load されないので実害は小さいが、フォ
 - `plugins/dev-kit/skills/html-mock/SKILL.jp.md`: YAML frontmatter 追加
 - `plugins/dev-kit/skills/py-script/SKILL.jp.md`: YAML frontmatter 追加
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

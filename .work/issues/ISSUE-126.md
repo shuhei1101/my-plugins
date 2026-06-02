@@ -2,6 +2,17 @@
 
 **作成日**: 2026-05-31
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 概要
 
 `references/.ref-injects/_index.yaml` の `plugin/プラグイン構造.md` エントリの description に、現在使われていない旧スキル名 `plugin-update` と省略形 `config` が残っている。
@@ -39,15 +50,4 @@ description: How to author or update a plugin. Standard directory layout, plugin
 
 `_index.yaml` の description は本文変更時に見落とされやすい。本文のスキル名変更時に `_index.yaml` description も必ず確認するよう、`plugin-migrate` のチェックリストに追加することを推奨する。
 
----
 
-# ユーザー回答欄
-
-> 回答方法: 各 `**回答**:` 行で不要な選択肢を消し、1 つだけ残す（`{回答を入力}` は自由記入）。
-> AI は選択肢・推奨と、候補を並べた `**回答**:` 行まで用意する。
-
-## 意思
-
-このイシューに対応するか。
-
-**回答**: 対応する / 対応しない

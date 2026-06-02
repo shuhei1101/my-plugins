@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `dev-kit:py-script` の `SKILL.md` と `dev-kit:py-project` の `SKILL.jp.md`（SKILL.md は欠落）が Step 1 で `{plugin_root}/references/python/index.yaml` の読み込みを指示しているが、このファイルは存在しない。
@@ -29,8 +40,3 @@ A) `references/_index.md`（全体インデックス）を参照する / B) `ref
 
 **回答**: <!-- A / B -->
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

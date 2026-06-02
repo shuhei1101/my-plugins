@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/work/skills/impl-review/` に `SKILL.jp.md` のみ存在し、**`SKILL.md`（英語ソースファイル）が存在しない**。`SKILL.jp.md` の先頭コメントは「Japanese mirror of SKILL.md」と明記しているが、参照先が実在しない。
@@ -16,8 +27,3 @@ Claude Code はスキルを呼び出す際に `SKILL.md` を読み込むため�
 
 - `plugins/work/skills/impl-review/SKILL.md`: 新規作成（英語ソース）
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

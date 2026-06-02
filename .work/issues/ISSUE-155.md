@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/claude-kit/skills/claude-refactor/SKILL.md` の Step 1・Step 2・References セクションで、参照するガイドを `common.md`、`rules.md`、`skills.md`、`hooks.md`、`claude-md.md`、`provenance.md` というショートネーム（パスなし）で列挙している。3.48.0 の再編後、これらのファイルは実在せず、現行パスはいずれも日本語サブフォルダ配下にある。
@@ -26,8 +37,3 @@ Step 1 の読み込み指示・Step 2 のアノテーション・References セ�
 - `plugins/claude-kit/skills/claude-refactor/SKILL.md`: Step 1・Step 2・References の旧ショートネームを現行フルパスに修正
 - `plugins/claude-kit/skills/claude-refactor/SKILL.jp.md`: JP ミラー同期
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

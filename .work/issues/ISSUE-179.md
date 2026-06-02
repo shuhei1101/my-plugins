@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `pre-compact.py` と `user-prompt-submit.py` が `sys.argv[1]` に直接アクセスしているが、引数が渡されなかった場合の `IndexError` ガードがない。`stop.py` は `if len(sys.argv) < 2: return` でガードしているが、他の 2 ファイルは未対応。
@@ -27,8 +38,3 @@ prompt_path = pathlib.Path(sys.argv[1])
 - `plugins/work/hooks/scripts/pre-compact.py`: `sys.argv[1]` アクセス前にガードを追加
 - `plugins/work/hooks/scripts/user-prompt-submit.py`: 同上
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

@@ -4,13 +4,10 @@
 
 # ユーザー回答欄
 
-> 各 `**回答**:` 行で不要な選択肢を消して 1 つだけ残す。
-
 ## 意思
 
-このイシューに対応するか。
-
-**回答**: 対応する
+- [x] 対応する
+- [ ] 対応しない
 
 ## QA
 
@@ -20,9 +17,13 @@ A) CLAUDE.md の `WORKSPACE_STOP_REMINDER` / `WORKSPACE_MERGE_PROPOSAL` に統�
 
 **推奨**: B — `stop.py` / `user-prompt-submit.py` の実際の変数名が `WORK_STOP_REMINDER` / `WORK_BRANCH_ENFORCEMENT` / `WORK_MERGE_PROPOSAL` であり、コードを変えずドキュメント側を合わせる方が変更範囲が少ない
 
-**回答**: A / B
+- [ ] A
+- [ ] B
+
 
 ---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
 
 ## 概要
 

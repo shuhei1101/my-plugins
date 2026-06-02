@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/claude-kit/hooks/scripts/_common.py` の `read_hook_input()` は `json.loads(sys.stdin.read())` を try/except なしで呼び出す。stdin が空またはマルフォームな JSON だった場合、`json.JSONDecodeError` が呼び出し元まで伝播する。`references_edit_guard.py` は `read_hook_input()` を try/except なしで呼び出しているため、例外はスクリプト全体のクラッシュになりうる。
@@ -41,8 +52,3 @@ A) 空 dict を返す（呼び出し元が `None` チェック不要） / B) `sy
 
 **回答**: <!-- A / B / C -->
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

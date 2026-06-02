@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/dev-kit/references/マークダウン編集.md` と `plugins/dev-kit/references/マークダウン編集.jp.md` が `references/` ルートに残っている。これらは `markdown/` サブフォルダに移動されたものと同一内容のコピーであり、`_index.yaml` / `_injection_rules.yaml` には登録されておらず、孤立ファイルとなっている。
@@ -21,8 +32,3 @@
 - `plugins/dev-kit/references/マークダウン編集.md`: 削除
 - `plugins/dev-kit/references/マークダウン編集.jp.md`: 削除
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

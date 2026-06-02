@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `dev-kit:plugin-config` スキルが `DEV_KIT_MARKDOWN_CHECK` を管理対象トグルとして列挙し続けているが、このトグルに対応するフック（`markdown_frontmatter_check.py`）は v4.10.0（2026-05-31）で削除済みである。実際のフックスクリプト群（`hooks/scripts/`）に `DEV_KIT_MARKDOWN_CHECK` への参照はない。
@@ -20,8 +31,3 @@ plugin-config/SKILL.md の「Feature toggles」テーブル（34行目）、Step
 - `plugins/dev-kit/skills/plugin-config/SKILL.md`: `DEV_KIT_MARKDOWN_CHECK` の全記述を削除
 - `plugins/dev-kit/skills/plugin-config/SKILL.jp.md`: 同上
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->
