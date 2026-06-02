@@ -1,5 +1,5 @@
 ---
-name: statusline-setup
+name: claude-kit:statusline-setup
 description: |
   Use this skill to configure the user's Claude Code status line setting.
   Trigger when the user says "set up the status line", "configure statusline", "apply statusline",

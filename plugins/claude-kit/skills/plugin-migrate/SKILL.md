@@ -1,5 +1,5 @@
 ---
-name: plugin-migrate
+name: claude-kit:plugin-migrate
 description: |
   Walk the project's claude-kit-authored artifacts (`.claude/skills/**` / `.claude/rules/**` /
   `.claude/hooks/**` / `**/CLAUDE.md` / `**/.claude-plugin/{plugin,marketplace}.json`) and

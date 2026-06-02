@@ -1322,3 +1322,10 @@ branches:
   summary: ブランチドキュメントの拡張子を .branch.md から .task.md に変更（既存266ファイルの一括リネーム + フック/リファレンス/スキル更新）
   task: 260602_ブランチ文書拡張子をtaskへ変更
   completed: true
+- branch: fix/claude-kit-skill-name-prefix-audit
+  completed: true
+  created: '2026-05-31'
+  summary: claude-kitの全10スキルのnameフィールドにclaude-kit:プレフィックスを付与して命名規則を統一する
+  task: 260531_claude-kitスキル名プレフィックス監査
+  title: claude-kitスキル名プレフィックス監査
+  type: fix

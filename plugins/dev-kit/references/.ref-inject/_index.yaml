@@ -151,6 +151,9 @@ references:
 - path: next/backend/DBヘルパー-ts.md
   lang: next
   description: app/api/v1/{resource}/dbHelper.ts — リソース内に閉じる共通ヘルパー (ページング計算等)。複数リソース横断のものは (shared)/lib/ に。
+- path: next/backend/ローカルYAML開発DB.md
+  lang: next
+  description: ローカル開発用 YAML データストア。関数ごとに type で型定義し、query.ts/db.ts の実装を本番 Drizzle と ローカル YAML (data/dev/) で USE_YAML_DB により切り替え。db 引数を受け渡しトランザクション維持（YAML はスナップショット/ロールバック + ロック）。クラス/interface/Repository は使わない関数型スタイル。
 - path: next/backend/アクション-ts.md
   lang: next
   description: app/(authenticated)/{feature}/actions.ts — Server Action 群。'use server' 開始、ActionResult<T> 戻り値、Zod パース、revalidateTag + cacheLife プロファイル。

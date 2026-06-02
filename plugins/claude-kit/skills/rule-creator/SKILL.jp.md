@@ -1,5 +1,5 @@
 ---
-name: rule-creator
+name: claude-kit:rule-creator
 description: |
   Create a new path-scoped rule under .claude/rules/ using the step-based structure.
   Trigger when the user says "新しいルール作って", "ルールを新規作成", "make a rule for X", or "create a rule for".

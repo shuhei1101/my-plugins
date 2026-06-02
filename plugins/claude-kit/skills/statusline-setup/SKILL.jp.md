@@ -1,5 +1,5 @@
 ---
-name: statusline-setup
+name: claude-kit:statusline-setup
 description: |
   ユーザーが「ステータスラインを設定して」「statusline-setup を実行して」「ステータスラインをセットアップして」と言ったとき。
   または `/statusline-setup` で明示的に呼ばれたとき。
