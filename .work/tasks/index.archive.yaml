@@ -1208,3 +1208,11 @@ branches:
   summary: WORK_BASE_BRANCH 環境変数を追加し、worktree 作成時のベースブランチを設定可能にする
   task: 260602_base-branch-config
   completed: true
+- branch: feat/revive-conversation-to-claude
+  created: '2026-06-02'
+  title: 会話キャプチャスキル復活
+  type: feat
+  summary: conversation-to-claude スキル・PreCompact フック・merge 呼び出しステップを work プラグインに復活。glossary/incidents
+    の登録基準を見直す。プロジェクト固有コンテンツの復元はしない。
+  task: 260602_会話キャプチャスキル復活
+  completed: true
