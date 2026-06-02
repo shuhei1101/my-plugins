@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -36,4 +36,3 @@ Step 4 がまだ実行中なのに「Step 4 のサマリーを表示」と自己
 
 - `plugins/ref-inject/skills/plugin-migrate/SKILL.md`: 対象行のステップ番号を修正
 - `plugins/ref-inject/skills/plugin-migrate/SKILL.jp.md`: 対応箇所を修正
-

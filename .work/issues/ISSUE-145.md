@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -40,4 +40,3 @@
 ## 対象ファイル
 
 - `plugins/ref-inject/templates/references/example/はじめに.md`: パス参照箇所を修正
-

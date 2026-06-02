@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -28,4 +28,3 @@ SKILL.md (`statusline-setup/SKILL.md`) には環境確認の警告注記があ�
 ## 対象ファイル
 
 - `plugins/claude-kit/scripts/apply-statusline.py`: `SETTINGS_PATH` を `main()` 内に移動し、適用前にパスを stderr 出力する
-

@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -31,4 +31,3 @@ dev-kit の現テンプレートは `jp_mirror` 変数を参照していない�
 
 - `plugins/dev-kit/hooks/scripts/inject_references.py`: `jp_mirror` 計算ロジックの追加 + `tmpl.render()` へ引数追加
 - `plugins/dev-kit/CLAUDE.md`: `DEV_KIT_JP_MIRROR` を env 変数表に追加
-

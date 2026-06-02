@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -32,4 +32,3 @@
 
 - `plugins/work/hooks/scripts/git-guard.py`: 冒頭コメントを修正
 - `plugins/work/hooks/scripts/master-commit-guard.py`: 同趣旨コメントを修正
-

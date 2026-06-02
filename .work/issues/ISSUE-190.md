@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -31,4 +31,3 @@ for explicit invocation.
 ## 対象ファイル
 
 - `plugins/claude-kit/CLAUDE.md`: 重複フレーズを修正
-

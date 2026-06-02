@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -46,4 +46,3 @@ A) description を機能概要のみに書き直す（changelog は CLAUDE.md �
 **推奨**: A — 二重管理を完全に解消でき、CLAUDE.md の Changelog テーブルが唯一の changelog ソースになる
 
 **回答**: <!-- A / B -->
-

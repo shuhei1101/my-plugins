@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -31,4 +31,3 @@
 
 - `plugins/dev-kit/references/マークダウン編集.md`: 削除
 - `plugins/dev-kit/references/マークダウン編集.jp.md`: 削除
-

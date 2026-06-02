@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -28,4 +28,3 @@
 ## 対象ファイル
 
 - `plugins/dev-kit/.claude-plugin/plugin.json`: description 末尾に `v4.13.0` のサフィックスを追加
-

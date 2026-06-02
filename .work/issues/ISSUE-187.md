@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -25,4 +25,3 @@
 
 - `plugins/work/CLAUDE.md`: changelog の重複ブロックを削除・統合
 - `plugins/work/CLAUDE.jp.md`: JP ミラー同期
-

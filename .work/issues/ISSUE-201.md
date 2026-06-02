@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -37,4 +37,3 @@ dev-kit のファイルはコメントが一切なく、`references:` から直�
 
 - `plugins/dev-kit/references/.ref-inject/_index.yaml`: 先頭にヘッダーコメントを追加
 - `plugins/dev-kit/references/.ref-inject/_index.jp.yaml`: 先頭にヘッダーコメントを追加
-

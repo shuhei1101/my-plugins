@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -35,4 +35,3 @@ JSON サンプル（Step 5）の `body` を Step 4 テンプレートおよび `
 ## 対象ファイル
 
 - `plugins/work/agents/issue-scanner.md`: Step 5 の JSON body サンプルを現行フォーマットに修正
-

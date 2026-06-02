@@ -6,7 +6,7 @@
 
 ## 意思
 
-- [ ] 対応する
+- [x] 対応する
 - [ ] 対応しない
 
 ---
@@ -38,4 +38,3 @@ plugins/dev-kit/references/.ref-inject/CLAUDE.md      ← 存在しない
 
 - `plugins/claude-kit/references/hook/キットフック同期.md`: パスを `.ref-inject/CLAUDE.md` に修正
 - `plugins/claude-kit/references/hook/キットフック同期.jp.md`: JP ミラー同期
-
