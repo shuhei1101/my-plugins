@@ -1399,3 +1399,10 @@ branches:
   summary: masterへのマージ後にgit pushとmarketplace upgradeを自動実行するフックを追加
   task: 260602_マージ後プッシュ・アップグレードフック
   completed: true
+- branch: feat/issue-resolver-direct-merge
+  created: '2026-06-02'
+  title: イシューリゾルバー直接マージ機能
+  type: feat
+  summary: issue-resolverにdirect_mergeフラグ追加・issue-resolve/scanで自動判定・git-guard対応
+  task: 260602_イシューリゾルバー直接マージ機能
+  completed: true
