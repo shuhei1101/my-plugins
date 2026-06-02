@@ -65,7 +65,8 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 
 | # | バージョン | 概要 |
 |---|---|---|
-| 1 | `3.55.0` | `claude-kit:plugin-config` スキルを復活（`config` からリネーム）。`プラグイン設定.md` 記述ガイドと `プラグイン構造.md` の `plugin-config` 必須記載を復元。SKILL.md / plugin.json パターンの注入ルールに追加 |
+| 1 | `3.56.0` | 死リンクとなっていた `provenance.md` 概念を削除 — JP ミラー警告コメントのフォーマットを `共通ガイド.md` の JP/EN ミラー節に統合し、`スキル.md`・creator 系 5 スキル・`claude-refactor` の `provenance.md` 参照をすべてそこへ書き換え |
+| 2 | `3.55.0` | `claude-kit:plugin-config` スキルを復活（`config` からリネーム）。`プラグイン設定.md` 記述ガイドと `プラグイン構造.md` の `plugin-config` 必須記載を復元。SKILL.md / plugin.json パターンの注入ルールに追加 |
 | 2 | `3.54.0` | 対話式 `work:plugin-config` / `dev-kit:plugin-config` スキルと config スキル記述ガイド `プラグイン設定.md` を削除。`plugin-creator` / `プラグイン構造.md` から `plugin-config` 必須記載を除去。`プラグインCLAUDE-md.md` の env テーブル仕様を統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再定義し各プラグインの `## 環境変数` テーブルを再フォーマット |
 | 2 | `3.53.0` | `claude-kit:config` スキルを削除 |
 | 3 | `3.52.0` | `claude-kit:jp-mirror-sync` スキルを追加（`utils` プラグインから移動）；`utils` プラグインを marketplace から削除 |

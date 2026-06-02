@@ -22,7 +22,7 @@ skill is a thin wrapper, kept for explicit invocation.
    `changelogs/v{X.Y.Z}.md`; write the changelog's "構造の変更" section.
 3. For attaching the reference auto-injection mechanism to a plugin, use `/ref-inject:apply <plugin>`
    (it owns the injection files; plugin-creator owns `plugin.json` / root `CLAUDE.md` / `marketplace.json`).
-4. Stamp each generated file per `references/provenance.md` — it is auto-injected when you write the
-   file, so write the stamp directly (no skill call needed).
+4. Start each `.jp.md` mirror with the JP-mirror warning comment (format in `references/common/共通ガイド.md`,
+   auto-injected when you write the file) — write it directly (no skill call needed).
 5. **Generate the required skills** — every plugin must ship `plugin-migrate`, and
    (if the plugin has env vars) `plugin-config`.

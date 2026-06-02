@@ -23,5 +23,5 @@ or a `hooks/prompts/*.md`. This skill is a thin wrapper, kept for explicit invoc
 2. For reference auto-injection hooks specifically, do **not** hand-build — use `/ref-inject:apply <plugin>`.
 3. Create the prompt file (+ `.jp.md` mirror for plugin hooks), wire `hooks.json` / `settings.json`,
    and add a loop guard for `Stop` / `PreToolUse` block-type hooks.
-4. Stamp each generated file per `references/provenance.md` — it is auto-injected when you write the
-   file, so write the stamp directly (no skill call needed).
+4. Start each `.jp.md` mirror with the JP-mirror warning comment (format in `references/common/共通ガイド.md`,
+   auto-injected when you write the file) — write it directly (no skill call needed).

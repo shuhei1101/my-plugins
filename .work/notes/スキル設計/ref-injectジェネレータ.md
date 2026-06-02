@@ -147,3 +147,16 @@ ref-inject の内部メカニズムファイルとユーザー authoring の ref
   `plugins/*-kit/references/.ref-injects/{...}` に更新、移動先 CLAUDE.md 内のパス参照文も更新。
 - **将来 apply するプラグイン**: テンプレート（`templates/references/.ref-injects/` + `templates/references/_index.md`）が
   この構造を持つため、`/ref-inject:apply` で自動的に新構造で展開される。
+
+## ISSUE-123: provenance.md 死リンク整理（claude-kit 3.56.0）
+
+PR161 で導入された `references/provenance.md` は PR165（provenance スタンプ全廃）で削除されたが、
+複数のリファレンス・スキルから参照記述だけが残り、実在しないファイルへの死リンク・循環参照になっていた
+（`_injection_rules.yaml` には既に紐付けが無く孤立参照のみ）。
+
+- **案 B を採用**: `provenance.md` という概念は復活させず、唯一残っていた中身（JP ミラー警告コメントの
+  フォーマット）を `references/common/共通ガイド.md` の JP/EN ミラー節に自己完結化（コメント全文・`{source}` 置換・
+  `.json` スキップ・既存行置換を明記）。
+- **参照整理**: `スキル.md`（行 7/70/153）、creator 系 5 スキル（claude/skill/rule/hook/plugin）、
+  `claude-refactor`（Step 4 / References）の `provenance.md` 参照を「共通ガイドの JP ミラー警告コメント手順」へ書き換え。JP ミラーも同期。
+- **確認**: `grep -rn "provenance" plugins/` で死リンク 0 件、`_injection_rules.yaml` / `_index.yaml` に provenance 宣言無し（孤立チェック済み）。

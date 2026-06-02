@@ -18,5 +18,5 @@ kept for explicit invocation and for callers (e.g. `notes-to-claude`).
    Together they cover: when a skill is the right type, checking for existing similar skills, the
    JP-mirror-first workflow, the step-based structure template, and `description` frontmatter rules.
 2. Create `.claude/skills/<name>/SKILL.jp.md` first, then produce the English `SKILL.md` from it.
-3. Stamp each file per `references/provenance.md` — it is auto-injected when you write the file, so
-   write the stamp directly (no skill call needed).
+3. Start each `.jp.md` mirror with the JP-mirror warning comment (format in `references/common/共通ガイド.md`,
+   auto-injected when you write the file) — write it directly (no skill call needed).
