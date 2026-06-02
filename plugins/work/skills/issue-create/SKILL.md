@@ -96,15 +96,19 @@ Example: "The chat history is hard to read, and settings reset on restart"
      `## 現状` / (`## 原因` if a bug) / `## 期待される状態` / `## 対応案` / `## 横展開` etc.). Write
      the body in Japanese, following the injected template. Do not write Type/Priority/Tags lines
      (those live in `_index.yaml`).
-   - In the **`# ユーザー回答欄`**, pre-fill each choice as an unchecked checkbox (`- [ ]`) — e.g.
-     `- [ ] 対応する` / `- [ ] 対応しない`. Do not check any box here (the user does that in
-     `work:issue-review`). Always include `## 意思`. There is no `## 自由記述`.
+   - In the **`# ユーザー回答欄`**, pre-fill the `## 意思` options as unchecked checkboxes (`- [ ]`):
+     `- [ ] 対応する（自動マージ）` / `- [ ] 対応する（マージはAIに任せる）` / `- [ ] 対応しない`. Do
+     not check any box here (the user does that in `work:issue-review`). Always include `## 意思`.
+     There is no `## 自由記述`.
    - **Raise a `## QA` when there are multiple 対応案 options or a decision is needed before starting.**
-     Each QA is `### QA-N: {タイトル}` with its **options summarized** (`A) … / B) …`), a **`**推奨**:`**
-     line (which option the AI recommends + a one-line reason; never "decide later"), and each option
-     as an unchecked checkbox (`- [ ] A`, `- [ ] B`). When you list multiple `## 対応案` options you
-     MUST add a "which option to take" QA as QA-1. Omit the `## QA` heading entirely if no decision
-     is needed.
+     Each QA is `### QA-N: {タイトル}` with a **`**推奨**:`** line (which value/option the AI
+     recommends + a one-line reason; never "decide later"). Two QA types:
+     - **Choice-type** — summarize the options (`A) … / B) …`) and list each as an unchecked checkbox
+       (`- [ ] A`, `- [ ] B`). When you list multiple `## 対応案` options you MUST add a "which option
+       to take" choice-type QA as QA-1.
+     - **Input-type** (free-form answer, no fixed options) — instead of checkboxes, leave a
+       `**回答**:` line for the user to fill in.
+     Omit the `## QA` heading entirely if no decision is needed.
 2. After writing all files, update `_index.yaml` per the reference: append each issue's entry
    (`type` / `priority` / `tags` / `scan_scope` / `status: not_started` / `branches: []` are recorded
    here) and set `last_id` to the highest ID used.

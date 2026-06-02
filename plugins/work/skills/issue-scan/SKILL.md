@@ -203,9 +203,10 @@ Selection rules:
 
    {body}
    ```
-   (The `body` field from the subagent already contains `**作成日**`, the `# ユーザー回答欄` with
-   `**回答**:` lines pre-filled with all candidates, and the AI-authored issue body; just prepend the
-   `# ISSUE-{N}: {title}` line and a blank line.) The work state (`status: not_started`,
+   (The `body` field from the subagent already contains `**作成日**`, the `# ユーザー回答欄` with the
+   `## 意思` options and any `## QA` pre-filled (choice-type as `- [ ]` checkboxes, input-type as a
+   `**回答**:` line), and the AI-authored issue body; just prepend the `# ISSUE-{N}: {title}` line and
+   a blank line.) The work state (`status: not_started`,
    `branches: []`) goes into the `_index.yaml`
    entry, not the file.
 4. Record the actual IDs assigned for use in Step 4.
@@ -227,11 +228,13 @@ File and index paths depend on `AUTO_MERGE`:
 - When `AUTO_MERGE`: `{WT_PATH}/.work/issues/`
 - Otherwise: `.work/issues/` (relative to main repo cwd)
 
-1. For each issue written in Step 3b, append to `_index.yaml`'s `issues`. Include
-   `direct_merge: true` when **all three** conditions hold: (a) the issue body has no `## QA`
-   section (single unambiguous solution, no choice required); (b) the issue type is `refactor`,
-   `test`, `fix`, or `backend`; (c) the body contains no mention of UI, screen, visual, or
-   frontend. Omit the field otherwise (the orchestrator will judge at resolve time).
+1. For each issue written in Step 3b, append to `_index.yaml`'s `issues`. Optionally include
+   `direct_merge: true` (the AI's pre-judgment) when **all three** conditions hold: (a) the issue
+   body has no `## QA` section (single unambiguous solution, no choice required); (b) the issue type
+   is `refactor`, `test`, `fix`, or `backend`; (c) the body contains no mention of UI, screen,
+   visual, or frontend. Omit the field otherwise. This field is consulted **only** when the user
+   later picks `対応する（マージはAIに任せる）`; `対応する（自動マージ）` always merges directly and
+   `対応しない` never reaches resolve.
    ```yaml
    - id: ISSUE-{N}
      title: "{title}"
