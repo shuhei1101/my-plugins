@@ -106,6 +106,14 @@ closed_issues:
   - misleading-content
   - documentation
   linked_branch: fix/plugin-config-section-title
+- id: ISSUE-129
+  title: セットアップウィザード.md の内部クロスリファレンス名称が不正確
+  closed: '2026-06-02'
+  resolution: wontfix
+  tags:
+  - documentation
+  - cross-reference
+  linked_branch: chore/reject-ISSUE-129
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
