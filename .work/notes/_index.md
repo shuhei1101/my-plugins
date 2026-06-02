@@ -83,6 +83,7 @@
 | 10 | [remove-unused-references.md](プラグイン構成・統合/remove-unused-references.md) | remove-unused-references — claude-kit の未使用リファレンスファイル削除 |
 | 11 | [zero-plugin-dependency.md](プラグイン構成・統合/zero-plugin-dependency.md) | プラグイン間依存ゼロ — 棚卸しノート |
 | 12 | [用語集インシデント選別復元.md](プラグイン構成・統合/用語集インシデント選別復元.md) | 用語集・インシデント選別復元 — .claude/rules/ コンテンツの再構築 |
+| 13 | [ref-injectディレクトリ単数形統一.md](プラグイン構成・統合/ref-injectディレクトリ単数形統一.md) | ref-inject ディレクトリ命名 — 単数形統一（.ref-injects → .ref-inject） |
 
 ---
 
@@ -127,15 +128,6 @@ env 設定・運用ポリシー・用語規約に関するメモ。
 | 6 | [イシューファイルテンプレート.md](ワークフロー・マージ/イシューファイルテンプレート.md) | イシューファイルテンプレート — 問題発生手順と修正案テーブル仕様 |
 | 7 | [イシュー対応ワークフロー.md](ワークフロー・マージ/イシュー対応ワークフロー.md) | イシュー対応ワークフロー — review → resolve → close |
 
----
-
-## utils プラグイン
-
-utils プラグインのスキル・エージェント設計に関するメモ。
-
-| # | ファイル | タイトル |
-|---|---|---|
-| 1 | [utils-JP-ミラー翻訳スキル.md](utils/utils-JP-ミラー翻訳スキル.md) | utils プラグイン — JP ミラー翻訳スキル |
 
 ---
 

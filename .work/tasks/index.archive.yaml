@@ -1258,3 +1258,17 @@ branches:
   summary: _index.yamlをglob前に読み込みnot_startedのみイシューファイルを開くよう変更
   task: 260602_issue-resolve-step1-index-first
   completed: true
+- branch: refactor/rename-ref-injects-to-ref-inject
+  created: '2026-06-02'
+  title: ref-injectsをref-injectに単数形変更
+  type: refactor
+  summary: 全プラグインの .ref-injects ディレクトリとその参照を .ref-inject に単数形へリネーム
+  task: 260602_ref-injectsをref-injectに単数形変更
+  completed: true
+- branch: refactor/remove-utils-plugin
+  created: '2026-06-02'
+  title: utilsプラグイン削除
+  type: refactor
+  summary: utils プラグインの jp-mirror-sync スキルを claude-kit へ移動し、utils プラグインを削除する
+  task: 260602_utilsプラグイン削除
+  completed: true

@@ -3,14 +3,14 @@ name: jp-mirror-sync
 description: |
   Accept one or more Japanese mirror (.jp.md) files and create or update the corresponding English
   counterparts (.md). Treats the JP mirror as the source of truth and spawns one
-  utils:jp-mirror-translator subagent per file, running all subagents in parallel.
+  claude-kit:jp-mirror-translator subagent per file, running all subagents in parallel.
   Trigger when the user says "JP ミラーを同期して", "英語版を更新して", "jp-mirror-sync して",
   "translate JP mirror", or passes one or more .jp.md file paths.
 ---
 
-# utils:jp-mirror-sync — JP Mirror → English Sync
+# claude-kit:jp-mirror-sync — JP Mirror → English Sync
 
-Accept one or more `.jp.md` file paths and spawn one `utils:jp-mirror-translator` subagent per
+Accept one or more `.jp.md` file paths and spawn one `claude-kit:jp-mirror-translator` subagent per
 file. All subagents run in parallel.
 
 ---
@@ -47,7 +47,7 @@ Step 1 complete and at least one file path exists
 #### Process
 
 1. [subagent: parallel · await all] For each file path in the list, spawn one
-   `utils:jp-mirror-translator` subagent. Pass the absolute file path as the prompt.
+   `claude-kit:jp-mirror-translator` subagent. Pass the absolute file path as the prompt.
    (return: completion report string from each subagent)
 
 → Proceed to Step 3
