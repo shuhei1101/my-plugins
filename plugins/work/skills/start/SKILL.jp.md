@@ -219,13 +219,14 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - `## 関連ブランチ` / `## 次ブランチ候補` — このセッションから記入、またはプレースホルダーを残す。
 4. **このブランチが連携イシューを持つ場合**（ステップ 2 より）、各 `ISSUE-{N}` をここで連携する：
    - ブランチ文書の `## 関連イシュー` テーブルに各連携イシューの行を追加。
-   - **ワークツリー内**のイシューファイル（`{wt}/.work/issues/ISSUE-{N}.md`、git 管理対象）を編集：
-     フロントマター `status: in_progress` を設定し、`branches:` にフルブランチ名を追記。
-   - 他セッションが進行中と分かるよう、**メインリポジトリ**の `_index.yaml`（git 管理外、ワークツリーには
-     存在しない）へステータスをミラーする：
+   - イシューファイルは**フロントマターを持たない** — 作業状態（`status` / `branches`）は
+     **メインリポジトリ**の `_index.yaml`（git 管理外、ワークツリーには存在しない）にある。
+     他セッションが進行中と分かるよう、そこへ status と branch を設定する：
      ```bash
      python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
        --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --status in_progress
+     python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" add-branch \
+       --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --branch {full-branch-name}
      ```
      （`{MAIN_REPO}` = 元のリポジトリルート = ワークツリーの親チェックアウト。そこに `.work/issues` が
      無ければ黙ってスキップ）

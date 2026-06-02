@@ -217,13 +217,14 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - `## 関連ブランチ` / `## 次ブランチ候補` — fill from this session, or leave placeholders.
 4. **If this branch is linked to issue(s)** (from Step 2), link each `ISSUE-{N}` now:
    - In the branch document's `## 関連イシュー` table, add a row for each linked issue.
-   - Edit the issue file **in the worktree** (`{wt}/.work/issues/ISSUE-{N}.md`, git-tracked): set
-     frontmatter `status: in_progress` and append the full branch name to `branches:`.
-   - Mirror the status into the **main repo's** `_index.yaml` (git-ignored, not present in the
-     worktree) so other sessions see it as in progress:
+   - Issue files have **no frontmatter** — the work state (`status` / `branches`) lives in the
+     **main repo's** `_index.yaml` (git-ignored, not present in the worktree). Set the status and
+     append the branch there so other sessions see it as in progress:
      ```bash
      python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
        --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --status in_progress
+     python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" add-branch \
+       --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --branch {full-branch-name}
      ```
      (`{MAIN_REPO}` = the original repo root, i.e. the worktree's parent checkout. Skip silently if
      that path has no `.work/issues`.)

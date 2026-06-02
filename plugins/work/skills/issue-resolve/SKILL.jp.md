@@ -2,8 +2,8 @@
 name: issue-resolve
 description: |
   `.work/issues/` のレビュー済みイシューを上から自動的に消化する — 1 起動あたり対応可能なイシュー 1 件。
-  accept のイシューは `work:issue-resolver` サブエージェントへ委譲し、ブランチを切って
-  マージ待ち最終コミットまで進める。reject のイシューは共有 `chore/rejected-issues` ブランチで
+  `## 意思` が「対応する」のイシューは `work:issue-resolver` サブエージェントへ委譲し、ブランチを切って
+  マージ待ち最終コミットまで進める。「対応しない」のイシューは共有 `chore/rejected-issues` ブランチで
   クローズする。`/loop` での実行を想定。トリガー: 「イシューを対応して」「イシューを消化して」
   「resolve issues」「issue-resolve」、または `/loop /work:issue-resolve` / `/work:issue-resolve` を
   明示的に呼び出したとき。
@@ -16,20 +16,23 @@ description: |
 イシュー 1 件**だけを処理する。ループの繰り返しでキューを消化し、ユーザーが確認・マージするための
 マージ待ちブランチが積み上がる。
 
-- **accept + not_started** → `work:issue-resolver` サブエージェント（1 イシュー 1 サブエージェント）へ
-  委譲。`work:start` でブランチを切り、修正を実装し、**マージ待ち最終コミット**で止まる
-  （マージはユーザーが別途判断）。
-- **reject** → 共有 `chore/rejected-issues` ブランチで `wontfix` クローズ（ファイルは `closed/` へ移動）。
-  ユーザーがそのブランチをマージするまで蓄積される。
-- **pending**（未レビュー）と **accept + in_progress**（対応中。別セッションの可能性）→ スキップ。
+- **意思=対応する + status: not_started** → `work:issue-resolver` サブエージェント（1 イシュー 1
+  サブエージェント）へ委譲。`work:start` でブランチを切り、修正を実装し、**マージ待ち最終コミット**で
+  止まる（マージはユーザーが別途判断）。
+- **意思=対応しない** → 共有 `chore/rejected-issues` ブランチで `wontfix` クローズ（ファイルは `closed/`
+  へ移動）。ユーザーがそのブランチをマージするまで蓄積される。
+- **意思=未記入**（未レビュー）と **意思=対応する + status: in_progress**（対応中。別セッションの
+  可能性）→ スキップ。
 
-イシューのフロントマター／ライフサイクルは `work-dir/イシュー.md`（自動注入）が規定する — それに従う。
+イシューのフォーマット（フロントマター無し・2 分割）／ライフサイクルは `work-dir/イシュー.md`
+（自動注入）が規定する — それに従う。`## 意思` の `**回答**:` は人間の自由記述で、「対応する／様子見」を
+肯定、「対応しない」を否定と解釈する。
 
 ---
 
 ## 概要
 
-- **前提**: イシューが `work:issue-review` で捌かれている（`decision` を持つ）。
+- **前提**: イシューが `work:issue-review` で捌かれている（`## 意思` が記入済み）。
 - **1 起動 = 対応可能イシュー 1 件**で、各ループ tick を 1 ブランチ／1 マージ単位に保つ。
 - QA はレビュー時に（イシュー上で）解決済みなので、resolver サブエージェントは止まらず最終コミットまで
   到達できるはず。**真にブロックする事項が出たらサブエージェントは止まる**（Step 3 参照）。
@@ -43,12 +46,12 @@ description: |
 #### プロセス
 
 1. `.work/issues/` が無ければ → 報告して停止。
-2. `.work/issues/ISSUE-*.md` を glob（`closed/` 除外）、各フロントマター（`decision` / `status`）を読み、
-   イシュー番号の昇順でソート。
+2. `.work/issues/ISSUE-*.md` を glob（`closed/` 除外）。各ファイルの `## 意思` の `**回答**:` を読み、
+   作業状態 `status` は `_index.yaml` の該当エントリから読む。イシュー番号の昇順でソート。
 3. 上から走査し、**最初の**対応可能イシューを選ぶ：
-   - `decision: reject` → REJECT アクション（Step 2）。
-   - `decision: accept` かつ `status: not_started` → ACCEPT アクション（Step 3）。
-   - `decision: pending`（未レビュー）と `decision: accept` + `status: in_progress` はスキップ。
+   - `## 意思` = 否定（対応しない）→ REJECT アクション（Step 2）。
+   - `## 意思` = 肯定（対応する／様子見）かつ `status: not_started` → ACCEPT アクション（Step 3）。
+   - `## 意思` 未記入（未レビュー）と、肯定 + `status: in_progress` はスキップ。
 4. 対応可能イシューが無ければ → 「対応可能なイシューはありません」と報告して停止（ループ終了可）。
 
 → Reject → Step 2 ／ Accept → Step 3
@@ -74,7 +77,8 @@ description: |
      --linked-branch chore/rejected-issues
    ```
    `ISSUE-{N}.md` を `closed/` へ移動し、`_index.archive.yaml` に `wontfix` 記録を追記する。
-3. reject ブランチ文書にイシュー ID・タイトル・reject 理由（イシューの `instruction` キーから）の行を追記。
+3. reject ブランチ文書にイシュー ID・タイトル・reject 理由（イシューの `## 自由記述` / `## 意思` の回答から）
+   の行を追記。
 4. `chore/rejected-issues` でコミット（イシュー移動 + ブランチ文書）。**マージはしない** — ユーザーが
    準備できたら行う。
 
@@ -101,15 +105,15 @@ description: |
    - **簡単／局所的**（単一ファイル編集、ドキュメント/typo/リネーム、狭いスコープ）→ `model: sonnet`
    - **難しい／複雑**（横断的変更、込み入ったロジック、複数ファイル、リスキーなリファクタ）→ `model: opus`
    - **`haiku` は絶対に使わない。**
-   判断材料はイシューの `## 問題点` / `## 修正案` のスコープ。迷ったら `opus`。
+   判断材料はイシューの `## 概要` / `## 対応案` のスコープ。迷ったら `opus`。
 3. このイシュー用に `work:issue-resolver` サブエージェント（エージェントタイプ `work:issue-resolver`、
    上で選んだ `model` 付き）を**1 つ**委譲する。渡す情報: `ISSUE-{N}` の id とパス、確定した方針
-   （`## 修正案` 採用案 + `instruction` フロントマター）、そして**マージ待ち最終コミット**まで
+   （`## 対応案` の採用案〔`## QA` の回答で確定〕 + `## 自由記述` の回答）、そして**マージ待ち最終コミット**まで
    ブランチを進める指示（マージはしない）。
 4. サブエージェントの返却時：
    - **完了（マージ待ち）** → 作成したブランチを記録。ユーザーが後でマージする。
    - **ブロック**（イシューで事前解決されなかった真の未決事項）→ サブエージェントがブロッカーを
-     イシューの `## QA` に記録して差し戻している。インデックスのロックを戻す：
+     イシューの `# ユーザー回答欄` の `## QA` に記録して差し戻している。インデックスのロックを戻す：
      ```bash
      python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
        --issues-dir .work/issues --issue-id ISSUE-{N} --status not_started
