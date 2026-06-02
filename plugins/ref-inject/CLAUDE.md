@@ -76,6 +76,7 @@ Paths mirror the template — no relocation.
 - TTL: default `3600`s, overridable via `settings.json` `env` → `{PREFIX}_INJECTION_TTL` (shared by both tiers)
 - Cleanup: every hook fire scans all `{session_id}.yaml`, drops expired entries from both namespaces, deletes emptied files (and purges stale top-level keys from the old single-tier schema)
 - Language: `{PREFIX}_INJECTION_LANG=jp` switches descriptions/template to Japanese
+- **Read vs Edit/Write output format**: for `Edit`/`Write`/`MultiEdit`, the hook returns `{"decision": "block", "reason": ...}` (cancels the tool; Claude retries with context). For `Read`, it returns `{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "allow", "additionalContext": ...}}` so the Read proceeds and Claude receives both the file contents and the injected context. Using `decision: "block"` on Read would cancel the Read, leaving Claude without the file contents.
 
 No `PreCompact` hook: after `/compact` the reference body is dropped from context, but the
 token simply re-injects once its TTL elapses — a dedicated compact-refresh hook was judged

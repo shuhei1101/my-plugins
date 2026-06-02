@@ -1343,3 +1343,10 @@ branches:
   task: 260531_work-plugin-description-sync
   title: workプラグインdescription同期修正
   type: fix
+- branch: docs/read-cancel-hook-investigation
+  created: '2026-06-02'
+  title: Readキャンセル原因フック調査
+  type: docs
+  summary: Readツールがキャンセルされる原因となっているフックを特定する
+  task: 260602_read-cancel-hook-investigation
+  completed: true
