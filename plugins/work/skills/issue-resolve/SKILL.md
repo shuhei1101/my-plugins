@@ -46,12 +46,12 @@ affirmative and "対応しない" as negative.
 #### Process
 
 1. If `.work/issues/` does not exist → report and stop.
-2. Glob `.work/issues/ISSUE-*.md` (exclude `closed/`). For each, read the `## 意思` `**回答**:`; read
-   the work `status` from the matching `_index.yaml` entry. Sort ascending by issue number.
-3. Walk the list top-down and select the **first** issue that is actionable:
+2. Read `.work/issues/_index.yaml`. Collect entries with `status: not_started` and sort them
+   ascending by issue number. These are the only candidates worth opening.
+3. Walk the candidates top-down. For each, open the issue file and read `## 意思` `**回答**:`:
    - `## 意思` negative (対応しない) → REJECT action (Step 2).
-   - `## 意思` affirmative (対応する/様子見) and `status: not_started` → ACCEPT action (Step 3).
-   - Skip `## 意思` blank (unreviewed) and affirmative + `status: in_progress`.
+   - `## 意思` affirmative (対応する/様子見) → ACCEPT action (Step 3).
+   - `## 意思` blank (unreviewed) → skip.
 4. If no actionable issue exists → report "対応可能なイシューはありません" and stop (the loop can end).
 
 → Reject → Step 2 · Accept → Step 3
