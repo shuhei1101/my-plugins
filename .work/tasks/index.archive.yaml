@@ -1378,3 +1378,10 @@ branches:
   summary: ユーザー回答欄を下部（ファイル末尾）へ戻す・用語集にイシューリファレンス場所を追加
   task: 260602_イシュー回答欄を下部へ移動
   completed: true
+- branch: feat/issue-resolve-agents-env-var
+  created: '2026-06-02'
+  title: イシューリゾルブエージェント数環境変数追加
+  type: feat
+  summary: issue-resolve スキルで1回の呼び出しで処理するイシュー数を ISSUE_RESOLVE_AGENTS 環境変数で設定可能にする
+  task: 260602_イシューリゾルブエージェント数環境変数追加
+  completed: true
