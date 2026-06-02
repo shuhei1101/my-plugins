@@ -1385,3 +1385,10 @@ branches:
   summary: issue-resolve スキルで1回の呼び出しで処理するイシュー数を ISSUE_RESOLVE_AGENTS 環境変数で設定可能にする
   task: 260602_イシューリゾルブエージェント数環境変数追加
   completed: true
+- branch: chore/unify-issue-format
+  created: '2026-06-02'
+  title: イシューファイル現行フォーマット統一
+  type: chore
+  summary: 19件のイシューファイルを イシュー.jp.md の現行フォーマットに統一
+  task: 260602_イシューフォーマット統一
+  completed: true

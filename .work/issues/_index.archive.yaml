@@ -93,3 +93,15 @@ scan_records:
   scope: glob:hooks.json
   issues_found:
   - ISSUE-130
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "consistency:injection-rules-orphans"
+  issues_found: [ISSUE-131, ISSUE-132, ISSUE-133, ISSUE-134, ISSUE-135, ISSUE-136, ISSUE-137]
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "folder:work/skills"
+  issues_found: [ISSUE-138, ISSUE-139, ISSUE-140, ISSUE-141]
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "consistency:marketplace-vs-plugin-json"
+  issues_found: [ISSUE-142]
