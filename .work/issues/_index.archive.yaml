@@ -133,6 +133,12 @@ closed_issues:
   - index
   - jp-mirror
   linked_branch: fix/dev-kit-index-jp-mirror-misentry
+- id: ISSUE-139
+  title: ''
+  closed: '2026-06-03'
+  resolution: resolved
+  tags: []
+  linked_branch: fix/branch-show-step-reference
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
