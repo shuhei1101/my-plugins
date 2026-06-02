@@ -300,3 +300,24 @@ scan_records:
   - ISSUE-184
   - ISSUE-185
   - ISSUE-186
+- date: 2026-06-02
+  skill: issue-scan
+  scope: glob:CLAUDE.md
+  issues_found:
+  - ISSUE-187
+  - ISSUE-188
+  - ISSUE-189
+  - ISSUE-190
+  - ISSUE-191
+  - ISSUE-192
+  - ISSUE-193
+- date: 2026-06-02
+  skill: issue-scan
+  scope: glob:_index.md
+  issues_found:
+  - ISSUE-194
+- date: 2026-06-02
+  skill: issue-scan
+  scope: pattern:env-var-naming
+  issues_found:
+  - ISSUE-195
