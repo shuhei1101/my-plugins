@@ -1392,3 +1392,10 @@ branches:
   summary: 19件のイシューファイルを イシュー.jp.md の現行フォーマットに統一
   task: 260602_イシューフォーマット統一
   completed: true
+- branch: feat/post-merge-push-hook
+  created: '2026-06-02'
+  title: マージ後プッシュ・アップグレードフック
+  type: feat
+  summary: masterへのマージ後にgit pushとmarketplace upgradeを自動実行するフックを追加
+  task: 260602_マージ後プッシュ・アップグレードフック
+  completed: true
