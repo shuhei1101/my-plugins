@@ -1406,3 +1406,10 @@ branches:
   summary: issue-resolverにdirect_mergeフラグ追加・issue-resolve/scanで自動判定・git-guard対応
   task: 260602_イシューリゾルバー直接マージ機能
   completed: true
+- branch: refactor/issue-answer-checkbox-format
+  created: '2026-06-02'
+  title: イシュー回答欄チェックボックス形式変更
+  type: refactor
+  summary: イシュー回答欄を先頭へ移動し、意思・QA回答をMarkdownチェックボックス形式に変更
+  task: 260602_イシュー回答欄チェックボックス形式変更
+  completed: true

@@ -108,12 +108,34 @@ Use `date +%Y-%m-%d` via Bash once to get today's date.
 
 The body must follow the `work-dir/イシュー.md` reference format exactly (no frontmatter),
 **excluding the `# ISSUE-{N}: {タイトル}` header line** (the orchestrator prepends that after
-assigning the ID). Write the AI-authored issue body right after the date; the `# ユーザー回答欄`
-(`## 意思` + `## QA`) sits at the **bottom**, after the `---`. Pre-fill every `**回答**:` line with **all
-candidates** for the human to later narrow to one:
+assigning the ID). Write the `# ユーザー回答欄` (`## 意思` + `## QA`) at the **top**, right after the
+date, then the `---` separator, then the AI-authored issue body. Pre-fill every choice as an
+unchecked checkbox (`- [ ]`) for the human to check one later:
 
 ```markdown
 **作成日**: {YYYY-MM-DD}
+
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+## QA
+（着手前に決める判断があれば。各 QA は番号・タイトル・選択肢・推奨を持つ。対応案が複数なら
+「どの案で進めるか」を QA-1 に必須。無ければこの見出しごと削除）
+
+### QA-1: {タイトル}
+
+A) {選択肢 A の要点} / B) {選択肢 B の要点}
+
+**推奨**: A — {理由を 1 行}
+
+- [ ] A
+- [ ] B
+
+---
 
 ## 概要
 {この発見が何についてか}
@@ -131,34 +153,10 @@ candidates** for the human to later narrow to one:
 {解決後に満たすべき状態}
 
 ## 対応案
-{修正の提案。複数案を出す場合は表で列挙し、下の回答欄に「どの案で進めるか」の `### QA-N` を必ず立てる}
+{修正の提案。複数案を出す場合は表で列挙し、上の回答欄に「どの案で進めるか」の `### QA-N` を必ず立てる}
 
 ## 横展開
 {同様の問題が他のファイルにも波及する可能性がある場合に記述。省略可}
-
----
-
-# ユーザー回答欄
-
-> 各 `**回答**:` 行で不要な選択肢を消して 1 つだけ残す。
-
-## 意思
-
-このイシューに対応するか。
-
-**回答**: 対応する / 対応しない / 様子見
-
-## QA
-（着手前に決める判断があれば。各 QA は番号・タイトル・選択肢・推奨を持つ。対応案が複数なら
-「どの案で進めるか」を QA-1 に必須。無ければこの見出しごと削除）
-
-### QA-1: {タイトル}
-
-A) {選択肢 A の要点} / B) {選択肢 B の要点}
-
-**推奨**: A — {理由を 1 行}
-
-**回答**: A / B
 ```
 
 Do **not** write a YAML frontmatter block, and do **not** include `Type` / `Priority` / `Tags` /
@@ -184,7 +182,7 @@ Return a JSON array — one element per finding. Include the full issue body as 
     "tags": ["..."],
     "scope": "src/...",
     "perspective": "{the perspective you were given}",
-    "body": "**作成日**: 2026-05-31\n\n# ユーザー回答欄\n\n## 意思\n\n**回答**: 対応する / 対応しない / 様子見\n\n## QA\n\n### QA-1: ...\n\nA) ... / B) ...\n\n**推奨**: A — ...\n\n**回答**: A / B\n\n---\n\n## 概要\n...\n\n## 現状\n...\n\n## 対応案\n..."
+    "body": "**作成日**: 2026-05-31\n\n# ユーザー回答欄\n\n## 意思\n\n- [ ] 対応する\n- [ ] 対応しない\n\n## QA\n\n### QA-1: ...\n\nA) ... / B) ...\n\n**推奨**: A — ...\n\n- [ ] A\n- [ ] B\n\n---\n\n## 概要\n...\n\n## 現状\n...\n\n## 対応案\n..."
   }
 ]
 ```

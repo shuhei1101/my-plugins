@@ -139,8 +139,8 @@ pre-resolve, and guessing would risk the wrong implementation:
 
 - Do **not** guess or merge.
 - Record the blocker as a new `### QA-N` entry in the issue's `# ユーザー回答欄` `## QA` (with a title,
-  the options summarized `A) … / B) …`, a `**推奨**:`, and a `**回答**:` line pre-filled with all
-  candidates), describing the question and the options.
+  the options summarized `A) … / B) …`, a `**推奨**:`, and each option as an unchecked checkbox
+  `- [ ]`), describing the question and the options.
 - Stop and return a **blocked** result. (The orchestrator reverts the issue to `not_started` so it
   can be re-reviewed.)
 

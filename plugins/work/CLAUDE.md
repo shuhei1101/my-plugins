@@ -28,14 +28,13 @@ The plugin enforces a "one task = one branch" lifecycle through hooks. The full 
    Verify the TODO checklist → merge the parent branch in → **close related issues** (each `## 関連イシュー` row via `issue-tool.py close`, moving it to `.work/issues/closed/` and recording it in `_index.archive.yaml`) → mark the branch completed in `index.yaml` → archive the task document → `--no-ff` merge into the parent → remove the worktree → confirm remaining QA → auto-invoke `branch-reserve` for next candidates.
 
 **Issue sub-cycle**: issues live in `.work/issues/ISSUE-{N}.md` as a two-part Markdown file with
-**no frontmatter** — the AI-authored issue body first, then a `# ユーザー回答欄` (user answer section:
-`## 意思` / `## QA`) at the **bottom** after `---`. Each QA
-carries a number, title, options, and an AI 推奨. Work state (`status` / `branches`) lives only in
-`_index.yaml`. The flow:
-**create** (`issue-create` / `issue-scan` → body + answer-section scaffolding written, each `**回答**:`
-pre-filled with all candidates, QA raised) →
-**review** (`issue-review`, mobile-first → user narrows `## 意思` (対応する/対応しない) and each
-`## QA` `**回答**:` to one choice) →
+**no frontmatter** — the `# ユーザー回答欄` (user answer section: `## 意思` / `## QA`) at the **top**
+first, then the AI-authored issue body after `---`. Each QA carries a number, title, options, and an
+AI 推奨. All answer choices are pre-filled as unchecked Markdown checkboxes (`- [ ]`); the user checks
+one with `[x]`. Work state (`status` / `branches`) lives only in `_index.yaml`. The flow:
+**create** (`issue-create` / `issue-scan` → answer-section scaffolding written at the top with checkboxes
+pre-filled as `- [ ]`, followed by the issue body, QA raised) →
+**review** (`issue-review`, mobile-first → user checks one checkbox in `## 意思` and each `## QA` entry) →
 **resolve** (`issue-resolve` under `/loop`, one issue per tick → affirmative 意思 dispatches an
 `issue-resolver` subagent; the orchestrator determines `direct_merge` from the `_index.yaml` entry
 or by analyzing issue content — UI-related issues get `direct_merge: false` (merge-waiting), all
@@ -123,7 +122,8 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.74.0 | 2026-06-02 | Add `direct_merge` parameter to `issue-resolver` (default `true`) — when true the resolver merges the branch to master directly after the final commit and closes the issue; `issue-resolve` determines the value from `_index.yaml` or by analyzing issue content (UI-related→false, refactor/test/backend→true); `issue-scan` sets `direct_merge: true` in `_index.yaml` for single-solution non-UI issues; add `direct_merge` field to `_index.yaml` schema; document `WORK_GUARD=false` as the way to skip the merge-guard prompt during automated direct merges |
+| 1 | 2.75.0 | 2026-06-03 | Move `# ユーザー回答欄` to the **top** of the issue file (before the AI body, after title/date); replace `**回答**: 対応する / 対応しない` and QA `**回答**: A / B` with Markdown unchecked checkboxes (`- [ ]`); remove the `> 回答方法:` explanation block; update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve` / `issue-scan` / `issue-scanner` agent / `issue-resolver` agent, and this CLAUDE.md |
+| 〃 | 2.74.0 | 2026-06-02 | Add `direct_merge` parameter to `issue-resolver` (default `true`) — when true the resolver merges the branch to master directly after the final commit and closes the issue; `issue-resolve` determines the value from `_index.yaml` or by analyzing issue content (UI-related→false, refactor/test/backend→true); `issue-scan` sets `direct_merge: true` in `_index.yaml` for single-solution non-UI issues; add `direct_merge` field to `_index.yaml` schema; document `WORK_GUARD=false` as the way to skip the merge-guard prompt during automated direct merges |
 | 〃 | 2.73.0 | 2026-06-02 | `issue-scan` Step 0 now copies uncommitted `.work/issues/` changes from the main repo into the scan worktree before committing, so user-answered issue files are committed together with the scan results |
 | 〃 | 2.72.0 | 2026-06-02 | Add `${ISSUE_RESOLVE_AGENTS}` env var (default `1`) — maximum actionable issues processed per `issue-resolve` invocation; issues are handled sequentially in ascending issue-number order; update `issue-resolve` SKILL.md + JP mirror and this CLAUDE.md |
 | 〃 | 2.71.0 | 2026-06-02 | Move `# ユーザー回答欄` to the **bottom** of the issue file (after `---`, following the AI-authored body); update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve`, the `issue-scanner` agent, and this CLAUDE.md |
