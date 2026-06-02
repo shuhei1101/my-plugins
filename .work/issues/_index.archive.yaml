@@ -98,6 +98,14 @@ closed_issues:
   - navigation
   - _index
   linked_branch: fix/claude-kit-index-md-links
+- id: ISSUE-128
+  title: プラグイン設定.md のセクションタイトルが本文の条件と矛盾している
+  closed: '2026-06-02'
+  resolution: resolved
+  tags:
+  - misleading-content
+  - documentation
+  linked_branch: fix/plugin-config-section-title
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
