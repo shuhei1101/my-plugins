@@ -35,24 +35,67 @@ tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## 手順
 
-`work:start` スキルのフローに従う（正確な手順は `plugins/work/skills/start/SKILL.md` を `Read` してよい）。
-要約：
+> **2 ディレクトリモデル**: 起動時のカレントディレクトリが `MAIN_DIR`（メインリポジトリのルート）。
+> Step 2d 以降は、**全ファイル操作と全 git コマンドを `WT`（ワークツリー）で実行する**。混在厳禁。
 
 1. **ブランチを決める**（イシューから）: `type` はイシューの種別（fix / refactor / feat / …）、
-   タイトルはイシューから導く短い kebab-case。`WORK_BRANCH_AUTHOR` 設定時は尊重。
-2. **ブランチ + ワークツリーを作成**: `index.yaml` エントリを追加（`index-tool.py add`）、続けて
-   ワークツリー作成（`git worktree add -b {branch} ../{repo}-wt-{branch-hyphenated}`）。
-   `WORK_USE_WORKTREE` が falsy ならワークツリーは省略。
-3. **ブランチ文書を作成**（ワークツリー内、`.branch.md`、注入 `タスクドキュメント.md` テンプレートから）。
-   `## 作業内容` をイシューの採用方針から埋める。
-4. **イシューを連携**（work:start Step 6）: ワークツリー内でイシューのフロントマター
-   `status: in_progress` を設定、`branches:` にブランチを追記、ブランチ文書の `## 関連イシュー`
-   テーブルに追加、メインリポジトリの `_index.yaml` へ `set-status in_progress` をミラー。
-5. **初回コミット**: ブランチ文書のみ。
-6. **実装**: 採用 `## 修正案` + `instruction` キーに沿って修正。ブランチ上で意味のある単位でコミット。
-   可能なら検証・スモークテストしてブランチ文書の `## テスト` に記録。
-7. **最終コミット**（work:start Step 9）: `.work/notes/` の関連ノートを更新／作成し、`## 参考ドキュメント`
-   からリンク、`## 作業内容` の全行を `済` にして、ノート + ブランチ文書をコミット。
+   タイトルはイシューから導く短い kebab-case。`WORK_BRANCH_AUTHOR` 設定時は尊重:
+   ```bash
+   BRANCH_AUTHOR="${WORK_BRANCH_AUTHOR:-}"
+   # 著者なし: BRANCH="fix/personal-chat-tuning"
+   # 著者あり: BRANCH="fix/nishikawa/personal-chat-tuning"
+   ```
+
+2. **ブランチ + ワークツリーを作成** — ファイルに触る前に全サブステップを完了すること:
+
+   a. メインリポジトリルートを記録しパスを計算:
+      ```bash
+      MAIN_DIR="$(pwd)"
+      WT_SUFFIX="${BRANCH//\//-}"   # スラッシュ → ハイフン (例: fix-personal-chat-tuning)
+      WT="${MAIN_DIR}/../$(basename "$MAIN_DIR")-wt-${WT_SUFFIX}"
+      ```
+   b. `WORK_USE_WORKTREE` を確認（デフォルト `true`）:
+      ```bash
+      v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
+      ```
+   c. `MAIN_DIR` に `index.yaml` エントリを追加:
+      ```bash
+      python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" add "$MAIN_DIR/.work/tasks/index.yaml" \
+        --branch "$BRANCH" --title "{日本語タイトル}" --type {type} \
+        --summary "{summary}" --task "{YYMMDD}_{task-title}"
+      ```
+   d. **ワークツリー有効なら** — `git worktree add` で作成:
+      ```bash
+      git worktree add -b "$BRANCH" "$WT"
+      ```
+      > ⛔ `$MAIN_DIR` で `git checkout`・`git switch -c`・`git branch` を実行して
+      > ブランチを切ることは**絶対禁止**。ブランチはワークツリー内にのみ存在する。
+
+   e. **この時点以降、全 Write/Edit 操作と全 git コマンド（`git add`・`git commit`・
+      `git status`）は `$WT` で実行すること — `$MAIN_DIR` は使わない。**
+
+3. **ブランチ文書を作成**（パス: `{WT}/.work/tasks/{YYMMDD}_{task-title}/{YYMMDD}-{日本語タイトル}.branch.md`、
+   注入 `タスクドキュメント.md` テンプレートから）。`## 作業内容` をイシューの採用方針から埋める。
+
+4. **イシューを連携**: `$WT/.work/issues/ISSUE-{N}.md` を編集 — フロントマター `status: in_progress`
+   を設定、`branches:` にブランチを追記、ブランチ文書の `## 関連イシュー` テーブルに行を追加。
+   続けてメインリポジトリへステータスをミラー:
+   ```bash
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
+     --issues-dir "$MAIN_DIR/.work/issues" --issue-id ISSUE-{N} --status in_progress
+   ```
+
+5. **初回コミット** — `$WT` から実行、ブランチ文書のみ:
+   ```bash
+   cd "$WT" && git add .work/tasks/ .work/issues/ && git commit -m "chore: $BRANCH のブランチドキュメントを作成"
+   ```
+
+6. **実装**: 採用 `## 修正案` + `instruction` キーに沿って `$WT` 内を修正。全コミットを `$WT`
+   から実行。可能なら検証・スモークテストしてブランチ文書の `## テスト` に記録。
+
+7. **最終コミット** — `$WT` から実行: `$WT/.work/notes/` の関連ノートを更新／作成し、
+   `## 参考ドキュメント` からリンク、`## 作業内容` の全行を `済` にして、ノート + ブランチ文書をコミット。
+
 8. **停止 — マージしない。** ブランチはマージ待ちでユーザーに残す。
 
 ---
