@@ -146,7 +146,7 @@ git branch -d {branch}   # 未マージの場合は -D を使う
 **Class C — index.yaml に追記**:
 
 ```bash
-python {PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
+python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --branch "{branch}" \
   --title "{title}" \
   --type {type} \
@@ -165,7 +165,7 @@ git branch -d {branch}   # 未マージの場合は -D を使う
 #### 注記
 
 - `git branch -d` が失敗した場合（完全にマージされていない）、ユーザーに警告して強制削除（`-D`）を確認
-- `{PLUGIN_ROOT}` はワークスペースプラグインルートパスを指す
+- `${CLAUDE_PLUGIN_ROOT}` はプラグインルートパスを指すシェル変数
 
 ---
 
