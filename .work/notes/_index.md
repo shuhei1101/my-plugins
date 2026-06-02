@@ -60,6 +60,7 @@
 | 12 | [skill-template-standards.md](スキル設計/skill-template-standards.md) | skill-template-standards — SKILL.jp.md テンプレート標準とサブエージェントガイド |
 | 13 | [会話キャプチャスキル.md](スキル設計/会話キャプチャスキル.md) | 会話キャプチャスキル — work:conversation-to-claude（セッションからアーティファクト自動生成） |
 | 14 | [issue-resolveスキル.md](スキル設計/issue-resolveスキル.md) | issue-resolve スキル — Step 1 の _index.yaml 優先読み込みと status/decision 分担 |
+| 15 | [plugin-configスキル.md](スキル設計/plugin-configスキル.md) | plugin-config スキル — 4プラグインの env トグル対話設定（5 ステップ AskUserQuestion ループ） |
 
 ---
 
