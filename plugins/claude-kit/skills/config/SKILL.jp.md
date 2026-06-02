@@ -17,9 +17,9 @@ env 変数をインタラクティブに設定するスキル。
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
-| `CLAUDE_KIT_JP_MIRROR` | JP ミラー（`.jp.md`）の作成 | 有効 |
-| `CLAUDE_KIT_INJECTION_LANG` | 注入リファレンスの言語（`en` / `jp`） | `en` |
-| `CLAUDE_KIT_INJECTION_TTL` | 注入トークンの TTL（秒） | `3600` |
+| `${CLAUDE_KIT_JP_MIRROR}` | JP ミラー（`.jp.md`）の作成 | 有効 |
+| `${CLAUDE_KIT_INJECTION_LANG}` | 注入リファレンスの言語（`en` / `jp`） | `en` |
+| `${CLAUDE_KIT_INJECTION_TTL}` | 注入トークンの TTL（秒） | `3600` |
 
 **JP_MIRROR 極性**: キー不在または `"true"` = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
 
@@ -27,7 +27,7 @@ env 変数をインタラクティブに設定するスキル。
 
 **INJECTION_TTL**: キー不在 = 3600秒（デフォルト）。任意の整数（秒）を文字列で設定可能。デフォルトに戻すにはキーを削除する。
 
-**除外**: `CLAUDE_KIT_INJECTION_DISABLE`（逆極性のキルスイッチ）はこのスキルで管理しない。
+**除外**: `${CLAUDE_KIT_INJECTION_DISABLE}`（逆極性のキルスイッチ）はこのスキルで管理しない。
 
 ---
 
@@ -50,16 +50,16 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 両ファイルの `env` ブロックを確認し（プロジェクト設定が優先）:
 
-**CLAUDE_KIT_JP_MIRROR**:
+**`${CLAUDE_KIT_JP_MIRROR}`**:
 - キー不在または `"true"/"1"/"yes"/"on"` → **ON**（デフォルト有効）
 - `"false"/"0"/"no"/"off"` → **OFF**
 
-**CLAUDE_KIT_INJECTION_LANG**:
+**`${CLAUDE_KIT_INJECTION_LANG}`**:
 - キー不在または `"en"` → **en**（デフォルト）
 - `"jp"` → **jp**
 - それ以外 → 設定値をそのまま表示
 
-**CLAUDE_KIT_INJECTION_TTL**:
+**`${CLAUDE_KIT_INJECTION_TTL}`**:
 - キー不在 → **3600（デフォルト）**
 - 値あり → その値を表示
 
@@ -117,7 +117,7 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 
 `AskUserQuestion` ツールを **1 回のコールで 2 つの質問** を送信。質問 1 の選択肢は変数の種類によって異なる:
 
-**`CLAUDE_KIT_JP_MIRROR`（通常極性）の場合**:
+**`${CLAUDE_KIT_JP_MIRROR}`（通常極性）の場合**:
 
 - question: `"CLAUDE_KIT_JP_MIRROR の値を設定"`
 - header: `"値"`
@@ -125,7 +125,7 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
   1. `"デフォルトに戻す（キー削除 = ON）"` — description: `"env キーを削除して JP ミラー作成を有効に戻す"`
   2. `"OFF（\"false\" に設定）"` — description: `"JP ミラー（.jp.md）の作成を無効にする"`
 
-**`CLAUDE_KIT_INJECTION_LANG`（言語選択）の場合**:
+**`${CLAUDE_KIT_INJECTION_LANG}`（言語選択）の場合**:
 
 - question: `"CLAUDE_KIT_INJECTION_LANG の値を設定"`
 - header: `"言語"`
@@ -133,7 +133,7 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
   1. `"en（デフォルト — キー削除）"` — description: `"英語注入に戻す（env キーを削除）"`
   2. `"jp（日本語注入）"` — description: `"日本語版リファレンスを注入する"`
 
-**`CLAUDE_KIT_INJECTION_TTL`（整数値）の場合**:
+**`${CLAUDE_KIT_INJECTION_TTL}`（整数値）の場合**:
 
 - question: `"CLAUDE_KIT_INJECTION_TTL の値を設定"`
 - header: `"TTL"`
@@ -171,14 +171,14 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 2. ターゲットファイルから JSON を読み込む（存在しない場合は `{}` を使用）
 3. `env` オブジェクトが存在することを確認
 4. 変更を適用:
-   - **CLAUDE_KIT_JP_MIRROR**:
+   - **`${CLAUDE_KIT_JP_MIRROR}`**:
      - "デフォルトに戻す" → `env.CLAUDE_KIT_JP_MIRROR` キーを削除
      - "OFF" → `env.CLAUDE_KIT_JP_MIRROR` を `"false"` に設定
-   - **CLAUDE_KIT_INJECTION_LANG**:
+   - **`${CLAUDE_KIT_INJECTION_LANG}`**:
      - "en（デフォルト）" → `env.CLAUDE_KIT_INJECTION_LANG` キーを削除
      - "jp" → `env.CLAUDE_KIT_INJECTION_LANG` を `"jp"` に設定
      - Other（カスタム値）→ `env.CLAUDE_KIT_INJECTION_LANG` をその値に設定
-   - **CLAUDE_KIT_INJECTION_TTL**:
+   - **`${CLAUDE_KIT_INJECTION_TTL}`**:
      - "デフォルトに戻す" → `env.CLAUDE_KIT_INJECTION_TTL` キーを削除
      - カスタム値 → `env.CLAUDE_KIT_INJECTION_TTL` を入力値の文字列に設定
 5. 2 スペースインデントで書き戻す
@@ -215,5 +215,5 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 ## 注意事項
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
-- `CLAUDE_KIT_INJECTION_DISABLE` は逆極性のキルスイッチのため、このスキルでは管理しない（`plugin-config.md` 参照）
+- `${CLAUDE_KIT_INJECTION_DISABLE}` は逆極性のキルスイッチのため、このスキルでは管理しない（`plugin-config.md` 参照）
 - TTL に数値以外の文字列を設定しないこと — 整数値のみ有効

@@ -19,10 +19,12 @@ until the user chooses to finish.
 |---|---|---|
 | `WORK_BRANCH_ENFORCEMENT` | UserPromptSubmit work-start 強制注入 | 有効 |
 | `WORK_STOP_REMINDER` | Stop TODO/QA リマインダー注入 | 有効 |
-| `WORK_USE_WORKTREE` | work-start での worktree 作成 | 有効 |
-| `WORK_MERGE_PROPOSAL` | Stop フックでの `/work:merge` 提案 | 有効 |
+| `${WORK_USE_WORKTREE}` | work-start での worktree 作成 | 有効 |
+| `${WORK_MERGE_PROPOSAL}` | Stop フックでの `/work:merge` 提案 | 有効 |
 | `WORK_MERGE_AUTO_HANDOFF` | merge Step 11 auto branch-reserve | 有効 |
-| `WORK_COMMIT_TYPE` | コミットメッセージのタイププレフィックス付与 | 有効 |
+| `${WORK_COMMIT_TYPE}` | コミットメッセージのタイププレフィックス付与 | 有効 |
+| `${WORK_PRECOMPACT_CONV2CLAUDE}` | PreCompact で `/work:conversation-to-claude` 実行（`/compact` 前） | 有効 |
+| `${WORK_MERGE_CONV2CLAUDE}` | merge でワークツリー内 `/work:conversation-to-claude` 実行 | 有効 |
 | `AITUBER_NOTIFY` | Stop notify-aituber 通知（ユーザー設定） | 有効 |
 
 **Normal polarity**: キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
@@ -86,7 +88,9 @@ Output a numbered list as plain text, then end the turn and wait for user input:
   4. [{state}] WORK_MERGE_PROPOSAL — Stop フックでの merge 提案
   5. [{state}] WORK_MERGE_AUTO_HANDOFF — merge Step 11 auto pr-handoff
   6. [{state}] WORK_COMMIT_TYPE — コミットメッセージのタイププレフィックス付与
-  7. [{state}] AITUBER_NOTIFY — Stop notify-aituber 通知
+  7. [{state}] WORK_PRECOMPACT_CONV2CLAUDE — PreCompact で conversation-to-claude 実行
+  8. [{state}] WORK_MERGE_CONV2CLAUDE — merge でワークツリー内 conversation-to-claude 実行
+  9. [{state}] AITUBER_NOTIFY — Stop notify-aituber 通知
   0. 完了（終了）
 ```
 
@@ -183,5 +187,5 @@ If no changes were made, report "変更なし".
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
 - AITUBER_NOTIFY のデフォルトスコープは「ユーザー」だが、スコープはユーザーが毎回選択する
-- dev-kit の env トグル（`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN` / `DEV_KIT_NEXT_TS_CHECK`）は `/dev-kit:plugin-config` で設定する
-- `CLAUDE_KIT_INJECTION_DISABLE` / `DEV_KIT_INJECTION_DISABLE` は逆極性のキルスイッチのためこのスキルでは管理しない（`plugin-config.md` 参照）
+- dev-kit の env トグル（`${DEV_KIT_PYTHON}` / `${DEV_KIT_HTML}` / `${DEV_KIT_NEXT}` / `${DEV_KIT_MARKDOWN}` / `${DEV_KIT_NEXT_TS_CHECK}`）は `/dev-kit:plugin-config` で設定する
+- `${CLAUDE_KIT_INJECTION_DISABLE}` / `${DEV_KIT_INJECTION_DISABLE}` は逆極性のキルスイッチのためこのスキルでは管理しない（`plugin-config.md` 参照）

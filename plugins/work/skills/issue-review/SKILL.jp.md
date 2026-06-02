@@ -97,7 +97,7 @@ description: |
    git add .work/issues/
    git commit -m "chore: イシューをレビュー（decision/QA を記入）"
    ```
-   （メッセージは他の work コミット同様 `WORK_COMMIT_LANG` / `WORK_COMMIT_TYPE` に従う）
+   （メッセージは他の work コミット同様 `${WORK_COMMIT_LANG}` / `${WORK_COMMIT_TYPE}` に従う）
 2. `_index.yaml` は git 管理外 — コミットしない。ここで `status` 変更は不要。
 3. サマリを報告: accept / reject / skip の件数。
 

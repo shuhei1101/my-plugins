@@ -61,10 +61,20 @@ BRANCH=refactor/rename-pr-to-branch
 WT_SUFFIX="${BRANCH//\//-}"  # → refactor-rename-pr-to-branch
 ```
 
-2. ワークツリーとブランチを作成します：
+2. `${WORK_BASE_BRANCH}` を読み込みます：
 
 ```bash
-git worktree add -b "$BRANCH" "../$(basename $(pwd))-wt-${WT_SUFFIX}"
+base="${WORK_BASE_BRANCH:-}"
+```
+
+3. ワークツリーとブランチを作成します：
+
+```bash
+if [ -n "$base" ]; then
+  git worktree add -b "$BRANCH" "../$(basename $(pwd))-wt-${WT_SUFFIX}" "$base"
+else
+  git worktree add -b "$BRANCH" "../$(basename $(pwd))-wt-${WT_SUFFIX}"
+fi
 ```
 
 → ステップ 3 へ

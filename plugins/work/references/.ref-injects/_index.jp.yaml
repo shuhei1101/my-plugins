@@ -28,3 +28,9 @@ references:
 
   - path: notes/ノート記述内容ルール.md
     description: .work/notes/ のノートに書く内容と固定ノートテンプレート。ノートは現在の仕様書（スナップショット） — 本文には現在状態のみを書き履歴・理由は書かない。変更は末尾の変更履歴テーブルにのみ残す。YAML frontmatter は付けない。
+
+  - path: conversation/グロッサリー.md
+    description: プロジェクト用語集（.claude/rules/glossary.md、常時ロード）の採用基準とファイル形式。プロジェクト固有・名前から非自明・繰り返し出る・かつ CLAUDE.md / ルール / スキル description / フォルダ構成に既出でない場合のみ登録する。迷ったら破棄。
+
+  - path: conversation/インシデント.md
+    description: 再発防止ログ（incidents）の採用基準とファイル形式 — インデックス .claude/rules/incidents.md（常時ロード）+ 詳細 .claude/references/incidents/{slug}.md。このセッションで実際に起きた一般化可能なミスで、かつ既存のルール / CLAUDE.md / フックで強制済みでない場合のみ記録する。ルールがあるべきなら incident でなくルールを作る。

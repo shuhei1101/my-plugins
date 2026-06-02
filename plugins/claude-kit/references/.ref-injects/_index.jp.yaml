@@ -9,6 +9,9 @@ references:
   - path: common/環境変数.md
     description: プラグインのフック/スクリプトを環境変数で設定可能にする方法 — settings.json の env ブロックで設定（ユーザー/プロジェクト/ローカルのスコープ）、os.environ で読む、デフォルト/検証、{PREFIX}_INJECTION_TTL / _INJECTION_LANG の実例、env とパス変数の区別。Markdown は env を読めない。
 
+  - path: common/環境変数記法.md
+    description: Claude が読む成果物（スキル・ルール・CLAUDE.md・プロンプト）での環境変数名の書き方・ドキュメント化。指示文書内では常に ${VAR_NAME} 表記を使う、ALL_CAPS_SNAKE_CASE + プラグイン名プレフィックス、ドキュメントテーブル形式、Bash の ${VAR} / Python の os.environ.get("VAR") との対応。
+
   - path: common/リファレンス同期.md
     description: プラグインリファレンスファイルの JP ミラー同期ルール。plugins/*/references/**/*.md を編集したら、ペアの *.jp.md も同じコミットで更新する。
 
