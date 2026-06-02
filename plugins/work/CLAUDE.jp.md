@@ -86,11 +86,12 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | 4 | `WORKSPACE_STOP_REMINDER` | `true` | Stop 時にタスク更新リマインドを表示 |
 | 5 | `WORKSPACE_MERGE_PROPOSAL` | `true` | Stop 時に `/work:merge` の実行を提案 |
 | 6 | `WORK_BRANCH_AUTHOR` | （空） | ブランチ名に作者名を追加：`{type}/{author}/{title}` 形式になる |
-| 7 | `CLAUDE_KIT_INJECTION_DISABLE` | (off) | リファレンス注入を無効化（kill switch） |
-| 8 | `DEV_KIT_INJECTION_DISABLE` | (off) | dev-kit リファレンス注入を無効化 |
-| 9 | `WORK_COMMIT_LANG` | `JP` | コミットメッセージの言語：`JP` = 日本語、`EN` = 英語 |
-| 10 | `WORK_COMMIT_TYPE` | `true` | Conventional commit タイププレフィックス（`feat:`、`fix:`、`chore:` など）を付与するか |
-| 11 | `ISSUE_SCAN_AGENTS` | `1` | `issue-scan` 1 回あたりのスキャン観点数（= 並列 `issue-scanner` サブエージェント数） |
+| 7 | `WORK_BASE_BRANCH` | （空） | 新規ワークツリーのベースブランチ。設定時は `git worktree add` がこのコミットを起点にブランチを切る |
+| 8 | `CLAUDE_KIT_INJECTION_DISABLE` | (off) | リファレンス注入を無効化（kill switch） |
+| 9 | `DEV_KIT_INJECTION_DISABLE` | (off) | dev-kit リファレンス注入を無効化 |
+| 10 | `WORK_COMMIT_LANG` | `JP` | コミットメッセージの言語：`JP` = 日本語、`EN` = 英語 |
+| 11 | `WORK_COMMIT_TYPE` | `true` | Conventional commit タイププレフィックス（`feat:`、`fix:`、`chore:` など）を付与するか |
+| 12 | `ISSUE_SCAN_AGENTS` | `1` | `issue-scan` 1 回あたりのスキャン観点数（= 並列 `issue-scanner` サブエージェント数） |
 
 ## ブランチドキュメント構造
 
@@ -107,7 +108,8 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.60.0 | 2026-06-01 | イシューのレビュー/対応ワークフロー: ISSUE にフロントマター（`decision` / `status` / `branches` / 自由記述 `instruction`）を追加し QA をイシューへ移設。`work:issue-review`（スマホ主用途・AskUserQuestion で捌く）+ `work:issue-resolve`（ループ駆動・1 起動 1 イシュー: accept→`issue-resolver` サブエージェント。そのモデルはイシュー難易度で選択＝sonnet/opus・haiku 不使用、reject→共有 `chore/rejected-issues`）+ `work:issue-resolver` エージェントを追加。`work:start` がイシュー連携（`status: in_progress` 設定・`branches` 追記・`## 関連イシュー` 記入）。`issue-tool.py` に `set-status` を追加、`close --linked-branch` は任意のブランチ名に変更。work ライフサイクルを CLAUDE.md に文書化 |
+| 1 | 2.61.0 | 2026-06-02 | `WORK_BASE_BRANCH` env var を追加 — 新規ワークツリー作成時のベースブランチを指定可能に |
+| 2 | 2.60.0 | 2026-06-01 | イシューのレビュー/対応ワークフロー: ISSUE にフロントマター（`decision` / `status` / `branches` / 自由記述 `instruction`）を追加し QA をイシューへ移設。`work:issue-review`（スマホ主用途・AskUserQuestion で捌く）+ `work:issue-resolve`（ループ駆動・1 起動 1 イシュー: accept→`issue-resolver` サブエージェント。そのモデルはイシュー難易度で選択＝sonnet/opus・haiku 不使用、reject→共有 `chore/rejected-issues`）+ `work:issue-resolver` エージェントを追加。`work:start` がイシュー連携（`status: in_progress` 設定・`branches` 追記・`## 関連イシュー` 記入）。`issue-tool.py` に `set-status` を追加、`close --linked-branch` は任意のブランチ名に変更。work ライフサイクルを CLAUDE.md に文書化 |
 | 2 | 2.59.0 | 2026-06-01 | `work:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
 | 2 | 2.56.0 | 2026-05-31 | `issue-scan` を並列 `work:issue-scanner` サブエージェント（新規エージェント）へ委譲するオーケストレーターに再設計。観点（フォルダ/grep/レイヤー/ファイル群）でスキャン・`ISSUE_SCAN_AGENTS` 追加。`issue-save` スキルを削除し、イシューファイルのフォーマットを `work-dir/イシュー` リファレンスへ集約（`issue-create`・`issue-scanner` が直接記述） |
 | 2 | 2.55.0 | 2026-05-31 | `plugins/work/templates/` と `setup-task.py` を削除。テンプレート／フォルダ別構成定義を `references/work-dir/`（`タスクドキュメント` / `タスクインデックス` / `イシュー` / `ワークディレクトリ構成`）へ移し、該当 `.work/` パスの作成・編集時に ref-inject で注入。`work:start` は注入テンプレートを元にブランチドキュメントを直接作成。ブランチドキュメントのファイル名に `.branch.md` 拡張子を付与。`ドットワークディレクトリ構成`→`ワークディレクトリ構成` にリネーム・`TODOテンプレート同期` を削除 |

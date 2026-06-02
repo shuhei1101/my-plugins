@@ -59,10 +59,20 @@ BRANCH=refactor/rename-pr-to-branch
 WT_SUFFIX="${BRANCH//\//-}"  # → refactor-rename-pr-to-branch
 ```
 
-2. Create the worktree and branch:
+2. Read `WORK_BASE_BRANCH`:
 
 ```bash
-git worktree add -b "$BRANCH" "../$(basename $(pwd))-wt-${WT_SUFFIX}"
+base="${WORK_BASE_BRANCH:-}"
+```
+
+3. Create the worktree and branch:
+
+```bash
+if [ -n "$base" ]; then
+  git worktree add -b "$BRANCH" "../$(basename $(pwd))-wt-${WT_SUFFIX}" "$base"
+else
+  git worktree add -b "$BRANCH" "../$(basename $(pwd))-wt-${WT_SUFFIX}"
+fi
 ```
 
 → Proceed to Step 3
