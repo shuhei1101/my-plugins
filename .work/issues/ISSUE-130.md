@@ -62,3 +62,23 @@ A) テンプレート `hooks.json` に `SessionStart` エントリを追加 / B)
 **推奨**: A — テンプレートに追加すれば `apply` / `migrate` 双方で一貫し、`setup_check.py` の消去リスクを根本から解消できる。
 
 **回答**: A
+
+### QA-2: 前提が陳腐化済み — 案A は存在しない setup_check.py を参照し apply フローを壊す
+
+実装着手時の調査で、本イシューの前提が現リポジトリと食い違うことが判明した。実装をブロックして再判断を仰ぐ。
+
+判明した事実:
+- **`SessionStart` → `setup_check.py` は全 consumer から既に削除済み**。`claude-kit` 3.51.0 / `dev-kit` 4.13.0 / `ref-inject` 1.9.0 / `work` 2.59.0 の changelog が `setup-wizard` スキルと `SessionStart` フック削除を記録。現在の `plugins/claude-kit/hooks/hooks.json`・`plugins/dev-kit/hooks/hooks.json` に `SessionStart` エントリは存在しない（イシュー本文の「L77-89 / L115-127 に SessionStart」は現状と不一致）。`find plugins -name setup_check.py` は 0 件 — スクリプト自体がリポジトリに存在しない。
+- **`plugin-migrate` は hooks.json を全体上書きしない（差分マージ方式）**。`plugins/ref-inject/skills/plugin-migrate/SKILL.md` が `PreToolUse(Edit|Write|MultiEdit|Read)` エントリのみをマージし他フックは温存すると明記（L37 / L118-120 / L149-151、禁止事項 L163「Never replace the whole hooks.json — always merge the PreToolUse entry in-place」）。よって本イシューが想定した「再適用で SessionStart が消える」リスクはそもそも発生しない。
+
+帰結:
+- 案A をそのまま実装すると、テンプレート `hooks.json` に**存在しない `${CLAUDE_PLUGIN_ROOT}/hooks/scripts/setup_check.py` を指す SessionStart エントリ**が入る。`/ref-inject:apply` で新規プラグインに適用すると、毎セッション開始時に存在しないスクリプトを起動する壊れたフックを生成する（新規 apply フローの実害）。
+
+選択肢:
+A) このイシューをクローズ（wontfix）— 前提（消去リスク）が plugin-migrate の差分マージ仕様により既に存在せず、対象の SessionStart/setup_check.py も全廃済みのため対応不要 /
+B) 別の意図（setup_check.py を復活させ全 consumer + テンプレートに SessionStart を再導入する）であれば、それは ISSUE-130 の範囲を超える別イシューとして再起票 /
+C) その他（具体指示を記入）
+
+**推奨**: A — リスクの根本（plugin-migrate の全体上書き）が存在せず、`setup_check.py` も全廃済み。テンプレートへの追加はむしろ apply フローを壊す。
+
+**回答**: A) wontfix（前提陳腐化・実害あり） / B) setup_check.py 復活を別イシューで / C) {具体指示を記入}
