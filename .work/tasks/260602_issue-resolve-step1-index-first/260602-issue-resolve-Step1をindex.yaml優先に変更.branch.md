@@ -21,10 +21,10 @@
 
 | 済 | タスク |
 |---|---|
-| | `SKILL.md` Step 1 プロセスを `_index.yaml` 優先に変更 |
-| | `SKILL.jp.md` を同期（JP ミラー） |
-| | QA を記録する |
-| | ノートを更新する |
+| 済 | `SKILL.md` Step 1 プロセスを `_index.yaml` 優先に変更 |
+| 済 | `SKILL.jp.md` を同期（JP ミラー） |
+| 済 | QA を記録する |
+| 済 | ノートを更新する |
 
 ---
 
@@ -52,6 +52,8 @@
 ---
 
 ## 参考ドキュメント
+
+- [issue-resolve スキル設計メモ](../../notes/スキル設計/issue-resolveスキル.md)
 
 ---
 

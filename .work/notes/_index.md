@@ -61,6 +61,7 @@
 | 13 | [html-kitスキル群.md](スキル設計/html-kitスキル群.md) | html-kitスキル群 — dev-kit の HTML/UI 系スキル群と規約 |
 | 14 | [skill-template-standards.md](スキル設計/skill-template-standards.md) | skill-template-standards — SKILL.jp.md テンプレート標準とサブエージェントガイド |
 | 15 | [会話キャプチャスキル.md](スキル設計/会話キャプチャスキル.md) | 会話キャプチャスキル — work:conversation-to-claude（セッションからアーティファクト自動生成） |
+| 16 | [issue-resolveスキル.md](スキル設計/issue-resolveスキル.md) | issue-resolve スキル — Step 1 の _index.yaml 優先読み込みと status/decision 分担 |
 
 ---
 
