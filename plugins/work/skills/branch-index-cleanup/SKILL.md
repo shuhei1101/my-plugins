@@ -145,7 +145,7 @@ git branch -d {branch}   # use -D if not merged
 **Class C — add to index.yaml**:
 
 ```bash
-python {PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
+python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --branch "{branch}" \
   --title "{title}" \
   --type {type} \
@@ -164,7 +164,7 @@ git branch -d {branch}   # use -D if not merged
 #### Notes
 
 - If `git branch -d` fails (not fully merged), warn the user and ask whether to force-delete (`-D`)
-- `{PLUGIN_ROOT}` refers to the workspace plugin root path
+- `${CLAUDE_PLUGIN_ROOT}` is the shell variable pointing to the plugin root path
 
 ---
 
