@@ -1308,3 +1308,10 @@ branches:
     bump
   task: 260602_イシュー回答欄の再設計
   completed: true
+- branch: refactor/issue-resolve-reject-immediate-merge
+  created: '2026-06-02'
+  title: issue-resolveのreject即マージ化
+  type: refactor
+  summary: reject を共有ブランチ蓄積から一時ブランチ即マージへ変更し整合性を維持
+  task: 260602_issue-resolveのreject即マージ化
+  completed: true
