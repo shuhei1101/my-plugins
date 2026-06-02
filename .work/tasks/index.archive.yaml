@@ -1216,3 +1216,10 @@ branches:
     の登録基準を見直す。プロジェクト固有コンテンツの復元はしない。
   task: 260602_会話キャプチャスキル復活
   completed: true
+- branch: docs/env-var-notation-reference
+  created: '2026-06-02'
+  title: 環境変数記法リファレンス追加
+  type: docs
+  summary: claude-kit references に環境変数記法リファレンスを追加し、スキル・ルール・CLAUDE.md への注入ルールを設定する
+  task: 260602_環境変数記法リファレンス追加
+  completed: true

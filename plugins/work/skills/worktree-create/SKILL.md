@@ -59,7 +59,7 @@ BRANCH=refactor/rename-pr-to-branch
 WT_SUFFIX="${BRANCH//\//-}"  # → refactor-rename-pr-to-branch
 ```
 
-2. Read `WORK_BASE_BRANCH`:
+2. Read `${WORK_BASE_BRANCH}`:
 
 ```bash
 base="${WORK_BASE_BRANCH:-}"
