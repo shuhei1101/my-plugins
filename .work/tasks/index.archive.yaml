@@ -1194,3 +1194,10 @@ branches:
   summary: 既存イシュー(my-plugins/aituber)に decision/status/branches/instruction フロントマターを付与
   task: 260602_既存イシューフロントマター移行
   completed: true
+- branch: feat/utils-jp-mirror-translator
+  created: '2026-06-02'
+  title: utils JP ミラー翻訳スキル
+  type: feat
+  summary: utils プラグインに JP ミラー→英語版の翻訳スキル・サブエージェントを追加
+  task: 260602_utils-JPミラー翻訳スキル
+  completed: true
