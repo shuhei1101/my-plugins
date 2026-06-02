@@ -49,18 +49,17 @@ final commit without stopping for questions.
 | 3 | `work:pr-show` | Show next branch candidates in 3 categories (ready / in-progress / conditional) |
 | 4 | `work:merge` | Merge the current branch, close related issues, archive the branch document |
 | 5 | `work:qa-wizard` | Present unresolved QA items and collect decisions |
-| 6 | `work:plugin-config` | Interactively configure work env toggles in `settings.json` |
-| 7 | `work:issue-create` | Create issue files under `.work/issues/` |
-| 8 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
-| 9 | `work:issue-review` | Triage un-reviewed issues (fill `## 意思`, answer QA, write `## 自由記述`) — mobile-first via AskUserQuestion |
-| 10 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→`chore/rejected-issues` |
-| 11 | `work:impl-review` | Review implementation against the branch document |
-| 12 | `work:setup` | Initialize `.work/` directory structure from templates |
-| 13 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
-| 14 | `work:worktree-create` | Create a git worktree for a branch |
-| 15 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
-| 16 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
-| 17 | `work:conversation-to-claude` | Analyze the session and auto-generate artifacts (skill / rule / hook / CLAUDE.md / incidents / glossary); delegates to claude-kit creator skills |
+| 6 | `work:issue-create` | Create issue files under `.work/issues/` |
+| 7 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
+| 8 | `work:issue-review` | Triage un-reviewed issues (fill `## 意思`, answer QA, write `## 自由記述`) — mobile-first via AskUserQuestion |
+| 9 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→`chore/rejected-issues` |
+| 10 | `work:impl-review` | Review implementation against the branch document |
+| 11 | `work:setup` | Initialize `.work/` directory structure from templates |
+| 12 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
+| 13 | `work:worktree-create` | Create a git worktree for a branch |
+| 14 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
+| 15 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
+| 16 | `work:conversation-to-claude` | Analyze the session and auto-generate artifacts (skill / rule / hook / CLAUDE.md / incidents / glossary); delegates to claude-kit creator skills |
 
 ## Agents
 
@@ -82,22 +81,24 @@ final commit without stopping for questions.
 
 ## Environment Variables
 
-| # | Variable | Default | Description |
-|---|---|---|---|
-| 1 | `${WORK_USE_WORKTREE}` | `true` | Create git worktrees for new branches |
-| 2 | `${WORK_GUARD}` | `true` | Enable git-guard hook (confirm push/merge) |
-| 3 | `${WORK_PROTECTED_BRANCHES}` | `master,main,develop` | Comma-separated list of branches protected by master-commit-guard |
-| 4 | `${WORKSPACE_STOP_REMINDER}` | `true` | Show task-update reminder on Stop |
-| 5 | `${WORKSPACE_MERGE_PROPOSAL}` | `true` | Suggest running `/work:merge` on Stop |
-| 6 | `${WORK_BRANCH_AUTHOR}` | (empty) | Author name inserted into branch names: `{type}/{author}/{title}` |
-| 7 | `${WORK_BASE_BRANCH}` | (empty) | Base branch for new worktrees; when set, `git worktree add` branches from this commit-ish instead of `HEAD` |
-| 8 | `${CLAUDE_KIT_INJECTION_DISABLE}` | (off) | Disable reference injection (kill switch) |
-| 9 | `${DEV_KIT_INJECTION_DISABLE}` | (off) | Disable dev-kit reference injection |
-| 10 | `${WORK_COMMIT_LANG}` | `JP` | Language of commit messages: `JP` = Japanese, `EN` = English |
-| 11 | `${WORK_COMMIT_TYPE}` | `true` | Include conventional commit type prefix (`feat:`, `fix:`, `chore:`, etc.) |
-| 12 | `${ISSUE_SCAN_AGENTS}` | `1` | Perspectives scanned per `issue-scan` run (= parallel `issue-scanner` subagents) |
-| 13 | `${WORK_PRECOMPACT_CONV2CLAUDE}` | `true` | Run `/work:conversation-to-claude` on `PreCompact` (before `/compact`) |
-| 14 | `${WORK_MERGE_CONV2CLAUDE}` | `true` | Run `/work:conversation-to-claude` inside the worktree during `work:merge` |
+**Bold** = default value (applied when the key is unset). Booleans list `true` / `false` only (`1` / `yes` / `on` are also accepted as truthy).
+
+| Variable | Description | Values |
+|---|---|---|
+| `${WORK_USE_WORKTREE}` | Create a git worktree for each new branch | - **true**<br>- false |
+| `${WORK_GUARD}` | Enable the git-guard hook (confirm push / merge) | - **true**<br>- false |
+| `${WORK_PROTECTED_BRANCHES}` | Branches protected by master-commit-guard (comma-separated) | **master,main,develop** |
+| `${WORKSPACE_STOP_REMINDER}` | Show the task-update reminder on Stop | - **true**<br>- false |
+| `${WORKSPACE_MERGE_PROPOSAL}` | Suggest running `/work:merge` on Stop | - **true**<br>- false |
+| `${WORK_BRANCH_AUTHOR}` | Author segment inserted into branch names (`{type}/{author}/{title}`); set any name to enable | **(unset)** |
+| `${WORK_BASE_BRANCH}` | Base branch for new worktrees; when set, `git worktree add` branches from this commit-ish instead of `HEAD` | **(unset)** |
+| `${CLAUDE_KIT_INJECTION_DISABLE}` | Kill switch — a truthy value disables claude-kit reference injection | - true<br>- **false** |
+| `${DEV_KIT_INJECTION_DISABLE}` | Kill switch — a truthy value disables dev-kit reference injection | - true<br>- **false** |
+| `${WORK_COMMIT_LANG}` | Commit message language (`JP` = Japanese, `EN` = English) | - **JP**<br>- EN |
+| `${WORK_COMMIT_TYPE}` | Include the conventional commit type prefix (`feat:` / `fix:` / `chore:` …) | - **true**<br>- false |
+| `${ISSUE_SCAN_AGENTS}` | Perspectives scanned per `issue-scan` run (= parallel `issue-scanner` subagents); integer | **1** |
+| `${WORK_PRECOMPACT_CONV2CLAUDE}` | Run `/work:conversation-to-claude` on `PreCompact` (before `/compact`) | - **true**<br>- false |
+| `${WORK_MERGE_CONV2CLAUDE}` | Run `/work:conversation-to-claude` inside the worktree during `work:merge` | - **true**<br>- false |
 
 ## Branch Document Structure
 
@@ -114,6 +115,7 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
+| 1 | 2.65.0 | 2026-06-02 | Remove the interactive `work:plugin-config` skill (env toggles are edited directly in `settings.json`); reformat the `## Environment Variables` table to the unified 3-column layout (Variable / Description / Values, default in **bold**) |
 | 1 | 2.64.0 | 2026-06-02 | Rename the glossary authoring-guide reference `references/conversation/` file to a Japanese name `用語集.md` (+ `.jp.md`) — drop the katakana filename; update `injection_rules` / `_index` / cross-links and all pointers accordingly |
 | 1 | 2.63.0 | 2026-06-02 | Redesign the ISSUE file format: drop YAML frontmatter; two-part Markdown layout (AI-authored top half + `# ユーザー回答欄` with `## 意思` / `## QA` / `## 自由記述`, answer candidates pre-filled, `**回答**:` left blank); rename `## 修正案`→`## 対応案` and drop the 問題点/詳細 section (背景/現状 cover it); move `status` / `branches` to `_index.yaml` (`issue-tool.py` gains `add-branch`); update `issue-create` / `issue-review` / `issue-resolve` / `issue-scan`, the `issue-scanner` / `issue-resolver` agents, and `work:start` issue-linking accordingly |
 | 2 | 2.61.0 | 2026-06-02 | Add `${WORK_BASE_BRANCH}` env var — specify base branch for new worktrees; `git worktree add` branches from this commit-ish when set |

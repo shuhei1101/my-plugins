@@ -48,18 +48,17 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | 3 | `work:pr-show` | 次のブランチ候補を 3 カテゴリ（着手可能 / 進行中 / 条件あり）で表示 |
 | 4 | `work:merge` | 現在のブランチをマージし、関連イシューをクローズ、ブランチドキュメントをアーカイブ |
 | 5 | `work:qa-wizard` | 未解決の QA 項目を提示してユーザーの判断を収集 |
-| 6 | `work:plugin-config` | `settings.json` の work env トグルを対話的に設定 |
-| 7 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
-| 8 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
-| 9 | `work:issue-review` | 未レビューイシューを捌く（`## 意思` 記入・QA 回答・`## 自由記述` 記入）— スマホ主用途・AskUserQuestion |
-| 10 | `work:issue-resolve` | ループ駆動: レビュー済みイシューを消化 — accept→`issue-resolver` サブエージェント、reject→`chore/rejected-issues` |
-| 11 | `work:impl-review` | ブランチドキュメントに照らして実装をレビュー |
-| 12 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
-| 13 | `work:plugin-migrate` | `.work/` 静的テンプレートを現在の work バージョンに更新 |
-| 14 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
-| 15 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
-| 16 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
-| 17 | `work:conversation-to-claude` | セッションを解析し成果物を自動生成（skill / rule / hook / CLAUDE.md / incidents / glossary）。claude-kit creator スキルに委譲 |
+| 6 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
+| 7 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
+| 8 | `work:issue-review` | 未レビューイシューを捌く（`## 意思` 記入・QA 回答・`## 自由記述` 記入）— スマホ主用途・AskUserQuestion |
+| 9 | `work:issue-resolve` | ループ駆動: レビュー済みイシューを消化 — accept→`issue-resolver` サブエージェント、reject→`chore/rejected-issues` |
+| 10 | `work:impl-review` | ブランチドキュメントに照らして実装をレビュー |
+| 11 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
+| 12 | `work:plugin-migrate` | `.work/` 静的テンプレートを現在の work バージョンに更新 |
+| 13 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
+| 14 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
+| 15 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
+| 16 | `work:conversation-to-claude` | セッションを解析し成果物を自動生成（skill / rule / hook / CLAUDE.md / incidents / glossary）。claude-kit creator スキルに委譲 |
 
 ## エージェント
 
@@ -81,22 +80,24 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 ## 環境変数
 
-| # | 変数 | デフォルト | 説明 |
-|---|---|---|---|
-| 1 | `${WORK_USE_WORKTREE}` | `true` | 新しいブランチに git ワークツリーを作成 |
-| 2 | `${WORK_GUARD}` | `true` | git-guard フックを有効化（push/merge を確認） |
-| 3 | `${WORK_PROTECTED_BRANCHES}` | `master,main,develop` | master-commit-guard で保護するブランチのカンマ区切りリスト |
-| 4 | `${WORKSPACE_STOP_REMINDER}` | `true` | Stop 時にタスク更新リマインドを表示 |
-| 5 | `${WORKSPACE_MERGE_PROPOSAL}` | `true` | Stop 時に `/work:merge` の実行を提案 |
-| 6 | `${WORK_BRANCH_AUTHOR}` | （空） | ブランチ名に作者名を追加：`{type}/{author}/{title}` 形式になる |
-| 7 | `${WORK_BASE_BRANCH}` | （空） | 新規ワークツリーのベースブランチ。設定時は `git worktree add` がこのコミットを起点にブランチを切る |
-| 8 | `${CLAUDE_KIT_INJECTION_DISABLE}` | (off) | リファレンス注入を無効化（kill switch） |
-| 9 | `${DEV_KIT_INJECTION_DISABLE}` | (off) | dev-kit リファレンス注入を無効化 |
-| 10 | `${WORK_COMMIT_LANG}` | `JP` | コミットメッセージの言語：`JP` = 日本語、`EN` = 英語 |
-| 11 | `${WORK_COMMIT_TYPE}` | `true` | Conventional commit タイププレフィックス（`feat:`、`fix:`、`chore:` など）を付与するか |
-| 12 | `${ISSUE_SCAN_AGENTS}` | `1` | `issue-scan` 1 回あたりのスキャン観点数（= 並列 `issue-scanner` サブエージェント数） |
-| 13 | `${WORK_PRECOMPACT_CONV2CLAUDE}` | `true` | `/compact` 前に `/work:conversation-to-claude` を実行（`PreCompact` フックで制御） |
-| 14 | `${WORK_MERGE_CONV2CLAUDE}` | `true` | `work:merge` 実行時にワークツリー内で `/work:conversation-to-claude` を実行 |
+**太字** = デフォルト値（キー未設定時に適用）。真偽値は `true` / `false` のみ記載（`1` / `yes` / `on` も truthy として扱われる）。
+
+| 変数名 | 説明 | 値 |
+|---|---|---|
+| `${WORK_USE_WORKTREE}` | 新規ブランチごとに git ワークツリーを作成するか | - **true**<br>- false |
+| `${WORK_GUARD}` | git-guard フックを有効化（push / merge を確認） | - **true**<br>- false |
+| `${WORK_PROTECTED_BRANCHES}` | master-commit-guard が保護するブランチ（カンマ区切り） | **master,main,develop** |
+| `${WORKSPACE_STOP_REMINDER}` | Stop 時にタスク更新リマインダーを表示するか | - **true**<br>- false |
+| `${WORKSPACE_MERGE_PROPOSAL}` | Stop 時に `/work:merge` の実行を提案するか | - **true**<br>- false |
+| `${WORK_BRANCH_AUTHOR}` | ブランチ名に挿入する著者セグメント（`{type}/{author}/{title}`）。任意の名前を設定すると有効 | **(未設定)** |
+| `${WORK_BASE_BRANCH}` | 新規ワークツリーのベースブランチ。設定時は `git worktree add` が `HEAD` ではなくこの commit-ish から分岐 | **(未設定)** |
+| `${CLAUDE_KIT_INJECTION_DISABLE}` | キルスイッチ — truthy で claude-kit のリファレンス注入を無効化 | - true<br>- **false** |
+| `${DEV_KIT_INJECTION_DISABLE}` | キルスイッチ — truthy で dev-kit のリファレンス注入を無効化 | - true<br>- **false** |
+| `${WORK_COMMIT_LANG}` | コミットメッセージの言語（`JP`=日本語 / `EN`=英語） | - **JP**<br>- EN |
+| `${WORK_COMMIT_TYPE}` | Conventional Commits のタイププレフィックス（`feat:` / `fix:` / `chore:` など）を付与するか | - **true**<br>- false |
+| `${ISSUE_SCAN_AGENTS}` | `issue-scan` 1 回あたりのスキャン観点数（= 並列 `issue-scanner` サブエージェント数）。整数 | **1** |
+| `${WORK_PRECOMPACT_CONV2CLAUDE}` | `PreCompact`（`/compact` 前）で `/work:conversation-to-claude` を実行するか | - **true**<br>- false |
+| `${WORK_MERGE_CONV2CLAUDE}` | `work:merge` 中にワークツリー内で `/work:conversation-to-claude` を実行するか | - **true**<br>- false |
 
 ## ブランチドキュメント構造
 
@@ -113,6 +114,7 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
+| 1 | 2.65.0 | 2026-06-02 | 対話式 `work:plugin-config` スキルを削除（env トグルは `settings.json` を直接編集）。`## 環境変数` テーブルを統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再フォーマット |
 | 1 | 2.64.0 | 2026-06-02 | 用語集記述ガイドのリファレンス `references/conversation/` を日本語ファイル名 `用語集.md`（+ `.jp.md`）にリネーム（カタカナ名を廃止）。`injection_rules` / `_index` / 相互リンク・各ポインタを更新 |
 | 1 | 2.63.0 | 2026-06-02 | イシューファイル形式を刷新: YAML フロントマターを廃止し、2 分割の Markdown（AI 記入の上半分 + `# ユーザー回答欄`〔`## 意思` / `## QA` / `## 自由記述`、回答候補を用意し `**回答**:` は空〕）に。`## 修正案`→`## 対応案` に改名し 問題点/詳細 セクションを廃止（背景/現状 で代替）。`status` / `branches` を `_index.yaml` へ移管（`issue-tool.py` に `add-branch` 追加）。`issue-create` / `issue-review` / `issue-resolve` / `issue-scan`・`issue-scanner` / `issue-resolver` エージェント・`work:start` のイシュー連携を更新 |
 | 2 | 2.61.0 | 2026-06-02 | `${WORK_BASE_BRANCH}` env var を追加 — 新規ワークツリー作成時のベースブランチを指定可能に |

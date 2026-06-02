@@ -16,7 +16,7 @@ Japanese mirror: `references/plugin/プラグインCLAUDE-md.jp.md`
 | `## Skills` | Table: skill / description / caller (who invokes it) | **Always required** |
 | `## Changelog` | Table at the bottom: version / date / summary | **Always required** |
 | `## Hooks` | Table: trigger type (merged rows) / hook name / behavior | Required when plugin ships hooks |
-| `## Environment Variables` | Table: key / values (BR-separated if multiple) / description | Required when plugin reads env vars |
+| `## Environment Variables` | Table: variable / description / values (one `- ` item per value, default in **bold**) | Required when plugin reads env vars |
 | `## Dependencies` | Table: plugin / relationship | Required when plugin has dependencies |
 | `## Overall Policy` | Major design decisions or version-transition notes | Optional |
 | `## Plugin Structure` | Directory tree | Optional |
@@ -76,20 +76,24 @@ blank (visual merging). Order: `PreToolUse` → `PostToolUse` → `UserPromptSub
 
 ## Environment variables table
 
-List every env var the plugin reads. In the **Values** column:
+List every env var the plugin reads. Three columns — **Variable / Description / Values**:
 
-- Use `<br>` to separate multiple values on separate lines
-- Mark the default with **(default)**
-- For boolean toggles, always list both `true` / `false`
+- In **Values**, write each accepted value as a `- ` item separated by `<br>`; **bold** the default (no separate Default column, no `(default)` text)
+- Write booleans as `true` / `false` only (not `1` / `yes` / `on`); always list both
+- For enum vars, explain what each value does in the **Description** column
+- For free-form values (integer, string, list), just bold the default value (e.g. `**3600**`, `**(unset)**`)
+- Add the legend line above the table
 
 ```markdown
 ## Environment Variables
 
-| Key | Values | Description |
+**Bold** = default value (applied when the key is unset). Booleans list `true` / `false` only (`1` / `yes` / `on` are also accepted as truthy).
+
+| Variable | Description | Values |
 |---|---|---|
-| `{PREFIX}_INJECTION_TTL` | integer seconds **(default: 3600)** | TTL for the injection token cache |
-| `{PREFIX}_INJECTION_LANG` | `en` **(default)**<br>`jp` | Language for injected descriptions |
-| `{PREFIX}_SOME_TOGGLE` | `true` **(default)**<br>`false` | Enables / disables some behavior when falsy (`false` / `0` / `no` / `off`) |
+| `{PREFIX}_INJECTION_TTL` | TTL for the injection token cache; seconds (integer) | **3600** |
+| `{PREFIX}_INJECTION_LANG` | Language for injected descriptions | - **en**<br>- jp |
+| `{PREFIX}_SOME_TOGGLE` | Enables some behavior; truthy = on | - **true**<br>- false |
 ```
 
 Set these in `settings.json` → `env` block. Full guide: `環境変数.md`.

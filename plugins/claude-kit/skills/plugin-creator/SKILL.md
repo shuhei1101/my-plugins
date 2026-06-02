@@ -24,5 +24,4 @@ skill is a thin wrapper, kept for explicit invocation.
    (it owns the injection files; plugin-creator owns `plugin.json` / root `CLAUDE.md` / `marketplace.json`).
 4. Stamp each generated file per `references/provenance.md` — it is auto-injected when you write the
    file, so write the stamp directly (no skill call needed).
-5. **Generate the required skills** — every plugin must ship `plugin-migrate`, and
-   (if the plugin has env vars) `plugin-config`.
+5. **Generate the required skill** — every plugin must ship `plugin-migrate`.

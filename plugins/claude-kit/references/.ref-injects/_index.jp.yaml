@@ -52,8 +52,5 @@ references:
   - path: plugin/プラグインCLAUDE-md.md
     description: プラグインのルート CLAUDE.md の書き方。必須セクション（Skills / Hooks / Environment Variables / Dependencies / Changelog）、各セクションのテーブル形式、コピペ用フルテンプレート。
 
-  - path: plugin/プラグイン設定.md
-    description: プラグインに config スキルを追加する方法。AskUserQuestion ループパターン、管理トグルの規約（キーなし = ON / "false" = OFF）、スコープ選択、最小 SKILL.md テンプレート。
-
   - path: plugin/バージョン同期.md
     description: プラグインバージョン同期不変条件 — plugin.json / marketplace.json / CLAUDE.md は常に同じバージョンを保つ。コミット前チェックリスト、バージョンバンプ規則、並行 PR 再バンプルール。

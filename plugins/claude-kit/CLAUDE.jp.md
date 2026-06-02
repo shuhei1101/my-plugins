@@ -5,7 +5,7 @@
 
 各指示ファイル種別のオーサリングガイドは `references/`（`common.md`, `skills.md`,
 `rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`, `glossary.md` /
-`incidents.md` / `plugin-config.md`）にある。
+`incidents.md`）にある。
 `claude-kit-references-injection` フック（`hooks/scripts/inject_references.py`）が、対応するファイル
 （`SKILL.md` / ルール / `CLAUDE.md` / `hooks.json` / `plugin.json` …）を編集したとき、該当ガイドを
 **本文全量**で注入する。パス → reference の対応は `references/_injection_rules.yaml` 参照。
@@ -36,17 +36,20 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 
 ## 環境変数
 
-| 変数名 | 値 | デフォルト | 説明 |
-|---|---|---|---|
-| `${CLAUDE_KIT_INJECTION_DISABLE}` | `true`/`1`/`yes`/`on` | （未設定 = ON） | マスターキルスイッチ — truthy 値で注入機構全体を停止する |
-| `${CLAUDE_KIT_INJECTION_TTL}` | 整数（秒） | `3600` | セッション単位注入トークンの TTL（patterns / references 共通） |
-| `${CLAUDE_KIT_INJECTION_LANG}` | `en` / `jp` | `en` | 注入リファレンスの言語（`jp` で `index.jp.yaml` + `injection.jp.md.j2` を使用） |
-| `${CLAUDE_KIT_JP_MIRROR}` | `true` / `false` | `true` | `false` の場合、`.jp.md` ミラーを作らず本体 `.md` ファイルを日本語で直接書く |
+**太字** = デフォルト値（キー未設定時に適用）。真偽値は `true` / `false` のみ記載（`1` / `yes` / `on` も truthy として扱われる）。
+
+| 変数名 | 説明 | 値 |
+|---|---|---|
+| `${CLAUDE_KIT_INJECTION_DISABLE}` | マスターキルスイッチ — truthy で注入機構全体を停止 | - true<br>- **false** |
+| `${CLAUDE_KIT_INJECTION_TTL}` | セッション単位注入トークンの TTL（patterns / references 共通）。秒（整数） | **3600** |
+| `${CLAUDE_KIT_INJECTION_LANG}` | 注入リファレンスの言語（`jp` で `index.jp.yaml` + `injection.jp.md.j2` を使用） | - **en**<br>- jp |
+| `${CLAUDE_KIT_JP_MIRROR}` | `false` で `.jp.md` ミラーを作らず本体 `.md` を日本語で直接書く | - **true**<br>- false |
 
 ## 変更履歴
 
 | # | バージョン | 概要 |
 |---|---|---|
+| 1 | `3.52.0` | 対話式 `claude-kit:config` スキルと config スキル記述ガイド `プラグイン設定.md` を削除。`plugin-creator` / `プラグイン構造.md` から `plugin-config` 必須記載を除去。`プラグインCLAUDE-md.md` の env テーブル仕様を統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再定義し `## 環境変数` テーブルを再フォーマット |
 | 1 | `3.51.0` | `claude-kit:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
 | 2 | `3.49.1` | `plugin-migrate` のブランチチェックステップ（master/main ガード）を削除 — work ハーネスの UserPromptSubmit フックと責務が重複しているため |
 | 2 | `3.49.0` | `claude-kit:config` スキルを追加 — `${CLAUDE_KIT_JP_MIRROR}` / `${CLAUDE_KIT_INJECTION_LANG}` / `${CLAUDE_KIT_INJECTION_TTL}` を番号付きリストループと `AskUserQuestion` でインタラクティブに設定 |

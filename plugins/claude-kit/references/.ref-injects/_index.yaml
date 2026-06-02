@@ -54,8 +54,5 @@ references:
   - path: plugin/プラグインCLAUDE-md.md
     description: How to write a plugin's root CLAUDE.md. Required sections (Skills / Hooks / Environment Variables / Dependencies / Changelog), table formats for each section, and the full copy-paste template.
 
-  - path: plugin/プラグイン設定.md
-    description: How to add a config skill to a plugin. The AskUserQuestion loop pattern, managed-toggle convention (absent = ON, "false" = OFF), scope selection, and a minimal SKILL.md template.
-
   - path: plugin/バージョン同期.md
     description: Plugin version sync invariant — plugin.json / marketplace.json / CLAUDE.md must always carry the same version. Pre-commit checklist, version bump rules, and parallel PR rebump rule.
