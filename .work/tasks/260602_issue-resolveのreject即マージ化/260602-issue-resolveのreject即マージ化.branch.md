@@ -23,17 +23,18 @@ reject ごとに一時ブランチを切って即 master へマージする方�
 
 | No | 完了 | 作業 |
 |---|---|---|
-| 1 | | Step 2 を「メインリポで close → 一時ブランチへ追跡変更を載せ即 master マージ → ブランチ削除」に書き換え |
-| 2 | | frontmatter description / Overview / Step 4 報告文から共有ブランチ蓄積の記述を更新 |
-| 3 | | SKILL.jp.md を同期 |
-| 4 | | plugins/work/CLAUDE.md のライフサイクル記述・Skills 表・Changelog を更新 |
-| 5 | | plugin.json / marketplace.json のバージョンを bump |
-| 6 | | QA をこのドキュメントに記録 |
-| 7 | | ノートを更新（該当あれば） |
+| 1 | 済 | Step 2 を「メインリポで close → 一時ブランチへ追跡変更を載せ即 master マージ → ブランチ削除」に書き換え |
+| 2 | 済 | frontmatter description / Overview / Step 4 報告文から共有ブランチ蓄積の記述を更新 |
+| 3 | 済 | SKILL.jp.md を同期 |
+| 4 | 済 | plugins/work/CLAUDE.md（+ JP ミラー）のライフサイクル記述・Skills 表・Changelog を更新 |
+| 5 | 済 | plugin.json / marketplace.json のバージョンを 2.68.0 へ bump |
+| 6 | 済 | QA をこのドキュメントに記録（ブロッカーなし） |
+| 7 | 済 | ノート（イシュー対応ワークフロー）を更新 |
 
 ## QA
 
-（このセクションは Step 7 で追記）
+（ブロッカーなし。設計判断はユーザーの「reject は即マージ／ステータス変更の master 直コミットは取り下げ」
+の指示で確定済み。close をメインリポで実行する点は `_index.yaml` の gitignore 特性から必然的に決まる。）
 
 ## テスト
 
@@ -43,8 +44,15 @@ reject ごとに一時ブランチを切って即 master へマージする方�
 
 ## 変更内容
 
-（実装中に記録）
+- `plugins/work/skills/issue-resolve/SKILL.md` / `SKILL.jp.md`: Step 2 を「使い捨てブランチでクローズ
+  → 即 master マージ」に全面書き換え。frontmatter description・Overview・Step 4 報告文も更新。
+- `plugins/work/CLAUDE.md` / `CLAUDE.jp.md`: イシューライフサイクル記述・Skills 表・Changelog を更新。
+- `plugins/work/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json`: 2.67.0 → 2.68.0。
+- ガード調査結果: master 直 `git commit` は `master-commit-guard` でブロック（マージ中は素通り）。
+  master への `git merge <feature>` は `git-guard` で 1 回確認（トークンでリトライは素通り）。
+  → 「直コミット」は不可、「ブランチ→即マージ」は確認 1 回で可能。
 
 ## 参考ドキュメント
 
-（最終コミットで追記）
+- `.work/notes/ワークフロー・マージ/イシュー対応ワークフロー.md`
+- `.work/notes/スキル設計/issue-resolveスキル.md`
