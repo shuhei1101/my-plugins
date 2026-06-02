@@ -49,18 +49,16 @@
 | 1 | [ジェネレーターメタデータ.md](スキル設計/ジェネレーターメタデータ.md) | ジェネレーターメタデータ — creator スキル生成物の出自トレース機構 |
 | 2 | [インタラクティブレビュースキル.md](スキル設計/インタラクティブレビュースキル.md) | インタラクティブレビュースキル — AskUserQuestion を使った 2 つのレビュー |
 | 3 | [next-kitプランスキル.md](スキル設計/next-kitプランスキル.md) | next-kit:plan スキル — Next.js プロジェクト設計計画書生成 |
-| 4 | [プラグイン設定スキル.md](スキル設計/プラグイン設定スキル.md) | プラグイン設定スキル — 設計メモ (PR167) |
-| 5 | [plugin-config-reference.md](スキル設計/plugin-config-reference.md) | plugin-config リファレンス設計メモ — config スキル規約・ガイド (PR175) |
-| 6 | [pr-showスキル.md](スキル設計/pr-showスキル.md) | pr-show スキル — 次 PR 候補一覧の状況表示 |
-| 7 | [ref-injectジェネレータ.md](スキル設計/ref-injectジェネレータ.md) | ref-inject — リファレンス自動注入プラグインのジェネレータ |
-| 8 | [work-kitスキル群.md](スキル設計/work-kitスキル群.md) | work-kit スキル群 — 設計メモ |
-| 9 | [AskUserQuestion制約リファレンス.md](スキル設計/AskUserQuestion制約リファレンス.md) | AskUserQuestion 制約リファレンス — スキルからの呼び出しガイド |
-| 10 | [claude-kit-plugin-update-sync.md](スキル設計/claude-kit-plugin-update-sync.md) | claude-kit 成果物同期 — plugin-update スキルによるリポジトリ規約同期 |
-| 11 | [env-syncスキル.md](スキル設計/env-syncスキル.md) | env-syncスキル — WSL ↔ Windows 間の Claude Code 設定同期 |
-| 12 | [debug-fabスキル.md](スキル設計/debug-fabスキル.md) | debug-fabスキル — 開発系画面のフロートデバッグボタン |
-| 13 | [html-kitスキル群.md](スキル設計/html-kitスキル群.md) | html-kitスキル群 — dev-kit の HTML/UI 系スキル群と規約 |
-| 14 | [skill-template-standards.md](スキル設計/skill-template-standards.md) | skill-template-standards — SKILL.jp.md テンプレート標準とサブエージェントガイド |
-| 15 | [会話キャプチャスキル.md](スキル設計/会話キャプチャスキル.md) | 会話キャプチャスキル — work:conversation-to-claude（セッションからアーティファクト自動生成） |
+| 4 | [pr-showスキル.md](スキル設計/pr-showスキル.md) | pr-show スキル — 次 PR 候補一覧の状況表示 |
+| 5 | [ref-injectジェネレータ.md](スキル設計/ref-injectジェネレータ.md) | ref-inject — リファレンス自動注入プラグインのジェネレータ |
+| 6 | [work-kitスキル群.md](スキル設計/work-kitスキル群.md) | work-kit スキル群 — 設計メモ |
+| 7 | [AskUserQuestion制約リファレンス.md](スキル設計/AskUserQuestion制約リファレンス.md) | AskUserQuestion 制約リファレンス — スキルからの呼び出しガイド |
+| 8 | [claude-kit-plugin-update-sync.md](スキル設計/claude-kit-plugin-update-sync.md) | claude-kit 成果物同期 — plugin-update スキルによるリポジトリ規約同期 |
+| 9 | [env-syncスキル.md](スキル設計/env-syncスキル.md) | env-syncスキル — WSL ↔ Windows 間の Claude Code 設定同期 |
+| 10 | [debug-fabスキル.md](スキル設計/debug-fabスキル.md) | debug-fabスキル — 開発系画面のフロートデバッグボタン |
+| 11 | [html-kitスキル群.md](スキル設計/html-kitスキル群.md) | html-kitスキル群 — dev-kit の HTML/UI 系スキル群と規約 |
+| 12 | [skill-template-standards.md](スキル設計/skill-template-standards.md) | skill-template-standards — SKILL.jp.md テンプレート標準とサブエージェントガイド |
+| 13 | [会話キャプチャスキル.md](スキル設計/会話キャプチャスキル.md) | 会話キャプチャスキル — work:conversation-to-claude（セッションからアーティファクト自動生成） |
 
 ---
 

@@ -53,8 +53,9 @@
 
 ## 設計メモ
 
-- `WORK_COMMIT_LANG` は文字列型（`WORK_BRANCH_AUTHOR` と同じパターン）— `plugin-config` の管理対象外
-- `WORK_COMMIT_TYPE` はブール型トグル（通常極性）— `plugin-config` の管理対象に追加
+- `WORK_COMMIT_LANG` は文字列型（`WORK_BRANCH_AUTHOR` と同じパターン）
+- `WORK_COMMIT_TYPE` はブール型トグル（通常極性）
+- env トグルは `settings.json` の `env` ブロックを直接編集して設定する（対話式の plugin-config スキルは廃止）
 - `start/SKILL.md` の「Commit message language」セクションで bash snippet を使って判定
 - 判定ロジック: `lang="${WORK_COMMIT_LANG:-JP}"` / `use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no|off) use_type=false;; *) use_type=true;; esac`
 
@@ -136,6 +137,6 @@ merge スキルがマージを提案するかどうかを env var でオフに�
 
 ## 設計メモ
 
-- `WORK_BRANCH_AUTHOR` と同じ「文字列型 env var」パターン（`work:plugin-config` の管理対象外）
+- `WORK_BRANCH_AUTHOR` と同じ「文字列型 env var」パターン
 - `git worktree add` は末尾に `[<commit-ish>]` を受け付けるため、追加オプションなしで対応可能
 - 一般的な命名: `dev/{name}`（最多）または `{name}/master`、`{name}/main` など
