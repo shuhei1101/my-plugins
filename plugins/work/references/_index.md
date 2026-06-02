@@ -37,5 +37,5 @@
 
 | # | ファイル | 注入パターン | 内容 |
 |---|---|---|---|
-| 1 | [conversation/グロッサリー.md](conversation/グロッサリー.md) | `.claude/rules/glossary.md` | 用語集の採用基準（プロジェクト固有・非自明・繰り返す・既出でない）とファイル形式 |
+| 1 | [conversation/用語集.md](conversation/用語集.md) | `.claude/rules/glossary.md` | 用語集の採用基準（プロジェクト固有・非自明・繰り返す・既出でない）とファイル形式 |
 | 2 | [conversation/インシデント.md](conversation/インシデント.md) | `.claude/rules/incidents.md`・`.claude/references/incidents/**` | 再発防止ログの採用基準（実際のミス・一般化可能・既存ルールで未強制）と二層構造の形式 |

@@ -31,7 +31,7 @@ references:
   - path: notes/ノート記述内容ルール.md
     description: What to write in a .work/notes/ note, plus the fixed note template. A note is a current spec sheet (snapshot) — write only the present state, no history/rationale in the body; record change only in the trailing 変更履歴 table. No YAML frontmatter.
 
-  - path: conversation/グロッサリー.md
+  - path: conversation/用語集.md
     description: Inclusion bar and file format for the project glossary (.claude/rules/glossary.md, always loaded). Register a term only if it is project-specific, non-obvious from its name, recurring, and not already in CLAUDE.md / a rule / a skill description / the folder structure. When in doubt, discard.
 
   - path: conversation/インシデント.md

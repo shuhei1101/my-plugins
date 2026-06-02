@@ -29,7 +29,7 @@ references:
   - path: notes/ノート記述内容ルール.md
     description: .work/notes/ のノートに書く内容と固定ノートテンプレート。ノートは現在の仕様書（スナップショット） — 本文には現在状態のみを書き履歴・理由は書かない。変更は末尾の変更履歴テーブルにのみ残す。YAML frontmatter は付けない。
 
-  - path: conversation/グロッサリー.md
+  - path: conversation/用語集.md
     description: プロジェクト用語集（.claude/rules/glossary.md、常時ロード）の採用基準とファイル形式。プロジェクト固有・名前から非自明・繰り返し出る・かつ CLAUDE.md / ルール / スキル description / フォルダ構成に既出でない場合のみ登録する。迷ったら破棄。
 
   - path: conversation/インシデント.md
