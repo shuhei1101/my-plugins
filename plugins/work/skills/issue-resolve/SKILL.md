@@ -26,12 +26,12 @@ merge-waiting branches (from accepts) for the user to review and merge.
   immediately** within the same invocation (file moved to `closed/`). Nothing accumulates, so the
   issue index and master never drift. (A reject is a pure status change — safe to finalize at once;
   an accept is real work and still waits for the user to merge.)
-- **意思 not narrowed** (unreviewed — still listing all candidates) and **意思 affirmative + status:
+- **意思 not checked** (unreviewed — all checkboxes still `- [ ]`) and **意思 affirmative + status:
   in_progress** (being worked, possibly another session) → skipped.
 
-The issue format (no frontmatter, answer section at the bottom) / lifecycle is governed by `work-dir/イシュー.md`
-(auto-injected) — follow it. The `## 意思` `**回答**:` is read by the AI: "対応する/様子見" is
-affirmative and "対応しない" is negative; a line still listing all candidates means unreviewed.
+The issue format (no frontmatter, answer section at the top) / lifecycle is governed by `work-dir/イシュー.md`
+(auto-injected) — follow it. The `## 意思` checkboxes are read by the AI: `- [x] 対応する` is
+affirmative and `- [x] 対応しない` is negative; all still unchecked (`- [ ]`) means unreviewed.
 
 ---
 
@@ -59,10 +59,10 @@ affirmative and "対応しない" is negative; a line still listing all candidat
 2. If `.work/issues/` does not exist → report and stop.
 3. Read `.work/issues/_index.yaml`. Collect entries with `status: not_started` and sort them
    ascending by issue number. These are the only candidates worth opening.
-4. Walk the candidates top-down. For each, open the issue file and read `## 意思` `**回答**:`:
-   - `## 意思` negative (対応しない) → REJECT action (Step 2).
-   - `## 意思` affirmative (対応する/様子見) → ACCEPT action (Step 3).
-   - `## 意思` not narrowed (still listing all candidates → unreviewed) → skip.
+4. Walk the candidates top-down. For each, open the issue file and read the `## 意思` checkboxes:
+   - `- [x] 対応しない` → REJECT action (Step 2).
+   - `- [x] 対応する` → ACCEPT action (Step 3).
+   - all `- [ ]` (none checked → unreviewed) → skip.
 5. If no actionable issue exists → report "対応可能なイシューはありません" and stop (the loop can end).
 
 → Reject → Step 2 · Accept → Step 3
