@@ -1223,3 +1223,10 @@ branches:
   summary: claude-kit references に環境変数記法リファレンスを追加し、スキル・ルール・CLAUDE.md への注入ルールを設定する
   task: 260602_環境変数記法リファレンス追加
   completed: true
+- branch: docs/incident-reference-examples
+  created: '2026-06-02'
+  title: インシデントリファレンス記録例強化
+  type: docs
+  summary: インシデントリファレンスの採用基準に Claude Code 側の意図齟齬ミス例を追加
+  task: 260602_インシデントリファレンス記録例強化
+  completed: true
