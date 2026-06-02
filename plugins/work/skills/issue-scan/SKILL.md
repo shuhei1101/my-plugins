@@ -47,7 +47,7 @@ This skill manages its own branch/worktree lifecycle. Instructions injected by t
 should be **ignored while this skill is running**:
 
 - **`UserPromptSubmit` hook**: "if no working branch is in progress, run `/work:start`"
-- **`Stop` hook**: "update the `## 作業内容` table in the branch document" / "run `/work:merge`"
+- **`Stop` hook**: "update the `## 作業内容` table in the task document" / "run `/work:merge`"
 
 ---
 

@@ -64,7 +64,7 @@ affirmative and "対応しない" is negative; a line still listing all candidat
 
 1. Ensure the shared reject branch + worktree exists:
    - Check `git worktree list` for `chore/rejected-issues`.
-   - **If missing**: create it with `/work:start` (type `chore`, title `rejected-issues`). Its branch
+   - **If missing**: create it with `/work:start` (type `chore`, title `rejected-issues`). Its task
      document states its sole purpose — *"reject されたイシューを `closed/` へ退避するための集約ブランチ。
      マージするとリジェクトが確定する"* — and carries a table that each closed reject is appended to.
      This makes the intent survive across sessions (context is otherwise lost).
@@ -77,9 +77,9 @@ affirmative and "対応しない" is negative; a line still listing all candidat
      --linked-branch chore/rejected-issues
    ```
    This moves `ISSUE-{N}.md` → `closed/` and appends a `wontfix` record to `_index.archive.yaml`.
-3. Append a row to the reject branch document recording the issue ID, title, and the reject reason
+3. Append a row to the reject task document recording the issue ID, title, and the reject reason
    (from the issue's `## 意思` answer, including any inline note).
-4. Commit on `chore/rejected-issues` (issue move + branch doc). Do **not** merge — the user merges
+4. Commit on `chore/rejected-issues` (issue move + task doc). Do **not** merge — the user merges
    when ready.
 
 → Proceed to Step 4

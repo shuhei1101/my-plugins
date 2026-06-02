@@ -10,22 +10,22 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 1. **プロンプト受信 → ブランチゲート**（`UserPromptSubmit` フック / `hooks/prompts/user-prompt-submit.md`）
    このセッションでブランチが進行中かを判定する。
    - **進行中でない** → 何かを編集・コミットする前に必ず `work:start` を実行する（ブランチ無しでの編集・コミット、master への直接コミットは禁止）。
-   - **進行中** → そのブランチのワークツリーへ移動しブランチ文書を読む。`## QA` に未解決項目があれば**そこで停止**しユーザーに解決を促す。クリアなら今回の依頼を `## 作業内容` に追記してから作業を続ける。
+   - **進行中** → そのブランチのワークツリーへ移動しタスクドキュメントを読む。`## QA` に未解決項目があれば**そこで停止**しユーザーに解決を促す。クリアなら今回の依頼を `## 作業内容` に追記してから作業を続ける。
 
 2. **ブランチ作成**（`work:start` → `work:worktree-create`）
-   ブランチ名決定（`{type}/{title}`、`${WORK_BRANCH_AUTHOR}` 設定時は作者セグメント挿入）→ 詳細収集（日本語タイトル・TODO・ノート・未決定事項）→ メインリポジトリの `index.yaml` にエントリ追加 → ワークツリーとブランチ作成 → タスクフォルダ選択／作成 → 注入テンプレートからブランチ文書を作成 → 未決定事項を `## QA` に記録 → **初回コミット（ブランチ文書のみ）**。
+   ブランチ名決定（`{type}/{title}`、`${WORK_BRANCH_AUTHOR}` 設定時は作者セグメント挿入）→ 詳細収集（日本語タイトル・TODO・ノート・未決定事項）→ メインリポジトリの `index.yaml` にエントリ追加 → ワークツリーとブランチ作成 → タスクフォルダ選択／作成 → 注入テンプレートからタスクドキュメントを作成 → 未決定事項を `## QA` に記録 → **初回コミット（タスクドキュメントのみ）**。
 
 3. **実装**（ワークツリー内）
    編集とコミットはブランチ上で行う。`PreToolUse(Bash)` の 2 つのガードがリポジトリを保護する：`master-commit-guard` は保護ブランチ（`master` / `main` / `develop`）への `git commit` をブロックし、`git-guard` は `git push` / 上流以外への `git merge` を確認する。
 
 4. **最終コミット**（`work:start` Step 9）
-   `.work/notes/` の関連ノートを更新／新規作成し、`## 参考ドキュメント` からリンクし、`_index.md` を更新して、ノート + ブランチ文書をまとめて最後のコミットにする。
+   `.work/notes/` の関連ノートを更新／新規作成し、`## 参考ドキュメント` からリンクし、`_index.md` を更新して、ノート + タスクドキュメントをまとめて最後のコミットにする。
 
 5. **レスポンス終了 → Stop リマインダー**（`Stop` フック / `hooks/prompts/stop.md`）
    完了した `## 作業内容` 行を `済` にし、`## QA` がクリアでノートが反映済みかを確認したうえで、**`/work:merge` の実行を提案**する（`${WORK_MERGE_PROPOSAL}` が falsy のときは提案を省略し `stop-no-merge.md` を使用）。
 
 6. **マージ**（`work:merge`）
-   TODO チェックリスト検証 → 親ブランチを取り込み → **関連イシューをクローズ**（`## 関連イシュー` の各行を `issue-tool.py close` で `.work/issues/closed/` へ移動し `_index.archive.yaml` に記録）→ `index.yaml` でブランチを完了化 → ブランチ文書をアーカイブ → `--no-ff` で親ブランチへマージ → ワークツリー削除 → 残 QA 確認 → 次ブランチ候補があれば `branch-reserve` を自動起動。
+   TODO チェックリスト検証 → 親ブランチを取り込み → **関連イシューをクローズ**（`## 関連イシュー` の各行を `issue-tool.py close` で `.work/issues/closed/` へ移動し `_index.archive.yaml` に記録）→ `index.yaml` でブランチを完了化 → タスクドキュメントをアーカイブ → `--no-ff` で親ブランチへマージ → ワークツリー削除 → 残 QA 確認 → 次ブランチ候補があれば `branch-reserve` を自動起動。
 
 **イシューのサブサイクル**: イシューは `.work/issues/ISSUE-{N}.md` に存在し、**フロントマターを持たない**
 2 分割の Markdown ファイル — `# ユーザー回答欄`（`## 意思` / `## QA`）を**上部**に置き（回答済みか
@@ -44,16 +44,16 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 | # | スキル | 目的 |
 |---|---|---|
-| 1 | `work:start` | 新しいブランチと `.work/tasks/` 配下のブランチドキュメントを作成 |
+| 1 | `work:start` | 新しいブランチと `.work/tasks/` 配下のタスクドキュメントを作成 |
 | 2 | `work:branch-reserve` | `work:start` と同じフローで、現在のブランチ完了後に次のブランチを予約 |
 | 3 | `work:branch-show` | 次のブランチ候補を 3 カテゴリ（着手可能 / 他で進行中 / 条件あり）で表示 |
-| 4 | `work:merge` | 現在のブランチをマージし、関連イシューをクローズ、ブランチドキュメントをアーカイブ |
+| 4 | `work:merge` | 現在のブランチをマージし、関連イシューをクローズ、タスクドキュメントをアーカイブ |
 | 5 | `work:qa-wizard` | 未解決の QA 項目を提示してユーザーの判断を収集 |
 | 6 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
 | 7 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
 | 8 | `work:issue-review` | 未レビューイシューを捌く（`## 意思` と各 `## QA` の `**回答**:` を 1 つに絞る）— スマホ主用途・AskUserQuestion |
 | 9 | `work:issue-resolve` | ループ駆動: レビュー済みイシューを消化 — accept→`issue-resolver` サブエージェント、reject→`chore/rejected-issues` |
-| 10 | `work:impl-review` | ブランチドキュメントに照らして実装をレビュー |
+| 10 | `work:impl-review` | タスクドキュメントに照らして実装をレビュー |
 | 11 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
 | 12 | `work:plugin-migrate` | `.work/` 静的テンプレートを現在の work バージョンに更新 |
 | 13 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
@@ -101,9 +101,9 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | `${WORK_PRECOMPACT_CONV2CLAUDE}` | `PreCompact`（`/compact` 前）で `/work:conversation-to-claude` を実行するか | - **true**<br>- false |
 | `${WORK_MERGE_CONV2CLAUDE}` | `work:merge` 中にワークツリー内で `/work:conversation-to-claude` を実行するか | - **true**<br>- false |
 
-## ブランチドキュメント構造
+## タスクドキュメント構造
 
-各ブランチは `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.md` の単一ファイルを使用し、以下のセクションを持つ：
+各ブランチは `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md` の単一ファイルを使用し、以下のセクションを持つ：
 
 - `## 作業内容` — タスク説明とチェックリスト
 - `## QA` — 実装前に解決すべき質問

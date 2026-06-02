@@ -2,7 +2,7 @@
 name: merge
 description: |
   ブランチをマージ：TODOチェックリスト検証、インデックスアーカイブ、関連イシューのクローズ、
-  --no-ff でマージ、ワークツリーとブランチの削除、ブランチドキュメント内の残存QAエントリ確認。
+  --no-ff でマージ、ワークツリーとブランチの削除、タスクドキュメント内の残存QAエントリ確認。
   「マージして」「merge して」「ブランチをマージしたい」でトリガー。
 disable-model-invocation: true
 ---
@@ -13,7 +13,7 @@ disable-model-invocation: true
 
 完全なマージフローを実行：TODO チェックリスト検証 → master 互換性確認 → ワークツリー内で conversation-to-claude 実行（有効な場合） → 関連イシューのクローズ →
 インデックスアーカイブ → `--no-ff` マージ → ワークツリークリーンアップ →
-ブランチドキュメント内の残存 QA エントリ確認 → 次ブランチ候補用の branch-reserve 自動実行。
+タスクドキュメント内の残存 QA エントリ確認 → 次ブランチ候補用の branch-reserve 自動実行。
 
 > **命名規則**: 新しいブランチは `{type}/{title}` を使用（`PR{N}/` プレフィックスなし）。
 > 新しいワークツリーは `{repo}-wt-{type}-{title}` を使用します。
@@ -53,7 +53,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 出力
 
-- ブランチドキュメントパス、ブランチ名、ワークツリーパスが確認されました
+- タスクドキュメントパス、ブランチ名、ワークツリーパスが確認されました
 
 ---
 
@@ -65,7 +65,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py list-active .work/tasks/index
 
 #### 処理
 
-1. `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md` のブランチドキュメント内の
+1. `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md` のタスクドキュメント内の
    `## 作業内容` テーブルを読み込み
 2. すべての行の `完了` 列に `済` があることを確認
 
@@ -183,8 +183,8 @@ conversation-to-claude をメインリポ（親ブランチ cwd）から実行�
 
 #### 処理
 
-1. ワークツリーの `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md`
-   ブランチドキュメントの `## 関連イシュー` セクションを読み込み
+1. ワークツリーの `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md`
+   タスクドキュメントの `## 関連イシュー` セクションを読み込み
 2. **セクションが存在しない、空である、またはテンプレートプレースホルダー行のみを含む**
    （`| ISSUE-{N} | ... |`）→ このステップの残りをスキップして Step 6 に進む
 3. テーブルの各行について、**ワークツリー内** でクローズコマンドを実行します：
@@ -356,8 +356,8 @@ git branch -d {BRANCH_NAME}
 
 #### 処理
 
-1. `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.md`
-   ブランチドキュメントの `## QA` セクションを確認し、残存する未解決エントリを
+1. `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md`
+   タスクドキュメントの `## QA` セクションを確認し、残存する未解決エントリを
    ユーザーと確認
 2. 変更がある場合はコミット：
 
@@ -379,7 +379,7 @@ git commit -m "docs: post-merge update"
 
 #### 処理
 
-1. マージされたブランチドキュメントを読み込み、その `## 次ブランチ候補` セクションを検査
+1. マージされたタスクドキュメントを読み込み、その `## 次ブランチ候補` セクションを検査
 2. **次ブランチ候補が存在する場合**：`/work:branch-reserve` を実行
    （ユーザー確認は不要）。すべての分類と予約ロジックをそのスキルに委譲
 3. **次ブランチ候補が空の場合**: branch-reserve をスキップ
@@ -403,7 +403,7 @@ git commit -m "docs: post-merge update"
 
 #### 処理
 
-マージされたブランチドキュメントパスをデータソースとして `/work:branch-show` を実行します。
+マージされたタスクドキュメントパスをデータソースとして `/work:branch-show` を実行します。
 
 #### 注記
 

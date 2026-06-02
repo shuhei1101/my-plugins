@@ -28,8 +28,8 @@ rules:
     required:
       - work-dir/ワークディレクトリ構成.md
 
-  # ---- .work/tasks/ ブランチドキュメント: テンプレート全文 + 記入ガイド ----
-  - pattern: ".work/tasks/**/*.branch.md"
+  # ---- .work/tasks/ タスクドキュメント: テンプレート全文 + 記入ガイド ----
+  - pattern: ".work/tasks/**/*.task.md"
     required:
       - work-dir/タスクドキュメント.md
 

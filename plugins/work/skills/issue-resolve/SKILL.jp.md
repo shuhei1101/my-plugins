@@ -64,7 +64,7 @@ description: |
 
 1. 共有 reject ブランチ + ワークツリーの存在を確認：
    - `git worktree list` に `chore/rejected-issues` があるか。
-   - **無ければ**: `/work:start`（type `chore`、title `rejected-issues`）で作成する。そのブランチ文書には
+   - **無ければ**: `/work:start`（type `chore`、title `rejected-issues`）で作成する。そのタスクドキュメントには
      唯一の目的を記す — *「reject されたイシューを `closed/` へ退避するための集約ブランチ。マージすると
      リジェクトが確定する」* — そして各クローズ済み reject を追記するテーブルを持たせる。これにより
      意図がセッションをまたいでも残る（さもないとコンテキストが失われる）。
@@ -77,9 +77,9 @@ description: |
      --linked-branch chore/rejected-issues
    ```
    `ISSUE-{N}.md` を `closed/` へ移動し、`_index.archive.yaml` に `wontfix` 記録を追記する。
-3. reject ブランチ文書にイシュー ID・タイトル・reject 理由（イシューの `## 意思` の回答〔inline の補足含む〕から）
+3. reject タスクドキュメントにイシュー ID・タイトル・reject 理由（イシューの `## 意思` の回答〔inline の補足含む〕から）
    の行を追記。
-4. `chore/rejected-issues` でコミット（イシュー移動 + ブランチ文書）。**マージはしない** — ユーザーが
+4. `chore/rejected-issues` でコミット（イシュー移動 + タスクドキュメント）。**マージはしない** — ユーザーが
    準備できたら行う。
 
 → Step 4 へ

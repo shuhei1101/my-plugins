@@ -74,12 +74,12 @@ Read the full issue file yourself to confirm `## 概要` / `## 現状`, `## 期�
    e. **From this point on, ALL Write/Edit operations and ALL git commands (`git add`, `git commit`,
       `git status`) MUST use `$WT` — never `$MAIN_DIR`.**
 
-3. **Author the branch document** at
-   `{WT}/.work/tasks/{YYMMDD}_{task-title}/{YYMMDD}-{日本語タイトル}.branch.md`
+3. **Author the task document** at
+   `{WT}/.work/tasks/{YYMMDD}_{task-title}/{YYMMDD}-{日本語タイトル}.task.md`
    (from the injected `タスクドキュメント.md` template). Fill `## 作業内容` from the issue's adopted
    approach.
 
-4. **Link the issue**: add a row to the branch doc's `## 関連イシュー` table (in `$WT`). Then in
+4. **Link the issue**: add a row to the task doc's `## 関連イシュー` table (in `$WT`). Then in
    the **main repo** `_index.yaml` (gitignored — not in the worktree), set `status: in_progress`
    and append the branch. Issue files have **no frontmatter** — no edits to the issue file itself:
    ```bash
@@ -89,17 +89,17 @@ Read the full issue file yourself to confirm `## 概要` / `## 現状`, `## 期�
      --issues-dir "$MAIN_DIR/.work/issues" --issue-id ISSUE-{N} --branch "$BRANCH"
    ```
 
-5. **First commit** — run from `$WT`, branch document only:
+5. **First commit** — run from `$WT`, task document only:
    ```bash
-   cd "$WT" && git add .work/tasks/ && git commit -m "chore: $BRANCH のブランチドキュメントを作成"
+   cd "$WT" && git add .work/tasks/ && git commit -m "chore: $BRANCH のタスクドキュメントを作成"
    ```
 
 6. **Implement** the fix per the adopted `## 対応案` + any inline note on the `## 意思` answer. All edits
    happen in `$WT`; all commits run from `$WT`. Verify / smoke-test where feasible and record
-   results in the branch doc's `## テスト`.
+   results in the task doc's `## テスト`.
 
 7. **Final commit** — run from `$WT`: update/create the related note in `$WT/.work/notes/`, link
-   it from `## 参考ドキュメント`, mark all `## 作業内容` rows `済`, and commit the note + branch doc.
+   it from `## 参考ドキュメント`, mark all `## 作業内容` rows `済`, and commit the note + task doc.
 
 8. **Stop — do NOT merge.** The branch is left merge-waiting for the user.
 

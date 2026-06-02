@@ -115,7 +115,7 @@ provide). When in doubt, do **not** register it.
    Do **NOT** record (these are the failure modes the old version suffered from):
    - **The code bug itself / its fix** — the single most common mis-registration. A bug a bug-fix
      branch resolved is done once fixed; it is a code defect, not a session process mistake, and
-     logging these explodes the entry count. "Which bug, fixed how" belongs in the branch document /
+     logging these explodes the entry count. "Which bug, fixed how" belongs in the task document /
      commit message.
    - **"That's already a rule / CLAUDE.md convention."** If the correct behavior is (or should be)
      enforced by an existing rule, CLAUDE.md, or hook, it is not an incident. If a rule *should*
