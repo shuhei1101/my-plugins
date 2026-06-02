@@ -48,3 +48,15 @@ rules:
   - pattern: ".work/issues/**"
     required:
       - work-dir/イシュー.md
+
+  # ==== conversation-to-claude が生成する用語集 / 再発防止ログ ====
+
+  # ---- glossary: 用語集の採用基準とファイル形式 ----
+  - pattern: ".claude/rules/glossary{.jp,}.md"
+    required:
+      - conversation/グロッサリー.md
+
+  # ---- incidents: インデックス（rules）と詳細（references）の両方で発火 ----
+  - pattern: ".claude/{rules/incidents{.jp,}.md,references/incidents/**}"
+    required:
+      - conversation/インシデント.md

@@ -319,6 +319,10 @@ and glossary.
 - **incidents**: a real mistake happened this session + lesson is generalizable + not already enforced by a rule / CLAUDE.md / hook / existing incident.
 - When in doubt for either: **discard**.
 
+The full authoring guides also live as work references and are auto-injected when you edit the
+target files: `references/conversation/グロッサリー.md` (on `.claude/rules/glossary.md`) and
+`references/conversation/インシデント.md` (on `.claude/rules/incidents.md` / `.claude/references/incidents/**`).
+
 ### Official docs
 
 - Skills: **https://code.claude.com/docs/en/skills**
