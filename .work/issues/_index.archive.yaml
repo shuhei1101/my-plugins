@@ -72,6 +72,15 @@ closed_issues:
   - stale-template
   - index.yaml
   linked_branch: fix/setup-index-yaml-template
+- id: ISSUE-122
+  title: incidents.md が _index.md に記載されているが実体が存在しない
+  closed: '2026-06-02'
+  resolution: wontfix
+  tags:
+  - broken-reference
+  - dead-link
+  - references
+  linked_branch: chore/reject-ISSUE-122
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
