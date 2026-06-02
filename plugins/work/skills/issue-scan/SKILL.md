@@ -193,9 +193,10 @@ Selection rules:
 
    {body}
    ```
-   (The `body` field from the subagent already contains `**作成日**`, the AI-authored sections, and
-   the `# ユーザー回答欄` with blank `**回答**:`; just prepend the `# ISSUE-{N}: {title}` line and a
-   blank line.) The work state (`status: not_started`, `branches: []`) goes into the `_index.yaml`
+   (The `body` field from the subagent already contains `**作成日**`, the `# ユーザー回答欄` with
+   `**回答**:` lines pre-filled with all candidates, and the AI-authored issue body; just prepend the
+   `# ISSUE-{N}: {title}` line and a blank line.) The work state (`status: not_started`,
+   `branches: []`) goes into the `_index.yaml`
    entry, not the file.
 4. Record the actual IDs assigned for use in Step 4.
 

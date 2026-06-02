@@ -21,12 +21,12 @@ while leaving a pile of merge-waiting branches for the user to review and merge.
   **merge-waiting final commit** (merge is the user's call, separately).
 - **意思 negative** → close as `wontfix` on the shared `chore/rejected-issues` branch (file moved to
   `closed/`), accumulating there until the user merges that branch.
-- **意思 blank** (unreviewed) and **意思 affirmative + status: in_progress** (being worked, possibly
-  another session) → skipped.
+- **意思 not narrowed** (unreviewed — still listing all candidates) and **意思 affirmative + status:
+  in_progress** (being worked, possibly another session) → skipped.
 
-The issue format (no frontmatter, two halves) / lifecycle is governed by `work-dir/イシュー.md`
-(auto-injected) — follow it. The `## 意思` `**回答**:` is free human text; read "対応する/様子見" as
-affirmative and "対応しない" as negative.
+The issue format (no frontmatter, answer section on top) / lifecycle is governed by `work-dir/イシュー.md`
+(auto-injected) — follow it. The `## 意思` `**回答**:` is read by the AI: "対応する/様子見" is
+affirmative and "対応しない" is negative; a line still listing all candidates means unreviewed.
 
 ---
 
@@ -51,7 +51,7 @@ affirmative and "対応しない" as negative.
 3. Walk the candidates top-down. For each, open the issue file and read `## 意思` `**回答**:`:
    - `## 意思` negative (対応しない) → REJECT action (Step 2).
    - `## 意思` affirmative (対応する/様子見) → ACCEPT action (Step 3).
-   - `## 意思` blank (unreviewed) → skip.
+   - `## 意思` not narrowed (still listing all candidates → unreviewed) → skip.
 4. If no actionable issue exists → report "対応可能なイシューはありません" and stop (the loop can end).
 
 → Reject → Step 2 · Accept → Step 3
@@ -78,7 +78,7 @@ affirmative and "対応しない" as negative.
    ```
    This moves `ISSUE-{N}.md` → `closed/` and appends a `wontfix` record to `_index.archive.yaml`.
 3. Append a row to the reject branch document recording the issue ID, title, and the reject reason
-   (from the issue's `## 自由記述` / `## 意思` answer).
+   (from the issue's `## 意思` answer, including any inline note).
 4. Commit on `chore/rejected-issues` (issue move + branch doc). Do **not** merge — the user merges
    when ready.
 
@@ -109,8 +109,9 @@ affirmative and "対応しない" as negative.
    Judge from the issue's `## 概要` / `## 対応案` scope; when unsure, prefer `opus`.
 3. Dispatch **one** `work:issue-resolver` subagent (agent type `work:issue-resolver`, with the
    `model` chosen above) for this issue. Pass it: the `ISSUE-{N}` id and path, its resolved approach
-   (the adopted `## 対応案` option 〔settled via the `## QA` answer〕 + the `## 自由記述` answer), and
-   the instruction to take the branch all the way to the **merge-waiting final commit** (do not merge).
+   (the adopted `## 対応案` option 〔settled via the `## QA` answer〕 + any inline note on the `## 意思`
+   answer), and the instruction to take the branch all the way to the **merge-waiting final commit**
+   (do not merge).
 4. On the subagent's return:
    - **Completed (merge-waiting)** → record the branch it created; the user will merge it later.
    - **Blocked** (a genuine open question the issue did not pre-resolve) → the subagent recorded the
