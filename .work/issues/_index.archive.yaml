@@ -62,6 +62,16 @@ closed_issues:
   - toctou
   - _common.py
   linked_branch: fix/toctou-already-dispatched
+- id: ISSUE-097
+  title: setup.py が生成する index.yaml テンプレートに廃止済みの last_id フィールドが残っている
+  closed: '2026-06-02'
+  resolution: resolved
+  tags:
+  - setup
+  - schema
+  - stale-template
+  - index.yaml
+  linked_branch: fix/setup-index-yaml-template
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
@@ -162,13 +172,23 @@ scan_records:
   - ISSUE-153
 - date: 2026-06-02
   skill: issue-scan
-  scope: "folder:claude-kit/skills"
-  issues_found: [ISSUE-154, ISSUE-155, ISSUE-156, ISSUE-157, ISSUE-158]
+  scope: folder:claude-kit/skills
+  issues_found:
+  - ISSUE-154
+  - ISSUE-155
+  - ISSUE-156
+  - ISSUE-157
+  - ISSUE-158
 - date: 2026-06-02
   skill: issue-scan
-  scope: "pattern:hardcoded-paths"
-  issues_found: [ISSUE-159, ISSUE-160]
+  scope: pattern:hardcoded-paths
+  issues_found:
+  - ISSUE-159
+  - ISSUE-160
 - date: 2026-06-02
   skill: issue-scan
-  scope: "folder:work/references"
-  issues_found: [ISSUE-161, ISSUE-162, ISSUE-163]
+  scope: folder:work/references
+  issues_found:
+  - ISSUE-161
+  - ISSUE-162
+  - ISSUE-163
