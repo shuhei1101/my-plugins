@@ -49,4 +49,4 @@ plugins/work/
 
 | # | 日付 | 変更 |
 |---|---|---|
-| 1 | 2026-06-02 | claude-kit から work プラグインに移設して復活。インライン python を `pre-compact.py` に切り出し、`_common.py` のセッションフラグヘルパーを利用。トグル `WORK_PRECOMPACT_CONV2CLAUDE` (work v2.61.0) |
+| 1 | 2026-06-02 | claude-kit から work プラグインに移設して復活。インライン python を `pre-compact.py` に切り出し、`_common.py` のセッションフラグヘルパーを利用。トグル `WORK_PRECOMPACT_CONV2CLAUDE` (work v2.62.0) |
