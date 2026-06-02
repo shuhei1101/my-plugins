@@ -160,3 +160,15 @@ scan_records:
   - ISSUE-151
   - ISSUE-152
   - ISSUE-153
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "folder:claude-kit/skills"
+  issues_found: [ISSUE-154, ISSUE-155, ISSUE-156, ISSUE-157, ISSUE-158]
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "pattern:hardcoded-paths"
+  issues_found: [ISSUE-159, ISSUE-160]
+- date: 2026-06-02
+  skill: issue-scan
+  scope: "folder:work/references"
+  issues_found: [ISSUE-161, ISSUE-162, ISSUE-163]
