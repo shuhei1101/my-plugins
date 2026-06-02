@@ -89,6 +89,15 @@ closed_issues:
   - missing-jp-mirror
   - jp-mirror-sync
   linked_branch: fix/jp-mirror-kankyohensu
+- id: ISSUE-125
+  title: _index.md の全リンクがサブディレクトリパスを省略していて無効
+  closed: '2026-06-02'
+  resolution: resolved
+  tags:
+  - broken-link
+  - navigation
+  - _index
+  linked_branch: fix/claude-kit-index-md-links
 scan_records:
 - date: 2026-05-31
   skill: issue-scan
