@@ -9,7 +9,7 @@ The plugin enforces a "one task = one branch" lifecycle through hooks. The full 
 
 1. **Prompt received → branch gate** (`UserPromptSubmit` hook / `hooks/prompts/user-prompt-submit.md`)
    Determines whether a branch is in progress this session.
-   - **No branch** → judge whether the request needs a git branch. Work that produces **committable changes to tracked files** runs `work:start` first; lightweight work that does not — investigation/confirmation, or edits limited to git-ignored/untracked files — runs `work:quick-task` instead (no branch/worktree). Committing tracked changes without a branch, and committing directly to master, are prohibited.
+   - **No branch** → judge whether the request **mainly edits source code**. Source-code implementation runs `work:start`; work that does not mainly edit source code (investigation / confirmation / research) runs `work:quick-task` instead. Both create a branch + task document; quick-task keeps the document and lifecycle light. Committing without a branch, and committing directly to master, are prohibited.
    - **Branch in progress** → move to its worktree and read the task document. If `## QA` has unresolved entries, **stop there** and ask the user to resolve them. If clear, add the new request to `## 作業内容`, then continue.
 
 2. **Branch creation** (`work:start` → `work:worktree-create`)
@@ -48,7 +48,7 @@ final commit without stopping for questions.
 | # | Skill | Purpose |
 |---|---|---|
 | 1 | `work:start` | Create a new branch + task document in `.work/tasks/` |
-| 2 | `work:quick-task` | Lightweight task with **no branch** — investigation/confirmation, or edits limited to git-ignored/untracked files; routed from the UserPromptSubmit hook when no committable tracked change is expected |
+| 2 | `work:quick-task` | Lightweight task for work that does **not mainly edit source code** (investigation / confirmation / research) — creates a branch + a lightweight task document; routed from the UserPromptSubmit hook |
 | 3 | `work:branch-reserve` | Reserve the next branch using the same flow as `work:start`, after the current branch is complete |
 | 4 | `work:branch-show` | Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions) |
 | 5 | `work:merge` | Merge the current branch, close related issues, archive the task document |
@@ -120,7 +120,7 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.68.0 | 2026-06-02 | Rename the task-document file extension `.branch.md` → `.task.md` (matches the `tasks/` folder) and bulk-rename the 266 existing documents; rename the concept **"branch document" → "task document"** across all current-spec references / skills / agents / hooks / CLAUDE.md (changelog history left unchanged); add the `work:quick-task` skill for lightweight work that needs no git branch (investigation/confirmation, or edits limited to git-ignored/untracked files) and route to it from the UserPromptSubmit hook (`work:start` only when committable tracked changes are expected) |
+| 1 | 2.68.0 | 2026-06-02 | Rename the task-document file extension `.branch.md` → `.task.md` (matches the `tasks/` folder) and bulk-rename the 266 existing documents; rename the concept **"branch document" → "task document"** across all current-spec references / skills / agents / hooks / CLAUDE.md (changelog history left unchanged); add the `work:quick-task` skill for lightweight work that does not mainly edit source code (investigation/confirmation/research) — it creates a branch + a lightweight task document — and route to it from the UserPromptSubmit hook (`work:start` for source-code implementation) |
 | 1 | 2.67.0 | 2026-06-02 | Redesign the ISSUE user-answer section: move `# ユーザー回答欄` (`## 意思` / `## QA`) to the **top** of the file (answered-state visible without scrolling), AI-authored issue body below; each QA now carries a number, title, options, and an AI `**推奨**:`; drop `## 自由記述` (free-form notes go inline on the `## 意思` answer); replace the `回答候補`/blank-`回答` model — the AI pre-fills each `**回答**:` with all candidates and the user narrows it to one. Update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve` / `issue-scan`, the `issue-scanner` / `issue-resolver` agents, and this CLAUDE.md |
 | 1 | 2.66.0 | 2026-06-02 | Restore `work:plugin-config` skill — interactive env toggle configuration for work plugin variables |
 | 2 | 2.65.1 | 2026-06-02 | Fix stale skill names in `## Skills` table: `work:pr-handoff` → `work:branch-reserve`, `work:pr-show` → `work:branch-show` |

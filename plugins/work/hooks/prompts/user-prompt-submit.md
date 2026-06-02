@@ -55,22 +55,21 @@ Check whether a working branch is in progress in **the current Claude Code conve
 
 #### Process
 
-1. Judge whether the request needs a git branch — i.e. will it produce **committable changes to
-   git-tracked files**?
-   - **No** → run `/work:quick-task`. This covers investigation / confirmation only ("how does this
-     work?", "what is the status of X?", reading code, explaining behavior) and edits limited to
-     git-ignored or otherwise untracked files (never committed). Do **not** create a branch or worktree.
-   - **Yes** → run `/work:start` to create a branch, then proceed to Step 2.
+1. Judge whether the request **mainly edits source code**.
+   - **No** (investigation / confirmation / research / reading code / explaining behavior — "how does
+     this work?", "what is the status of X?", "look into Y") → run `/work:quick-task`. It creates a
+     branch + a lightweight task document recording the findings.
+   - **Yes** (source-code implementation) → run `/work:start` to create a branch, then proceed to Step 2.
 
 #### Notes
 
-- When unsure whether the work will produce committable tracked changes, prefer `/work:start` — a
-  branch is the safe default.
-- If a `work:quick-task` turns out to require committable changes to tracked files, stop and switch
-  to `/work:start`.
+- Both entry points create a branch and a task document; the difference is the nature of the work
+  (investigation vs source-code implementation) and how light the lifecycle is.
+- If a `work:quick-task` turns into source-code implementation, continue under the `work:start`
+  lifecycle on the same branch.
 
 ##### Prohibitions
 
-- Committing changes to git-tracked files without running work:start first
+- Editing or committing without running `work:start` or `work:quick-task` first
 - Committing directly to master
 - Skipping this check "just this once"
