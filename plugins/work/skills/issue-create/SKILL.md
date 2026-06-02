@@ -90,18 +90,20 @@ Example: "The chat history is hard to read, and settings reset on restart"
 1. For each confirmed issue, allocate the next ID (`last_id + 1`, incrementing as you go) and write
    `.work/issues/ISSUE-{N}.md`.
    - Writing the file auto-injects the `work-dir/イシュー.md` reference — **follow its format exactly**.
-   - The file **opens with the YAML frontmatter** defaulted for a fresh, unreviewed issue:
-     `decision: pending`, `status: not_started`, `branches: []`, `instruction: ""`. Do not set
-     accept/reject here — the user does that later in `work:issue-review`.
-   - The body is Japanese and follows the injected template sections (`## 概要` / `## 背景` /
-     `## 現状` / `## 問題点` / `## 原因` / `## 期待される状態` / `## 修正案` etc.).
-     Do not write Type/Priority/Tags lines (those live in `_index.yaml`).
-   - **Raise QA when there are open questions** (e.g. which 修正案 to adopt, design choices the
-     user must decide): add `## QA` with `QA-XXX` entries (状態: 未解決). These are answered later in
-     `work:issue-review`. If there are no open questions, omit the `## QA` heading entirely.
+   - The file has **no frontmatter** — it starts at `# ISSUE-{N}: {タイトル}`.
+   - Fill the **top half (AI-authored)** in Japanese, following the injected template sections
+     (`## 概要` / `## 背景` / `## 現状` / (`## 原因` if a bug) / `## 期待される状態` / `## 対応案` /
+     `## 横展開` etc.). Do not write Type/Priority/Tags lines (those live in `_index.yaml`).
+   - For the **bottom half (`# ユーザー回答欄`)** write only the headings and the **回答候補**
+     (answer candidates), leaving each `**回答**:` blank — do not decide accept/reject here (the user
+     does that later in `work:issue-review`). Always include `## 意思` and `## 自由記述`.
+   - **Raise a `## QA` when there are multiple 対応案 options or a decision is needed before starting**
+     (each `QA-XXX` with `回答候補` and a blank `**回答**:`). In particular, when you list multiple
+     `## 対応案` options you MUST add a "which option to take" QA. Omit the `## QA` heading if no
+     decision is needed.
 2. After writing all files, update `_index.yaml` per the reference: append each issue's entry
-   (`type` / `priority` / `tags` / `scan_scope` / `status: not_started` are recorded here) and set
-   `last_id` to the highest ID used.
+   (`type` / `priority` / `tags` / `scan_scope` / `status: not_started` / `branches: []` are recorded
+   here) and set `last_id` to the highest ID used.
 3. Collect the created ISSUE IDs.
 
 → Proceed to Step 4

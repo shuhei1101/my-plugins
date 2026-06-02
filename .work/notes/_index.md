@@ -17,6 +17,7 @@
 | 5 | [JPミラー作成規約.md](コーディング規約・スタイル/JPミラー作成規約.md) | JPミラー作成規約 — .jp.md ファイルの作成ルールと既知の問題 |
 | 6 | [E2Eテスト設計方針.md](コーディング規約・スタイル/E2Eテスト設計方針.md) | E2Eテスト設計方針 — ユースケース駆動設計 |
 | 7 | [dev-kitリファレンス関数型スタイル規約.md](コーディング規約・スタイル/dev-kitリファレンス関数型スタイル規約.md) | dev-kit リファレンス関数型スタイル規約 — function-first / type 優先の徹底 |
+| 8 | [環境変数記法規約.md](コーディング規約・スタイル/環境変数記法規約.md) | 環境変数記法規約 — Claude 成果物内での `${VAR_NAME}` 記述ルール |
 
 ---
 
@@ -59,6 +60,7 @@
 | 12 | [debug-fabスキル.md](スキル設計/debug-fabスキル.md) | debug-fabスキル — 開発系画面のフロートデバッグボタン |
 | 13 | [html-kitスキル群.md](スキル設計/html-kitスキル群.md) | html-kitスキル群 — dev-kit の HTML/UI 系スキル群と規約 |
 | 14 | [skill-template-standards.md](スキル設計/skill-template-standards.md) | skill-template-standards — SKILL.jp.md テンプレート標準とサブエージェントガイド |
+| 15 | [会話キャプチャスキル.md](スキル設計/会話キャプチャスキル.md) | 会話キャプチャスキル — work:conversation-to-claude（セッションからアーティファクト自動生成） |
 
 ---
 

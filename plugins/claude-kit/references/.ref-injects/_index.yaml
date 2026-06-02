@@ -11,6 +11,9 @@ references:
   - path: common/環境変数.md
     description: How to make a plugin's hooks/scripts configurable via environment variables — set in settings.json's env block (user/project/local scopes), read with os.environ, defaults/validation, the {PREFIX}_INJECTION_TTL / _INJECTION_LANG example, and env-vs-path-variable distinction. Markdown files cannot read env.
 
+  - path: common/環境変数記法.md
+    description: How to write and document env var names in Claude-read artifacts (skills, rules, CLAUDE.md, prompts). Always use ${VAR_NAME} notation in instruction text; ALL_CAPS_SNAKE_CASE with plugin-name prefix; documentation table format; and how the notation maps to Bash ${VAR} / Python os.environ.get("VAR").
+
   - path: common/リファレンス同期.md
     description: JP mirror sync rule for plugin references files. When editing plugins/*/references/**/*.md, the paired *.jp.md must also be updated in the same commit.
 

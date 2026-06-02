@@ -12,7 +12,7 @@ description: |
 Creates the worktree first, then creates the single per-branch task document inside it.
 This prevents task documents from being created in the main repository.
 
-> **Naming**: branches use `{type}/{title}` by default. If `WORK_BRANCH_AUTHOR` is set, the author
+> **Naming**: branches use `{type}/{title}` by default. If `${WORK_BRANCH_AUTHOR}` is set, the author
 > segment is inserted: `{type}/{author}/{title}` (e.g. `feat/nishikawa/test-update`).
 > The worktree mirrors the full branch name with slashes replaced by hyphens: `{repo}-wt-{branch-hyphenated}`.
 > The branch document filename is `{YYMMDD}-{日本語タイトル}.branch.md` — the Japanese title collected in Step 2
@@ -35,7 +35,7 @@ This prevents task documents from being created in the main repository.
 1. Determine the branch suffix from the requested work:
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **Title**: short kebab-case label that describes the work
-2. Check `WORK_BRANCH_AUTHOR` to build the full branch name:
+2. Check `${WORK_BRANCH_AUTHOR}` to build the full branch name:
 
    ```bash
    author="${WORK_BRANCH_AUTHOR:-}"
@@ -126,7 +126,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### Process
 
 1. Check whether worktree usage is enabled. It is **enabled by default**; disabled only when the
-   `WORK_USE_WORKTREE` env var is set to a falsy value (`false` / `0` / `no` / `off`):
+   `${WORK_USE_WORKTREE}` env var is set to a falsy value (`false` / `0` / `no` / `off`):
 
    ```bash
    v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
@@ -140,9 +140,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 3. **If disabled**: skip worktree creation and notify the user:
 
-   > ⚠️ `WORK_USE_WORKTREE` が無効のため、ワークツリーの作成をスキップします。  
+   > ⚠️ `${WORK_USE_WORKTREE}` が無効のため、ワークツリーの作成をスキップします。  
    > `.work/` フォルダ管理のみで作業を続けます。  
-   > ワークツリーを使用したい場合は `settings.json` の `env` から `WORK_USE_WORKTREE` を外すか `true` に設定してください。
+   > ワークツリーを使用したい場合は `settings.json` の `env` から `${WORK_USE_WORKTREE}` を外すか `true` に設定してください。
 
 → Proceed to Step 5
 
@@ -217,13 +217,14 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - `## 関連ブランチ` / `## 次ブランチ候補` — fill from this session, or leave placeholders.
 4. **If this branch is linked to issue(s)** (from Step 2), link each `ISSUE-{N}` now:
    - In the branch document's `## 関連イシュー` table, add a row for each linked issue.
-   - Edit the issue file **in the worktree** (`{wt}/.work/issues/ISSUE-{N}.md`, git-tracked): set
-     frontmatter `status: in_progress` and append the full branch name to `branches:`.
-   - Mirror the status into the **main repo's** `_index.yaml` (git-ignored, not present in the
-     worktree) so other sessions see it as in progress:
+   - Issue files have **no frontmatter** — the work state (`status` / `branches`) lives in the
+     **main repo's** `_index.yaml` (git-ignored, not present in the worktree). Set the status and
+     append the branch there so other sessions see it as in progress:
      ```bash
      python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
        --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --status in_progress
+     python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" add-branch \
+       --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --branch {full-branch-name}
      ```
      (`{MAIN_REPO}` = the original repo root, i.e. the worktree's parent checkout. Skip silently if
      that path has no `.work/issues`.)
@@ -293,10 +294,10 @@ lang="${WORK_COMMIT_LANG:-JP}"
 use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no|off) use_type=false;; *) use_type=true;; esac
 ```
 
-- **`WORK_COMMIT_LANG`** (default `JP`): `JP` → Japanese; `EN` → English. Both subject and body follow this setting. Metadata lines like `Co-Authored-By:` may remain in English regardless.
-- **`WORK_COMMIT_TYPE`** (default `true`): truthy → include `feat:` / `fix:` / `chore:` etc. prefix; falsy → omit the type prefix entirely.
+- **`${WORK_COMMIT_LANG}`** (default `JP`): `JP` → Japanese; `EN` → English. Both subject and body follow this setting. Metadata lines like `Co-Authored-By:` may remain in English regardless.
+- **`${WORK_COMMIT_TYPE}`** (default `true`): truthy → include `feat:` / `fix:` / `chore:` etc. prefix; falsy → omit the type prefix entirely.
 
-| `WORK_COMMIT_LANG` | `WORK_COMMIT_TYPE` | Example commit message |
+| `${WORK_COMMIT_LANG}` | `${WORK_COMMIT_TYPE}` | Example commit message |
 |---|---|---|
 | `JP` (default) | `true` (default) | `chore: feat/commit-message-options のブランチドキュメントを作成` |
 | `EN` | `true` | `chore: create branch document for feat/commit-message-options` |

@@ -23,12 +23,12 @@ You never merge.
 The orchestrator passes you, in the prompt:
 
 - **Issue id + path** — e.g. `ISSUE-042` at `.work/issues/ISSUE-042.md`.
-- **Resolved approach** — the issue's adopted fix (`## 修正案` 採用案) and the `instruction`
-  frontmatter key (the user's free-form handling instruction from review).
+- **Resolved approach** — the issue's adopted option (the `## 対応案` chosen via the `## QA` answer)
+  and the `## 自由記述` answer (the user's free-form handling instruction from review).
 - The instruction to stop at the merge-waiting final commit (do **not** merge).
 
-Read the full issue file yourself to confirm `## 問題点`, `## 期待される状態`, the adopted
-`## 修正案`, and the `instruction` frontmatter key.
+Read the full issue file yourself to confirm `## 概要` / `## 現状`, `## 期待される状態`, the adopted
+`## 対応案` (per the `## QA` answer), and the `## 自由記述` answer. Issue files have **no frontmatter**.
 
 ---
 
@@ -78,22 +78,24 @@ Read the full issue file yourself to confirm `## 問題点`, `## 期待される
    (from the injected `タスクドキュメント.md` template). Fill `## 作業内容` from the issue's adopted
    approach.
 
-4. **Link the issue**: edit the issue file in `$WT/.work/issues/ISSUE-{N}.md` — set frontmatter
-   `status: in_progress`, append the branch to `branches:`, add a row to the branch doc's
-   `## 関連イシュー` table, then mirror the status change to the main repo:
+4. **Link the issue**: add a row to the branch doc's `## 関連イシュー` table (in `$WT`). Then in
+   the **main repo** `_index.yaml` (gitignored — not in the worktree), set `status: in_progress`
+   and append the branch. Issue files have **no frontmatter** — no edits to the issue file itself:
    ```bash
    python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
      --issues-dir "$MAIN_DIR/.work/issues" --issue-id ISSUE-{N} --status in_progress
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" add-branch \
+     --issues-dir "$MAIN_DIR/.work/issues" --issue-id ISSUE-{N} --branch "$BRANCH"
    ```
 
 5. **First commit** — run from `$WT`, branch document only:
    ```bash
-   cd "$WT" && git add .work/tasks/ .work/issues/ && git commit -m "chore: $BRANCH のブランチドキュメントを作成"
+   cd "$WT" && git add .work/tasks/ && git commit -m "chore: $BRANCH のブランチドキュメントを作成"
    ```
 
-6. **Implement** the fix per the adopted `## 修正案` + the `instruction` key. All edits happen in
-   `$WT`; all commits run from `$WT`. Verify / smoke-test where feasible and record results in
-   the branch doc's `## テスト`.
+6. **Implement** the fix per the adopted `## 対応案` + the `## 自由記述` instruction. All edits
+   happen in `$WT`; all commits run from `$WT`. Verify / smoke-test where feasible and record
+   results in the branch doc's `## テスト`.
 
 7. **Final commit** — run from `$WT`: update/create the related note in `$WT/.work/notes/`, link
    it from `## 参考ドキュメント`, mark all `## 作業内容` rows `済`, and commit the note + branch doc.
@@ -109,8 +111,8 @@ final commit without stopping. But if a **genuine open question** arises that th
 pre-resolve, and guessing would risk the wrong implementation:
 
 - Do **not** guess or merge.
-- Record the blocker as a new `## QA` entry on the issue file (`状態: 未解決`), describing the
-  question and the options.
+- Record the blocker as a new `## QA` entry in the issue's `# ユーザー回答欄` (with `回答候補` and a
+  blank `**回答**:`), describing the question and the options.
 - Stop and return a **blocked** result. (The orchestrator reverts the issue to `not_started` so it
   can be re-reviewed.)
 

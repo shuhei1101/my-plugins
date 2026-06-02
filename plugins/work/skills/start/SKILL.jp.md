@@ -14,7 +14,7 @@ description: |
 ワークツリーを作成してから、その中に単一のブランチごとのタスクドキュメントを作成します。
 これにより、タスクドキュメントがメインリポに作成されるのを防ぎます。
 
-> **命名規則**: デフォルトでは `{type}/{title}` を使用します。`WORK_BRANCH_AUTHOR` が設定されている場合は、
+> **命名規則**: デフォルトでは `{type}/{title}` を使用します。`${WORK_BRANCH_AUTHOR}` が設定されている場合は、
 > 作者名セグメントが挿入されます：`{type}/{author}/{title}`（例：`feat/nishikawa/test-update`）。
 > ワークツリーはブランチ名のスラッシュをハイフンに変換したパスになります：`{repo}-wt-{branch-hyphenated}`。
 > ブランチドキュメントのファイル名は `{YYMMDD}-{日本語タイトル}.branch.md` 形式です（Step 2 で収集する日本語タイトルを使用）
@@ -37,7 +37,7 @@ description: |
 1. リクエストされた作業からブランチサフィックスを決定します：
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
    - **Title**: 作業を説明する簡潔な kebab-case ラベル
-2. `WORK_BRANCH_AUTHOR` を確認して完全なブランチ名を決定します：
+2. `${WORK_BRANCH_AUTHOR}` を確認して完全なブランチ名を決定します：
 
    ```bash
    author="${WORK_BRANCH_AUTHOR:-}"
@@ -128,7 +128,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 #### 処理
 
 1. ワークツリーの使用が有効になっているかどうかを確認します。デフォルトでは **有効** です。
-   `WORK_USE_WORKTREE` 環境変数が偽値（`false` / `0` / `no` / `off`）に設定されている場合のみ無効です：
+   `${WORK_USE_WORKTREE}` 環境変数が偽値（`false` / `0` / `no` / `off`）に設定されている場合のみ無効です：
 
    ```bash
    v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
@@ -142,9 +142,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 
 3. **無効な場合**: ワークツリー作成をスキップしてユーザーに通知します：
 
-   > ⚠️ `WORK_USE_WORKTREE` が無効のため、ワークツリーの作成をスキップします。  
+   > ⚠️ `${WORK_USE_WORKTREE}` が無効のため、ワークツリーの作成をスキップします。  
    > `.work/` フォルダ管理のみで作業を続けます。  
-   > ワークツリーを使用したい場合は `settings.json` の `env` から `WORK_USE_WORKTREE` を外すか `true` に設定してください。
+   > ワークツリーを使用したい場合は `settings.json` の `env` から `${WORK_USE_WORKTREE}` を外すか `true` に設定してください。
 
 → ステップ 5 へ
 
@@ -219,13 +219,14 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
    - `## 関連ブランチ` / `## 次ブランチ候補` — このセッションから記入、またはプレースホルダーを残す。
 4. **このブランチが連携イシューを持つ場合**（ステップ 2 より）、各 `ISSUE-{N}` をここで連携する：
    - ブランチ文書の `## 関連イシュー` テーブルに各連携イシューの行を追加。
-   - **ワークツリー内**のイシューファイル（`{wt}/.work/issues/ISSUE-{N}.md`、git 管理対象）を編集：
-     フロントマター `status: in_progress` を設定し、`branches:` にフルブランチ名を追記。
-   - 他セッションが進行中と分かるよう、**メインリポジトリ**の `_index.yaml`（git 管理外、ワークツリーには
-     存在しない）へステータスをミラーする：
+   - イシューファイルは**フロントマターを持たない** — 作業状態（`status` / `branches`）は
+     **メインリポジトリ**の `_index.yaml`（git 管理外、ワークツリーには存在しない）にある。
+     他セッションが進行中と分かるよう、そこへ status と branch を設定する：
      ```bash
      python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
        --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --status in_progress
+     python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" add-branch \
+       --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --branch {full-branch-name}
      ```
      （`{MAIN_REPO}` = 元のリポジトリルート = ワークツリーの親チェックアウト。そこに `.work/issues` が
      無ければ黙ってスキップ）
@@ -294,10 +295,10 @@ lang="${WORK_COMMIT_LANG:-JP}"
 use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no|off) use_type=false;; *) use_type=true;; esac
 ```
 
-- **`WORK_COMMIT_LANG`**（デフォルト `JP`）：`JP` → 日本語、`EN` → 英語。サブジェクトとボディの両方がこの設定に従う。`Co-Authored-By:` などのメタデータ行は設定に関わらず英語のままでよい。
-- **`WORK_COMMIT_TYPE`**（デフォルト `true`）：truthy → `feat:` / `fix:` / `chore:` などのプレフィックスを付ける、falsy → タイププレフィックスを省略する。
+- **`${WORK_COMMIT_LANG}`**（デフォルト `JP`）：`JP` → 日本語、`EN` → 英語。サブジェクトとボディの両方がこの設定に従う。`Co-Authored-By:` などのメタデータ行は設定に関わらず英語のままでよい。
+- **`${WORK_COMMIT_TYPE}`**（デフォルト `true`）：truthy → `feat:` / `fix:` / `chore:` などのプレフィックスを付ける、falsy → タイププレフィックスを省略する。
 
-| `WORK_COMMIT_LANG` | `WORK_COMMIT_TYPE` | コミットメッセージ例 |
+| `${WORK_COMMIT_LANG}` | `${WORK_COMMIT_TYPE}` | コミットメッセージ例 |
 |---|---|---|
 | `JP`（デフォルト） | `true`（デフォルト） | `chore: feat/commit-message-options のブランチドキュメントを作成` |
 | `EN` | `true` | `chore: create branch document for feat/commit-message-options` |

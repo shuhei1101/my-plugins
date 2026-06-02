@@ -38,10 +38,10 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 
 | 変数名 | 値 | デフォルト | 説明 |
 |---|---|---|---|
-| `CLAUDE_KIT_INJECTION_DISABLE` | `true`/`1`/`yes`/`on` | （未設定 = ON） | マスターキルスイッチ — truthy 値で注入機構全体を停止する |
-| `CLAUDE_KIT_INJECTION_TTL` | 整数（秒） | `3600` | セッション単位注入トークンの TTL（patterns / references 共通） |
-| `CLAUDE_KIT_INJECTION_LANG` | `en` / `jp` | `en` | 注入リファレンスの言語（`jp` で `index.jp.yaml` + `injection.jp.md.j2` を使用） |
-| `CLAUDE_KIT_JP_MIRROR` | `true` / `false` | `true` | `false` の場合、`.jp.md` ミラーを作らず本体 `.md` ファイルを日本語で直接書く |
+| `${CLAUDE_KIT_INJECTION_DISABLE}` | `true`/`1`/`yes`/`on` | （未設定 = ON） | マスターキルスイッチ — truthy 値で注入機構全体を停止する |
+| `${CLAUDE_KIT_INJECTION_TTL}` | 整数（秒） | `3600` | セッション単位注入トークンの TTL（patterns / references 共通） |
+| `${CLAUDE_KIT_INJECTION_LANG}` | `en` / `jp` | `en` | 注入リファレンスの言語（`jp` で `index.jp.yaml` + `injection.jp.md.j2` を使用） |
+| `${CLAUDE_KIT_JP_MIRROR}` | `true` / `false` | `true` | `false` の場合、`.jp.md` ミラーを作らず本体 `.md` ファイルを日本語で直接書く |
 
 ## 変更履歴
 
@@ -49,10 +49,10 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 |---|---|---|
 | 1 | `3.51.0` | `claude-kit:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
 | 2 | `3.49.1` | `plugin-migrate` のブランチチェックステップ（master/main ガード）を削除 — work ハーネスの UserPromptSubmit フックと責務が重複しているため |
-| 2 | `3.49.0` | `claude-kit:config` スキルを追加 — `CLAUDE_KIT_JP_MIRROR` / `CLAUDE_KIT_INJECTION_LANG` / `CLAUDE_KIT_INJECTION_TTL` を番号付きリストループと `AskUserQuestion` でインタラクティブに設定 |
+| 2 | `3.49.0` | `claude-kit:config` スキルを追加 — `${CLAUDE_KIT_JP_MIRROR}` / `${CLAUDE_KIT_INJECTION_LANG}` / `${CLAUDE_KIT_INJECTION_TTL}` を番号付きリストループと `AskUserQuestion` でインタラクティブに設定 |
 | 3 | `3.48.0` | `references/` をロール別サブフォルダ（`common/`・`skill/`・`hook/`・`claude-md/`・`plugin/`）に再編；`plugin/バージョン同期.md` を追加；`plugins/*/CLAUDE.md` 編集時にバージョン同期リマインダーを注入 |
 | 4 | `3.47.0` | `references/jinja2/templates.md` を追加 — Markdown を出力する Jinja2 テンプレートのオーサリングルール；`**/hooks/templates/*.j2` 編集時に自動注入 |
 | 5 | `3.46.0` | `references-edit-guard` PreToolUse フックを追加 — `references/` 編集前に `_index.yaml` / `_injection_rules.yaml` の更新漏れをリマインド |
-| 6 | `3.44.0` | `CLAUDE_KIT_JP_MIRROR` 環境変数を追加 — `false` の場合 `.jp.md` ミラーをスキップし本体ファイルを日本語で書く |
+| 6 | `3.44.0` | `${CLAUDE_KIT_JP_MIRROR}` 環境変数を追加 — `false` の場合 `.jp.md` ミラーをスキップし本体ファイルを日本語で書く |
 | 7 | `3.43.0` | `references/` 配下のメタ YAML をアンダースコア接頭辞付きにリネーム；ドキュメントの plugin 名整理 (PR179) |
-| 8 | `3.42.0` | `CLAUDE_KIT_INJECTION_DISABLE` kill switch 環境変数を追加 |
+| 8 | `3.42.0` | `${CLAUDE_KIT_INJECTION_DISABLE}` kill switch 環境変数を追加 |
