@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-03
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/claude-kit/references/hook/キットフック同期.md` の構造テーブルとチェックリストが `plugins/*-kit/references/CLAUDE.md` / `CLAUDE.jp.md` を参照しているが、この場所にファイルは存在しない。
@@ -28,8 +39,3 @@ plugins/dev-kit/references/.ref-inject/CLAUDE.md      ← 存在しない
 - `plugins/claude-kit/references/hook/キットフック同期.md`: パスを `.ref-inject/CLAUDE.md` に修正
 - `plugins/claude-kit/references/hook/キットフック同期.jp.md`: JP ミラー同期
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

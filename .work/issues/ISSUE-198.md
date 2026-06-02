@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-03
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/ref-inject/templates/hooks/scripts/inject_references.py` の `_save_token` 関数内のエラーメッセージ 1 件が英語のままで、同ファイル内の他のすべてのエラーメッセージ（およびすべての消費者コピー）と一致しない。
@@ -24,8 +35,3 @@ _eprint(f"トークン書き込みエラー ({path.name}): {e}")
 
 - `plugins/ref-inject/templates/hooks/scripts/inject_references.py`: `_save_token` のエラーメッセージを日本語化
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

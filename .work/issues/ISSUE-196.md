@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-03
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/ref-inject/templates/hooks/templates/injection.md.j2`（および `.jp.md.j2`）に Jinja2 Markdown Pitfall 1 の修正が適用されていない。`{% for ref in required %}` 直後に空行なしで `---` が来ている。
@@ -34,8 +45,3 @@ A) ISSUE-143（claude-kit 配布元の Pitfall 2/3）の対応方針に Pitfall 
 
 **回答**: <!-- A / B -->
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->
