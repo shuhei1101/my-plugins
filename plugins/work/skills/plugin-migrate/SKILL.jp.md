@@ -104,7 +104,7 @@ description: |
 
 ---
 
-### ステップ 4: 確認とコミット
+### ステップ 4: `.branch.md` のタスクドキュメントを `.task.md` にリネーム
 
 #### 条件
 
@@ -112,15 +112,45 @@ description: |
 
 #### 処理
 
+1. 旧拡張子のまま git 追跡されているタスクドキュメントを探す:
+   ```bash
+   git ls-files '.work/tasks/*.branch.md'
+   ```
+2. 各ファイルを `git mv` でリネーム（履歴を保持）:
+   ```bash
+   git ls-files '.work/tasks/*.branch.md' | while IFS= read -r f; do
+     git mv "$f" "${f%.branch.md}.task.md"
+   done
+   ```
+   - v2.68.0 でタスクドキュメントの拡張子を `.branch.md` → `.task.md` に変更。ref-inject の
+     テンプレートは `*.task.md` にマッチするため、残った `.branch.md` はテンプレート注入を受けない。
+3. 1 件も無ければ移行済み — スキップ。
+
+→ ステップ 5 へ
+
+#### 出力
+
+- `.work/tasks/**/*.branch.md` をすべて `*.task.md` にリネーム（または「該当なし — スキップ」）
+
+---
+
+### ステップ 5: 確認とコミット
+
+#### 条件
+
+- Step 4 完了
+
+#### 処理
+
 1. worktree の `git status` と `git diff` をユーザーに表示
 2. グループ化した変更を説明的なメッセージでコミット:
    - `chore: sync work .work/ templates to v{version}`
 
-→ ステップ 5 へ
+→ ステップ 6 へ
 
 ---
 
-### ステップ 5: 完了を報告
+### ステップ 6: 完了を報告
 
 #### 処理
 

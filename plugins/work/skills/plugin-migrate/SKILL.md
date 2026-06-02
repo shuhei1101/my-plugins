@@ -102,7 +102,7 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 ---
 
-### Step 4: Review and commit
+### Step 4: Rename `.branch.md` task documents to `.task.md`
 
 #### Condition
 
@@ -110,15 +110,45 @@ owns its own update path and ships its own equivalent skill if needed (e.g. a hy
 
 #### Process
 
+1. Find git-tracked task documents still using the old extension:
+   ```bash
+   git ls-files '.work/tasks/*.branch.md'
+   ```
+2. For each match, rename it with `git mv` so history is preserved:
+   ```bash
+   git ls-files '.work/tasks/*.branch.md' | while IFS= read -r f; do
+     git mv "$f" "${f%.branch.md}.task.md"
+   done
+   ```
+   - v2.68.0 renamed the task-document extension from `.branch.md` to `.task.md`; the ref-inject
+     template now matches `*.task.md`, so leftover `.branch.md` files no longer receive the template.
+3. If none are found → already migrated, skip.
+
+→ Proceed to Step 5
+
+#### Output
+
+- All `.work/tasks/**/*.branch.md` renamed to `*.task.md` (or "none found — skipped")
+
+---
+
+### Step 5: Review and commit
+
+#### Condition
+
+- Step 4 complete
+
+#### Process
+
 1. Show the user `git status` and `git diff` of the worktree
 2. Commit grouped changes with a descriptive message:
    - `chore: sync work .work/ templates to v{version}`
 
-→ Proceed to Step 5
+→ Proceed to Step 6
 
 ---
 
-### Step 5: Report completion
+### Step 6: Report completion
 
 #### Process
 

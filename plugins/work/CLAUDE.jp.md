@@ -9,7 +9,7 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 1. **プロンプト受信 → ブランチゲート**（`UserPromptSubmit` フック / `hooks/prompts/user-prompt-submit.md`）
    このセッションでブランチが進行中かを判定する。
-   - **進行中でない** → 何かを編集・コミットする前に必ず `work:start` を実行する（ブランチ無しでの編集・コミット、master への直接コミットは禁止）。
+   - **進行中でない** → 依頼が git ブランチを必要とするか判断する。**追跡ファイルへのコミットを伴う変更**は先に `work:start` を実行する。それを伴わない軽量作業（調査・確認、または gitignore 除外・未追跡ファイルだけの編集）は代わりに `work:quick-task` を実行する（ブランチ/ワークツリーなし）。追跡ファイルをブランチ無しでコミットすること、master への直接コミットは禁止。
    - **進行中** → そのブランチのワークツリーへ移動しタスクドキュメントを読む。`## QA` に未解決項目があれば**そこで停止**しユーザーに解決を促す。クリアなら今回の依頼を `## 作業内容` に追記してから作業を続ける。
 
 2. **ブランチ作成**（`work:start` → `work:worktree-create`）
@@ -45,22 +45,23 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 | # | スキル | 目的 |
 |---|---|---|
 | 1 | `work:start` | 新しいブランチと `.work/tasks/` 配下のタスクドキュメントを作成 |
-| 2 | `work:branch-reserve` | `work:start` と同じフローで、現在のブランチ完了後に次のブランチを予約 |
-| 3 | `work:branch-show` | 次のブランチ候補を 3 カテゴリ（着手可能 / 他で進行中 / 条件あり）で表示 |
-| 4 | `work:merge` | 現在のブランチをマージし、関連イシューをクローズ、タスクドキュメントをアーカイブ |
-| 5 | `work:qa-wizard` | 未解決の QA 項目を提示してユーザーの判断を収集 |
-| 6 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
-| 7 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
-| 8 | `work:issue-review` | 未レビューイシューを捌く（`## 意思` と各 `## QA` の `**回答**:` を 1 つに絞る）— スマホ主用途・AskUserQuestion |
-| 9 | `work:issue-resolve` | ループ駆動: レビュー済みイシューを消化 — accept→`issue-resolver` サブエージェント、reject→`chore/rejected-issues` |
-| 10 | `work:impl-review` | タスクドキュメントに照らして実装をレビュー |
-| 11 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
-| 12 | `work:plugin-migrate` | `.work/` 静的テンプレートを現在の work バージョンに更新 |
-| 13 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
-| 14 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
-| 15 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
-| 16 | `work:conversation-to-claude` | セッションを解析し成果物を自動生成（skill / rule / hook / CLAUDE.md / incidents / glossary）。claude-kit creator スキルに委譲 |
-| 17 | `work:plugin-config` | work プラグインの env トグルをインタラクティブに設定（ブランチ強制、マージ提案、ワークツリー、コミットタイプなど） |
+| 2 | `work:quick-task` | **ブランチ不要**の軽量タスク — 調査・確認、または gitignore 除外・未追跡ファイルだけの編集。追跡ファイルへのコミットが見込まれない場合に UserPromptSubmit フックから振り分けられる |
+| 3 | `work:branch-reserve` | `work:start` と同じフローで、現在のブランチ完了後に次のブランチを予約 |
+| 4 | `work:branch-show` | 次のブランチ候補を 3 カテゴリ（着手可能 / 他で進行中 / 条件あり）で表示 |
+| 5 | `work:merge` | 現在のブランチをマージし、関連イシューをクローズ、タスクドキュメントをアーカイブ |
+| 6 | `work:qa-wizard` | 未解決の QA 項目を提示してユーザーの判断を収集 |
+| 7 | `work:issue-create` | `.work/issues/` 配下にイシューファイルを作成 |
+| 8 | `work:issue-scan` | `work:issue-scanner` サブエージェントを並列起動して観点をスキャンし、発見をイシューとして記録して自動マージ |
+| 9 | `work:issue-review` | 未レビューイシューを捌く（`## 意思` と各 `## QA` の `**回答**:` を 1 つに絞る）— スマホ主用途・AskUserQuestion |
+| 10 | `work:issue-resolve` | ループ駆動: レビュー済みイシューを消化 — accept→`issue-resolver` サブエージェント、reject→`chore/rejected-issues` |
+| 11 | `work:impl-review` | タスクドキュメントに照らして実装をレビュー |
+| 12 | `work:setup` | テンプレートから `.work/` ディレクトリ構造を初期化 |
+| 13 | `work:plugin-migrate` | `.work/` 静的テンプレートを現在の work バージョンに更新 |
+| 14 | `work:worktree-create` | ブランチ用の git ワークツリーを作成 |
+| 15 | `work:vscode-workspace-sync` | VS Code の `.code-workspace` ファイルを git ワークツリーと同期 |
+| 16 | `work:branch-index-cleanup` | `.work/tasks/index.yaml` から古いエントリを削除 |
+| 17 | `work:conversation-to-claude` | セッションを解析し成果物を自動生成（skill / rule / hook / CLAUDE.md / incidents / glossary）。claude-kit creator スキルに委譲 |
+| 18 | `work:plugin-config` | work プラグインの env トグルをインタラクティブに設定（ブランチ強制、マージ提案、ワークツリー、コミットタイプなど） |
 
 ## エージェント
 
@@ -116,6 +117,7 @@ work プラグインは「1 タスク = 1 ブランチ」のライフサイク�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
+| 1 | 2.68.0 | 2026-06-02 | タスクドキュメントのファイル拡張子を `.branch.md` → `.task.md` に変更（`tasks/` フォルダ名と整合）し既存 266 件を一括リネーム。概念名を **「ブランチドキュメント」→「タスクドキュメント」** に統一（全カレント仕様の references / skills / agents / hooks / CLAUDE.md。changelog 履歴は不変）。git ブランチを必要としない軽量作業（調査・確認、または gitignore 除外・未追跡ファイルだけの編集）向けに `work:quick-task` スキルを新設し、UserPromptSubmit フックから振り分け（追跡ファイルへのコミットが見込まれる場合のみ `work:start`） |
 | 1 | 2.67.0 | 2026-06-02 | イシューのユーザー回答欄を再設計: `# ユーザー回答欄`（`## 意思` / `## QA`）をファイル**上部**へ移動（スクロールせず回答済みか分かる）、AI 記入のイシュー本文は下に。各 QA に番号・タイトル・選択肢・AI `**推奨**:` を必須化。`## 自由記述` を廃止（自由補足は `## 意思` の回答に inline）。`回答候補`/空 `回答` 方式を廃止し、AI が各 `**回答**:` に全候補を事前記入→ユーザーが 1 つに絞る方式に。`イシュー.md` テンプレート・`issue-create` / `issue-review` / `issue-resolve` / `issue-scan`・`issue-scanner` / `issue-resolver` エージェント・本 CLAUDE.md を更新 |
 | 1 | 2.66.0 | 2026-06-02 | `work:plugin-config` スキルを復活 — work プラグイン変数のインタラクティブな env トグル設定 |
 | 2 | 2.65.1 | 2026-06-02 | `## スキル` テーブルの古いスキル名を修正: `work:pr-handoff` → `work:branch-reserve`、`work:pr-show` → `work:branch-show` |

@@ -9,7 +9,7 @@ The plugin enforces a "one task = one branch" lifecycle through hooks. The full 
 
 1. **Prompt received → branch gate** (`UserPromptSubmit` hook / `hooks/prompts/user-prompt-submit.md`)
    Determines whether a branch is in progress this session.
-   - **No branch** → `work:start` must run before editing or committing anything (editing/committing without a branch, and committing directly to master, are prohibited).
+   - **No branch** → judge whether the request needs a git branch. Work that produces **committable changes to tracked files** runs `work:start` first; lightweight work that does not — investigation/confirmation, or edits limited to git-ignored/untracked files — runs `work:quick-task` instead (no branch/worktree). Committing tracked changes without a branch, and committing directly to master, are prohibited.
    - **Branch in progress** → move to its worktree and read the task document. If `## QA` has unresolved entries, **stop there** and ask the user to resolve them. If clear, add the new request to `## 作業内容`, then continue.
 
 2. **Branch creation** (`work:start` → `work:worktree-create`)
@@ -48,22 +48,23 @@ final commit without stopping for questions.
 | # | Skill | Purpose |
 |---|---|---|
 | 1 | `work:start` | Create a new branch + task document in `.work/tasks/` |
-| 2 | `work:branch-reserve` | Reserve the next branch using the same flow as `work:start`, after the current branch is complete |
-| 3 | `work:branch-show` | Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions) |
-| 4 | `work:merge` | Merge the current branch, close related issues, archive the task document |
-| 5 | `work:qa-wizard` | Present unresolved QA items and collect decisions |
-| 6 | `work:issue-create` | Create issue files under `.work/issues/` |
-| 7 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
-| 8 | `work:issue-review` | Triage un-reviewed issues (narrow `## 意思` and each `## QA` `**回答**:` to one choice) — mobile-first via AskUserQuestion |
-| 9 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→`chore/rejected-issues` |
-| 10 | `work:impl-review` | Review implementation against the task document |
-| 11 | `work:setup` | Initialize `.work/` directory structure from templates |
-| 12 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
-| 13 | `work:worktree-create` | Create a git worktree for a branch |
-| 14 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
-| 15 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
-| 16 | `work:conversation-to-claude` | Analyze the session and auto-generate artifacts (skill / rule / hook / CLAUDE.md / incidents / glossary); delegates to claude-kit creator skills |
-| 17 | `work:plugin-config` | Interactively configure work plugin env toggles (branch enforcement, merge proposal, worktree, commit type, etc.) |
+| 2 | `work:quick-task` | Lightweight task with **no branch** — investigation/confirmation, or edits limited to git-ignored/untracked files; routed from the UserPromptSubmit hook when no committable tracked change is expected |
+| 3 | `work:branch-reserve` | Reserve the next branch using the same flow as `work:start`, after the current branch is complete |
+| 4 | `work:branch-show` | Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions) |
+| 5 | `work:merge` | Merge the current branch, close related issues, archive the task document |
+| 6 | `work:qa-wizard` | Present unresolved QA items and collect decisions |
+| 7 | `work:issue-create` | Create issue files under `.work/issues/` |
+| 8 | `work:issue-scan` | Orchestrate parallel `work:issue-scanner` subagents to scan perspectives; record findings as issues and auto-merge |
+| 9 | `work:issue-review` | Triage un-reviewed issues (narrow `## 意思` and each `## QA` `**回答**:` to one choice) — mobile-first via AskUserQuestion |
+| 10 | `work:issue-resolve` | Loop-driven: work through reviewed issues — accept→`issue-resolver` subagent, reject→`chore/rejected-issues` |
+| 11 | `work:impl-review` | Review implementation against the task document |
+| 12 | `work:setup` | Initialize `.work/` directory structure from templates |
+| 13 | `work:plugin-migrate` | Update `.work/` static templates to the current work version |
+| 14 | `work:worktree-create` | Create a git worktree for a branch |
+| 15 | `work:vscode-workspace-sync` | Keep a VS Code `.code-workspace` file in sync with git worktrees |
+| 16 | `work:branch-index-cleanup` | Remove stale entries from `.work/tasks/index.yaml` |
+| 17 | `work:conversation-to-claude` | Analyze the session and auto-generate artifacts (skill / rule / hook / CLAUDE.md / incidents / glossary); delegates to claude-kit creator skills |
+| 18 | `work:plugin-config` | Interactively configure work plugin env toggles (branch enforcement, merge proposal, worktree, commit type, etc.) |
 
 ## Agents
 
@@ -119,6 +120,7 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
+| 1 | 2.68.0 | 2026-06-02 | Rename the task-document file extension `.branch.md` → `.task.md` (matches the `tasks/` folder) and bulk-rename the 266 existing documents; rename the concept **"branch document" → "task document"** across all current-spec references / skills / agents / hooks / CLAUDE.md (changelog history left unchanged); add the `work:quick-task` skill for lightweight work that needs no git branch (investigation/confirmation, or edits limited to git-ignored/untracked files) and route to it from the UserPromptSubmit hook (`work:start` only when committable tracked changes are expected) |
 | 1 | 2.67.0 | 2026-06-02 | Redesign the ISSUE user-answer section: move `# ユーザー回答欄` (`## 意思` / `## QA`) to the **top** of the file (answered-state visible without scrolling), AI-authored issue body below; each QA now carries a number, title, options, and an AI `**推奨**:`; drop `## 自由記述` (free-form notes go inline on the `## 意思` answer); replace the `回答候補`/blank-`回答` model — the AI pre-fills each `**回答**:` with all candidates and the user narrows it to one. Update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve` / `issue-scan`, the `issue-scanner` / `issue-resolver` agents, and this CLAUDE.md |
 | 1 | 2.66.0 | 2026-06-02 | Restore `work:plugin-config` skill — interactive env toggle configuration for work plugin variables |
 | 2 | 2.65.1 | 2026-06-02 | Fix stale skill names in `## Skills` table: `work:pr-handoff` → `work:branch-reserve`, `work:pr-show` → `work:branch-show` |

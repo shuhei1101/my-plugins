@@ -47,7 +47,7 @@ Check whether a working branch is in progress in **the current Claude Code conve
 
 ---
 
-### Step 3: Run work:start before doing anything
+### Step 3: No branch in progress — choose the entry point
 
 #### Condition
 
@@ -55,13 +55,22 @@ Check whether a working branch is in progress in **the current Claude Code conve
 
 #### Process
 
-1. Run `/work:start` to create a branch
-2. Once the branch is created, proceed to Step 2
+1. Judge whether the request needs a git branch — i.e. will it produce **committable changes to
+   git-tracked files**?
+   - **No** → run `/work:quick-task`. This covers investigation / confirmation only ("how does this
+     work?", "what is the status of X?", reading code, explaining behavior) and edits limited to
+     git-ignored or otherwise untracked files (never committed). Do **not** create a branch or worktree.
+   - **Yes** → run `/work:start` to create a branch, then proceed to Step 2.
 
 #### Notes
 
+- When unsure whether the work will produce committable tracked changes, prefer `/work:start` — a
+  branch is the safe default.
+- If a `work:quick-task` turns out to require committable changes to tracked files, stop and switch
+  to `/work:start`.
+
 ##### Prohibitions
 
-- Editing or committing files without running work:start first
+- Committing changes to git-tracked files without running work:start first
 - Committing directly to master
 - Skipping this check "just this once"
