@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-064: vscode-workspace-sync/SKILL.jp.md がコードブロックを省略してリンク参照に差し替えている
 
 **作成日**: 2026-05-31

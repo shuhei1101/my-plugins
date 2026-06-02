@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-130: ref-inject テンプレート hooks.json に SessionStart フックが欠落 — plugin-migrate 実行時に consumer の SessionStart が消去されるリスク
 
 **作成日**: 2026-05-31

@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-126: _index.yaml の プラグイン構造.md 説明に旧スキル名 plugin-update が残存
 
 **作成日**: 2026-05-31

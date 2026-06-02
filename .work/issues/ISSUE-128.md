@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-128: プラグイン設定.md のセクションタイトルが本文の条件と矛盾している
 
 **作成日**: 2026-05-31

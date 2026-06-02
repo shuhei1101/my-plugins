@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-035: 複数プラグインの `plugin-config` スキルで `description` トリガーフレーズが重複している
 
 **作成日**: 2026-05-31

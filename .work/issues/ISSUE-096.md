@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-096: `git-guard.py` / `master-commit-guard.py` が stdin パースエラーをキャッチしない
 
 **作成日**: 2026-05-31

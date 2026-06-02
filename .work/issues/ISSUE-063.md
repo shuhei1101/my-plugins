@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-063: 英語オリジナルが削除された JP ミラーが残存（孤立ミラー 4 件）
 
 **作成日**: 2026-05-31

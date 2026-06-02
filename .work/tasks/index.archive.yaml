@@ -1187,3 +1187,10 @@ branches:
     のイシュー連携を実装する
   task: 260601_イシュー対応スキル
   completed: true
+- branch: chore/migrate-existing-issues
+  created: '2026-06-02'
+  title: 既存イシューをフロントマター形式へ移行
+  type: chore
+  summary: 既存イシュー(my-plugins/aituber)に decision/status/branches/instruction フロントマターを付与
+  task: 260602_既存イシューフロントマター移行
+  completed: true

@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-093: `stop.py` が `sys.argv[1]` を無防備に参照し、引数欠落で IndexError クラッシュ
 
 **作成日**: 2026-05-31

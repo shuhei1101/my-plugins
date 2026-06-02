@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-123: provenance.md が複数箇所から参照されているが実体が存在しない
 
 **作成日**: 2026-05-31
