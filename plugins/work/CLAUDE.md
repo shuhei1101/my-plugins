@@ -89,13 +89,14 @@ final commit without stopping for questions.
 | 4 | `WORKSPACE_STOP_REMINDER` | `true` | Show task-update reminder on Stop |
 | 5 | `WORKSPACE_MERGE_PROPOSAL` | `true` | Suggest running `/work:merge` on Stop |
 | 6 | `WORK_BRANCH_AUTHOR` | (empty) | Author name inserted into branch names: `{type}/{author}/{title}` |
-| 7 | `CLAUDE_KIT_INJECTION_DISABLE` | (off) | Disable reference injection (kill switch) |
-| 8 | `DEV_KIT_INJECTION_DISABLE` | (off) | Disable dev-kit reference injection |
-| 9 | `WORK_COMMIT_LANG` | `JP` | Language of commit messages: `JP` = Japanese, `EN` = English |
-| 10 | `WORK_COMMIT_TYPE` | `true` | Include conventional commit type prefix (`feat:`, `fix:`, `chore:`, etc.) |
-| 11 | `ISSUE_SCAN_AGENTS` | `1` | Perspectives scanned per `issue-scan` run (= parallel `issue-scanner` subagents) |
-| 12 | `WORK_PRECOMPACT_CONV2CLAUDE` | `true` | Run `/work:conversation-to-claude` on `PreCompact` (before `/compact`) |
-| 13 | `WORK_MERGE_CONV2CLAUDE` | `true` | Run `/work:conversation-to-claude` inside the worktree during `work:merge` |
+| 7 | `WORK_BASE_BRANCH` | (empty) | Base branch for new worktrees; when set, `git worktree add` branches from this commit-ish instead of `HEAD` |
+| 8 | `CLAUDE_KIT_INJECTION_DISABLE` | (off) | Disable reference injection (kill switch) |
+| 9 | `DEV_KIT_INJECTION_DISABLE` | (off) | Disable dev-kit reference injection |
+| 10 | `WORK_COMMIT_LANG` | `JP` | Language of commit messages: `JP` = Japanese, `EN` = English |
+| 11 | `WORK_COMMIT_TYPE` | `true` | Include conventional commit type prefix (`feat:`, `fix:`, `chore:`, etc.) |
+| 12 | `ISSUE_SCAN_AGENTS` | `1` | Perspectives scanned per `issue-scan` run (= parallel `issue-scanner` subagents) |
+| 13 | `WORK_PRECOMPACT_CONV2CLAUDE` | `true` | Run `/work:conversation-to-claude` on `PreCompact` (before `/compact`) |
+| 14 | `WORK_MERGE_CONV2CLAUDE` | `true` | Run `/work:conversation-to-claude` inside the worktree during `work:merge` |
 
 ## Branch Document Structure
 
@@ -112,8 +113,9 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.61.0 | 2026-06-02 | Revive `work:conversation-to-claude` (formerly claude-kit, removed in PR181) — analyzes the session and auto-generates artifacts (skill / rule / hook / CLAUDE.md / incidents / glossary), delegating skill/rule/hook/CLAUDE.md to claude-kit creator skills; tighten the glossary/incidents inclusion bars (skip what is already in CLAUDE.md / a rule / the folder structure). Add the `PreCompact` hook (`pre-compact.py`, toggle `WORK_PRECOMPACT_CONV2CLAUDE`) to run it before `/compact`, and restore the `work:merge` step that runs it inside the worktree (toggle `WORK_MERGE_CONV2CLAUDE`). Add `references/conversation/グロッサリー.md` + `インシデント.md` (glossary/incidents authoring guides) auto-injected via ref-inject when editing `.claude/rules/glossary.md` / `.claude/rules/incidents.md` / `.claude/references/incidents/**` |
-| 2 | 2.60.0 | 2026-06-01 | Issue review/resolve workflow: add ISSUE frontmatter (`decision` / `status` / `branches` / free-form `instruction`) and move QA onto the issue; add `work:issue-review` (mobile-first triage via AskUserQuestion) + `work:issue-resolve` (loop-driven, one issue/tick: accept→`issue-resolver` subagent whose model is chosen by issue difficulty — sonnet/opus, never haiku; reject→shared `chore/rejected-issues`) + `work:issue-resolver` agent; `work:start` links issues (sets `status: in_progress`, appends `branches`, fills `## 関連イシュー`); `issue-tool.py` gains `set-status` and `close --linked-branch` is now an optional branch name; document the work lifecycle in CLAUDE.md |
+| 1 | 2.62.0 | 2026-06-02 | Revive `work:conversation-to-claude` (formerly claude-kit, removed in PR181) — analyzes the session and auto-generates artifacts (skill / rule / hook / CLAUDE.md / incidents / glossary), delegating skill/rule/hook/CLAUDE.md to claude-kit creator skills; tighten the glossary/incidents inclusion bars (skip what is already in CLAUDE.md / a rule / the folder structure, and code bug fixes are not incidents). Add the `PreCompact` hook (`pre-compact.py`, toggle `WORK_PRECOMPACT_CONV2CLAUDE`) to run it before `/compact`, and restore the `work:merge` step that runs it inside the worktree (toggle `WORK_MERGE_CONV2CLAUDE`). Add `references/conversation/グロッサリー.md` + `インシデント.md` (glossary/incidents authoring guides) auto-injected via ref-inject when editing `.claude/rules/glossary.md` / `.claude/rules/incidents.md` / `.claude/references/incidents/**` |
+| 2 | 2.61.0 | 2026-06-02 | Add `WORK_BASE_BRANCH` env var — specify base branch for new worktrees; `git worktree add` branches from this commit-ish when set |
+| 3 | 2.60.0 | 2026-06-01 | Issue review/resolve workflow: add ISSUE frontmatter (`decision` / `status` / `branches` / free-form `instruction`) and move QA onto the issue; add `work:issue-review` (mobile-first triage via AskUserQuestion) + `work:issue-resolve` (loop-driven, one issue/tick: accept→`issue-resolver` subagent whose model is chosen by issue difficulty — sonnet/opus, never haiku; reject→shared `chore/rejected-issues`) + `work:issue-resolver` agent; `work:start` links issues (sets `status: in_progress`, appends `branches`, fills `## 関連イシュー`); `issue-tool.py` gains `set-status` and `close --linked-branch` is now an optional branch name; document the work lifecycle in CLAUDE.md |
 | 2 | 2.59.0 | 2026-06-01 | Remove `work:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
 | 2 | 2.56.0 | 2026-05-31 | Redesign `issue-scan` as an orchestrator delegating to parallel `work:issue-scanner` subagents (new agent); scan by perspective (folder/grep/layer/file-group); add `ISSUE_SCAN_AGENTS`; remove `issue-save` skill — issue file format now in the `work-dir/イシュー` reference, authored by `issue-create` and `issue-scanner` |
 | 2 | 2.55.0 | 2026-05-31 | Remove `plugins/work/templates/` and `setup-task.py`; move templates/structure defs into `references/work-dir/` (`タスクドキュメント` / `タスクインデックス` / `イシュー` / `ワークディレクトリ構成`), injected by ref-inject on the matching `.work/` path. `work:start` authors the branch doc from the injected template; branch doc filename gains `.branch.md`. Rename `ドットワークディレクトリ構成`→`ワークディレクトリ構成`; remove `TODOテンプレート同期` |
