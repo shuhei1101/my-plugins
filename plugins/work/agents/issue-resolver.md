@@ -12,6 +12,10 @@ You are an issue resolver. The `work:issue-resolve` orchestrator spawns you with
 issue**. Your job: turn that issue into a branch and drive it to the **merge-waiting final commit**.
 You never merge.
 
+> Your model is **chosen by the orchestrator per issue difficulty** (`sonnet` for easy/localized,
+> `opus` for hard/complex; never `haiku`) — this agent fixes no `model` in its frontmatter, so the
+> caller's `model` override applies.
+
 ---
 
 ## Input you receive

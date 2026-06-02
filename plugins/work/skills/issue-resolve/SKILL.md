@@ -98,11 +98,17 @@ The issue frontmatter / lifecycle is governed by `work-dir/イシュー.md` (aut
    python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
      --issues-dir .work/issues --issue-id ISSUE-{N} --status in_progress
    ```
-2. Dispatch **one** `work:issue-resolver` subagent (agent type `work:issue-resolver`) for this
-   issue. Pass it: the `ISSUE-{N}` id and path, its resolved approach (`## 修正案` 採用案 +
-   `## 対応メモ`), and the instruction to take the branch all the way to the **merge-waiting final
-   commit** (do not merge).
-3. On the subagent's return:
+2. **Pick the subagent model by issue difficulty** (you, the orchestrator, decide and pass it via
+   the Agent tool's `model` parameter — the agent itself fixes no model):
+   - **Easy / localized** (single-file edit, doc/typo/rename, narrow scope) → `model: sonnet`
+   - **Hard / complex** (cross-cutting change, tricky logic, multiple files, risky refactor) → `model: opus`
+   - **Never use `haiku`.**
+   Judge from the issue's `## 問題点` / `## 修正案` scope; when unsure, prefer `opus`.
+3. Dispatch **one** `work:issue-resolver` subagent (agent type `work:issue-resolver`, with the
+   `model` chosen above) for this issue. Pass it: the `ISSUE-{N}` id and path, its resolved approach
+   (`## 修正案` 採用案 + `instruction` frontmatter), and the instruction to take the branch all the
+   way to the **merge-waiting final commit** (do not merge).
+4. On the subagent's return:
    - **Completed (merge-waiting)** → record the branch it created; the user will merge it later.
    - **Blocked** (a genuine open question the issue did not pre-resolve) → the subagent recorded the
      blocker as a `## QA` entry on the issue and reverted; revert the index lock:
