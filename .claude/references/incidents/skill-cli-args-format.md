@@ -1,0 +1,42 @@
+# Sub-skill designed with CLI-style argument flags
+
+## Background
+
+In PR131, an `issue-log` sub-skill was created to encapsulate the "write one issue
+to disk" logic shared between `issue-scan` and `issue-create`. The initial SKILL.md
+specified inputs as if they were CLI flags:
+
+```
+/work-kit:issue-log --title "..." --type refactor --priority medium --tags tag1,tag2 --scope "..." --problem "..." --fix "..."
+```
+
+The SKILL.md even included a parameter table (Required / Optional columns) and a
+"parse arguments" Step 1 that referenced extracting flags.
+
+## What the user pointed out
+
+> あのスキルって別にその引数とかそういう概念ないから
+> クロードコードのスキルについて読んでみたら
+> スキルってあの何やろ引数みたいな感じで渡す感じじゃないから
+
+Claude Code skills are not invoked like CLI commands. A skill is a Markdown file
+loaded into the model's context — there is no argument parser, no required-vs-optional
+schema, no positional/flag distinction. Whatever the caller wants the sub-skill to
+know just becomes part of the surrounding prompt text.
+
+## Lesson
+
+When a sub-skill receives data from a caller:
+
+- Describe the expected inputs in **natural-language bullet points**, not CLI flags
+- Use a "受け取る情報" / "Information received from the caller" section listing
+  required vs optional items with one-line semantics
+- Do not write a fake invocation form like `/work-kit:sub-skill --flag value`
+- The caller's responsibility is to mention each field in the surrounding text;
+  the sub-skill's responsibility is to enumerate what it expects
+
+## Recurrence prevention
+
+For any future sub-skill that processes input from a calling skill, write the
+"Overview" section as a bullet list of input fields with semantics, not as a
+CLI-style argument table.
