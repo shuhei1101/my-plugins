@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/work/CLAUDE.md` の Environment Variables テーブルでは以下の変数名を掲載している：
@@ -28,8 +39,3 @@
 
 - `plugins/work/CLAUDE.md`: 変数名を `WORK_STOP_REMINDER` / `WORK_MERGE_PROPOSAL` に修正
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

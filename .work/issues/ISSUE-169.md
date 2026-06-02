@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/dev-kit/skills/html-mock/SKILL.md` の `References` セクション末尾が `{plugin_root}/skills/mock/templates/mock-skeleton.html` を参照しているが、実際のファイルは `{plugin_root}/skills/html-mock/templates/mock-skeleton.html` に存在する。
@@ -17,8 +28,3 @@
 - `plugins/dev-kit/skills/html-mock/SKILL.md`: References セクションのパスを修正
 - `plugins/dev-kit/skills/html-mock/SKILL.jp.md`: 同上
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

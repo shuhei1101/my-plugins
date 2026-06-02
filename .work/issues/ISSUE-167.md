@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/dev-kit/skills/py-project/` に `SKILL.jp.md` のみが存在し、英語版 `SKILL.md` が欠落している。他のすべてのスキルは英語版 `SKILL.md` を source of truth として持ち、`SKILL.jp.md` はそのミラーという構造を取っている。`py-project` だけがこの構造を満たしていない。
@@ -15,8 +26,3 @@
 - `plugins/dev-kit/skills/py-project/SKILL.md`: 新規作成（`SKILL.jp.md` の英語翻訳）
 - `plugins/dev-kit/skills/py-project/SKILL.jp.md`: mirror 警告コメント・YAML frontmatter を追加
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

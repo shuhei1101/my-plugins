@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 複数スキルの `References` セクションおよび手順内で、存在しないフォルダ名を参照している。実際のスキルフォルダは `html-debug-fab` / `html-logging` / `html-mock` だが、参照では旧名または短縮名が使われている。
@@ -34,8 +45,3 @@
 - `plugins/dev-kit/skills/html-implement/SKILL.md`: `skills/mock/SKILL.md` → `skills/html-mock/SKILL.md`、`skills/logging/SKILL.md` → `skills/html-logging/SKILL.md`
 - `plugins/dev-kit/skills/html-implement/SKILL.jp.md`: 同上
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

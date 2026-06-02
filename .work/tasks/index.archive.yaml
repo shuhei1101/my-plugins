@@ -1420,3 +1420,10 @@ branches:
   summary: branch-show/SKILL.mdのmerge Step 12参照をStep 13に修正
   task: 260603_branch-show-step-reference
   completed: true
+- branch: chore/issue-migrate-v275
+  created: '2026-06-03'
+  title: イシューファイル v2.75 フォーマット移行
+  type: chore
+  summary: 73件のイシューファイルを v2.75.0 形式（ユーザー回答欄先頭・チェックボックス）に一括変換
+  task: 260603_イシューファイル v2.75 フォーマット移行
+  completed: true

@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-03
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/dev-kit/references/.ref-inject/_index.yaml`（EN）と `_index.jp.yaml`（JP）の `next/testing/E2Eテスト.md` エントリで、description の内容が翻訳差異を超えた実質的な齟齬がある。
@@ -21,8 +32,3 @@
 - `plugins/dev-kit/references/.ref-inject/_index.yaml`: `E2Eテスト.md` の description を実ファイルに合わせて修正
 - `plugins/dev-kit/references/.ref-inject/_index.jp.yaml`: 上記の日本語訳として統一
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

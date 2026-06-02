@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/ref-inject/skills/plugin-migrate/SKILL.md` の Step 4 冒頭に誤ったステップ参照がある。
@@ -26,8 +37,3 @@ Step 4 がまだ実行中なのに「Step 4 のサマリーを表示」と自己
 - `plugins/ref-inject/skills/plugin-migrate/SKILL.md`: 対象行のステップ番号を修正
 - `plugins/ref-inject/skills/plugin-migrate/SKILL.jp.md`: 対応箇所を修正
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

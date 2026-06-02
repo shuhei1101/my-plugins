@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `dev-kit:plugin-config` SKILL.md において `DEV_KIT_MARKDOWN_CHECK` の記述が複数箇所で `${}` ラッパーなし（lines 34, 64, 138, 176）になっており、`${DEV_KIT_NEXT_TS_CHECK}` など他の変数と表記が不統一である。
@@ -21,8 +32,3 @@
 - `plugins/work/skills/plugin-config/SKILL.md`: line 188 の dev-kit トグルリストに `${DEV_KIT_MARKDOWN_CHECK}` を追記
 - `plugins/work/skills/plugin-config/SKILL.jp.md`: 同 JP ミラー修正
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

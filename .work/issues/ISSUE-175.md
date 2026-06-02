@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `user-prompt-submit.py` が `WORK_BRANCH_ENFORCEMENT` 環境変数でフック全体を無効化できるが、この変数が `plugins/work/CLAUDE.md` の Environment Variables テーブルに存在しない。`work:plugin-config` スキルには記載があるが CLAUDE.md にはない。
@@ -23,8 +34,3 @@ CLAUDE.md の Environment Variables テーブルに `${WORK_BRANCH_ENFORCEMENT}`
 - `plugins/work/CLAUDE.md`: env 変数テーブルに `WORK_BRANCH_ENFORCEMENT` を追加
 - `plugins/work/CLAUDE.jp.md`: JP ミラー同期
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

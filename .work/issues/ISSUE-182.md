@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/dev-kit/hooks/scripts/_common.py` の `read_hook_input()` が stdin の JSON パースエラーを捕捉せず、呼び出し元へ例外を伝播させる。これは ISSUE-165（claude-kit 側の同一問題）の横展開。
@@ -29,8 +40,3 @@ def read_hook_input() -> dict:
 
 - `plugins/dev-kit/hooks/scripts/_common.py`: `read_hook_input()` に try/except を追加
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

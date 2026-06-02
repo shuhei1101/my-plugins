@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `claude-creator`、`rule-creator`、`skill-creator` の SKILL.md が「explicit invocation and for callers (e.g. `notes-to-claude`)」と記述しているが、`notes-to-claude` というスキルはリポジトリ内のどこにも存在しない。
@@ -19,8 +30,3 @@
 - `plugins/claude-kit/skills/skill-creator/SKILL.md`: 同上
 - 各 `SKILL.jp.md`: JP ミラー同期
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

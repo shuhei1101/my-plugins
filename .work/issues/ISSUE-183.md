@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/dev-kit/hooks/scripts/inject_references.py` が `pathlib.Path.home()` でトークンディレクトリを解決している。これはインシデント #22（`path-home-cross-env-mismatch`）および ISSUE-164（claude-kit 側の同一問題）の横展開。
@@ -20,8 +31,3 @@ WSL 環境で Claude Code がネイティブ Windows として動作し、フッ
 
 - `plugins/dev-kit/hooks/scripts/inject_references.py`: トークンディレクトリ解決を `HOME` 環境変数優先に変更
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

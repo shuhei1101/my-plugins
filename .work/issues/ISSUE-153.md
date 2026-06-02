@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/claude-kit/references/plugin/プラグイン設定.md` に 2 点の問題がある。
@@ -25,8 +36,3 @@
 - `plugins/claude-kit/references/plugin/プラグイン設定.md`: reference implementation 修正、opt-in polarity セクション追記
 - `plugins/claude-kit/references/plugin/プラグイン設定.jp.md`: JP ミラー同期
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

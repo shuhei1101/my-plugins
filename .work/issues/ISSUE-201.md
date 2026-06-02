@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-03
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/dev-kit/references/.ref-inject/_index.yaml` と `_index.jp.yaml` の両ファイルに、他プラグイン（claude-kit・work）および `ref-inject` テンプレートが持つ標準ヘッダーコメントが欠落している。
@@ -27,8 +38,3 @@ dev-kit のファイルはコメントが一切なく、`references:` から直�
 - `plugins/dev-kit/references/.ref-inject/_index.yaml`: 先頭にヘッダーコメントを追加
 - `plugins/dev-kit/references/.ref-inject/_index.jp.yaml`: 先頭にヘッダーコメントを追加
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

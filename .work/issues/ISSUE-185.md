@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `dev-kit` の `plugin.json` の `description` と `marketplace.json` の対応エントリの `description` が一致していない。バージョン自体は両ファイルともに一致しているが、`plugin.json` 側が `v4.13.0` のチェンジログ追記（`remove setup-wizard skill and SessionStart hook`）を受け取っていない。
@@ -18,8 +29,3 @@
 
 - `plugins/dev-kit/.claude-plugin/plugin.json`: description 末尾に `v4.13.0` のサフィックスを追加
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

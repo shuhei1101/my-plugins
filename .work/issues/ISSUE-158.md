@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/claude-kit/skills/plugin-config/SKILL.md` の `description` フロントマターは日本語トリガーフレーズのみで、英語の自然言語トリガーが存在しない。
@@ -22,8 +33,3 @@ description に英語トリガーフレーズを追加する。例：`"change pl
 
 - `plugins/claude-kit/skills/plugin-config/SKILL.md`: frontmatter の `description` フィールドに英語トリガーフレーズを追加
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->

@@ -2,6 +2,17 @@
 
 **作成日**: 2026-06-02
 
+# ユーザー回答欄
+
+## 意思
+
+- [ ] 対応する
+- [ ] 対応しない
+
+---
+
+<!-- ここから下は AI 記入欄（イシュー本文）。ユーザーは通常編集しない -->
+
 ## 問題
 
 `plugins/work/hooks/scripts/inject_references.py` は `ENV_PREFIX = "WORK"` を使い、以下の 3 変数を実行時に読み取る：
@@ -23,8 +34,3 @@
 - `plugins/work/CLAUDE.md`: `## Environment Variables` テーブルに 3 行を追加
 - `plugins/work/CLAUDE.jp.md`: JP ミラー同期
 
-# ユーザー回答欄
-
-## 意思
-
-**回答**: <!-- 承認 / 却下 / 保留 -->
