@@ -118,7 +118,8 @@ resolver サブエージェントは質問で止まらず最終コミットま�
 
 | # | バージョン | 日付 | 概要 |
 |---|---|---|---|
-| 1 | 2.72.0 | 2026-06-02 | `${ISSUE_RESOLVE_AGENTS}` 環境変数を追加（デフォルト `1`）— `issue-resolve` 1 起動で処理するアクション可能なイシューの最大件数。イシュー番号の昇順に順次処理。`issue-resolve` SKILL.md + JP ミラー・本 CLAUDE.md を更新 |
+| 1 | 2.73.0 | 2026-06-02 | `issue-scan` ステップ0 でスキャン worktree 作成後、メインリポの未コミット `.work/issues/` 変更を worktree にコピーし、スキャン結果と一緒にコミットする |
+| 〃 | 2.72.0 | 2026-06-02 | `${ISSUE_RESOLVE_AGENTS}` 環境変数を追加（デフォルト `1`）— `issue-resolve` 1 起動で処理するアクション可能なイシューの最大件数。イシュー番号の昇順に順次処理。`issue-resolve` SKILL.md + JP ミラー・本 CLAUDE.md を更新 |
 | 〃 | 2.71.0 | 2026-06-02 | イシューのユーザー回答欄を**下部**へ移動（`---` の後、AI 記入本文の下）。`イシュー.md` テンプレート・`issue-create` / `issue-review` / `issue-resolve` スキル、`issue-scanner` エージェント・本 CLAUDE.md を更新 |
 | 1 | 2.70.0 | 2026-06-02 | `work:quick-task` スキルを削除し、UserPromptSubmit フックの Step 3 を `work:start` のみ実行する形に戻す |
 | 〃 | 2.69.0 | 2026-06-02 | タスクドキュメントのファイル拡張子を `.branch.md` → `.task.md` に変更（`tasks/` フォルダ名と整合）し既存 266 件を一括リネーム。概念名を **「ブランチドキュメント」→「タスクドキュメント」** に統一（全カレント仕様の references / skills / agents / hooks / CLAUDE.md。changelog 履歴は不変） |

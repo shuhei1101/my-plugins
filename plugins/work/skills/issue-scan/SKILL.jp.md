@@ -69,6 +69,16 @@ description: |
    WT_PATH="../$(basename $(pwd))-wt-${WT_SUFFIX}"
    git worktree add -b "$BRANCH" "$WT_PATH"
    ```
+4. `AUTO_MERGE` の場合、メインリポの**未コミットのイシューファイル変更**をワークツリーにコピーし、
+   スキャン結果と一緒にコミットされるようにする。メインリポのルートで実行:
+   ```bash
+   # 変更済みのトラック済みファイル
+   git diff --name-only HEAD -- .work/issues/
+   # 未トラックの新規ファイル
+   git ls-files --others --exclude-standard .work/issues/
+   ```
+   返却された各パスについて `{main_repo}/{path}` → `{WT_PATH}/{path}` にコピー（上書き）。
+   両リストが空なら何もしない。
 
 → ステップ1
 
