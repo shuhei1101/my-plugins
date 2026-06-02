@@ -73,4 +73,4 @@ def already_dispatched_this_session(tag: str, session_id: str) -> bool:
 
 このイシューに対応するか。
 
-**回答**: 対応する / 対応しない
+**回答**: 対応する
