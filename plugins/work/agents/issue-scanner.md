@@ -108,12 +108,35 @@ Use `date +%Y-%m-%d` via Bash once to get today's date.
 
 The body must follow the `work-dir/イシュー.md` reference format exactly (no frontmatter),
 **excluding the `# ISSUE-{N}: {タイトル}` header line** (the orchestrator prepends that after
-assigning the ID). The `# ユーザー回答欄` (`## 意思` + `## QA`) sits near the **top**, right under the
-date; the AI-authored issue body follows below the `---`. Pre-fill every `**回答**:` line with **all
+assigning the ID). Write the AI-authored issue body right after the date; the `# ユーザー回答欄`
+(`## 意思` + `## QA`) sits at the **bottom**, after the `---`. Pre-fill every `**回答**:` line with **all
 candidates** for the human to later narrow to one:
 
 ```markdown
 **作成日**: {YYYY-MM-DD}
+
+## 概要
+{この発見が何についてか}
+
+## 背景
+{なぜ問題か。関連リファレンス・規約・技術的背景}
+
+## 現状
+{現在のコードの状態。ファイル名・行番号など具体的な位置を引用すること}
+
+## 原因
+{なぜこうなっているか。省略可}
+
+## 期待される状態
+{解決後に満たすべき状態}
+
+## 対応案
+{修正の提案。複数案を出す場合は表で列挙し、下の回答欄に「どの案で進めるか」の `### QA-N` を必ず立てる}
+
+## 横展開
+{同様の問題が他のファイルにも波及する可能性がある場合に記述。省略可}
+
+---
 
 # ユーザー回答欄
 
@@ -136,29 +159,6 @@ A) {選択肢 A の要点} / B) {選択肢 B の要点}
 **推奨**: A — {理由を 1 行}
 
 **回答**: A / B
-
----
-
-## 概要
-{この発見が何についてか}
-
-## 背景
-{なぜ問題か。関連リファレンス・規約・技術的背景}
-
-## 現状
-{現在のコードの状態。ファイル名・行番号など具体的な位置を引用すること}
-
-## 原因
-{なぜこうなっているか。省略可}
-
-## 期待される状態
-{解決後に満たすべき状態}
-
-## 対応案
-{修正の提案。複数案を出す場合は表で列挙し、上の回答欄に「どの案で進めるか」の `### QA-N` を必ず立てる}
-
-## 横展開
-{同様の問題が他のファイルにも波及する可能性がある場合に記述。省略可}
 ```
 
 Do **not** write a YAML frontmatter block, and do **not** include `Type` / `Priority` / `Tags` /

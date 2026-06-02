@@ -27,7 +27,7 @@ while leaving a pile of merge-waiting branches (from accepts) for the user to re
 - **意思 not narrowed** (unreviewed — still listing all candidates) and **意思 affirmative + status:
   in_progress** (being worked, possibly another session) → skipped.
 
-The issue format (no frontmatter, answer section on top) / lifecycle is governed by `work-dir/イシュー.md`
+The issue format (no frontmatter, answer section at the bottom) / lifecycle is governed by `work-dir/イシュー.md`
 (auto-injected) — follow it. The `## 意思` `**回答**:` is read by the AI: "対応する/様子見" is
 affirmative and "対応しない" is negative; a line still listing all candidates means unreviewed.
 

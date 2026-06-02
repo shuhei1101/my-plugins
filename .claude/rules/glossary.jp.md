@@ -23,3 +23,9 @@
 | Term | Description |
 |---|---|
 | ref-inject | リファレンス自動注入の仕組み（`ref-inject` プラグインと、それが配布する `*-kit` フック）。Write/Edit/Read がマッチすると、フックは `required` リファレンスを**本文全量**、`optional` を**パス + 説明のみ**で注入する。セッション単位の二層 TTL トークン（`patterns` + `references` の名前空間）で抑制し、TTL が切れるまで同じ本文を再注入しない。 |
+
+## work プラグイン
+
+| Term | Description |
+|---|---|
+| イシューテンプレート (issue template) | イシューファイルの形式・ライフサイクル・`_index.yaml` スキーマは `plugins/work/references/work-dir/イシュー.md` に定義される。テンプレート構造を変更する場合はこのファイルを編集する — 個別イシューファイルの編集ではない。 |
