@@ -8,8 +8,8 @@
 | # | 内容 | 完了 |
 |---|---|---|
 | 1 | merge/SKILL.md を確認し、`/work:branch-show` が呼び出される実ステップ番号を確認する | 済 |
-| 2 | branch-show/SKILL.md の `Step 12` 参照（行 14・行 31）を正しい番号に修正する | - |
-| 3 | branch-show/SKILL.jp.md の対応する参照を EN に合わせて修正する | - |
+| 2 | branch-show/SKILL.md の `Step 12` 参照（行 14・行 31）を正しい番号に修正する | 済 |
+| 3 | branch-show/SKILL.jp.md の対応する参照を EN に合わせて修正する | 済 |
 
 ## QA
 
@@ -35,7 +35,7 @@ JP ミラーも同様に修正。
 
 ## 参考ドキュメント
 
-（なし）
+- `.work/notes/スキル設計/work-kitスキル群.md` — work プラグインのスキル群仕様（merge フロー含む）
 
 ## 次ブランチ候補
 
