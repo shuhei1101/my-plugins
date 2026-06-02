@@ -1,15 +1,16 @@
----
-decision: pending
-status: not_started
-branches: []
-instruction: ""
----
-
 # ISSUE-092: `read_hook_input()` が例外をキャッチせず、不正な stdin でフックがクラッシュする
 
 **作成日**: 2026-05-31
 
-## 問題
+## 概要
+
+`_common.py` の `read_hook_input()` が `json.loads` の例外を捕捉しないため、不正な stdin でフックプロセスがクラッシュし、ユーザーのセッションが妨害されうる。
+
+## 背景
+
+Claude Code はフックのクラッシュをエラーとして扱う。特に `PreToolUse` フックがクラッシュすると、ツール呼び出し自体がブロックされる可能性がある。`_common.py` はテンプレートヘルパーであり、ここに欠陥があると生成される全フックスクリプトに伝播する。
+
+## 現状
 
 `_common.py` の `read_hook_input()` は以下のように実装されている:
 
@@ -18,7 +19,7 @@ def read_hook_input() -> dict:
     return json.loads(sys.stdin.read())
 ```
 
-`json.loads` は stdin が空文字列・不正 JSON・EOF のときに `json.JSONDecodeError` を送出する。この例外は呼び出し元でキャッチされていないため、フックプロセスが非ゼロ終了コードでクラッシュする。Claude Code はフックのクラッシュをエラーとして扱い、**ユーザーのセッションが妨害される**可能性がある（特に PreToolUse の場合、ツール呼び出し自体がブロックされる）。
+`json.loads` は stdin が空文字列・不正 JSON・EOF のときに `json.JSONDecodeError` を送出する。この例外は呼び出し元でキャッチされていないため、フックプロセスが非ゼロ終了コードでクラッシュする。
 
 この `read_hook_input()` は以下の全フックスクリプトから呼ばれている:
 
@@ -31,9 +32,15 @@ def read_hook_input() -> dict:
 
 なお `inject_references.py` 各版は `read_hook_input()` を使わず直接 `json.loads(sys.stdin.read())` を呼んでいるが、そちらは try/except で包まれている（問題なし）。`git-guard.py` と `master-commit-guard.py` も直接呼び出しで未保護（ISSUE-096 として分離）。
 
+## 原因
+
 問題の核心は **`_common.py` というテンプレートヘルパー自身に例外処理がない**ことで、テンプレートから生成される全フックスクリプトに同じ欠陥が伝播している。
 
-## 修正案
+## 期待される状態
+
+`read_hook_input()` が stdin のパース失敗時に fail-open（空 dict を返す）で振る舞い、不正入力でもフックがクラッシュせずに静かに終了する。修正が全 `_common.py` コピーに反映されている。
+
+## 対応案
 
 `read_hook_input()` 内で例外を捕捉し、失敗時は空 dict を返してフックを静かに終了させる（fail-open）:
 
@@ -48,6 +55,19 @@ def read_hook_input() -> dict:
 
 この修正を `_common.py` の全コピー（`plugins/claude-kit/`, `plugins/dev-kit/`, `plugins/work/`, `plugins/ref-inject/templates/`）に適用する。テンプレート (`ref-inject/templates/`) を先に直し、キット版は手動で同期する。
 
-## 水平展開
+## 横展開
 
 `git-guard.py` / `master-commit-guard.py` も同様の直接 `json.loads` 呼び出しで未保護 (ISSUE-096 参照)。今後 `_common.py` に追加するヘルパーは同じ fail-open ポリシーを守ること。
+
+---
+
+# ユーザー回答欄
+
+> 回答方法: 各 `**回答**:` 行で不要な選択肢を消し、1 つだけ残す（`{回答を入力}` は自由記入）。
+> AI は選択肢・推奨と、候補を並べた `**回答**:` 行まで用意する。
+
+## 意思
+
+このイシューに対応するか。
+
+**回答**: 対応する / 対応しない

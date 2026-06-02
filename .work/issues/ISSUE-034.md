@@ -1,27 +1,26 @@
----
-decision: pending
-status: not_started
-branches: []
-instruction: ""
----
-
 # ISSUE-034: `work:branch-show` と `work:qa-review` の `description` にトリガー条件が不十分
 
 **作成日**: 2026-05-31
 
-## 問題
+## 概要
 
-`work:branch-show` と `work:qa-review` の `description` frontmatter が、同じプラグイン内の他スキルと比べて著しくトリガー条件が薄い。skill 参照ガイド（`claude-kit/references/skill/スキル.md`）は「Trigger when the user says X」という形式で具体的なトリガーフレーズを列挙することを要求しているが、以下の2スキルはそれを満たしていない。
+`work:branch-show` と `work:qa-review` の `description` frontmatter が、同じプラグイン内の他スキルと比べて著しくトリガー条件が薄く、自動起動の発話条件が記述されていない。
 
-**`plugins/work/skills/branch-show/SKILL.md`**（現状）:
+## 背景
+
+skill 参照ガイド（`claude-kit/references/skill/スキル.md`）は「Trigger when the user says X」という形式で具体的なトリガーフレーズを列挙することを要求している。同プラグインの `branch-reserve` や `issue-create` は複数の日本語・英語トリガーフレーズを持つ。
+
+## 現状
+
+**`plugins/work/skills/branch-show/SKILL.md`**:
 
 ```yaml
 description: Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions).
 ```
 
-トリガーフレーズが一切ない1行の説明文のみ。自動起動の条件が全く記述されておらず、ユーザーがどう発話するとこのスキルが発動するかが不明。同プラグインの `branch-reserve` や `issue-create` が複数の日本語・英語トリガーフレーズを持つのと比べて大きく見劣りする。
+トリガーフレーズが一切ない 1 行の説明文のみ。ユーザーがどう発話するとこのスキルが発動するかが不明。
 
-**`plugins/work/skills/qa-review/SKILL.md`**（現状）:
+**`plugins/work/skills/qa-review/SKILL.md`**:
 
 ```yaml
 description: |
@@ -29,11 +28,15 @@ description: |
   Or when the user says "review QA", "check QA items", or "answer the QA".
 ```
 
-英語フレーズが3つだけで、日本語トリガーフレーズがない。同プラグインの他スキル（`start`、`merge`、`branch-reserve`、`issue-create` など）はすべて日本語フレーズを複数含んでいる。
+英語フレーズが 3 つだけで、日本語トリガーフレーズがない。同プラグインの他スキル（`start`、`merge`、`branch-reserve`、`issue-create` など）はすべて日本語フレーズを複数含んでいる。
 
-## 修正案
+## 期待される状態
 
-`branch-show` に Trigger フレーズ（日本語・英語）を追加し、単なる説明文から「いつこのスキルが起動すべきか」を明示した形式に変える。
+`branch-show` と `qa-review` の両方が、日英のトリガーフレーズを伴った「いつこのスキルが起動すべきか」を明示する形式の `description` を持ち、同プラグインの他スキルと同等の自動起動性を備えている。
+
+## 対応案
+
+`branch-show` に Trigger フレーズ（日本語・英語）を追加し、単なる説明文から起動条件を明示した形式に変える。
 
 ```yaml
 # branch-show 修正例
@@ -53,6 +56,19 @@ description: |
   "QA を確認して", "QA に回答して", "QA の決定事項を埋めて".
 ```
 
-## 水平展開
+## 横展開
 
 `work` プラグイン全体のスキルを一覧し、トリガーフレーズが日英混在または英語のみになっているものを把握すると良い。同様のパターンは `setup` スキル（"Manual invocation only" とだけあり日本語フレーズなし）にも見られる。
+
+---
+
+# ユーザー回答欄
+
+> 回答方法: 各 `**回答**:` 行で不要な選択肢を消し、1 つだけ残す（`{回答を入力}` は自由記入）。
+> AI は選択肢・推奨と、候補を並べた `**回答**:` 行まで用意する。
+
+## 意思
+
+このイシューに対応するか。
+
+**回答**: 対応する / 対応しない

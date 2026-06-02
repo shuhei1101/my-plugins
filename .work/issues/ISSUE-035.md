@@ -1,17 +1,16 @@
----
-decision: pending
-status: not_started
-branches: []
-instruction: ""
----
-
 # ISSUE-035: 複数プラグインの `plugin-config` スキルで `description` トリガーフレーズが重複している
 
 **作成日**: 2026-05-31
 
-## 問題
+## 概要
 
-`dev-kit:plugin-config`、`work:plugin-config`、`claude-kit:config` の3スキルが、`description` frontmatter に同一または極めて類似したトリガーフレーズを使っており、Claude がどのスキルを呼ぶべきか判断できない状況が生じている。
+`dev-kit:plugin-config`、`work:plugin-config`、`claude-kit:config` の 3 スキルが、`description` frontmatter に同一または極めて類似したトリガーフレーズを使っており、Claude がどのスキルを呼ぶべきか判断できない。
+
+## 背景
+
+skill 参照ガイド（`claude-kit/references/skill/スキル.md`）は「Vague descriptions cause false positives.（曖昧な説明は誤トリガーを引き起こす）」と明記している。汎用フレーズを複数スキルで使い回すことはこれに該当する。
+
+## 現状
 
 | No | スキル | 重複しているトリガーフレーズ |
 |---|---|---|
@@ -21,9 +20,11 @@ instruction: ""
 
 ユーザーが「設定を変えたい」と言うと、どのプラグインの設定を変えたいのか区別がつかず、意図しない config スキルが誤起動するリスクがある。
 
-skill 参照ガイド（`claude-kit/references/skill/スキル.md`）は「Vague descriptions cause false positives.（曖昧な説明は誤トリガーを引き起こす）」と明記している。汎用フレーズを複数スキルで使い回すことはこれに該当する。
+## 期待される状態
 
-## 修正案
+各 `plugin-config` 系スキルの `description` がプラグイン固有の文脈（管理する env 変数名など）を含み、汎用フレーズへの依存が解消されて、Claude が文脈から正しいスキルを選択できる。
+
+## 対応案
 
 各スキルの description に、そのプラグイン固有の文脈を示すフレーズを追加し、汎用フレーズへの依存を減らす。または汎用フレーズを削除してプラグイン固有の語句のみに絞る。
 
@@ -48,6 +49,19 @@ description: |
 
 各スキルのトリガーフレーズをプラグイン固有の操作名（管理している env 変数名など）を含む表現に変更することで、Claude が文脈から正しいスキルを選択できるようにする。
 
-## 水平展開
+## 横展開
 
-同様の重複トリガー問題は他のプラグイン間でも発生しやすい。特に `plugin-migrate` のトリガーフレーズが3プラグイン間で重複していないか確認することを推奨する。
+同様の重複トリガー問題は他のプラグイン間でも発生しやすい。特に `plugin-migrate` のトリガーフレーズが 3 プラグイン間で重複していないか確認することを推奨する。
+
+---
+
+# ユーザー回答欄
+
+> 回答方法: 各 `**回答**:` 行で不要な選択肢を消し、1 つだけ残す（`{回答を入力}` は自由記入）。
+> AI は選択肢・推奨と、候補を並べた `**回答**:` 行まで用意する。
+
+## 意思
+
+このイシューに対応するか。
+
+**回答**: 対応する / 対応しない
