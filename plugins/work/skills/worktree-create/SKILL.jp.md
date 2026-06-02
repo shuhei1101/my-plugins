@@ -61,7 +61,7 @@ BRANCH=refactor/rename-pr-to-branch
 WT_SUFFIX="${BRANCH//\//-}"  # → refactor-rename-pr-to-branch
 ```
 
-2. `WORK_BASE_BRANCH` を読み込みます：
+2. `${WORK_BASE_BRANCH}` を読み込みます：
 
 ```bash
 base="${WORK_BASE_BRANCH:-}"

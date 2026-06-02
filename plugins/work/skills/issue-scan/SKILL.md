@@ -6,7 +6,7 @@ description: |
   against ref-inject references and return findings as JSON with full issue content. The main agent
   orchestrates: it creates a scan branch, launches subagents in parallel, receives their findings,
   writes ISSUE files with sequential IDs, updates the indexes, commits, and merges to master.
-  ISSUE_SCAN_AGENTS controls how many perspectives are scanned per invocation (default: 1).
+  `${ISSUE_SCAN_AGENTS}` controls how many perspectives are scanned per invocation (default: 1).
   Trigger when the user says "issue-scan", "scan for issues", "find problems in the code",
   "コードをスキャン", "イシューを探して", or invokes `/work:issue-scan` explicitly.
 ---
@@ -26,7 +26,7 @@ their findings → write ISSUE files → update indexes → commit → merge.
 - `.work/issues/` must exist (run `/work:setup` if it doesn't)
 
 **Environment variables**:
-- `ISSUE_SCAN_AGENTS` (default: `1`) — number of perspectives scanned per invocation = number of
+- `${ISSUE_SCAN_AGENTS}` (default: `1`) — number of perspectives scanned per invocation = number of
   subagents launched. `1` still launches one subagent (analysis always runs in a separate context).
 
 **Division of responsibility**:
@@ -57,7 +57,7 @@ should be **ignored while this skill is running**:
 
 #### Process
 
-1. Read `ISSUE_SCAN_AGENTS` (default `1`); store as `N`.
+1. Read `${ISSUE_SCAN_AGENTS}` (default `1`); store as `N`.
 2. Check the current branch (`git branch --show-current`):
    - On `master`/`main` → `AUTO_MERGE = true`
    - Otherwise → `AUTO_MERGE = false` (commit to the current branch at the end, no auto-merge)

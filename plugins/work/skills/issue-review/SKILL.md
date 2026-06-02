@@ -101,7 +101,7 @@ For each un-reviewed issue, in order:
    git add .work/issues/
    git commit -m "chore: イシューをレビュー（decision/QA を記入）"
    ```
-   (Follow `WORK_COMMIT_LANG` / `WORK_COMMIT_TYPE` for the message, like other work commits.)
+   (Follow `${WORK_COMMIT_LANG}` / `${WORK_COMMIT_TYPE}` for the message, like other work commits.)
 2. `_index.yaml` is git-ignored — do not commit it. No `status` change is needed here.
 3. Report a summary: how many accepted / rejected / skipped.
 

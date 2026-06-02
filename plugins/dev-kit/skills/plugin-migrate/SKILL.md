@@ -24,7 +24,7 @@ Static template re-copy is automatic. Convention inspection is performed by Clau
 current references (auto-injected by the injection hook when each file is `Read`).
 
 Which language conventions to inspect is controlled by `settings.json` env vars
-(`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT`).
+(`${DEV_KIT_PYTHON}` / `${DEV_KIT_HTML}` / `${DEV_KIT_NEXT}`).
 
 This skill depends on no other plugin. Committing and merging are the user's responsibility.
 
@@ -63,11 +63,11 @@ This skill depends on no other plugin. Committing and merging are the user's res
 
 ---
 
-### Step 2: Inspect Python source files (if DEV_KIT_PYTHON is enabled)
+### Step 2: Inspect Python source files (if `${DEV_KIT_PYTHON}` is enabled)
 
 #### Condition
 
-- `DEV_KIT_PYTHON` is truthy in `settings.json` env
+- `${DEV_KIT_PYTHON}` is truthy in `settings.json` env
 
 #### Process
 
@@ -90,11 +90,11 @@ Do not flag anything not explicitly stated in those references.
 
 ---
 
-### Step 3: Inspect HTML/CSS/JS source files (if DEV_KIT_HTML is enabled)
+### Step 3: Inspect HTML/CSS/JS source files (if `${DEV_KIT_HTML}` is enabled)
 
 #### Condition
 
-- `DEV_KIT_HTML` is truthy in `settings.json` env
+- `${DEV_KIT_HTML}` is truthy in `settings.json` env
 
 #### Process
 
@@ -110,11 +110,11 @@ Do not flag anything not explicitly stated in those references.
 
 ---
 
-### Step 4: Inspect TypeScript/TSX source files (if DEV_KIT_NEXT is enabled)
+### Step 4: Inspect TypeScript/TSX source files (if `${DEV_KIT_NEXT}` is enabled)
 
 #### Condition
 
-- `DEV_KIT_NEXT` is truthy in `settings.json` env
+- `${DEV_KIT_NEXT}` is truthy in `settings.json` env
 
 #### Process
 

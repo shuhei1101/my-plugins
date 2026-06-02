@@ -38,10 +38,10 @@ enforced by the project's `*-jp-mirror-sync` rules.
 
 | Variable | Values | Default | Description |
 |---|---|---|---|---|
-| `CLAUDE_KIT_INJECTION_DISABLE` | `true`/`1`/`yes`/`on` | (unset = ON) | Master kill switch — set to a truthy value to stop all reference injection |
-| `CLAUDE_KIT_INJECTION_TTL` | integer (seconds) | `3600` | TTL for the per-session injection token (patterns and references) |
-| `CLAUDE_KIT_INJECTION_LANG` | `en` / `jp` | `en` | Language for injected references (`jp` uses `index.jp.yaml` + `injection.jp.md.j2`) |
-| `CLAUDE_KIT_JP_MIRROR` | `true` / `false` | `true` | When `false`, skip `.jp.md` mirror creation and write the main `.md` file in Japanese directly |
+| `${CLAUDE_KIT_INJECTION_DISABLE}` | `true`/`1`/`yes`/`on` | (unset = ON) | Master kill switch — set to a truthy value to stop all reference injection |
+| `${CLAUDE_KIT_INJECTION_TTL}` | integer (seconds) | `3600` | TTL for the per-session injection token (patterns and references) |
+| `${CLAUDE_KIT_INJECTION_LANG}` | `en` / `jp` | `en` | Language for injected references (`jp` uses `index.jp.yaml` + `injection.jp.md.j2`) |
+| `${CLAUDE_KIT_JP_MIRROR}` | `true` / `false` | `true` | When `false`, skip `.jp.md` mirror creation and write the main `.md` file in Japanese directly |
 
 ## Changelog
 
@@ -49,10 +49,10 @@ enforced by the project's `*-jp-mirror-sync` rules.
 |---|---|---|
 | 1 | `3.51.0` | Remove `claude-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
 | 2 | `3.49.1` | Remove branch-check step (master/main guard) from `plugin-migrate` — redundant with the work harness UserPromptSubmit hook |
-| 2 | `3.49.0` | Add `claude-kit:config` skill — interactively configures `CLAUDE_KIT_JP_MIRROR` / `CLAUDE_KIT_INJECTION_LANG` / `CLAUDE_KIT_INJECTION_TTL` via numbered-list loop and `AskUserQuestion` |
+| 2 | `3.49.0` | Add `claude-kit:config` skill — interactively configures `${CLAUDE_KIT_JP_MIRROR}` / `${CLAUDE_KIT_INJECTION_LANG}` / `${CLAUDE_KIT_INJECTION_TTL}` via numbered-list loop and `AskUserQuestion` |
 | 3 | `3.48.0` | Reorganize `references/` into role-based subfolders (`common/`, `skill/`, `hook/`, `claude-md/`, `plugin/`); add `plugin/バージョン同期.md`; inject version-sync reminder on `plugins/*/CLAUDE.md` edits |
 | 4 | `3.47.0` | Add `references/jinja2/templates.md` — authoring rules for Jinja2 templates that emit Markdown; auto-injected on `**/hooks/templates/*.j2` edits |
 | 5 | `3.46.0` | Add `references-edit-guard` PreToolUse hook — reminds to update `_index.yaml` / `_injection_rules.yaml` when editing `references/` |
-| 6 | `3.44.0` | Add `CLAUDE_KIT_JP_MIRROR` env var — when `false`, skip `.jp.md` mirrors and write the main file in Japanese |
+| 6 | `3.44.0` | Add `${CLAUDE_KIT_JP_MIRROR}` env var — when `false`, skip `.jp.md` mirrors and write the main file in Japanese |
 | 7 | `3.43.0` | Rename meta-YAML files under `references/` with `_` prefix; update plugin-name docs (PR179) |
-| 8 | `3.42.0` | Add `CLAUDE_KIT_INJECTION_DISABLE` kill switch env var |
+| 8 | `3.42.0` | Add `${CLAUDE_KIT_INJECTION_DISABLE}` kill switch env var |

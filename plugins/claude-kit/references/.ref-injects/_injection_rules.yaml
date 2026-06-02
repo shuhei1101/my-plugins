@@ -18,6 +18,7 @@ rules:
     optional:
       - common/サブエージェント.md
       - common/環境変数.md
+      - common/環境変数記法.md
       - plugin/プラグイン設定.md
       - common/AskUserQuestion制約.md
 
@@ -55,6 +56,7 @@ rules:
       - claude-md/CLAUDE-md記述ガイド.md
     optional:
       - common/環境変数.md
+      - common/環境変数記法.md
 
   # ---- Hooks: プラグインの hooks.json、プロジェクト設定（JSON はスタンプなし）、プロンプトファイル（.md） ----
   # settings.json / hooks.json は env ブロックを持つため、ここでは 環境変数.md をフル注入する。
@@ -73,6 +75,7 @@ rules:
       - hook/フック.md
     optional:
       - common/環境変数.md
+      - common/環境変数記法.md
 
   # ---- Plugins: マニフェスト／マーケットプレイス（JSON はスタンプなし） ----
   - pattern: "**/.claude-plugin/{plugin,marketplace}.json"
