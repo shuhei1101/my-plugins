@@ -20,8 +20,8 @@ sequentially top-to-bottom. Repeated loop ticks drain the queue while leaving a 
 merge-waiting branches (from accepts) for the user to review and merge.
 
 - **意思 affirmative + status: not_started** → dispatch a `work:issue-resolver` subagent (one
-  subagent per issue) that creates a branch via `work:start`, implements the fix, and stops at the
-  **merge-waiting final commit** (merge is the user's call, separately).
+  subagent per issue) that creates a branch, implements the fix, and — depending on
+  `direct_merge` — either merges directly into master or stops at the merge-waiting final commit.
 - **意思 negative** → close as `wontfix` on a throwaway per-issue branch and **merge it to master
   immediately** within the same invocation (file moved to `closed/`). Nothing accumulates, so the
   issue index and master never drift. (A reject is a pure status change — safe to finalize at once;
@@ -137,19 +137,27 @@ carried to `master` on a throwaway branch. The main repo's working tree must be 
    python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
      --issues-dir .work/issues --issue-id ISSUE-{N} --status in_progress
    ```
-2. **Pick the subagent model by issue difficulty** (you, the orchestrator, decide and pass it via
+2. **Determine `direct_merge`** for this issue:
+   1. Read the `_index.yaml` entry for ISSUE-{N}; if it has a `direct_merge` field, use that value.
+   2. Otherwise, analyze the issue content:
+      - Any mention of UI, screen, visual, frontend, or user-visible output → `direct_merge: false`
+      - Type is `refactor`, `test`, `docs`, or `backend`; no UI indicators → `direct_merge: true`
+      - Unclear → `direct_merge: true` (default)
+3. **Pick the subagent model by issue difficulty** (you, the orchestrator, decide and pass it via
    the Agent tool's `model` parameter — the agent itself fixes no model):
    - **Easy / localized** (single-file edit, doc/typo/rename, narrow scope) → `model: sonnet`
    - **Hard / complex** (cross-cutting change, tricky logic, multiple files, risky refactor) → `model: opus`
    - **Never use `haiku`.**
    Judge from the issue's `## 概要` / `## 対応案` scope; when unsure, prefer `opus`.
-3. Dispatch **one** `work:issue-resolver` subagent (agent type `work:issue-resolver`, with the
+4. Dispatch **one** `work:issue-resolver` subagent (agent type `work:issue-resolver`, with the
    `model` chosen above) for this issue. Pass it: the `ISSUE-{N}` id and path, its resolved approach
    (the adopted `## 対応案` option 〔settled via the `## QA` answer〕 + any inline note on the `## 意思`
-   answer), and the instruction to take the branch all the way to the **merge-waiting final commit**
-   (do not merge).
-4. On the subagent's return:
-   - **Completed (merge-waiting)** → record the branch it created; the user will merge it later.
+   answer), and the `direct_merge` value determined above.
+5. On the subagent's return:
+   - **Completed, merged** (`direct_merge: true`) → the resolver already closed the issue and
+     merged. Record the branch; nothing more required.
+   - **Completed, merge-waiting** (`direct_merge: false`) → record the branch it created; the user
+     will merge it later.
    - **Blocked** (a genuine open question the issue did not pre-resolve) → the subagent recorded the
      blocker as a `## QA` entry in the issue's `# ユーザー回答欄` and reverted; revert the index lock:
      ```bash
@@ -181,7 +189,7 @@ remain), proceed to Step 4.
 
 #### Process
 
-1. Report what this invocation did: the issue handled, the action (accept→merge-waiting branch /
-   reject→closed + merged to master), and the branch name. List anything left for the user
-   (accept branches awaiting merge, surfaced blockers).
+1. Report what this invocation did: the issue handled, the action (accept+direct_merge→merged to
+   master / accept+no-direct_merge→merge-waiting branch / reject→closed + merged to master), and
+   the branch name. List anything left for the user (merge-waiting branches, surfaced blockers).
 2. Under `/loop`, the loop re-invokes to handle the next issue.

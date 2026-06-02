@@ -37,11 +37,14 @@ pre-filled with all candidates, QA raised) →
 **review** (`issue-review`, mobile-first → user narrows `## 意思` (対応する/対応しない) and each
 `## QA` `**回答**:` to one choice) →
 **resolve** (`issue-resolve` under `/loop`, one issue per tick → affirmative 意思 dispatches an
-`issue-resolver` subagent that runs `work:start` and stops at the merge-waiting commit; negative 意思
-closes on a throwaway per-issue branch and merges it to master immediately within the same tick) →
-**close** (`merge` closes an accept branch's `## 関連イシュー` as `resolved`; a reject is closed as
-`wontfix` and already merged at resolve time). Because QA is settled on the issue at review time,
-the resolver subagent reaches the final commit without stopping for questions.
+`issue-resolver` subagent; the orchestrator determines `direct_merge` from the `_index.yaml` entry
+or by analyzing issue content — UI-related issues get `direct_merge: false` (merge-waiting), all
+others get `direct_merge: true` (merges immediately); negative 意思 closes on a throwaway per-issue
+branch and merges it to master immediately within the same tick) →
+**close** (`merge` closes an accept branch's `## 関連イシュー` as `resolved` when `direct_merge: false`;
+the resolver itself closes when `direct_merge: true`; a reject is closed as `wontfix` and already
+merged at resolve time). Because QA is settled on the issue at review time, the resolver subagent
+reaches the final commit without stopping for questions.
 
 ## Skills
 
@@ -70,7 +73,7 @@ the resolver subagent reaches the final commit without stopping for questions.
 | # | Agent | Purpose |
 |---|---|---|
 | 1 | `work:issue-scanner` | Scan one perspective (folder / grep / layer / file-group) against ref-inject references and write ISSUE files; spawned by `work:issue-scan` |
-| 2 | `work:issue-resolver` | Resolve one accepted issue: create a branch via `work:start`, implement the fix, stop at the merge-waiting final commit; spawned by `work:issue-resolve` |
+| 2 | `work:issue-resolver` | Resolve one accepted issue: create a branch, implement the fix, then either merge directly into master (`direct_merge: true`, default) or stop at the merge-waiting commit (`direct_merge: false`); spawned by `work:issue-resolve` |
 
 ## Hooks
 
@@ -90,7 +93,7 @@ the resolver subagent reaches the final commit without stopping for questions.
 | Variable | Description | Values |
 |---|---|---|
 | `${WORK_USE_WORKTREE}` | Create a git worktree for each new branch | - **true**<br>- false |
-| `${WORK_GUARD}` | Enable the git-guard hook (confirm push / merge) | - **true**<br>- false |
+| `${WORK_GUARD}` | Enable the git-guard hook (confirm push / merge). When `false`, `issue-resolver` direct merges proceed without a confirmation prompt. | - **true**<br>- false |
 | `${WORK_PROTECTED_BRANCHES}` | Branches protected by master-commit-guard (comma-separated) | **master,main,develop** |
 | `${WORKSPACE_STOP_REMINDER}` | Show the task-update reminder on Stop | - **true**<br>- false |
 | `${WORKSPACE_MERGE_PROPOSAL}` | Suggest running `/work:merge` on Stop | - **true**<br>- false |
@@ -120,7 +123,8 @@ Branches are named `{type}/{title}` by default; `{type}/{author}/{title}` when `
 
 | # | Version | Date | Summary |
 |---|---|---|---|
-| 1 | 2.72.0 | 2026-06-02 | Add `${ISSUE_RESOLVE_AGENTS}` env var (default `1`) — maximum actionable issues processed per `issue-resolve` invocation; issues are handled sequentially in ascending issue-number order; update `issue-resolve` SKILL.md + JP mirror and this CLAUDE.md |
+| 1 | 2.73.0 | 2026-06-02 | Add `direct_merge` parameter to `issue-resolver` (default `true`) — when true the resolver merges the branch to master directly after the final commit and closes the issue; `issue-resolve` determines the value from `_index.yaml` or by analyzing issue content (UI-related→false, refactor/test/backend→true); `issue-scan` sets `direct_merge: true` in `_index.yaml` for single-solution non-UI issues; add `direct_merge` field to `_index.yaml` schema; document `WORK_GUARD=false` as the way to skip the merge-guard prompt during automated direct merges |
+| 〃 | 2.72.0 | 2026-06-02 | Add `${ISSUE_RESOLVE_AGENTS}` env var (default `1`) — maximum actionable issues processed per `issue-resolve` invocation; issues are handled sequentially in ascending issue-number order; update `issue-resolve` SKILL.md + JP mirror and this CLAUDE.md |
 | 〃 | 2.71.0 | 2026-06-02 | Move `# ユーザー回答欄` to the **bottom** of the issue file (after `---`, following the AI-authored body); update `イシュー.md` template, `issue-create` / `issue-review` / `issue-resolve`, the `issue-scanner` agent, and this CLAUDE.md |
 | 〃 | 2.70.0 | 2026-06-02 | Remove `work:quick-task` skill and revert the UserPromptSubmit hook Step 3 to always run `work:start` |
 | 〃 | 2.69.0 | 2026-06-02 | Rename the task-document file extension `.branch.md` → `.task.md` (matches the `tasks/` folder) and bulk-rename the 266 existing documents; rename the concept **"branch document" → "task document"** across all current-spec references / skills / agents / hooks / CLAUDE.md (changelog history left unchanged) |
