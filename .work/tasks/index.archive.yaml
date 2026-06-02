@@ -1315,3 +1315,10 @@ branches:
   summary: reject を共有ブランチ蓄積から一時ブランチ即マージへ変更し整合性を維持
   task: 260602_issue-resolveのreject即マージ化
   completed: true
+- branch: refactor/branch-doc-ext-to-task
+  created: '2026-06-02'
+  title: ブランチドキュメント拡張子をtaskへ変更
+  type: refactor
+  summary: ブランチドキュメントの拡張子を .branch.md から .task.md に変更（既存266ファイルの一括リネーム + フック/リファレンス/スキル更新）
+  task: 260602_ブランチ文書拡張子をtaskへ変更
+  completed: true
