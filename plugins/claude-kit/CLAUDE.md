@@ -49,8 +49,9 @@ enforced by the project's `*-jp-mirror-sync` rules.
 
 | # | Version | Summary |
 |---|---|---|
-| 1 | `3.52.0` | Remove the interactive `claude-kit:config` skill and the `プラグイン設定.md` (config-skill) authoring reference; drop the `plugin-config` mandate from `plugin-creator` / `プラグイン構造.md`; redefine the env-table format in `プラグインCLAUDE-md.md` to the unified 3-column layout (Variable / Description / Values, default in **bold**) and reformat the `## Environment Variables` table |
-| 1 | `3.51.0` | Remove `claude-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
+| 1 | `3.53.0` | Remove the interactive `claude-kit:config` skill and the `プラグイン設定.md` (config-skill) authoring reference; drop the `plugin-config` mandate from `plugin-creator` / `プラグイン構造.md`; redefine the env-table format in `プラグインCLAUDE-md.md` to the unified 3-column layout (Variable / Description / Values, default in **bold**) and reformat the `## Environment Variables` table |
+| 1 | `3.52.0` | Add `claude-kit:jp-mirror-sync` skill (moved from `utils` plugin); remove `utils` plugin from marketplace |
+| 2 | `3.51.0` | Remove `claude-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
 | 2 | `3.49.1` | Remove branch-check step (master/main guard) from `plugin-migrate` — redundant with the work harness UserPromptSubmit hook |
 | 2 | `3.49.0` | Add `claude-kit:config` skill — interactively configures `${CLAUDE_KIT_JP_MIRROR}` / `${CLAUDE_KIT_INJECTION_LANG}` / `${CLAUDE_KIT_INJECTION_TTL}` via numbered-list loop and `AskUserQuestion` |
 | 3 | `3.48.0` | Reorganize `references/` into role-based subfolders (`common/`, `skill/`, `hook/`, `claude-md/`, `plugin/`); add `plugin/バージョン同期.md`; inject version-sync reminder on `plugins/*/CLAUDE.md` edits |

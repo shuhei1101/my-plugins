@@ -49,8 +49,9 @@ JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保
 
 | # | バージョン | 概要 |
 |---|---|---|
-| 1 | `3.52.0` | 対話式 `claude-kit:config` スキルと config スキル記述ガイド `プラグイン設定.md` を削除。`plugin-creator` / `プラグイン構造.md` から `plugin-config` 必須記載を除去。`プラグインCLAUDE-md.md` の env テーブル仕様を統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再定義し `## 環境変数` テーブルを再フォーマット |
-| 1 | `3.51.0` | `claude-kit:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
+| 1 | `3.53.0` | 対話式 `claude-kit:config` スキルと config スキル記述ガイド `プラグイン設定.md` を削除。`plugin-creator` / `プラグイン構造.md` から `plugin-config` 必須記載を除去。`プラグインCLAUDE-md.md` の env テーブル仕様を統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再定義し `## 環境変数` テーブルを再フォーマット |
+| 1 | `3.52.0` | `claude-kit:jp-mirror-sync` スキルを追加（`utils` プラグインから移動）；`utils` プラグインを marketplace から削除 |
+| 2 | `3.51.0` | `claude-kit:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
 | 2 | `3.49.1` | `plugin-migrate` のブランチチェックステップ（master/main ガード）を削除 — work ハーネスの UserPromptSubmit フックと責務が重複しているため |
 | 2 | `3.49.0` | `claude-kit:config` スキルを追加 — `${CLAUDE_KIT_JP_MIRROR}` / `${CLAUDE_KIT_INJECTION_LANG}` / `${CLAUDE_KIT_INJECTION_TTL}` を番号付きリストループと `AskUserQuestion` でインタラクティブに設定 |
 | 3 | `3.48.0` | `references/` をロール別サブフォルダ（`common/`・`skill/`・`hook/`・`claude-md/`・`plugin/`）に再編；`plugin/バージョン同期.md` を追加；`plugins/*/CLAUDE.md` 編集時にバージョン同期リマインダーを注入 |

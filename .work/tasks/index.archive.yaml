@@ -1251,3 +1251,24 @@ branches:
   summary: PR181 で消えた glossary 75語・incidents 48件のうち現在も有効なものを選別して復元。孤立 incident 8件の整理も含む。
   task: 260602_用語集インシデント選別復元
   completed: true
+- branch: fix/issue-resolve-step1-index-first
+  created: '2026-06-02'
+  title: issue-resolve Step1をindex.yaml優先に変更
+  type: fix
+  summary: _index.yamlをglob前に読み込みnot_startedのみイシューファイルを開くよう変更
+  task: 260602_issue-resolve-step1-index-first
+  completed: true
+- branch: refactor/rename-ref-injects-to-ref-inject
+  created: '2026-06-02'
+  title: ref-injectsをref-injectに単数形変更
+  type: refactor
+  summary: 全プラグインの .ref-injects ディレクトリとその参照を .ref-inject に単数形へリネーム
+  task: 260602_ref-injectsをref-injectに単数形変更
+  completed: true
+- branch: refactor/remove-utils-plugin
+  created: '2026-06-02'
+  title: utilsプラグイン削除
+  type: refactor
+  summary: utils プラグインの jp-mirror-sync スキルを claude-kit へ移動し、utils プラグインを削除する
+  task: 260602_utilsプラグイン削除
+  completed: true

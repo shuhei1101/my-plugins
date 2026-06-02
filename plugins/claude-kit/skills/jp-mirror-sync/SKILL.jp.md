@@ -2,16 +2,16 @@
 name: jp-mirror-sync
 description: |
   1 つ以上の日本語ミラー（.jp.md）ファイルを受け取り、対応する英語版（.md）を作成または更新する。
-  JP ミラーを正として扱い、ファイルごとに utils:jp-mirror-translator サブエージェントを 1 つ起動し、
+  JP ミラーを正として扱い、ファイルごとに claude-kit:jp-mirror-translator サブエージェントを 1 つ起動し、
   すべてのサブエージェントを並列で実行する。
   以下の場合にトリガーする: 「JP ミラーを同期して」「英語版を更新して」「jp-mirror-sync して」
   「translate JP mirror」、または .jp.md ファイルパスが渡された場合。
 ---
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# utils:jp-mirror-sync — JP ミラー → 英語 同期
+# claude-kit:jp-mirror-sync — JP ミラー → 英語 同期
 
-1 つ以上の `.jp.md` ファイルパスを受け取り、各ファイルに対して `utils:jp-mirror-translator`
+1 つ以上の `.jp.md` ファイルパスを受け取り、各ファイルに対して `claude-kit:jp-mirror-translator`
 サブエージェントを 1 つ起動する。すべてのサブエージェントは並列で実行される。
 
 ---
@@ -48,7 +48,7 @@ description: |
 #### 処理
 
 1. [subagent: parallel · await all] ファイルパスリストの各ファイルに対して
-   `utils:jp-mirror-translator` サブエージェントを起動する。プロンプトには絶対パスを渡す。
+   `claude-kit:jp-mirror-translator` サブエージェントを起動する。プロンプトには絶対パスを渡す。
    （返り値: 各サブエージェントの完了レポート文字列）
 
 → ステップ 3 へ進む
