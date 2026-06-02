@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-094: `already_dispatched_this_session()` の check-then-touch が TOCTOU 競合を持つ
 
 **作成日**: 2026-05-31

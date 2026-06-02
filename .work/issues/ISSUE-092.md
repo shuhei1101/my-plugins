@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-092: `read_hook_input()` が例外をキャッチせず、不正な stdin でフックがクラッシュする
 
 **作成日**: 2026-05-31

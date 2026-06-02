@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-125: _index.md の全リンクがサブディレクトリパスを省略していて無効
 
 **作成日**: 2026-05-31

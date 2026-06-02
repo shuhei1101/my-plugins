@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-124: 環境変数.md が JP ミラーを宣言しているが 環境変数.jp.md が存在しない
 
 **作成日**: 2026-05-31

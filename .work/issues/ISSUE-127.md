@@ -1,3 +1,10 @@
+---
+decision: pending
+status: not_started
+branches: []
+instruction: ""
+---
+
 # ISSUE-127: jinja2/テンプレート注意点.md と jinja2/執筆ガイド.md の内容が大幅に重複
 
 **作成日**: 2026-05-31
