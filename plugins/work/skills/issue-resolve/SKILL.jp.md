@@ -1,4 +1,3 @@
-<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 ---
 name: issue-resolve
 description: |
@@ -9,6 +8,7 @@ description: |
   「resolve issues」「issue-resolve」、または `/loop /work:issue-resolve` / `/work:issue-resolve` を
   明示的に呼び出したとき。
 ---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:issue-resolve — レビュー済みイシューを消化する（ループ駆動）
 

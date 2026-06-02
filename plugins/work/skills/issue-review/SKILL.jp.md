@@ -1,4 +1,3 @@
-<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 ---
 name: issue-review
 description: |
@@ -8,6 +7,7 @@ description: |
   トリガー: 「イシューをレビューして」「イシューを捌きたい」「review issues」「issue-review」、
   または `/work:issue-review` を明示的に呼び出したとき。
 ---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 # work:issue-review — イシューを捌く（スマホ主用途）
 
