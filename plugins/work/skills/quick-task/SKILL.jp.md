@@ -1,5 +1,5 @@
 ---
-name: quick-task
+name: work:quick-task
 description: |
   軽量タスクを処理する — **ソースコードをメインに編集しない**作業: 調査・確認・リサーチ・コード
   読解・挙動の説明（「これどうなってる?」「X の状態は?」「Y を調べて」）。work の UserPromptSubmit

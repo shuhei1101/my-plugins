@@ -1,5 +1,5 @@
 ---
-name: merge
+name: work:merge
 description: |
   Merge a branch: verify TODO checklist, archive index, merge with --no-ff, remove worktree and
   branch, and confirm any remaining QA entries in the task document.

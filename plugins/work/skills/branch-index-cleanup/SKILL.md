@@ -1,5 +1,5 @@
 ---
-name: branch-index-cleanup
+name: work:branch-index-cleanup
 description: |
   Audit git branches against index.yaml / index.archive.yaml and clean up unregistered ones.
   Classifies each unregistered branch as A (delete), B (archive + delete), or C (keep, add to index).

@@ -1,5 +1,5 @@
 ---
-name: issue-resolve
+name: work:issue-resolve
 description: |
   `.work/issues/` のレビュー済みイシューを上から自動的に消化する — 1 起動あたり対応可能なイシュー 1 件。
   `## 意思` が「対応する」のイシューは `work:issue-resolver` サブエージェントへ委譲し、ブランチを切って

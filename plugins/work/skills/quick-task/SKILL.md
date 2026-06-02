@@ -1,5 +1,5 @@
 ---
-name: quick-task
+name: work:quick-task
 description: |
   Handle a lightweight task — work that does NOT mainly edit source code: investigation,
   confirmation, research, reading code, explaining behavior ("how does this work?", "what is the

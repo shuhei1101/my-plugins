@@ -1,5 +1,5 @@
 ---
-name: jp-mirror-sync
+name: claude-kit:jp-mirror-sync
 description: |
   1 つ以上の日本語ミラー（.jp.md）ファイルを受け取り、対応する英語版（.md）を作成または更新する。
   JP ミラーを正として扱い、ファイルごとに claude-kit:jp-mirror-translator サブエージェントを 1 つ起動し、

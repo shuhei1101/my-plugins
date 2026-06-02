@@ -1,5 +1,5 @@
 ---
-name: apply
+name: ref-inject:apply
 description: |
   Apply (attach) the ref-inject reference auto-injection mechanism to a target plugin — new or existing. Copies the injection hook (inject_references.py + hooks.json), the Jinja2 templates, and a references/ skeleton into the plugin, substituting per-plugin placeholders. Does not own plugin-level concerns (plugin.json, the plugin's own CLAUDE.md, marketplace.json) — only the injection part.
   Trigger when the user says "このプラグインに ref-inject を付けて", "リファレンス注入を追加して", "apply ref-inject to {plugin}", "add reference injection to a plugin", or invokes /ref-inject:apply explicitly.

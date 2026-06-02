@@ -1,5 +1,5 @@
 ---
-name: issue-scan
+name: work:issue-scan
 description: |
   Orchestrator skill. Picks N scan perspectives (folders, grep patterns, layers, file groups)
   from the project, then spawns one `work:issue-scanner` subagent per perspective to scan the code

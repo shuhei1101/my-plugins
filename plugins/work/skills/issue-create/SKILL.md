@@ -1,5 +1,5 @@
 ---
-name: issue-create
+name: work:issue-create
 description: |
   Interpret a user's description of a problem and split it into discrete issue files under `.work/issues/`.
   Trigger when the user says "create an issue", "register this problem", "make issues for this",

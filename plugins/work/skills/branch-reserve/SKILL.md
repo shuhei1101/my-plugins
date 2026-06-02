@@ -1,5 +1,5 @@
 ---
-name: branch-reserve
+name: work:branch-reserve
 description: |
   Reserve the next branch using the same flow as work:start, after the current branch is complete.
   Reads the "Next branch candidates" section from the current task document to determine what to

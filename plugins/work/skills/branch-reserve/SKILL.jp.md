@@ -1,5 +1,5 @@
 ---
-name: branch-reserve
+name: work:branch-reserve
 description: |
   work:start と同じフローを使用して、現在のブランチ完了後に次のブランチを予約します。
   現在のタスクドキュメントから「次ブランチ候補」セクションを読み込んで

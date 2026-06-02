@@ -1,5 +1,5 @@
 ---
-name: conversation-to-claude
+name: work:conversation-to-claude
 description: |
   Analyze the current session's conversation history and automatically create all
   appropriate artifacts (skill, rule, hook, CLAUDE.md, incidents, glossary) for

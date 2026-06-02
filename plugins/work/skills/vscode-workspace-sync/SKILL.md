@@ -1,5 +1,5 @@
 ---
-name: vscode-workspace-sync
+name: work:vscode-workspace-sync
 description: |
   Set up PostToolUse hooks that keep a VS Code .code-workspace file in sync with git worktrees.
   When run, finds the workspace file, confirms it with the user, then writes two hooks to

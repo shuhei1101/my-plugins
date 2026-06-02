@@ -1,7 +1,7 @@
 <!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
 ---
-name: branch-index-cleanup
+name: work:branch-index-cleanup
 description: |
   git ブランチと index.yaml / index.archive.yaml を照合し、未登録ブランチを整理する。
   各ブランチを A（削除）/ B（archive 追記 → 削除）/ C（index 追記）に分類して実行。

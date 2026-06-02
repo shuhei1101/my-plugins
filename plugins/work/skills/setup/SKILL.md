@@ -1,5 +1,5 @@
 ---
-name: setup
+name: work:setup
 description: |
   Initialize the workspace document structure (.work/) in the current project by running the setup script.
   Creates .work/tasks/, .work/notes/, .work/issues/, and .work/QA.md from templates.

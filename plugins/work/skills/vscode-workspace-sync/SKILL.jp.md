@@ -1,5 +1,5 @@
 ---
-name: vscode-workspace-sync
+name: work:vscode-workspace-sync
 description: |
   VS Code の .code-workspace ファイルと git worktree を同期する PostToolUse フックをセットアップする。
   実行すると、ワークスペースファイルを検索してユーザーに確認後、
