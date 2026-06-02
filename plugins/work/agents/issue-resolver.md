@@ -34,26 +34,72 @@ Read the full issue file yourself to confirm `## 概要` / `## 現状`, `## 期�
 
 ## Procedure
 
-Follow the `work:start` skill flow (you may `Read`
-`plugins/work/skills/start/SKILL.md` for the exact steps). In short:
+> **Two-directory model**: you start in `MAIN_DIR` (the main repo root). After Step 2d, ALL file
+> edits and ALL git commands run in `WT` (the worktree). Never mix them up.
 
 1. **Decide the branch** from the issue: `type` from the issue's type (fix / refactor / feat / …),
-   a short kebab-case title derived from the issue. Honor `WORK_BRANCH_AUTHOR` if set.
-2. **Create the branch + worktree**: add the `index.yaml` entry (`index-tool.py add`), then create
-   the worktree (`git worktree add -b {branch} ../{repo}-wt-{branch-hyphenated}`) unless
-   `WORK_USE_WORKTREE` is falsy.
-3. **Author the branch document** inside the worktree (`.branch.md`, from the injected
-   `タスクドキュメント.md` template). Fill `## 作業内容` from the issue's adopted approach.
-4. **Link the issue** (work:start Step 6): add it to the branch doc's `## 関連イシュー` table, and
-   in the **main repo** `_index.yaml` (gitignored — not in the worktree) set `status: in_progress`
-   and append the branch via `issue-tool.py set-status ... --status in_progress` and
-   `issue-tool.py add-branch ... --branch {branch}`. The issue file has **no frontmatter** — nothing
-   to edit inside it for linking.
-5. **First commit**: the branch document only.
-6. **Implement** the fix per the adopted `## 対応案` + the `## 自由記述` instruction. Commit in meaningful units on
-   the branch. Verify / smoke-test where feasible and record it in the branch doc's `## テスト`.
-7. **Final commit** (work:start Step 9): update/create the related note in `.work/notes/`, link it
-   from `## 参考ドキュメント`, mark all `## 作業内容` rows `済`, and commit the note + branch doc.
+   a short kebab-case title derived from the issue. Honor `WORK_BRANCH_AUTHOR` if set:
+   ```bash
+   BRANCH_AUTHOR="${WORK_BRANCH_AUTHOR:-}"
+   # Without author:  BRANCH="fix/personal-chat-tuning"
+   # With author:     BRANCH="fix/nishikawa/personal-chat-tuning"
+   ```
+
+2. **Create the branch + worktree** — complete all sub-steps before touching any files:
+
+   a. Record the main repo root and compute paths:
+      ```bash
+      MAIN_DIR="$(pwd)"
+      WT_SUFFIX="${BRANCH//\//-}"   # slashes → hyphens, e.g. fix-personal-chat-tuning
+      WT="${MAIN_DIR}/../$(basename "$MAIN_DIR")-wt-${WT_SUFFIX}"
+      ```
+   b. Check `WORK_USE_WORKTREE` (default `true`):
+      ```bash
+      v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
+      ```
+   c. Add the `index.yaml` entry in `MAIN_DIR`:
+      ```bash
+      python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" add "$MAIN_DIR/.work/tasks/index.yaml" \
+        --branch "$BRANCH" --title "{日本語タイトル}" --type {type} \
+        --summary "{summary}" --task "{YYMMDD}_{task-title}"
+      ```
+   d. **If worktree enabled** — create it with `git worktree add`:
+      ```bash
+      git worktree add -b "$BRANCH" "$WT"
+      ```
+      > ⛔ **NEVER** run `git checkout`, `git switch -c`, or `git branch` in `$MAIN_DIR` to create
+      > the branch. The branch must live in the worktree only.
+
+   e. **From this point on, ALL Write/Edit operations and ALL git commands (`git add`, `git commit`,
+      `git status`) MUST use `$WT` — never `$MAIN_DIR`.**
+
+3. **Author the branch document** at
+   `{WT}/.work/tasks/{YYMMDD}_{task-title}/{YYMMDD}-{日本語タイトル}.branch.md`
+   (from the injected `タスクドキュメント.md` template). Fill `## 作業内容` from the issue's adopted
+   approach.
+
+4. **Link the issue**: add a row to the branch doc's `## 関連イシュー` table (in `$WT`). Then in
+   the **main repo** `_index.yaml` (gitignored — not in the worktree), set `status: in_progress`
+   and append the branch. Issue files have **no frontmatter** — no edits to the issue file itself:
+   ```bash
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
+     --issues-dir "$MAIN_DIR/.work/issues" --issue-id ISSUE-{N} --status in_progress
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" add-branch \
+     --issues-dir "$MAIN_DIR/.work/issues" --issue-id ISSUE-{N} --branch "$BRANCH"
+   ```
+
+5. **First commit** — run from `$WT`, branch document only:
+   ```bash
+   cd "$WT" && git add .work/tasks/ && git commit -m "chore: $BRANCH のブランチドキュメントを作成"
+   ```
+
+6. **Implement** the fix per the adopted `## 対応案` + the `## 自由記述` instruction. All edits
+   happen in `$WT`; all commits run from `$WT`. Verify / smoke-test where feasible and record
+   results in the branch doc's `## テスト`.
+
+7. **Final commit** — run from `$WT`: update/create the related note in `$WT/.work/notes/`, link
+   it from `## 参考ドキュメント`, mark all `## 作業内容` rows `済`, and commit the note + branch doc.
+
 8. **Stop — do NOT merge.** The branch is left merge-waiting for the user.
 
 ---
