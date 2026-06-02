@@ -1413,3 +1413,10 @@ branches:
   summary: イシュー回答欄を先頭へ移動し、意思・QA回答をMarkdownチェックボックス形式に変更
   task: 260602_イシュー回答欄チェックボックス形式変更
   completed: true
+- branch: fix/branch-show-step-reference
+  created: '2026-06-03'
+  title: branch-showのStep参照番号修正
+  type: fix
+  summary: branch-show/SKILL.mdのmerge Step 12参照をStep 13に修正
+  task: 260603_branch-show-step-reference
+  completed: true

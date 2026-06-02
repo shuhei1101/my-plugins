@@ -11,7 +11,7 @@ Reads a task document's `## 次ブランチ候補` table and classifies each can
 
 ## Overview
 
-A standalone skill extracted from merge Step 12. Can be called at any time to check which branches are next — not only after a merge.
+A standalone skill extracted from merge Step 13. Can be called at any time to check which branches are next — not only after a merge.
 
 **Data source**: the `## 次ブランチ候補` table in the specified task document.
 Never lists all git branches blindly — only candidates explicitly listed in the table are shown.
@@ -28,7 +28,7 @@ Never lists all git branches blindly — only candidates explicitly listed in th
 
 #### Process
 
-1. If called with a task document path argument (e.g. from merge Step 12), use that file directly
+1. If called with a task document path argument (e.g. from merge Step 13), use that file directly
 2. If called standalone (no argument):
    - Find all task documents under `.work/tasks/`:
      ```bash
