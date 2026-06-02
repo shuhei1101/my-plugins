@@ -1272,3 +1272,10 @@ branches:
   summary: utils プラグインの jp-mirror-sync スキルを claude-kit へ移動し、utils プラグインを削除する
   task: 260602_utilsプラグイン削除
   completed: true
+- branch: chore/remove-claude-kit-config-skill
+  created: '2026-06-02'
+  title: claude-kit configスキル削除
+  type: chore
+  summary: claude-kit:config スキルのファイルと参照を削除する
+  task: 260602_claude-kit-configスキル削除
+  completed: true
