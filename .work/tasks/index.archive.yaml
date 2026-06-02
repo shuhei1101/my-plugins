@@ -1300,3 +1300,11 @@ branches:
   summary: work/dev-kit/claude-kit の plugin-config スキルと構造ルールを復元
   task: 260602_plugin-configスキル復活
   completed: true
+- branch: refactor/work-issue-answer-section
+  created: '2026-06-02'
+  title: イシュー回答欄の再設計
+  type: refactor
+  summary: イシューテンプレートのユーザー回答欄を最上部へ移動・QAに推奨を必須化・自由記述削除・回答候補を回答化。依存skill/agent/CLAUDE.mdも整合しversion
+    bump
+  task: 260602_イシュー回答欄の再設計
+  completed: true
