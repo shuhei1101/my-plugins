@@ -1,5 +1,5 @@
 ---
-name: hook-creator
+name: claude-kit:hook-creator
 description: |
   Create a prompt-injection hook — a hook that injects a text prompt into Claude's context at a specific event.
   Trigger when the user says "I want to give Claude instructions at a specific moment", "inject a prompt on hook",

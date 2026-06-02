@@ -1,5 +1,5 @@
 ---
-name: claude-creator
+name: claude-kit:claude-creator
 description: |
   Create or overhaul a CLAUDE.md (and its CLAUDE.jp.md mirror) for a project or subfolder.
   Trigger when the user says "CLAUDE.md を作って", "CLAUDE.md を書いて", "create a CLAUDE.md",

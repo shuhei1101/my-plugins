@@ -1,5 +1,5 @@
 ---
-name: plugin-creator
+name: claude-kit:plugin-creator
 description: |
   Create or update a Claude Code plugin with versioning (changelogs/ folder).
   Trigger when the user says "新しいプラグインを作りたい", "プラグインを作って", "プラグインを更新したい", "create a plugin", "update a plugin", "make a new plugin", or "plugin-creator して".

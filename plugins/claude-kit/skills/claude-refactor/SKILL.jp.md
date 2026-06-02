@@ -1,5 +1,5 @@
 ---
-name: claude-refactor
+name: claude-kit:claude-refactor
 description: |
   Audit and organize Claude configuration (rules / skills / CLAUDE.md / hooks).
   Trigger when the user says "ルールを整理して", "設定が肥大化してきた",

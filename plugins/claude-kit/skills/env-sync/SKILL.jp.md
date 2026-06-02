@@ -1,5 +1,5 @@
 ---
-name: env-sync
+name: claude-kit:env-sync
 description: |
   WSL と Windows 間で Claude Code の設定ファイルを同期するスキル。
   両環境をスキャンして差分を表示し、ユーザーの確認後にファイルをコピーする。
