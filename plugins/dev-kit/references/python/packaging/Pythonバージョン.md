@@ -1,49 +1,50 @@
-# packaging/python-versions — Python version policy
+<!-- This file is a Japanese mirror of Pythonバージョン.md. When updating the English original, update this file too. -->
+# packaging/python-versions — Python バージョン方針
 
-dev-kit Python's policy: **adopt the highest version possible**.
-
----
-
-## Recommendation
-
-- **New projects**: the latest stable version (3.13 at the time of writing) or one below (3.12)
-- **Set `requires-python = ">=3.12"` as the minimum line**
-- As a rule, do not support 3.11 or earlier
+dev-kit Python の方針: **極力高いバージョンを採用する**。
 
 ---
 
-## Major feature support table from 3.12 onward
+## 推奨
 
-| Feature | Introduced | Description |
+- **新規プロジェクト**: 最新安定版（執筆時点で 3.13）または 1 つ下（3.12）
+- **`requires-python = ">=3.12"` を最低ラインに**
+- 3.11 以下のサポートは原則しない
+
+---
+
+## 3.12 以降の主要機能対応表
+
+| 機能 | 導入 | 説明 |
 |---|---|---|
-| PEP 695 `type X = ...` | 3.12 | Dedicated syntax for type aliases |
-| PEP 695 generic functions `def f[T](...)` | 3.12 | New notation for generics |
-| `@override` decorator | 3.12 | Explicit method override |
-| f-string improvements (nested quoting) | 3.12 | `f"{'inner'}"` becomes writable |
-| `tomllib` standard library | 3.11 | TOML reading (standard) |
-| `Self` type | 3.11 | Return type for class methods |
-| `ExceptionGroup` / `except*` | 3.11 | Combined with TaskGroup |
-| `tomllib` writer is a separate package | — | For writing, install `tomli-w` |
-| `asyncio.TaskGroup` | 3.11 | New API for concurrent execution |
-| `asyncio.timeout` | 3.11 | New API for timeouts |
-| `--disable-gil` build | 3.13 | Experimental; not recommended for production |
-| `interpreters` standard module | 3.13 | Official API for subinterpreters |
+| PEP 695 `type X = ...` | 3.12 | 型エイリアス専用構文 |
+| PEP 695 ジェネリック関数 `def f[T](...)` | 3.12 | ジェネリクスの新書式 |
+| `@override` decorator | 3.12 | メソッドオーバーライド明示 |
+| `f-string` の改善（ネスト引用） | 3.12 | `f"{'inner'}"` が書けるように |
+| `tomllib` 標準ライブラリ | 3.11 | TOML 読み込み（標準） |
+| `Self` 型 | 3.11 | クラスメソッドの戻り値型 |
+| `ExceptionGroup` / `except*` | 3.11 | TaskGroup と組み合わせ |
+| `tomllib` writer は別パッケージ | — | 書き込みは `tomli-w` を入れる |
+| `asyncio.TaskGroup` | 3.11 | 並行実行の新 API |
+| `asyncio.timeout` | 3.11 | タイムアウトの新 API |
+| `--disable-gil` ビルド | 3.13 | 実験的・本番未推奨 |
+| `interpreters` 標準モジュール | 3.13 | subinterpreter 公式 API |
 
-dev-kit Python fully adopts PEP 695, so **3.12+ is required**.
-
----
-
-## Multi-version support is generally not pursued
-
-For a library distributed widely, supporting older versions may be worth considering,
-but for in-house projects / limited distribution, **pinning to the latest is overwhelmingly easier**:
-- Just `from __future__ import annotations` is enough
-- No need for compatibility shims such as `typing_extensions`
-- Performance improvements (the speed gains since 3.11)
+dev-kit Python は PEP 695 を全面採用するので **3.12+ 必須**。
 
 ---
 
-## How to pin the version
+## マルチバージョンサポートは原則しない
+
+ライブラリとして広く配布するなら旧バージョン互換も検討する価値があるが、
+内製プロジェクト / 限定配布なら **最新固定が圧倒的に楽**:
+- `from __future__ import annotations` だけで済む
+- `typing_extensions` 等の互換 shim 不要
+- パフォーマンス改善（3.11 以降のスピード向上）
+
+---
+
+## バージョン固定方法
 
 `pyproject.toml`:
 
@@ -52,7 +53,7 @@ but for in-house projects / limited distribution, **pinning to the latest is ove
 requires-python = ">=3.12"
 ```
 
-`.python-version` (for uv):
+`.python-version`（uv 用）:
 
 ```
 3.12
@@ -66,9 +67,9 @@ uv python pin 3.12
 
 ---
 
-## Matrix testing in CI
+## CI でのマトリクステスト
 
-To verify behavior on multiple versions, use GitHub Actions:
+複数バージョンで動作確認するなら GitHub Actions で:
 
 ```yaml
 strategy:
@@ -83,43 +84,43 @@ steps:
   - run: uv run pytest
 ```
 
-That said, for an in-house project, **pinning to a single version** is sufficient.
+ただし、内製プロジェクトなら **1 バージョン固定** で十分。
 
 ---
 
-## New features in 3.13 (adoption judgment)
+## 3.13 の新機能（採用判断）
 
-| Feature | Adopt |
+| 機能 | 採用 |
 |---|---|
-| `--disable-gil` build | ❌ Wait and see (dependent libraries don't support it yet) |
-| `interpreters` standard | ❌ Experimental |
-| iOS / Android tier 3 | ❌ Not relevant |
-| Improved REPL | ✅ Benefit only at development time |
-| Type system improvements (PEP 696 default type arguments, etc.) | ✅ Use as needed |
+| `--disable-gil` ビルド | ❌ 様子見（依存ライブラリ未対応） |
+| `interpreters` 標準 | ❌ 実験的 |
+| iOS / Android tier 3 | ❌ 関係なし |
+| 改善された REPL | ✅ 開発時のみ恩恵あり |
+| 型システムの改善（PEP 696 デフォルト型引数等） | ✅ 必要なら使う |
 
-Until 3.13 stabilizes, **pinning to 3.12** is fine.
+3.13 が安定するまで **3.12 固定** でも問題ない。
 
 ---
 
-## When you need an older Python
+## 古い Python が必要になったら
 
-Only when integration with legacy environments is required, lower the minimum line:
+レガシー環境との連携が必要な場合のみ、最小ラインを下げる:
 
 ```toml
 requires-python = ">=3.10"
 ```
 
-In that case:
-- PEP 695 (`type X = ...`) is unavailable → substitute with `TypeAlias`
-- The `Self` type must be replaced with `typing_extensions.Self`
-- `asyncio.TaskGroup` is unavailable → fall back to `asyncio.gather`
+ただしその場合:
+- PEP 695 (`type X = ...`) は使えない → `TypeAlias` で代用
+- `Self` 型は `typing_extensions.Self` で代用
+- `asyncio.TaskGroup` 使えない → `asyncio.gather` でフォールバック
 
-If you have to write code like this, be prepared for **maintenance costs to skyrocket**.
+このようなコードを書く必要があるなら、**メンテコストが跳ね上がる**ことを覚悟する。
 
 ---
 
-## Related files
+## 関連ファイル
 
-- `core/型ヒント.md` — code using PEP 695
-- `packaging/pyproject設定.md` — the `requires-python` field in pyproject.toml
-- `packaging/依存パッケージ管理.md` — Python version management with uv
+- `core/型ヒント.md` — PEP 695 を使ったコード
+- `packaging/pyproject設定.md` — pyproject.toml の `requires-python`
+- `packaging/依存パッケージ管理.md` — uv での Python バージョン管理

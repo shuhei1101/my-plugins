@@ -1,240 +1,237 @@
 ---
 name: work:issue-scan
 description: |
-  Orchestrator skill. Picks N scan perspectives (folders, grep patterns, layers, file groups)
-  from the project, then spawns one `work:issue-scanner` subagent per perspective to scan the code
-  against ref-inject references and return findings as JSON with full issue content. The main agent
-  orchestrates: it creates a scan branch, launches subagents in parallel, receives their findings,
-  writes ISSUE files with sequential IDs, updates the indexes, commits, and merges to master.
-  `${ISSUE_SCAN_AGENTS}` controls how many perspectives are scanned per invocation (default: 1).
-  Trigger when the user says "issue-scan", "scan for issues", "find problems in the code",
-  "コードをスキャン", "イシューを探して", or invokes `/work:issue-scan` explicitly.
+  オーケストレーター専用スキル。プロジェクトから N 個のスキャン観点（フォルダ・grep パターン・
+  レイヤー・ファイル群）を選び、観点ごとに `work:issue-scanner` サブエージェントを起動して、
+  ref-inject の reference と照合しコードをスキャンし、発見をイシュー内容を含む JSON として返させる。
+  メインエージェントはオーケストレーションのみ: スキャンブランチ作成・サブエージェント並列起動後、
+  発見を受け取り ISSUE ファイルを連番 ID で書き出し・インデックス更新・コミット・master マージする。
+  `${ISSUE_SCAN_AGENTS}` で 1 回の実行でスキャンする観点数を制御（デフォルト: 1）。
+  ユーザーが「issue-scan」「コードをスキャン」「イシューを探して」「問題を見つけて」と言ったとき、
+  または `/work:issue-scan` を明示的に呼び出したときに起動する。
+---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+
+# work:issue-scan — コードベーススキャン（オーケストレーター）
+
+このスキルは**オーケストレーション専用**。プロジェクトのソースを自分で読んだりコードを分析したりは
+一切しない — その作業は `work:issue-scanner` サブエージェント（観点ごとに 1 つ）へ委譲し、
+各々が独自のコンテキストで動く。メインエージェントの仕事は: 観点を選ぶ → スキャナを並列起動 →
+発見を受け取る → ISSUE ファイルを書く → インデックス更新 → コミット → マージ。
+
 ---
 
-# work:issue-scan — Scan Codebase for Issues (Orchestrator)
+## 概要
 
-This skill is **orchestration only**. It never reads project source or analyzes code itself —
-that work is delegated to `work:issue-scanner` subagents (one per perspective), each running in its
-own context. The main agent's job is: pick perspectives → launch scanners in parallel → receive
-their findings → write ISSUE files → update indexes → commit → merge.
+**前提条件**:
+- `.work/issues/` が存在すること（なければ `/work:setup` を実行）
 
----
+**環境変数**:
+- `${ISSUE_SCAN_AGENTS}`（デフォルト: `1`）— 1 回の実行でスキャンする観点数 = 起動するサブエージェント数。
+  `1` でもサブエージェントを 1 つ起動する（分析は常に別コンテキストで実行される）。
 
-## Overview
+**責務分担**:
 
-**Prerequisites**:
-- `.work/issues/` must exist (run `/work:setup` if it doesn't)
-
-**Environment variables**:
-- `${ISSUE_SCAN_AGENTS}` (default: `1`) — number of perspectives scanned per invocation = number of
-  subagents launched. `1` still launches one subagent (analysis always runs in a separate context).
-
-**Division of responsibility**:
-
-| Actor | Owns |
+| 主体 | 担当 |
 |---|---|
-| **Main agent (this skill)** | branch, perspective selection, writing `ISSUE-{N}.md` files, sequential ID assignment, `_index.yaml` / `_index.archive.yaml` updates, commit, merge |
-| **`work:issue-scanner` subagent** | reading source, receiving references, finding problems, returning findings as JSON |
+| **メインエージェント（本スキル）** | ブランチ・観点選択・`ISSUE-{N}.md` ファイル書き出し・連番 ID 付与・`_index.yaml` / `_index.archive.yaml` 更新・コミット・マージ |
+| **`work:issue-scanner` サブエージェント** | ソース読み込み・reference 受領・問題発見・発見を JSON として返却 |
 
-The subagent does **not** write files, does **not** touch index files, and does **not** commit;
-the main agent owns all file I/O and does **not** read source or analyze code.
-
----
-
-## Note: work hook overrides
-
-This skill manages its own branch/worktree lifecycle. Instructions injected by the following hooks
-should be **ignored while this skill is running**:
-
-- **`UserPromptSubmit` hook**: "if no working branch is in progress, run `/work:start`"
-- **`Stop` hook**: "update the `## 作業内容` table in the task document" / "run `/work:merge`"
+サブエージェントはファイルを**書かず**、インデックスファイルに**触れず**、コミットも**しない**。
+メインエージェントはソースを**読まず**コードを分析**しない**。
 
 ---
 
-## Tasks
+## 注意: work フックの無視
 
-### Step 0: Initialize scan branch
+このスキルは独自のブランチ/ワークツリー管理を持つ。以下のフックが挿入する指示は
+**このスキルの実行中は無視してよい**:
 
-#### Process
+- **`UserPromptSubmit` フック**: 「作業ブランチがなければ `/work:start` を実行してください」
+- **`Stop` フック**: 「タスクドキュメントの `## 作業内容` を更新してください」「`/work:merge` を実行してください」
 
-1. Read `${ISSUE_SCAN_AGENTS}` (default `1`); store as `N`.
-2. Check the current branch (`git branch --show-current`):
-   - On `master`/`main` → `AUTO_MERGE = true`
-   - Otherwise → `AUTO_MERGE = false` (commit to the current branch at the end, no auto-merge)
-3. If `AUTO_MERGE`, create a **worktree** for the temporary scan branch (main repo branch unchanged):
+---
+
+## タスク
+
+### ステップ0: スキャンブランチを初期化する
+
+#### 処理
+
+1. `${ISSUE_SCAN_AGENTS}` を読む（デフォルト `1`）; `N` として保持。
+2. 現在のブランチを確認（`git branch --show-current`）:
+   - `master`/`main` 上 → `AUTO_MERGE = true`
+   - それ以外 → `AUTO_MERGE = false`（最後に現在のブランチへコミット、自動マージなし）
+3. `AUTO_MERGE` なら一時スキャンブランチ用の**ワークツリーを作成する**（メインリポのブランチは変更しない）:
    ```bash
    BRANCH="chore/issue-scan-$(date +%Y%m%d-%H%M%S)"
    WT_SUFFIX="${BRANCH//\//-}"
    WT_PATH="../$(basename $(pwd))-wt-${WT_SUFFIX}"
    git worktree add -b "$BRANCH" "$WT_PATH"
    ```
-4. If `AUTO_MERGE`, carry any **uncommitted issue-file changes** from the main repo into the worktree
-   so they are committed together with the scan results. Run in the main repo root:
+4. `AUTO_MERGE` の場合、メインリポの**未コミットのイシューファイル変更**をワークツリーにコピーし、
+   スキャン結果と一緒にコミットされるようにする。メインリポのルートで実行:
    ```bash
-   # Modified tracked files
+   # 変更済みのトラック済みファイル
    git diff --name-only HEAD -- .work/issues/
-   # Untracked new files
+   # 未トラックの新規ファイル
    git ls-files --others --exclude-standard .work/issues/
    ```
-   For each path returned, copy `{main_repo}/{path}` → `{WT_PATH}/{path}` (overwrite). Skip if both
-   lists are empty.
+   返却された各パスについて `{main_repo}/{path}` → `{WT_PATH}/{path}` にコピー（上書き）。
+   両リストが空なら何もしない。
 
-→ Step 1
+→ ステップ1
 
-#### Output
+#### 出力
 
-- `N`, `AUTO_MERGE`, `BRANCH`, `WT_PATH` (only when `AUTO_MERGE`)
-
----
-
-### Step 1: Read scan history and current ID
-
-#### Process
-
-1. If `.work/issues/` does not exist → prompt for `/work:setup` and stop.
-2. Read `_index.archive.yaml` (empty if missing): collect `scan_records[].scope` (perspectives
-   already scanned) and `closed_issues` with `resolution: wontfix` (to exclude).
-3. Read the current `last_id` from `_index.yaml` (treat as `0` if missing). Call it `L`.
-
-→ Step 2
-
-#### Output
-
-- Set of already-scanned perspectives
-- Current `last_id` = `L`
+- `N`・`AUTO_MERGE`・`BRANCH`・`WT_PATH`（`AUTO_MERGE` の場合のみ）
 
 ---
 
-### Step 2: Pick N scan perspectives
+### ステップ1: スキャン履歴と現在の ID を読む
 
-#### Process
+#### 処理
 
-Choose `N` **perspectives** (not just files) that have not been scanned recently (skip ones already
-in `scan_records`). A perspective is any lens that selects a coherent slice of the codebase. Aim for
-variety across invocations — rotate through the categories below rather than always picking folders.
+1. `.work/issues/` が存在しなければ → `/work:setup` を促して停止。
+2. `_index.archive.yaml` を読む（なければ空）: `scan_records[].scope`（スキャン済み観点）と
+   `closed_issues` の `resolution: wontfix`（除外対象）を収集。
+3. `_index.yaml` から現在の `last_id` を読む（なければ `0`）。これを `L` とする。
 
-**A perspective is the most important choice this skill makes — be creative and specific.** Pull from:
+→ ステップ2
 
-##### Folder / module perspectives
-- A feature folder: `features/{x}/`, a domain package, an integration package
-- A cross-cutting folder: `shared/`, `lib/`, `utils/`, `config/`, `tools/`, `scripts/`, `hooks/`
-- A subsystem: `llm/`, `infra/`, `db/`, `auth/`, `api/`, `server/`, `runtime/`, `components/`
+#### 出力
 
-##### Layer perspectives (architectural slices)
-- All endpoint/route files (`**/route.ts`, FastAPI routers)
-- All service-layer files (`*Service.*`, `service.py`)
-- All data-access files (`query.ts`, `*Repository.*`, `db.*`)
-- All schema/DTO files (`schema.*`, `types.*`, Zod/Pydantic models)
-- All client/provider files (`*Client.*`, `providers/`)
-
-##### File-kind perspectives (glob by name)
-- Package initializers only: `**/__init__.py`
-- Entry points: `main.py`, `index.ts`, `app.*`
-- Config surfaces: `settings.*`, `constants.*`, `*.config.*`, `pyproject.toml`, `.env*` templates
-- Barrel/re-export files: `index.ts` across the tree
-
-##### Pattern perspectives (grep-driven)
-- Abstract types: classes named `Base*`, `ABC` subclasses, `Protocol` definitions, interfaces
-- Concurrency: `async def` / `await` sites, thread/pool usage
-- Risk smells: bare `except:` / `except Exception: pass`, swallowed errors, `# type: ignore`
-- Debug leftovers: stray `print(` / `console.log(`, `TODO` / `FIXME` / `XXX` comments
-- Hardcoding: inline secrets/URLs/magic numbers, duplicated string literals
-- Boundary smells: functions missing type hints, overly long functions/files, deep nesting
-- Naming consistency: a chosen prefix/suffix convention applied across the tree
-
-##### Consistency / hygiene perspectives
-- Error-handling approach across a layer
-- Logging consistency (tags, levels, structured vs print)
-- Environment-variable handling (centralized vs scattered)
-- Import ordering / dependency direction
-- Comment-language consistency, JP-mirror sync status of `*.jp.md` files
-
-Selection rules:
-1. Prefer perspectives whose `scope` label is **not** already in `scan_records`.
-2. For `N ≥ 2`, pick **distinct, non-overlapping** perspectives so the subagents do not collide on
-   the same files.
-3. Give each perspective a short stable `scope` label (e.g. `folder:src/llm`, `pattern:Base-classes`,
-   `layer:route-ts`, `glob:__init__.py`) — this is what gets recorded in `scan_records`.
-
-→ Step 3
-
-#### Output
-
-- `N` perspectives, each with a description (for the subagent) and a `scope` label (for the record)
+- スキャン済み観点の集合
+- 現在の `last_id` = `L`
 
 ---
 
-### Step 3: Launch one scanner subagent per perspective
+### ステップ2: スキャン観点を N 個選ぶ
 
-#### Process
+#### 処理
 
-1. [subagent: parallel · await all] For each perspective, spawn a `work:issue-scanner` subagent
-   (use the `Agent` tool with `subagent_type: "work:issue-scanner"`). In the prompt, pass:
-   - The perspective description (what to scan, in words)
-   - Its `scope` label
-   (return: `[{title, type, priority, tags, scope, perspective, body}]`, or `[]` with the scanned
-   perspective named)
-2. Await all subagents. Collect every returned array.
+最近スキャンしていない**観点**（ファイルだけでなく）を `N` 個選ぶ（`scan_records` に既にあるものは避ける）。
+観点とは、コードベースの一貫したスライスを選び出すあらゆる切り口。実行のたびに種類を変え、
+常にフォルダばかり選ばず以下のカテゴリを巡回するのが望ましい。
 
-→ Step 3b
+**観点の選択は本スキル最大の判断ポイント — 創造的かつ具体的に。** 以下から引き出す:
 
-#### Output
+##### フォルダ / モジュール観点
+- フィーチャーフォルダ: `features/{x}/`、ドメインパッケージ、インテグレーションパッケージ
+- 横断フォルダ: `shared/`・`lib/`・`utils/`・`config/`・`tools/`・`scripts/`・`hooks/`
+- サブシステム: `llm/`・`infra/`・`db/`・`auth/`・`api/`・`server/`・`runtime/`・`components/`
 
-- All findings from all subagents (including `body` for each)
-- The set of perspectives actually scanned (including empty ones)
+##### レイヤー観点（アーキテクチャのスライス）
+- 全エンドポイント/ルートファイル（`**/route.ts`、FastAPI ルーター）
+- 全サービス層ファイル（`*Service.*`、`service.py`）
+- 全データアクセスファイル（`query.ts`、`*Repository.*`、`db.*`）
+- 全スキーマ/DTO ファイル（`schema.*`、`types.*`、Zod/Pydantic モデル）
+- 全クライアント/プロバイダーファイル（`*Client.*`、`providers/`）
+
+##### ファイル種別観点（名前で glob）
+- パッケージ初期化ファイルのみ: `**/__init__.py`
+- エントリポイント: `main.py`、`index.ts`、`app.*`
+- 設定面: `settings.*`、`constants.*`、`*.config.*`、`pyproject.toml`、`.env*` テンプレート
+- バレル/再エクスポートファイル: ツリー全体の `index.ts`
+
+##### パターン観点（grep ベース）
+- 抽象型: `Base*` という名前のクラス、`ABC` サブクラス、`Protocol` 定義、インターフェース
+- 並行処理: `async def` / `await` 箇所、スレッド/プール使用
+- リスク臭: 裸の `except:` / `except Exception: pass`、握りつぶしたエラー、`# type: ignore`
+- デバッグ残骸: 残った `print(` / `console.log(`、`TODO` / `FIXME` / `XXX` コメント
+- ハードコーディング: インラインのシークレット/URL/マジックナンバー、重複する文字列リテラル
+- 境界臭: 型ヒントなし関数、長大な関数/ファイル、深いネスト
+- 命名一貫性: 選んだ prefix/suffix 規約がツリー全体で守られているか
+
+##### 一貫性 / 衛生観点
+- あるレイヤーのエラーハンドリング方針
+- ロギングの一貫性（タグ・レベル・構造化 vs print）
+- 環境変数の扱い（集中 vs 散在）
+- import 順序 / 依存方向
+- コメント言語の統一、`*.jp.md` ファイルの JP ミラー同期状態
+
+選択ルール:
+1. `scope` ラベルが `scan_records` にまだ無い観点を優先する。
+2. `N ≥ 2` の場合、サブエージェントが同じファイルで衝突しないよう、**重複しない別個の**観点を選ぶ。
+3. 各観点に短く安定した `scope` ラベルを付ける（例 `folder:src/llm`、`pattern:Base-classes`、
+   `layer:route-ts`、`glob:__init__.py`）— これが `scan_records` に記録される。
+
+→ ステップ3
+
+#### 出力
+
+- `N` 個の観点。各々に説明（サブエージェント用）と `scope` ラベル（記録用）
 
 ---
 
-### Step 3b: Write ISSUE files with sequential IDs
+### ステップ3: 観点ごとにスキャナサブエージェントを起動する
 
-#### Process
+#### 処理
 
-1. Flatten all findings from all subagents into a single ordered list.
-2. Get today's date once:
+1. [subagent: parallel · await all] 各観点について `work:issue-scanner` サブエージェントを起動する
+   （`Agent` ツールで `subagent_type: "work:issue-scanner"` を指定）。プロンプトには以下を渡す:
+   - 観点の説明（何をスキャンするか、言葉で）
+   - その `scope` ラベル
+   （戻り値: `[{title, type, priority, tags, scope, perspective, body}]`、
+   または空の場合は `[]` とスキャンした観点名）
+2. 全サブエージェントを await する。返ってきた全配列を収集する。
+
+→ ステップ3b
+
+#### 出力
+
+- 全サブエージェントからの発見（各 `body` を含む）
+- 実際にスキャンした観点の集合（空の観点も含む）
+
+---
+
+### ステップ3b: ISSUE ファイルを連番 ID で書き出す
+
+#### 処理
+
+1. 全サブエージェントの発見を 1 つの順序付きリストにまとめる。
+2. 今日の日付を一度取得する:
    ```bash
    date +%Y-%m-%d
    ```
-3. For each finding at 0-indexed position `k`, assign ID `ISSUE-{L + 1 + k}` and write
-   `{issues_dir}/ISSUE-{L + 1 + k}.md` (`{issues_dir}` = `{WT_PATH}/.work/issues/` when
-   `AUTO_MERGE`, otherwise `.work/issues/`). The file has **no frontmatter** — it starts at the
-   `# ISSUE-{N}: {title}` header:
+3. 0-indexed の位置 `k` にある発見ごとに ID `ISSUE-{L + 1 + k}` を付与し、
+   `{issues_dir}/ISSUE-{L + 1 + k}.md` を書き出す（`{issues_dir}` は `AUTO_MERGE` の場合 `{WT_PATH}/.work/issues/`、それ以外は `.work/issues/`）。ファイルは**フロントマターを持たない** — `# ISSUE-{N}: {title}` ヘッダから始める:
    ```
    # ISSUE-{N}: {title}
 
    {body}
    ```
-   (The `body` field from the subagent already contains `**作成日**`, the `# ユーザー回答欄` with the
-   `## 意思` options and any `## QA` pre-filled (choice-type as `- [ ]` checkboxes, input-type as a
-   `**回答**:` line), and the AI-authored issue body; just prepend the `# ISSUE-{N}: {title}` line and
-   a blank line.) The work state (`status: not_started`,
-   `branches: []`) goes into the `_index.yaml`
-   entry, not the file.
-4. Record the actual IDs assigned for use in Step 4.
+   （サブエージェントの `body` フィールドは既に `**作成日**`・`# ユーザー回答欄`（`## 意思` の選択肢と
+   `## QA` を事前記入。選択肢型は `- [ ]` チェックボックス、入力型は `**回答**:` 欄）・AI 記入のイシュー
+   本文を含む; 先頭に `# ISSUE-{N}: {title}` 行と空行を付加するだけ）。
+   作業状態（`status: not_started`・`branches: []`）はファイルではなく `_index.yaml` エントリに置く。
+4. ステップ4 で使用するために実際に付与した ID を記録する。
 
-→ Step 4
+→ ステップ4
 
-#### Output
+#### 出力
 
-- `ISSUE-{N}.md` files written to `.work/issues/`
-- Total count `M` of issues written
+- `.work/issues/` に書き出した `ISSUE-{N}.md` ファイル群
+- 書き出したイシューの総数 `M`
 
 ---
 
-### Step 4: Update the indexes
+### ステップ4: インデックスを更新する
 
-#### Process
+#### 処理
 
-File and index paths depend on `AUTO_MERGE`:
-- When `AUTO_MERGE`: `{WT_PATH}/.work/issues/`
-- Otherwise: `.work/issues/` (relative to main repo cwd)
+ファイルおよびインデックスのパスは `AUTO_MERGE` によって異なる:
+- `AUTO_MERGE` の場合: `{WT_PATH}/.work/issues/`
+- `AUTO_MERGE` でない場合: `.work/issues/`（メインリポのカレントディレクトリ相対）
 
-1. For each issue written in Step 3b, append to `_index.yaml`'s `issues`. Optionally include
-   `direct_merge: true` (the AI's pre-judgment) when **all three** conditions hold: (a) the issue
-   body has no `## QA` section (single unambiguous solution, no choice required); (b) the issue type
-   is `refactor`, `test`, `fix`, or `backend`; (c) the body contains no mention of UI, screen,
-   visual, or frontend. Omit the field otherwise. This field is consulted **only** when the user
-   later picks `対応する（マージはAIに任せる）`; `対応する（自動マージ）` always merges directly and
-   `対応しない` never reaches resolve.
+1. ステップ3b で書き出した各イシューを `_index.yaml` の `issues` に追記する。
+   以下の**3 条件をすべて満たす**場合は `direct_merge: true`（AI の事前判断）を含めてよい:
+   (a) イシュー本文に `## QA` セクションがない（選択肢なしの単一案）;
+   (b) タイプが `refactor`・`test`・`fix`・`backend` のいずれか;
+   (c) 本文に UI・画面・ビジュアル・フロントエンドの記述がない。
+   条件を満たさない場合はフィールドを省略する。このフィールドはユーザーが後で
+   `対応する（マージはAIに任せる）` を選んだときのみ参照される（`対応する（自動マージ）` は常に直接マージ、
+   `対応しない` は対応に到達しない）。
    ```yaml
    - id: ISSUE-{N}
      title: "{title}"
@@ -246,64 +243,64 @@ File and index paths depend on `AUTO_MERGE`:
      tags: [{tags}]
      status: not_started
      branches: []
-     # direct_merge: true   # only when all three conditions are met (see above)
+     # direct_merge: true   # 上記 3 条件を満たす場合のみ含める（マージはAIに任せる選択時のみ参照）
    ```
-2. Set `_index.yaml`'s `last_id` to `L + M` (where `M` is the total number of issues written).
-3. For each scanned perspective, append to `_index.archive.yaml`'s `scan_records`:
+2. `_index.yaml` の `last_id` を `L + M` に設定する（`M` は書き出したイシューの総数）。
+3. スキャンした各観点について `_index.archive.yaml` の `scan_records` に追記する:
    ```yaml
    - date: {YYYY-MM-DD}
      skill: issue-scan
-     scope: "{perspective scope label}"
-     issues_found: [{ISSUE-N}, ...]   # empty list if the perspective was clean
+     scope: "{観点の scope ラベル}"
+     issues_found: [{ISSUE-N}, ...]   # 観点がクリーンなら空リスト
    ```
-4. If `_index.archive.yaml` does not exist, create it with `closed_issues: []` and `scan_records: []`.
+4. `_index.archive.yaml` が存在しなければ `closed_issues: []` と `scan_records: []` で作成する。
 
-→ Step 5
+→ ステップ5
 
 ---
 
-### Step 5: Commit and merge
+### ステップ5: コミットしてマージする
 
-#### Process
+#### 処理
 
-1. If `AUTO_MERGE`: stage and commit inside the worktree (`{WT_PATH}`):
+1. `AUTO_MERGE` の場合: ワークツリー（`{WT_PATH}`）内でステージ・コミットする:
    ```bash
    cd {WT_PATH}
    git add .work/issues/
-   git commit -m "chore: issue-scan — {N} perspective(s), {M} issue(s) found"
+   git commit -m "chore: issue-scan — {N} 観点, {M} イシュー発見"
    ```
-   (Commit even when `M = 0` — the scan-record update is still worth recording.)
-   Then merge and clean up from the main repo:
+   （`M = 0` でもコミットする — スキャン記録の更新は残す価値がある）
+   その後メインリポからマージしてワークツリーを削除する:
    ```bash
    cd {main_repo}
    git merge --no-ff {BRANCH} -m "chore: merge issue-scan results from {BRANCH}"
    git branch -d {BRANCH}
    git worktree remove {WT_PATH}
    ```
-2. If not `AUTO_MERGE`: stage and commit in the main repo:
+2. `AUTO_MERGE` でない場合: メインリポの `.work/issues/` をステージしてコミットする:
    ```bash
    git add .work/issues/
-   git commit -m "chore: issue-scan — {N} perspective(s), {M} issue(s) found"
+   git commit -m "chore: issue-scan — {N} 観点, {M} イシュー発見"
    ```
-   Leave the branch as-is and tell the user a manual merge is needed.
+   ブランチはそのままにし、手動マージが必要な旨をユーザーに伝える。
 
-→ Step 6
+→ ステップ6
 
 ---
 
-### Step 6: Report results
+### ステップ6: 結果をレポートする
 
-#### Process
+#### 処理
 
-Report to the user:
-- The perspectives scanned (with their `scope` labels)
-- Per perspective: number of issues created and their list (ID / title / priority)
-- Perspectives that came back clean
-- The scan branch that was merged (or left open if `AUTO_MERGE` was false)
+ユーザーに報告する:
+- スキャンした観点（`scope` ラベル付き）
+- 観点ごと: 作成したイシュー数とその一覧（ID / タイトル / 優先度）
+- クリーンだった観点
+- マージしたスキャンブランチ（`AUTO_MERGE` が false なら未マージの旨）
 
-Mention that issues can be closed with `resolution: wontfix` if no fix is planned.
+修正予定なしの場合は `resolution: wontfix` で閉じられる旨を伝える。
 
-#### Notes
+#### 注意事項
 
-- The main agent never reads project source — only subagent findings.
-- IDs are sequential (`L+1`, `L+2`, …) across all perspectives combined, with no gaps.
+- メインエージェントはプロジェクトのソースを読まない — サブエージェントの発見のみを扱う。
+- ID は全観点の合算で連番（`L+1`, `L+2`, …）となり、ギャップはない。

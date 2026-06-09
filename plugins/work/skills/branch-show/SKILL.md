@@ -1,159 +1,176 @@
 ---
 name: work:branch-show
-description: Present next branch candidates in 3 categories (ready to start / in progress elsewhere / has conditions).
+description: 次ブランチ候補を 3 カテゴリで提示（開始準備完了 / 別で進行中 / 条件あり）。
 ---
 
-# work:branch-show — Show Next Branch Candidates
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-Reads a task document's `## 次ブランチ候補` table and classifies each candidate as ready to start, in progress elsewhere, or has conditions.
+# work:branch-show — 次ブランチ候補を表示
 
----
-
-## Overview
-
-A standalone skill extracted from merge Step 13. Can be called at any time to check which branches are next — not only after a merge.
-
-**Data source**: the `## 次ブランチ候補` table in the specified task document.
-Never lists all git branches blindly — only candidates explicitly listed in the table are shown.
+タスクドキュメントの `## 次ブランチ候補` テーブルを読み込み、各候補を
+開始準備完了、別で進行中、または条件ありとして分類します。
 
 ---
 
-## Tasks
+## 概要
 
-### Step 1: Locate the data source
+merge Step 13 から抽出したスタンドアロンスキル。いつでも呼び出せて、
+次のブランチが何かを確認できます — マージ直後だけではありません。
 
-#### Condition
+**データソース**: 指定されたタスクドキュメントの `## 次ブランチ候補` テーブル。
+git ブランチをむやみにリストアップすることはありません —
+テーブルに明示的にリストアップされた候補のみ表示されます。
 
-- Always — run first
+---
 
-#### Process
+## タスク
 
-1. If called with a task document path argument (e.g. from merge Step 13), use that file directly
-2. If called standalone (no argument):
-   - Find all task documents under `.work/tasks/`:
+### ステップ 1: データソースを探す
+
+#### 条件
+
+- 常に実行 — 最初に実行
+
+#### 処理
+
+1. タスクドキュメントパス引数（例：merge Step 13 から）で呼び出された場合、
+   そのファイルを直接使用
+2. スタンドアロンで呼び出された場合（引数なし）：
+   - `.work/tasks/` 配下のすべてのタスクドキュメントを探す：
      ```bash
      find .work/tasks -type f -name "*.md" -not -name ".*"
      ```
-   - If only one active branch exists, use its document automatically
-   - If multiple exist, ask the user which branch to check
+   - アクティブブランチが 1 つだけの場合、そのドキュメントを自動使用
+   - 複数存在する場合、ユーザーに確認
 
-→ Proceed to Step 2
+→ ステップ 2 へ
 
-#### Output
+#### 出力
 
-- Task document path confirmed
-
----
-
-### Step 2: Read the `## 次ブランチ候補` table
-
-#### Condition
-
-- Step 1 complete
-
-#### Process
-
-1. Read the `## 次ブランチ候補` section from the task document
-2. If the table contains only a placeholder row (e.g., `{次にやること}` or a lone `-`)
-   → output "No next branch candidates." and finish
-
-→ Proceed to Step 3
-
-#### Output
-
-- List of candidate rows (title, summary, 実施条件)
+- タスクドキュメントパスが確認されました
 
 ---
 
-### Step 3: Classify each candidate
+### ステップ 2: `## 次ブランチ候補` テーブルを読み込む
 
-#### Condition
+#### 条件
 
-- Step 2 complete (table has real rows)
+- Step 1 完了
 
-#### Process
+#### 処理
 
-For each candidate row:
+1. タスクドキュメントから `## 次ブランチ候補` セクションを読み込む
+2. テーブルがプレースホルダー行のみを含む場合
+   （例：`{次にやること}` または単一の `-`）
+   → 「次ブランチ候補がありません」を出力して終了
 
-**a. Has conditions (条件あり)**:
-- Column 3 (実施条件) references another candidate — e.g. `「{other}」が完了したら`
-- branch-reserve intentionally did not reserve a branch for these
-- List directly from the table — no branch lookup needed
+→ ステップ 3 へ
 
-**b. Ready to start or In progress elsewhere**:
-- Column 3 is blank or `即時実施可` — branch-reserve should have reserved a branch
-- Find the branch by searching for the candidate title:
+#### 出力
+
+- 候補行のリスト（title、summary、実施条件）
+
+---
+
+### ステップ 3: 各候補を分類
+
+#### 条件
+
+- Step 2 完了（テーブルに実際の行がある）
+
+#### 処理
+
+各候補行について：
+
+**a. 条件あり（条件あり）**:
+- 3 列目（実施条件）が別の候補を参照 — 例：`「{other}」が完了したら`
+- branch-reserve は意図的にこれらのブランチを予約していません
+- テーブルから直接リストアップ — ブランチ検索は不要
+
+**b. 開始準備完了または別で進行中**:
+- 3 列目が空白または `即時実施可` — branch-reserve がブランチを予約しているはず
+- 候補タイトルで検索してブランチを探す：
   ```bash
   git branch --list "*{candidate-title}*"
   ```
-- Count commits ahead of master:
+- master より先のコミット数をカウント：
   ```bash
   git log master..{branch} --oneline | wc -l
   ```
-- commits ≤ 1 → **Ready to start**
-- commits ≥ 2 → **In progress elsewhere**
-- Branch not found → branch-reserve was not run; note as "未予約 (branch-reserve not run)"
+- commits ≤ 1 → **開始準備完了**
+- commits ≥ 2 → **別で進行中**
+- ブランチが見つからない → branch-reserve が実行されていない。「未予約（branch-reserve not run）」と記録
 
-→ Proceed to Step 4
+→ ステップ 4 へ
 
-#### Output
+#### 出力
 
-- Each candidate classified into one of the 3 categories
+- 各候補が 3 カテゴリのいずれかに分類
 
 ---
 
-### Step 4: Present the table
+### ステップ 4: テーブルを提示
 
-#### Condition
+#### 条件
 
-- Step 3 complete
+- Step 3 完了
 
-#### Process
+#### 処理
 
-1. Output the table in this format:
+1. 以下の形式でテーブルを出力：
 
    ```markdown
-   ## Next branches you can pick up
+   ## 次に取り掛かれるブランチ
 
-   | Category | Branch | Summary |
+   | カテゴリ | ブランチ | 概要 |
    |---|---|---|
-   | Ready to start | {branch} | {title} |
+   | 開始準備完了 | {branch} | {title} |
    |  | {branch} | {title} |
-   | In progress elsewhere | {branch} | {title} ({commit_count} commits ahead) |
-   | Has conditions | — | {title} — condition: depends on `{other-candidate}` being completed |
+   | 別で進行中 | {branch} | {title} ({commit_count} commits ahead) |
+   | 条件あり | — | {title} — 条件: `{other-candidate}` 完了が必須 |
    ```
 
-   - When multiple branches share the same category, write the category name only in the first row; leave subsequent cells empty
-   - Omit rows for categories with zero items
-   - If all categories are empty (placeholder table only), show: "No next branch candidates."
+   - 複数のブランチが同じカテゴリを共有する場合、最初の行にのみカテゴリ名を記述。
+     後続セルは空白
+   - ゼロアイテムのカテゴリ行は省略
+   - すべてのカテゴリが空の場合（プレースホルダーテーブルのみ）、
+     「次ブランチ候補がありません」を表示
 
-→ Done
+→ 完了
 
-#### Output
+#### 出力
 
-- Status report table presented to the user
+- ステータスレポートテーブルがユーザーに提示されました
 
 ---
 
-## References
+## 参考資料
 
-### Data source rule
+### データソースルール
 
-Use only the specified task document's `## 次ブランチ候補` table — never `git branch --list '*'` indiscriminately.
-Unrelated reserved branches from other sessions are intentionally excluded.
+指定されたタスクドキュメントの `## 次ブランチ候補` テーブルのみを使用 —
+`git branch --list '*'` を無分別に使用しないでください。
+関連のない予約ブランチは他のセッションから意図的に除外されます。
 
-### Classification knowledge
+### 分類知識
 
-| Category | Detail |
+| カテゴリ | 詳細 |
 |---|---|
-| **Ready to start** | State immediately after branch-reserve reservation. Branch has just the document-creation commit (1 commit) ahead of master. |
-| **In progress elsewhere** | Another Claude Code session has implementation commits on this branch. Two or more commits means the user is actively working there. |
-| **Has conditions** | A candidate that branch-reserve classified as a serial-dependency item and chose not to reserve. It becomes eligible once its predecessor branch merges. |
+| **開始準備完了** | branch-reserve 予約直後の状態。ブランチは master より先に
+ドキュメント作成コミット（1 コミット）のみを持つ。 |
+| **別で進行中** | 別の Claude Code セッションがこのブランチに実装コミットを持っています。
+2 以上のコミットはユーザーがそこで積極的に作業していることを意味します。 |
+| **条件あり** | branch-reserve が直列依存項目として分類し、予約しないことを選択した候補。
+先行ブランチがマージされると適格になります。 |
 
-### Why keep "in progress" visible
+### 「進行中」を表示し続ける理由
 
-Hiding them entirely would create the impression "nothing is left." Surfacing them prevents the user from losing track of overall state.
+完全に非表示にすると「残りがない」という印象を与えます。
+それらを表示することで、ユーザーが全体的な状態を追跡し忘れるのを防ぎます。
 
-### Why surface "has conditions"
+### 「条件あり」を表示する理由
 
-They do not appear as reserved branches, but they live in the task document's `## 次ブランチ候補` as "next-next" items. Listing them alongside ready-to-start ensures the user does not overlook them.
+予約ブランチとしては表示されませんが、タスクドキュメントの
+`## 次ブランチ候補` に「次々」項目として記載されます。
+開始準備完了と並ぶようにリストアップすることで、
+ユーザーがそれらを見逃さないようにします。

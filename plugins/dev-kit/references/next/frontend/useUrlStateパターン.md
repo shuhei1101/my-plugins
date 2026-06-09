@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of useUrlStateパターン.md. When updating the English original, update this file too. -->
 # hooks/use{Feature}UrlState.ts — URL クエリ state hook
 
 タブ・フィルタ・ソート・ページ等を URL クエリと同期させる hook。nuqs 推奨。

@@ -1434,3 +1434,10 @@ branches:
   summary: '## 意思を3択化（自動マージ/マージはAIに任せる/対応しない）しdirect_mergeと連動、自由入力型QAのチェックボックス廃止'
   task: 260603_イシュー意思マージ選択肢
   completed: true
+- branch: refactor/abolish-jp-mirror
+  created: '2026-06-09'
+  title: jp-mirror廃止・日本語を本体mdに統合
+  type: refactor
+  summary: .jp.mdの日本語内容を対応する.mdに上書きコピーし、.jp.mdを削除
+  task: 260609_jp-mirror廃止
+  completed: true

@@ -1,95 +1,94 @@
-# dev-kit — Development Conventions Toolkit
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
+# dev-kit — 開発規約統合プラグイン
 
-Unified plugin covering Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown conventions.
-Reference auto-injection is opt-in per language via `settings.json` env vars.
+Python / HTML-CSS-JS / Next.js 16 App Router / YAML / Markdown を 1 プラグインに統合。
+リファレンス自動注入は `settings.json` の env で言語ごとに opt-in する。
 
-## Skills
+## スキル
 
-| Skill | Purpose |
+| スキル | 用途 |
 |---|---|
-| `dev-kit:py-script` | Single-file (or few-file) Python script scaffold |
-| `dev-kit:py-project` | Full Python project scaffold (feature-folder layout, function-first) |
-| `dev-kit:html-implement` | UI screen implementation workflow (FLOCSS + design tokens) |
-| `dev-kit:html-logging` | Frontend logging setup |
-| `dev-kit:html-mock` | UI mock generation |
-| `dev-kit:html-debug-fab` | Floating debug button (FAB) with element picker |
-| `dev-kit:next-implement` | Next.js implementation workflow |
-| `dev-kit:next-plan` | Next.js planning document generator |
-| `dev-kit:plugin-migrate` | Sync dev-kit-generated artifacts in the project (html-implement rules, html-debug-fab widget) to the installed dev-kit version (manual `/dev-kit:plugin-migrate` only) |
-| `dev-kit:plugin-config` | Interactively configure dev-kit env toggles (language opt-ins, TypeScript check, Markdown check) |
+| `dev-kit:py-script` | 単一ファイル / 数ファイル Python スクリプトのスキャフォールド |
+| `dev-kit:py-project` | Python プロジェクトのスキャフォールド（機能フォルダ型レイアウト / 関数ファースト） |
+| `dev-kit:html-implement` | UI 画面実装ワークフロー（FLOCSS + デザイントークン） |
+| `dev-kit:html-logging` | フロントエンドロガー整備 |
+| `dev-kit:html-mock` | UI モック生成 |
+| `dev-kit:html-debug-fab` | 開発用フローティングデバッグボタン（FAB） |
+| `dev-kit:next-implement` | Next.js 実装ワークフロー |
+| `dev-kit:next-plan` | Next.js 計画ドキュメント生成 |
+| `dev-kit:plugin-migrate` | プロジェクトに展開済みの dev-kit 生成物（html-implement のルール / html-debug-fab のウィジェット）をインストール済み dev-kit のバージョンに同期する（手動 `/dev-kit:plugin-migrate` のみ） |
+| `dev-kit:plugin-config` | dev-kit の env トグル（言語 opt-in / TypeScript チェック / Markdown チェック）をインタラクティブに設定 |
 
-## Hooks
+## フック
 
-Hook scripts live under `hooks/scripts/` with a per-plugin `_common.py` for shared helpers.
+フックスクリプトは `hooks/scripts/` 配下に集約し、共通ヘルパは plugin 内 `_common.py` に置く。
 
-| Hook | Trigger | Purpose |
+| フック | トリガー | 用途 |
 |---|---|---|
-| `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | Reference auto-injection per language |
-| `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `tsc --noEmit --incremental` for `*.ts`/`*.tsx` |
-| `scripts/_common.py` | — (library) | Stdin parsing / env truthy / once-per-session token / block reason emitter |
+| `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | 言語ごとのリファレンス自動注入 |
+| `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
+| `scripts/_common.py` | — （ライブラリ） | stdin 読み・env truthy 判定・once-per-session トークン・block 理由出力 |
 
-## Env toggles
+## env トグル
 
-All toggles live in `settings.json` `env` (or `~/.claude/settings.json`).
-Truthy = `true`/`1`/`yes`/`on` (case-insensitive). Falsy = anything else.
+`settings.json` の `env` （またはユーザー `~/.claude/settings.json`）に設定。
+truthy = `true`/`1`/`yes`/`on`（大文字小文字無視）、falsy = それ以外。
 
-**Bold** = default value (applied when the key is unset). Booleans list `true` / `false` only (`1` / `yes` / `on` are also accepted as truthy).
+**太字** = デフォルト値（キー未設定時に適用）。真偽値は `true` / `false` のみ記載（`1` / `yes` / `on` も truthy として扱われる）。
 
-### Language opt-in (reference auto-injection)
+### 言語 opt-in（リファレンス自動注入）
 
-| Variable | Description | Values |
+| 変数名 | 説明 | 値 |
 |---|---|---|
-| `${DEV_KIT_PYTHON}` | Truthy injects Python references when editing matched `*.py` etc. | - true<br>- **false** |
-| `${DEV_KIT_HTML}` | Truthy injects HTML references when editing `*.html` / `*.css` / `*.js` | - true<br>- **false** |
-| `${DEV_KIT_NEXT}` | Truthy injects Next.js references when editing `*.ts` / `*.tsx` etc. | - true<br>- **false** |
-| `${DEV_KIT_MARKDOWN}` | Truthy injects Markdown references when editing `*.md` | - true<br>- **false** |
+| `${DEV_KIT_PYTHON}` | truthy で `*.py` 等の編集時に Python リファレンスを注入 | - true<br>- **false** |
+| `${DEV_KIT_HTML}` | truthy で `*.html` / `*.css` / `*.js` 編集時に HTML リファレンスを注入 | - true<br>- **false** |
+| `${DEV_KIT_NEXT}` | truthy で `*.ts` / `*.tsx` 等の編集時に Next.js リファレンスを注入 | - true<br>- **false** |
+| `${DEV_KIT_MARKDOWN}` | truthy で `*.md` 編集時に Markdown リファレンスを注入 | - true<br>- **false** |
 
-Default is **all off**. Opt into each language your project uses.
+デフォルトは **全 OFF**。プロジェクトで使用する言語のみ明示的に有効化する。
 
-### Other toggles
+### その他のトグル
 
-| Variable | Description | Values |
+| 変数名 | 説明 | 値 |
 |---|---|---|
-| `${DEV_KIT_NEXT_TS_CHECK}` | Run `tsc --noEmit` on `*.ts` / `*.tsx` after edit | - **true**<br>- false |
-| `${DEV_KIT_INJECTION_DISABLE}` | Kill switch — a truthy value disables all reference injection | - true<br>- **false** |
-| `${DEV_KIT_INJECTION_TTL}` | TTL for the per-pattern / reference token cache; seconds (integer) | **3600** |
-| `${DEV_KIT_INJECTION_LANG}` | Language for injected reference bodies (`jp` for Japanese) | - **en**<br>- jp |
+| `${DEV_KIT_NEXT_TS_CHECK}` | `*.ts` / `*.tsx` 編集後に `tsc --noEmit` チェックを実行するか | - **true**<br>- false |
+| `${DEV_KIT_INJECTION_DISABLE}` | キルスイッチ — truthy で全リファレンス注入を停止 | - true<br>- **false** |
+| `${DEV_KIT_INJECTION_TTL}` | パターン / リファレンスのトークンキャッシュ TTL。秒（整数） | **3600** |
+| `${DEV_KIT_INJECTION_LANG}` | 注入リファレンスの言語（`jp` で日本語版を注入） | - **en**<br>- jp |
 
-## Reference structure
+## リファレンス構造
 
 ```
 references/
-├── python/      # Python conventions (47 files: architecture/, core/, fastapi/, llm/, etc.)
-├── html/        # HTML/CSS/JS principles (principles.md, ui-design.md)
-├── next/        # Next.js conventions (90 files: backend/, frontend/, testing/, etc.)
-├── markdown/    # Markdown conventions (markdown-table.md, マークダウン編集.md)
-├── _index.yaml   # path + lang + description per reference (merged from all langs)
-├── _injection_rules.yaml   # pattern + lang + required/optional per rule
+├── python/      # Python 規約（47ファイル: architecture/, core/, fastapi/, llm/ など）
+├── html/        # HTML/CSS/JS 原則（principles.md, ui-design.md）
+├── next/        # Next.js 規約（90ファイル: backend/, frontend/, testing/ など）
+├── markdown/    # Markdown 規約（markdown-table.md, マークダウン編集.md）
+├── _index.yaml   # 各リファレンスの path + lang + description
+├── _injection_rules.yaml   # 各ルールの pattern + lang + required/optional
 └── ...
 ```
 
-Each rule in `_injection_rules.yaml` carries `lang: python|html|next|markdown`. The hook skips rules whose
-`lang` is not enabled in env. The TTL token at `~/.claude/tokens/dev-kit/{session_id}.yaml`
-prevents duplicate injection.
+`_injection_rules.yaml` の各ルールは `lang: python|html|next|markdown` を持つ。env で OFF の lang のルールは
+フックがスキップする。`~/.claude/tokens/dev-kit/{session_id}.yaml` の TTL トークンで二重注入を防ぐ。
 
 ## Changelog
 
-
 | Version | Date | Summary |
 |---|---|---|
-| 4.15.0 | 2026-06-02 | Restore `dev-kit:plugin-config` skill — interactive env toggle configuration for language opt-ins and feature toggles |
-| 4.14.0 | 2026-06-02 | Remove the interactive `dev-kit:plugin-config` skill; reformat the env-toggle tables to the unified 3-column layout (Variable / Description / Values, default in **bold**) |
-| 4.13.0 | 2026-06-01 | Remove `dev-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
-| 4.11.1 | 2026-05-31 | Remove branch-check step (master/main guard) from `plugin-migrate` — redundant with the work harness UserPromptSubmit hook |
-| 4.11.0 | 2026-05-31 | Add `dev-kit:plugin-config` skill — interactively configures 6 env toggles (`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` default-on) via numbered-list loop (PR229) |
-| 4.10.0 | 2026-05-31 | Remove `markdown_frontmatter_check.py` hook; rule is already enforced via `references/markdown/マークダウン編集.md` auto-injection on `**/*.md` (PR228) |
-| 4.9.0 | 2026-05-31 | Add `references-edit-guard` PreToolUse hook (via ref-inject v1.7.0) that reminds to update `_index.yaml` / `_injection_rules.yaml` **before** editing or creating files under `references/` (PR206) |
-| 4.8.0 | 2026-05-31 | Remove `dev-kit:yaml` skill, `references/yaml/`, and the `yaml_skill_dispatch.py` hook (+ prompts); drop `**/index.yaml` / `**/settings.yaml(.sample)` injection patterns; the YAML conventions are out of scope for dev-kit (PR202) |
-| 4.7.0 | 2026-05-31 | Add Markdown frontmatter placement check hook and reference; move `マークダウン編集.md` into `markdown/` subfolder; wire into `_injection_rules.yaml` alongside `markdown-table.md`; add `${DEV_KIT_MARKDOWN}` opt-in support (PR198) |
-| 4.6.0 | 2026-05-30 | Move `yaml.md` / `yaml.jp.md` into `yaml/` subfolder to match `html/`, `next/`, `python/`, `markdown/` structure; register `yaml/yaml.md` in `_index.yaml` and add `**/index.yaml` / `**/settings.yaml(.sample)` injection rules (PR199) |
-| 4.5.0 | 2026-05-30 | Move `css-js-link.md` / `common-component-first.md` from `templates/html/rules/` to `references/html/`; wire them into `_injection_rules.yaml` html patterns; remove static-copy steps from `html-implement` (Step 7) and `plugin-migrate` (Step 2) (PR200) |
-| 4.4.0 | 2026-05-30 | Add `markdown/` reference subfolder with Markdown table conventions (`#` column rule, `〃` ditto mark for repeated values); injected on `**/*.md` edits (PR196) |
-| 4.3.0 | 2026-05-30 | Add `dev-kit:plugin-migrate` skill — inspects/fixes dev-kit-generated artifacts (static templates + convention-following source files) against the current dev-kit version. Self-contained: no dependency on any other plugin; refuses to run on master/main; never commits on its own (PR182) |
-| 4.2.0 | 2026-05-30 | Rename meta-YAML files in `references/` with `_` prefix: `index.yaml` / `index.jp.yaml` / `injection_rules.yaml` → `_index.yaml` / `_index.jp.yaml` / `_injection_rules.yaml` (PR179) |
-| 4.1.0 | 2026-05-30 | Move hook scripts under `hooks/scripts/` with shared `_common.py`; behavior unchanged (PR180) |
-| 4.0.0 | 2026-05-30 | Merge `py-kit` / `html-kit` / `next-kit` into `dev-kit`; opt-in language toggles via `${DEV_KIT_PYTHON}` / `${DEV_KIT_HTML}` / `${DEV_KIT_NEXT}` (PR166) |
+| 4.15.0 | 2026-06-02 | `dev-kit:plugin-config` スキルを復活 — 言語 opt-in / 機能トグルのインタラクティブな env 設定 |
+| 4.14.0 | 2026-06-02 | 対話式 `dev-kit:plugin-config` スキルを削除。env トグルのテーブルを統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再フォーマット |
+| 4.13.0 | 2026-06-01 | `dev-kit:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
+| 4.11.1 | 2026-05-31 | `plugin-migrate` のブランチチェックステップ（master/main ガード）を削除 — work ハーネスの UserPromptSubmit フックと責務が重複しているため |
+| 4.11.0 | 2026-05-31 | `dev-kit:plugin-config` スキルを追加 — 6 つの env トグル（`DEV_KIT_PYTHON/HTML/NEXT/MARKDOWN` opt-in + `DEV_KIT_NEXT_TS_CHECK/MARKDOWN_CHECK` デフォルト ON）を番号付きリストループで対話的に設定（PR229） |
+| 4.10.0 | 2026-05-31 | `markdown_frontmatter_check.py` フックを削除。ルールは `**/*.md` 編集時の `references/markdown/マークダウン編集.md` 自動注入で代替（PR228） |
+| 4.9.0 | 2026-05-31 | `references-edit-guard` PreToolUse フックを追加（ref-inject v1.7.0 経由）。`references/` 配下のファイルを **編集／作成する直前** に `_index.yaml` / `_injection_rules.yaml` の更新も忘れていないかリマインド（PR206） |
+| 4.8.0 | 2026-05-31 | `dev-kit:yaml` スキル・`references/yaml/`・`yaml_skill_dispatch.py` フック（+ プロンプト）を削除; `**/index.yaml` / `**/settings.yaml(.sample)` の注入パターンも削除; YAML 規約は dev-kit の対象外（PR202） |
+| 4.7.0 | 2026-05-31 | Markdown フロントマター配置チェックフックとリファレンスを追加; `マークダウン編集.md` を `markdown/` サブフォルダへ移動; `markdown-table.md` と並んで `_injection_rules.yaml` に登録; `${DEV_KIT_MARKDOWN}` opt-in サポートを追加（PR198） |
+| 4.6.0 | 2026-05-30 | `yaml.md` / `yaml.jp.md` を `yaml/` サブフォルダへ移動し、`html/`・`next/`・`python/`・`markdown/` と構造を統一; `yaml/yaml.md` を `_index.yaml` に登録し `**/index.yaml` / `**/settings.yaml(.sample)` の注入ルールを追加（PR199） |
+| 4.5.0 | 2026-05-30 | `css-js-link.md` / `common-component-first.md` を `templates/html/rules/` から `references/html/` へ移動し `_injection_rules.yaml` の html パターンに紐付け; `html-implement`（ステップ7）と `plugin-migrate`（ステップ2）の静的コピー手順を削除（PR200） |
+| 4.4.0 | 2026-05-30 | `markdown/` リファレンスサブフォルダを追加。Markdown テーブル規約（`#` カラムルール・`〃` ダイトーマーク）を収録し、`**/*.md` 編集時に注入（PR196） |
+| 4.3.0 | 2026-05-30 | `dev-kit:plugin-migrate` スキルを追加 — dev-kit 生成物（静的テンプレ + 規約遵守ソースファイル）を現バージョンの規約に検査・修正する。自己完結設計: 他プラグインに依存しない / master・main では実行拒否 / スキル自身はコミットしない（PR182） |
+| 4.2.0 | 2026-05-30 | `references/` 配下のメタ系 YAML を `_` 接頭辞付きにリネーム: `index.yaml` / `index.jp.yaml` / `injection_rules.yaml` → `_index.yaml` / `_index.jp.yaml` / `_injection_rules.yaml`（PR179） |
+| 4.1.0 | 2026-05-30 | フックスクリプトを `hooks/scripts/` 配下へ移動し共通ヘルパ `_common.py` を導入。挙動変更なし（PR180） |
+| 4.0.0 | 2026-05-30 | `py-kit` / `html-kit` / `next-kit` を `dev-kit` に統合。言語別の opt-in トグル `${DEV_KIT_PYTHON}` / `${DEV_KIT_HTML}` / `${DEV_KIT_NEXT}` を導入（PR166） |

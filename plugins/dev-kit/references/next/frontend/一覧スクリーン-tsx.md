@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of 一覧スクリーン-tsx.md. When updating the English original, update this file too. -->
 # {Feature}ListScreen.tsx — 一覧 Client Component
 
 `'use client'` 必須。URL state + TanStack Query + リスト描画。

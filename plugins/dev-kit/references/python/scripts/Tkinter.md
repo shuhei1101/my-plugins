@@ -1,11 +1,12 @@
-# tkinter — GUI script conventions
+<!-- This file is a Japanese mirror of Tkinter.md. When updating the English original, update this file too. -->
+# tkinter — GUI スクリプト規約
 
-Conventions for when you need a lightweight GUI. For a full-fledged GUI consider other technologies
-(Electron / Tauri, etc.), but tkinter is sufficient for attaching a small operation screen to a script.
+簡易 GUI が必要な場合の規約。本格的な GUI は別技術を検討（Electron / Tauri 等）するが、
+スクリプトに小さい操作画面を付ける程度なら tkinter で十分。
 
 ---
 
-## Basic structure
+## 基本構造
 
 ```python
 #!/usr/bin/env python3
@@ -124,17 +125,17 @@ if __name__ == "__main__":
 
 ---
 
-## Design guidelines
+## 設計指針
 
-1. **Separate UI from processing**: button handlers only collect arguments; delegate actual processing to a separate function (`_do_work`). This makes it testable.
-2. **Fix the theme to `clam`**: the OS default (`default`) looks very different across OSes, so unify with `clam`.
-3. **Accent color is blue**: unified across the whole project (based on `#2563eb`).
-4. **Errors via messagebox**: don't swallow exceptions; show them to the user with `messagebox.showerror`.
-5. **Modal dialogs**: build them as `tk.Toplevel` subclasses when input is required.
+1. **UI と処理を分離**: ボタン handler は引数を集めるだけ、実処理は別関数（`_do_work`）に委譲。テスト可能になる
+2. **テーマは `clam` 固定**: OS デフォルト（`default`）は OS 間で見た目が大きく違うので、`clam` で統一
+3. **アクセントカラーは青**: プロジェクト全体で統一（`#2563eb` 基準）
+4. **エラーは messagebox**: 例外を握りつぶさず `messagebox.showerror` でユーザーに見せる
+5. **モーダルダイアログ**: 入力が必要なら `tk.Toplevel` 派生で作成
 
 ---
 
-## Settings dialog pattern
+## 設定ダイアログのパターン
 
 ```python
 class SettingsDialog(tk.Toplevel):
@@ -187,7 +188,7 @@ def open_settings(root: tk.Tk, current: Settings) -> Settings | None:
 
 ---
 
-## File / folder selection
+## ファイル / フォルダ選択
 
 ```python
 from tkinter import filedialog
@@ -211,9 +212,9 @@ out = filedialog.asksaveasfilename(
 
 ---
 
-## Asynchronous processing (long tasks)
+## 非同期処理（長い処理）
 
-To avoid blocking the GUI thread, run long tasks in a separate thread:
+GUI スレッドをブロックしないよう、長い処理は別スレッドで:
 
 ```python
 import threading
@@ -244,11 +245,11 @@ def _on_run_async(folder: str) -> None:
     root.after(100, poll)
 ```
 
-The key is to collect the result on tk's event loop via `root.after(ms, fn)`.
+`root.after(ms, fn)` で tk のイベントループ上で結果を回収するのがポイント。
 
 ---
 
-## Things you must not do
+## やってはいけないこと
 
 ```python
 # ❌ ロジックを handler に直書き
@@ -268,8 +269,8 @@ except:
 
 ---
 
-## Related files
+## 関連ファイル
 
-- `scripts/Pythonスクリプト.md` — single-script structure (a GUI follows the same skeleton)
-- `shared/設定.md` — the side that passes Settings
-- `core/コメント.md` — how to write docstrings
+- `scripts/Pythonスクリプト.md` — 単一スクリプト構造（GUI も同様の骨格）
+- `shared/設定.md` — Settings を渡す方
+- `core/コメント.md` — docstring の書き方

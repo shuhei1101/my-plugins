@@ -1,32 +1,33 @@
-# debug-fab Template Sync Rules
+<!-- This file is a Japanese mirror of デバッグFAB同期.md. When updating the English original, update this file too. -->
+# debug-fab テンプレート同期ルール
 
-When editing files under `plugins/dev-kit/skills/html-debug-fab/templates/`, the following files
-must also be updated in the same commit.
-Japanese mirror: `references/html/デバッグFAB同期.jp.md`
+`plugins/dev-kit/skills/html-debug-fab/templates/` 配下のファイルを編集したら、
+以下のファイルも**必ず同じコミットで更新する**。
+英語原文: `references/html/デバッグFAB同期.md`
 
 ---
 
-## Required sync targets
+## 同期が必要なファイル
 
-| Edited file | Must also update |
+| 編集したファイル | 必ず同時に更新するファイル |
 |---|---|
-| `uidev.js` (behavior change) | `SKILL.md` — Operation flow section |
-| `uidev.js` (behavior change) | `templates/CLAUDE.md` — Operations table |
-| `uidev.css` (new UI element) | `templates/CLAUDE.md` — Operations table |
-| Any template file | `plugins/dev-kit/.claude-plugin/plugin.json` — version bump |
-| Any template file | `.claude-plugin/marketplace.json` — version bump |
+| `uidev.js`（動作変更） | `SKILL.md` — Operation flow セクション |
+| `uidev.js`（動作変更） | `templates/CLAUDE.md` — Operations テーブル |
+| `uidev.css`（新 UI 要素） | `templates/CLAUDE.md` — Operations テーブル |
+| テンプレートファイル全般 | `plugins/dev-kit/.claude-plugin/plugin.json` — バージョンバンプ |
+| テンプレートファイル全般 | `.claude-plugin/marketplace.json` — バージョンバンプ |
 
-## Version bump rules
+## バージョンバンプのルール
 
-| Change type | Bump |
+| 変更の種類 | バンプ |
 |---|---|
-| Bug fix / minor correction | PATCH (`1.x.y` → `1.x.y+1`) |
-| New UI element or behavior change | MINOR (`1.x.0` → `1.x+1.0`) |
-| Complete redesign | MAJOR (`1.0.0` → `2.0.0`) |
+| バグ修正 / 軽微な修正 | PATCH (`1.x.y` → `1.x.y+1`) |
+| 新 UI 要素または動作変更 | MINOR (`1.x.0` → `1.x+1.0`) |
+| 完全な再設計 | MAJOR (`1.0.0` → `2.0.0`) |
 
-## Checklist before committing
+## コミット前チェックリスト
 
-- [ ] `SKILL.md` Operation flow reflects current behavior
-- [ ] `templates/CLAUDE.md` Operations table is accurate
-- [ ] `example.html` still demonstrates the current widget correctly
-- [ ] `plugin.json` and `marketplace.json` versions are bumped
+- [ ] `SKILL.md` の Operation flow が現在の動作を反映している
+- [ ] `templates/CLAUDE.md` の Operations テーブルが正確
+- [ ] `example.html` が現在のウィジェットを正しく示している
+- [ ] `plugin.json` と `marketplace.json` のバージョンがバンプされている

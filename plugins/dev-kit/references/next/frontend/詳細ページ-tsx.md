@@ -1,3 +1,5 @@
+<!-- This file is a Japanese mirror of 詳細ページ-tsx.md. When updating the English original, update this file too. -->
+
 # app/(authenticated)/{feature}/[id]/page.tsx — View Server Component
 
 レコード詳細（読み取り）のエントリポイント。`[id]/page.tsx` は **View 画面そのもの**（PR135、`view/` サブルート廃止）。

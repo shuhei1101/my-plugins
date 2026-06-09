@@ -1,80 +1,80 @@
-# AskUserQuestion Usage Guide
+<!-- This file is a Japanese mirror of AskUserQuestion制約.md — human reference only. Do NOT load this file directly. Edit the JP mirror first, then apply changes to the English source. -->
 
-When and how to call the `AskUserQuestion` tool from within skills.
+# AskUserQuestion 使用ガイド
 
-Japanese mirror: `references/common/AskUserQuestion制約.jp.md`
+スキル内から `AskUserQuestion` ツールを呼び出す際の制約と正しい使い方。
 
----
-
-## When to use
-
-Only call `AskUserQuestion` when a skill definition or the user **explicitly instructs** its use.
-
-For all other mid-task questions or confirmation prompts, write the question as **plain text and
-end the turn** — do not call `AskUserQuestion`.
-
-**Why**: `AskUserQuestion` does not trigger the Stop hook. Calling it outside a skill bypasses
-the stop-hook notification system.
+English source: `references/common/AskUserQuestion制約.md`
 
 ---
 
-## Question count
+## 使用するタイミング
 
-| Item | Constraint |
+`AskUserQuestion` を呼び出してよいのは、**スキル定義またはユーザーが明示的に指示した場合のみ**。
+
+タスクの途中で確認・質問が必要になった場合は、**通常のテキストとして質問を書いてターンを終了する** — `AskUserQuestion` を呼んではいけない。
+
+**理由**: `AskUserQuestion` は Stop フックを発火させない。スキル外で呼ぶと stop-hook 通知システムがバイパスされる。
+
+---
+
+## 質問数
+
+| 項目 | 制約 |
 |---|---|
-| Minimum | 1 question |
-| Maximum | 4 questions per call |
+| 最小 | 1 質問 |
+| 最大 | 4 質問（1 回の呼び出しで） |
 
 ---
 
-## Options constraints
+## options の制約
 
-| Item | Constraint |
+| 項目 | 制約 |
 |---|---|
-| Minimum | 2 options |
-| Maximum | 4 options |
-| "Other" | Appended automatically by the UI — never add it manually |
+| 最小 | 2 個 |
+| 最大 | 4 個 |
+| "Other" | UI が自動で末尾に付与する — 手動で追加してはいけない |
 
 ---
 
-## Fields
+## フィールド詳細
 
 ### `question`
 
-The complete question, ending with a question mark.
+質問文全体。疑問符で終わること。
 
 ### `header`
 
-Short label displayed as a chip/tag. **Max 12 characters.** Examples: `"Auth method"`, `"Library"`, `"Approach"`.
+チップ/タグとして表示される短いラベル。**最大 12 文字**。例: `"認証方式"`、`"ライブラリ"`、`"アプローチ"`。
 
 ### `options[].label`
 
-Display text the user sees and selects (1–5 words). If recommending a specific option, put it
-first and append `"(Recommended)"` to the label.
+ユーザーが見て選ぶ選択肢のテキスト（1〜5 語）。特定の選択肢を推奨する場合は、それをリストの先頭に置き、ラベル末尾に `"（推奨）"` を付ける。
 
 ### `options[].description`
 
-Explains the option — trade-offs, implications, or what happens if chosen.
+その選択肢の説明 — トレードオフ、影響範囲、選んだ場合に何が起きるか。
 
 ### `multiSelect`
 
-When `true`: the user can select multiple options. Use when choices are **not mutually exclusive**.
-Phrase the question accordingly (e.g. "Which features do you want to enable?").
+`true` にすると複数選択可。**選択肢が排他的でない場合**に使う。
+質問文もそれに合わせる（例: 「有効にする機能を選んでください」）。
 
-**Constraint**: `preview` is only supported for single-select questions (`multiSelect: false`).
+**制約**: `preview` は single-select（`multiSelect: false`）のみ対応。
 
 ---
 
-## Preview field
+## preview フィールド
 
-Use `options[].preview` for visual comparisons: ASCII mockups, code snippets, diagram
-variations, or configuration examples. Do **not** use for simple preference questions where
-labels and descriptions suffice.
+視覚的に比較させたい場合に `options[].preview` を使う。
+適したコンテンツ: ASCII モックアップ、コードスニペット、ダイアグラム、設定例。
+
+単純な好み質問（ラベルと description で十分な場合）には使わないこと。
 
 ```yaml
 options:
-  - label: "Class structure"
-    description: "Better for stateful processing."
+  - label: "クラス構造"
+    description: "状態を持つ処理に向く。"
     preview: |
       ```python
       class Processor:
@@ -84,8 +84,8 @@ options:
           def run(self):
               ...
       ```
-  - label: "Function structure"
-    description: "Better for simple pipelines."
+  - label: "関数構造"
+    description: "シンプルなパイプラインに向く。"
     preview: |
       ```python
       def process(cfg):
@@ -93,17 +93,16 @@ options:
       ```
 ```
 
-When any option has a `preview`, the UI switches to a side-by-side layout (option list on the
-left, preview on the right). Content is rendered as Markdown in a monospace box; multi-line text
-with newlines is supported.
+いずれかの選択肢に `preview` がある場合、UI は左に選択肢リスト・右にプレビューの 2 カラムレイアウトに切り替わる。
+コンテンツは Markdown としてモノスペースボックスでレンダリングされる。改行を含む複数行テキストも有効。
 
 ---
 
-## Anti-patterns
+## アンチパターン
 
-| # | Anti-pattern | Correct approach |
+| # | アンチパターン | 正しい方法 |
 |---|---|---|
-| 1 | More than 4 options | Split into multiple questions or use a numbered list in plain text |
-| 2 | Adding "Other" manually | Omit — the UI appends it automatically |
-| 3 | Using `preview` with `multiSelect: true` | Only use `preview` with single-select questions |
-| 4 | Calling `AskUserQuestion` outside a skill | Write the question as plain text and end the turn |
+| 1 | options を 5 個以上並べる | 複数の質問に分割するか、プレーンテキストの番号付きリストを使う |
+| 2 | "Other" を手動で追加する | 不要 — UI が自動で付与する |
+| 3 | `multiSelect: true` に `preview` を付ける | `preview` は single-select のみ使用可 |
+| 4 | スキル外で `AskUserQuestion` を呼ぶ | プレーンテキストで質問を書いてターンを終了する |

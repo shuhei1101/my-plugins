@@ -1,61 +1,63 @@
----
-name: work:setup
-description: |
-  Initialize the workspace document structure (.work/) in the current project by running the setup script.
-  Creates .work/tasks/, .work/notes/, .work/issues/, and .work/QA.md from templates.
-  Manual invocation only — use /work:setup.
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+# SKILL.jp.md — work:setup スキル（日本語ミラー）
+
 ---
 
-# work:setup — Initialize .work/ Document Structure
+**スキル名**: setup
+**トリガー**: ユーザーが `/work:setup` を実行したとき（自動起動なし）
 
-Expands the plugin's template into `.work/` in the current project.
-The Python script handles all file creation.
+---
 
-Expanded structure:
+## 概要
+
+カレントプロジェクトに `.work/` ドキュメント構造を初期化するスキル。
+ファイル作成はスクリプトに委譲する（Claude が直接作らない）。
+
+展開される構造:
 ```
 .work/
-├── tasks/      # Task / branch folders (created dynamically by work-start)
-├── notes/      # Design notes and memos (empty initially)
-└── issues/     # Issue files managed by issue-scan and issue-create
+├── tasks/      # タスク・ブランチフォルダ（動的生成）
+├── notes/      # 設計メモ・検討ノート（空フォルダ）
+└── issues/     # issue-scan・issue-create で管理するイシューファイル
 ```
 
 ---
 
-## Tasks
+## タスク
 
-### Step 1: Run the setup script
+### ステップ1: セットアップスクリプトを実行する
 
-#### Condition
+#### 条件
 
-- Always — run first
+- 常に — 最初に実行する
 
-#### Process
+#### 処理
 
-1. Run:
+1. 以下のコマンドを実行する:
 
 ```bash
 python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/setup.py"
 ```
 
-→ Proceed to Step 2
+→ ステップ2へ進む
 
-#### Output
+#### 出力
 
-- `.work/` expanded in the current directory
+- `.work/` がカレントディレクトリに展開済み
 
 ---
 
-### Step 2: Verify and report
+### ステップ2: 完了確認
 
-#### Process
+#### 処理
 
-1. Confirm script output shows no errors
-2. Report completion to the user
+1. スクリプトの出力を確認する
+2. ユーザーに完了を報告する
 
-#### Notes
+#### 注意事項
 
-##### Checklist
+##### チェックリスト
 
-- [ ] `.work/tasks/` — exists
-- [ ] `.work/notes/` — exists
-- [ ] `.work/issues/` — exists (with `.gitignore` inside)
+- [ ] `.work/tasks/` — 存在する
+- [ ] `.work/notes/` — 存在する
+- [ ] `.work/issues/` — 存在する（内部に `.gitignore` あり）

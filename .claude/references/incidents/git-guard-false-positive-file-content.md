@@ -1,13 +1,14 @@
-# git-guard Hook False Positive from Command String Text
+<!-- This file is a Japanese mirror of git-guard-false-positive-file-content.md. When updating the English original, update this file too. -->
+# git-guard フックがコマンド文字列テキストに誤反応
 
-**Date**: 2026-05-30
-**Category**: tool-misuse
+**日付**: 2026-05-30
+**カテゴリ**: tool-misuse
 
-## What Happened
+## 何が起きたか
 
-The git-guard hook (`PreToolUse(Bash)`) fires on the entire Bash command string. Any occurrence of "git push" or "git merge" — even as literal text in arguments, file content, or summaries — triggers the guard.
+git-guard フック（`PreToolUse(Bash)`）はBashコマンド文字列全体を検索する。引数・ファイル内容・サマリーテキストなど、「git push」「git merge」という文字列がどこに出現しても発動する。
 
-**Case A — Shell heredoc** (2026-05-30):
+**ケースA — シェルヒアドキュメント**（2026-05-30）:
 ```bash
 cat > plugins/work/.claude-plugin/plugin.json << 'EOF'
 {
@@ -15,21 +16,21 @@ cat > plugins/work/.claude-plugin/plugin.json << 'EOF'
 }
 EOF
 ```
-The file body is part of the command string, so the literal phrase "git merge" blocked the write.
+ファイル本文がコマンド文字列に含まれるため、リテラル "git merge" がブロックを引き起こした。
 
-**Case B — Python command arguments** (2026-05-30):
+**ケースB — Pythonコマンド引数**（2026-05-30）:
 ```bash
 python index-tool.py add ... --summary "git merge master/main は許可..."
 python -c "..." "git-guardフックを修正し、git merge master/mainは許可..." "session-id"
 ```
-The `--summary` or positional argument value containing "git merge" as text triggers the guard, even though the command itself is not a git operation.
+`--summary` や位置引数の値に "git merge" がテキストとして含まれるだけでガードが発動する（実際のgitコマンドではなくても）。
 
-## How to Avoid
+## 回避策
 
-1. **Rephrase**: avoid the literal strings "git push" / "git merge" in arguments and file content (e.g., "マージ", "ギットマージ", "force-operations").
-2. **Python file write**: use Python's file API instead of a heredoc when writing files that contain these phrases.
-3. **WORK_GUARD=false**: temporarily disable the guard via the env var when the false positive cannot be avoided.
+1. **リフレーズ**: 引数やファイル内容で "git push" / "git merge" の文字列を避ける（例: "マージ"、"ギットマージ"、"force-operations"）。
+2. **Pythonファイル書き込み**: ヒアドキュメントの代わりにPython APIでファイルを書く。
+3. **WORK_GUARD=false**: 偽陽性が避けられない場合は環境変数でガードを一時的に無効化する。
 
-## Context
+## コンテキスト
 
-The git-guard hook regex (`r"\bgit\s+(push|merge)\b"`) scans the full Bash command string, including all arguments and embedded content. It cannot distinguish between "git merge" as a command and as text being discussed.
+git-guard の正規表現（`r"\bgit\s+(push|merge)\b"`）はBashコマンド文字列全体（引数や埋め込みコンテンツを含む）を検索する。コマンドとしての "git merge" と、テキストとして議論している "git merge" を区別できない。

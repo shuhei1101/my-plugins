@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of クライアント-ts.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/client.ts
 
 クライアント側 fetch ヘルパー。フロントエンドの hook / Server Component から呼ぶ。

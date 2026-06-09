@@ -1,132 +1,133 @@
 ---
 name: work:qa-wizard
 description: |
-  When /work:qa-wizard is invoked.
-  Or when the user says "review QA", "check QA items", "answer the QA", or "resolve QA items".
+  /work:qa-wizard が呼び出されたとき。
+  またはユーザーが「QA をレビューしたい」「QA の内容を確認したい」「QA に回答したい」「QA 項目を解決したい」と言ったとき。
+---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+
+# work:qa-wizard — インタラクティブ QA ウィザード
+
+対象ブランチのタスクドキュメントの `## QA` セクションを読み込み、未解決の各項目を `AskUserQuestion` ツールで最大 4 件ずつまとめて提示する。全質問への回答が完了した後、一括でタスクドキュメントに決定内容を反映する。
+
 ---
 
-# work:qa-wizard — Interactive QA Wizard
+## タスク
 
-Reads the `## QA` section of a task document and presents unresolved items via the `AskUserQuestion` tool, batching up to 4 questions per call. After all responses are collected, updates the task document in a single pass.
+### ステップ 1: 対象のタスクドキュメントを特定する
 
----
+#### 条件
 
-## Tasks
+- 常に最初に実行
 
-### Step 1: Resolve the target task document
+#### 処理
 
-#### Condition
-
-- Always — run first
-
-#### Process
-
-1. If there is an in-progress branch in the current conversation session, use its task document as the first priority
-2. If a branch name (or fragment) is explicitly provided as an argument, use it to find the matching task document
-3. If neither applies:
-   - Search for task documents: `find .work/tasks -type f -name "*.md" -not -name ".*"`
-   - If only one is found, use it automatically
-   - If multiple exist, use `AskUserQuestion` to ask the user which task document to review
-4. Also check git worktrees in case the target is in a sibling worktree:
+1. 現在の会話セッションで作業中のブランチがある場合、そのタスクドキュメントを最優先で使用する
+2. 引数にブランチ名（または部分一致語）が明示されていれば、それを使ってタスクドキュメントを探す
+3. 上記どちらも該当しない場合:
+   - タスクドキュメントを検索: `find .work/tasks -type f -name "*.md" -not -name ".*"`
+   - 1件のみ見つかった場合は自動選択
+   - 複数見つかった場合は `AskUserQuestion` でどのタスクドキュメントをレビューするか尋ねる
+4. git ワークツリーも確認する:
    ```bash
    git worktree list
    ```
-5. Confirm the task document path (pattern: `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md`)
+5. タスクドキュメントのパスを確定する（パターン: `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md`）
 
-→ Proceed to Step 2
+→ ステップ 2 へ
 
-#### Output
+#### 出力
 
-- Task document path confirmed
-
----
-
-### Step 2: Parse unresolved QA items
-
-#### Condition
-
-- Step 1 complete
-
-#### Process
-
-1. Read the task document and locate its `## QA` section
-2. Extract all `### QA-XXX` subsections where the **状態** line does NOT contain「解決済み」or「却下」
-3. If no unresolved items exist → report "QAに未決定事項はありません" and finish
-4. Build a list: each item has its ID, title, and a body summary
-
-→ Proceed to Step 3
-
-#### Output
-
-- List of unresolved QA items
+- タスクドキュメントのパスが確定している
 
 ---
 
-### Step 3: Present items in batches
+### ステップ 2: 未解決 QA 項目を解析する
 
-#### Condition
+#### 条件
 
-- Step 2 complete (at least one unresolved item)
+- ステップ 1 完了
 
-#### Process
+#### 処理
 
-Batch unresolved items into groups of up to 4 (the `AskUserQuestion` maximum) and present each batch in a single call:
+1. タスクドキュメントを読み込み、`## QA` セクションを特定する
+2. `**状態**:` 行に「解決済み」または「却下」が含まれていない `### QA-XXX` サブセクションを抽出する
+3. 未解決項目がない場合 → 「QAに未決定事項はありません」と報告して終了
+4. 各項目のID・タイトル・本文サマリーをリスト化する
 
-1. Split unresolved items into batches of at most 4 (fewer if less remain)
-2. For each batch, make one `AskUserQuestion` call:
-   - Each QA item becomes one **question** entry (up to 4 per call)
-   - **question**: The QA item's title plus a concise 1–2 sentence summary of the decision needed
-   - **header**: The QA item ID (e.g. `QA-001`)
-   - **options** (same for each question):
-     - `解決済み（採用）` — A decision has been made
-     - `保留（後で判断）` — Skip for now
-     - `却下（対応しない）` — Won't fix
+→ ステップ 3 へ
+
+#### 出力
+
+- 未解決 QA 項目のリスト
+
+---
+
+### ステップ 3: 項目をまとめて提示する
+
+#### 条件
+
+- ステップ 2 完了（未解決項目が 1 件以上ある）
+
+#### 処理
+
+`AskUserQuestion` の最大件数（4 件）を上限に、未解決項目をバッチにまとめて提示する:
+
+1. 未解決項目を 4 件ずつのバッチに分割する（4 件未満の場合はそのまま 1 バッチ）
+2. 各バッチに対して `AskUserQuestion` ツールを 1 回呼び出す:
+   - 各 QA 項目を 1 つの **question** エントリとしてまとめる（最大 4 件）
+   - **question**: QA 項目のタイトルと判断に必要な 1〜2 文のサマリー
+   - **header**: QA 項目の ID（例: `QA-001`）
+   - **options**（各 question で共通）:
+     - `解決済み（採用）` — 決定が下された
+     - `保留（後で判断）` — 今は保留
+     - `却下（対応しない）` — 対応しない
    - **multiSelect**: false
-3. Repeat for the next batch until all items are presented
+3. 次のバッチがあれば繰り返す。全バッチが終わったらステップ 4 へ
 
-→ Proceed to Step 4
+→ ステップ 4 へ
 
-#### Notes
+#### 注意事項
 
-- If the item body is long, summarize to the essential question in the `question` field
-- Answers are retained in the prompt history, so no intermediate document update is needed between batches
-
----
-
-### Step 4: Update the task document's `## QA` section with all decisions at once
-
-#### Condition
-
-- Step 3 complete (all batches answered)
-
-#### Process
-
-1. Apply all responses collected in Step 3 to the task document's `## QA` section in a single pass:
-   - Resolved: `**状態**: 解決済み — {decision note or free-text input}`
-   - Closed: `**状態**: 却下 — {reason or free-text input}`
-   - On hold: leave the line unchanged
-2. Write the updated task document
-
-→ Proceed to Step 5
+- QA 項目の本文が長い場合は、判断に必要な核心だけを `question` フィールドに要約する
+- 各バッチの回答はプロンプト履歴に保持されるため、ステップ 4 での一括反映まで個別更新は不要
 
 ---
 
-### Step 5: Report summary
+### ステップ 4: タスクドキュメントの `## QA` セクションに全回答を一括反映する
 
-#### Condition
+#### 条件
 
-- Step 4 complete
+- ステップ 3 完了（全バッチへの回答が揃っている）
 
-#### Process
+#### 処理
 
-1. Output a summary table:
+1. ステップ 3 で収集した全回答をもとに、一括でタスクドキュメントの `## QA` セクションを更新する:
+   - 「解決済み」: `**状態**: 解決済み — {決定内容または「その他」の自由入力}`
+   - 「却下」: `**状態**: 却下 — {理由または「その他」の自由入力}`
+   - 「保留」: 該当行をそのまま残す（変更しない）
+2. 更新したタスクドキュメントを保存する
+
+→ ステップ 5 へ
+
+---
+
+### ステップ 5: 集計レポートを出力する
+
+#### 条件
+
+- ステップ 4 完了
+
+#### 処理
+
+1. 集計表を出力する:
 
    | QA ID | 状態 |
    |---|---|
    | QA-001 | 解決済み |
    | QA-002 | 保留 |
 
-2. If all items are now resolved → "すべての QA が解決しました。実装を進められます。"
-3. If unresolved items remain → state how many are still pending
+2. 全項目が解決済みの場合 → 「すべての QA が解決しました。実装を進められます。」
+3. 未解決の項目が残っている場合 → 残件数を案内する
 
-→ Done
+→ 完了

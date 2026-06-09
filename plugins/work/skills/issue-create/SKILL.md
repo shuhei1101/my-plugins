@@ -1,140 +1,141 @@
 ---
 name: work:issue-create
 description: |
-  Interpret a user's description of a problem and split it into discrete issue files under `.work/issues/`.
-  Trigger when the user says "create an issue", "register this problem", "make issues for this",
-  "イシューを作って", "問題を登録して", "issue-create", or invokes `/work:issue-create` explicitly.
+  ユーザーの問題説明を解釈し、独立したイシューファイルに分割して `.work/issues/` 配下に作成する。
+  ユーザーが「イシューを作って」「問題を登録して」「これをイシューにして」「create an issue」「issue-create」と言ったとき、
+  または `/work:issue-create` を明示的に呼び出したときに起動する。
 ---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# work:issue-create — Create Issues from User Description
+# work:issue-create — ユーザー説明からイシューを作成
 
-Interprets a user's description of problems, splits it into discrete actionable issues, and writes
-each as an issue file in `.work/issues/`. The issue file format, ID numbering, and index update are
-governed by the `work-dir/イシュー.md` reference, which is auto-injected when you write a
-`.work/issues/ISSUE-*.md` file — follow it directly; there is no separate save skill.
+ユーザーの問題説明を解釈し、独立して対処可能なイシューに分割して、各々を `.work/issues/` 配下の
+イシューファイルとして書き出すスキル。イシューファイルのフォーマット・採番・index 更新は
+`work-dir/イシュー.md` リファレンスが定める。これは `.work/issues/ISSUE-*.md` を書き込む際に
+自動注入されるので、直接それに従う — 専用の保存スキルは存在しない。
 
-Example: "The chat history is hard to read, and settings reset on restart"
-→ ISSUE-006: Improve chat history UI readability
-→ ISSUE-007: Settings not persisted across restarts
-
----
-
-## Overview
-
-**Prerequisites**:
-- `.work/issues/` must exist (run `/work:setup` if it doesn't)
-
-**Splitting principle**:
-- Problems that can be addressed independently → separate issues
-- Multiple symptoms from the same root cause → one issue
+例: 「チャット履歴が見づらいし、設定が再起動でリセットされる」
+→ ISSUE-006: チャット履歴 UI の視認性改善
+→ ISSUE-007: 設定が再起動間で永続化されない
 
 ---
 
-## Tasks
+## 概要
 
-### Step 1: Check current issue state
+**前提条件**:
+- `.work/issues/` が存在すること（なければ `/work:setup` を実行）
 
-#### Condition
-
-- Always — run first
-
-#### Process
-
-1. Check whether `.work/issues/` exists:
-   - If not → report that setup must be run first (`/work:setup`), then stop
-2. Read `_index.yaml` if it exists and note the current `last_id` (default 0 if missing)
-
-→ Proceed to Step 2
-
-#### Output
-
-- Current `last_id`
+**分割原則**:
+- 独立して対処できる問題 → 別々のイシュー
+- 同一の根本原因による複数の症状 → 1 つのイシュー
 
 ---
 
-### Step 2: Interpret and split the user's description
+## タスク
 
-#### Condition
+### ステップ1: 現在のイシュー状態を確認する
 
-- Always — run after Step 1
+#### 条件
 
-#### Process
+- 常に — 最初に実行する
 
-1. Read the user's input (from arguments or the prompt)
-2. Split it into discrete problem units:
-   - Independently fixable problems → separate issues
-   - Same component or same root cause → merge into one issue
-3. For each problem, determine title / type / priority / tags (see the injected `work-dir/イシュー.md`
-   reference for the meaning of each field)
-4. Present the split to the user for confirmation:
-   - "I will split this into N issues. Does this look right?"
-   - Show each issue: title, type, priority
-5. If the user requests adjustments, revise before proceeding
+#### 処理
 
-→ Proceed to Step 3
+1. `.work/issues/` が存在するか確認する:
+   - 存在しない場合 → 先に `/work:setup` を実行する必要がある旨を報告して停止
+2. `_index.yaml` があれば読み、現在の `last_id` を把握する（なければ 0）
 
-#### Output
+→ ステップ2へ進む
 
-- Confirmed issue split (title, type, priority, tags for each)
+#### 出力
+
+- 現在の `last_id`
 
 ---
 
-### Step 3: Write the issue files
+### ステップ2: ユーザー説明を解釈して分割する
 
-#### Condition
+#### 条件
 
-- Always — run after Step 2
+- 常に — ステップ1の後に実行する
 
-#### Process
+#### 処理
 
-1. For each confirmed issue, allocate the next ID (`last_id + 1`, incrementing as you go) and write
-   `.work/issues/ISSUE-{N}.md`.
-   - Writing the file auto-injects the `work-dir/イシュー.md` reference — **follow its format exactly**.
-   - The file has **no frontmatter** — it starts at `# ISSUE-{N}: {タイトル}`.
-   - Write the **`# ユーザー回答欄`** (`## 意思` + `## QA`) at the **top**, right after the title and
-     date; then the `---` separator; then the **issue body (AI-authored)** (`## 概要` / `## 背景` /
-     `## 現状` / (`## 原因` if a bug) / `## 期待される状態` / `## 対応案` / `## 横展開` etc.). Write
-     the body in Japanese, following the injected template. Do not write Type/Priority/Tags lines
-     (those live in `_index.yaml`).
-   - In the **`# ユーザー回答欄`**, pre-fill the `## 意思` options as unchecked checkboxes (`- [ ]`):
-     `- [ ] 対応する（自動マージ）` / `- [ ] 対応する（マージはAIに任せる）` / `- [ ] 対応しない`. Do
-     not check any box here (the user does that in `work:issue-review`). Always include `## 意思`.
-     There is no `## 自由記述`.
-   - **Raise a `## QA` when there are multiple 対応案 options or a decision is needed before starting.**
-     Each QA is `### QA-N: {タイトル}` with a **`**推奨**:`** line (which value/option the AI
-     recommends + a one-line reason; never "decide later"). Two QA types:
-     - **Choice-type** — summarize the options (`A) … / B) …`) and list each as an unchecked checkbox
-       (`- [ ] A`, `- [ ] B`). When you list multiple `## 対応案` options you MUST add a "which option
-       to take" choice-type QA as QA-1.
-     - **Input-type** (free-form answer, no fixed options) — instead of checkboxes, leave a
-       `**回答**:` line for the user to fill in.
-     Omit the `## QA` heading entirely if no decision is needed.
-2. After writing all files, update `_index.yaml` per the reference: append each issue's entry
-   (`type` / `priority` / `tags` / `scan_scope` / `status: not_started` / `branches: []` are recorded
-   here) and set `last_id` to the highest ID used.
-3. Collect the created ISSUE IDs.
+1. ユーザー入力（引数またはプロンプト）を読む
+2. 独立した問題単位に分割する:
+   - 独立して直せる問題 → 別々のイシュー
+   - 同一コンポーネント・同一根本原因 → 1 つのイシューに統合
+3. 各問題について タイトル / タイプ / 優先度 / タグ を決める（各フィールドの意味は注入される
+   `work-dir/イシュー.md` リファレンスを参照）
+4. 分割案をユーザーに提示して確認する:
+   - 「N 件のイシューに分割します。これでよいですか？」
+   - 各イシューを表示: タイトル・タイプ・優先度
+5. ユーザーが調整を求めたら、進める前に修正する
 
-→ Proceed to Step 4
+→ ステップ3へ進む
 
-#### Output
+#### 出力
 
-- List of created ISSUE IDs
+- 確定した分割案（各イシューのタイトル・タイプ・優先度・タグ）
 
 ---
 
-### Step 4: Report results
+### ステップ3: イシューファイルを書き出す
 
-#### Condition
+#### 条件
 
-- Always — run last
+- 常に — ステップ2の後に実行する
 
-#### Process
+#### 処理
 
-1. Report the created issues (id, title, priority)
-2. Mention that priority can be adjusted by editing the issue file or `_index.yaml`
+1. 確定した各イシューについて次の ID を採番し（`last_id + 1` を順にインクリメント）、
+   `.work/issues/ISSUE-{N}.md` を書く。
+   - ファイル書き込み時に `work-dir/イシュー.md` リファレンスが自動注入される — **そのフォーマットに
+     正確に従う**。
+   - ファイルは**フロントマターを持たない** — `# ISSUE-{N}: {タイトル}` から始める。
+   - **`# ユーザー回答欄`（`## 意思` + `## QA`）** をファイルの**先頭**（タイトル・日付の直後）に置き、
+     `---` の後に**イシュー本文（AI 記入欄）**（`## 概要` / `## 背景` / `## 現状` /（バグなら `## 原因`）/
+     `## 期待される状態` / `## 対応案` / `## 横展開` など）を書く。本文は日本語で注入テンプレートに
+     従って書く。`Type` / `Priority` / `Tags` 行は書かない（`_index.yaml` に記録）。
+   - **`# ユーザー回答欄`** の `## 意思` は各選択肢を未チェックのチェックボックス（`- [ ]`）で事前記入する:
+     `- [ ] 対応する（自動マージ）` / `- [ ] 対応する（マージはAIに任せる）` / `- [ ] 対応しない` —
+     ここでチェックを入れたり accept/reject を決めたりしない（後で `work:issue-review` でユーザーが
+     チェックする）。`## 意思` を必ず置く。`## 自由記述` は無い。
+   - **対応案が複数ある場合、または着手前に決めるべき判断がある場合は `## QA` を立てる。**
+     各 QA は `### QA-N: {タイトル}` とし、**`**推奨**:`** 行（AI がどれを推すか + 理由 1 行。「後で
+     決める」禁止）を必ず持つ。QA には 2 種ある:
+     - **選択肢型** — **選択肢を要約**（`A) … / B) …`）し、各選択肢を未チェックのチェックボックスで
+       記入する（`- [ ] A`、`- [ ] B`）。`## 対応案` を複数挙げたときは「どの案で進めるか」を選択肢型
+       QA-1 として**必須**にする。
+     - **入力型**（自由記述で答える・固定の選択肢がない）— チェックボックスの代わりに `**回答**:` 欄を
+       残しユーザーが記入する。
+     判断が不要なら `## QA` 見出しごと付けない。
+2. 全ファイルを書いたら、リファレンスに従って `_index.yaml` を更新する: 各イシューのエントリを
+   `issues` に追記し（`type` / `priority` / `tags` / `scan_scope` / `status: not_started` /
+   `branches: []` をここに記録）、`last_id` を使用した最大 ID に設定する。
+3. 作成した ISSUE ID を収集する。
 
-#### Notes
+→ ステップ4へ進む
 
-- Do NOT run `git commit` in this skill — the user reviews before committing
-- File format, numbering, and index rules all live in the `work-dir/イシュー.md` reference — do not
-  duplicate them here; the reference is injected when you write the file
+#### 出力
+
+- 作成した ISSUE ID のリスト
+
+---
+
+### ステップ4: 結果をレポートする
+
+#### 条件
+
+- 常に — 最後に実行する
+
+#### 処理
+
+1. 作成したイシューを報告する（id・タイトル・優先度）
+2. 優先度はイシューファイルまたは `_index.yaml` を編集して変更できる旨を伝える
+
+#### 注意事項
+
+- このスキルでは `git commit` を行わない — ユーザーが確認した後にコミットする
+- フォーマット・採番・index ルールは全て `work-dir/イシュー.md` リファレンスにある — ここで重複させない。
+  ファイルを書く際にリファレンスが注入される

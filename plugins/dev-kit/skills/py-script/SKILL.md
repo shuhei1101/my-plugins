@@ -1,112 +1,114 @@
----
-name: dev-kit:py-script
-description: >
-  Create a simple Python script (single file or a few files, no full project scaffold).
-  Trigger when the user asks for a quick script, a one-off automation, or anything that
-  does not need pyproject.toml, a package directory, or tests.
-  Examples: "write a script that...", "make a quick Python file to...", "スクリプト作って".
-  Do NOT trigger for full project creation — use dev-kit:py-project instead.
----
-
-# dev-kit:py-script — Simple Python Script
-
-Create a single-file (or few-file) script that follows dev-kit Python conventions.
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+# SKILL.jp.md — dev-kit:py-script（日本語ミラー）
 
 ---
 
-## Tasks
+**スキル名**: dev-kit:py-script
+**トリガー**: 単一ファイルまたは数ファイル程度の簡易 Python スクリプト作成依頼時。
+「スクリプト作って」「ちょっとした Python ファイル書いて」「自動化スクリプトほしい」など。
+`pyproject.toml` や `tests/` を必要とする本格プロジェクトには使わない → `dev-kit:py-project` を使う。
 
-### Step 1: Load standards
+---
 
-First, read the references index:
+# dev-kit:py-script — 簡易 Python スクリプト作成
+
+dev-kit Python 規約に従った単一ファイル / 数ファイルのスクリプトを作成する。
+
+---
+
+## タスク
+
+### ステップ1: 規約を読み込む
+
+まず references のインデックスを読む:
 
 ```
 {plugin_root}/references/python/index.yaml
 ```
 
-The plugin root is two levels above this skill file (e.g. `Base directory: .../skills/py-script` → plugin root is `.../dev-kit/`).
+スキルファイルの 2 階層上がプラグインルート（例: `Base directory: .../skills/py-script` → プラグインルートは `.../dev-kit/`）。
 
-Read the following for this skill:
-- `{plugin_root}/references/python/core/命名規則.md` — naming conventions
-- `{plugin_root}/references/python/core/コメント.md` — docstrings and field descriptions
-- `{plugin_root}/references/python/core/型ヒント.md` — PEP 695 / type annotations
-- `{plugin_root}/references/python/core/言語ルール.md` — Japanese comments / English logs
-- `{plugin_root}/references/python/core/スタイル.md` — ruff / line length
-- `{plugin_root}/references/python/scripts/Pythonスクリプト.md` — script structure
+このスキルで読むべきもの:
+- `{plugin_root}/references/python/core/命名規則.md` — 命名規約
+- `{plugin_root}/references/python/core/コメント.md` — docstring とフィールド説明
+- `{plugin_root}/references/python/core/型ヒント.md` — PEP 695 / 型注釈
+- `{plugin_root}/references/python/core/言語ルール.md` — 日本語コメント / 英語ログ
+- `{plugin_root}/references/python/core/スタイル.md` — ruff / 行長
+- `{plugin_root}/references/python/scripts/Pythonスクリプト.md` — スクリプト構造
 
-If a bat launcher is also needed:
+bat ランチャーも作るなら:
 - `{plugin_root}/references/python/scripts/launchers-windows.md`
 
-For a UNIX launcher:
+UNIX ランチャーなら:
 - `{plugin_root}/references/python/scripts/ランチャー-Unix.md`
 
-For a tkinter GUI:
+tkinter GUI なら:
 - `{plugin_root}/references/python/scripts/Tkinter.md`
 
-→ Proceed to Step 2
+→ ステップ2へ
 
 ---
 
-### Step 2: Clarify requirements
+### ステップ2: 要件を確認する
 
-#### Process
+#### 処理
 
-1. Confirm the script's purpose if unclear.
-2. Identify any third-party packages required.
-3. Confirm the output location and filename.
-4. Confirm whether a GUI (tkinter) is needed.
-5. Confirm whether a launcher (bat / sh) is needed.
+1. スクリプトの目的が不明な場合は確認する
+2. 必要なサードパーティパッケージを特定する
+3. 出力先とファイル名を確認する
+4. GUI（tkinter）が必要かどうか確認する
+5. ランチャー（bat / sh）が必要かどうか確認する
 
-→ Proceed to Step 3
+→ ステップ3へ
 
 ---
 
-### Step 3: Write the script
+### ステップ3: スクリプトを書く
 
-#### Process
+#### 処理
 
-1. Create the file following the standard template in `scripts/python-script.md`:
-   - Module docstring (line 1 describes what it does)
+1. `scripts/python-script.md` の標準テンプレートに従ってファイルを作成:
+   - モジュール docstring（1 行目で何をするか）
    - `from __future__ import annotations`
-   - Imports in order: standard library → third-party → own modules
-   - Constants (`UPPER_SNAKE_CASE`)
-   - Logger setup
-   - `_parse_args()` for argparse
-   - Body functions (e.g. `process(...)`)
-   - `main() -> int` to tie everything together
+   - 標準ライブラリ → サードパーティ → 自モジュール の順で import
+   - 定数（`UPPER_SNAKE_CASE`）
+   - logger セットアップ
+   - `_parse_args()` で argparse
+   - 処理本体の関数（`process(...)` 等）
+   - `main() -> int` でまとめる
    - `if __name__ == "__main__": sys.exit(main())`
-2. Apply type hints everywhere (PEP 695).
-3. Declare required packages with `# pip install {package}` comments at the top of the file.
-4. Follow `core/naming.md` (snake_case functions, UpperCamel types) and `core/comments.md` (docstrings on exported functions).
-5. Use `logger` instead of `print()`. Log messages in **English**.
-6. Exception handling: catch expected exceptions; for uncaught ones, leave a full traceback via `logger.exception`.
-7. If a launcher is needed, create it at the same time (`scripts/launchers-windows.md` / `scripts/launchers-unix.md`).
+2. 型ヒントを全箇所に付ける（PEP 695）
+3. 必要なパッケージは `# pip install {package}` をファイル先頭のコメントで明示
+4. `core/naming.md`（snake_case 関数、UpperCamel 型）と `core/comments.md`（exported 関数 docstring）に従う
+5. `print()` ではなく `logger` を使う。ログメッセージは **英語**
+6. 例外処理: 想定例外は捕まえる、未捕捉は `logger.exception` で traceback ごと残す
+7. ランチャーが必要なら同時に作成（`scripts/launchers-windows.md` / `scripts/launchers-unix.md`）
 
-→ Done
+→ 完了
 
-#### Output
+#### 出力
 
-- Script file following dev-kit Python conventions
-- bat / sh launcher if required
+- dev-kit Python 規約に従ったスクリプトファイル
+- 必要なら bat / sh ランチャー
 
-#### Notes
+#### 注意事項
 
-##### Prohibitions
+##### 禁止事項
 
-- Do not create `pyproject.toml` (if needed, use `dev-kit:py-project` for a full project).
-- Do not create `shared/` modules such as `logger.py` / `settings.py` / `errors.py` (inline them).
-- Do not create a `tests/` folder.
-- Do not add unnecessary abstraction for a one-off script (YAGNI).
-- Do not write unit tests (overall dev-kit Python policy).
+- `pyproject.toml` を作らない（必要なら `dev-kit:py-project` で本格プロジェクト化）
+- `logger.py` / `settings.py` / `errors.py` 等の `shared/` モジュールを作らない（インライン）
+- `tests/` フォルダを作らない
+- 1 回限りのスクリプトに不要な抽象化を加えない（YAGNI）
+- 単体テストを書かない（dev-kit Python 全体の方針）
 
 ---
 
-## References
+## 参考資料
 
-See `{plugin_root}/references/python/index.yaml` for details.
+詳細は `{plugin_root}/references/python/index.yaml` を参照。
 
-Primary references:
-- `core/*` — language rules
-- `scripts/python-script.md` — script skeleton
-- `scripts/launchers-*.md` — launchers
-- `scripts/tkinter.md` — when adding a GUI
+主要 reference:
+- `core/*` — 言語ルール
+- `scripts/python-script.md` — スクリプトの骨格
+- `scripts/launchers-*.md` — ランチャー
+- `scripts/tkinter.md` — GUI 付ける場合

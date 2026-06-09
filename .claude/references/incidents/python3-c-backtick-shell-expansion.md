@@ -1,11 +1,12 @@
-# python3 -c Backtick Shell Expansion
+<!-- This file is a Japanese mirror of python3-c-backtick-shell-expansion.md. When updating the English original, update this file too. -->
+# python3 -c でバッククォートがシェル展開される
 
-**Date**: 2026-05-30
-**Category**: command-error
+**日付**: 2026-05-30
+**カテゴリ**: command-error
 
-## What Happened
+## 何が起きたか
 
-When passing Python code to `python3 -c "..."` via a Bash command that contained backtick-quoted strings (e.g., Markdown code spans like `` `plugins/work/` ``), Bash treated the backticks as command substitutions and expanded them, corrupting the Python string content:
+バッククォートで囲まれた文字列（Markdownのコードスパン: `` `plugins/work/` `` など）を含む Python コードを `python3 -c "..."` に渡したとき、Bash がバッククォートをコマンド置換として扱い、展開してしまった。
 
 ```bash
 python3 -c "
@@ -15,11 +16,11 @@ content = '''
 "
 ```
 
-The backtick content was shell-expanded (attempted as a command), and the resulting variables were empty strings, leaving the file with blank cells in the table.
+バッククォート内がコマンドとして実行され（空文字列に展開され）、テーブルのセルが空白になってしまった。
 
-## How to Avoid
+## 回避策
 
-Use a single-quoted heredoc delimiter (`PYEOF`) so Bash does not expand anything inside the heredoc body:
+シングルクォートのヒアドキュメント区切り文字（`PYEOF`）を使い、Bash がヒアドキュメント本体を展開しないようにする:
 
 ```bash
 python3 << 'PYEOF'
@@ -29,8 +30,8 @@ content = """
 PYEOF
 ```
 
-With `<< 'PYEOF'` (single-quoted), Bash treats the entire block as a literal string — no variable expansion, no command substitution, no backslash processing.
+`<< 'PYEOF'`（シングルクォート）にすると、Bash はブロック全体をリテラル文字列として扱い、変数展開・コマンド置換・バックスラッシュ処理を一切行わない。
 
-## Context
+## コンテキスト
 
-This issue occurs when Python code contains backtick characters (common in Markdown table content). The `python3 -c "..."` form passes the code through Bash string parsing, which interprets backticks as command substitutions even inside double quotes. The heredoc form with a quoted delimiter bypasses this entirely.
+Python コードに Markdown のコードスパン（バッククォート）が含まれる場合に発生する。`python3 -c "..."` 形式では Bash 文字列パース中にバッククォートがコマンド置換として解釈される。クォートされたヒアドキュメントを使えばこの問題を完全に回避できる。

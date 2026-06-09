@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of ルート-ts.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/route.ts
 
 HTTP ハンドラ（GET / POST / PATCH / DELETE）。`withRouteErrorHandling` でラップし、認証 → Zod パース → `service.ts` 呼び出しの順に書く。

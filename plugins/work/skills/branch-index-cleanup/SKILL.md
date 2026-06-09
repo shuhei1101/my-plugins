@@ -1,38 +1,39 @@
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+
 ---
 name: work:branch-index-cleanup
 description: |
-  Audit git branches against index.yaml / index.archive.yaml and clean up unregistered ones.
-  Classifies each unregistered branch as A (delete), B (archive + delete), or C (keep, add to index).
-  Trigger when the user says "ブランチを整理して", "未登録ブランチを片付けて", "branch-index-cleanup して",
-  or invoked explicitly as `/work:branch-index-cleanup`.
+  git ブランチと index.yaml / index.archive.yaml を照合し、未登録ブランチを整理する。
+  各ブランチを A（削除）/ B（archive 追記 → 削除）/ C（index 追記）に分類して実行。
+  「ブランチを整理して」「未登録ブランチを片付けて」「branch-index-cleanup して」
+  または `/work:branch-index-cleanup` で起動。
 disable-model-invocation: true
 ---
 
-# work:branch-index-cleanup — Audit & Clean Up Unregistered Branches
+# work:branch-index-cleanup — 未登録ブランチの整理
 
-Compares local git branches with `index.yaml` / `index.archive.yaml` and interactively classifies
-each unregistered branch. Then executes delete / archive / index-add per classification.
+ローカルブランチと `index.yaml` / `index.archive.yaml` を比較し、
+未登録ブランチをインタラクティブに分類・整理する。
 
 ---
 
-## Tasks
+## タスク
 
-### Step 1: Collect unregistered branches
+### ステップ 1: 未登録ブランチの収集
 
-#### Condition
+#### 条件
 
-- Always — run first
+- 常に — 最初に実行
 
-#### Process
+#### 処理
 
-1. Get all local branches:
+1. ローカルブランチをすべて取得:
 
 ```bash
 git branch --format='%(refname:short)'
 ```
 
-2. Read registered branch identifiers from both index files (each entry has either an `id` and/or a
-   `title` matching `{type}/{title}`):
+2. 両方のインデックスファイルから登録済みのブランチ識別子を読む（各エントリは `id` と/または `{type}/{title}` マッチングの `title` を持つ）:
 
 ```bash
 python -c "
@@ -48,72 +49,72 @@ print('BRANCHES:', ' '.join(sorted(branches)))
 "
 ```
 
-3. For each branch (excluding `master` / `main`), check whether it is registered:
-   - **New format**: branch is `{type}/{title}` → match against `titles`
-   - **Legacy format**: branch is `PR{N}/{type}/{title}` → extract `{N}` and match against `ids`
-   - Branches that match neither are treated as unregistered
-4. Build the list of **unregistered branches**
+3. 各ブランチ（`master` / `main` を除く）について、登録済みかどうかを確認:
+   - **新形式**: ブランチが `{type}/{title}` → `titles` と照合
+   - **レガシー形式**: ブランチが `PR{N}/{type}/{title}` → `{N}` を抽出して `ids` と照合
+   - どちらにも当てはまらないブランチは未登録として扱う
+4. **未登録ブランチ** のリストを作成
 
-→ Proceed to Step 2
+→ ステップ 2 へ
 
-#### Output
+#### 出力
 
-- List of unregistered branch names
+- 未登録ブランチ名のリスト
 
 ---
 
-### Step 2: Classify each branch
+### ステップ 2: 各ブランチを分類
 
-#### Condition
+#### 条件
 
-- Step 1 complete — at least one unregistered branch found
+- Step 1 完了 — 少なくとも1つの未登録ブランチが見つかった
 
-#### Process
+#### 処理
 
-1. Display the unregistered branch list in a table:
+1. 未登録ブランチを表形式で表示:
 
-   | Branch | Inferred ID | Inferred Title | Classification |
+   | ブランチ | 推定 ID | 推定タイトル | 分類 |
    |---|---|---|---|
-   | feat/some-feature | (none) | feat/some-feature | ? |
+   | feat/some-feature | (なし) | feat/some-feature | ? |
    | PR42/feat/legacy   | 42     | feat/legacy        | ? |
    | ... | | | |
 
-2. For each branch, auto-infer:
-   - `id` — only present when the branch name carries a legacy `PR{N}/` prefix
-   - `title` — full branch name (new format) or the `{type}/{title}` portion (legacy format)
-   - `type` — type portion (feat/fix/refactor/docs/chore/test), default `chore` if absent
+2. 各ブランチについて自動推定:
+   - `id` — レガシー `PR{N}/` プレフィックスを持つ場合のみ存在
+   - `title` — ブランチ名全体（新形式）または `{type}/{title}` 部分（レガシー形式）
+   - `type` — type 部分（feat/fix/refactor/docs/chore/test）、存在しない場合はデフォルト `chore`
 
-3. Ask the user to assign A / B / C to each branch:
+3. ユーザーに各ブランチを A / B / C のいずれかに割り当てるよう要求:
 
    > 各ブランチを以下のいずれかに分類してください:
    > - **A** — 完了済み・不要（削除のみ）
    > - **B** — 完了済み・記録したい（archive に追記 → 削除）
    > - **C** — 作業継続（index.yaml に追記）
 
-4. If the user wants to modify inferred metadata for B/C branches, accept corrections before proceeding
+4. B/C ブランチの推定メタデータを修正したい場合は、進める前に受け入れる
 
-→ Proceed to Step 3
+→ ステップ 3 へ
 
-#### Output
+#### 出力
 
-- Classification map: `{ branch: { class: A|B|C, id, title, type, summary? } }`
+- 分類マップ: `{ branch: { class: A|B|C, id, title, type, summary? } }`
 
 ---
 
-### Step 3: Execute per classification
+### ステップ 3: 分類ごとに処置を実行
 
-#### Condition
+#### 条件
 
-- Step 2 complete — user has confirmed all classifications
+- Step 2 完了 — ユーザーがすべての分類を確認済み
 
-#### Process
+#### 処理
 
-Execute in order: B → C → A
+B → C → A の順で実行:
 
-**Class B — archive + delete**:
+**Class B — archive 追記 + 削除**:
 
-For each B branch:
-1. Append entry to `.work/tasks/index.archive.yaml`:
+各 B ブランチについて:
+1. `.work/tasks/index.archive.yaml` にエントリ追記:
 
 ```bash
 python -c "
@@ -136,13 +137,13 @@ yaml.dump(data, open(path, 'w'), allow_unicode=True, default_flow_style=False)
 " {branch} {title} {type} "{summary}" {task_dir}
 ```
 
-2. Delete the branch:
+2. ブランチを削除:
 
 ```bash
-git branch -d {branch}   # use -D if not merged
+git branch -d {branch}   # 未マージの場合は -D を使う
 ```
 
-**Class C — add to index.yaml**:
+**Class C — index.yaml に追記**:
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
@@ -153,30 +154,30 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --task "{task_dir}"
 ```
 
-**Class A — delete only**:
+**Class A — 削除のみ**:
 
 ```bash
-git branch -d {branch}   # use -D if not merged
+git branch -d {branch}   # 未マージの場合は -D を使う
 ```
 
-→ Proceed to Step 4
+→ ステップ 4 へ
 
-#### Notes
+#### 注記
 
-- If `git branch -d` fails (not fully merged), warn the user and ask whether to force-delete (`-D`)
-- `${CLAUDE_PLUGIN_ROOT}` is the shell variable pointing to the plugin root path
+- `git branch -d` が失敗した場合（完全にマージされていない）、ユーザーに警告して強制削除（`-D`）を確認
+- `${CLAUDE_PLUGIN_ROOT}` はプラグインルートパスを指すシェル変数
 
 ---
 
-### Step 4: Report results
+### ステップ 4: 結果を報告
 
-#### Condition
+#### 条件
 
-- Step 3 complete
+- Step 3 完了
 
-#### Process
+#### 処理
 
-Print a summary table:
+サマリーテーブルを出力:
 
 | 分類 | 件数 | ブランチ |
 |---|---|---|
@@ -184,24 +185,24 @@ Print a summary table:
 | B（archive → 削除） | N | branch3 |
 | C（index 追記） | N | branch4 |
 
-Confirm the final state:
+最終状態を確認:
 
 ```bash
 git branch --format='%(refname:short)' | grep -v master | grep -v main
 ```
 
-→ Done.
+→ 完了
 
 ---
 
-### Step 5: Nothing to do (all branches registered)
+### ステップ 5: 何もすることなし（すべてのブランチが登録済み）
 
-#### Condition
+#### 条件
 
-- Step 1 found zero unregistered branches
+- Step 1 で未登録ブランチが 0 件
 
-#### Process
+#### 処理
 
-Report:
+以下を報告:
 
 > すべてのブランチが index.yaml / index.archive.yaml に登録済みです。整理は不要です。

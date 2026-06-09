@@ -1,189 +1,185 @@
 ---
 name: ref-inject:plugin-migrate
 description: |
-  Inspect every plugin that has ref-inject applied (detected by the presence of
-  hooks/scripts/inject_references.py) and update its injection mechanism files to match the
-  current ref-inject templates. The references/ content (user-authored docs, _index.yaml,
-  _injection_rules.yaml) is never touched — only the hook mechanism files are updated.
-  Manual invocation only — use /ref-inject:plugin-migrate.
+  ref-inject が適用済みのプラグイン（hooks/scripts/inject_references.py の存在で判定）を検査し、
+  注入の仕組みファイルを現行の ref-inject テンプレートに揃える。references/ の内容（ユーザー作成の
+  doc・_index.yaml・_injection_rules.yaml）は一切変更しない — hooks/ 配下の仕組みファイルだけを更新する。
+  手動起動のみ — /ref-inject:plugin-migrate を使う。
 ---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# ref-inject:plugin-migrate — Update Injection Mechanism in Consumer Plugins
+# ref-inject:plugin-migrate — コンシューマープラグインの注入の仕組みを更新
 
-Brings the injection hook files in **all ref-inject consumers** up to date with the current
-ref-inject templates. Where `/ref-inject:apply` installs the mechanism for the first time,
-`plugin-migrate` keeps it current across template changes.
+**全 ref-inject コンシューマー**の注入フックファイルを、現行の ref-inject テンプレートに揃える。
+`/ref-inject:apply` が初回導入を行うのに対し、`plugin-migrate` はテンプレート変更が生じたときに仕組みを最新化し続ける。
 
-The `references/` content (user-authored docs, `_index.yaml`, `_injection_rules.yaml`) is
-**never modified** — only the mechanism files under `hooks/` are updated.
-
----
-
-## What counts as a "consumer"
-
-A plugin is a ref-inject consumer if it has `hooks/scripts/inject_references.py`.
-This file is the canonical marker left by `/ref-inject:apply`.
+`references/` の内容（ユーザー作成の doc・`_index.yaml`・`_injection_rules.yaml`）は
+**一切変更しない** — 更新対象は `hooks/` 配下の仕組みファイルのみ。
 
 ---
 
-## Mechanism files updated by this skill
+## "コンシューマー" の定義
 
-| File | Action |
+プラグインが `hooks/scripts/inject_references.py` を持つ場合、そのプラグインは ref-inject コンシューマーとみなす。
+このファイルは `/ref-inject:apply` が残す正規のマーカー。
+
+---
+
+## このスキルが更新する仕組みファイル
+
+| ファイル | 処理 |
 |---|---|
-| `hooks/scripts/inject_references.py` | Overwrite with current template (placeholder-substituted) |
-| `hooks/scripts/_common.py` | Overwrite with current template |
-| `hooks/templates/injection.md.j2` | Overwrite with current template |
-| `hooks/templates/injection.jp.md.j2` | Overwrite with current template |
-| `hooks/hooks.json` | Merge the `PreToolUse(Edit\|Write\|MultiEdit\|Read)` entry; leave other hooks intact |
+| `hooks/scripts/inject_references.py` | 現行テンプレート（プレースホルダ置換済み）で上書き |
+| `hooks/scripts/_common.py` | 現行テンプレートで上書き |
+| `hooks/templates/injection.md.j2` | 現行テンプレートで上書き |
+| `hooks/templates/injection.jp.md.j2` | 現行テンプレートで上書き |
+| `hooks/hooks.json` | `PreToolUse(Edit\|Write\|MultiEdit\|Read)` エントリをマージ、他のフックはそのまま |
 
 ---
 
-## Tasks
+## タスク
 
-### Step 1: Enumerate consumer plugins
+### ステップ1: コンシューマープラグインを列挙
 
-#### Condition
+#### 条件
 
-- Always — run first
+- 常に — 最初に実行
 
-#### Process
+#### 処理
 
-1. Run:
+1. 以下を実行する:
    ```bash
    find . -path '*/hooks/scripts/inject_references.py' \
      -not -path '*/ref-inject/templates/*' \
      -not -path '*/.git/*'
    ```
-2. Each result lives at `{plugin_root}/hooks/scripts/inject_references.py`.
-   Derive `{plugin_root}` (e.g. `plugins/claude-kit`) for each match.
-3. If no consumers are found → report "No ref-inject consumers found." and stop.
+2. 各結果は `{plugin_root}/hooks/scripts/inject_references.py` の位置にある。
+   それぞれのマッチから `{plugin_root}`（例: `plugins/claude-kit`）を導出する。
+3. コンシューマーが見つからない場合 → 「ref-inject コンシューマーが見つかりません。」と報告して終了。
 
-→ Proceed to Step 2
+→ ステップ2へ
 
-#### Output
+#### 出力
 
-- List of consumer plugin roots confirmed (e.g. `plugins/claude-kit`, `plugins/dev-kit`)
+- コンシューマープラグインのルート一覧が確定（例: `plugins/claude-kit`、`plugins/dev-kit`）
 
 ---
 
-### Step 2: Derive placeholder values for each consumer
+### ステップ2: 各コンシューマーのプレースホルダ値を導出
 
-#### Condition
+#### 条件
 
-- Step 1 complete
+- ステップ1完了
 
-#### Process
+#### 処理
 
-For each consumer plugin root (`{plugin_root}`), derive the placeholder values from the
-**directory name** (`{name}` = last path segment):
+各コンシューマーのプラグインルート（`{plugin_root}`）について、**ディレクトリ名**（`{name}` = パスの最後のセグメント）からプレースホルダ値を導出する:
 
-| Placeholder | Derivation | Example (`claude-kit`) |
+| プレースホルダ | 導出方法 | 例（`claude-kit`） |
 |---|---|---|
 | `__PLUGIN_NAME__` | `name` | `claude-kit` |
-| `__ENV_PREFIX__` | `name` upper-cased, every run of non-alphanumeric → `_` | `CLAUDE_KIT` |
+| `__ENV_PREFIX__` | `name` を大文字化し英数以外の連続を `_` に | `CLAUDE_KIT` |
 | `__LOG_TAG__` | `{name}-references-injection` | `claude-kit-references-injection` |
-| `__DEFAULT_TTL__` | Read from first `TTL` line in the consumer's existing `.py`; fall back to `3600` | `3600` |
+| `__DEFAULT_TTL__` | コンシューマーの既存 `.py` の最初の TTL 行から取得; なければ `3600` | `3600` |
 
-→ Proceed to Step 3
+→ ステップ3へ
 
-#### Output
+#### 出力
 
-- Placeholder map for each consumer confirmed
+- 各コンシューマーのプレースホルダマップが確定
 
 ---
 
-### Step 3: Compare mechanism files and report
+### ステップ3: 仕組みファイルを比較して報告
 
-#### Condition
+#### 条件
 
-- Step 2 complete
+- ステップ2完了
 
-#### Process
+#### 処理
 
-For each consumer plugin:
+[サブエージェントで並列実行・完了を待つ] 各コンシューマープラグインについて以下を実行する:
+（戻り値: `{consumer: string, updates: string[], needsMerge: boolean}`）
 
-1. Read the four template files from `${CLAUDE_PLUGIN_ROOT}/templates/hooks/`:
+1. `${CLAUDE_PLUGIN_ROOT}/templates/hooks/` から4つのテンプレートファイルを読む:
    - `scripts/inject_references.py`
    - `scripts/_common.py`
    - `templates/injection.md.j2`
    - `templates/injection.jp.md.j2`
 
-2. For `inject_references.py`, substitute all four placeholders with the consumer's derived values.
-   The other three files have no placeholders — compare verbatim.
+2. `inject_references.py` は4つのプレースホルダをコンシューマーの導出値で置換する。
+   他の3ファイルはプレースホルダなし — そのまま比較する。
 
-3. Read the consumer's current versions of the same four files.
+3. コンシューマーの現行バージョンの同4ファイルを読む。
 
-4. Compare. For each file that differs, note it as **needs update**.
+4. 比較する。差分があるファイルを **要更新** としてメモする。
 
-5. For `hooks.json`: read both the template's `hooks.json` and the consumer's `hooks.json`.
-   Check whether the consumer's `PreToolUse(Edit|Write|MultiEdit|Read)` entry
-   matches the template's entry. Note as **needs merge** if it differs.
+5. `hooks.json` について: テンプレートの `hooks.json` とコンシューマーの `hooks.json` を読む。
+   コンシューマーの `PreToolUse(Edit|Write|MultiEdit|Read)` エントリがテンプレートのエントリと
+   一致するか確認する。異なれば **要マージ** としてメモする。
 
-6. Summarize the findings per consumer:
-   - **Up to date**: no differences
-   - **Needs update**: list each file that differs
+6. コンシューマーごとに調査結果をまとめる:
+   - **最新**: 差分なし
+   - **要更新**: 差分があるファイルの一覧
 
-→ Proceed to Step 4
+→ ステップ4へ
 
-#### Output
+#### 出力
 
-- Per-consumer diff summary displayed to the user
-
----
-
-### Step 4: Apply updates (with user confirmation)
-
-#### Condition
-
-- Step 3 complete
-- At least one consumer has files that need updating
-
-#### Process
-
-1. Show the per-consumer summary from Step 4.
-2. Ask the user: "Update mechanism files in all consumers? (yes / list specific plugins to skip)"
-3. For each consumer the user approves:
-
-   a. **Overwrite** the four hook scripts and templates (placeholder-substituted where applicable).
-
-   b. **Merge `hooks.json`**: do not overwrite the whole file — find the
-      `PreToolUse(Edit|Write|MultiEdit|Read)` entry and replace it with the template's entry.
-      All other entries in the consumer's `hooks.json` remain unchanged.
-
-4. After writing each consumer, grep `{plugin_root}/hooks/` for any remaining
-   `__PLACEHOLDER__` tokens and report if any are found.
-
-→ Proceed to Step 5
-
-#### Notes
-
-##### Prohibitions
-
-- Never overwrite `references/` content (docs, `_index.yaml`, `_injection_rules.yaml`, `CLAUDE.md`)
-- Never replace the whole `hooks.json` — always merge the PreToolUse entry in-place
+- コンシューマーごとの差分サマリーをユーザーに表示
 
 ---
 
-### Step 5: Report completion
+### ステップ4: 更新を適用（ユーザー確認あり）
 
-#### Condition
+#### 条件
 
-- Step 4 complete
+- ステップ3完了
+- 更新が必要なファイルを持つコンシューマーが1つ以上ある
 
-#### Process
+#### 処理
 
-1. List every file updated per consumer.
-2. Show `git diff` (truncate if large).
-3. If no files changed for a consumer, report "Already up to date".
-4. Suggest a commit message:
+1. ステップ4 のコンシューマーごとのサマリーを表示する。
+2. ユーザーに確認する: 「全コンシューマーの仕組みファイルを更新しますか？（yes / スキップするプラグインを指定）」
+3. ユーザーが承認した各コンシューマーについて:
+
+   a. 4つのフックスクリプトとテンプレートを**上書き**する（該当箇所はプレースホルダを置換）。
+
+   b. **`hooks.json` をマージ**: ファイル全体を上書きしない — `PreToolUse(Edit|Write|MultiEdit|Read)` エントリを見つけてテンプレートのエントリに差し替える。コンシューマーの `hooks.json` にある他のエントリはそのまま保持する。
+
+4. 各コンシューマーへの書き込み後、`{plugin_root}/hooks/` を grep して残存する `__PLACEHOLDER__` トークンがないか確認し、あれば報告する。
+
+→ ステップ5へ
+
+#### 注意
+
+##### 禁止事項
+
+- `references/` の内容（doc・`_index.yaml`・`_injection_rules.yaml`・`CLAUDE.md`）を上書きしない
+- `hooks.json` を全体置換しない — PreToolUse エントリは必ずインプレースでマージする
+
+---
+
+### ステップ5: 完了報告
+
+#### 条件
+
+- ステップ4完了
+
+#### 処理
+
+1. コンシューマーごとに更新したファイルを一覧表示する。
+2. `git diff` を表示する（大きい場合は省略）。
+3. コンシューマーのファイルに変更がなかった場合は「Already up to date」と報告する。
+4. コミットメッセージ案を提示する:
    - `chore: sync ref-inject injection hook to v{N}`
-   - Read `{N}` from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`
-6. **This skill never commits** — committing is the user's responsibility.
+   - `{N}` は `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` から取得
+6. **このスキルはコミットしない** — コミットはユーザーの責務。
 
-→ Done
+→ 完了
 
-#### Notes
+#### 注意
 
-##### Prohibitions
+##### 禁止事項
 
-- Auto-committing
+- 自動コミット

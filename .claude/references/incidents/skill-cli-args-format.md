@@ -1,42 +1,43 @@
-# Sub-skill designed with CLI-style argument flags
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
-## Background
+# サブスキルを CLI 風の引数フラグで設計してしまった
 
-In PR131, an `issue-log` sub-skill was created to encapsulate the "write one issue
-to disk" logic shared between `issue-scan` and `issue-create`. The initial SKILL.md
-specified inputs as if they were CLI flags:
+## 背景
+
+PR131 で、`issue-scan` と `issue-create` で共通する「イシューを 1 件保存する」
+ロジックをサブスキル `issue-log` として切り出した。最初の SKILL.md では入力を
+CLI フラグのように記述していた:
 
 ```
 /work-kit:issue-log --title "..." --type refactor --priority medium --tags tag1,tag2 --scope "..." --problem "..." --fix "..."
 ```
 
-The SKILL.md even included a parameter table (Required / Optional columns) and a
-"parse arguments" Step 1 that referenced extracting flags.
+SKILL.md には Required / Optional のパラメータ表もあり、ステップ 1 は
+「引数をパースする」処理が書いてあった。
 
-## What the user pointed out
+## ユーザーの指摘
 
 > あのスキルって別にその引数とかそういう概念ないから
 > クロードコードのスキルについて読んでみたら
 > スキルってあの何やろ引数みたいな感じで渡す感じじゃないから
 
-Claude Code skills are not invoked like CLI commands. A skill is a Markdown file
-loaded into the model's context — there is no argument parser, no required-vs-optional
-schema, no positional/flag distinction. Whatever the caller wants the sub-skill to
-know just becomes part of the surrounding prompt text.
+Claude Code のスキルは CLI コマンドのように呼ばれるものではない。スキルは
+モデルのコンテキストにロードされる Markdown ファイルにすぎず、引数パーサーも、
+必須/任意のスキーマも、位置/フラグの区別もない。呼び出し側がサブスキルに
+伝えたい内容は、呼び出し時の周辺プロンプトテキストに含めるだけで足りる。
 
-## Lesson
+## 教訓
 
-When a sub-skill receives data from a caller:
+サブスキルが呼び出し側からデータを受け取る場合:
 
-- Describe the expected inputs in **natural-language bullet points**, not CLI flags
-- Use a "受け取る情報" / "Information received from the caller" section listing
-  required vs optional items with one-line semantics
-- Do not write a fake invocation form like `/work-kit:sub-skill --flag value`
-- The caller's responsibility is to mention each field in the surrounding text;
-  the sub-skill's responsibility is to enumerate what it expects
+- 期待される入力は **自然言語の箇条書き** で書く。CLI フラグの形式は使わない
+- 「受け取る情報」セクションで必須/任意の項目を箇条書きにし、各項目の意味を
+  1 行で記述する
+- `/work-kit:sub-skill --flag value` のような偽の呼び出し形式は書かない
+- 呼び出し側は周辺テキストで各フィールドに触れる責務を持ち、サブスキル側は
+  「何を期待するか」を列挙する責務を持つ
 
-## Recurrence prevention
+## 再発防止
 
-For any future sub-skill that processes input from a calling skill, write the
-"Overview" section as a bullet list of input fields with semantics, not as a
-CLI-style argument table.
+呼び出し元から入力を受け取るサブスキルは、SKILL.md の「概要」セクションを
+CLI 引数表ではなく、入力フィールドと意味の箇条書きで記述する。

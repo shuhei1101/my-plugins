@@ -1,8 +1,10 @@
-# Orphan references not checked after adding (PR140)
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# 新規 reference 追加後の orphan チェック漏れ（PR140）
 
-## What happened
+## 何が起きたか
 
-py-kit references were rebuilt into 38 → 43 files across 10 topic folders. `injection_rules.yaml` was authored by hand. After the third commit, the user asked: "ちゃんと全部のフォルダに紐づくようになっているか調べて". A quick YAML-vs-filesystem diff script revealed **5 references were orphans** (existed under `references/` but were not referenced by any `rules[].pattern`):
+py-kit references を 38 → 43 ファイル、10 トピックフォルダに再構築。`injection_rules.yaml` は手書きで書いた。3 コミット目のあと、ユーザーが「ちゃんと全部のフォルダに紐づくようになっているか調べて」と質問。
+簡単な YAML vs filesystem 差分スクリプトで **5 件の orphan**（`references/` 配下に存在するが、どの `rules[].pattern` からも参照されていない）が発覚:
 
 - `scripts/python-script.md`
 - `scripts/tkinter.md`
@@ -10,18 +12,18 @@ py-kit references were rebuilt into 38 → 43 files across 10 topic folders. `in
 - `performance/cheatsheet.md`
 - `architecture/refactoring-judgement.md`
 
-The orphans were files for which AI either:
-- Forgot to add a binding rule when creating the reference
-- Assumed they'd be invoked manually only (e.g. `cheatsheet.md`, `tkinter.md`)
-- Created the reference as a "fallback explanation" without a path pattern in mind
+これらは AI が:
+- reference を作成した時に紐付けルールを書き忘れた
+- 手動呼び出しのみと暗黙的に想定していた（`cheatsheet.md`、`tkinter.md` など）
+- パスパターンを意識せず「補足説明用」として作った
 
-## Root cause
+## 根本原因
 
-AI added references without a verification step. When 38+ references and 20+ rules are juggled in one pass, **silent drift between the two sets is invisible** without scripted checking.
+AI は reference を追加するだけで検証ステップを実行しなかった。38 個以上の reference と 20 個以上の rule を一気に扱うと、**両者間の silent drift はスクリプトでチェックしないと見えない**。
 
-## Lesson
+## 教訓
 
-**After every `injection_rules.yaml` edit, run an orphan-check script.** Minimal Python (no extra deps beyond pyyaml):
+**`injection_rules.yaml` を編集したら必ず orphan 検出スクリプトを実行する。** 最小 Python（pyyaml 以外の依存なし）:
 
 ```python
 import yaml, pathlib
@@ -47,14 +49,14 @@ print('orphan:', orphans)
 print('unknown:', unknowns)
 ```
 
-Run on:
-- Any new reference creation
-- Any `injection_rules.yaml` edit
-- Before merging PRs that touch references
+実行タイミング:
+- 新規 reference 作成時
+- `injection_rules.yaml` 編集時
+- references に触る PR をマージする前
 
-For references that genuinely have no path-pattern home (e.g. `performance/cheatsheet.md` — only loaded during manual profiling work), document the intentional exception in `injection_rules.yaml` as a YAML comment **or** assign a best-fit pattern (e.g. `**/benchmarks/**/*.py`).
+パスパターンに本当に当てはまる場所がない reference（例: `performance/cheatsheet.md` — 手動のプロファイリング作業時にしか読まれない）は、`injection_rules.yaml` に YAML コメントで意図的例外を明示する **か**、ベストフィットなパターンを当てる（例: `**/benchmarks/**/*.py`）。
 
-## Related
+## 関連
 
-- PR140 fix: commit 2492991 (added 5 patterns to absorb the orphans)
-- Same pattern would apply to any plugin using `references/` + `injection_rules.yaml`
+- PR140 修正: コミット 2492991（5 パターン追加で orphan 吸収）
+- `references/` + `injection_rules.yaml` を使う他プラグインにも同じパターンが適用される

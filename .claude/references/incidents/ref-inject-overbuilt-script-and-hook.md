@@ -1,32 +1,30 @@
-# ref-inject over-built a generator script and a PreCompact hook
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# ref-inject で生成スクリプトと PreCompact フックを過剰実装した
 
-## What happened
+## 何が起きたか
 
-While building the `ref-inject` plugin (PR156), AI added two mechanisms the user then removed:
+`ref-inject` プラグインの構築中（PR156）、AI は次の2つの仕組みを追加したが、ユーザーがいずれも削除した:
 
-1. A deterministic `scripts/generate.py` that copied templates, substituted placeholders, and
-   registered the plugin in `marketplace.json`. The user removed it — they wanted Claude to
-   **read the templates and write the files itself**, because that keeps the generation in
-   conversation context and is adaptable per plugin.
-2. A `PreCompact` hook (`refresh_on_compact.py`) that deleted the session token after `/compact`
-   so references would re-inject immediately. The user removed it because the **TTL token
-   already re-injects** once it expires, so a dedicated compact hook was wasted overhead.
+1. テンプレートをコピーし、プレースホルダを置換し、`marketplace.json` に登録する決定論的な
+   `scripts/generate.py`。ユーザーは削除を指示 — **Claude がテンプレートを読んで自分で書く**方式を
+   望んだ。そのほうが生成がコンテキストに残り、プラグインごとに調整しやすいため。
+2. `/compact` 後にセッショントークンを削除して即再注入させる `PreCompact` フック
+   （`refresh_on_compact.py`）。**TTL トークンが期限経過で再注入する**ため、compact 専用フックは
+   無駄と判断され削除された。
 
-## Why it matters
+## なぜ問題か
 
-Both were extra machinery for behavior the simpler existing path already covered (Claude-driven
-copy; TTL expiry). Each added a file to maintain for no net benefit.
+どちらも、より単純な既存の経路（Claude 主導コピー / TTL 期限切れ）で既に賄える挙動のための
+余計な仕組みだった。それぞれ、得るものが無いのに保守対象ファイルを増やした。
 
-## Lesson
+## 教訓
 
-- For per-plugin / per-file generation in this repo, prefer **Claude-driven copy + substitute**
-  over a deterministic script — the work stays in context and stays adaptable.
-- Do **not** add a dedicated hook for behavior an existing mechanism (here, the TTL token)
-  already provides.
-- Default to the leanest mechanism; add infrastructure only when the simple path demonstrably
-  falls short.
+- このリポジトリでのプラグイン／ファイル生成は、決定論的スクリプトより **Claude 主導の
+  コピー + 置換**を優先する — 作業がコンテキストに残り、調整しやすい。
+- 既存の仕組み（ここでは TTL トークン）が既に提供する挙動のために、専用フックを追加しない。
+- 最小の仕組みをデフォルトにし、単純な経路が明確に不足する場合にだけインフラを足す。
 
-## Related
+## 関連
 
-- PR156: ref-inject created; generate.py and refresh_on_compact.py both added then removed
-- Related theme: [[premature-cross-plugin-centralization]], [[session-kit-removed-after-premise-change]]
+- PR156: ref-inject を作成。generate.py と refresh_on_compact.py を両方追加後に削除
+- 同系の教訓: [[premature-cross-plugin-centralization]]、[[session-kit-removed-after-premise-change]]

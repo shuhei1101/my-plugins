@@ -1,98 +1,100 @@
 ---
 name: work:start
 description: |
-  Start a new branch: decide the branch name, collect details, add the index.yaml entry in the main
-  repo, create a worktree, then create the single per-branch task document INSIDE the worktree.
-  Trigger when the user says "新しいブランチを切って", "新しい作業を始めたい", "work-start して",
-  "start new work", or "create a new branch".
+  新しいブランチを切って開始：ブランチ名を決定し、詳細を収集し、メインリポの index.yaml エントリを追加し、
+  ワークツリーを作成してから、ワークツリー内に単一のブランチごとのタスクドキュメントを作成する。
+  「新しいブランチを切って」「新しい作業を始めたい」「work-start して」「start new work」
+  「create a new branch」などのトリガーキーワードで実行。
 ---
 
-# work:start — Start a New Branch
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-Creates the worktree first, then creates the single per-branch task document inside it.
-This prevents task documents from being created in the main repository.
+# work:start — 新しいブランチを開始
 
-> **Naming**: branches use `{type}/{title}` by default. If `${WORK_BRANCH_AUTHOR}` is set, the author
-> segment is inserted: `{type}/{author}/{title}` (e.g. `feat/nishikawa/test-update`).
-> The worktree mirrors the full branch name with slashes replaced by hyphens: `{repo}-wt-{branch-hyphenated}`.
-> The task document filename is `{YYMMDD}-{日本語タイトル}.task.md` — the Japanese title collected in Step 2
-> (e.g. `260531-タスクドキュメントファイル名変更.task.md`). The `.task.md` extension marks it as the task
-> document (the task folder may also hold user files). The git branch name is recorded inside the document header.
-> The branch index (`index.yaml`) is keyed by the branch name; there is no numeric ID or `last_id`.
+ワークツリーを作成してから、その中に単一のブランチごとのタスクドキュメントを作成します。
+これにより、タスクドキュメントがメインリポに作成されるのを防ぎます。
+
+> **命名規則**: デフォルトでは `{type}/{title}` を使用します。`${WORK_BRANCH_AUTHOR}` が設定されている場合は、
+> 作者名セグメントが挿入されます：`{type}/{author}/{title}`（例：`feat/nishikawa/test-update`）。
+> ワークツリーはブランチ名のスラッシュをハイフンに変換したパスになります：`{repo}-wt-{branch-hyphenated}`。
+> タスクドキュメントのファイル名は `{YYMMDD}-{日本語タイトル}.task.md` 形式です（Step 2 で収集する日本語タイトルを使用）
+>（例：`260531-タスクドキュメントファイル名変更.task.md`）。`.task.md` 拡張子はそれがタスクドキュメントであることを示します
+>（タスクフォルダにはユーザーファイルも含まれることがあります）。git ブランチ名はドキュメントヘッダー内に記録されます。
+> ブランチインデックス（`index.yaml`）はブランチ名をキーとします。数値 ID や `last_id` は存在しません。
 
 ---
 
-## Tasks
+## タスク
 
-### Step 1: Decide the branch name
+### ステップ 1: ブランチ名を決定
 
-#### Condition
+#### 条件
 
-- Always — run first
+- 常に実行 — 最初に実行
 
-#### Process
+#### 処理
 
-1. Determine the branch suffix from the requested work:
+1. リクエストされた作業からブランチサフィックスを決定します：
    - **Type**: `feat` / `fix` / `refactor` / `docs` / `chore` / `test`
-   - **Title**: short kebab-case label that describes the work
-2. Check `${WORK_BRANCH_AUTHOR}` to build the full branch name:
+   - **Title**: 作業を説明する簡潔な kebab-case ラベル
+2. `${WORK_BRANCH_AUTHOR}` を確認して完全なブランチ名を決定します：
 
    ```bash
    author="${WORK_BRANCH_AUTHOR:-}"
    ```
 
-   - If `$author` is non-empty: branch name is `{type}/${author}/{title}` (e.g. `feat/nishikawa/test-update`)
-   - If `$author` is empty or unset: branch name is `{type}/{title}` (e.g. `feat/test-update`)
+   - `$author` が空でない場合: ブランチ名は `{type}/${author}/{title}`（例：`feat/nishikawa/test-update`）
+   - `$author` が空または未設定の場合: ブランチ名は `{type}/{title}`（例：`feat/test-update`）
 
-→ Proceed to Step 2
+→ ステップ 2 へ
 
-#### Output
+#### 出力
 
-- Branch name decided (with or without author segment)
-
----
-
-### Step 2: Collect request details
-
-#### Condition
-
-- Step 1 complete
-
-#### Process
-
-1. Determine the following:
-   - **日本語タイトル**: descriptive Japanese title for this branch work — used in the document H1 and as the file name (e.g. `タスクドキュメントファイル名変更`)
-   - **TODO list**: what will be done on this branch (becomes the checklist)
-   - **Linked issue(s)**: is this branch addressing one or more `.work/issues/ISSUE-{N}`? (e.g. invoked
-     by `work:issue-resolve`, or the user said "start a branch for ISSUE-123"). If so, record the IDs —
-     Step 6 links them (sets `status: in_progress`, appends the branch, fills `## 関連イシュー`).
-   - **Note**: does a related note exist in `.work/notes/`? Or does one need to be created?
-   - **Open questions**: anything that needs to be confirmed or decided before starting implementation.
-     Check from these angles:
-     - **Maintainability / extensibility**: Is this approach manageable long-term? Is there a simpler alternative?
-     - **Scope / cost**: Is the implementation over-engineered for the requirement?
-     - **Performance**: Are there concerns about processing load, speed, or token consumption?
-     - **Library / tool selection**: When multiple options exist, which one to use?
-     - **Alternative implementation**: Is there a better approach than what the user described?
-     - **Breaking changes**: Does this affect existing behavior or interfaces?
-
-→ Proceed to Step 3
-
-#### Output
-
-- 日本語タイトル `{日本語タイトル}`, TODO list, note info, and open questions confirmed
+- ブランチ名が決定されました（作者名セグメントあり/なし）
 
 ---
 
-### Step 3: Add entry to index.yaml (main repository)
+### ステップ 2: リクエスト詳細を収集
 
-#### Condition
+#### 条件
 
-- Step 2 complete
+- Step 1 完了
 
-#### Process
+#### 処理
 
-1. Run the following command to add the new branch entry:
+1. 以下を決定します：
+   - **日本語タイトル**: このブランチ作業を表す日本語の説明タイトル — 文書の H1 およびファイル名に使用（例：`タスクドキュメントファイル名変更`）
+   - **TODO リスト**: このブランチで何をするか（チェックリストになります）
+   - **連携イシュー**: このブランチは `.work/issues/ISSUE-{N}` を 1 件以上対応するものか？
+     （例: `work:issue-resolve` から起動された、ユーザーが「ISSUE-123 のブランチを切って」と言った）。
+     該当する場合は ID を記録する — Step 6 で連携する（`status: in_progress` 設定・ブランチ追記・`## 関連イシュー` 記入）。
+   - **ノート**: `.work/notes/` に関連するノートが存在しますか？または作成が必要ですか？
+   - **未解決の質問**: 実装を進める前に確認・決定が必要な点はありますか？
+     以下の観点で洗い出してください：
+     - **保守性・拡張性**: この実装方針は長期的に管理しやすいか。より単純な代替はないか
+     - **スコープ・コスト**: 要件に対してオーバースペックな実装になっていないか
+     - **パフォーマンス**: 処理負荷・実行速度・トークン消費などに懸念はないか
+     - **ライブラリ・ツール選定**: 複数の選択肢がある場合、どれを使うか
+     - **代替実装**: ユーザーの指示より適した実装アプローチがあるか
+     - **破壊的変更**: 既存の動作・インターフェースへの影響はないか
+
+→ ステップ 3 へ
+
+#### 出力
+
+- 日本語タイトル `{日本語タイトル}`、TODO リスト、ノート情報、未解決の質問が確認されました
+
+---
+
+### ステップ 3: index.yaml にエントリを追加（メインリポジトリ）
+
+#### 条件
+
+- Step 2 完了
+
+#### 処理
+
+1. 以下のコマンドを実行して新しいブランチエントリを追加します：
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
@@ -103,229 +105,228 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --task "{YYMMDD}_{title}"
 ```
 
-→ Proceed to Step 4
+→ ステップ 4 へ
 
-#### Output
+#### 出力
 
-- `.work/tasks/index.yaml` updated with the new branch entry (main repository)
+- `.work/tasks/index.yaml` が新しいブランチエントリで更新されました（メインリポジトリ）
 
-#### Notes
+#### 注記
 
-- `index.yaml` is excluded by `.work/tasks/.gitignore` — no commit to master is needed
-- Use a 6-digit `YYMMDD` (e.g. `260530`), not the 8-digit `YYYYMMDD` form
-- `--branch` records the git branch name; `--title` records the Japanese document title
+- `index.yaml` は `.work/tasks/.gitignore` で除外されます — master へのコミットは不要です
+- 6 桁の `YYMMDD`（例：`260530`）を使用してください。8 桁の `YYYYMMDD` 形式は使用しないでください
+- `--branch` は git ブランチ名を記録します。`--title` は日本語の文書タイトルを記録します
 
 ---
 
-### Step 4: Create the worktree and branch (if enabled)
+### ステップ 4: ワークツリーとブランチを作成（有効な場合）
 
-#### Condition
+#### 条件
 
-- Step 3 complete
+- Step 3 完了
 
-#### Process
+#### 処理
 
-1. Check whether worktree usage is enabled. It is **enabled by default**; disabled only when the
-   `${WORK_USE_WORKTREE}` env var is set to a falsy value (`false` / `0` / `no` / `off`):
+1. ワークツリーの使用が有効になっているかどうかを確認します。デフォルトでは **有効** です。
+   `${WORK_USE_WORKTREE}` 環境変数が偽値（`false` / `0` / `no` / `off`）に設定されている場合のみ無効です：
 
    ```bash
    v="${WORK_USE_WORKTREE:-true}"; case "${v,,}" in false|0|no|off) echo disabled;; *) echo enabled;; esac
    ```
 
-2. **If enabled**: invoke `/work:worktree-create` with the full branch name (including author if set):
+2. **有効な場合**: `/work:worktree-create` を完全なブランチ名（作者名セグメント含む）で実行します：
 
    > `/work:worktree-create {full-branch-name}`
    >
-   > e.g. `/work:worktree-create feat/nishikawa/test-update` or `/work:worktree-create feat/test-update`
+   > 例：`/work:worktree-create feat/nishikawa/test-update` または `/work:worktree-create feat/test-update`
 
-3. **If disabled**: skip worktree creation and notify the user:
+3. **無効な場合**: ワークツリー作成をスキップしてユーザーに通知します：
 
    > ⚠️ `${WORK_USE_WORKTREE}` が無効のため、ワークツリーの作成をスキップします。  
    > `.work/` フォルダ管理のみで作業を続けます。  
    > ワークツリーを使用したい場合は `settings.json` の `env` から `${WORK_USE_WORKTREE}` を外すか `true` に設定してください。
 
-→ Proceed to Step 5
+→ ステップ 5 へ
 
-#### Output
+#### 出力
 
-- (worktree enabled) Worktree created at `../{repo}-wt-{branch-hyphenated}`, branch exists
-- (worktree disabled) No worktree; proceed with `.work/` folder management only
+- （ワークツリー有効）ワークツリーが `../{repo}-wt-{branch-hyphenated}` に作成され、ブランチが存在します
+- （ワークツリー無効）ワークツリーなし。`.work/` フォルダ管理のみで続行します
 
-#### Notes
+#### 注記
 
-##### Prohibitions
+##### 禁止事項
 
-- Never commit directly to master/main
-
----
-
-### Step 5: Determine the task folder (autonomous judgment)
-
-#### Condition
-
-- Step 4 complete
-
-#### Process
-
-1. Read all folder names under `.work/tasks/` in the worktree
-2. Compare each folder name (`YYMMDD_title` format) against the purpose of this branch and decide:
-   - **Add to existing folder**: an existing folder covers the same goal or feature area, and this branch fits naturally as part of it
-     - Examples: splitting a feature across multiple branches, a follow-up fix, related refactoring
-   - **Create new folder**: no existing folder is closely related, or `.work/tasks/` is empty
-3. Decide the branch-document path inside the worktree `{wt}`
-   (`{wt}` = `../$(basename $(pwd))-wt-{branch-hyphenated}`, slashes in the full branch name → hyphens):
-   - New folder: `{wt}/.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md`
-   - Existing folder: `{wt}/.work/tasks/{existing_folder_name}/{YYMMDD}-{日本語タイトル}.task.md`
-
-→ Proceed to Step 6
-
-#### Output
-
-- Task folder strategy (new or existing) and the full branch-document path are confirmed
-
-#### Notes
-
-- Do not ask the user — decide autonomously based on content
-- When in doubt, create a new folder (folders can be consolidated later)
-- New folders must use the 6-digit `YYMMDD` prefix and a **Japanese title** (e.g. `260530_タスクフォルダ命名統一`)
+- master/main に直接コミットしないでください
 
 ---
 
-### Step 6: Create and fill in the task document (inside worktree)
+### ステップ 5: タスクフォルダを決定（自動判断）
 
-#### Condition
+#### 条件
 
-- Step 5 complete
+- ステップ 4 完了
 
-#### Process
+#### 処理
 
-1. `Write` the task document at the path decided in Step 5
-   (`{YYMMDD}-{日本語タイトル}.task.md`).
-2. The **template is auto-injected** by the ref-inject hook the moment you write a `.task.md`
-   file under `.work/tasks/` (your first write is blocked once and the full template +
-   section fill-in guide from `references/work-dir/タスクドキュメント.md` appears). Author the
-   document from that injected template — there is **no script** and no template file to copy.
-3. Fill in the real plan as you write:
-   - H1 = `{日本語タイトル}`; `> ブランチ:` = the full git branch name.
-   - `## 概要` (incl. `### 実施条件` — `即時実施可` or `「{other branch}」が完了してから`,
-     mirroring the triggering branch's `## 次ブランチ候補` row).
-   - `## 作業内容` — keep the mandatory rows (record QA / update note); add the implementation tasks.
-   - `## 変更内容` / `## テスト` — leave placeholder rows; fill in during implementation.
-   - `## QA` — open questions from Step 2 (Step 7 appends them).
-   - `## 参考ドキュメント` — leave empty; the note path is added in the final commit (Step 9).
-   - `## 関連イシュー` — issues this branch resolves; **delete the heading + table if none**.
-   - `## 関連ブランチ` / `## 次ブランチ候補` — fill from this session, or leave placeholders.
-4. **If this branch is linked to issue(s)** (from Step 2), link each `ISSUE-{N}` now:
-   - In the task document's `## 関連イシュー` table, add a row for each linked issue.
-   - Issue files have **no frontmatter** — the work state (`status` / `branches`) lives in the
-     **main repo's** `_index.yaml` (git-ignored, not present in the worktree). Set the status and
-     append the branch there so other sessions see it as in progress:
+1. ワークツリーの `.work/tasks/` 配下のすべてのフォルダ名を読み込みます
+2. 各フォルダ名（`YYMMDD_title` 形式）とこのブランチの目的を比較して決定します：
+   - **既存フォルダに追加**: 既存フォルダが同じ目標または機能エリアをカバーしており、
+     このブランチがそれの一部として自然に適合する
+     - 例：機能を複数ブランチに分割、フォローアップ修正、関連リファクタリング
+   - **新しいフォルダを作成**: 関連する既存フォルダがない、または `.work/tasks/` が空
+3. ワークツリー `{wt}` 内のタスクドキュメントのパスを決定します
+   （`{wt}` = `../$(basename $(pwd))-wt-{branch-hyphenated}`、フルブランチ名のスラッシュはハイフンに変換）：
+   - 新規フォルダ: `{wt}/.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md`
+   - 既存フォルダ: `{wt}/.work/tasks/{existing_folder_name}/{YYMMDD}-{日本語タイトル}.task.md`
+
+→ ステップ 6 へ
+
+#### 出力
+
+- タスクフォルダ戦略（新規または既存）とタスクドキュメントの完全なパスが確認されました
+
+#### 注記
+
+- ユーザーに質問しないでください — コンテンツに基づいて自動判断してください
+- 迷う場合は新しいフォルダを作成してください（フォルダは後で統合できます）
+- 新規フォルダは 6 桁 `YYMMDD` プレフィックスと**日本語タイトル**を使う（例：`260530_タスクフォルダ命名統一`）
+
+---
+
+### ステップ 6: タスクドキュメントを作成・記入（ワークツリー内）
+
+#### 条件
+
+- ステップ 5 完了
+
+#### 処理
+
+1. ステップ 5 で決定したパスに `Write` でタスクドキュメントを作成します
+   （`{YYMMDD}-{日本語タイトル}.task.md`）。
+2. **テンプレートは自動注入されます** — `.work/tasks/` 配下の `.task.md` ファイルを書き込んだ瞬間に ref-inject hook が起動し、
+   `references/work-dir/タスクドキュメント.md` の完全なテンプレート＋セクション記入ガイドが表示されます。
+   **スクリプトはなく**、そのテンプレートから実装を進めてください。
+3. 実際の計画として記入してください：
+   - H1 = `{日本語タイトル}`、`> ブランチ:` = 完全な git ブランチ名。
+   - `## 概要`（`### 実施条件` を含む — `即時実施可` または `「{other branch}」が完了してから`、
+     トリガーブランチの `## 次ブランチ候補` 行をミラー）。
+   - `## 作業内容` — 必須行を保持（QA 記録・ノート更新）し、実装タスクを追加。
+   - `## 変更内容` / `## テスト` — プレースホルダー行は実装中に記入。
+   - `## QA` — ステップ 2 からの未解決の質問（ステップ 7 で追加されます）。
+   - `## 参考ドキュメント` — 空のまま。ノートパスは最終コミット（ステップ 9）で追加されます。
+   - `## 関連イシュー` — このブランチが解決するイシュー；**関連イシューがない場合は見出し+テーブルを削除**。
+   - `## 関連ブランチ` / `## 次ブランチ候補` — このセッションから記入、またはプレースホルダーを残す。
+4. **このブランチが連携イシューを持つ場合**（ステップ 2 より）、各 `ISSUE-{N}` をここで連携する：
+   - タスクドキュメントの `## 関連イシュー` テーブルに各連携イシューの行を追加。
+   - イシューファイルは**フロントマターを持たない** — 作業状態（`status` / `branches`）は
+     **メインリポジトリ**の `_index.yaml`（git 管理外、ワークツリーには存在しない）にある。
+     他セッションが進行中と分かるよう、そこへ status と branch を設定する：
      ```bash
      python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" set-status \
        --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --status in_progress
      python "${CLAUDE_PLUGIN_ROOT}/scripts/issue-tool.py" add-branch \
        --issues-dir {MAIN_REPO}/.work/issues --issue-id ISSUE-{N} --branch {full-branch-name}
      ```
-     (`{MAIN_REPO}` = the original repo root, i.e. the worktree's parent checkout. Skip silently if
-     that path has no `.work/issues`.)
+     （`{MAIN_REPO}` = 元のリポジトリルート = ワークツリーの親チェックアウト。そこに `.work/issues` が
+     無ければ黙ってスキップ）
 
-The injected `タスクドキュメント.md` reference is the single source of truth for the section
-structure and rules — follow it.
+注入された `タスクドキュメント.md` リファレンスがセクション構造と規則の唯一の情報源です — それに従ってください。
 
-→ Proceed to Step 7
+→ ステップ 7 へ
 
-#### Output
+#### 出力
 
-- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.task.md` created and filled with the plan
-
----
-
-### Step 7: Record open questions in the `## QA` section (inside worktree)
-
-#### Condition
-
-- Step 6 complete
-
-#### Process
-
-1. Append any open questions from Step 2 to the `## QA` section of the task document as QA-XXX entries
-2. Skip if there are no open questions
-
-→ Proceed to Step 8
+- `{wt}/.work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.task.md` が作成され、計画で記入されました
 
 ---
 
-### Step 8: First commit — create task document, then start implementation
+### ステップ 7: `## QA` セクションに開いている質問を記録（ワークツリー内）
 
-#### Process
+#### 条件
 
-1. Commit **only the task document** inside the worktree (branch: `{branch}`)
-   - Do **not** include notes at this stage — notes are committed in the final Step 9
-2. Report what was created: branch name, worktree path, task document path
-3. Start implementation:
-   - **If QA entries exist** → ask the user for confirmation before starting
-   - **If no QA entries** → proceed with implementation immediately
+- ステップ 6 完了
 
-#### Notes
+#### 処理
 
-##### Prohibitions
+1. ステップ 2 からの開いている質問をタスクドキュメントの `## QA` セクションに QA-XXX エントリとして追加
+2. 開いている質問がない場合はスキップ
 
-- Never commit to anywhere other than the created worktree (`{branch}` branch)
-- Never include notes or final updates in this first commit
+→ ステップ 8 へ
 
-##### Commit granularity
+---
 
-- Commit in meaningful units that are easy for the user to understand
-- Do not split commits too finely
-- Do not mix planning documents (task document) and implementation code in the same commit
+### ステップ 8: 最初のコミット — タスクドキュメントを作成し、実装を開始
 
-##### Commit ordering
+#### 処理
 
-This commit is always the **first** commit of the branch.
-Implementation commits follow in the middle.
-The final commit (Step 9) closes the branch with notes and task document updates.
+1. ワークツリー内の**タスクドキュメントのみ**をコミット（ブランチ：`{branch}`）
+   - この段階ではノートを含めない — ノートは最終 ステップ 9 でコミットします
+2. 作成内容をレポート：ブランチ名、ワークツリーパス、タスクドキュメントパス
+3. 実装開始：
+   - **QA エントリが存在する場合** → 開始前にユーザーの確認を求める
+   - **QA エントリがない場合** → すぐに実装を開始
 
-##### Commit message language
+#### 注記
 
-Read the following env vars before composing every commit message:
+##### 禁止事項
+
+- 作成されたワークツリー（`{branch}` ブランチ）以外にコミットしないでください
+- この最初のコミットにノートや最終更新を含めないでください
+
+##### コミット粒度
+
+- ユーザーが理解しやすい意味のある単位でコミット
+- コミットを細かく分割しないでください
+- 計画ドキュメント（タスクドキュメント）と実装コードを同じコミットに混ぜないでください
+
+##### コミット順序
+
+このコミットは常にブランチの**最初**のコミット。
+実装コミットが中間に続く。
+最終コミット（ステップ 9）はノートとタスクドキュメント更新でブランチを締める。
+
+##### コミットメッセージ言語
+
+コミットメッセージを作成する前に、以下の env var を読み込む：
 
 ```bash
 lang="${WORK_COMMIT_LANG:-JP}"
 use_type_raw="${WORK_COMMIT_TYPE:-true}"; case "${use_type_raw,,}" in false|0|no|off) use_type=false;; *) use_type=true;; esac
 ```
 
-- **`${WORK_COMMIT_LANG}`** (default `JP`): `JP` → Japanese; `EN` → English. Both subject and body follow this setting. Metadata lines like `Co-Authored-By:` may remain in English regardless.
-- **`${WORK_COMMIT_TYPE}`** (default `true`): truthy → include `feat:` / `fix:` / `chore:` etc. prefix; falsy → omit the type prefix entirely.
+- **`${WORK_COMMIT_LANG}`**（デフォルト `JP`）：`JP` → 日本語、`EN` → 英語。サブジェクトとボディの両方がこの設定に従う。`Co-Authored-By:` などのメタデータ行は設定に関わらず英語のままでよい。
+- **`${WORK_COMMIT_TYPE}`**（デフォルト `true`）：truthy → `feat:` / `fix:` / `chore:` などのプレフィックスを付ける、falsy → タイププレフィックスを省略する。
 
-| `${WORK_COMMIT_LANG}` | `${WORK_COMMIT_TYPE}` | Example commit message |
+| `${WORK_COMMIT_LANG}` | `${WORK_COMMIT_TYPE}` | コミットメッセージ例 |
 |---|---|---|
-| `JP` (default) | `true` (default) | `chore: feat/commit-message-options のタスクドキュメントを作成` |
+| `JP`（デフォルト） | `true`（デフォルト） | `chore: feat/commit-message-options のタスクドキュメントを作成` |
 | `EN` | `true` | `chore: create task document for feat/commit-message-options` |
 | `JP` | `false` | `feat/commit-message-options のタスクドキュメントを作成` |
 | `EN` | `false` | `create task document for feat/commit-message-options` |
 
 ---
 
-### Step 9: Final commit — update notes and task document
+### ステップ 9: 最終コミット — ノートとタスクドキュメントを更新
 
-#### Condition
+#### 条件
 
-- All implementation work is complete
+- すべての実装作業が完了
 
-#### Process
+#### 処理
 
-1. Check `.work/notes/` inside the worktree for a related note
-2. If found → update it to reflect the current state (a note is a **current spec sheet** — overwrite stale text, don't append history)
-3. If not found → create a new note following `ノート記述内容ルール.md` (auto-injected when you edit a file under `.work/notes/`): present state only, no YAML frontmatter, fixed template ending in a `## 変更履歴` table
-   - The note H1 title must be written **entirely in Japanese** (e.g. `# 機能名 — 一行説明`)
-   - Technical identifiers (plugin names, command names, file paths) may remain in their original form
-4. Add a link to the note in the task document's `## 参考ドキュメント` section
-5. Update (or create) `.work/notes/_index.md`:
-   - Add the new note to the appropriate category, or update the entry if the note already existed
-   - If `_index.md` does not exist, create it with all current notes grouped by category
-6. Commit the updated notes + task document together as the **final commit** of the branch
+1. ワークツリーの `.work/notes/` で関連するノートを確認
+2. 見つかった場合 → 現在の状態を反映するよう更新する（ノートは**現在の仕様書** — 古い記述は追記せず上書きする）
+3. 見つからない場合 → `ノート記述内容ルール.md`（`.work/notes/` 配下を編集すると自動注入される）に従って新しいノートを作成：現在状態のみ、YAML frontmatter なし、末尾に `## 変更履歴` テーブルを持つ固定テンプレート
+   - ノートの H1 タイトルは**すべて日本語**で記述する（例：`# 機能名 — 一行説明`）
+   - プラグイン名・コマンド名・ファイルパスなどの固有識別子は元の形式のまま使用可
+4. タスクドキュメントの `## 参考ドキュメント` セクションにノートへのリンクを追加
+5. `.work/notes/_index.md` を更新（または作成）する：
+   - 新しいノートを適切なカテゴリに追加、または既存エントリを更新する
+   - `_index.md` が存在しない場合は、現在のノートを全てカテゴリ別にまとめて新規作成する
+6. 更新したノート＋タスクドキュメントをまとめて**ブランチの最終コミット**としてコミットする
 
-#### Notes
+#### 注記
 
-- This is always the **last** commit of the branch
-- Commit notes and task document together — do not split them
+- これは常にブランチの**最後**のコミット
+- ノートとタスクドキュメントは一緒にコミットする — 分割しないこと

@@ -1,93 +1,94 @@
-# CLAUDE.md Authoring Guide
+<!-- This file is a Japanese mirror of CLAUDE-md記述ガイド.md. When updating the English original, update this file too. -->
+# CLAUDE.md 作成ガイド
 
-How to design, create, and evaluate `CLAUDE.md` (and its `CLAUDE.jp.md` mirror) for a project or
-subfolder. This guide is self-contained: when injected (because you are editing a `CLAUDE.md`),
-follow it to author the file directly. Read `共通ガイド.md` alongside it.
-Japanese mirror: `references/claude-md/CLAUDE-md記述ガイド.jp.md`
+プロジェクトまたはサブフォルダの `CLAUDE.md`（およびその `CLAUDE.jp.md` ミラー）の設計・作成・
+評価の方法。本ガイドは自己完結している: （`CLAUDE.md` を編集しているため）注入されたら、これに
+従ってファイルを直接執筆すること。`共通ガイド.md` を併読すること。
+英語原本: `references/claude-md/CLAUDE-md記述ガイド.md`
 
 ---
 
-## When it loads
+## 読み込まれるタイミング
 
-| Placement | When loaded |
+| 配置 | 読み込まれるタイミング |
 |---|---|
-| Project root | At every session start — always loaded |
-| Subfolder | Lazily, when Claude reads any file in that folder or its subfolders |
+| プロジェクトルート | セッション開始のたび — 常時ロード |
+| サブフォルダ | 遅延、Claude がそのフォルダまたはサブフォルダ内のファイルを読んだとき |
 
-**Root** CLAUDE.md defines the overall project workflow, commit rules, server management, and the
-folder-scoped rule table. **Subfolder** CLAUDE.md describes that folder's contents and local
-conventions, giving Claude context without loading it every session.
+**ルート**の CLAUDE.md はプロジェクト全体のワークフロー、コミット規則、サーバー管理、
+フォルダスコープのルール表を定義する。**サブフォルダ**の CLAUDE.md はそのフォルダの内容と
+ローカル規約を記述し、毎セッションロードせずに Claude にコンテキストを与える。
 
 ---
 
-## Important: keep it thin
+## 重要: 薄く保つ
 
-The root CLAUDE.md is loaded on **every** session — the more content, the more context it consumes.
+ルートの CLAUDE.md は**毎**セッションでロードされる — 内容が多いほどコンテキストを消費する。
 
-### Extraction destination guide
+### 外出し先ガイド
 
-| Content nature | Action |
+| 内容の性質 | アクション |
 |---|---|
-| Needed only when specific files are edited | Move to `.claude/rules/` |
-| Multi-step workflow or procedure | Move to `.claude/skills/` |
-| Relevant only to a specific folder | Move to that subfolder's `CLAUDE.md` |
-| Detailed explanation/reference (read occasionally) | Move to `.claude/references/`; write only the path in CLAUDE.md |
-| Spec/doc already in the project | Write only the path; do not duplicate content |
+| 特定ファイルを編集するときだけ必要 | `.claude/rules/` に移す |
+| 複数ステップのワークフローや手順 | `.claude/skills/` に移す |
+| 特定フォルダにだけ関係する | そのサブフォルダの `CLAUDE.md` に移す |
+| 詳細説明/参照（ときどき読む） | `.claude/references/` に移し、CLAUDE.md にはパスだけ書く |
+| プロジェクトに既にある仕様/ドキュメント | パスだけ書く。内容を複製しない |
 
-### Line count guideline
+### 行数ガイドライン
 
-- Target under 200 lines for the root CLAUDE.md
-- If it exceeds 200 lines, extract domain-specific content to `.claude/rules/`
+- ルートの CLAUDE.md は 200 行未満を目標とする
+- 200 行を超えたら、ドメイン固有の内容を `.claude/rules/` に外出しする
 
 ---
 
-## Authoring workflow
+## 作成ワークフロー
 
-### Step 1 — Gather details
+### ステップ 1 — 詳細を集める
 
-- **Location** — project root (`CLAUDE.md`) or a subfolder (e.g. `src/CLAUDE.md`)?
-- **For root**: overall workflow steps, prohibitions, folder-scoped rule table entries
-- **For subfolder**: what files are in the folder, their roles, local conventions
-- **Content overview** — what instructions/descriptions to include
+- **配置** — プロジェクトルート（`CLAUDE.md`）かサブフォルダ（例: `src/CLAUDE.md`）か？
+- **ルートの場合**: 全体ワークフローのステップ、禁止事項、フォルダスコープのルール表のエントリ
+- **サブフォルダの場合**: フォルダ内のファイル、その役割、ローカル規約
+- **内容の概要** — どんな指示/説明を含めるか
 
-### Step 2 — Validate that CLAUDE.md is the right type
+### ステップ 2 — CLAUDE.md が正しい種別か検証する
 
-| If the content is… | Verdict |
+| 内容が… | 判定 |
 |---|---|
-| Project-wide workflow or global conventions | ✅ CLAUDE.md (root) — correct |
-| Single-folder conventions/descriptions | ✅ CLAUDE.md (subfolder) for co-location; `.claude/rules/` if auditability matters more |
-| Cross-path file sync ("edit X → also update Y, Z elsewhere") | ⚠️ `.claude/rules/` |
-| A multi-step workflow with user interaction | ⚠️ `.claude/skills/` |
-| Mix | ⚠️ Split across file types |
+| プロジェクト全体のワークフローやグローバル規約 | ✅ CLAUDE.md（ルート） — 正しい |
+| 単一フォルダの規約/説明 | ✅ co-location なら CLAUDE.md（サブフォルダ）。監査性が優先なら `.claude/rules/` |
+| クロスパスのファイル同期（「X を編集 → 別の場所の Y, Z も更新」） | ⚠️ `.claude/rules/` |
+| ユーザー操作を伴う複数ステップのワークフロー | ⚠️ `.claude/skills/` |
+| 混在 | ⚠️ ファイル種別を跨いで分割する |
 
-### Step 3 — Write `CLAUDE.jp.md` first, then translate
+### ステップ 3 — まず `CLAUDE.jp.md` を書き、次に翻訳する
 
-CLAUDE.md uses a **description format, not a step format**. Author `CLAUDE.jp.md` in Japanese first,
-keep it under ~200 lines (extract domain content to `.claude/rules/` if longer), then produce the
-English `CLAUDE.md` (by hand or via the `jp-mirror-translator` agent). Stamp both (see `共通ガイド.md`).
-
----
-
-## About `.claude/references/`
-
-For content that conceptually belongs in CLAUDE.md but does not need loading every session.
-Write only the file path in CLAUDE.md — Claude reads the file when it actually needs it.
+CLAUDE.md は**ステップ形式ではなく記述形式**を使う。まず `CLAUDE.jp.md` を日本語で執筆し、
+約 200 行未満に保ち（長ければドメイン内容を `.claude/rules/` に外出し）、それから英語の
+`CLAUDE.md` を（手作業または `jp-mirror-translator` エージェントで）作る。両方にスタンプを付ける（`共通ガイド.md` 参照）。
 
 ---
 
-## Required sections
+## `.claude/references/` について
 
-| Section | Content | Required |
+概念的には CLAUDE.md に属するが毎セッションのロードが不要な内容のための場所。
+CLAUDE.md にはファイルパスだけを書く — Claude は実際に必要になったときにそのファイルを読む。
+
+---
+
+## 必須セクション
+
+| セクション | 内容 | 必須/推奨 |
 |---|---|---|
-| Title | H1 heading | Required |
-| `## Overview` | Project/folder description | Required |
-| `## Folder structure` | Path-to-summary table | Recommended |
-| `## Constraints` | Rules and prohibitions Claude must always follow | Recommended |
-| (Other sections) | Add freely as needed | Optional |
+| タイトル | H1 見出し | 必須 |
+| `## Overview` | プロジェクト/フォルダの説明 | 必須 |
+| `## Folder structure` | パス→概要の表 | 推奨 |
+| `## Constraints` | Claude が常に守るべきルールと禁止事項 | 推奨 |
+| （その他のセクション） | 必要に応じて自由に追加 | 任意 |
 
 ---
 
-## Structure example
+## 構造例
 
 ```markdown
 # Project Name
@@ -111,17 +112,17 @@ Description of this project or folder.
 
 ---
 
-## JP Mirror Sync
+## JP ミラー同期
 
-When editing `CLAUDE.md`, **update `CLAUDE.jp.md` in the same commit**.
+`CLAUDE.md` を編集したら、**必ず同じコミットで `CLAUDE.jp.md` も更新する**。
 
-| Edited file | Must also update |
+| 編集したファイル | 必ず同時に更新するファイル |
 |---|---|
 | `CLAUDE.md` | `CLAUDE.jp.md` |
 | `plugins/{name}/CLAUDE.md` | `plugins/{name}/CLAUDE.jp.md` |
 
-### Checklist before committing
+### コミット前チェックリスト
 
-- [ ] Changes in `CLAUDE.md` are reflected in `CLAUDE.jp.md` in Japanese
-- [ ] Section structure in `CLAUDE.jp.md` matches `CLAUDE.md`
-- [ ] `CLAUDE.jp.md` has the JP mirror warning comment at the top (`<!-- This file is a Japanese mirror of CLAUDE.md ... -->`)
+- [ ] `CLAUDE.md` の変更内容が `CLAUDE.jp.md` に日本語で反映されている
+- [ ] `CLAUDE.jp.md` のセクション構成が `CLAUDE.md` と一致している
+- [ ] `CLAUDE.jp.md` の冒頭に JP ミラー警告コメント（`<!-- This file is a Japanese mirror of CLAUDE.md ... -->`）が含まれている

@@ -1,121 +1,117 @@
 ---
 name: work:issue-review
 description: |
-  Review un-reviewed issues one by one by recording answers in their "ユーザー回答欄" (user answer
-  section): check one `## 意思` option (対応する（自動マージ）/ 対応する（マージはAIに任せる）/ 対応しない)
-  and answer the issue's `## QA` (check one option for choice-type entries, fill in `**回答**:` for
-  input-type entries). Mobile-first: presents a readable summary of
-  each issue and collects answers via AskUserQuestion (tap-friendly), walking through every
-  un-reviewed issue in one run. Trigger when the user says "イシューをレビューして",
-  "イシューを捌きたい", "review issues", "issue-review", or invokes `/work:issue-review` explicitly.
+  未レビューのイシューを 1 件ずつ見て、「ユーザー回答欄」に回答する —
+  `## 意思`（対応する（自動マージ）/ 対応する（マージはAIに任せる）/ 対応しない）の 1 つをチェックし、
+  `## QA` に回答する（選択肢型は 1 つをチェック、入力型は `**回答**:` に記入）。スマホ主用途:
+  各イシューの読みやすい要約を提示し、AskUserQuestion（タップ操作）で回答を集めながら、未レビューイシューを 1 度に全件捌く。
+  トリガー: 「イシューをレビューして」「イシューを捌きたい」「review issues」「issue-review」、
+  または `/work:issue-review` を明示的に呼び出したとき。
 ---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# work:issue-review — Triage Issues (mobile-first)
+# work:issue-review — イシューを捌く（スマホ主用途）
 
-Walks every un-reviewed issue in `.work/issues/`, top to bottom, and lets the user decide
-**対応する（自動マージ） / 対応する（マージはAIに任せる） / 対応しない (skip) / 後で (later)** for each —
-plus answer the issue's `## QA`. Built for phones: on a phone SSH session you can't comfortably open
-issue files, so this skill presents a compact summary and collects answers with `AskUserQuestion`
-(tap targets), not raw file viewing.
+`.work/issues/` の未レビューイシューを上から順に巡り、各イシューについて
+**対応する（自動マージ）/ 対応する（マージはAIに任せる）/ 対応しない / 後で** をユーザーに選ばせる。
+あわせてイシューの `## QA` に回答させる。スマホ前提: スマホの SSH ではイシューファイルを開きづらいため、
+生のファイル閲覧ではなく、コンパクトな要約を提示し `AskUserQuestion`（タップ）で回答を集める。
 
-The result is written into each issue's **`# ユーザー回答欄`** by checking one `## 意思` checkbox and
-answering each `## QA` entry — choice-type entries by checking one box (`[ ]` → `[x]`), input-type
-entries by filling in the `**回答**:` line. Any free-form note is appended as a comment below the
-checked 意思 line (there is no `## 自由記述` section). `work:issue-resolve` later acts on it.
+結果は各イシューの **`# ユーザー回答欄`** に書き込む — `## 意思` の 1 つを `[x]` にチェックし、`## QA`
+各エントリに回答する（選択肢型は 1 つを `[x]`、入力型は `**回答**:` 行に記入）。自由記述の補足があれば
+チェックした意思行の下にノートとして追記する（`## 自由記述` セクションは無い）。後で
+`work:issue-resolve` がその内容に基づいて動く。
 
-> `AskUserQuestion` use is intentional and required for this skill (see the global AskUserQuestion
-> restriction — skills that define its use are exempt).
-
----
-
-## Overview
-
-- **Prerequisite**: `.work/issues/` exists (run `/work:setup` if not).
-- **Un-reviewed** = an issue whose `## 意思` checkboxes are all still unchecked (`- [ ]`). Issues
-  with one checkbox checked (`- [x]`) are skipped; `closed/` is ignored.
-- The issue file format (no frontmatter, answer section at the top) is governed by `work-dir/イシュー.md`
-  (auto-injected when you edit a `.work/issues/` file) — follow it.
+> このスキルでは `AskUserQuestion` の使用を意図的に必須としている（グローバルの AskUserQuestion 制約
+> 参照 — 使用を定義したスキルは適用外）。
 
 ---
 
-## Tasks
+## 概要
 
-### Step 1: Collect un-reviewed issues
-
-#### Process
-
-1. If `.work/issues/` does not exist → tell the user to run `/work:setup`, then stop.
-2. Glob `.work/issues/ISSUE-*.md` (exclude `closed/`). For each, read the `## 意思` checkboxes.
-   Keep those with all checkboxes still unchecked (`- [ ]`).
-3. Sort the kept issues by ascending issue number.
-4. If none remain → report "未レビューのイシューはありません" and stop.
-
-→ Proceed to Step 2
-
-#### Output
-
-- Ordered list of un-reviewed issue IDs
+- **前提**: `.work/issues/` が存在する（無ければ `/work:setup`）。
+- **未レビュー** = `## 意思` のチェックボックスが全て未チェック（`- [ ]`）のイシュー。1 つでも `[x]`
+  がついていればスキップ。`closed/` は無視。
+- イシューファイルのフォーマット（フロントマター無し・回答欄が先頭）は `work-dir/イシュー.md`
+  （`.work/issues/` 編集時に自動注入）が規定する — それに従う。
 
 ---
 
-### Step 2: Review each issue (loop, top to bottom)
+## タスク
 
-#### Process
+### Step 1: 未レビューイシューを収集
 
-For each un-reviewed issue, in order:
+#### プロセス
 
-1. Read the issue file and present a **compact, phone-readable summary** — do NOT dump the raw file.
-   Include: `ISSUE-N` + title, `## 概要`, the core of `## 現状`, and the `## 対応案` options with the
-   推奨 option marked (if any). Keep it short.
-2. Ask the 意思 with `AskUserQuestion` (4 options, tap-friendly):
-   - Question: `ISSUE-N: {title} — どうする?`
-   - Options:
-     - **対応する（自動マージ）** → maps to `- [x] 対応する（自動マージ）` (Claude merges to master after finishing)
-     - **対応する（マージはAIに任せる）** → maps to `- [x] 対応する（マージはAIに任せる）` (AI decides whether to auto-merge or stop merge-waiting)
-     - **対応しない** → maps to `- [x] 対応しない`
-     - **後で** → leave un-answered
-   - The user may type a reason / instruction in the free-input ("Other") field.
-3. **If 後で (later)** → leave the issue untouched (`## 意思` keeps all boxes unchecked) and move to the next.
-4. **If any 対応する variant / 対応しない**:
-   a. If the issue has a `## QA` with unanswered entries, present each (batch up to 4 per
-      `AskUserQuestion` call) and collect the answer. Write it back per the entry's type:
-      - **Choice-type** (has `- [ ]` option checkboxes) → **check the chosen option** (`[ ]` → `[x]`),
-        using that entry's options as the AskUserQuestion choices. When `## 対応案` has multiple
-        options, settle the adopted one here.
-      - **Input-type** (has a `**回答**:` line, no checkboxes) → write the user's answer onto the
-        `**回答**:` line (e.g. `**回答**: 公開APIのみ対象`).
-   b. Check the chosen `## 意思` checkbox (`[ ]` → `[x]`) — exactly one of the three.
-   c. If the user gave a free-form handling instruction / reason (from the 意思 step's free-input or a
-      follow-up), append it as a note below the checked 意思 line (e.g. `> 公開APIのみ`).
-5. Move to the next issue.
+1. `.work/issues/` が無ければ → `/work:setup` を促して停止。
+2. `.work/issues/ISSUE-*.md` を glob（`closed/` 除外）。各ファイルの `## 意思` のチェックボックスを読む。
+   全て未チェック（`- [ ]`）のものを残す。
+3. 残ったイシューをイシュー番号の昇順でソート。
+4. 1 件も無ければ → 「未レビューのイシューはありません」と報告して停止。
 
-→ After the last issue, proceed to Step 3
+→ Step 2 へ
 
-#### Notes
+#### 出力
 
-- Do **not** create branches or change the `_index.yaml` `status` here — that happens in
-  `work:issue-resolve`.
-- Keep each issue's interaction self-contained so the user can stop partway (remaining issues stay
-  un-answered and reappear next run).
+- 未レビューイシュー ID の順序付きリスト
 
 ---
 
-### Step 3: Commit the review results
+### Step 2: 各イシューをレビュー（上から順にループ）
 
-#### Process
+#### プロセス
 
-1. If any issue files were changed, commit them. Issue files are git-tracked; this triage commit is
-   made on the current branch (typically `master`). The `master-commit-guard` hook may prompt once —
-   that is expected for issue triage; proceed.
+未レビューイシューを順に：
+
+1. イシューファイルを読み、**スマホで読みやすいコンパクトな要約**を提示する — 生ファイルを丸ごと
+   出さない。含める: `ISSUE-N` + タイトル・`## 概要`・`## 現状` の要点・`## 対応案` の選択肢
+   （推奨案があれば明示）。短く。
+2. `AskUserQuestion` で意思を尋ねる（4 択・タップ操作）：
+   - 質問: `ISSUE-N: {title} — どうする?`
+   - 選択肢:
+     - **対応する（自動マージ）** → `- [x] 対応する（自動マージ）`（完了後 Claude が master へマージ）
+     - **対応する（マージはAIに任せる）** → `- [x] 対応する（マージはAIに任せる）`（自動マージするか・マージ待ちで止めるかは AI が判断）
+     - **対応しない** → `- [x] 対応しない`
+     - **後で** → 未記入のまま
+   - ユーザーは自由入力（「その他」）欄に理由・指示を書いてよい。
+3. **後で** の場合 → イシューは触らず（`## 意思` は全て未チェックのまま）次へ。
+4. **対応する系のいずれか / 対応しない** の場合：
+   a. イシューに未回答の `## QA` があれば、各エントリを（`AskUserQuestion` 1 回あたり最大 4 件まで
+      バッチで）提示し回答を集める。エントリの種別に応じて書き戻す:
+      - **選択肢型**（`- [ ]` のチェックボックスがある）→ そのエントリの選択肢を提示し、**選んだ選択肢の
+        チェックボックスを `[x]` に**する（`[ ]` → `[x]`）。`## 対応案` が複数ある場合はここで採用案を確定。
+      - **入力型**（`**回答**:` 行があり、チェックボックスが無い）→ ユーザーの回答を `**回答**:` 行に
+        記入する（例: `**回答**: 公開APIのみ対象`）。
+   b. `## 意思` の選んだチェックボックスを `[x]` にチェックする（3 つのうち 1 つ）。
+   c. ユーザーが自由記述の対応指示・理由を述べた場合（意思ステップの自由入力または追問で）、
+      チェックした意思行の下にノートとして追記する（例: `> 公開APIのみ`）。
+5. 次のイシューへ。
+
+→ 最後のイシュー後、Step 3 へ
+
+#### 注記
+
+- ここでブランチ作成や `_index.yaml` の `status` 変更は**しない** — それは `work:issue-resolve` で行う。
+- 各イシューの対話を自己完結させ、途中で止めてもよいようにする（残りは未記入のまま次回再表示）。
+
+---
+
+### Step 3: レビュー結果をコミット
+
+#### プロセス
+
+1. イシューファイルに変更があればコミットする。イシューファイルは git 管理対象で、このトリアージ
+   コミットは現在のブランチ（通常 `master`）で行う。`master-commit-guard` フックが 1 度確認を挟む
+   ことがある — イシュートリアージでは想定どおりなので進める。
    ```bash
    git add .work/issues/
    git commit -m "chore: イシューをレビュー（意思/QA を記入）"
    ```
-   (Follow `${WORK_COMMIT_LANG}` / `${WORK_COMMIT_TYPE}` for the message, like other work commits.)
-2. `_index.yaml` is git-ignored — do not commit it. No `status` change is needed here.
-3. Report a summary: how many 対応する / 対応しない / 後で.
+   （メッセージは他の work コミット同様 `${WORK_COMMIT_LANG}` / `${WORK_COMMIT_TYPE}` に従う）
+2. `_index.yaml` は git 管理外 — コミットしない。ここで `status` 変更は不要。
+3. サマリを報告: 対応する / 対応しない / 後で の件数。
 
-#### Notes
+#### 注記
 
-- The decisions must be **committed** so `work:issue-resolve` (which works in fresh worktrees) can
-  see them. Leaving them uncommitted would hide them from new worktrees.
+- 決定は**コミット**する必要がある。`work:issue-resolve`（新しいワークツリーで動く）が決定を
+  読めるようにするため。未コミットのままだと新しいワークツリーから見えない。

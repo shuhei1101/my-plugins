@@ -1,135 +1,135 @@
 references:
 - path: markdown/マークダウンテーブル.md
-  description: "Markdown table formatting conventions. Always add a # column as the leftmost column; every row gets a sequential number. When consecutive rows share the same column value, write it only in the first row and use 〃 (ditto mark) in subsequent rows."
+  description: "Markdown テーブルの記法規約。最左カラムに必ず # カラムを設け、すべての行に通し番号を書く。連続する行で同じ列の値が同じ場合、最初の行にのみ書き、以降のセルは 〃（ダイトーマーク）を使う。"
 - path: python/core/命名規則.md
   lang: python
-  description: Naming conventions. Functions snake_case, type aliases UpperCamel, files/modules snake_case. Standard file names inside a feature folder (types/service/query/route/client/db).
+  description: 命名規約。関数 snake_case、型エイリアス UpperCamel、ファイル/モジュール snake_case。feature フォルダ内の標準ファイル名（types/service/query/route/client/db）対応表
 - path: python/core/コメント.md
   lang: python
-  description: Comment rules. 1-line docstring required on exported functions/types; description required on design-significant Pydantic/dataclass fields; PR-numbered change history; TODO must carry an issue number.
+  description: コメントルール。exported 関数/型に 1 行 docstring 必須、Pydantic/dataclass の設計上重要フィールドの description 必須、PR 番号付き変更履歴、TODO は issue 番号必須
 - path: python/core/型ヒント.md
   lang: python
-  description: Type hints body. PEP 695 generics, Self, @typing.override, Annotated, TYPE_CHECKING, type statement, NewType, assert_never, Literal+match.
+  description: 型ヒント本体。PEP 695 ジェネリクス、Self、@typing.override、Annotated、TYPE_CHECKING、type 文、NewType、assert_never、Literal+match
 - path: python/core/デコレーター.md
   lang: python
-  description: Recommended decorators (@dataclass / @final / @cache / @cached_property / @override / @contextmanager) and handler decorators for cross-cutting concerns (@catch_and_log / @catch_and_map / @with_retry / @with_timeout); limited use of @overload.
+  description: 推奨デコレータ（@dataclass / @final / @cache / @cached_property / @override / @contextmanager）と、横断関心事を吸収するハンドラーデコレータ（@catch_and_log / @catch_and_map / @with_retry / @with_timeout）、@overload の限定使用
 - path: python/core/言語ルール.md
   lang: python
-  description: Language rules. Comments in Japanese; print/logger/bat in English; f-string for formatting; import order; exception hierarchy (AppError base class).
+  description: 言語ルール。コメントは日本語、print/logger/bat は英語、文字列フォーマット f-string、import 順、例外階層（AppError 基底クラス）
 - path: python/core/スタイル.md
   lang: python
-  description: Style settings. Recommended config for ruff/mypy/pyright; line length 100; double quotes; section markers.
+  description: スタイル設定。ruff/mypy/pyright の推奨設定、行長 100、ダブルクォート、セクションマーカー
 - path: python/architecture/レイアウト.md
   lang: python
-  description: Top-level layout. Only shared/ and main.py are required; features / integrations / runtime / server are optional. Standard structure inside a feature folder (types.py / service.py / query.py / route.py / client.py).
+  description: トップレベルレイアウト。必須は shared/ と main.py のみ、任意で features/integrations/runtime/server。feature フォルダ内の標準構成（types.py / service.py / query.py / route.py / client.py）
 - path: python/architecture/TypeScriptスタイル適用.md
   lang: python
-  description: The central document for TypeScript-style Python. Type-alias for function types + Callable for DI; Protocol for structural typing; usage table for @dataclass / Pydantic / TypedDict.
+  description: TypeScript 風 Python の中心ドキュメント。type エイリアスで関数の型を定義 + Callable で DI、Protocol で構造的型付け、@dataclass/Pydantic/TypedDict の使い分け表
 - path: python/architecture/コンポジションルート.md
   lang: python
-  description: Responsibilities of main.py. Wire functions in build_handlers(settings) with functools.partial; hold them in a Handlers dataclass for type-safe access. Library-standard classes (FastAPI, CLI, etc.) are used as-is.
+  description: main.py の責務。build_handlers(settings) で関数を functools.partial で配線、Handlers dataclass で型安全に保持。FastAPI/CLI 等ライブラリ標準クラスはそのまま使う
 - path: python/architecture/依存パッケージ管理.md
   lang: python
-  description: Dependency direction rule. One-way features/server -> integrations -> shared. Same-layer cross-reference is forbidden. Dependency inversion (DIP) is done via function-type aliases.
+  description: 依存方向ルール。features/server -> integrations -> shared の一方向。同層内相互参照は禁止。逆依存（DIP）は関数の型エイリアスで実現
 - path: python/architecture/design-基本方針.md
   lang: python
-  description: Design-principle priorities. DRY > SOLID > extensibility awareness. Function-first; class use is restricted to DTOs and library requirements.
+  description: 設計原則の優先順位。DRY > SOLID > 拡張性意識。関数ファーストでクラスは DTO とライブラリ要求のみ
 - path: python/architecture/リファクタリング判断.md
   lang: python
-  description: Refactoring judgement. How many times before extracting; when to abstract; when to externalize config; when to split a file.
+  description: リファクタ判断基準。何回書いたら共通化、いつ抽象化、いつ設定外出し、いつファイル分割するか
 - path: python/shared/ロガー.md
   lang: python
-  description: Standard JSON Lines logger. get_logger(__name__), structured logging, log-level policy.
+  description: JSON Lines 形式の logger 標準実装。get_logger(__name__)、構造化ログ、ログレベル運用
 - path: python/shared/設定.md
   lang: python
-  description: Standard pattern for pydantic_settings.BaseSettings. .env / .env.sample workflow; SecretStr; nested settings.
+  description: pydantic_settings.BaseSettings 標準パターン。.env / .env.sample 運用、SecretStr、ネストした設定
 - path: python/shared/シークレットと環境変数.md
   lang: python
-  description: Separation of secrets / environment / structure / assets / runtime state. How to choose between .env / settings.yaml / code / index.yaml / data/.
+  description: シークレット / 環境 / 構造 / アセット / ランタイム状態の保管先の分離方針。.env / settings.yaml / コード / index.yaml / data/ の使い分け
 - path: python/shared/エラー定義.md
   lang: python
-  description: Exception hierarchy. AppError base class; domain sub-classes; mapping to HTTP errors.
+  description: 例外階層。AppError 基底クラス、ドメイン別サブクラス、HTTP エラーとのマッピング
 - path: python/shared/型定義.md
   lang: python
-  description: Common type aliases. Choosing between NewType and type statement; standard for identifier types (e.g. UserId).
+  description: 共通型エイリアス。NewType と type 文の使い分け、識別子型（UserId 等）の標準
 - path: python/shared/定数.md
   lang: python
-  description: Role boundary of constants.py. Storage for pre-computed paths such as PROJECT_ROOT, LOG_DIR. Runtime-variable values go to settings.
+  description: constants.py の役割境界。PROJECT_ROOT, LOG_DIR 等の計算済みパス置き場。実行時可変値は settings へ
 - path: python/scripts/Pythonスクリプト.md
   lang: python
-  description: Structure of a single-file Python script. Docstring, argparse, main() -> int, section markers.
+  description: 単一ファイル Python スクリプトの構造。docstring、argparse、main() 返り値 int、セクションマーカー
 - path: python/scripts/launchers-windows.md
   lang: python
-  description: Windows bat launcher. chcp 65001, setlocal, PowerShell timestamps, log/ directory output. Never write Japanese inside a bat file (absolute).
+  description: Windows 用 bat ランチャー。chcp 65001、setlocal、PowerShell 時刻、log/ ディレクトリ出力。bat 内に日本語を書かない（絶対）
 - path: python/scripts/ランチャー-Unix.md
   lang: python
-  description: UNIX shell script. set -euo pipefail, tee for logging, .venv activation.
+  description: UNIX 用 shell スクリプト。set -euo pipefail、tee でログ、.venv activate
 - path: python/scripts/Tkinter.md
   lang: python
-  description: tkinter GUI conventions. Standard style, settings dialog, blue accent color.
+  description: tkinter GUI 規約。標準スタイル、設定ダイアログ、アクセントカラー（blue）
 - path: python/testing/テスト戦略.md
   lang: python
-  description: Test policy. No unit tests; only integration tests + smoke tests. Smoke tests hit real external services and are user-triggered only (AI must not auto-run them).
+  description: テスト方針。単体テストは書かない、結合テスト + スモークテストのみ。スモークは外部接続用でユーザー手動実行限定（AI 自動実行禁止）
 - path: python/testing/pytest.md
   lang: python
-  description: pytest conventions. conftest.py, fixtures, parametrize, pytest-asyncio, tests/ layout.
+  description: pytest 規約。conftest.py、fixtures、parametrize、pytest-asyncio、tests/ レイアウト
 - path: python/testing/モック.md
   lang: python
-  description: Mock patterns for integration tests. LLM mocks, HTTP mocks, time mocks, swapping implementations via function-type aliases.
+  description: 結合テストの Mock パターン。LLM Mock、HTTP Mock、時刻 Mock、関数の型エイリアスを利用した注入差し替え
 - path: python/concurrency/非同期処理.md
   lang: python
-  description: asyncio conventions. TaskGroup, asyncio.timeout, sync/async boundaries, async generators / context managers.
+  description: asyncio 規約。TaskGroup、asyncio.timeout、sync/async 境界、async generator/context manager
 - path: python/concurrency/並列処理.md
   lang: python
-  description: Parallel processing. Choosing between multiprocessing / threading / subinterpreters; the GIL; CPU bound vs IO bound.
+  description: 並列処理。multiprocessing / threading / subinterpreter の使い分け、GIL、CPU bound vs IO bound
 - path: python/packaging/pyproject設定.md
   lang: python
-  description: Complete pyproject.toml sample. [project] / [tool.ruff] / [tool.mypy] / [tool.pyright] / [tool.pytest].
+  description: pyproject.toml 完全サンプル。[project] / [tool.ruff] / [tool.mypy] / [tool.pyright] / [tool.pytest]
 - path: python/packaging/依存パッケージ管理.md
   lang: python
-  description: Dependency management. uv is the standard; optional-dependencies.dev required; unified .venv; lockfile workflow.
+  description: 依存管理。uv 標準、optional-dependencies.dev 必須、.venv 統一、lock ファイル運用
 - path: python/packaging/配布設定.md
   lang: python
-  description: Distribution. wheel/sdist, PyPI publish, exposing the CLI via entry_points.
+  description: 配布。wheel/sdist、PyPI publish、entry_points で CLI 公開
 - path: python/packaging/Pythonバージョン.md
   lang: python
-  description: Python version policy. Use the newest version possible; feature-table for 3.12+.
+  description: Python バージョン方針。極力高いバージョンを採用、3.12 以降の機能対応表
 - path: python/performance/パフォーマンスチートシート.md
   lang: python
-  description: Performance cheatsheet. Choosing between profilers (cProfile / snakeviz / line_profiler / py-spy / scalene / memray); hot-path checklist.
+  description: パフォーマンスチート集。プロファイラ（cProfile / snakeviz / line_profiler / py-spy / scalene / memray）の使い分け、ホットパスのチェックリスト
 - path: python/llm/プロバイダー.md
   lang: python
-  description: LLM provider implementation. Abstract Claude / OpenAI / Gemini as functions; wrap vendor exceptions into domain exceptions; log token usage.
+  description: LLM プロバイダ実装。Claude / OpenAI / Gemini を関数で抽象化、vendor 例外をドメイン例外にラップ、token usage ログ
 - path: python/llm/Instructor.md
   lang: python
-  description: Structured outputs with Instructor + Pydantic. How to build task-specific client functions.
+  description: Instructor + Pydantic で構造化出力。task-specific クライアント関数の作り方
 - path: python/llm/プロンプト執筆.md
   lang: python
-  description: Authoring and assembling prompt files. prompts/ at project root; H3-section-sized parts; static (.md) vs dynamic (.j2); SoT management via index.yaml; assembly via includes.
+  description: プロンプトファイルの書き方と組み立て。プロジェクトルート直下 prompts/、H3 セクション単位で部品化、static (.md) と dynamic (.j2)、index.yaml で SoT 管理、includes で組み立て
 - path: python/llm/プロンプトローダー.md
   lang: python
-  description: Prompt loader implementation. Place index_loader / builder / types under src/{pkg}/integrations/llm/prompts/; Jinja2 + StrictUndefined; build_prompt / build_bundle.
+  description: プロンプトのローダー実装。src/{pkg}/integrations/llm/prompts/ 配下に index_loader / builder / types を置く、Jinja2 + StrictUndefined、build_prompt / build_bundle
 - path: python/llm/コストとキャッシュ.md
   lang: python
-  description: Cost management. Design premise of prompt caching (stack from top; static at top, dynamic at bottom); Anthropic cache_control; OpenAI automatic cache; max_tokens; Batch API; streaming.
+  description: コスト管理。プロンプトキャッシュの設計考え方（上から積む / 固定値は上 / 動的値は下）、Anthropic cache_control、OpenAI 自動キャッシュ、max_tokens、Batch API、ストリーミング
 - path: python/llm/例外とリトライ.md
   lang: python
-  description: LLM exception hierarchy. rate-limit / server / bad-request / auth / timeout / content-filter; retry strategies; honoring Retry-After.
+  description: LLM 例外階層。rate-limit / server / bad-request / auth / timeout / content-filter、リトライ戦略、Retry-After 尊重
 - path: python/fastapi/アプリケーション.md
   lang: python
-  description: FastAPI app composition. build_app pattern, lifespan, middleware, CORS.
+  description: FastAPI アプリ構成。build_app パターン、lifespan、middleware、CORS
 - path: python/fastapi/ルート定義.md
   lang: python
-  description: Router implementation. Annotated[Type, Depends/Path/Query]; route functions stay thin; business logic in service.py.
+  description: ルーター実装。Annotated[Type, Depends/Path/Query]、route 関数は thin、service.py に処理本体
 - path: python/fastapi/スキーマ.md
   lang: python
-  description: I/O Pydantic schemas. Field constraints; to_domain / from_domain methods to keep feature-internal DTOs separate.
+  description: 入出力 Pydantic スキーマ。Field 制約、to_domain/from_domain メソッドで feature 内 DTO と分離
 - path: python/fastapi/認証とエラー.md
   lang: python
-  description: Authentication with Depends + handling SecretStr + error handling via exception_handler.
+  description: 認証 Depends + SecretStr の取り扱い + exception_handler によるエラーハンドリング
 - path: python/fastapi/ヘルスチェック.md
   lang: python
-  description: Health check. Simple /healthz that just returns 200.
+  description: ヘルスチェック。/healthz で 200 を返すだけのシンプル実装
 - path: next/backend/APIフォルダ概要.md
   lang: next
   description: app/api/v1/{resource}/ の 6 ファイル (route/client/service/db/query/dbHelper) の責務分離と呼び出し階層。Server Actions との使い分け。
@@ -387,7 +387,7 @@ references:
   description: Unit / Component test (Vitest)。vitest.config.ts、Schema test、Pure function test、Component test (Testing Library + userEvent)、service.ts integration、MSW。
 - path: next/testing/E2Eテスト.md
   lang: next
-  description: E2E test (Playwright)。playwright.config.ts、tests/e2e/ 構造（テスト戦略.md 準拠）、Page Object Model (tests/pages/)、helpers (tests/helpers/)、Storage State 認証、DB シード、視覚回帰、axe-core a11y。
+  description: E2E test (Playwright)。playwright.config.ts、ユースケース駆動設計（scenarios/）、Page Object Model、fixtures、utils/data 責務分離、Storage State 認証、DB シード、視覚回帰、axe-core a11y。
 - path: next/testing/フィクスチャー.md
   lang: next
   description: テストデータ Factory パターン。tests/fixtures/{resource,user,...}.ts、build*/seed*/clean*、nanoid で一意命名、DB cleanup (truncate)、テスト専用 API (NODE_ENV gate)。
@@ -405,19 +405,19 @@ references:
   description: デプロイ。Vercel 第一選択 (Web サービス)、ローカル動作のみ (AITuber 等) はデプロイなし、self-host (Docker + Nginx) も選択肢。DB は Supabase/Neon。Vercel Cron。
 - path: html/基本方針.md
   lang: html
-  description: HTML/CSS/JS development principles. DRY/centralization, FLOCSS layered structure, design tokens, JS conventions (// @ts-check, JSDoc types, arrow functions, function-parameter DI).
+  description: HTML/CSS/JS 開発原則。DRY/集約、FLOCSS レイヤー構造、デザイントークン、JS 規約（// @ts-check、JSDoc 型、アロー関数、関数引数 DI）。
 - path: html/UIデザイン.md
   lang: html
-  description: UX patterns and shared-component mandate. Read shared resources (constants/routes/components) before writing any screen code; reuse > extend > add.
+  description: UX パターンと共有コンポーネント必須化。画面コードを書く前に共有リソース（constants/routes/components）を読み、再利用 > 拡張 > 新規追加 の順で判断する。
 - path: html/デバッグFAB同期.md
   lang: html
-  description: debug-fab template sync rules. When editing uidev.js or uidev.css, also update SKILL.md and templates/CLAUDE.md. Bump plugin.json and marketplace.json on any template change.
+  description: debug-fab テンプレート同期ルール。uidev.js / uidev.css を編集したら SKILL.md と templates/CLAUDE.md も更新する。テンプレートファイルを変更したら plugin.json と marketplace.json のバージョンをバンプする。
 - path: html/CSS-JSリンク.md
   lang: html
-  description: CSS class ↔ JS DOM access linkage. Keep FLOCSS class definitions in CSS and DOM access in JS/HTML in sync. Covers existence checks, layer correctness, BEM substructure, dead classes, and no-magic-strings rule.
+  description: CSS クラス ↔ JS DOM アクセス紐付け。CSS の FLOCSS クラス定義と JS/HTML の DOM アクセスを同期させる。存在確認・レイヤー妥当性・BEM サブ構造・死んだクラス・魔法文字列禁止を網羅。
 - path: html/コンポーネントファースト.md
   lang: html
-  description: Common component first mandate. Before adding new UI markup/styles/DOM code, read shared constants, routes, component CSS and JS layers. Reuse > extend > add; prohibits inline one-offs and hardcoded values.
+  description: 共通コンポーネント先読み必須化。UI マークアップ・スタイル・DOM コードを追加する前に、共有の constants・routes・コンポーネント CSS/JS 層を先に読む。再利用 > 拡張 > 新規追加; インライン一発実装と値のハードコードを禁止。
 - path: markdown/マークダウン編集.md
   lang: markdown
-  description: Markdown frontmatter placement rule. Nothing may appear before the opening --- in a file with YAML frontmatter. Move HTML comments and other content to after the closing ---.
+  description: Markdown フロントマター配置ルール。YAML フロントマターを持つファイルでは開き --- の前に何も置かない。HTML コメント等は閉じ --- の直後に移動する。

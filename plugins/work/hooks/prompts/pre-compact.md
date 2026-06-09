@@ -1,3 +1,4 @@
-Before context compaction proceeds, run the `/work:conversation-to-claude` skill to capture this session's work as artifacts (skills, rules, hooks, CLAUDE.md, incidents, glossary entries).
+<!-- This file is a Japanese mirror of pre-compact.md. When updating the English original, update this file too. -->
+コンテキストの圧縮（compact）を実行する前に、`/work:conversation-to-claude` スキルを実行して、このセッションの作業内容をアーティファクト（スキル・ルール・フック・CLAUDE.md・インシデント・用語集）として保存してください。
 
-Once the skill completes, run `/compact` again to proceed with compaction.
+スキルの実行が完了したら、もう一度 `/compact` を実行してコンテキストを圧縮してください。

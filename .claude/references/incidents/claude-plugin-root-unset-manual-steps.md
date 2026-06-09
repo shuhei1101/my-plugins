@@ -1,40 +1,40 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 # claude-plugin-root-unset-manual-steps
 
-Japanese mirror: `claude-plugin-root-unset-manual-steps.jp.md`
+英語オリジナル: `claude-plugin-root-unset-manual-steps.md`
 
-## What happened
+## 何が起きたか
 
-While executing `work:merge` steps manually (the skill has `disable-model-invocation: true`),
-the index-tool command was copied verbatim from the skill definition:
+`work:merge` スキル（`disable-model-invocation: true`）の手順を手動実行中、
+スキル定義からコマンドをそのままコピーして実行した:
 
 ```bash
 python "${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py" list-active .work/tasks/index.yaml
 ```
 
-This failed with:
+結果:
 
 ```
 python: can't open file '/scripts/index-tool.py': [Errno 2] No such file or directory
 ```
 
-`${CLAUDE_PLUGIN_ROOT}` expanded to an empty string, so the path became `/scripts/index-tool.py`.
+`${CLAUDE_PLUGIN_ROOT}` が空文字列に展開され、パスが `/scripts/index-tool.py` になった。
 
-## Why it happened
+## 原因
 
-`CLAUDE_PLUGIN_ROOT` is injected by the Claude Code skill runner when a skill executes normally.
-When steps are run manually via the Bash tool — as required for skills with
-`disable-model-invocation: true` — the env var is absent from the shell environment.
+`CLAUDE_PLUGIN_ROOT` は Claude Code のスキルランナーがスキル実行時に注入する環境変数。
+`disable-model-invocation: true` のスキルを Bash ツールから手動実行する場合、
+このシェル環境には env var が存在しない。
 
-## Prevention
+## 防止策
 
-Before executing any skill step that references `${CLAUDE_PLUGIN_ROOT}`, locate the script
-with `find`:
+`${CLAUDE_PLUGIN_ROOT}` を参照するスキル手順を実行する前に、`find` でスクリプトを特定する:
 
 ```bash
 find /path/to/repo -path "*/scripts/index-tool.py" | head -1
 ```
 
-Then substitute the literal path:
+その後、リテラルパスで置き換えて実行:
 
 ```bash
 python plugins/work/scripts/index-tool.py list-active .work/tasks/index.yaml

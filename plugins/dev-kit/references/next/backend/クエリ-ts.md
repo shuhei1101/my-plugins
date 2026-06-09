@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of クエリ-ts.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/query.ts
 
 読み取り（SELECT）専用ファイル。**SELECT 関数群 + フィルタ Zod スキーマ + 戻り値型** を全てここに集約する。

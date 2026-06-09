@@ -1,42 +1,42 @@
-# ref-inject Plugin Developer Guide
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
+# ref-inject プラグイン開発ガイド
 
-`ref-inject` **attaches the reference auto-injection mechanism to a plugin** (the `*-kit`
-style used by `dev-kit` / `claude-kit`): a `PreToolUse` hook that matches the edited file path
-against `_injection_rules.yaml` and injects the relevant references. The target plugin can be
-new or existing — `/ref-inject:apply` only contributes the **injection part**.
+`ref-inject` は**プラグインにリファレンス自動注入の仕組みを付与する**プラグイン。`dev-kit` /
+`claude-kit` で使われている `*-kit` 形式の、編集対象パスを `_injection_rules.yaml` と照合して
+関連リファレンスを注入する `PreToolUse` フックを付ける。対象プラグインは新規でも既存でもよく、
+`/ref-inject:apply` は**注入部分だけ**を提供する。
 
-It does **not** centralize a shared runtime (that approach was rejected — see
-`premature-cross-plugin-centralization`). Instead it copies **independent files** from
-`templates/`, automating the copy-paste that the incident log blessed as the cheaper path.
+共通ランタイムの共有はしない（そのやり方は却下済み —
+`premature-cross-plugin-centralization` 参照）。代わりに `templates/` から**独立したファイル**を
+コピーし、インシデントログが「コピペの方が安い」と認めたやり方を自動化する。
 
-There is **no generator script**. `/ref-inject:apply` has Claude read each template and write
-the destination file itself, substituting placeholders as it goes — so the structure stays in
-context and can be adapted per plugin.
+**生成スクリプトは持たない。** `/ref-inject:apply` は Claude が各テンプレートを読んで出力先
+ファイルを自分で書き、その過程でプレースホルダを置換する。こうすることで構造がコンテキストに
+残り、プラグインごとに調整しやすい。
 
-### Scope (what this plugin does NOT own)
+### 責務範囲（このプラグインが所有しないもの）
 
-The `apply` skill is scoped to the **injection machinery only**. Plugin-level concerns belong
-to `plugin-creator`, not here:
+`apply` スキルは**注入の仕組みだけ**に責務を絞る。プラグインレベルの関心事は `plugin-creator`
+の領分でここには含まない:
 
-- It does not create/edit the target plugin's `plugin.json`
-- It does not create/own the target plugin's root `CLAUDE.md`
-- It does not touch `marketplace.json`
+- 対象プラグインの `plugin.json` を作成・編集しない
+- 対象プラグインのルート `CLAUDE.md` を作成・所有しない
+- `marketplace.json` を触らない
 
 ---
 
-## Structure
+## 構成
 
 ```
 ref-inject/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md / CLAUDE.jp.md
-├── skills/apply/SKILL.md (+ .jp.md)           # /ref-inject:apply — Claude reads templates & writes them into the target plugin
-├── skills/plugin-migrate/SKILL.md (+ .jp.md)  # /ref-inject:plugin-migrate — update injection files in all consumers
-└── templates/                           # the injection files copied into a target plugin (injection part only)
+├── skills/apply/SKILL.md (+ .jp.md)           # /ref-inject:apply — Claude がテンプレを読んで対象プラグインへ書く
+├── skills/plugin-migrate/SKILL.md (+ .jp.md)  # /ref-inject:plugin-migrate — 全 consumer の注入ファイルを更新
     ├── hooks/
     │   ├── scripts/
-    │   │   ├── inject_references.py      # PreToolUse: match path → inject references (the reusable injection script)
-    │   │   └── _common.py                # Shared helpers for hook scripts (stdin, env truthy, once-per-session, block reason)
+    │   │   ├── inject_references.py      # PreToolUse: パス照合 → リファレンス注入（再利用される注入スクリプト）
+    │   │   └── _common.py                # フックスクリプトの共通ヘルパー（stdin・env truthy・once-per-session・block 理由出力）
     │   ├── hooks.json
     │   └── templates/injection.md.j2 (+ .jp.md.j2)
     └── references/
@@ -46,85 +46,83 @@ ref-inject/
         └── example/はじめに.md
 ```
 
-There are no `plugin.json` / root-`CLAUDE.md` templates — those are plugin-level (owned by
-`plugin-creator`), not part of the injection mechanism.
+`plugin.json` / ルート `CLAUDE.md` のテンプレートは無い — それらはプラグインレベル
+（`plugin-creator` の所有）であり、注入の仕組みの一部ではない。
 
 ---
 
-## Placeholders
+## プレースホルダ
 
-The `apply` skill has Claude substitute these in every text template while writing it out
-(derived from the target plugin's directory name):
+`apply` スキルが、各テキストテンプレートを書き出す際に Claude に置換させる
+（対象プラグインのディレクトリ名から導出）:
 
-| Placeholder | Replaced with | Example |
+| プレースホルダ | 置換内容 | 例 |
 |---|---|---|
-| `__PLUGIN_NAME__` | plugin name (kebab) | `vue-kit` |
-| `__ENV_PREFIX__` | name upper-cased, non-alnum → `_` | `VUE_KIT` |
+| `__PLUGIN_NAME__` | プラグイン名（kebab） | `vue-kit` |
+| `__ENV_PREFIX__` | 名前を大文字化、英数以外を `_` | `VUE_KIT` |
 | `__LOG_TAG__` | `{name}-references-injection` | `vue-kit-references-injection` |
-| `__DEFAULT_TTL__` | default TTL seconds | `3600` |
+| `__DEFAULT_TTL__` | デフォルト TTL 秒 | `3600` |
 
-Paths mirror the template — no relocation.
-
----
-
-## Injection design (baked into the hook)
-
-- `required` references → **full body** injected (first time this session); `optional` → **path + description only**
-- Token: `~/.claude/tokens/{plugin}/{session_id}.yaml`, a **two-tier** YAML map with two namespaces — `patterns` and `references` — each keyed entry has `expires_at` (epoch, = injection time + TTL). Skip while `now < expires_at`; re-inject once `now >= expires_at`. Because the expiry is baked in at injection time, changing the TTL env var does not retroactively affect already-written entries.
-  - **`patterns`** throttle whether a matched pattern's reference-set is re-injected at all (a still-fresh pattern is skipped entirely)
-  - **`references`** throttle whether a `required` reference's **body** is injected. If a reference was already injected this session via any pattern (still fresh), it is shown by **path only** — so a reference bound to multiple patterns is never re-injected as full body
-- TTL: default `3600`s, overridable via `settings.json` `env` → `{PREFIX}_INJECTION_TTL` (shared by both tiers)
-- Cleanup: every hook fire scans all `{session_id}.yaml`, drops expired entries from both namespaces, deletes emptied files (and purges stale top-level keys from the old single-tier schema)
-- Language: `{PREFIX}_INJECTION_LANG=jp` switches descriptions/template to Japanese
-- **Read vs Edit/Write output format**: for `Edit`/`Write`/`MultiEdit`, the hook returns `{"decision": "block", "reason": ...}` (cancels the tool; Claude retries with context). For `Read`, it returns `{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "allow", "additionalContext": ...}}` so the Read proceeds and Claude receives both the file contents and the injected context. Using `decision: "block"` on Read would cancel the Read, leaving Claude without the file contents.
-
-No `PreCompact` hook: after `/compact` the reference body is dropped from context, but the
-token simply re-injects once its TTL elapses — a dedicated compact-refresh hook was judged
-unnecessary overhead (PR156).
-
-The reference-tier cache (PR160) extends the original single-tier (pattern-only) token (PR156/157):
-it solves the case where the same reference is bound to multiple patterns, so editing files that
-match different patterns no longer re-injects the shared document body. This whole scheme replaces
-the old per-pattern empty-file token (PR150/151) and the pointer-only injection (PR147) — `required`
-bodies are back because the TTL token throttles re-injection.
+パスはテンプレートをそのまま反映 — 移動なし。
 
 ---
 
-## Skills
+## 注入設計（フックに組み込み済み）
 
-| Skill | Purpose |
+- `required` は（本セッション初回のみ）**本文全量**注入 / `optional` は**パス + description のみ**
+- トークン: `~/.claude/tokens/{plugin}/{session_id}.yaml`。`patterns` と `references` の 2 名前空間を持つ**二層** YAML マップで、各エントリに `expires_at`（epoch、= 注入時刻 + TTL）。`now < expires_at` の間はスキップ、`now >= expires_at` で再注入。期限が注入時に確定するため、TTL の env var を変えても既存エントリには遡及しない。
+  - **`patterns`**: そのパターンのリファレンス集合を再注入するかの判定（期限内のパターンは丸ごとスキップ）
+  - **`references`**: `required` リファレンスの**本文**を注入するかの判定。本セッションに（どのパターン経由であれ）既に注入済み（期限内）なら**パスのみ**表示する。これで複数パターンに紐づくリファレンスの本文二重注入を防ぐ
+- TTL: デフォルト `3600` 秒、`settings.json` の `env` → `{PREFIX}_INJECTION_TTL` で上書き（両層共通）
+- クリーンアップ: 発火のたびに全 `{session_id}.yaml` を走査し両名前空間の期限切れエントリを削除、空ファイルは削除（旧 single-tier schema のトップレベルキーも除去）
+- 言語: `{PREFIX}_INJECTION_LANG=jp` で description/テンプレートを日本語に切替
+
+`PreCompact` フックは持たない: `/compact` 後は注入済み本文がコンテキストから消えるが、
+トークンは TTL 経過後に再注入されるだけ。compact 専用のリフレッシュフックは無駄と判断（PR156）。
+
+リファレンス層キャッシュ（PR160）は当初の single-tier（パターンのみ）トークン（PR156/157）を
+拡張したもの。同一リファレンスが複数パターンに紐づくケースを解決し、別パターンにマッチする
+ファイルを編集しても共有ドキュメント本文を再注入しなくなった。この仕組み全体は旧方式（パターン
+単位の空ファイルトークン PR150/151、ポインタのみ注入 PR147）を置き換える。TTL トークンが
+再注入を throttle するため `required` の本文注入を復活させた。
+
+---
+
+## スキル
+
+| スキル | 目的 |
 |---|---|
-| `ref-inject:apply` | Attach the injection mechanism to a target plugin |
-| `ref-inject:plugin-migrate` | Update injection hook files in all consumers to current templates |
-| `ref-inject:plugin-config` | Placeholder config skill (no user-facing toggles currently) |
+| `ref-inject:apply` | 対象プラグインに注入機構を付与 |
+| `ref-inject:plugin-migrate` | 全消費プラグインの注入フックファイルを現在のテンプレートに更新 |
+| `ref-inject:plugin-config` | プレースホルダーの config スキル（現状ユーザー向けトグルなし） |
 
 ---
 
-## Usage
+## 使い方
 
-`/ref-inject:apply` against a target plugin (new or existing). Then fill `references/` with
-real docs and bind them in `_injection_rules.yaml`.
+対象プラグイン（新規でも既存でも）に `/ref-inject:apply` を実行する。その後 `references/` を
+実際の doc で埋め、`_injection_rules.yaml` で紐付ける。
 
-To change the **mechanism** for all consumers, edit `templates/` here, then re-apply the
-changed templates to each consumer's `hooks/` (the references stay as-is — only the
-hook/template files come from `ref-inject`).
+全 consumer の**仕組み**を変えるときは、ここの `templates/` を編集し、変更後のテンプレを各
+consumer の `hooks/` に再適用する（references はそのまま。`ref-inject` 由来なのはフック・
+テンプレートファイルのみ）。
 
 ---
 
-## Related Plugins
+## 関連プラグイン
 
-| Plugin | Relationship |
+| プラグイン | 関係 |
 |---|---|
-| `dev-kit` / `claude-kit` | Reference-injection consumers; use ref-inject's templates |
-| `claude-kit` | Source of `plugin-creator` (owns plugin-level files) and the common hook policy |
+| `dev-kit` / `claude-kit` | リファレンス注入の consumer。ref-inject テンプレートを採用済み |
+| `claude-kit` | `plugin-creator`（プラグインレベルのファイルを所有）と共通フックポリシーの出所 |
 
 ---
 
 ## Changelog
 
-| Version | Date | Summary |
+| バージョン | 日付 | 概要 |
 |---|---|---|
-| 1.10.0 | 2026-06-02 | Add `ref-inject:plugin-config` skeleton skill (no managed toggles; placeholder for future use) |
-| 1.9.0 | 2026-06-01 | Remove `ref-inject:setup-wizard` skill and `hooks/` directory (only contained `setup_check.py`) |
-| 1.6.0 | 2026-05-30 | Add `ref-inject:plugin-migrate` skill — enumerates consumers and updates injection hook files to current templates; leaves references/ untouched (PR185) |
-| 1.5.0 | — | Two-tier TTL token (pattern + reference tiers) to prevent double-injection of shared references across multiple patterns (PR160) |
+| 1.10.0 | 2026-06-02 | `ref-inject:plugin-config` skeleton スキルを追加（管理トグルなし。将来用プレースホルダー） |
+| 1.9.0 | 2026-06-01 | `ref-inject:setup-wizard` スキルと `hooks/` ディレクトリを削除（`setup_check.py` のみ含まれていた） |
+| 1.6.0 | 2026-05-30 | `ref-inject:plugin-migrate` スキルを追加 — consumer を列挙し注入フックファイルを現行テンプレートに更新する; references/ は変更しない (PR185) |
+| 1.5.0 | — | 二層 TTL トークン（パターン層 + リファレンス層）導入 — 複数パターンで共有されるリファレンスの二重注入を防止 (PR160) |

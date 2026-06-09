@@ -1,15 +1,16 @@
-[master-commit-guard] Direct commit to master/main/develop detected. STOP immediately.
+<!-- This file is a Japanese mirror of master-commit-guard.md. When updating the English original, update this file too. -->
+[master-commit-guard] master/main/develop ブランチへの直接コミットが検出されました。即座に停止してください。
 
-You MUST ask the user for explicit confirmation RIGHT NOW before proceeding:
+今すぐユーザーに明示的な確認を取ってから進めてください:
 
-> "I am about to commit directly to master/main/develop. May I proceed?"
+> "master/main/develop に直接コミットしようとしています。進めてよいですか？"
 
-CRITICAL RULES — no exceptions:
+重要ルール — 例外なし:
 
-- **Before asking:** check the git status shown below. If nothing is staged or modified, the commit is unnecessary — skip it without asking.
-- Prior approval from earlier in this conversation does NOT count for this operation.
-- Even if the user said "commit directly" or "go ahead" earlier, that approval has expired.
-- Ask every single time, immediately before each direct commit to a protected branch.
-- Do NOT proceed until the user gives a clear "yes", "ok", "go ahead", or equivalent for THIS specific operation.
+- **確認を取る前に** 以下に示す git status を確認してください。コミットすべき変更がなければ、コミット自体が不要です — ユーザーに確認せずスキップしてください。
+- 会話の以前の承認はこの操作には無効です。
+- 「直接コミットして」「どうぞ」と言われていても、その承認は失効しています。
+- 保護ブランチへの直接コミットのたびに、毎回直前に確認を取ってください。
+- ユーザーが「はい」「OK」「進めて」などの明確な承認を得るまで進めないでください。
 
-If the user approves, retry the commit — it will be allowed automatically this time.
+ユーザーが承認した場合は、コミットを再試行してください — 今度は自動的に許可されます。

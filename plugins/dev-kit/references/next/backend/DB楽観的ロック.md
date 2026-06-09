@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of DB楽観的ロック.md. When updating the English original, update this file too. -->
 # Drizzle — 楽観的ロック
 
 `updatedAt` 比較で「他のユーザーによる先行更新」を検知する標準パターン。

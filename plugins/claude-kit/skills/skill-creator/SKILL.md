@@ -4,19 +4,19 @@ description: |
   Create a new Claude Code skill under .claude/skills/ using the step-based structure.
   Trigger when the user says "スキルを作りたい", "新しいスキル作って", "create a skill", "make a skill for X", or claude-kit dispatches here.
 ---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# skill-creator — New Skill Scaffold (thin wrapper)
+# skill-creator — 新規スキル雛形（薄ラッパー）
 
-Authoring guidance for skills now lives in this plugin's references and is **auto-injected** by the
-`claude-kit-references-injection` hook whenever you edit a `SKILL.md`. This skill is a thin wrapper,
-kept for explicit invocation and for callers (e.g. `notes-to-claude`).
+スキルのオーサリング手順は本プラグインの references に移り、`SKILL.md` を編集すると
+`claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動のために残している薄いラッパー。
 
-## What to do
+## やること
 
-1. Follow `references/skills.md` + `references/common.md` (in this plugin). They are injected
-   automatically when you write the `SKILL.md`; if for some reason they are not, read them directly.
-   Together they cover: when a skill is the right type, checking for existing similar skills, the
-   JP-mirror-first workflow, the step-based structure template, and `description` frontmatter rules.
-2. Create `.claude/skills/<name>/SKILL.jp.md` first, then produce the English `SKILL.md` from it.
-3. Start each `.jp.md` mirror with the JP-mirror warning comment (format in `references/common/共通ガイド.md`,
-   auto-injected when you write the file) — write it directly (no skill call needed).
+1. `references/skills.md` + `references/common.md`（本プラグイン内）に従う。`SKILL.md` を書く際に
+   自動注入される。注入されない場合は直接読む。両者は「skill が適切な種別か」「既存類似スキルの
+   確認」「JP ミラー先行ワークフロー」「ステップ構造テンプレ」「description フロントマター規約」を
+   カバーする。
+2. `.claude/skills/<name>/SKILL.jp.md` を先に作り、それから英語の `SKILL.md` を生成する。
+3. 各 `.jp.md` ミラーの冒頭に JP ミラー警告コメントを付ける（フォーマットは `references/common/共通ガイド.md`、
+   ファイルを書く際に自動注入される）— 直接書く（スキル呼び出し不要）。

@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of 一覧ページ-tsx.md. When updating the English original, update this file too. -->
 # app/(authenticated)/{feature}/page.tsx — 一覧 Server Component
 
 リスト画面のエントリポイント。Server Component で初期データを取得して Client Screen に渡す。

@@ -1,26 +1,29 @@
-# python-script — Single-file scripts
+<!-- This file is a Japanese mirror of Pythonスクリプト.md. When updating the English original, update this file too. -->
+# python-script — 単一ファイルスクリプト
 
-Structure for simple scripts that don't need a `pyproject.toml`.
-Used for automation, conversion, report generation, etc. that fit in one or a few files.
+> このファイルは `Pythonスクリプト.md` の日本語ミラーです。
+
+`pyproject.toml` を作らない簡易スクリプトの構造。
+1 ファイル〜数ファイルで完結する自動化、コンバート、レポート生成等で使う。
 
 ---
 
-## File layout
+## ファイル構成
 
-Scripts live in a `scripts/` (or `tools/`) subfolder under the project root — not at the root itself.
+スクリプトはプロジェクトルート直下ではなく、`scripts/`（または `tools/`）サブフォルダに置く。
 
 ```
 project/
 └── scripts/              # or tools/
-    ├── my-script.py      # main script
-    └── _common.py        # shared helpers (optional)
+    ├── my-script.py      # メイン
+    └── _common.py        # 共通ヘルパー（任意）
 ```
 
-No `pyproject.toml` needed. Promote to **`py-project`** once the whole project needs packaging.
+`pyproject.toml` は不要。プロジェクト全体のパッケージ化が必要になったら **`py-project`** に昇格させる。
 
 ---
 
-## Standard template for my-script.py
+## script.py の標準テンプレート
 
 ```python
 #!/usr/bin/env python3
@@ -91,27 +94,27 @@ if __name__ == "__main__":
     sys.exit(main())
 ```
 
-The usage in the docstring: write the command **without indentation** so it can be copy-pasted
-and run directly, with a `#` comment line **above** the command describing what it does. Show
-optional arguments in `[brackets]` (e.g. `python my-script.py --input data.csv [--verbose]`).
+docstring の使い方（Usage）は、**インデントを付けず**にコマンドを書いてそのままコピペ実行できるようにし、
+コマンドの**上**に `#` コメントで何をするかの説明を書く。任意引数は `[角括弧]` で示す
+（例: `python my-script.py --input data.csv [--verbose]`）。
 
 ---
 
-## Required elements
+## 必須要素
 
-1. **Module docstring**: first line states what it does, followed by details and a usage example
-   (un-indented command with a `#` description above it; optional args in `[brackets]`)
-2. **`from __future__ import annotations`**: at the top of every file
-3. **`argparse`**: always parse arguments via argparse (no hardcoded literals)
-4. **`main() -> int`**: main processing is a function that returns an exit code
-5. **`if __name__ == "__main__": sys.exit(main())`**: makes the file directly runnable
-6. **Use `print`**: stdout for normal output, `print(..., file=sys.stderr)` for errors — no logging module needed
-7. **Exception handling**: catch expected exceptions; use `traceback.print_exc()` for unexpected ones to preserve the traceback
-8. **Japanese for comments and print messages**: write all inline comments and `print` message strings in Japanese — not English
+1. **モジュール docstring**: 1 行目で何をするか、続けて詳細と使い方の例
+   （インデントなしのコマンド＋その上に `#` で説明。任意引数は `[角括弧]`）
+2. **`from __future__ import annotations`**: 全ファイル冒頭
+3. **`argparse`**: 引数は必ず argparse でパース（即値ハードコード禁止）
+4. **`main() -> int`**: メイン処理は関数化、終了コードを返す
+5. **`if __name__ == "__main__": sys.exit(main())`**: 直接実行可能に
+6. **`print` を使う**: 通常の出力は stdout へ、エラーは `print(..., file=sys.stderr)` — logging モジュール不要
+7. **例外処理**: 想定例外を捕まえ、未捕捉例外は `traceback.print_exc()` で traceback ごと残す
+8. **コメント・print メッセージは日本語で書く**: インラインコメントおよび `print` のメッセージ文字列は英語でなく日本語で書く
 
 ---
 
-## Things you must not do
+## やってはいけないこと
 
 ```python
 # ❌ argparse なし、即値
@@ -132,7 +135,7 @@ logger.info("processing...")   # print を使う
 
 ---
 
-## Related files
+## 関連ファイル
 
-- `scripts/Tkinter.md` — when it's a GUI script
-- `core/コメント.md` — how to write docstrings
+- `scripts/Tkinter.md` — GUI スクリプトの場合
+- `core/コメント.md` — docstring の書き方

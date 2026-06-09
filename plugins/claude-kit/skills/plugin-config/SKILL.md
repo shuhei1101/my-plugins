@@ -1,69 +1,69 @@
 ---
 name: claude-kit:plugin-config
 description: |
-  When /claude-kit:plugin-config is invoked.
-  Or when the user says "設定を変えたい", "env を設定したい", "トグルを切り替えたい", "JP ミラーを無効にしたい", "注入言語を変えたい".
+  /claude-kit:plugin-config が呼び出されたとき。
+  またはユーザーが「設定を変えたい」「env を設定したい」「トグルを切り替えたい」「JP ミラーを無効にしたい」「注入言語を変えたい」と言ったとき。
+---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original (SKILL.md), update this file too. -->
+
+# claude-kit:plugin-config — プラグイントグル設定
+
+env 変数をインタラクティブに設定するスキル。
+「変数選択 → 値設定 → スコープ選択 → 適用」のループを繰り返し、ユーザーが終了を選択するまで続ける。
+
 ---
 
-# claude-kit:plugin-config — Plugin Toggle Configuration
+## 管理対象変数
 
-Interactively configures env variables.
-Loops through variable selection → value → scope → apply,
-until the user chooses to finish.
-
----
-
-## Managed Variables
-
-| env var | Description | Default |
+| env 変数 | 説明 | デフォルト |
 |---|---|---|
-| `${CLAUDE_KIT_JP_MIRROR}` | Create JP mirror (`.jp.md`) files | ON |
-| `${CLAUDE_KIT_INJECTION_LANG}` | Language for injected references (`en` / `jp`) | `en` |
-| `${CLAUDE_KIT_INJECTION_TTL}` | Injection token TTL (seconds) | `3600` |
+| `${CLAUDE_KIT_JP_MIRROR}` | JP ミラー（`.jp.md`）の作成 | 有効 |
+| `${CLAUDE_KIT_INJECTION_LANG}` | 注入リファレンスの言語（`en` / `jp`） | `en` |
+| `${CLAUDE_KIT_INJECTION_TTL}` | 注入トークンの TTL（秒） | `3600` |
 
-**JP_MIRROR polarity**: Key absent or `"true"` = ON (default). `"false"` = OFF. To return to default, delete the key.
+**JP_MIRROR 極性**: キー不在または `"true"` = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
 
-**INJECTION_LANG**: Key absent or `"en"` = English injection (default). `"jp"` = Japanese injection. To return to default, delete the key.
+**INJECTION_LANG**: キー不在または `"en"` = 英語注入（デフォルト）。`"jp"` に設定 = 日本語注入。デフォルトに戻すにはキーを削除する。
 
-**INJECTION_TTL**: Key absent = 3600 seconds (default). Any integer (seconds) as a string. To return to default, delete the key.
+**INJECTION_TTL**: キー不在 = 3600秒（デフォルト）。任意の整数（秒）を文字列で設定可能。デフォルトに戻すにはキーを削除する。
 
-**Excluded**: `${CLAUDE_KIT_INJECTION_DISABLE}` (reversed-polarity kill switch) is not managed by this skill.
+**除外**: `${CLAUDE_KIT_INJECTION_DISABLE}`（逆極性のキルスイッチ）はこのスキルで管理しない。
 
 ---
 
-## Tasks
+## タスク
 
-### Step 1: Read current state
+### ステップ 1: 現在の状態を読み取る
 
-#### Condition
+#### 条件
 
-- Always — run first
+- 常に実行 — 最初に行う
 
-#### Process
+#### 処理
 
-Run:
+以下を実行:
 
 ```bash
 cat .claude/settings.json 2>/dev/null || echo '{}'
 cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 ```
 
-For each variable, check the `env` block of both settings files (project takes precedence):
+両ファイルの `env` ブロックを確認し（プロジェクト設定が優先）:
 
 **`${CLAUDE_KIT_JP_MIRROR}`**:
-- Key absent or `"true"/"1"/"yes"/"on"` → **ON** (default)
+- キー不在または `"true"/"1"/"yes"/"on"` → **ON**（デフォルト有効）
 - `"false"/"0"/"no"/"off"` → **OFF**
 
 **`${CLAUDE_KIT_INJECTION_LANG}`**:
-- Key absent or `"en"` → **en** (default)
+- キー不在または `"en"` → **en**（デフォルト）
 - `"jp"` → **jp**
-- Anything else → display the raw value
+- それ以外 → 設定値をそのまま表示
 
 **`${CLAUDE_KIT_INJECTION_TTL}`**:
-- Key absent → **3600 (default)**
-- Value present → display the value
+- キー不在 → **3600（デフォルト）**
+- 値あり → その値を表示
 
-Display a state table as text output:
+状態テーブルをテキストで表示:
 
 ```
 ## 現在の設定
@@ -75,19 +75,19 @@ Display a state table as text output:
 | CLAUDE_KIT_INJECTION_TTL | 3600（デフォルト） | (未設定) |
 ```
 
-→ Proceed to Step 2
+→ ステップ 2 へ進む
 
 ---
 
-### Step 2: Select variable to configure （ループ先頭）
+### ステップ 2: 設定する変数を選択（ループ先頭）
 
-#### Condition
+#### 条件
 
-- Step 1 complete（ループ時はここから再開）
+- ステップ 1 完了（ループ時はここから再開）
 
-#### Process
+#### 処理
 
-Output a numbered list as plain text, then end the turn and wait for user input:
+番号付きリストをプレーンテキストで出力し、ターンを終了してユーザーの入力を待つ:
 
 ```
 設定する変数の番号を入力してください（0 で終了）:
@@ -98,26 +98,26 @@ Output a numbered list as plain text, then end the turn and wait for user input:
   0. 完了（終了）
 ```
 
-**Do not call `AskUserQuestion` here** — use plain numbered list to avoid the 4-option cap.
+**`AskUserQuestion` は使わない** — 4 選択肢上限を避けるためプレーンテキストリストを使用する。
 
-If the user inputs `0` or `q` → jump to Step 5.
-Otherwise parse the number and look up the corresponding var name.
+ユーザーが `0` または `q` を入力 → ステップ 5 へジャンプ。
+それ以外は番号を解析し、対応する変数名を取得する。
 
-→ Proceed to Step 3
+→ ステップ 3 へ進む
 
 ---
 
-### Step 3: Select value and scope
+### ステップ 3: 値とスコープを選択
 
-#### Condition
+#### 条件
 
-- Step 2 complete (a variable was selected)
+- ステップ 2 完了（変数が選択された）
 
-#### Process
+#### 処理
 
-Call `AskUserQuestion` with **2 questions in a single call**. Question 1 options differ by variable type:
+`AskUserQuestion` ツールを **1 回のコールで 2 つの質問** を送信。質問 1 の選択肢は変数の種類によって異なる:
 
-**For `${CLAUDE_KIT_JP_MIRROR}` (normal polarity)**:
+**`${CLAUDE_KIT_JP_MIRROR}`（通常極性）の場合**:
 
 - question: `"CLAUDE_KIT_JP_MIRROR の値を設定"`
 - header: `"値"`
@@ -125,7 +125,7 @@ Call `AskUserQuestion` with **2 questions in a single call**. Question 1 options
   1. `"デフォルトに戻す（キー削除 = ON）"` — description: `"env キーを削除して JP ミラー作成を有効に戻す"`
   2. `"OFF（\"false\" に設定）"` — description: `"JP ミラー（.jp.md）の作成を無効にする"`
 
-**For `${CLAUDE_KIT_INJECTION_LANG}` (language selection)**:
+**`${CLAUDE_KIT_INJECTION_LANG}`（言語選択）の場合**:
 
 - question: `"CLAUDE_KIT_INJECTION_LANG の値を設定"`
 - header: `"言語"`
@@ -133,7 +133,7 @@ Call `AskUserQuestion` with **2 questions in a single call**. Question 1 options
   1. `"en（デフォルト — キー削除）"` — description: `"英語注入に戻す（env キーを削除）"`
   2. `"jp（日本語注入）"` — description: `"日本語版リファレンスを注入する"`
 
-**For `${CLAUDE_KIT_INJECTION_TTL}` (integer value)**:
+**`${CLAUDE_KIT_INJECTION_TTL}`（整数値）の場合**:
 
 - question: `"CLAUDE_KIT_INJECTION_TTL の値を設定"`
 - header: `"TTL"`
@@ -141,9 +141,9 @@ Call `AskUserQuestion` with **2 questions in a single call**. Question 1 options
   1. `"デフォルトに戻す（キー削除 = 3600秒）"` — description: `"env キーを削除して 3600 秒に戻す"`
   2. `"カスタム値を入力"` — description: `"秒数を直接入力する（例: 7200）"`
 
-For the custom value option, accept the user's typed value via AskUserQuestion "Other" input and interpret it as an integer string.
+カスタム値を選択した場合は、入力された値を整数として解釈する（AskUserQuestion の「Other」入力で受け付ける）。
 
-**Question 2 — scope** (all variables):
+**質問 2 — スコープ**（すべての変数共通）:
 - question: `"どの settings.json に書き込みますか？"`
 - header: `"スコープ"`
 - options:
@@ -151,52 +151,52 @@ For the custom value option, accept the user's typed value via AskUserQuestion "
   2. `"ユーザー（~/.claude/settings.json）"` — description: `"全プロジェクトに適用"`
 - multiSelect: false
 
-Record both answers.
+両方の回答を記録する。
 
-→ Proceed to Step 4
+→ ステップ 4 へ進む
 
 ---
 
-### Step 4: Apply change
+### ステップ 4: 変更を適用
 
-#### Condition
+#### 条件
 
-- Step 3 complete
+- ステップ 3 完了
 
-#### Process
+#### 処理
 
-1. Determine target file from scope answer:
+1. スコープの回答からターゲットファイルを決定:
    - プロジェクト → `.claude/settings.json`
    - ユーザー → `~/.claude/settings.json`
-2. Read JSON from target file (use `{}` if absent)
-3. Ensure `env` object exists
-4. Apply change:
+2. ターゲットファイルから JSON を読み込む（存在しない場合は `{}` を使用）
+3. `env` オブジェクトが存在することを確認
+4. 変更を適用:
    - **`${CLAUDE_KIT_JP_MIRROR}`**:
-     - "デフォルトに戻す" → delete `env.CLAUDE_KIT_JP_MIRROR` key
-     - "OFF" → set `env.CLAUDE_KIT_JP_MIRROR` to `"false"`
+     - "デフォルトに戻す" → `env.CLAUDE_KIT_JP_MIRROR` キーを削除
+     - "OFF" → `env.CLAUDE_KIT_JP_MIRROR` を `"false"` に設定
    - **`${CLAUDE_KIT_INJECTION_LANG}`**:
-     - "en（デフォルト）" → delete `env.CLAUDE_KIT_INJECTION_LANG` key
-     - "jp" → set `env.CLAUDE_KIT_INJECTION_LANG` to `"jp"`
-     - Other (custom) → set `env.CLAUDE_KIT_INJECTION_LANG` to the entered value
+     - "en（デフォルト）" → `env.CLAUDE_KIT_INJECTION_LANG` キーを削除
+     - "jp" → `env.CLAUDE_KIT_INJECTION_LANG` を `"jp"` に設定
+     - Other（カスタム値）→ `env.CLAUDE_KIT_INJECTION_LANG` をその値に設定
    - **`${CLAUDE_KIT_INJECTION_TTL}`**:
-     - "デフォルトに戻す" → delete `env.CLAUDE_KIT_INJECTION_TTL` key
-     - Custom value → set `env.CLAUDE_KIT_INJECTION_TTL` to the entered value as a string
-5. Write back with 2-space indent
-6. Record the change (var name, old state → new state, file)
+     - "デフォルトに戻す" → `env.CLAUDE_KIT_INJECTION_TTL` キーを削除
+     - カスタム値 → `env.CLAUDE_KIT_INJECTION_TTL` を入力値の文字列に設定
+5. 2 スペースインデントで書き戻す
+6. 変更を記録する（変数名、変更前の状態 → 変更後の状態、ファイル）
 
-→ Loop to Step 2
+→ ステップ 2 へループ
 
 ---
 
-### Step 5: Report
+### ステップ 5: レポート
 
-#### Condition
+#### 条件
 
-- User input `0` or `q` in Step 2
+- ステップ 2 でユーザーが `0` または `q` を入力
 
-#### Process
+#### 処理
 
-Output a summary of all changes made during this session:
+このセッション中に行ったすべての変更のサマリーを出力:
 
 ```
 ## 変更完了
@@ -206,14 +206,14 @@ Output a summary of all changes made during this session:
 | CLAUDE_KIT_JP_MIRROR | ON | OFF | .claude/settings.json |
 ```
 
-If no changes were made, report "変更なし".
+変更がなかった場合は「変更なし」と表示する。
 
-→ Done.
+→ 完了。
 
 ---
 
-## Notes
+## 注意事項
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
 - `${CLAUDE_KIT_INJECTION_DISABLE}` は逆極性のキルスイッチのため、このスキルでは管理しない（`プラグイン設定.md` 参照）
-- TTL には整数値のみ設定すること
+- TTL に数値以外の文字列を設定しないこと — 整数値のみ有効

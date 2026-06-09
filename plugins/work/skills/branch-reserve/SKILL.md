@@ -1,171 +1,175 @@
 ---
 name: work:branch-reserve
 description: |
-  Reserve the next branch using the same flow as work:start, after the current branch is complete.
-  Reads the "Next branch candidates" section from the current task document to determine what to
-  work on, then records relevant background context in the new task document.
-  Candidates with a serial dependency (only doable after a preceding branch is merged) are NOT
-  reserved now — they are embedded into the reserved preceding branch's "Next branch candidates"
-  so the chain is carried forward.
-  Trigger when the user says "引き継ぎ書を作って", "次のブランチをセットアップして", "ハンドオフして",
-  "ブランチを予約して", "branch-reserve して", or calls `/work:branch-reserve` explicitly.
+  work:start と同じフローを使用して、現在のブランチ完了後に次のブランチを予約します。
+  現在のタスクドキュメントから「次ブランチ候補」セクションを読み込んで
+  次に何をするかを決定し、新しいタスクドキュメントに関連する背景コンテキストを記録します。
+  直列依存関係を持つ候補（先行ブランチのマージ後にのみ実行可能）は今予約されません —
+  予約された先行ブランチの「次ブランチ候補」に埋め込まれるため、チェーンが前に進みます。
+  「引き継ぎ書を作って」「次のブランチをセットアップして」「ハンドオフして」「ブランチを予約して」
+  「branch-reserve して」でトリガー、または `/work:branch-reserve` を明示的に呼び出し。
 ---
 
-# work:branch-reserve — Reserve the Next Branch with Context
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-Reads the "Next branch candidates" from the current task document and runs the same flow
-as `work:start` to create the branch and work folder. Records relevant background
-context in the new task document to improve handoff quality.
+# work:branch-reserve — 次ブランチをコンテキスト付きで予約
 
-When a serial dependency exists (a successor branch can only start after a preceding branch is
-merged), reserve only the immediately-actionable candidates; embed the dependent
-candidates into the reserved preceding branch's `## 次ブランチ候補` section.
+現在のタスクドキュメントから「次ブランチ候補」を読み込み、`work:start` と同じフローを実行して
+ブランチとワークフォルダを作成します。新しいタスクドキュメントに関連する背景コンテキストを記録して
+ハンドオフの質を向上させます。
 
-
----
-
-## Overview
-
-After a branch is complete, the next session's Claude has zero context about what was done.
-This skill runs the work:start reservation flow while writing background information
-(why this branch is needed, decisions made in the previous branch) into the new task document.
-
-Additionally, when a successor branch can only be implemented after a preceding branch is merged
-(serial dependency), reserving all candidates at once would create the successor's worktree
-on a stale master base. To avoid this, dependent candidates are not reserved now — they are
-transcribed into the preceding branch's `## 次ブランチ候補`, so when that branch completes and
-branch-reserve runs again, the dependent candidate becomes the next immediate target.
+直列依存関係が存在する場合（後続ブランチは先行ブランチのマージ後にのみ開始可能）、
+即座に実行可能な候補のみを予約します。依存候補は予約された先行ブランチの
+`## 次ブランチ候補` セクションに埋め込まれます。
 
 ---
 
-## Tasks
+## 概要
 
-### Step 1: Confirm and classify next branch candidates
+ブランチが完了した後、次のセッションの Claude は何が行われたかについてのコンテキストがありません。
+このスキルは work:start 予約フローを実行しながら、背景情報
+（このブランチが必要な理由、前のブランチで行われた決定）を新しいタスクドキュメントに書き込みます。
 
-#### Condition
+さらに、後続ブランチは先行ブランチがマージされた後にのみ実装できる場合
+（直列依存関係）、すべての候補を一度に予約すると、後続のワークツリーが
+古い master ベースで作成されます。これを避けるため、依存候補は今予約されません —
+先行ブランチの `## 次ブランチ候補` に転記されるため、そのブランチが完了して branch-reserve が再び実行されると、
+依存候補が次の即座のターゲットになります。
 
-- Always — run first
+---
 
-#### Process
+## タスク
 
-1. Read the current task document:
+### ステップ 1: 次ブランチ候補を確認して分類
+
+#### 条件
+
+- 常に実行 — 最初に実行
+
+#### 処理
+
+1. 現在のタスクドキュメントを読み込みます：
    ```
    .work/tasks/{task_folder}/{YYMMDD}-{日本語タイトル}.task.md
    ```
 
-2. Read its `## 次ブランチ候補` table (columns: title / summary / 実施条件):
-   - No candidates (placeholder text) → ask the user for the next branch details
-   - Candidates present → inspect each row's `実施条件` column and classify as follows:
+2. その `## 次ブランチ候補` テーブル（列：title / summary / 実施条件）を読み込みます：
+   - 候補なし（プレースホルダーテキスト） → ユーザーに次ブランチの詳細を確認
+   - 候補が存在 → 各行の `実施条件` 列を検査し、以下のように分類：
 
-   | 実施条件 content | Classification |
+   | 実施条件 内容 | 分類 |
    |---|---|
-   | Empty, `-`, "即時実施可" or similar (no dependency) | **Immediately reservable** |
-   | References a branch / candidate that is already merged (verifiable from history) | **Immediately reservable** |
-   | Depends on another candidate in the same table (e.g. "{other candidate title} が完了したら") | **Dependent candidate (embed into preceding branch)** |
+   | 空、`-`、「即時実施可」またはそれに準ずる（依存関係なし） | **即座に予約可能** |
+   | すでにマージされたブランチ/候補を参照（履歴から検証可能） | **即座に予約可能** |
+   | 同じテーブル内の別の候補に依存（例：「{other candidate title} が完了したら」） | **依存候補（先行ブランチに埋め込み）** |
 
-3. **Build a dependency graph and decide reservation order:**
-   - Candidates with no dependency (roots) are **immediately reservable**
-   - Candidates with dependencies are transcribed into the dependent root's "Next branch candidates" once that root is reserved
-   - When a single root has multiple successors, preserve the successor-to-successor dependencies in the transcribed table
+3. **依存グラフを構築して予約順序を決定：**
+   - 依存関係のない候補（ルート）は **即座に予約可能**
+   - 依存候補は、そのルートが予約されたら依存ルートの「次ブランチ候補」に転記
+   - 単一ルートが複数の後続者を持つ場合、後続者間の依存関係を転記テーブルで保持
 
-→ Proceed to Step 2
+→ ステップ 2 へ
 
-#### Output
+#### 出力
 
-- List of immediately reservable candidates
-- List of dependent successor candidates attached to each immediately reservable candidate (if any)
+- 即座に予約可能な候補のリスト
+- 各即座に予約可能な候補に付属する依存後続候補のリスト（存在する場合）
 
-#### Notes
+#### 注記
 
-##### Examples of 実施条件 phrasing
+##### 実施条件 フレージングの例
 
-| Phrasing | Interpretation |
+| フレージング | 解釈 |
 |---|---|
-| Empty / `-` / `即時実施可` | Immediately reservable |
-| `{merged branch name} がマージされたら` | Depends on an existing branch. If already merged → immediately reservable; if not → dependent |
-| `「{other candidate title}」が完了したら` | Depends on another candidate in the same table. Treat as dependent |
+| 空 / `-` / `即時実施可` | 即座に予約可能 |
+| `{マージ済みブランチ名} がマージされたら` | 既存ブランチに依存。既にマージされている場合 → 即座に予約可能。
+そうでない場合 → 依存 |
+| `「{other candidate title}」が完了したら` | 同じテーブル内の別の候補に依存。依存として扱う |
 
-##### Common misclassifications
+##### よくある誤分類
 
-- If a candidate title could match both an in-table candidate and a recently merged branch, prefer the in-table candidate (treat as serial dependency)
-- If 実施条件 is ambiguous and undecidable, ask the user
-
----
-
-### Step 2: Extract relevant background context
-
-#### Condition
-
-- Step 1 complete
-
-#### Process
-
-1. Review the current conversation and, for each immediately reservable candidate, select only the work **directly related** to it:
-   - Why this candidate is needed
-   - Design decisions or constraints decided in the current branch
-   - Implementation notes that affect this candidate
-
-2. Keep background context separate per candidate (do not merge across candidates if there are multiple)
-
-3. For each immediately reservable candidate that has attached dependent successors, also note their title / summary / 実施条件 (these will be transcribed in Step 3)
-
-→ Proceed to Step 3
-
-#### Output
-
-- Background context for each immediately reservable candidate
-- Transcription data for dependent successor candidates
-
-#### Notes
-
-##### What to focus on
-
-- Do not summarize the entire session — only extract what matters for the next branch
-- The "why" and "we decided X in the last branch" relationships are what count
-- If there is no relevant context, skip this extraction
+- 候補タイトルが表内候補と最近マージされたブランチの両方にマッチする場合、
+  表内候補を優先（直列依存として扱う）
+- 実施条件が曖昧で決定できない場合、ユーザーに確認
 
 ---
 
-### Step 3: Call work:start to reserve the next branch
+### ステップ 2: 関連する背景コンテキストを抽出
 
-#### Condition
+#### 条件
 
-- Step 2 complete
+- Step 1 完了
 
-#### Process
+#### 処理
 
-1. Reserve each **immediately reservable** candidate one by one using `/work:start`:
+1. 現在の会話を確認し、各即座に予約可能な候補について、**直接関連する** 作業のみを選択します：
+   - この候補が必要な理由
+   - 現在のブランチで決定された設計決定または制約
+   - この候補に影響を与える実装ノート
 
-   > Call `/work:start` for each candidate with its title and type.
-   > Repeat until every immediately reservable candidate is reserved.
+2. 背景コンテキストを候補ごとに別に保つ（複数の候補がある場合、候補間で統合しないでください）
 
-2. During each work:start's branch-document fill-in step (Step 7), fill in the following:
-   - Append the background context from Step 2 to `## 概要`
-   - Include "why this branch is needed" and "relationship to the previous branch"
-   - **If this candidate has attached dependent successors, transcribe them into `## 次ブランチ候補`** (all three columns: title / summary / 実施条件)
+3. 各即座に予約可能な候補が付属する依存後続者について、
+   そのタイトル / summary / 実施条件も記録（Step 3 で転記します）
 
-→ Done
+→ ステップ 3 へ
 
-#### Output
+#### 出力
 
-- All immediately reservable candidates have their branch and work folder created
-- Each new task document contains background context
-- Dependent successor candidates are transcribed into the preceding branch's `## 次ブランチ候補` and will be reserved by the next branch-reserve run
+- 各即座に予約可能な候補の背景コンテキスト
+- 依存後続候補の転記データ
 
-#### Notes
+#### 注記
 
-##### Difference from work:start
+##### フォーカスするもの
 
-The differences from a plain `work:start` are these two points:
+- セッション全体を要約しないでください — 次のブランチに重要なもの のみを抽出
+- 「なぜ」と「前のブランチで X を決定した」関係が重要
+- 関連するコンテキストがない場合、この抽出をスキップ
 
-1. **The `## 概要` section of the new task document is pre-filled with background context.**
-2. **Dependent successor candidates are transcribed into the new branch's `## 次ブランチ候補` to carry forward the chain.**
+---
 
-Everything else (branch creation, folder creation, `## QA` section) follows work:start's standard flow.
+### ステップ 3: work:start を呼び出して次ブランチを予約
 
-##### Chained handoff example
+#### 条件
 
-A current branch's `## 次ブランチ候補`:
+- Step 2 完了
+
+#### 処理
+
+1. 各 **即座に予約可能な** 候補を `/work:start` を使用して 1 つずつ予約します：
+
+   > 各候補をそのタイトルとタイプで `/work:start` を呼び出してください。
+   > すべての即座に予約可能な候補が予約されるまで繰り返してください。
+
+2. 各 work:start のタスクドキュメント入力ステップ（Step 7）中に、以下を入力してください：
+   - Step 2 から背景コンテキストを `## 概要` に追加
+   - 「なぜこのブランチが必要か」と「前のブランチとの関係」を含める
+   - **この候補が付属する依存後続者がある場合、それらを `## 次ブランチ候補` に転記**
+     （3 列すべて：title / summary / 実施条件）
+
+→ 完了
+
+#### 出力
+
+- すべての即座に予約可能な候補がブランチとワークフォルダを作成
+- 各新しいタスクドキュメントに背景コンテキストを含む
+- 依存後続候補は先行ブランチの `## 次ブランチ候補` に転記され、次の branch-reserve 実行で予約
+
+#### 注記
+
+##### work:start との違い
+
+プレーンな `work:start` との違いは次の 2 点です：
+
+1. **新しいタスクドキュメントの `## 概要` セクションは背景コンテキストで事前入力されます。**
+2. **依存後続候補は新しいブランチの `## 次ブランチ候補` に転記されてチェーンを前に進めます。**
+
+その他すべて（ブランチ作成、フォルダ作成、`## QA` セクション）は work:start の標準フローに従います。
+
+##### 直列ハンドオフの例
+
+現在のブランチの `## 次ブランチ候補`：
 
 | Title | Summary | 実施条件 |
 |---|---|---|
@@ -173,8 +177,10 @@ A current branch's `## 次ブランチ候補`:
 | feature-B | Add feature B | feature-A が完了したら |
 | feature-C | Add feature C | feature-B が完了したら |
 
-→ After branch-reserve runs:
+→ branch-reserve 実行後：
 
-- Only `feat/feature-A` is reserved
-- That branch's `## 次ブランチ候補` is populated with feature-B (実施条件: 即時実施可) and feature-C (実施条件: feature-B が完了したら)
-- When `feat/feature-A` completes and branch-reserve runs again, feature-B becomes the next reserved branch, and feature-C is transcribed forward into its `## 次ブランチ候補`
+- `feat/feature-A` のみが予約されます
+- そのブランチの `## 次ブランチ候補` には feature-B（実施条件：即時実施可）と
+  feature-C（実施条件：feature-B が完了したら）が入力されます
+- `feat/feature-A` が完了して branch-reserve が再び実行されると、feature-B が次の予約ブランチになり、
+  feature-C がその `## 次ブランチ候補` に転記されます

@@ -1,17 +1,18 @@
-# llm/instructor — Structured output with Instructor + Pydantic
+<!-- This file is a Japanese mirror of Instructor.md. When updating the English original, update this file too. -->
+# llm/instructor — Instructor + Pydantic で構造化出力
 
-To receive LLM output as a Pydantic model, use [Instructor](https://python.useinstructor.com/).
-Schema validation + retries are built in.
+LLM の出力を Pydantic モデルとして受け取るには [Instructor](https://python.useinstructor.com/) を使う。
+スキーマ検証 + リトライが組み込まれている。
 
 ---
 
-## Setup
+## セットアップ
 
 ```bash
 uv add instructor pydantic
 ```
 
-Wrap an OpenAI client with `instructor`:
+OpenAI クライアントを `instructor` でラップする:
 
 ```python
 # src/{pkg}/integrations/llm/structured_client.py
@@ -26,7 +27,7 @@ def make_structured_openai(api_key: str) -> instructor.AsyncInstructor:
     return instructor.from_openai(raw_client, mode=instructor.Mode.TOOLS)
 ```
 
-Anthropic version:
+Anthropic 版:
 
 ```python
 import anthropic
@@ -38,7 +39,7 @@ def make_structured_anthropic(api_key: str) -> instructor.AsyncInstructor:
 
 ---
 
-## Receiving as a Pydantic schema
+## Pydantic スキーマで受け取る
 
 ```python
 # src/{pkg}/features/extract/types.py
@@ -58,7 +59,7 @@ class ExtractedEvent(BaseModel):
 
 ---
 
-## Extraction function
+## 抽出関数
 
 ```python
 # src/{pkg}/features/extract/service.py
@@ -85,14 +86,14 @@ async def extract_event(
     )
 ```
 
-Just by passing `response_model=ExtractedEvent`:
-- LLM output is received as JSON
-- Validated with Pydantic
-- On validation failure, asks the LLM to fix it and retries (`max_retries`)
+`response_model=ExtractedEvent` を渡すだけで:
+- LLM 出力を JSON で受ける
+- Pydantic で検証
+- 検証失敗時は LLM に修正させて再試行（`max_retries`）
 
 ---
 
-## Wiring
+## 配線
 
 ```python
 # src/{pkg}/main.py
@@ -111,7 +112,7 @@ def build_handlers(settings: Settings) -> Handlers:
 
 ---
 
-## Handling validation errors
+## バリデーションエラーをハンドリング
 
 ```python
 from pydantic import ValidationError
@@ -135,7 +136,7 @@ async def extract_event_safe(
 
 ---
 
-## Nested schemas
+## ネストしたスキーマ
 
 ```python
 class Speaker(BaseModel):
@@ -150,7 +151,7 @@ class ConferenceEvent(BaseModel):
     topics: list[str]
 ```
 
-The LLM can produce a complex structure in one shot.
+LLM が複雑な構造を一発で出してくれる。
 
 ---
 
@@ -165,13 +166,13 @@ async for partial in client.chat.completions.create_partial(
     print(partial)   # 部分的に埋まったオブジェクトが yield される
 ```
 
-Useful for progressively displaying in a UI.
+UI で逐次表示するのに便利。
 
 ---
 
-## Task-specific client pattern
+## Task-specific client パターン
 
-Encapsulate the LLM as "a function specialized for a particular task":
+LLM を「ある特定タスクに特化した関数」として封じる:
 
 ```python
 # 関数の型エイリアス
@@ -189,7 +190,7 @@ def make_extract_event_fn(
     return fn
 ```
 
-The caller doesn't need to know about `client` or `model`:
+呼び出し側は `client` も `model` も知らなくていい:
 
 ```python
 extract = make_extract_event_fn(client=structured, model="gpt-4o-mini")
@@ -200,7 +201,7 @@ result = await extract("...article text...")
 
 ---
 
-## Bundling prompt and schema in one file
+## プロンプトとスキーマを 1 ファイルにまとめる
 
 ```python
 # src/{pkg}/features/extract/event_extractor.py
@@ -239,13 +240,13 @@ async def extract_event(
     )
 ```
 
-When the task is small, it can fit in one file. Schema, prompt, and function are readable as one set.
+タスクが小さければ 1 ファイルで完結。スキーマ・プロンプト・関数を 1 セットで読める。
 
 ---
 
-## Related files
+## 関連ファイル
 
-- `llm/プロバイダー.md` — Raw (unstructured) chat calls
-- `llm/prompts.md` — Managing long prompts
-- `llm/例外とリトライ.md` — Retry strategy
-- `architecture/TypeScriptスタイル適用.md` — Type design of task-specific functions
+- `llm/プロバイダー.md` — 素のチャット呼び出し（非構造化）
+- `llm/prompts.md` — 長いプロンプトの管理
+- `llm/例外とリトライ.md` — リトライ戦略
+- `architecture/TypeScriptスタイル適用.md` — task-specific 関数の型設計

@@ -1,41 +1,44 @@
-# CLAUDE.md — my-plugins Developer Guide
-
-This repository is a Claude Code plugin marketplace. It hosts skills distributed as plugins, installable via the `/plugin` command.
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
+# CLAUDE.jp.md — my-plugins 開発者ガイド（日本語訳）
 
 ---
 
-## Repository Structure
+このリポジトリは Claude Code のプラグインマーケットプレイスです。スキルをプラグインとして配布・管理し、`/plugin` コマンドでインストールできます。
+
+---
+
+## リポジトリ構成
 
 ```
 my-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json       # Plugin catalog — the source of truth for what's published
+│   └── marketplace.json       # プラグインカタログ（公開プラグインの一覧）
 ├── plugins/
-│   └── {plugin-name}/
+│   └── {プラグイン名}/
 │       ├── .claude-plugin/
-│       │   └── plugin.json    # Plugin manifest (name, description, version)
-│       ├── references/        # Optional: shared reference docs read by skills
-│       │   ├── {topic}.md        # Reference content (English, loaded on demand)
-│       │   └── {topic}.jp.md     # Japanese translation (reference only)
+│       │   └── plugin.json    # プラグインマニフェスト（名前・説明・バージョン）
+│       ├── references/        # 任意：スキルが参照する共有資料
+│       │   ├── {トピック}.md     # 参照内容（英語・スキルから明示的に読み込み）
+│       │   └── {トピック}.jp.md  # 日本語訳（参照用）
 │       └── skills/
-│           └── {skill-name}/
-│               ├── SKILL.md      # Skill definition (English, auto-loaded)
-│               └── SKILL.jp.md   # Japanese translation (reference only)
-├── CLAUDE.md      # This file (English, auto-loaded)
-└── CLAUDE.jp.md   # Japanese translation (reference only)
+│           └── {スキル名}/
+│               ├── SKILL.md      # スキル定義（英語・自動読み込み）
+│               └── SKILL.jp.md   # 日本語翻訳（参照用）
+├── CLAUDE.md      # このファイルの英語本体（自動読み込み）
+└── CLAUDE.jp.md   # このファイルの日本語翻訳（参照用）
 ```
 
 ---
 
-## Reference Links
+## 参考リンク
 
-| Topic | URL |
-|-------|-----|
-| Skills | https://code.claude.com/docs/ja/skills |
-| Plugins | https://code.claude.com/docs/ja/plugins |
-| Installing plugins | https://code.claude.com/docs/ja/discover-plugins |
-| Marketplaces | https://code.claude.com/docs/ja/plugin-marketplaces |
-| Plugin reference (schema) | https://code.claude.com/docs/ja/plugins-reference |
-| Subagents | https://code.claude.com/docs/ja/sub-agents |
-| Hooks | https://code.claude.com/docs/ja/hooks |
-| MCP servers | https://code.claude.com/docs/ja/mcp |
+| トピック | URL |
+|---------|-----|
+| スキル | https://code.claude.com/docs/ja/skills |
+| プラグイン | https://code.claude.com/docs/ja/plugins |
+| プラグインのインストール | https://code.claude.com/docs/ja/discover-plugins |
+| マーケットプレイス | https://code.claude.com/docs/ja/plugin-marketplaces |
+| プラグインリファレンス（スキーマ） | https://code.claude.com/docs/ja/plugins-reference |
+| サブエージェント | https://code.claude.com/docs/ja/sub-agents |
+| フック | https://code.claude.com/docs/ja/hooks |
+| MCP サーバー | https://code.claude.com/docs/ja/mcp |
