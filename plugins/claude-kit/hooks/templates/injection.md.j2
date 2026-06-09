@@ -1,14 +1,14 @@
-# claude-kit references — auto-injected
-
-The injection hook matched `{{ file_path }}` against `references/_injection_rules.yaml`.
-The **required** references must be followed when working with this file. Ones not yet seen this
-session are inlined in full; ones already injected earlier are listed by path only (re-`Read` if
-they have scrolled out of context).
+# claude-kit リファレンス — 自動注入
 
 {% if not jp_mirror %}
-> `CLAUDE_KIT_JP_MIRROR=false` — Skip JP mirrors; write the main `.md` file in Japanese directly.
+> `CLAUDE_KIT_JP_MIRROR=false` — JP ミラーをスキップ。本体 `.md` ファイルを日本語で直接書くこと。
 
 {% endif %}
+注入フックが `{{ file_path }}` を `references/_injection_rules.yaml` と照合しました。
+以下の **required** リファレンスはこのファイルを扱う際に従ってください。本セッションで未注入の
+ものは本文全量を展開し、既に注入済みのものはパスのみ記載します（コンテキストから消えていれば
+再度 `Read` してください）。
+
 {% if required %}
 {% for ref in required %}
 
@@ -17,7 +17,7 @@ they have scrolled out of context).
 ## {{ ref.path }} — {{ ref.description }}<!-- -->
 
 {% if ref.cached %}
-_(Already injected earlier this session — re-`Read` `{{ ref.abs_path }}` if you need it again.)_
+_（本セッションで注入済み — 必要なら `{{ ref.abs_path }}` を再度 `Read` してください）_
 {% else %}
 {{ ref.body }}
 {% endif %}
@@ -27,7 +27,7 @@ _(Already injected earlier this session — re-`Read` `{{ ref.abs_path }}` if yo
 
 ---
 
-## Optional references (read with `Read` if you need them)
+## 任意リファレンス（必要なら `Read` で読む）
 
 {% for ref in optional %}
 - `{{ ref.abs_path }}` — {{ ref.description }}
