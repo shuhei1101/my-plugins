@@ -1,0 +1,42 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# 先行 PR のマージ前に予約したワークツリーは「手本」が古い
+
+## 何が起きたか
+
+PR158 の仕事は `next-kit` を `ref-inject` の注入形式へ移行すること — PR157 が `py-kit` で
+行ったのと全く同じ移行だった。計画では、移行済みの `py-kit`（と `ref-inject` テンプレート）を
+手本としてミラーするつもりだった。
+
+ところが最初の diff で `py-kit` の注入フックが **旧** 方式（パターンごとの空ファイルトークン）の
+ままで、glossary が「PR157 で `expires_at` TTL 方式へ切替済み」と言っているのと矛盾していた。
+`ref-inject` テンプレートも `injected_at` のままだった。
+
+原因: PR158 のワークツリーは `pr-handoff` が **PR157 マージ前** の master から予約していた。
+`git merge-base --is-ancestor 542a9c8 HEAD` が false を返し、PR157 がブランチ履歴に無いと判明。
+ブランチ内の `py-kit` / `ref-inject` ファイルは PR157 前の版であり、コピー元として誤りだった。
+
+## 根本原因
+
+`pr-handoff` は予約時点の master から枝を切り、次 PR のワークツリーを即座に予約する。
+予約された PR の目的が **先行 PR の変更をミラーする** ことで、その先行 PR が予約の *後* に
+マージされると、先行 PR の成果はブランチに存在しない。ブランチ内ファイルを「最新」とみなすと
+古いコードをミラーしてしまう。
+
+## 修正内容
+
+先に master を PR158 ブランチへ取り込んだ（`git merge master`、コンフリクトなし）。これで
+PR157 の移行済み `py-kit` と `expires_at` 更新済みの `ref-inject` テンプレートが入った。
+その後で初めて `py-kit` が有効な手本となり、`next-kit` の再生成はプラグイン名以外 `py-kit` と
+バイト一致した。
+
+## 教訓
+
+ある PR の目的が先行 PR を追従・ミラーすることなら、ブランチ内ファイルを手本に使う前に、
+先行 PR がブランチ履歴に含まれているか確認する:
+
+```bash
+git merge-base --is-ancestor {先行コミット} HEAD && echo included || echo "merge master first"
+```
+
+含まれていなければ、まず `git merge master` する。`pr-handoff` で予約したブランチは先行 PR の
+成果を含むとは **限らない** — 予約時刻と先行 PR のマージ時刻は独立している。
