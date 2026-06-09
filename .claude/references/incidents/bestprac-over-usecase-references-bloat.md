@@ -1,44 +1,45 @@
-# References designed for "best-practice coverage" had to be re-split for hook auto-injection
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# 「ベストプラ網羅型」references がフック自動 inject 前提で分割やり直しになった
 
-**Date**: 2026-05-28
+**日付**: 2026-05-28
 **PR**: PR135 (review-next-kit-plugin)
 
-## Background
+## 背景
 
-PR135 reviewed `next-kit` references against Next.js community best practices. After 72 QA decisions were applied, AI produced 46 references covering shadcn/ui, Server Actions, testing, security, etc.
+PR135 で `next-kit` references を Next.js コミュニティのベストプラクティスと照合してレビュー。72 件の QA 判断を反映後、AI は shadcn/ui・Server Actions・テスト・セキュリティ等をカバーした 46 ファイルの references を仕上げた。
 
-When the user inspected the result, they pointed at concrete files (`backend/api-routes.md` lines 50–60, `backend/auth.md` lines 11–22) and rejected the structure:
+ユーザーが成果物を点検したところ、具体的なファイル (`backend/api-routes.md` の 50〜60 行目、`backend/auth.md` の 11〜22 行目) を指摘して構造を拒否:
 
-- `api-routes.md` packed 6 different file kinds (`route.ts` / `client.ts` / `service.ts` / `db.ts` / `query.ts` / `dbHelper.ts`) into one document. When the user only wants to write `query.ts`, the other 5 kinds of info get pulled in too.
-- `auth.md` consisted mostly of "provider selection tables" comparing Better Auth / Auth.js / Lucia / Clerk / Supabase Auth. Once the decision is made, comparison tables are noise — and they cannot help a hook that auto-injects context.
-- The user said: "次の PR でフックを作る前提で、ファイル名・パスでヒットしたらその reference だけ inject する形にしたい。だから 1 ファイル = 1 ユースケースに分割して、比較・選定・トレードオフは完全削除して。"
+- `api-routes.md` は 6 種類のファイル種別 (`route.ts` / `client.ts` / `service.ts` / `db.ts` / `query.ts` / `dbHelper.ts`) を 1 ファイルに詰めていた。ユーザーが `query.ts` だけ書きたいときに、他 5 種類の情報まで読み込まれる
+- `auth.md` の大半が「プロバイダ選定の比較表」(Better Auth / Auth.js / Lucia / Clerk / Supabase Auth)。決定済みの後では比較表はノイズで、フック自動 inject には役立たない
+- ユーザー曰く: 「次の PR でフックを作る前提で、ファイル名・パスでヒットしたらその reference だけ inject する形にしたい。だから 1 ファイル = 1 ユースケースに分割して、比較・選定・トレードオフは完全削除して」
 
-Result: QA-073 was opened and the entire references tree was re-split — **46 → 90 files**, with file names matching hook trigger keywords (`query-ts.md` / `route-ts.md` / `list-screen-tsx.md` / etc.).
+結果: QA-073 を起票し、references を全面再分割 — **46 → 90 ファイル**、ファイル名はフックトリガーキーワード (`query-ts.md` / `route-ts.md` / `list-screen-tsx.md` 等) と一致させた。
 
-## Root cause
+## 根本原因
 
-AI optimized for **best-practice coverage** ("did we cover SEO? testing? PWA? a11y?"). It did not optimize for the **reading context** — who reads this, when, and how much surrounding context they need.
+AI は「**ベストプラクティスの網羅**」を最適化していた (「SEO は? テストは? PWA は? a11y は?」)。「**読まれる場面**」(誰が・いつ・どれだけの周辺コンテキストを必要としているか) を最適化していなかった。
 
-For a hook-injection world, the unit of value is *"a single file edit"*. Anything not relevant to that single file is wasted tokens.
+フック注入の世界では、価値の単位は「**1 ファイル編集**」。それと無関係なものは全てトークンの無駄。
 
-The "比較・選定・トレードオフ" sections were especially bad: they exist to make a *decision*, but once the decision is recorded, the comparison is over and no longer useful to anyone *implementing* in the codebase. They survived only because AI defaulted to writing "thorough" docs.
+「比較・選定・トレードオフ」セクションは特に質が悪い: それらは *判断* のために存在するが、判断が記録された後、比較表は実装者にとってもう価値がない。AI がデフォルトで「網羅的」なドキュメントを書こうとしただけで残っていた。
 
-## Lesson
+## 教訓
 
-When writing references that will be loaded by a hook (or any auto-injection mechanism):
+フックで（または何らかの自動 inject 機構で）読み込まれる references を書くとき:
 
-1. **Imagine the trigger**: which file edit will cause this reference to load?
-2. **One file = one trigger = one use case**. If two different file types share content, that means the shared content is structural (`api-folder-overview.md`) and gets its own thin file, OR it should be replicated and kept short.
-3. **Delete comparison / selection / trade-off sections**. Record the decision in `commit message` / `.work/notes/` or as a one-liner — never as a comparison table that a hook would inject every time someone edits a file.
-4. **File names should match the trigger keyword**: `query.ts` edit → `query-ts.md`; `EditScreen.tsx` edit → `edit-screen-tsx.md`; `proxy.ts` edit → `proxy.md`. This makes 1:1 mapping in `injection_rules.yaml` trivial.
+1. **トリガーを想像する**: どのファイル編集でこの reference が読み込まれるか?
+2. **1 ファイル = 1 トリガー = 1 ユースケース**。2 つのファイル種別が共通の内容を持つなら、共通部分は構造的なもの (`api-folder-overview.md` のような薄いファイル) として独立させるか、または両方にコピペして短く保つ
+3. **比較・選定・トレードオフセクションは削除**。判断は commit message / `.work/notes/` または 1 行記述に残す — フックで毎回 inject される比較表として残してはいけない
+4. **ファイル名はトリガーキーワードと一致**: `query.ts` 編集 → `query-ts.md`、`EditScreen.tsx` 編集 → `edit-screen-tsx.md`、`proxy.ts` 編集 → `proxy.md`。これで `injection_rules.yaml` での 1:1 マッピングが簡単になる
 
-## Recurrence prevention
+## 再発防止
 
-- When designing references for a kit-style plugin, **start from `injection_rules.yaml` patterns** (the trigger map), not from a content TOC.
-- Add a check in the AI's plan / QA phase: "Could a hook auto-inject this file usefully? If a single file would inject content irrelevant to the editor's current file, split it."
+- kit 系 plugin の references を設計するとき、**`injection_rules.yaml` のパターン(トリガーマップ)から始める** — 内容の目次から始めない
+- AI の plan / QA フェーズに以下のチェックを加える: 「この 1 ファイルがフックで自動 inject されたとき、編集者の現在のファイルに無関係な内容も一緒に注入されないか? もし含まれるなら、分割せよ」
 
-## Related
+## 関連
 
-- PR135 commits `02a5b0e` (backend split), `fac94c5` (frontend split), `ef44fe6` (shared/error split + finalize)
-- See also `premature-cross-plugin-centralization.md` (PR140 — opposite mistake: centralizing too early)
-- See also `markdown-for-code-consumed-config.md` (PR140 — designing config files for humans when they are consumed by code)
+- PR135 のコミット `02a5b0e` (backend 分割)、`fac94c5` (frontend 分割)、`ef44fe6` (shared/error 分割 + 最終整合)
+- `premature-cross-plugin-centralization.md` (PR140 — 反対の間違い: 早すぎる共通化)
+- `markdown-for-code-consumed-config.md` (PR140 — コードで消費される設定ファイルを人間用に設計した)

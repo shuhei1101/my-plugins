@@ -1,46 +1,47 @@
-# Template file placed under a `.gitignore` that excluded it
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
-## Background
+# テンプレートファイルを `.gitignore` で除外されるディレクトリに置いてしまった
 
-In PR131, an attempt was made to ship `_index.yaml` as a starter template for the
-new `.work/issues/` folder. The file was placed at:
+## 背景
+
+PR131 で、`.work/issues/` フォルダの初期テンプレートとして `_index.yaml` を
+配置しようとした:
 
 ```
 plugins/work-kit/templates/.work/issues/_index.yaml
 ```
 
-But the same template directory already contained:
+しかし同じテンプレートディレクトリには既に以下が含まれていた:
 
 ```
-plugins/work-kit/templates/.work/issues/.gitignore       # contents: _index.yaml
+plugins/work-kit/templates/.work/issues/.gitignore       # 中身: _index.yaml
 ```
 
-That `.gitignore` is correct for the **destination** (a user project's `.work/issues/`
-needs to exclude `_index.yaml`), but it is also active in the **source** repo, so the
-template `_index.yaml` was silently gitignored and could not be committed.
+この `.gitignore` は **コピー先**（ユーザープロジェクトの `.work/issues/` で
+`_index.yaml` を git 管理外にする）のために正しく書かれているが、**ソース** リポジトリ
+でも有効に作用するため、テンプレートの `_index.yaml` も静かに gitignored となり、
+commit できない状態になっていた。
 
-## What the user pointed out
+## どう気づいたか
 
-The user did not call this out — `git status` was the one that revealed the file
-was untracked-and-also-ignored. The lesson is to verify it before assuming the
-template will ship.
+ユーザーが指摘したわけではなく、`git status` で「テンプレートディレクトリに置いたはずの
+ファイルが untracked かつ ignored になっている」ことから判明した。
 
-## Lesson
+## 教訓
 
-When placing a file under a directory that contains a `.gitignore`:
+`.gitignore` を含むディレクトリにファイルを配置するときは:
 
-- Check whether the file matches an ignored pattern in any ancestor `.gitignore`
-- For "starter file" templates that match the destination's ignore pattern, do NOT
-  ship them as files. Generate them programmatically in the setup/install step instead.
+- 配置するファイル名が祖先の `.gitignore` の除外パターンにマッチしないか確認する
+- 配置先の `.gitignore` パターンにマッチしてしまう「初期ファイル」テンプレートは
+  ファイルとして配布せず、setup / install スクリプト側で動的生成する
 
-In PR131 the fix was:
+PR131 での対応:
 
-- Drop `templates/.work/issues/_index.yaml` from the template tree
-- Have `setup.py` write the initial `_index.yaml` content into the user's project
-  after `_expand()` finishes
+- `templates/.work/issues/_index.yaml` をテンプレートツリーから削除
+- `setup.py` が `_expand()` の後に `_index.yaml` の初期内容を書き込むように変更
 
-## Recurrence prevention
+## 再発防止
 
-Before adding a new template file under a directory with a `.gitignore`, run
-`git check-ignore -v <path>` and confirm the file is trackable. If not, move the
-starter content into the setup script.
+`.gitignore` のあるディレクトリ配下に新しいテンプレートファイルを追加する前に、
+`git check-ignore -v <path>` で除外されないことを確認する。除外される場合は
+setup スクリプト側で生成する方針に切り替える。

@@ -4,20 +4,20 @@ description: |
   Create a new path-scoped rule under .claude/rules/ using the step-based structure.
   Trigger when the user says "新しいルール作って", "ルールを新規作成", "make a rule for X", or "create a rule for".
 ---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# rule-creator — Path-Scoped Rule Creator (thin wrapper)
+# rule-creator — パススコープルール作成（薄ラッパー）
 
-Authoring guidance for rules now lives in this plugin's references and is **auto-injected** by the
-`claude-kit-references-injection` hook whenever you edit a file under `.claude/rules/`. This skill is
-a thin wrapper, kept for explicit invocation and for callers (e.g. `notes-to-claude`).
+ルールのオーサリング手順は本プラグインの references に移り、`.claude/rules/` 配下のファイルを
+編集すると `claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動のために残している薄いラッパー。
 
-## What to do
+## やること
 
-1. Follow `references/rules.md` + `references/common.md` (in this plugin). They are injected
-   automatically when you write the rule file; if not, read them directly. Together they cover:
-   when rules load, the two rule types (link / context), use-case-oriented `paths:` design,
-   consolidation/separation criteria, folder structure, required sections, and the structure example.
-2. Create `.claude/rules-jp/<name>.md` first, then produce the English `.claude/rules/<name>.md`.
-   Do **not** put the JP mirror inside `.claude/rules/` (it would auto-load).
-3. Start each `.jp.md` mirror with the JP-mirror warning comment (format in `references/common/共通ガイド.md`,
-   auto-injected when you write the file) — write it directly (no skill call needed).
+1. `references/rules.md` + `references/common.md`（本プラグイン内）に従う。ルールファイルを書く際に
+   自動注入される。注入されない場合は直接読む。両者は「ルールの読み込み条件」「2 種類（リンク型 /
+   コンテキスト型）」「ユースケース指向の `paths:` 設計」「統合 / 分離基準」「フォルダ構成」「必須
+   セクション」「構造例」をカバーする。
+2. `.claude/rules-jp/<name>.md` を先に作り、それから英語の `.claude/rules/<name>.md` を生成する。
+   JP ミラーを `.claude/rules/` 配下に置かないこと（自動ロードされてしまう）。
+3. 各 `.jp.md` ミラーの冒頭に JP ミラー警告コメントを付ける（フォーマットは `references/common/共通ガイド.md`、
+   ファイルを書く際に自動注入される）— 直接書く（スキル呼び出し不要）。

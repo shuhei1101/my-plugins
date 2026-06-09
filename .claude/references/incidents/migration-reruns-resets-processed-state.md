@@ -1,41 +1,38 @@
-# Incident 26: migration-reruns-resets-processed-state
+<!-- This file is a Japanese mirror of migration-reruns-resets-processed-state.md. When updating the English original, update this file too. -->
 
-Japanese mirror: `migration-reruns-resets-processed-state.jp.md`
+# インシデント 26: migration-reruns-resets-processed-state
 
-## Summary
+英語オリジナル: `migration-reruns-resets-processed-state.md`
 
-Re-running a batch-transformation script on already-processed files silently resets their state.
-After a merge that introduces new files, apply the script only to those new files — or verify
-idempotency first.
+## 要約
 
-## What happened
+一括変換スクリプトを変換済みファイルに再実行すると、既存状態（チェックボックス等）が黙ってリセットされる。
+マージで新規ファイルが追加された後は、そのファイルのみにスクリプトを適用するか、冪等性を事前確認する。
 
-During `work:merge` Step 3, `git merge master` brought in 6 new issue files (ISSUE-196〜201)
-that had not yet been migrated to the v2.75.0 format. The migration script (`migrate_issues.py`)
-was re-run on the entire `.work/issues/` directory (77 files) to catch those 6 new files.
+## 何が起きたか
 
-Because the script searched for `**回答**: ` markers to detect the answer state, already-migrated
-files (which had `- [x]` checkboxes instead) returned `isha_answer = None` — causing all
-`## 意思` checkboxes to be written back as `- [ ] 対応する / - [ ] 対応しない` (fully unchecked).
-Answered QA checkboxes were similarly reset.
+`work:merge` の Step 3 で `git merge master` により、v2.75.0 フォーマット未移行の新規イシューファイル
+（ISSUE-196〜201）が 6 件取り込まれた。これらを移行するため、マイグレーションスクリプト
+（`migrate_issues.py`）を `.work/issues/` ディレクトリ全体（77 件）に対して再実行した。
 
-The state reset was silent: the script reported "OK" for all 77 files, and the diff was not
-inspected before committing. The error was caught only when spot-checking the output.
+スクリプトは回答状態を `**回答**: ` マーカーで検出していたが、変換済みファイルはすでに `- [x]`
+チェックボックス形式になっていたため、`isha_answer = None` となり `## 意思` のチェックボックスが
+すべて未チェック（`- [ ]`）に書き戻された。QA の回答済みチェックボックスも同様にリセットされた。
 
-## Fix applied
+スクリプトはすべてのファイルに「OK」を報告し、コミット前に差分を確認しなかったため、
+サンプル確認時に初めて問題が発覚した。
+
+## 適用した修正
 
 ```bash
-git reset --hard HEAD~1   # revert the bad commit
-python migrate_issues.py  # re-run selectively, only on the 6 new files
-git add .work/issues/ISSUE-196.md … ISSUE-201.md
-git commit
+git reset --hard HEAD~1   # 問題のコミットを取り消し
+# 6 件の新規ファイルのみを選択的に変換して再コミット
 ```
 
-## Prevention
+## 再発防止
 
-1. **Apply to new files only**: after a merge that adds new files, apply the transformation
-   script only to the newly-added files, not the full directory.
-2. **Verify idempotency before re-running**: if running on the whole directory is unavoidable,
-   test the script on one already-processed file first and confirm the output is unchanged.
-3. **Inspect the diff before committing**: `git diff --stat` after running the script should show
-   only the expected new/changed files.
+1. **新規ファイルのみに適用**: マージで新規ファイルが追加された後は、そのファイルのみに変換スクリプトを
+   適用し、ディレクトリ全体に再実行しない。
+2. **冪等性を事前確認**: ディレクトリ全体への再実行が避けられない場合は、変換済みファイル 1 件で
+   スクリプトを試し、出力が変わらないことを確認してから全体に適用する。
+3. **コミット前に差分を確認**: スクリプト実行後に `git diff --stat` で変更ファイル数が期待通りか確認する。

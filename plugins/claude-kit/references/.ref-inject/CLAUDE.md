@@ -1,40 +1,41 @@
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # claude-kit references
 
-Authoring guides for Claude Code instruction files (skills, rules, CLAUDE.md, hooks, plugins).
-Auto-injected by the `claude-kit-references-injection` hook based on the edited file path.
+Claude Code 指示ファイル（skill / rule / CLAUDE.md / hook / plugin）のオーサリングガイド集。
+`claude-kit-references-injection` フックが編集対象ファイルパスに応じて自動注入する。
 
-These references **are the source of truth** for how to author each file type. The creator
-skills (`skill-creator` / `rule-creator` / `hook-creator` / `claude-creator` / `plugin-creator`)
-are now thin wrappers that defer to these docs — editing the target file injects the matching
-guide directly, so you can write the file without invoking a skill.
+これらの reference が各ファイル種別の **正本（オーサリング手順の単一情報源）**。creator スキル
+（`skill-creator` / `rule-creator` / `hook-creator` / `claude-creator` / `plugin-creator`）は
+これらに委譲する薄いラッパーになっており、対象ファイルを編集すれば該当ガイドが直接注入される
+ため、スキルを起動せずにファイルを書ける。
 
-## Reading manually
+## 手動で読む場合
 
-- `_index.yaml` — the list of all references (path + one-line description; parsed by the hook)
-- `_injection_rules.yaml` — edit-path pattern → `required` / `optional` references
+- `_index.yaml` — 全 reference の一覧（path + 1 行 description。フックがパースする）
+- `_injection_rules.yaml` — 編集パスパターン → `required` / `optional` reference
 
-## Reading automatically
+## 自動で読まれる場合
 
-On `PreToolUse(Edit | Write | MultiEdit | Read)`, `hooks/scripts/inject_references.py`:
+`PreToolUse(Edit | Write | MultiEdit | Read)` で `hooks/scripts/inject_references.py` が:
 
-1. Matches the edited file path against `_injection_rules.yaml` patterns
-2. Injects each matched `required` reference **in full body**, and each `optional` as **path + description only**
-3. De-dupes via a two-tier TTL token at `~/.claude/tokens/claude-kit/{session_id}.yaml`
-   (re-injects once `CLAUDE_KIT_INJECTION_TTL` seconds elapse, default 3600):
-   - `patterns`: a matched pattern is skipped entirely while still fresh
-   - `references`: a `required` reference whose body was already injected this session (via any
-     pattern) is shown by **path only**, so a reference shared across patterns is never re-injected
+1. 編集対象ファイルパスを `_injection_rules.yaml` のパターンと照合
+2. マッチした `required` reference は **本文全量**、`optional` は **パス + description のみ** を注入
+3. `~/.claude/tokens/claude-kit/{session_id}.yaml` の二層 TTL トークンで重複排除
+   （`CLAUDE_KIT_INJECTION_TTL` 秒経過で再注入。デフォルト 3600）:
+   - `patterns`: そのパターンが期限内なら丸ごとスキップ
+   - `references`: 本セッションで（どのパターン経由であれ）既に本文注入済みの `required` は
+     **パスのみ**表示。これで複数パターンで共有されるリファレンス本文の二重注入を防ぐ
 
-Set `CLAUDE_KIT_INJECTION_LANG=jp` to inject Japanese descriptions (`_index.jp.yaml` + `injection.jp.md.j2`).
+`CLAUDE_KIT_INJECTION_LANG=jp` で日本語 description を注入（`_index.jp.yaml` + `injection.jp.md.j2`）。
 
-## Path → reference map
+## パス → reference 対応
 
-| Edited file | Injected guide |
+| 編集ファイル | 注入されるガイド |
 |---|---|
 | `**/skills/*/SKILL.md` | `common/共通ガイド.md` + `skill/スキル.md` |
 | `**/CLAUDE{.local,.jp,}.md` | `common/共通ガイド.md` + `claude-md/CLAUDE-md記述ガイド.md` |
 | `plugins/*/CLAUDE{.jp,}.md` | ↑ + `plugin/プラグインCLAUDE-md.md` + `plugin/バージョン同期.md` |
-| `**/hooks/hooks.json`, `**/.claude/settings.json` | `common/共通ガイド.md` + `hook/フック.md` + `common/環境変数.md` |
+| `**/hooks/hooks.json`、`**/.claude/settings.json` | `common/共通ガイド.md` + `hook/フック.md` + `common/環境変数.md` |
 | `**/hooks/prompts/*.md` | `hook/フック.md` |
 | `**/.claude-plugin/{plugin,marketplace}.json` | `common/共通ガイド.md` + `plugin/プラグイン構造.md` + `plugin/バージョン同期.md` |
 | `plugins/*/references/**/*.md` | `common/リファレンス同期.md` |
@@ -42,9 +43,9 @@ Set `CLAUDE_KIT_INJECTION_LANG=jp` to inject Japanese descriptions (`_index.jp.y
 | `plugins/*-kit/hooks/templates/*.j2` | `hook/キットフック同期.md` + `hook/jinja2/執筆ガイド.md` |
 | `**/hooks/templates/*.j2` | `hook/jinja2/テンプレート注意点.md` |
 
-## Maintenance
+## メンテナンス
 
-- Add a reference: create the file, add it to `_index.yaml` (+ `_index.jp.yaml`), bind it to a pattern in `_injection_rules.yaml`
-- Keep `1 reference = 1 use case` so a single edited file does not pull in unrelated docs
-- After editing `_injection_rules.yaml`, verify no reference is orphaned (listed in index but bound to no pattern, or vice versa)
-- This injection structure is shared across all `*-kit` plugins — see the `kit-hooks-index-sync` rule; change the structure in lock-step
+- reference 追加: ファイルを作り、`_index.yaml`（+ `_index.jp.yaml`）に追加し、`_injection_rules.yaml` のパターンに紐付ける
+- `1 reference = 1 ユースケース` を保ち、1 ファイル編集で無関係なドキュメントを巻き込まない
+- `_injection_rules.yaml` 編集後は orphan（index にあるのにパターン未紐付け、またはその逆）が無いか確認
+- この注入構造は全 `*-kit` プラグインで共通 — `kit-hooks-index-sync` ルール参照。構造変更は足並みを揃える

@@ -1,42 +1,44 @@
-# `git merge master -X theirs` silently drops branch-only additions inside heavily-edited shared files
+<!-- This file is a Japanese mirror of merge-theirs-loses-branch-only-additions.md. When updating the English original, update this file too. -->
 
-## Context
+# 大幅に編集された共有ファイルに対して `git merge master -X theirs` を使うと、ブランチ側のみの追記が静かに消える
 
-- PR: PR168 (`refactor-task-doc-structure`)
-- Date: 2026-05-30
+## 状況
 
-## What happened
+- PR: PR168（`refactor-task-doc-structure`）
+- 日付: 2026-05-30
 
-PR168 was long-running, and master had been overhauled by 5 PRs (PR165 / PR166 / PR169 / PR170 / PR172) while it sat. After confirming with the user "master is canonical; layer PR168 on top," I ran:
+## 起きたこと
+
+PR168 は long-running PR で、待っている間に master が 5 PR（PR165 / PR166 / PR169 / PR170 / PR172）で大幅にリファクタされていた。ユーザーに「master が正解、その上に PR168 を重ねる」と判断してもらい、以下を実行した:
 
 ```bash
 git merge master -X theirs
 ```
 
-to resolve dozens of structural conflicts (e.g. `plugins/work-kit/` → `plugins/workspace/` rename, `mark-generated` skill removal, `version-sync` removal) by preferring master in every conflict.
+`plugins/work-kit/` → `plugins/workspace/` リネーム、`mark-generated` 廃止、`version-sync` 廃止など多数の構造衝突を、全部 master 側を優先して一括解消する狙い。
 
-The strategy worked for **files master also touched** — master's version won, as intended. But PR168 had also **appended 4 new entries to `.claude/rules/core/glossary.md`** (a file master had likewise heavily edited for PR172). Even though those PR168 additions did not overlap master's edits, the resulting merged glossary lost them — they did not appear in the post-merge tree at all.
+**master も触ったファイル**については期待通り master 版が勝ち問題なし。しかし PR168 は `.claude/rules/core/glossary.md`（PR172 で master 側も大量編集していた）に**新規エントリ 4 件を追記**していた。これらは master の編集とは別箇所への追加だったにも関わらず、merge 後のファイルからきれいに消えていた — 追加分はゼロ。
 
-I noticed only because I grepped for the new term names after merge:
+気づいたのは merge 直後に新用語名を grep したから:
 
 ```bash
 grep -n "PR168\|plugin-update\|変更内容セクション\|テストセクション\|単一ファイル化" .claude/rules/core/glossary.md
-# (no output)
+# (出力なし)
 ```
 
-Re-appending the 4 entries manually was straightforward, but had I committed without checking, the glossary additions would have silently vanished.
+4 件を手で再追記すれば済んだが、確認せずにコミットしていたら静かに失われていた。
 
-## Lesson
+## 教訓
 
-`-X theirs` is not a precision tool when both sides have appended to the same file. Git's auto-merge can pick "theirs" entirely for files that look hunk-conflicted, dropping additions the branch had made elsewhere in the file. After a `-X theirs` merge into a long-lived branch:
+`-X theirs` は両側で append が起きているファイルに対しては精度を欠く。git の auto-merge は「両方 modified」と見たファイル全体について theirs を選び、ブランチ側のファイル別箇所への追記を巻き込んで消すことがある。long-lived ブランチへの `-X theirs` merge 後は以下を必須にする:
 
-- Identify every file your PR **appended** to (not just modified or moved): glossary tables, incidents tables, marketplace plugin list, index-style files.
-- For each, run a `grep` for your PR's distinguishing identifiers (new term names, new file paths, the PR number) immediately after the merge.
-- If anything is missing, re-append it before the merge commit.
+- 自分の PR が **追記**したファイルを全て洗い出す（編集や移動ではなく追記）: glossary、incidents、marketplace のプラグイン一覧、index 系ファイルなど。
+- 各ファイルに対し、PR を識別できる文字列（新用語名・新ファイルパス・PR 番号）で merge 直後に `grep` する。
+- 欠落があれば、merge コミット前に手で再追記する。
 
-A safer alternative when the branch's additions are isolated: drop the `-X theirs` and resolve each "both modified" conflict manually for append-style files, even if you accept `theirs` for everything else.
+ブランチ側の追記が孤立しているのが事前に分かっている場合は、`-X theirs` を使わず、append 型のファイルだけは手で「both modified」を解消するほうが安全（他のファイルは theirs で OK でも）。
 
-## Related
+## 関連
 
-- `large-master-adapt-user-decisions.md` — master-overhaul-during-long-PR pattern; this is a follow-on lesson about which strategy to use once you've decided to "layer on top."
-- `parallel-pr-version-bump-collision.md` — another long-PR pitfall when master is far ahead.
+- `large-master-adapt-user-decisions.md` — long-running PR で master が大変動した時の判断パターン。本件はそれを実行するときの「どの戦略を取るか」の後続教訓。
+- `parallel-pr-version-bump-collision.md` — long-running PR が master から離れたときの別パターン。

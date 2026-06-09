@@ -1,12 +1,12 @@
-[git-guard] git push / git merge detected. STOP immediately.
+<!-- This file is a Japanese mirror of git-guard.md. When updating the English original, update this file too. -->
+[git-guard] git push / git merge を検知しました。今すぐ実行を停止してください。
 
-You MUST ask the user for explicit confirmation RIGHT NOW before proceeding:
+以下を必ずユーザーに確認してください:
 
-> "I am about to run: `{command}`. May I proceed?"
+> 「`{コマンド}` を実行しようとしています。実行してよいですか？」
 
-CRITICAL RULES — no exceptions:
+重要ルール（例外なし）:
 
-- Prior approval from earlier in this conversation does NOT count for this operation.
-- Even if the user said "go ahead and merge" or "you can push" earlier, that approval has expired.
-- Ask every single time, immediately before each push or merge.
-- Do NOT proceed until the user gives a clear "yes", "ok", "go ahead", or equivalent for THIS specific operation.
+- 過去の会話で「マージしていいよ」「プッシュしていいよ」と言われていても、それはこの操作への許可にはなりません
+- 毎回、この操作の直前に改めて確認を取ること
+- ユーザーが「はい」「ok」「いいよ」「やって」など、この操作への明示的な承認を返すまで実行しないこと

@@ -1,6 +1,8 @@
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+
 # path-home-cross-env-mismatch
 
-## What happened
+## 何が起きたか
 
 ステータスラインのバグ調査中、`apply-statusline.py` を WSL の Python で実行したが、ユーザーの Claude Code は Windows ネイティブで動いていた。
 
@@ -10,18 +12,18 @@
 
 WSL から実行した結果、WSL 側 settings.json は更新されたが、Windows ネイティブで動く Claude Code が読む `C:\Users\...\settings.json` には何も反映されなかった。**エラーも警告も出ないため、変更が反映されないのに「適用済み」と思い込んでしまった**。
 
-## Why it happened
+## なぜ起きたか
 
 - `Path.home()` の挙動が実行環境依存であることを意識していなかった
 - スクリプト実行のフィードバック（`statusLine applied to ...`）が「Windows 側に適用された」と誤認しやすい出力だった
 - ユーザーが WSL 環境であることを早期に確認せず、書き換え先のパスを検証しなかった
 
-## Fix
+## 修正
 
 ユーザーから「WSL 環境や」と教えてもらい、書き換え先を `/home/shuhei2441/.claude/settings.json` に固定して修正した。
 SKILL.md / SKILL.jp.md に「実行環境（WSL/Windows）を見極めて、Claude Code と同じ Python 環境からスクリプトを実行すること」という注意事項を追記した。
 
-## Prevention
+## 再発防止
 
 `Path.home()` などプラットフォーム依存のパスを使うスクリプトを作る・実行するときは:
 1. **実行前**: Claude Code の `Platform` (linux=WSL / win32=Windows) を確認する

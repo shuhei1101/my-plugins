@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of PWA.md. When updating the English original, update this file too. -->
 # Next.js App Router — PWA / Offline
 
 > **対象**: アプリをホーム画面に追加可能 + 基本的なオフライン対応を行う。

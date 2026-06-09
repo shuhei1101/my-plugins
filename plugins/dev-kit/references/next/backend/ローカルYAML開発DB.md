@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of ローカルYAML開発DB.md. When updating the English original, update this file too. -->
 # ローカル開発用 YAML データストア
 
 > 関数ごとに `type` で型を定義し、`query.ts` / `db.ts` の実装を本番（Drizzle）と

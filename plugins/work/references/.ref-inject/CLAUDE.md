@@ -1,31 +1,32 @@
-# work references
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
+# work リファレンス
 
-This folder contains reference documents auto-injected by the work plugin's `inject_references.py`
-hook when you edit matching files.
+このフォルダには、work プラグインの `inject_references.py` フックが対象ファイル編集時に
+自動注入するリファレンスドキュメントが含まれている。
 
-## Reading manually
+## 手動で読む
 
-To read a reference, use the `Read` tool with the absolute path:
+リファレンスを読むには、`Read` ツールに絶対パスを指定する:
 
 ```
 Read: plugins/work/references/{filename}.md
 ```
 
-## Reading automatically
+## 自動で読まれる仕組み
 
-The `PreToolUse` injection hook fires on `Edit / Write / MultiEdit / Read` and matches the edited
-file path against `references/_injection_rules.yaml`. Matched `required` references are injected in
-full; `optional` references are injected as path + description only.
+`PreToolUse` 注入フックが `Edit / Write / MultiEdit / Read` で発火し、編集ファイルのパスを
+`references/_injection_rules.yaml` の glob パターンと照合する。マッチした `required` リファレンスは
+本文全量を、`optional` はパスと説明のみを注入する。
 
-Injection is de-duped per session via a TTL token at `~/.claude/tokens/work/{session_id}.yaml`.
-Re-injection happens once the TTL elapses (default 3600s; override with `WORK_INJECTION_TTL`).
+注入は `~/.claude/tokens/work/{session_id}.yaml` の TTL トークンでセッション内重複排除される。
+TTL 経過後に再注入される（デフォルト 3600 秒、`WORK_INJECTION_TTL` で変更可）。
 
-## Reference list
+## リファレンス一覧
 
-See `_index.yaml` for the full list with descriptions.
+説明付き一覧は `_index.yaml` を参照。
 
-## Maintenance
+## メンテナンス
 
-- **Adding a reference**: add an entry to `_index.yaml` (and `_index.jp.yaml`), then add a pattern to `_injection_rules.yaml`
-- **Removing a reference**: remove from `_index.yaml`, `_index.jp.yaml`, and `_injection_rules.yaml`
-- **Updating a reference**: update the `.md` and its `.jp.md` mirror in the same commit
+- **リファレンス追加**: `_index.yaml`（と `_index.jp.yaml`）にエントリを追加し、`_injection_rules.yaml` にパターンを追加する
+- **リファレンス削除**: `_index.yaml`、`_index.jp.yaml`、`_injection_rules.yaml` から削除する
+- **リファレンス更新**: `.md` とその `.jp.md` ミラーを同じコミットで更新する

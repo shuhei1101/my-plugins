@@ -1,21 +1,21 @@
 ---
 name: dev-kit:plugin-config
 description: |
-  When /dev-kit:plugin-config is invoked.
-  Or when the user says "設定を変えたい", "env を設定したい", "トグルを切り替えたい", "言語を有効にしたい", "TypeScript チェックを無効にしたい", "Markdown チェックを無効にしたい".
+  /dev-kit:plugin-config が呼び出されたとき。
+  またはユーザーが「設定を変えたい」「env を設定したい」「トグルを切り替えたい」「言語を有効にしたい」「TypeScript チェックを無効にしたい」「Markdown チェックを無効にしたい」と言ったとき。
+---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+
+# dev-kit:plugin-config — プラグイントグル設定
+
+env トグル変数をインタラクティブに設定するスキル。
+「変数選択 → 値設定 → スコープ選択 → 適用」のループを繰り返し、ユーザーが終了を選択するまで続ける。
+
 ---
 
-# dev-kit:plugin-config — Plugin Toggle Configuration
+## 管理対象トグル
 
-Interactively configures env toggle variables.
-Loops through one-variable-at-a-time selection → value → scope → apply,
-until the user chooses to finish.
-
----
-
-## Managed Toggles
-
-### Language opt-in toggles（デフォルト OFF — truthy で有効化）
+### 言語 opt-in トグル（デフォルト OFF — truthy で有効化）
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
@@ -24,49 +24,49 @@ until the user chooses to finish.
 | `${DEV_KIT_NEXT}` | Next.js 参照注入（`*.ts`/`*.tsx` 等を編集時） | 無効 |
 | `${DEV_KIT_MARKDOWN}` | Markdown 参照注入（`*.md` 編集時） | 無効 |
 
-**Opt-in polarity**: キー不在 = OFF（デフォルト無効）。truthy（`"true"` など）に設定 = ON。OFF に戻すにはキーを削除する。
+**Opt-in 極性**: キー不在 = OFF（デフォルト無効）。truthy（`"true"` など）に設定 = ON。OFF に戻すにはキーを削除する。
 
-### Feature toggles（デフォルト ON）
+### 機能トグル（デフォルト ON）
 
 | env 変数 | 説明 | デフォルト |
 |---|---|---|
 | `${DEV_KIT_NEXT_TS_CHECK}` | PostToolUse `tsc --noEmit`（`*.ts`/`*.tsx` 編集後） | 有効 |
 | `DEV_KIT_MARKDOWN_CHECK` | Markdown frontmatter チェック（`*.md` 書き込み後） | 有効 |
 
-**Normal polarity**: キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
+**通常極性**: キー不在 = ON（デフォルト有効）。`"false"` に設定 = OFF。ON に戻すにはキーを削除する。
 
 ---
 
-## Tasks
+## タスク
 
-### Step 1: Read current state
+### ステップ 1: 現在の状態を読み取る
 
-#### Condition
+#### 条件
 
-- Always — run first
+- 常に実行 — 最初に行う
 
-#### Process
+#### 処理
 
-Run:
+以下を実行:
 
 ```bash
 cat .claude/settings.json 2>/dev/null || echo '{}'
 cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 ```
 
-For each managed toggle, check the `env` block of both settings files (project takes precedence):
+両ファイルの `env` ブロックを確認し（プロジェクト設定が優先）:
 
-**Opt-in polarity** (`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`):
-- Key absent → **OFF**（デフォルト無効）
-- Value in `("true", "1", "yes", "on")` → **ON**
-- Otherwise → **OFF**
+**Opt-in 極性**（`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`）:
+- キー不在 → **OFF**（デフォルト無効）
+- 値が `("true", "1", "yes", "on")` → **ON**
+- それ以外 → **OFF**
 
-**Normal polarity** (`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`):
-- Key absent → **ON**（デフォルト有効）
-- Value in `("false", "0", "no", "off")` → **OFF**
-- Otherwise → **ON**
+**通常極性**（`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`）:
+- キー不在 → **ON**（デフォルト有効）
+- 値が `("false", "0", "no", "off")` → **OFF**
+- それ以外 → **ON**
 
-Display a state table as text output:
+状態テーブルをテキストで表示:
 
 ```
 ## 現在の設定
@@ -81,19 +81,19 @@ Display a state table as text output:
 | DEV_KIT_MARKDOWN_CHECK | ON | (未設定) |
 ```
 
-→ Proceed to Step 2
+→ ステップ 2 へ進む
 
 ---
 
-### Step 2: Select env var to configure （ループ先頭）
+### ステップ 2: 設定する env 変数を選択（ループ先頭）
 
-#### Condition
+#### 条件
 
-- Step 1 complete（ループ時はここから再開）
+- ステップ 1 完了（ループ時はここから再開）
 
-#### Process
+#### 処理
 
-Output a numbered list as plain text, then end the turn and wait for user input:
+番号付きリストをプレーンテキストで出力し、ターンを終了してユーザーの入力を待つ:
 
 ```
 設定する変数の番号を入力してください（0 で終了）:
@@ -107,42 +107,42 @@ Output a numbered list as plain text, then end the turn and wait for user input:
   0. 完了（終了）
 ```
 
-**Do not call `AskUserQuestion` here** — use plain numbered list to avoid the 4-option cap.
+**`AskUserQuestion` は使わない** — 4 選択肢上限を避けるためプレーンテキストリストを使用する。
 
-If the user inputs `0` or `q` → jump to Step 5.
-Otherwise parse the number and look up the corresponding var name.
+ユーザーが `0` または `q` を入力 → ステップ 5 へジャンプ。
+それ以外は番号を解析し、対応する変数名を取得する。
 
-→ Proceed to Step 3
+→ ステップ 3 へ進む
 
 ---
 
-### Step 3: Select value and scope
+### ステップ 3: 値とスコープを選択
 
-#### Condition
+#### 条件
 
-- Step 2 complete (a var was selected)
+- ステップ 2 完了（変数が選択された）
 
-#### Process
+#### 処理
 
-Call `AskUserQuestion` tool with **2 questions in a single call**:
+`AskUserQuestion` ツールを **1 回のコールで 2 つの質問** を送信:
 
-**Question 1 — 値** (options differ by polarity):
+**質問 1 — 値**（極性によって選択肢が異なる）:
 
-*Opt-in polarity vars* (`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`):
+*Opt-in 極性変数*（`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`）:
 - question: `"{VAR_NAME} の値を設定"`
 - header: `"値"`
 - options:
   1. `"有効にする（\"true\" に設定）"` — description: `"この言語の参照注入を有効化する"`
   2. `"デフォルトに戻す（キー削除 = OFF）"` — description: `"env キーを削除してデフォルト無効に戻す"`
 
-*Normal polarity vars* (`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`):
+*通常極性変数*（`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`）:
 - question: `"{VAR_NAME} の値を設定"`
 - header: `"値"`
 - options:
   1. `"デフォルトに戻す（キー削除 = ON）"` — description: `"env キーを削除してデフォルト有効に戻す"`
   2. `"OFF（\"false\" に設定）"` — description: `"この機能を無効化する"`
 
-**Question 2 — スコープ**:
+**質問 2 — スコープ**:
 - question: `"どの settings.json に書き込みますか？"`
 - header: `"スコープ"`
 - options:
@@ -150,48 +150,48 @@ Call `AskUserQuestion` tool with **2 questions in a single call**:
   2. `"ユーザー（~/.claude/settings.json）"` — description: `"全プロジェクトに適用"`
 - multiSelect: false
 
-Record both answers.
+両方の回答を記録する。
 
-→ Proceed to Step 4
+→ ステップ 4 へ進む
 
 ---
 
-### Step 4: Apply change
+### ステップ 4: 変更を適用
 
-#### Condition
+#### 条件
 
-- Step 3 complete
+- ステップ 3 完了
 
-#### Process
+#### 処理
 
-1. Determine target file from scope answer:
+1. スコープの回答からターゲットファイルを決定:
    - プロジェクト → `.claude/settings.json`
    - ユーザー → `~/.claude/settings.json`
-2. Read JSON from target file (use `{}` if absent)
-3. Ensure `env` object exists
-4. Apply change:
-   - *Opt-in polarity vars* (`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`):
-     - "有効にする" → set `env.{VAR_NAME}` to `"true"`
-     - "デフォルトに戻す" → delete `env.{VAR_NAME}` key
-   - *Normal polarity vars* (`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`):
-     - "デフォルトに戻す" → delete `env.{VAR_NAME}` key
-     - "OFF" → set `env.{VAR_NAME}` to `"false"`
-5. Write back with 2-space indent
-6. Record the change (var name, old state → new state, file)
+2. ターゲットファイルから JSON を読み込む（存在しない場合は `{}` を使用）
+3. `env` オブジェクトが存在することを確認
+4. 変更を適用:
+   - *Opt-in 極性変数*（`${DEV_KIT_PYTHON}`, `${DEV_KIT_HTML}`, `${DEV_KIT_NEXT}`, `${DEV_KIT_MARKDOWN}`）:
+     - "有効にする" → `env.{VAR_NAME}` を `"true"` に設定
+     - "デフォルトに戻す" → `env.{VAR_NAME}` キーを削除
+   - *通常極性変数*（`${DEV_KIT_NEXT_TS_CHECK}`, `DEV_KIT_MARKDOWN_CHECK`）:
+     - "デフォルトに戻す" → `env.{VAR_NAME}` キーを削除
+     - "OFF" → `env.{VAR_NAME}` を `"false"` に設定
+5. 2 スペースインデントで書き戻す
+6. 変更を記録する（変数名、変更前の状態 → 変更後の状態、ファイル）
 
-→ Loop to Step 2
+→ ステップ 2 へループ
 
 ---
 
-### Step 5: Report
+### ステップ 5: レポート
 
-#### Condition
+#### 条件
 
-- User input `0` or `q` in Step 2
+- ステップ 2 でユーザーが `0` または `q` を入力
 
-#### Process
+#### 処理
 
-Output a summary of all changes made during this session:
+このセッション中に行ったすべての変更のサマリーを出力:
 
 ```
 ## 変更完了
@@ -201,13 +201,13 @@ Output a summary of all changes made during this session:
 | DEV_KIT_NEXT_TS_CHECK | ON | OFF | .claude/settings.json |
 ```
 
-If no changes were made, report "変更なし".
+変更がなかった場合は「変更なし」と表示する。
 
-→ Done.
+→ 完了。
 
 ---
 
-## Notes
+## 注意事項
 
 - `settings.json` が存在しない場合は `{"env": {}}` として新規作成する
 - `${DEV_KIT_INJECTION_DISABLE}` は逆極性のキルスイッチのため、このスキルでは管理しない（`プラグイン設定.md` 参照）

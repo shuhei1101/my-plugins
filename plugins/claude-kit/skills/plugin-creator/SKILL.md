@@ -4,25 +4,26 @@ description: |
   Create or update a Claude Code plugin with versioning (changelogs/ folder).
   Trigger when the user says "新しいプラグインを作りたい", "プラグインを作って", "プラグインを更新したい", "create a plugin", "update a plugin", "make a new plugin", or "plugin-creator して".
 ---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# plugin-creator — Plugin Scaffold & Update (thin wrapper)
+# plugin-creator — プラグイン雛形・更新（薄ラッパー）
 
-Authoring guidance for plugins now lives in this plugin's references and is **auto-injected** by the
-`claude-kit-references-injection` hook whenever you edit a `plugin.json` or `marketplace.json`. This
-skill is a thin wrapper, kept for explicit invocation.
+プラグインのオーサリング手順は本プラグインの references に移り、`plugin.json` / `marketplace.json`
+を編集すると `claude-kit-references-injection` フックが**自動注入**する。このスキルは明示起動の
+ために残している薄いラッパー。
 
-## What to do
+## やること
 
-1. Follow `references/plugin-structure.md` + `references/common.md` (in this plugin). They are
-   injected automatically when you write `plugin.json` / `marketplace.json`; if not, read them
-   directly. Together they cover: the standard directory layout, create-vs-update mode, plugin.json
-   fields, the marketplace.json entry, version bump rules, the plugin.json/marketplace.json/changelog
-   version-sync invariant, and the changelog format.
-2. Keep the version identical across `plugin.json`, the `marketplace.json` entry, and
-   `changelogs/v{X.Y.Z}.md`; write the changelog's "構造の変更" section.
-3. For attaching the reference auto-injection mechanism to a plugin, use `/ref-inject:apply <plugin>`
-   (it owns the injection files; plugin-creator owns `plugin.json` / root `CLAUDE.md` / `marketplace.json`).
-4. Start each `.jp.md` mirror with the JP-mirror warning comment (format in `references/common/共通ガイド.md`,
-   auto-injected when you write the file) — write it directly (no skill call needed).
-5. **Generate the required skills** — every plugin must ship `plugin-migrate`, and
-   (if the plugin has env vars) `plugin-config`.
+1. `references/plugin-structure.md` + `references/common.md`（本プラグイン内）に従う。`plugin.json` /
+   `marketplace.json` を書く際に自動注入される。注入されない場合は直接読む。両者は「標準ディレクトリ
+   構成」「新規 / 更新モード」「plugin.json フィールド」「marketplace.json エントリ」「バージョンバンプ
+   規則」「plugin.json / marketplace.json / changelog のバージョン一致不変条件」「changelog フォーマット」
+   をカバーする。
+2. `plugin.json`・`marketplace.json` エントリ・`changelogs/v{X.Y.Z}.md` のバージョンを一致させ、
+   changelog の「構造の変更」セクションを書く。
+3. プラグインへのリファレンス自動注入機構の付与は `/ref-inject:apply <plugin>` を使う（注入ファイルは
+   ref-inject の領分。plugin-creator は `plugin.json` / ルート `CLAUDE.md` / `marketplace.json` の領分）。
+4. 各 `.jp.md` ミラーの冒頭に JP ミラー警告コメントを付ける（フォーマットは `references/common/共通ガイド.md`、
+   ファイルを書く際に自動注入される）— 直接書く（スキル呼び出し不要）。
+5. **必須スキルを生成する** — すべてのプラグインは `plugin-migrate`、（env vars がある場合は）
+   `plugin-config` を同梱しなければならない。

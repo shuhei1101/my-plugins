@@ -1,57 +1,58 @@
-# Incident: Design-phase QA included implementation detail (creep)
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# インシデント: 設計フェーズの QA に実装詳細を書きすぎた（creep）
 
-## Date
+## 日付
 
-2026-05-27 — PR138 (review-py-kit-plugin)
+2026-05-27 — PR138（review-py-kit-plugin）
 
-## What happened
+## 何が起きたか
 
-While drafting the design QA for py-kit (PR138), AI included **detailed step-by-step implementation logic** in QA-D-6 and QA-D-7 — for example, "the hook should (1) read tool_input.file_path, (2) load index.yaml, (3) iterate injection_rules, (4) collect required/optional refs, (5) render with Jinja2, (6) return decision: block …" — even though the PR's scope was to **decide policy only** and to defer implementation to a separate PR.
+py-kit の設計 QA を起票していた際（PR138）、AI が QA-D-6 / QA-D-7 で **フック実装の手順（pseudocode）** を詳細に書いてしまった。たとえば「(1) tool_input.file_path を取得 → (2) index.yaml を読む → (3) injection_rules を走査 → (4) required/optional を集計 → (5) Jinja2 で render → (6) decision: block で返す …」のように。しかし当 PR のスコープは **方針確定のみ**、実装は別 PR で行う取り決めだった。
 
-The user pointed this out sharply: 「こんなの書かなくていい」「フックは hook-creator スキルで普通に Python スクリプト流せるから自明」「実装は別フェーズで予約だけしておいて」.
+ユーザーから強めに指摘:「こんなの書かなくていい」「フックは hook-creator スキルで普通に Python スクリプト流せるから自明」「実装は別フェーズで予約だけしておいて」。
 
-## Root cause
+## 根本原因
 
-AI conflated two distinct PR scopes:
+AI が 2 つの異なる PR スコープを混同した:
 
-1. **Policy / design PR**: decide *what to build* and *why*
-2. **Implementation PR**: decide *how to build it*
+1. **方針 / 設計 PR**: *何を作るか* / *なぜ作るか* を決める
+2. **実装 PR**: *どう作るか* を決める
 
-When the user explicitly partitioned the work into two PRs (PR138 = policy, next PR = implementation), AI should have stopped at "what / why" in the QA and left "how" to the implementation PR. Instead, AI tried to be helpful by writing the implementation strategy in advance, creating noise that conflicted with the scope decision.
+ユーザーが明示的に PR を 2 つに分けた（PR138 = 方針、次 PR = 実装）にもかかわらず、AI は QA に「どう作るか」を先回りで書き、スコープと矛盾するノイズを生んだ。
 
-## Lesson
+## 教訓
 
-When a PR is explicitly scoped to **policy / design only** (with implementation deferred to a follow-up PR), the QA content must stop at:
+PR が明示的に **方針 / 設計のみ** にスコープされている場合（実装は別 PR）、QA の内容は以下までで止める:
 
-- **What** the artifact will do
-- **Why** it is needed
-- **Where** it will be placed (path / file structure)
-- **References to data shapes** (e.g. "use the existing index.yaml schema") when essential for the policy decision
+- 成果物が **何をするか**
+- **なぜ** 必要か
+- **どこに** 配置するか（パス / ファイル構成）
+- 必須なデータ形状の契約（YAML スキーマ等。方針判断に不可欠な範囲のみ）
 
-The QA must NOT include:
+QA に書いては **いけない** もの:
 
-- Step-by-step implementation logic
-- Specific function signatures or pseudocode of the implementation
-- Decisions about libraries / techniques that belong to the implementation PR
+- ステップ・バイ・ステップの実装ロジック
+- 実装の関数シグネチャや pseudocode
+- ライブラリ / 技法の選定（実装 PR の責任）
 
-If implementation detail feels relevant during the policy QA, it is usually a sign that:
+実装詳細を書きたくなったら、それは以下のいずれかのサイン:
 
-- The policy decision is not yet stable (resolve the policy first), OR
-- The detail belongs as a brief data-shape contract (acceptable, e.g. YAML schema), OR
-- The detail is just AI being over-helpful (cut it)
+- 方針判断がまだ揺れている（先に方針を固める）
+- 簡潔なデータ契約として残すべき（YAML スキーマ等、許容範囲）
+- AI が善意で過剰に書いている（削る）
 
-## Fix applied (PR138)
+## 適用した修正（PR138）
 
-- Removed the detailed Python pseudocode from QA-D-6 and QA-D-7
-- Replaced with: "implementation deferred to the next PR (`add-py-kit-references-injection-hook`)"
-- Reserved two follow-up PRs in TODO.md `## 次PR候補` (rebuild-py-kit-references → add-py-kit-references-injection-hook)
+- QA-D-6 / QA-D-7 から Python pseudocode を削除
+- 代わりに「実装は次 PR（`add-py-kit-references-injection-hook`）で行う」と記載
+- TODO.md `## 次PR候補` に 2 つの後続 PR を予約（rebuild-py-kit-references → add-py-kit-references-injection-hook）
 
-## Detection signal for future sessions
+## 今後のセッションでの検出シグナル
 
-If you (AI) are drafting QA content and find yourself writing:
+AI が QA を書いていて、以下のような内容を書き出していたら:
 
-- `# 1. ... # 2. ... # 3. ...` step lists describing how a thing works
-- Pseudocode that includes specific stdlib calls or library APIs
-- "The hook does X, then Y, then Z"
+- `# 1. ... # 2. ... # 3. ...` の手順リスト
+- 特定の stdlib 関数やライブラリ API を含む pseudocode
+- 「フックは X して、次に Y、その後 Z」のような動作記述
 
-…and the PR description says "実装は別 PR" / "policy only" / "design only" — **stop and delete the detail**. Move it to the follow-up PR's planning notes if it has lasting value, or simply discard.
+しかも PR 説明に「実装は別 PR」「policy only」「design only」と書かれていたら — **手を止めて詳細を削る**。長期的に価値あるなら次 PR の計画ノートに移し、そうでなければ破棄する。

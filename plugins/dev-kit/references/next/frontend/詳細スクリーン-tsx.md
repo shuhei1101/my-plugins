@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of 詳細スクリーン-tsx.md. When updating the English original, update this file too. -->
 # {Feature}ViewScreen.tsx — View Client Component
 
 レコード詳細の表示。`'use client'` 必須。読み取り専用、`useMutation` を持たない。

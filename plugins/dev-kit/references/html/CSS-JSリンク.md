@@ -1,41 +1,47 @@
+<!-- This file is a Japanese mirror of CSS-JSリンク.md. When updating the English original, update this file too. -->
 
-# CSS Class ↔ JS DOM Access Linkage
+# CSS クラス ↔ JS DOM アクセスの紐付け
 
-Keeps FLOCSS class definitions in CSS and DOM access in JS / HTML in sync.
+> このファイルは `CSS-JSリンク.md` の日本語ミラーです(`plugins/dev-kit/references/html/CSS-JSリンク.jp.md` に配置)。
+> Claude Code には自動読み込まれません。英語版を更新したら同じ変更を反映してください。
 
-This rule auto-loads whenever you read or edit a `.css`, `.js`, or `.html` file in the project.
+CSS の FLOCSS クラス定義と、JS / HTML での DOM アクセスを同期する。
+
+このルールはプロジェクトで `.css` / `.js` / `.html` を読み書きするたび自動でロードされる。
 
 ---
 
-## Triggers
+## トリガー
 
-| When you change... | Also check... |
+| 変更した内容 | 確認する内容 |
 |---|---|
-| A `.c-*`, `.p-*`, `.l-*`, `.u-*` class definition in CSS (add / remove / rename) | All `*.js` and `*.html` files that reference that class via `querySelector`, `getElementsByClassName`, `classList.add/remove`, `className`, or HTML `class="..."` |
-| A `querySelector(".c-...")` / `getElementsByClassName(...)` / `classList.*` call in JS (add / remove / rename selector) | The corresponding CSS file — does the class exist? Is the BEM substructure correct? |
-| A `class="..."` attribute in HTML (add / remove / rename) | The corresponding CSS file for definitions AND any JS file that queries that class |
+| CSS で `.c-*` / `.p-*` / `.l-*` / `.u-*` クラス定義を追加・削除・改名 | `querySelector` / `getElementsByClassName` / `classList.*` / `className` / HTML の `class="..."` でそのクラスを参照している `*.js` と `*.html` 全箇所 |
+| JS の `querySelector(".c-...")` / `classList.*` 等を追加・削除・改名 | 対応する CSS — そのクラスが存在するか、BEM サブ構造は正しいか |
+| HTML の `class="..."` 属性を追加・削除・改名 | 定義側の CSS、参照側の JS の両方 |
 
-## What to verify
+## 何を検証するか
 
-1. **Existence**: every class referenced in JS / HTML has a matching definition in CSS (or is intentionally a placeholder).
-2. **Layer correctness**:
-   - `l-*` selectors target layout containers
-   - `c-*` selectors target reusable components
-   - `p-*` selectors target project-specific composites
-   - `u-*` selectors target utilities (single-purpose, do not combine inside JS logic)
-3. **BEM substructure**: `.c-button__icon` exists only if `.c-button` exists; `--modifier` makes sense for the block.
-4. **No dead classes**: classes defined in CSS but not referenced anywhere in JS / HTML should be flagged as candidates for removal.
-5. **No magic strings**: JS selectors that recur across multiple files should be hoisted to a shared `SELECTORS` constant module.
+1. **存在性**: JS / HTML から参照されるクラスが CSS に定義されている(または意図的なプレースホルダ)
+2. **レイヤー妥当性**:
+   - `l-*` セレクタはレイアウトコンテナ
+   - `c-*` セレクタは再利用可能なコンポーネント
+   - `p-*` セレクタは画面固有のコンポジット
+   - `u-*` セレクタは単一目的のユーティリティ(JS のロジック内では使わない)
+3. **BEM サブ構造**: `.c-button__icon` は `.c-button` がある場合のみ。`--modifier` は block 上で意味を成すか
+4. **死んだクラス**: CSS に定義されているが JS / HTML のどこからも参照されていないクラスは削除候補としてフラグ
+5. **魔法文字列禁止**: 複数ファイルで繰り返される JS セレクタは `SELECTORS` 定数モジュールに集約
 
-## What NOT to do
+## やってはいけないこと
 
-- Do not autofix renames blindly — propose the change and confirm with the user. Class renames can break CSS theme overrides, tests, and external integrations.
-- Do not consider framework / library / vendor classes (e.g. `swiper-*`, `gridjs-*`) as in-scope. The rule applies to project-defined FLOCSS classes only.
+- リネームを盲目的に自動修正しない。提案してユーザーに確認すること。クラスのリネームは
+  CSS テーマ・テスト・外部連携を壊す可能性がある
+- フレームワーク / ライブラリ / ベンダ製クラス(`swiper-*`、`gridjs-*` 等)は対象外。
+  本ルールはプロジェクト定義の FLOCSS クラスにのみ適用
 
 ---
 
-## Rule maintenance
+## ルールの保守
 
-If the FLOCSS prefix set changes (e.g. introducing a new `t-*` Theme layer) or the linkage logic
-evolves (new patterns like `data-component="..."`), update this rule file before relying on it.
-The rule is meant to be the single source of truth for the linkage convention.
+FLOCSS プレフィックスセットが変わった場合(`t-*` Theme 層を追加するなど)や、紐付けロジックが
+進化した場合(`data-component="..."` 等の新パターン導入)は、利用前にこのルールを更新する。
+このルールが「紐付け規約」の単一の出典であるべき。

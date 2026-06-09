@@ -1,98 +1,95 @@
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 ---
 name: dev-kit:html-debug-fab
-description: Embed a floating debug button (FAB) on every development-support screen. Clicking the FAB directly enters element picker mode — select elements, then click the FAB (📋 N) or the top-center Copy button to paste a JSON snapshot into Claude Code for debugging. Trigger when creating or editing development-only UI screens (admin panels, internal tools, debug pages) — not production user-facing screens. Examples: "管理画面作って", "内部ツール用 UI を追加", "開発用デバッグ画面を直して".
+description: 開発サポート画面にフローティングデバッグボタン（FAB）を埋め込む。FAB をクリックすると要素ピッカーモードに入り、要素を選択してから FAB（📋 N）または画面上部のコピーボタンをクリックすると JSON スナップショットが Claude Code に貼り付け可能になる。管理画面・内部ツール・デバッグページなど開発専用 UI 画面の作成・編集時にトリガー — 本番ユーザー向け画面には使用しない。例:「管理画面作って」「内部ツール用 UI を追加」「開発用デバッグ画面を直して」。
 ---
 
-# dev-kit:html-debug-fab — Floating Debug Button
+# dev-kit:html-debug-fab — フローティングデバッグボタン
 
-Adds a shared floating debug widget (FAB + top copy bar) to every development-support screen.
-Click the FAB to enter element picker mode. Select elements on the page, then copy a JSON
-snapshot (selected elements + related files + recent error logs) directly to the clipboard.
+開発サポート画面に共有フローティングデバッグウィジェット（FAB + 上部コピーバー）を追加する。
+FAB をクリックすると要素ピッカーモードに入る。ページ上の要素を選択し、
+JSON スナップショット（選択要素 + 関連ファイル + 直近のエラーログ）をクリップボードにコピーする。
 
-This skill ships a **shared module** (`templates/uidev.css` + `templates/uidev.js`) — each screen
-imports it once and declares only the screen-specific related files. Never copy the widget code
-into individual screens.
+このスキルは**共有モジュール**（`templates/uidev.css` + `templates/uidev.js`）を提供する —
+各画面は一度 import するだけで、画面固有の関連ファイルを宣言するのみ。ウィジェットコードを個別画面にコピーしない。
 
 ---
 
-## Tasks
+## タスク
 
-### Step 1: Load related references
+### ステップ 1: 関連リファレンスを読み込む
 
-Read for context:
+コンテキストとして読む:
 
 ```
-{plugin_root}/references/html/基本方針.md   # UI principles (DRY, CSS, JS, frontend-design)
+{plugin_root}/references/html/基本方針.md   # UI 原則（DRY、CSS、JS、frontend-design）
 ```
 
-Plus the logging skill's conventions:
+加えてロギングスキルの規約:
 
 ```
-{plugin_root}/skills/logging/SKILL.md    # logging conventions
+{plugin_root}/skills/logging/SKILL.md    # ロギング規約
 ```
 
-The plugin root is two levels above this skill file.
+プラグインルートはこのスキルファイルから 2 階層上。
 
-→ Proceed to Step 2
+→ ステップ 2 へ
 
 ---
 
-### Step 2: Confirm this is a development screen
+### ステップ 2: 開発用画面であることを確認
 
-#### Process
+#### 処理
 
-Confirm with the user that the screen being worked on is a **development-support** screen
-(admin panel / internal tool / debug page) — not a production user-facing screen.
+作業対象の画面が**開発サポート**画面（管理画面 / 内部ツール / デバッグページ）であり、本番ユーザー向け画面ではないことをユーザーに確認する。
 
-If it is a production screen, **do not apply this skill** and stop.
+本番画面の場合は**このスキルを適用せずに停止する**。
 
-→ Proceed to Step 3
-
----
-
-### Step 3: Place the shared widget files in the project
-
-#### Process
-
-1. Copy `{plugin_root}/skills/debug-fab/templates/uidev.css` and `uidev.js` into the project's static
-   assets directory (e.g. `static/`, `public/`, `assets/`).
-2. If the files already exist in the project, do not overwrite — just confirm the path.
-3. Confirm the URLs from which the browser will load them.
-
-→ Proceed to Step 4
-
-#### Notes
-
-- These two files are the **single source of truth** for the widget. All dev screens load them.
-- Do not edit the templates inline per screen. If a project needs to customize the widget, branch
-  the files in the project (not in this skill).
+→ ステップ 3 へ
 
 ---
 
-### Step 4: Add the widget loader to the screen
+### ステップ 3: 共有ウィジェットファイルをプロジェクトに配置する
 
-#### Process
+#### 処理
 
-1. Add the following to the screen's HTML `<head>`:
+1. `{plugin_root}/skills/debug-fab/templates/uidev.css` と `uidev.js` をプロジェクトの静的アセットディレクトリ（例: `static/`、`public/`、`assets/`）にコピーする。
+2. プロジェクト内にすでにファイルが存在する場合は上書きせず、パスを確認するだけ。
+3. ブラウザがそれらを読み込む URL を確認する。
+
+→ ステップ 4 へ
+
+#### 注意事項
+
+- これら 2 ファイルがウィジェットの**唯一の正しいソース**。すべての開発画面がこれを読み込む。
+- 画面ごとにインラインでテンプレートを編集しない。プロジェクトでウィジェットをカスタマイズする必要があれば、このスキルではなくプロジェクト内でファイルをブランチする。
+
+---
+
+### ステップ 4: 画面にウィジェットローダーを追加する
+
+#### 処理
+
+1. 画面の HTML `<head>` に以下を追加する:
 
    ```html
    <link rel="stylesheet" href="/static/uidev.css" />
    <script src="/static/uidev.js" defer></script>
    ```
 
-2. The widget auto-initializes after DOM ready. No further JS wiring is needed.
+2. ウィジェットは DOM ready 後に自動初期化する。追加の JS 配線は不要。
 
-→ Proceed to Step 5
+→ ステップ 5 へ
 
 ---
 
-### Step 5: Declare related files on the screen
+### ステップ 5: 画面上の関連ファイルを宣言する
 
-#### Process
+#### 処理
 
-Pick one of the two registration methods (or both, they merge):
+2 つの登録方法のいずれか（または両方 — マージされる）を選ぶ:
 
-**A. `data-debug-files` attribute (preferred — declarative)**
+**A. `data-debug-files` 属性（推奨 — 宣言的）**
 
 ```html
 <body data-debug-files='{
@@ -102,9 +99,9 @@ Pick one of the two registration methods (or both, they merge):
 }'>
 ```
 
-Multiple elements can each declare a subset; entries are merged.
+複数の要素がそれぞれサブセットを宣言でき、エントリはマージされる。
 
-**B. `window.__uidevFiles` global (for dynamic additions)**
+**B. `window.__uidevFiles` グローバル（動的追加用）**
 
 ```html
 <script>
@@ -115,64 +112,63 @@ Multiple elements can each declare a subset; entries are merged.
 </script>
 ```
 
-→ Proceed to Step 6
+→ ステップ 6 へ
 
-#### Notes
+#### 注意事項
 
-##### What to register
+##### 登録するもの
 
-- `html`: page templates / partial templates rendering this screen
-- `css`:  stylesheets specific to this screen (skip global resets)
-- `js`:   scripts specific to this screen (skip framework runtime)
+- `html`: この画面をレンダリングするページテンプレート / パーシャルテンプレート
+- `css`:  この画面固有のスタイルシート（グローバルリセットはスキップ）
+- `js`:   この画面固有のスクリプト（フレームワークランタイムはスキップ）
 
-Skip framework / library files. The goal is "files Claude needs to read to debug this screen."
-Backend / API targets are intentionally NOT registered here — they can be derived from the JS
-files (look for `fetch` / API calls). Likewise for config files, data sources, etc.
-
----
-
-### Step 6: Apply logging conventions
-
-#### Process
-
-Confirm the project follows `dev-kit:html-logging` conventions:
-- Logger object (not raw `console.log` in handlers)
-- JSON Lines output format
-- Operation logs at key user interactions and state transitions
-- Each log line short (no multi-line object dumps)
-
-If the project does not yet have a logger, run `/dev-kit:html-logging` first.
-
-→ Done
-
-#### Output
-
-- Shared widget loaded on the screen
-- Related files declared
-- Logger active and emitting JSON Lines
+フレームワーク / ライブラリファイルはスキップ。目的は「Claude がこの画面をデバッグするために読む必要があるファイル」。
+バックエンド / API ターゲットは意図的にここには登録しない — JS ファイル（`fetch` / API コールを探す）から導出できる。
 
 ---
 
-## Operation flow (for the developer)
+### ステップ 6: ロギング規約を適用する
 
-1. Open the dev screen in the browser
-2. Click the 🐛 button (bottom-right, fixed) — element picker mode starts immediately
-3. Click elements to select (cyan = hover, green = selected; re-click to deselect)
-4. Copy in one of two ways:
-   - Click the **📋 N** FAB (bottom-right) → copies JSON and exits picker; FAB shows "✓ コピーしました" on success
-   - Click the **📋 コピー (N件)** button (top center) → copies JSON and exits picker; button shows "✓ コピーしました" on success
-5. Paste into Claude Code with "これでデバッグして" → Claude reads related files, logs, and selected elements together
+#### 処理
 
-If the clipboard copy fails (e.g. non-HTTPS context), an alert is shown and picker mode stays active so you can retry.
+プロジェクトが `dev-kit:html-logging` の規約に従っているか確認する:
+- ロガーオブジェクト（ハンドラ内で生 `console.log` を使わない）
+- JSON Lines 出力形式
+- キーとなるユーザー操作と状態遷移での操作ログ
+- 各ログ行を短く（複数行のオブジェクトダンプなし）
 
-`Esc` cancels picker mode without copying.
+プロジェクトにまだロガーがない場合は、先に `/dev-kit:html-logging` を実行する。
+
+→ 完了
+
+#### 出力
+
+- 共有ウィジェットが画面に読み込まれている
+- 関連ファイルが宣言されている
+- ロガーがアクティブで JSON Lines を出力している
 
 ---
 
-## References
+## 操作フロー（開発者向け）
 
-See:
+1. ブラウザで開発用画面を開く
+2. 🐛 ボタンをクリック（右下固定）— 要素ピッカーモードが即座に開始
+3. 要素をクリックして選択（シアン = ホバー、緑 = 選択済み; 再クリックで選択解除）
+4. 以下の 2 通りのいずれかでコピー:
+   - **📋 N** FAB をクリック（右下）→ JSON をコピーしてピッカー終了; 成功時に「✓ コピーしました」と表示
+   - **📋 コピー (N件)** ボタンをクリック（画面上部中央）→ JSON をコピーしてピッカー終了; 成功時に「✓ コピーしました」と表示
+5. Claude Code に「これでデバッグして」と貼り付け → Claude が関連ファイル・ログ・選択要素をまとめて読む
 
-- `{plugin_root}/references/html/基本方針.md` — UI principles (mandatory)
-- `{plugin_root}/skills/logging/SKILL.md` — logging conventions
-- `{plugin_root}/skills/debug-fab/templates/CLAUDE.md` — widget usage details (auto-loaded when working in that folder)
+クリップボードへのコピーが失敗した場合（例: 非 HTTPS 環境）はアラートが表示され、ピッカーモードは継続してリトライできる。
+
+`Esc` でコピーせずにピッカーモードをキャンセル。
+
+---
+
+## リファレンス
+
+参照:
+
+- `{plugin_root}/references/html/基本方針.md` — UI 原則（必須）
+- `{plugin_root}/skills/logging/SKILL.md` — ロギング規約
+- `{plugin_root}/skills/debug-fab/templates/CLAUDE.md` — ウィジェット使用詳細（そのフォルダで作業中に自動読み込み）

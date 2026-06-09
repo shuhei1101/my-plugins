@@ -1,122 +1,123 @@
----
-name: dev-kit:html-mock
-description: >
-  Generate a multi-variant mock for a single screen type as a single HTML file.
-  Variants ("案 A / B / C / ...") are switched via tabs at the top of the page; the mock body
-  renders below the tabs. Each variant should explore a meaningful design axis (layout, density,
-  navigation pattern) — not just color changes.
-  Trigger when the user asks for a UI mock, design proposals, or wants to compare layout options
-  before committing to one. Examples: "設定画面のモック作って", "トップ画面の案出して", "一覧詳細のモック数パターン欲しい".
----
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+# SKILL.jp.md — dev-kit:html-mock(日本語ミラー)
 
-# dev-kit:html-mock — Multi-Variant Mock Generator
-
-Produces a single HTML file that shows several design variants of one screen, switchable via
-top tabs. Each variant follows `principles.md` (FLOCSS + Design Tokens, JS rules) and
-`ui-design.md` (UX patterns by screen type). Output goes to `tmp/mocks/` in the project.
+> 変更時は JP ミラーを先に更新し、その後 `SKILL.md` にも反映する。
 
 ---
 
-## Tasks
+**スキル名**: dev-kit:html-mock
+**トリガー**: 1 つの画面タイプに対して複数案のモックを単一 HTML で生成するとき。
+各案は意味のあるデザイン軸(レイアウト・密度・ナビゲーションパターン)で差をつける(色違いだけは不可)。
+「設定画面のモック作って」「トップ画面の案出して」「一覧詳細のモック数パターン欲しい」など。
 
-### Step 1: Load references AND inventory shared resources
+---
 
-#### Process
+# dev-kit:html-mock — 複数案モックジェネレータ
 
-1. Read in full:
+1 つの画面タイプの複数デザイン案を単一 HTML ファイルにまとめ、上部のタブで切り替える形で出力する。
+各案は `principles.md`(FLOCSS + Design Tokens、JS 規約)と `ui-design.md`(画面タイプ別 UX パターン)に従う。
+出力先はプロジェクトの `tmp/mocks/`。
+
+---
+
+## タスク
+
+### ステップ1: リファレンス読み込み + 共通リソースの棚卸し
+
+#### 処理
+
+1. 全文読み込み:
 
    ```
-   {plugin_root}/references/html/基本方針.md   # FLOCSS, design tokens, JS rules
-   {plugin_root}/references/html/UIデザイン.md    # UX patterns by screen type
+   {plugin_root}/references/html/基本方針.md   # FLOCSS、デザイントークン、JS 規約
+   {plugin_root}/references/html/UIデザイン.md    # 画面タイプ別 UX パターン
    ```
 
-2. **Inventory shared resources in the project** (mandatory — applies to mocks too, so
-   variants reuse existing components instead of inventing parallel ones):
-   - `static/js/constants.js` (or equivalent) — design tokens
-   - `static/js/routes.js` (or equivalent) — route names / URL patterns
-   - The component layer of CSS — every `c-*` definition
-   - The component layer of JS — every shared component module
+2. **プロジェクトの共通リソースを棚卸しする**(モックでも必須 — 各案が並行に別物を作らないため):
+   - `static/js/constants.js`(相当) — デザイントークン
+   - `static/js/routes.js`(相当) — ルート名 / URL パターン
+   - CSS のコンポーネント層 — `c-*` 定義
+   - JS のコンポーネント層 — 共有コンポーネントモジュール
 
-   If these don't exist in the project yet, note their absence — the mock should still hint at
-   what would belong there.
+   まだない場合は不在を記録 — モックでも「ここにこれが入る」を示唆する。
 
-The plugin root is two levels above this skill file.
+プラグインルートはこのスキルファイルの2階層上。
 
-→ Proceed to Step 2
+→ ステップ2へ
 
 ---
 
-### Step 2: Confirm screen type
+### ステップ2: 画面タイプを確定
 
-#### Process
+#### 処理
 
-Confirm with the user which **single** screen type the mock should explore:
+モックでどの**単一**画面タイプを探るかをユーザーに確認する:
 
-| Type | Notes |
+| タイプ | 備考 |
 |---|---|
-| **Top screen**        | Sidebar lists categories; main area shows a card grid of items per category |
-| **Settings**          | Section-grouped form rows; sticky action bar; danger zone at bottom |
-| **List + Detail**     | PC: 2-pane |
+| **トップ画面**       | サイドバーがカテゴリ列挙、メインにカードグリッド |
+| **設定画面**         | セクション分けのフォーム行、スティッキーアクションバー、最下に Danger zone |
+| **一覧 + 詳細**       | PC は 2 ペイン |
 
-One screen type per mock — do not mix multiple types into one HTML file.
+1 モック = 1 画面タイプ。複数の画面タイプを 1 HTML に混ぜない。
 
-→ Proceed to Step 3
-
----
-
-### Step 3: Determine the design axes for variants
-
-#### Process
-
-1. Pick 3–5 design axes that meaningfully differ across the variants. Examples:
-   - Sidebar vs top-tab navigation
-   - Dense vs spacious card grid (e.g. 2-col vs 4-col on PC)
-   - Detail pane on right vs detail pane in a modal
-   - Light theme vs dark-first theme
-   - Inline editing vs separate edit screen
-2. Each variant = one combination of axes worth comparing
-3. **Don't** generate variants that differ only in color or microcopy — Claude flags these and skips them
-4. Confirm the axes with the user before generating
-
-→ Proceed to Step 4
+→ ステップ3へ
 
 ---
 
-### Step 4: Apply `frontend-design` skill
+### ステップ3: 案のデザイン軸を決める
 
-#### Process
+#### 処理
 
-Per `principles.md` Section 4, invoke `frontend-design:frontend-design` skill to commit to a clear
-aesthetic direction for the mock. This sets typography, color palette, motion, and overall vibe.
+1. 案ごとに意味のある差を生むデザイン軸を 3〜5 個ピックアップ。例:
+   - サイドバー型 vs トップタブ型
+   - 密度の高いカードグリッド vs ゆとりのあるグリッド(2 列 vs 4 列)
+   - 詳細を右ペイン vs モーダル
+   - ライトテーマ vs ダーク基調
+   - インライン編集 vs 別画面編集
+2. 各案 = 比較する価値のある軸の組み合わせ
+3. 色違い・文言違いだけの案は**生成しない**。Claude が検出して却下する
+4. 生成前にユーザーに軸を確認する
 
-The aesthetic direction is shared across all variants on the same mock file (so variants can be
-compared on layout / pattern differences, not aesthetic).
-
-→ Proceed to Step 5
+→ ステップ4へ
 
 ---
 
-### Step 5: Generate the mock HTML
+### ステップ4: `frontend-design` スキルを適用
 
-#### Process
+#### 処理
 
-**Determine output location by project type:**
+`principles.md` セクション 4 に従い、`frontend-design:frontend-design` スキルを呼び出して
+モックの美的方向性(タイポグラフィ・配色・モーション・全体トーン)を確定する。
 
-| Project type | Output location | Reason |
+美的方向性は同じモックファイル内の全案で共有する(各案はレイアウト / パターンの差を見るためで、
+美的差を見るためではない)。
+
+→ ステップ5へ
+
+---
+
+### ステップ5: モック HTML を生成
+
+#### 処理
+
+**出力先をプロジェクト種別で分ける:**
+
+| プロジェクト種別 | 出力先 | 理由 |
 |---|---|---|
-| FastAPI / Flask / Django or any web server | Directory served by the running server (see below) | Mock is accessible via the live server immediately |
-| No server / static project | `tmp/mocks/` | Served by a local HTTP server |
+| FastAPI / Flask / Django など Web サーバーあり | サーバーが配信できる場所(後述) | 起動中のサーバー経由で即アクセスできるため |
+| サーバーなし / 静的プロジェクト | `tmp/mocks/` | ローカルサーバーで配信する |
 
-**For FastAPI and similar server projects:**
+**FastAPI などのサーバープロジェクトの場合:**
 
-1. Check whether a mock/dev listing page already exists (e.g. `/dev/mocks`, `/debug/mocks`)
-2. If it exists, place the HTML in the template directory that route reads (e.g. `templates/mocks/`, `app/templates/dev/`)
-3. If it does not exist, create a new dev mock route and decide on a template directory, then place the HTML there
-4. Add an entry for the mock listing to the routing config (e.g. `router.py`, `urls.py`)
+1. モック画面を一覧できるページがすでにあるか確認する(例: `/dev/mocks`、`/debug/mocks` などの開発用ルート)
+2. あればそのルートが読み込むテンプレートディレクトリに HTML を配置する(例: `templates/mocks/`, `app/templates/dev/`)
+3. なければ開発用モックルートを新規作成し、テンプレートディレクトリを決めて HTML を配置する
+4. ルーティング設定(例: `router.py`, `urls.py`)にモック一覧へのエントリを追加する
 
-File name: `{screen-type}-{YYYYMMDD}.html` (e.g. `settings-20260518.html`).
+ファイル名は `{画面タイプ}-{YYYYMMDD}.html`(例: `settings-20260518.html`)。
 
-The file structure:
+ファイル構造:
 
 ```html
 <!doctype html>
@@ -124,95 +125,95 @@ The file structure:
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{Screen Type} — Mock</title>
+  <title>{画面タイプ} — Mock</title>
   <style>
-    /* FLOCSS layers inline for self-contained mock:
-       Foundation (reset + tokens) → Layout (l-*) → Component (c-*) → Project (p-*) → Utility (u-*) */
+    /* 自己完結モック用に FLOCSS をインラインで:
+       Foundation(reset + tokens)→ Layout(l-*)→ Component(c-*)→ Project(p-*)→ Utility(u-*) */
   </style>
 </head>
 <body>
 
-  <!-- ── Tabs at the top ──────────────────────────────────── -->
+  <!-- ── 上部タブ ─────────────────────────────────────────── -->
   <nav class="l-mockTabs" role="tablist">
-    <button class="l-mockTabs__tab" data-variant="a" aria-selected="true">案 A — {axis summary}</button>
-    <button class="l-mockTabs__tab" data-variant="b" aria-selected="false">案 B — {axis summary}</button>
-    <!-- ... more variants ... -->
+    <button class="l-mockTabs__tab" data-variant="a" aria-selected="true">案 A — {軸サマリ}</button>
+    <button class="l-mockTabs__tab" data-variant="b" aria-selected="false">案 B — {軸サマリ}</button>
+    <!-- ... 続く ... -->
   </nav>
 
-  <!-- ── Mock body — one section per variant ──────────────── -->
+  <!-- ── モック本体 — 案ごとに 1 セクション ────────────────── -->
   <main class="l-mockBody">
-    <section data-variant="a" class="p-variant"> ... variant A content ... </section>
-    <section data-variant="b" class="p-variant" hidden> ... variant B content ... </section>
+    <section data-variant="a" class="p-variant"> ... 案 A の内容 ... </section>
+    <section data-variant="b" class="p-variant" hidden> ... 案 B の内容 ... </section>
     <!-- ... -->
   </main>
 
   <script>
     // @ts-check
-    // Tab switching: clicking a tab shows the matching section, hides others
+    // タブ切替: クリックされたタブと一致するセクションを表示、他は隠す
   </script>
 </body>
 </html>
 ```
 
-Implementation rules:
+実装ルール:
 
-- All styling inline in `<style>` (single-file mock — no external CSS)
-- All JS inline in `<script>` (with `// @ts-check`)
-- FLOCSS layer order preserved
-- Design tokens defined in `:root` Foundation
-- Each variant section: full screen layout including sidebar / header / main as per the chosen screen type
-- Variants switchable via top tabs (one variant visible at a time via `hidden` attribute)
+- スタイルはすべて `<style>` 内にインライン(単一ファイルモック、外部 CSS なし)
+- JS もすべて `<script>` 内にインライン(`// @ts-check` 必須)
+- FLOCSS のレイヤー順を保つ
+- デザイントークンは `:root` の Foundation 層に定義
+- 各案セクションは選択された画面タイプに沿った完全レイアウト(サイドバー / ヘッダー / メイン)
+- 案切替はタブ経由、表示は `hidden` 属性で 1 案ずつ
 
-→ Proceed to Step 6
+→ ステップ6へ
 
 ---
 
-### Step 6: Start a server and give the user a URL
+### ステップ6: サーバーを起動してURLをユーザーに伝える
 
-#### Process
+#### 処理
 
-**For FastAPI and similar server projects:**
+**FastAPI などのサーバープロジェクトの場合:**
 
-1. Check whether the server is already running (e.g. `ps aux | grep uvicorn`)
-2. If already running, use that port
-3. If not running, find a free port and start the server:
+1. すでにサーバーが起動しているか確認する(`ps aux | grep uvicorn` など)
+2. 起動済みであればそのポートをそのまま使う
+3. 起動していなければ空きポートを探して起動する:
    ```bash
-   # Find a free port
+   # 空きポートを探す
    python -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()"
-   # Start the server (example: FastAPI)
-   uvicorn app.main:app --port {free_port} --reload &
+   # サーバー起動(例: FastAPI)
+   uvicorn app.main:app --port {空きポート} --reload &
    ```
-4. Tell the user the mock listing URL (e.g. `http://localhost:{port}/dev/mocks`)
+4. モック一覧ページのURL(例: `http://localhost:{port}/dev/mocks`)をユーザーに伝える
 
-**For no-server / static projects:**
+**サーバーなし / 静的プロジェクトの場合:**
 
-1. Find a free port and start `python -m http.server`:
+1. 空きポートを探して `python -m http.server` でローカルサーバーを起動する:
    ```bash
    PORT=$(python -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()")
    python -m http.server $PORT --directory tmp/mocks &
-   echo "http://localhost:$PORT/{filename}.html"
+   echo "http://localhost:$PORT/{ファイル名}.html"
    ```
-2. Tell the user the URL that was started
+2. 起動したURLをユーザーに伝える
 
-**Both cases:**
+**共通:**
 
-- Always give the user a **URL they can click to open immediately** — never just a file path
-- Report each variant's design axis alongside the URL
-- When the mock is approved, recommend `/dev-kit:html-implement` for the implementation phase
-  (it enforces shared-resource reuse during real implementation)
+- ユーザーに渡すのは**クリックすれば即開くURL**。ファイルパスだけを伝えない
+- 各案の軸とURLをセットで伝える
+- モック確定後は実装フェーズへ — `/dev-kit:html-implement` を推奨
+  (実装時に共通リソース再利用を強制するため)
 
-→ Done
+→ 完了
 
-#### Output
+#### 出力
 
-- Mock HTML (in the server's template directory for server projects, or `tmp/mocks/` otherwise)
-- A browser-ready URL
-- All variants follow `principles.md` + `ui-design.md`
+- モック HTML(サーバープロジェクトなら配信用テンプレートに、それ以外は `tmp/mocks/` に)
+- ブラウザで即開けるURL
+- 全案が `principles.md` + `ui-design.md` に準拠
 
 ---
 
-## References
+## 参考資料
 
-- `{plugin_root}/references/html/基本方針.md` — FLOCSS, design tokens, JS rules
-- `{plugin_root}/references/html/UIデザイン.md` — UX patterns by screen type
-- `{plugin_root}/skills/mock/templates/mock-skeleton.html` — starter HTML skeleton
+- `{plugin_root}/references/html/基本方針.md` — FLOCSS、デザイントークン、JS 規約
+- `{plugin_root}/references/html/UIデザイン.md` — 画面タイプ別 UX パターン
+- `{plugin_root}/skills/mock/templates/mock-skeleton.html` — モック雛形 HTML

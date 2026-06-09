@@ -1,159 +1,161 @@
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+
 ---
 name: work:plugin-migrate
 description: |
-  Bring the current project's plugin-generated artifacts in line with the currently installed
-  plugin versions: sync work's `.work/.gitignore` files, remove legacy `.work/CLAUDE.md`, and
-  migrate `index.yaml` to the latest schema. Other plugins' generated artifacts are out of scope
-  unless they ship their own equivalent skill.
-  Manual invocation only — use /work:plugin-migrate.
+  カレントプロジェクトのプラグイン生成物を、現在インストール済みのプラグインバージョンに合わせて更新する:
+  work の `.work/.gitignore` ファイルを同期し、レガシーの `.work/CLAUDE.md` を削除し、
+  `index.yaml` を最新スキーマへ移行する。他プラグインの生成物は対象外（各プラグインが
+  同等のスキルを持っている場合はそれを使う）。
+  手動起動のみ — `/work:plugin-migrate` を使う。
 ---
 
-# work:plugin-migrate — Sync Plugin-Generated Artifacts to Latest Versions
+# work:plugin-migrate — プラグイン生成物を最新版に揃える
 
-Replaces the older `update` skill (PR168). Scope is **work's own static templates** only:
-the `.work/` `.gitignore` files, removal of legacy `CLAUDE.md`, and `index.yaml` schema migration.
+旧 `update` スキルからの置き換え（PR168）。スコープは **work 自身の静的テンプレ** のみ:
+`.work/` の `.gitignore` ファイルの同期、レガシー `CLAUDE.md` の削除、`index.yaml` のスキーマ移行。
 
-Per-plugin diff logic for *other* plugins is intentionally out of scope here — each plugin
-owns its own update path and ships its own equivalent skill if needed (e.g. a hypothetical
-`/{plugin}:plugin-migrate`). This skill never reaches across plugin boundaries.
-
----
-
-## Tasks
-
-### Step 1: Verify .work/ exists and prepare a working branch
-
-#### Condition
-
-- Always — run first
-
-#### Process
-
-1. Check that `.work/` exists in the current project
-2. If absent, tell the user to run `/work:setup` first and exit
-3. Invoke `/work:start` to create a working branch dedicated to this sync
-   (so the generated edits land on a reviewable branch, not master)
-4. Wait until the worktree and branch are created
-
-→ Proceed to Step 2
-
-#### Output
-
-- `.work/` confirmed; working branch / worktree ready
-- All subsequent file edits and commits in later steps happen inside this worktree on the working branch
+他プラグインの diff ロジックは意図的に対象外 — 各プラグインが自分の更新パスを所有し、
+必要なら同等のスキル（例: `/{plugin}:plugin-migrate`）を提供する。
+このスキルは決してプラグイン境界を跨がない。
 
 ---
 
-### Step 2: Remove legacy `.work/CLAUDE.md` and sync `.gitignore` files
+## タスク
 
-#### Condition
+### ステップ 1: .work/ が存在することを確認し、作業ブランチを準備
 
-- Step 1 complete
+#### 条件
 
-#### Process
+- 必ず最初に実行
 
-1. If `.work/CLAUDE.md` exists, remove it with `git rm`
-   - `.work/CLAUDE.md` was a static file that is now handled by ref-inject; it is no longer shipped in the template
-   - If `.work/CLAUDE.jp.md` exists, remove it the same way
-2. Write the following `.gitignore` files with the hardcoded content below (overwrite):
-   - `.work/tasks/.gitignore` → content: `index.yaml`
-   - `.work/issues/.gitignore` → content: `_index.yaml` (create `.work/issues/` first if it does not exist)
-3. Report which files were changed
+#### 処理
 
-→ Proceed to Step 3
+1. カレントプロジェクトに `.work/` が存在することを確認
+2. 存在しない場合、ユーザーに `/work:setup` を先に実行するよう案内して終了
+3. `/work:start` を実行してこの同期用の作業ブランチを作成
+   （生成されたファイル編集が確認可能なブランチにランディングするよう）
+4. worktree とブランチが作成されるまで待機
 
-#### Output
+→ ステップ 2 へ
 
-- `.work/CLAUDE.md` / `.work/CLAUDE.jp.md` removed (if they existed)
-- `.work/tasks/.gitignore`, `.work/issues/.gitignore` updated to the latest
+#### 出力
 
----
-
-### Step 3: Migrate `.work/tasks/index.yaml` to the branch-keyed schema
-
-#### Condition
-
-- Step 2 complete
-- `.work/tasks/index.yaml` exists
-
-#### Process
-
-1. Read `.work/tasks/index.yaml` (and `.work/tasks/index.archive.yaml` if present)
-2. If no entry has `id` or `tags` and there is no top-level `last_id` → already migrated, skip
-3. Otherwise migrate to the branch-keyed schema:
-   - Remove `id` and `tags` from every entry
-   - Remove the top-level `last_id` key
-   - Keep only `branch`, `title`, `type`, `summary`, `task`, `completed`
-   - Apply the same normalization to `index.archive.yaml`
-   - Write the updated file(s)
-
-→ Proceed to Step 4
-
-#### Output
-
-- `index.yaml` (and `index.archive.yaml`) use the branch-keyed schema (no `id` / `last_id` / `tags`)
-- If already migrated: report "index.yaml already uses the branch-keyed schema — skipped"
-
-#### Notes
-
-- The branch index is keyed by `branch`; there is no numeric `id` or `last_id`
-- `index.yaml` is gitignored — no commit needed for it; `index.archive.yaml` is git-tracked
-- The migration is idempotent — running it again after migration is a no-op
+- `.work/` が確認済み。作業ブランチ / worktree が準備完了
+- 以降のすべてのファイル編集とコミットはこのworktree上の作業ブランチ内で実行される
 
 ---
 
-### Step 4: Rename `.branch.md` task documents to `.task.md`
+### ステップ 2: レガシー `.work/CLAUDE.md` を削除し、`.gitignore` を同期
 
-#### Condition
+#### 条件
 
-- Step 3 complete
+- Step 1 完了
 
-#### Process
+#### 処理
 
-1. Find git-tracked task documents still using the old extension:
+1. `.work/CLAUDE.md` が存在する場合、`git rm` で削除する
+   - このファイルは ref-inject に移行済みのため不要
+   - `.work/CLAUDE.jp.md` が存在する場合も同様に削除する
+2. 以下の `.gitignore` ファイルをハードコードされた内容で書き込む（上書き）:
+   - `.work/tasks/.gitignore` → 内容: `index.yaml`
+   - `.work/issues/.gitignore` → 内容: `_index.yaml`（`.work/issues/` が存在しない場合は作成してから書き込む）
+3. どのファイルが変更されたかを報告
+
+→ ステップ 3 へ
+
+#### 出力
+
+- `.work/CLAUDE.md` / `.work/CLAUDE.jp.md` が削除済み（存在した場合）
+- `.work/tasks/.gitignore`、`.work/issues/.gitignore` が最新版に更新済み
+
+---
+
+### ステップ 3: `.work/tasks/index.yaml` を branch キースキーマへマイグレーション
+
+#### 条件
+
+- Step 2 完了
+- `.work/tasks/index.yaml` が存在
+
+#### 処理
+
+1. `.work/tasks/index.yaml`（および存在すれば `.work/tasks/index.archive.yaml`）を読む
+2. どのエントリにも `id`・`tags` がなく、トップレベルに `last_id` もない → 移行済みとしてスキップ
+3. それ以外は branch キースキーマへ移行する:
+   - 全エントリから `id` と `tags` を除去
+   - トップレベルの `last_id` キーを除去
+   - `branch`・`title`・`type`・`summary`・`task`・`completed` のみ残す
+   - `index.archive.yaml` にも同じ正規化を適用
+   - 更新ファイルを書き込む
+
+→ ステップ 4 へ
+
+#### 出力
+
+- `index.yaml`（および `index.archive.yaml`）が branch キースキーマになる（`id` / `last_id` / `tags` なし）
+- 既に移行済みの場合：「index.yaml は既に branch キースキーマです — スキップしました」と報告
+
+#### 注記
+
+- ブランチインデックスは `branch` を識別キーとする。数値 `id` や `last_id` は存在しない
+- `index.yaml` は gitignore されている — コミット不要。`index.archive.yaml` は git 追跡
+- マイグレーションは冪等 — 移行後に再実行しても no-op
+
+---
+
+### ステップ 4: `.branch.md` のタスクドキュメントを `.task.md` にリネーム
+
+#### 条件
+
+- Step 3 完了
+
+#### 処理
+
+1. 旧拡張子のまま git 追跡されているタスクドキュメントを探す:
    ```bash
    git ls-files '.work/tasks/*.branch.md'
    ```
-2. For each match, rename it with `git mv` so history is preserved:
+2. 各ファイルを `git mv` でリネーム（履歴を保持）:
    ```bash
    git ls-files '.work/tasks/*.branch.md' | while IFS= read -r f; do
      git mv "$f" "${f%.branch.md}.task.md"
    done
    ```
-   - v2.68.0 renamed the task-document extension from `.branch.md` to `.task.md`; the ref-inject
-     template now matches `*.task.md`, so leftover `.branch.md` files no longer receive the template.
-3. If none are found → already migrated, skip.
+   - v2.68.0 でタスクドキュメントの拡張子を `.branch.md` → `.task.md` に変更。ref-inject の
+     テンプレートは `*.task.md` にマッチするため、残った `.branch.md` はテンプレート注入を受けない。
+3. 1 件も無ければ移行済み — スキップ。
 
-→ Proceed to Step 5
+→ ステップ 5 へ
 
-#### Output
+#### 出力
 
-- All `.work/tasks/**/*.branch.md` renamed to `*.task.md` (or "none found — skipped")
+- `.work/tasks/**/*.branch.md` をすべて `*.task.md` にリネーム（または「該当なし — スキップ」）
 
 ---
 
-### Step 5: Review and commit
+### ステップ 5: 確認とコミット
 
-#### Condition
+#### 条件
 
-- Step 4 complete
+- Step 4 完了
 
-#### Process
+#### 処理
 
-1. Show the user `git status` and `git diff` of the worktree
-2. Commit grouped changes with a descriptive message:
+1. worktree の `git status` と `git diff` をユーザーに表示
+2. グループ化した変更を説明的なメッセージでコミット:
    - `chore: sync work .work/ templates to v{version}`
 
-→ Proceed to Step 6
+→ ステップ 6 へ
 
 ---
 
-### Step 6: Report completion
+### ステップ 6: 完了を報告
 
-#### Process
+#### 処理
 
-1. List every file that was updated
-2. If no files changed, report "All work plugin artifacts already up to date"
-3. Suggest the user run `/work:merge` to merge the sync branch when ready
+1. 更新されたすべてのファイルをリスト化
+2. ファイルに変更がない場合、「work プラグインの成果物はすべて最新版です」と報告
+3. ユーザーに準備完了後に `/work:merge` を実行して同期ブランチをマージするよう提案
 
-→ Done
+→ 完了

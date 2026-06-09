@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of DBマイグレーション.md. When updating the English original, update this file too. -->
 # Drizzle — マイグレーション運用
 
 `drizzle-kit` を使った schema → SQL migration → DB 適用の流れ。

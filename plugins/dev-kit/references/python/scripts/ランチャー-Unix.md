@@ -1,10 +1,11 @@
-# launchers-unix — sh launcher
+<!-- This file is a Japanese mirror of ランチャー-Unix.md. When updating the English original, update this file too. -->
+# launchers-unix — sh ランチャー
 
-Conventions for `.sh` files that launch Python scripts on UNIX-like systems (Linux / macOS / WSL).
+UNIX 系（Linux / macOS / WSL）で Python スクリプトを起動する `.sh` ファイルの規約。
 
 ---
 
-## Standard template
+## 標準テンプレート
 
 ```bash
 #!/usr/bin/env bash
@@ -36,27 +37,27 @@ exit "$EXIT_CODE"
 
 ---
 
-## Required elements
+## 必須要素
 
-| Element | Reason |
+| 要素 | 理由 |
 |---|---|
-| `#!/usr/bin/env bash` | Make bash explicit (avoid environments where the sh symlink is dash) |
-| `set -euo pipefail` | Stop immediately on error, detect undefined variables, catch mid-pipe failures |
-| `cd "$(dirname "$0")"` | Use the script's location as the base |
-| `.venv/bin/activate` (with existence check) | Auto-activate venv |
-| `mkdir -p log` | Ensure log directory |
-| `date +%Y%m%d-%H%M%S` | Locale-independent timestamp |
-| `tee "$LOG"` | Output stdout/stderr to screen and file simultaneously |
-| `${PIPESTATUS[0]}` | Get the exit code of the pipe's first stage (python) |
-| `exit "$EXIT_CODE"` | Propagate the exit code to the caller |
+| `#!/usr/bin/env bash` | bash を明示（sh シンボリックリンクが dash の環境を避ける） |
+| `set -euo pipefail` | エラーで即停止、未定義変数を検出、pipe の途中失敗も拾う |
+| `cd "$(dirname "$0")"` | スクリプトの置かれた場所を基準にする |
+| `.venv/bin/activate`（存在チェック付き） | venv 自動有効化 |
+| `mkdir -p log` | ログディレクトリ確保 |
+| `date +%Y%m%d-%H%M%S` | locale 非依存のタイムスタンプ |
+| `tee "$LOG"` | stdout/stderr を画面とファイルへ同時出力 |
+| `${PIPESTATUS[0]}` | pipe 先頭（python）の終了コードを取得 |
+| `exit "$EXIT_CODE"` | 呼び出し元に終了コードを伝える |
 
 ---
 
-## Meaning of `set -euo pipefail`
+## `set -euo pipefail` の意味
 
-- `-e`: terminate immediately if a command fails (non-zero exit code)
-- `-u`: error on reference to an undefined variable
-- `-o pipefail`: set the whole pipeline's exit code to "the rightmost non-zero"
+- `-e`: コマンドが失敗（exit code 0 以外）したら即終了
+- `-u`: 未定義変数を参照したらエラー
+- `-o pipefail`: pipe 全体の終了コードを「最も右の非ゼロ」にする
 
 ```bash
 # pipefail なし: python が失敗しても tee 成功で全体は 0 になってしまう
@@ -69,21 +70,21 @@ python script.py | tee log.txt   # ← python の exit が返る
 
 ---
 
-## Argument forwarding
+## 引数転送
 
-Pass arguments to Python with quoting via `"$@"`:
+`"$@"` で引数をクォート付きで Python へ渡す:
 
 ```bash
 python script.py "$@"
 ```
 
-Use `"$@"` rather than `$*` (avoids accidents with whitespace-containing arguments).
+`$*` ではなく `"$@"` を使う（空白を含む引数で事故らない）。
 
 ---
 
-## Choosing among multiple binaries
+## 複数バイナリの選択
 
-Pattern using `uv run` (recommended for dev-kit Python projects: use `uv`):
+`uv run` を使うパターン（dev-kit Python プロジェクトの場合 `uv` 推奨）:
 
 ```bash
 #!/usr/bin/env bash
@@ -94,7 +95,7 @@ cd "$(dirname "$0")"
 uv run python script.py "$@"
 ```
 
-Or explicitly specify the version:
+または明示的にバージョン指定:
 
 ```bash
 python3.12 script.py "$@"
@@ -102,7 +103,7 @@ python3.12 script.py "$@"
 
 ---
 
-## Sample: run-server.sh for launching FastAPI
+## サンプル: FastAPI 起動用 run-server.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -125,31 +126,31 @@ echo "Starting FastAPI on http://${HOST}:${PORT} (log: ${LOG})"
 uvicorn mypkg.server.app:build_fastapi --factory --host "$HOST" --port "$PORT" 2>&1 | tee "$LOG"
 ```
 
-`HOST` / `PORT` can be overridden via environment variables.
+`HOST` / `PORT` は環境変数で上書き可能。
 
 ---
 
-## Output messages
+## 出力メッセージ
 
-Like bat, default to **English** (easier to grep / share):
+bat と同様、**英語** を基本にする（grep / 共有しやすい）:
 
 ```bash
 echo "(log: $LOG)"         # ✅
 echo "（ログ：$LOG）"        # ⚠️ UTF-8 環境なら可
 ```
 
-That said, UNIX environments are UTF-8 by default, so including Japanese is usually fine.
-Align with the project's policy.
+ただし UNIX 環境は UTF-8 が標準なので、日本語を入れても通常は問題ない。
+プロジェクト方針で揃える。
 
 ---
 
-## Execute permission
+## 実行権限
 
-Don't forget `chmod +x run.sh` (when committing to git, save the attribute with `git update-index --chmod=+x run.sh`).
+`chmod +x run.sh` を忘れずに（git 管理時は `git update-index --chmod=+x run.sh` で属性を保存）。
 
 ---
 
-## Things you must not do
+## やってはいけないこと
 
 ```bash
 # ❌ set -e なし → エラーが伝播せず、後続が動いてしまう
@@ -166,8 +167,8 @@ python script.py | tee log.txt
 
 ---
 
-## Related files
+## 関連ファイル
 
-- `scripts/launchers-windows.md` — Windows counterpart
-- `scripts/Pythonスクリプト.md` — the Python script that gets called
-- `core/言語ルール.md` — shell script output should preferably be English
+- `scripts/launchers-windows.md` — Windows 側の対応版
+- `scripts/Pythonスクリプト.md` — 呼ばれる側の Python スクリプト
+- `core/言語ルール.md` — シェルスクリプトの出力は英語推奨

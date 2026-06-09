@@ -1,154 +1,125 @@
 ---
 name: work:vscode-workspace-sync
 description: |
-  Set up PostToolUse hooks that keep a VS Code .code-workspace file in sync with git worktrees.
-  When run, finds the workspace file, confirms it with the user, then writes two hooks to
-  .claude/settings.json: one adds a worktree path to `folders` on `git worktree add`,
-  the other removes it on `git worktree remove`.
-  Trigger when the user says "ワークスペース同期を設定して", "VS Codeのワークツリーを自動追加したい",
-  "worktreeをワークスペースに自動登録したい", or invokes explicitly as `/work:vscode-workspace-sync`.
+  VS Code の .code-workspace ファイルと git worktree を同期する PostToolUse フックをセットアップする。
+  実行すると、ワークスペースファイルを検索してユーザーに確認後、
+  .claude/settings.json に2つのフックを書き込む:
+  git worktree add 時に folders にパスを追加、git worktree remove 時にパスを削除。
+  「ワークスペース同期を設定して」「VS Codeのワークツリーを自動追加したい」などで起動。
+  明示的には /work:vscode-workspace-sync。
+---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+
+# work:vscode-workspace-sync — VS Code ワークスペース ↔ ワークツリー同期
+
+Claude Code が git worktree を作成・削除するたびに VS Code の `.code-workspace` ファイルを
+自動更新する `PostToolUse` フックを `.claude/settings.json` に書き込む。
+
 ---
 
-# work:vscode-workspace-sync — VS Code Workspace ↔ Worktree Sync
+## タスク
 
-Writes two `PostToolUse` hooks to `.claude/settings.json` so VS Code's `.code-workspace` file
-stays in sync whenever Claude Code creates or removes a git worktree.
+### ステップ 1: `.code-workspace` ファイルを探す
 
----
+#### 条件
 
-## Tasks
+- 常に最初に実行
 
-### Step 1: Find the `.code-workspace` file
+#### 処理
 
-#### Condition
-
-- Always — run first
-
-#### Process
-
-1. Search for `*.code-workspace` files in:
-   - The current project directory (`${CLAUDE_PROJECT_DIR}`)
-   - One level up (`..`)
-2. If **one file found** → proceed with it
-3. If **multiple files found** → present the list and ask the user to choose
-4. If **none found** → show the message below, ask the user to enter the absolute path manually, then proceed with that path:
+1. 以下の場所で `*.code-workspace` ファイルを検索:
+   - カレントプロジェクトディレクトリ（`${CLAUDE_PROJECT_DIR}`）
+   - 1階層上（`..`）
+2. **1件見つかった場合** → そのまま使用
+3. **複数見つかった場合** → リストを提示してユーザーに選択を求める
+4. **見つからない場合** → 以下のメッセージを表示し、絶対パスをユーザーに入力してもらう:
 
    > `.code-workspace` ファイルが見つかりませんでした。絶対パスを入力してください。
 
-→ Proceed to Step 2
+→ ステップ 2 へ
 
-#### Output
+#### 出力
 
-- Absolute path to the `.code-workspace` file confirmed (stored as `WORK_PATH`)
+- `.code-workspace` ファイルの絶対パス確定（`WORK_PATH` として保持）
 
 ---
 
-### Step 2: Confirm with the user
+### ステップ 2: ユーザーに確認
 
-#### Condition
+#### 条件
 
-- Step 1 complete
+- Step 1 完了
 
-#### Process
+#### 処理
 
-1. Show the resolved path and ask for confirmation:
+1. 解決したパスを表示してユーザーに確認:
 
    > 使用するワークスペースファイル: `{WORK_PATH}`  
    > このファイルにフックを設定しますか？
 
-2. Wait for user confirmation before proceeding
+2. ユーザーの確認を待ってから進む
 
-→ Proceed to Step 3
+→ ステップ 3 へ
 
-#### Output
+#### 出力
 
-- `WORK_PATH` confirmed
-
----
-
-### Step 3: Write hooks to `.claude/settings.json`
-
-#### Condition
-
-- Step 2 complete
-
-#### Process
-
-1. Read `${CLAUDE_PROJECT_DIR}/.claude/settings.json`; start from `{}` if it does not exist
-2. Merge the two hook entries below into the `hooks.PostToolUse` array,
-   appending to any existing `matcher: "Bash"` entry (do not duplicate entries)
-3. Substitute `WORK_PATH` with the confirmed absolute path from Step 1
-4. Write the result back to `.claude/settings.json`
-
-**Hook 1 — worktree add → add path to workspace folders:**
-
-```json
-{
-  "matcher": "Bash",
-  "hooks": [
-    {
-      "type": "command",
-      "command": "python",
-      "args": [
-        "-c",
-        "import sys,json,re,pathlib; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if 'git worktree add' not in cmd else None; m=re.search(r'git\\s+worktree\\s+add\\s+(?:-b\\s+\\S+\\s+)?(\\S+)',cmd); sys.exit(0) if not m else None; p=pathlib.Path(r'WORK_PATH'); sys.exit(0) if not p.exists() else None; data=json.loads(p.read_text('utf-8')); folders=data.get('folders',[]); wt=m.group(1); folders.append({'path':wt}) if not any(f.get('path')==wt for f in folders) else None; data['folders']=folders; p.write_text(json.dumps(data,indent=2,ensure_ascii=False),'utf-8')"
-      ]
-    }
-  ]
-}
-```
-
-**Hook 2 — worktree remove → remove path from workspace folders:**
-
-```json
-{
-  "matcher": "Bash",
-  "hooks": [
-    {
-      "type": "command",
-      "command": "python",
-      "args": [
-        "-c",
-        "import sys,json,re,pathlib; d=json.loads(sys.stdin.read()); cmd=d.get('tool_input',{}).get('command',''); sys.exit(0) if 'git worktree remove' not in cmd else None; m=re.search(r'git\\s+worktree\\s+remove\\s+(?:--force\\s+)?(\\S+)',cmd); sys.exit(0) if not m else None; p=pathlib.Path(r'WORK_PATH'); sys.exit(0) if not p.exists() else None; data=json.loads(p.read_text('utf-8')); data['folders']=[f for f in data.get('folders',[]) if f.get('path')!=m.group(1)]; p.write_text(json.dumps(data,indent=2,ensure_ascii=False),'utf-8')"
-      ]
-    }
-  ]
-}
-```
-
-#### Notes
-
-- Each hook entry is a **separate** object in the `PostToolUse` array — do not merge the two `matcher: "Bash"` blocks into one
-- If `.claude/` directory does not exist, create it first
-- `WORK_PATH` must be an absolute path (forward slashes or escaped backslashes both work on Windows)
-
-→ Proceed to Step 4
-
-#### Output
-
-- `.claude/settings.json` updated with both hook entries
+- `WORK_PATH` 確定
 
 ---
 
-### Step 4: Report to the user
+### ステップ 3: `.claude/settings.json` にフックを書き込む
 
-#### Condition
+#### 条件
 
-- Step 3 complete
+- Step 2 完了
 
-#### Process
+#### 処理
 
-1. List created/updated files
-2. Show the verification steps:
+1. `${CLAUDE_PROJECT_DIR}/.claude/settings.json` を読む。ファイルがなければ `{}` から開始
+2. 以下の2つのフックを `hooks.PostToolUse` 配列にマージ
+   （既存の `matcher: "Bash"` エントリに追記。重複追加しない）
+3. `WORK_PATH` を Step 1 で確定した絶対パスに置換
+4. `.claude/settings.json` に書き戻す
+
+**フック1 — worktree 追加時にワークスペースの folders にパスを追加:**
+
+SKILL.md の Hook 1 JSON 参照
+
+**フック2 — worktree 削除時にワークスペースの folders からパスを削除:**
+
+SKILL.md の Hook 2 JSON 参照
+
+#### 注意事項
+
+- 2つのフックは `PostToolUse` 配列内で**別々の**オブジェクトにする（1つの `matcher: "Bash"` にまとめない）
+- `.claude/` ディレクトリが存在しない場合は先に作成
+- `WORK_PATH` は絶対パスで指定（Windows ではスラッシュ区切りでも動作）
+
+→ ステップ 4 へ
+
+#### 出力
+
+- `.claude/settings.json` に2件のフックエントリが追加された状態
+
+---
+
+### ステップ 4: ユーザーに報告
+
+#### 条件
+
+- Step 3 完了
+
+#### 処理
+
+1. 作成・更新したファイルをリストアップ
+2. 確認方法を案内:
 
    > **確認方法**:  
    > 1. Claude Code を再起動してフックを読み込む  
    > 2. `git worktree add` を実行 → `.code-workspace` の `folders` にパスが追加されることを確認  
    > 3. `git worktree remove` を実行 → `folders` からパスが削除されることを確認
 
-#### Notes
-
-##### Checklist
+#### チェックリスト
 
 - [ ] `.claude/settings.json` に `PostToolUse` フックが2件追加されている
 - [ ] 両フックの `WORK_PATH` が実際のファイルパスに置換されている

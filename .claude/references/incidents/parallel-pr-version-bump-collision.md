@@ -1,32 +1,33 @@
-# Incident: Parallel PR Version Bump Collision
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# インシデント: 並行 PR によるバージョンバンプの衝突
 
-## What happened
+## 何が起きたか
 
-PR152 and PR153 were developed in parallel. Both bumped claude-kit independently:
-- PR153 bumped `3.27.1 → 3.28.0` (modernize creator-dispatch hooks)
-- PR152 bumped `3.27.1 → 3.28.0` (add PreCompact hook)
+PR152 と PR153 が並行して開発されており、それぞれが独立して claude-kit をバンプした。
+- PR153: `3.27.1 → 3.28.0`（creator-dispatch フックのモダン化）
+- PR152: `3.27.1 → 3.28.0`（PreCompact フックの追加）
 
-PR153 merged first (it was already done). When PR152 ran the master compatibility check (`git log HEAD..master --oneline`), it found PR153's commits on master. The `plugins/claude-kit/.claude-plugin/plugin.json` diff showed the same `3.28.0` on both sides — version collision.
+PR153 が先にマージされた。PR152 が master 適合確認（`git log HEAD..master --oneline`）を実行したところ、master 上に PR153 のコミットが存在することが判明。`plugins/claude-kit/.claude-plugin/plugin.json` の差分を見ると、両サイドが同じ `3.28.0` に変更していた — バージョン衝突。
 
-## Fix applied
+## 適用した修正
 
-During Step 3 of the merge skill (master compatibility check):
-1. Detected that master's claude-kit was already at `3.28.0`
-2. PR152 branch also had `3.28.0` from its own bump
-3. Bumped PR152 to `3.29.0` before executing the final merge
+merge スキルの Step 3（master 適合確認）にて:
+1. master の claude-kit がすでに `3.28.0` であることを検出
+2. PR152 ブランチも自分のバンプで `3.28.0` になっていた
+3. 最終マージ前に PR152 を `3.29.0` へ繰り上げ
 
-## How to detect
+## 検出方法
 
 ```bash
 git diff HEAD..master -- plugins/claude-kit/.claude-plugin/plugin.json
 ```
 
-If both sides changed `version` to the same value, a version collision exists.
+両サイドが同じ値に `version` を変更している場合、バージョン衝突が存在する。
 
-## Prevention
+## 予防策
 
-When `git diff HEAD..master` shows a version bump on the same plugin:
-1. Check what version master is now at
-2. Bump the PR branch to `master_version + 0.1.0` (next minor)
-3. Update both `plugin.json` and `marketplace.json`
-4. Commit before merging
+`git diff HEAD..master` で同じプラグインのバージョンバンプが見えたら:
+1. master が現在何のバージョンになっているか確認する
+2. PR ブランチを `masterのバージョン + 0.1.0`（次のマイナー）にバンプする
+3. `plugin.json` と `marketplace.json` の両方を更新する
+4. マージ前にコミットする

@@ -1,8 +1,9 @@
-# testing/pytest — pytest Conventions
+<!-- This file is a Japanese mirror of pytest.md. When updating the English original, update this file too. -->
+# testing/pytest — pytest 規約
 
 ---
 
-## Base configuration (pyproject.toml)
+## 基本設定（pyproject.toml）
 
 ```toml
 [tool.pytest.ini_options]
@@ -25,11 +26,11 @@ markers = [
 
 ---
 
-## File / function naming
+## ファイル / 関数の命名
 
-- Files: `test_*.py`
-- Functions: `test_*()`
-- Classes (optional): `Test*` — we generally don't use base classes; write as functions.
+- ファイル: `test_*.py`
+- 関数: `test_*()`
+- クラス（任意）: `Test*` ※基本クラスは使わない、関数で書く
 
 ```python
 # tests/features/chat/test_generate_response.py
@@ -42,14 +43,14 @@ async def test_generate_response_success() -> None: ...
 async def test_generate_response_with_empty_input() -> None: ...
 ```
 
-Write test names in **English that reads as "what is being verified"**:
+テスト名は **「何を確認しているか」が読める英語** で書く:
 - `test_generate_response_returns_text_when_llm_succeeds`
 - `test_generate_response_raises_when_llm_rate_limited`
 - `test_create_user_persists_to_repository`
 
 ---
 
-## conftest.py — shared fixtures
+## conftest.py — 共通 fixtures
 
 ```python
 # tests/conftest.py
@@ -82,12 +83,12 @@ def freeze_time(monkeypatch: pytest.MonkeyPatch):
     return fixed
 ```
 
-`conftest.py` is **auto-loaded per directory level**.
-`tests/conftest.py` → usable in all tests / `tests/features/conftest.py` → only under `features/`.
+`conftest.py` は **ディレクトリ階層単位で自動ロード**される。
+`tests/conftest.py` → 全テストで使える / `tests/features/conftest.py` → features/ 配下のみ。
 
 ---
 
-## fixture dependencies
+## fixture の依存関係
 
 ```python
 @pytest.fixture
@@ -121,7 +122,7 @@ async def test_rate_limited(chat_mock_rate_limited) -> None:
 
 ## parametrize
 
-Multiple patterns in one function:
+複数パターンを 1 関数で:
 
 ```python
 @pytest.mark.parametrize(
@@ -136,7 +137,7 @@ def test_count_chars(input_text: str, expected_len: int) -> None:
     assert count_chars(input_text) == expected_len
 ```
 
-When you want explicit case names:
+ケース名を明示したい場合:
 
 ```python
 @pytest.mark.parametrize(
@@ -154,8 +155,8 @@ def test_count_chars(input_text: str, expected_len: int) -> None: ...
 
 ## pytest-asyncio
 
-Use `pytest-asyncio` for testing async functions.
-If `asyncio_mode = "auto"` is set, `@pytest.mark.asyncio` can be omitted.
+非同期関数のテストには `pytest-asyncio` を使う。
+`asyncio_mode = "auto"` を設定済みなら `@pytest.mark.asyncio` を省略可能。
 
 ```python
 async def test_async_thing() -> None:
@@ -165,9 +166,9 @@ async def test_async_thing() -> None:
 
 ---
 
-## Testing FastAPI routes
+## FastAPI ルートのテスト
 
-Integration test with `TestClient`:
+`TestClient` を使った結合テスト:
 
 ```python
 # tests/server/test_chat_route.py
@@ -199,7 +200,7 @@ def test_post_chat_success() -> None:
 
 ---
 
-## Applying markers
+## マーカーの付け方
 
 ```python
 import pytest
@@ -218,7 +219,7 @@ def test_heavy() -> None: ...
 def test_gpu_only() -> None: ...
 ```
 
-Selective execution:
+選択実行:
 
 ```bash
 uv run pytest -m "not smoke"   # smoke 以外
@@ -227,7 +228,7 @@ uv run pytest -m "smoke"       # smoke だけ
 
 ---
 
-## Debugging tips
+## デバッグ tips
 
 ```bash
 # 1 つだけ走らせる
@@ -245,8 +246,8 @@ uv run pytest -x
 
 ---
 
-## Related files
+## 関連ファイル
 
-- `testing/テスト戦略.md` — Kinds of tests and policy
-- `testing/モック.md` — How to write mocks
-- `packaging/pyproject設定.md` — Complete example of pytest configuration
+- `testing/テスト戦略.md` — テストの種類と方針
+- `testing/モック.md` — Mock の作り方
+- `packaging/pyproject設定.md` — pytest 設定の完全例

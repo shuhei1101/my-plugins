@@ -1,22 +1,25 @@
-# Incident: Skill Reading Other Skills Causes Token Bloat
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+> ⚠️ **Japanese mirror** — not loaded by Claude. When updating this file, always update the English original `.claude/references/incidents/skill-reading-token-cost.md` at the same time.
 
-**Date**: 2026-05-23
+# インシデント: スキルが他スキルを読み込むとトークンが膨張する
+
+**日付**: 2026-05-23
 **PR**: PR68 (conversation-to-claude-improve)
 
-## What Happened
+## 何が起きたか
 
-`conversation-to-claude` had a Step 0 that read four creator skills (`skill-creator`, `rule-creator`, `hook-creator`, `claude-creator`) before making proposals. This was intended to give Claude accurate judgment criteria.
+`conversation-to-claude` には Step 0 があり、提案前に4つのクリエータースキル（`skill-creator`・`rule-creator`・`hook-creator`・`claude-creator`）を読み込んでいた。正確な判定基準を Claude に与えるための設計だった。
 
-However, each Claude Code skill has a ~2500 token limit, so reading 4 skills consumed ~10,000 tokens on every invocation — before any actual work was done.
+しかし Claude Code の各スキルは ~2500 トークンが上限のため、4スキルの読み込みで起動のたびに ~10,000 トークンを消費していた。
 
-## Root Cause
+## 根本原因
 
-The assumption was that Claude needed to read full skills to understand how to propose accurately. In reality, only a small subset of each skill (the "when to use" criteria) was needed.
+「正確に提案するには完全なスキルを読む必要がある」という思い込み。実際に必要なのは各スキルの「いつ使うか」の判定基準だけだった。
 
-## Fix
+## 修正
 
-Removed Step 0 entirely. Extracted the essential judgment criteria from all creator skills and embedded them directly into `conversation-to-claude`'s own References section (`§ Artifact type knowledge`). The skill is now self-contained.
+Step 0 を完全削除。各クリエータースキルから必要な判定基準だけを抽出し、`conversation-to-claude` の References セクション（`§ Artifact type knowledge`）に直接埋め込んだ。スキルが自己完結するようになった。
 
-## Prevention Rule
+## 再発防止ルール
 
-**Never design a skill that reads other skills at startup.** If judgment criteria from another skill are needed, extract only the relevant decision rules and embed them inline. Skills should be self-contained.
+**起動時に他のスキルを読み込む設計にしない。** 他スキルの判定基準が必要な場合は、関連する意思決定ルールだけを抽出してインラインで埋め込むこと。スキルは自己完結させること。

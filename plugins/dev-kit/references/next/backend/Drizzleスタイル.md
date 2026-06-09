@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of Drizzleスタイル.md. When updating the English original, update this file too. -->
 # Drizzle — SQL Builder vs Relational Queries
 
 Drizzle は **SQL Builder（低レベル）** と **Relational Queries（高レベル）** の 2 つの API を持つ。本プロジェクトは **SQL Builder を標準**。

@@ -1,45 +1,46 @@
-# Editing a file on a long-lived branch that was already deleted on master
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# 長期ブランチで master 側で既に削除されたファイルを編集した
 
-**Date**: 2026-05-28
+**日付**: 2026-05-28
 **PR**: PR135 (review-next-kit-plugin)
 
-## Background
+## 背景
 
-PR135 was a multi-day branch with many commits. In the final cleanup phase, AI added a new entry (`kit-hooks-index-sync.md`) to `.claude/rules/feature/_overview.md`.
+PR135 は数日にわたる長期ブランチで多数のコミットを持っていた。最終整理フェーズで、AI は `.claude/rules/feature/_overview.md` に新規エントリ (`kit-hooks-index-sync.md`) を追記した。
 
-When the user merged master in, the `_overview.md` file was found to have been **deleted on master** (by PR141 / `move-jp-mirror-agent-to-claude-kit` and related cleanup). The file existed on PR135's branch only because PR135 had not synced with master since branching.
+ユーザーが master を取り込んだとき、`_overview.md` は **master 側で削除済み** (PR141 / `move-jp-mirror-agent-to-claude-kit` 周辺のクリーンアップで) であることが判明。PR135 が master と同期せずに分岐していたためブランチに残っていただけだった。
 
-This caused a "ghost file" situation: PR135 was actively editing a file that master no longer expected to exist. Resolution required a separate commit to delete `_overview.md` on the branch as well, just to restore parity with master before the actual merge.
+これで「ghost ファイル」状態が発生: PR135 は master がもはや存在を想定していないファイルを編集し続けていた。解消には、merge 前に master と整合させるためにブランチ側でも `_overview.md` を削除する別コミットが必要になった。
 
-## Root cause
+## 根本原因
 
-On a long-lived branch, AI assumed the files it saw locally were the canonical set. It did not check whether any of them had been deleted on master since branching.
+長期ブランチでは、AI はローカルに見えるファイルをそのまま canonical な集合と仮定していた。それらが分岐後に master 側で削除されていないか確認していなかった。
 
-Specifically, when adding a new entry to a list-style file like `_overview.md` or `incidents.md`, AI's reflex is "open and append" — it doesn't first run `git log master -- {file}` to confirm the file is still a live concept upstream.
+特に `_overview.md` や `incidents.md` のような **リスト型ファイル** に新規エントリを追記するとき、AI の反射は「開いて append」 — 「`git log master -- {file}` でファイルが上流でまだ生きているコンセプトか確認する」前段は省かれる。
 
-## Lesson
+## 教訓
 
-When editing a file on a long-lived branch (especially `.claude/rules/**`, `.claude/references/**`, overview / index files), **first verify the file still exists on master**:
+長期ブランチで（特に `.claude/rules/**`、`.claude/references/**`、overview / index ファイル等を）編集する前に、**まず master 上にファイルが残っているか確認** する:
 
 ```bash
 git log master --oneline -- {file} | head -5
-git show master:{file} 2>&1 | head -3   # error → deleted on master
+git show master:{file} 2>&1 | head -3   # エラー → master で削除されている
 ```
 
-If the file was deleted on master, the action should be one of:
+master で削除済みなら、行動は以下のいずれか:
 
-1. **Don't touch it** — write the content elsewhere (e.g., directly under `.claude/rules/feature/{name}.md` without indexing in an overview file)
-2. **Resurrect deliberately** — only if there's a clear reason to bring it back
-3. **Match master's deletion** — `git rm` on the branch too, before the merge
+1. **触らない** — 内容を他の場所に書く (例: `.claude/rules/feature/{name}.md` を overview に index させずに直接置く)
+2. **意図的に復活させる** — 戻す明確な理由がある場合のみ
+3. **master の削除に合わせる** — merge 前にブランチ側でも `git rm` する
 
-## Recurrence prevention
+## 再発防止
 
-- Add an explicit check before editing rule / overview / index files: `git log master..HEAD --oneline -- {file}` and `git log HEAD..master --oneline -- {file}`
-- For `_overview.md`-style index files, prefer not to maintain them at all — let the folder listing be the index. The PR135 incident confirms `_overview.md` was being phased out.
-- During merge prep (work-kit:merge Step 3), explicitly check master's deletions: `git diff --diff-filter=D --name-only HEAD..master | grep "{paths edited in this PR}"`.
+- rule / overview / index ファイルを編集する前に明示的にチェック: `git log master..HEAD --oneline -- {file}` と `git log HEAD..master --oneline -- {file}`
+- `_overview.md` 型の index ファイルは、そもそも保守しないことを優先する — フォルダのファイル一覧そのものを index とする。PR135 のインシデントは `_overview.md` が段階的に廃止されていたことを裏付けている
+- merge 準備中 (work-kit:merge Step 3) に、master 側の削除を明示的にチェックする: `git diff --diff-filter=D --name-only HEAD..master | grep "{この PR で編集したパス}"`
 
-## Related
+## 関連
 
-- `extract-step-check-master-first.md` (similar lesson: check master before extracting a skill step)
-- `unnecessary-jp-mirror-sync-rule-for-agents.md` (PR141 — the change that deleted `_overview.md` cluster)
-- PR135 commit `5c8ad7d` (the cleanup commit that restored parity)
+- `extract-step-check-master-first.md` (類似教訓: skill のステップを抽出する前に master を確認)
+- `unnecessary-jp-mirror-sync-rule-for-agents.md` (PR141 — `_overview.md` クラスタを削除した変更)
+- PR135 commit `5c8ad7d` (整合を復元したクリーンアップコミット)

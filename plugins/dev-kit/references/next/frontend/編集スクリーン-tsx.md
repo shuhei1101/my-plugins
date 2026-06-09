@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of 編集スクリーン-tsx.md. When updating the English original, update this file too. -->
 # {Feature}EditScreen.tsx / {Feature}NewScreen.tsx — Edit Client Component
 
 編集・新規作成画面。shadcn `<Form>` + react-hook-form + Zod + Server Action。

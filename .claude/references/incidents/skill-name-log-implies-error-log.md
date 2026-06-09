@@ -1,40 +1,40 @@
-# Skill named `*-log` was read as error-log
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
 
-## Background
+# `*-log` という名前を「エラーログ」と誤解された
 
-In PR131, the sub-skill that persists one issue to disk was named `issue-log`,
-following the rationale "this skill *logs* an issue record". The SKILL.md described
-it as a shared sub-skill for recording an issue, called by `issue-scan` and
-`issue-create`.
+## 背景
 
-## What the user pointed out
+PR131 で、イシュー 1 件をディスクに保存するサブスキルを `issue-log` と命名した。
+「イシューを *log* するスキル」という発想だったが、SKILL.md では「イシューを記録する
+共有サブスキル。`issue-scan` / `issue-create` から呼ばれる」と説明していた。
+
+## ユーザーの指摘
 
 > ログっていうのはちょっと微妙やな
 > なんかただログログって感じがするから
 > なんかエラーログみたいなイメージやから
 > それはちょっと変かな
 
-"Log" reads as "error log" / "debug log" — the kind of throwaway append-only
-stream you grep through after a failure. A skill whose job is to **create a
-persistent issue record** should use a verb that signals persistence, not
-streaming-log noise.
+"log" は「エラーログ」「デバッグログ」を連想させる — 障害後に grep する
+append-only ストリームのイメージ。**永続的なイシューレコードを作成する** スキルには、
+ストリームログのノイズではなく、永続化を示す動詞を使うべき。
 
-## Lesson
+## 教訓
 
-Renamed `issue-log` → `issue-save`. Updated all callers (`issue-scan`,
-`issue-create`) and the TODO / notes.
+`issue-log` → `issue-save` にリネーム。呼び出し側（`issue-scan` / `issue-create`）と
+TODO / notes も全て更新した。
 
-When naming a skill / function / module whose job is to **persist data**:
+**データを永続化する** スキル / 関数 / モジュールを命名するとき:
 
-| Avoid | Prefer | Reason |
+| 避ける | 推奨 | 理由 |
 |---|---|---|
-| `log` | `save`, `write`, `record`, `persist` | "log" implies error/debug stream, not durable storage |
-| `dump` | `save`, `export` | "dump" implies one-off ad-hoc output |
+| `log` | `save`, `write`, `record`, `persist` | "log" はエラー/デバッグストリームを連想させる |
+| `dump` | `save`, `export` | "dump" は一回限りの ad-hoc 出力を連想させる |
 
-Reserve `log` for code that emits debug/error/audit lines into a log stream.
+`log` はログシステムにデバッグ/エラー/監査行を出す処理にのみ使う。
 
-## Recurrence prevention
+## 再発防止
 
-When proposing a name for a record-writing skill or function, default to
-`save` / `write` / `record`. Only use `log` when the artifact is genuinely a
-log line in a logging system.
+レコードを書き込むスキル / 関数の命名候補を出すときは、デフォルトで
+`save` / `write` / `record` を採用する。`log` はロギングシステムへの本物の
+ログ行出力にのみ使う。

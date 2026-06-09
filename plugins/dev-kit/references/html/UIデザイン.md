@@ -1,237 +1,240 @@
-# UI Design — dev-kit (HTML) Shared Reference
+<!-- This file is a Japanese mirror of UIデザイン.md. When updating the English original, update this file too. -->
+# UI Design — dev-kit (HTML) 共通リファレンス(日本語ミラー)
 
-UI / UX patterns and conventions for development-support screens.
-Read alongside `基本方針.md`. Used by `mock`, `implement`, and `debug-fab` skills.
+> このファイルは `UIデザイン.md` の日本語ミラーです。Claude Code には読み込まれません。
+> 変更時は JP ミラーを先に更新し、その後 `UIデザイン.md` にも反映する。
+
+開発支援画面向けの UI / UX パターンと規約。
+`基本方針.md` と併読する。`mock`・`implement`・`debug-fab` スキルから参照される。
 
 ---
 
-## Navigation & Layout
+## ナビゲーション & レイアウト
 
-### Mandatory: URL query strings for all screen switching
+### 必須: 画面切替は URL クエリストリングに反映する
 
-Every interaction that switches what the user sees — tabs, sidebar items, list↔detail,
-pagination, filters, sort — **must** update the URL via query string. The URL is the single
-source of truth for "where I am". See `基本方針.md` Section 1 ("Reflect screen state in the URL")
-for the centralized `url-state.js` helper.
+ユーザーの見る画面を切り替えるあらゆるインタラクション — タブ・サイドバーメニュー・一覧↔詳細・
+ページネーション・フィルタ・ソート — は **必ず** URL クエリストリングを更新する。
+URL が「今どこにいるか」の単一の真実の源。集約された `url-state.js` ヘルパーについては
+`基本方針.md` セクション 1「画面状態を URL クエリストリングに反映する」を参照。
 
-Examples: `?tab=settings`, `?nav=tools`, `?view=detail&id=42`, `?page=3&filter=active`.
+例: `?tab=settings`、`?nav=tools`、`?view=detail&id=42`、`?page=3&filter=active`。
 
-This makes a pasted URL fully describe the user's context to Claude when they ask for help.
+URL を Claude に貼るだけで、ユーザーのコンテキストが完全に伝わるようになる。
 
-### Primary structures
+### 主要構造
 
-| Structure | When to use |
+| 構造 | 使いどころ |
 |---|---|
-| **Sidebar + main**           | Default for tool-like screens (top page, settings, list/detail) |
-| **2-pane (list + detail)**   | Browsing a list and seeing details simultaneously (PC) |
-| **3-pane (nav + list + detail)** | Heavy multi-resource browsing (rare in dev tools, e.g. inbox-style) |
-| **Top tabs**                 | Switching between siblings under the same parent (e.g. user "Profile / Settings / Activity") |
+| **サイドバー + メイン**           | ツール系画面のデフォルト(トップ・設定・一覧詳細) |
+| **2 ペイン(一覧 + 詳細)**       | 一覧を見ながら詳細を見る(PC) |
+| **3 ペイン(ナビ + 一覧 + 詳細)** | リソース横断ブラウジングが多い場合(開発ツールでは稀、メーラー系) |
+| **トップタブ**                    | 同一親の兄弟切替(例: ユーザーの「プロフィール / 設定 / アクティビティ」) |
 
-Avoid bare top-only navigation without a sidebar in a tool app — sidebars discoverable everything.
+ツールアプリでサイドバーなしのトップオンリーは避ける。サイドバーが全体の発見性を担う。
 
-### Header
+### ヘッダー
 
-- Fixed at top, full width
-- Left: app / page title
-- Right: user menu / global actions (search, notifications)
-- **Do not** put "Home" link in the header title. "Home" lives in the sidebar (see Sidebar)
-- Height: 56–64px
+- 上部固定、フル幅
+- 左: アプリ / 画面タイトル
+- 右: ユーザーメニュー・グローバルアクション(検索・通知)
+- ヘッダーのタイトル領域に「ホーム」リンクを置かない。ホームはサイドバー側
+- 高さ: 56–64px
 
-### Sidebar (PC)
+### サイドバー(PC)
 
-- Fixed left, full height
-- Always visible (fixed)
-- Items to include:
-  - **Home** (first item, dashboard / top page)
-  - **Section headers** for grouping (e.g. "Tools", "Settings", "Admin")
-  - **Recent / favorites** (optional, for frequently used items)
-  - **Account / sign-out** at the bottom
-- Active item: visually distinct (background, left bar accent)
-- Width: 240–280px
+- 左固定、フル高
+- 常時表示(固定)
+- 含める項目:
+  - **ホーム**(最上段、ダッシュボード / トップ画面)
+  - **セクション見出し**でグルーピング(例: "ツール"、"設定"、"管理")
+  - **最近 / お気に入り**(任意、頻出項目用)
+  - **アカウント / サインアウト**(最下部)
+- アクティブ項目: 視覚的に区別(背景・左端アクセント)
+- 幅: 240–280px
 
-### Action buttons (Save / Delete / etc.)
+### アクションボタン(保存・削除等)
 
-- **Primary action** position is fixed per screen type:
-  - **Form screens (settings, edit)**: bottom-right, sticky footer with the action bar
-  - **List screens**: top-right of the list
-  - **Detail screens**: top-right of the detail pane
-- **Destructive actions** (Delete): always confirm via modal; visually red but secondary in placement
-- Never place primary actions in the header (reserved for navigation)
-
----
-
-## Screen Types
-
-### Top screen
-
-- Sidebar lists categories (e.g. "Tools", "Reports")
-- Click a category → main area shows a **card grid** of items in that category
-- Each card: icon + name + short description
-- Click a card → navigate to that item's dedicated screen
-
-### Settings screen
-
-- Sections grouped by topic (e.g. "Account", "Notifications", "Advanced")
-- Each section has a heading + a stack of form rows
-- Action bar at bottom (Save / Cancel / Reset)
-- Validation errors: inline next to the field (see Forms below)
-- For destructive settings: separate "Danger zone" section at the bottom with red accent
-
-### List + Detail screen (2-pane on PC)
-
-- Left pane (PC width ~ 280–360px): list of items
-  - Per-item: title + 1-2 lines of metadata
-  - Selected item: highlighted
-- Right pane: detail of selected item
-- Toolbar above the list: search, filter, sort, "New" button
+- **主アクション**の位置は画面タイプ別に固定:
+  - **フォーム画面(設定・編集)**: 画面下のスティッキーフッターのアクションバー右側
+  - **一覧画面**: リスト上部右
+  - **詳細画面**: 詳細ペインの上部右
+- **破壊的アクション**(削除): 必ずモーダルで確認、視覚的には赤で配置は控えめに
+- ヘッダーに主アクションを置かない(ナビゲーション専用)
 
 ---
 
-## Forms
+## 画面タイプ
 
-### Field anatomy
+### トップ画面
 
-- Label above the input (always visible — never use placeholder-only labels)
-- Helper text below the input (small, dim)
-- Validation error: replaces helper text, in danger color, with a small icon
+- サイドバーがカテゴリ(例: "ツール"、"レポート")を列挙
+- カテゴリをクリック → メインエリアにそのカテゴリのアイテムを**カードグリッド**で表示
+- 各カード: アイコン + 名前 + 短い説明
+- カードをクリック → そのアイテム専用の画面へ遷移
 
-### Validation patterns
+### 設定画面
 
-- **Inline error** (preferred): show immediately under the field as the user blurs or submits
-- **Summary error**: top of the form for multi-field submission failures (rare; complement inline, don't replace)
+- トピックごとにセクション分け(例: "アカウント"、"通知"、"高度な設定")
+- 各セクションは見出し + フォーム行のスタック
+- 画面下のアクションバー(保存 / キャンセル / リセット)
+- バリデーションエラー: フィールド直下のインライン表示(「フォーム」節参照)
+- 破壊的設定: 最下部に "Danger zone" セクションを赤アクセントで分離
 
-### Confirmation dialogs
+### 一覧 + 詳細画面(PC は 2 ペイン)
 
-Required for **irreversible actions**: delete, leave unsaved changes, sign out, etc.
-- Title: clear action verb ("Delete user account?")
-- Body: explain consequence + how to undo (or that it's irreversible)
-- Primary button: the destructive verb in danger color
-- Secondary button: "Cancel" (default focus)
-- Esc key closes; backdrop click closes
+- 左ペイン(PC 幅 280–360px): 項目の一覧
+  - 各項目: タイトル + メタ 1〜2 行
+  - 選択中項目: ハイライト
+- 右ペイン: 選択項目の詳細
+- 一覧上部のツールバー: 検索・フィルタ・ソート・「新規」ボタン
 
-### Keyboard shortcuts
+---
 
-| Action | Shortcut |
+## フォーム
+
+### フィールド構成
+
+- ラベルは入力の上(常時表示、プレースホルダ単体ラベルは禁止)
+- ヘルプテキストは入力の下(小さく薄め)
+- バリデーションエラー: ヘルプテキストを置き換える形で、エラー色 + 小アイコン
+
+### バリデーションパターン
+
+- **インラインエラー**(推奨): ユーザーがフォーカスを外したり送信した瞬間に、フィールド直下に表示
+- **サマリエラー**: 複数フィールド失敗時にフォーム上部にまとめる(稀。インラインの補完であり代替ではない)
+
+### 確認ダイアログ
+
+**取り消し不能アクション**(削除・未保存で離脱・サインアウト等)では必須:
+- タイトル: 明確な動詞("ユーザーアカウントを削除しますか?")
+- 本文: 結果 + 取り消し方法(または取り消し不能であること)
+- 主ボタン: 危険アクションを danger 色で
+- 副ボタン: "キャンセル"(デフォルトフォーカス)
+- Esc で閉じる、背景クリックで閉じる
+
+### キーボードショートカット
+
+| 動作 | ショートカット |
 |---|---|
-| Submit form | `Cmd/Ctrl + Enter` |
-| Save | `Cmd/Ctrl + S` (catch the browser default) |
-| Close modal / drawer | `Esc` |
-| Focus search | `/` (when not in input) |
-| Help | `?` |
+| フォーム送信 | `Cmd/Ctrl + Enter` |
+| 保存 | `Cmd/Ctrl + S`(ブラウザデフォルトを上書き) |
+| モーダル / ドロワーを閉じる | `Esc` |
+| 検索にフォーカス | `/`(入力欄外の場合) |
+| ヘルプ | `?` |
 
-Document any custom shortcuts in a Help modal accessible via `?`.
-
----
-
-## State & Feedback
-
-### Loading states
-
-- **Skeleton screens** for predictable layouts (list rows, card grids)
-- **Spinners** for indeterminate operations under 3s
-- For long operations (> 3s): progress bar + cancel button if possible
-- Disable submit buttons + show inline spinner during form submit
-
-### Empty states
-
-- Icon + heading + short helper text + primary action
-- Example: "No users yet" / "Add your first user" / [+ Add user] button
-
-### Error states
-
-- Page-level errors: full-page card with icon, description, and retry button
-- Component-level errors: inline card replacing the failed component
-- Network errors: toast notification (auto-dismiss after ~5s)
-
-### Toast notifications
-
-- Position: bottom-right
-- Auto-dismiss: 4–6s for success/info, **manual dismiss** for errors
-- Max visible: 3 stacked, oldest pushed out
-- Severity colors: success (green), info (blue), warning (amber), error (red)
+カスタムショートカットは `?` で開けるヘルプモーダルに記載する。
 
 ---
 
-## Accessibility
+## 状態 & フィードバック
 
-- Color contrast: WCAG AA minimum (`4.5:1` text, `3:1` UI components)
-- All interactive elements reachable by Tab; focus ring visible
-- Skip-to-content link as the first focusable element
-- ARIA roles for landmarks (`role="navigation"`, `role="main"`, etc.)
-- Modal: focus trap; return focus to opener on close
-- Form fields: `<label for>` or wrapped; `aria-describedby` for helper text
+### ロード中
+
+- **スケルトン画面**を予測可能なレイアウト(リスト行・カードグリッド)で使う
+- 3 秒以下の不確定処理は**スピナー**
+- 長時間(> 3s): プログレスバー + 可能ならキャンセルボタン
+- フォーム送信中: 送信ボタン無効化 + インラインスピナー
+
+### 空状態
+
+- アイコン + 見出し + ヘルプ短文 + 主アクション
+- 例: 「ユーザーがいません」/「最初のユーザーを追加」/ [+ 追加] ボタン
+
+### エラー状態
+
+- 画面レベルエラー: 全画面カードでアイコン・説明・再試行ボタン
+- コンポーネントレベルエラー: 失敗箇所をインラインカードで置換
+- ネットワークエラー: トースト通知(約 5 秒で自動消去)
+
+### トースト通知
+
+- 位置: 右下
+- 自動消去: 成功 / info は 4〜6 秒、エラーは**手動消去**
+- 同時表示: 最大 3 件、古いものから押し出される
+- 重要度色: success 緑、info 青、warning 黄、error 赤
 
 ---
 
-## Dark Mode
+## アクセシビリティ
 
-- Toggle in the sidebar (bottom area) or user menu
-- Persist preference in `localStorage["theme"]` ("light" / "dark" / "auto")
-- Default: `auto` (follow system via `prefers-color-scheme`)
-- Implement via `:root[data-theme="dark"] { --color-bg: ...; ... }` overrides on Design Tokens
+- コントラスト比: WCAG AA 以上(文字 4.5:1、UI コンポーネント 3:1)
+- すべてのインタラクティブ要素は Tab で到達可能、フォーカスリングを表示
+- 「メインコンテンツへスキップ」リンクを最初のフォーカス可能要素にする
+- ARIA ロール(`role="navigation"`、`role="main"` 等)
+- モーダル: フォーカストラップ、閉じたら呼び出し元に戻す
+- フォーム: `<label for>` または包む。ヘルプテキストには `aria-describedby`
 
 ---
 
-## Motion
+## ダークモード
 
-### Principles
+- サイドバー下部またはユーザーメニューにトグル
+- 設定は `localStorage["theme"]` に保存("light" / "dark" / "auto")
+- デフォルト: `auto`(`prefers-color-scheme` でシステム追従)
+- 実装は `:root[data-theme="dark"] { --color-bg: ...; ... }` でデザイントークンを上書き
 
-- Motion is purposeful, never decorative
-- Duration: 150–250ms for most micro-interactions
-- Easing: `cubic-bezier(0.4, 0.0, 0.2, 1)` (Material standard) or `ease-out` for entrances
-- Reduced motion: respect `@media (prefers-reduced-motion: reduce)` — disable non-essential animations
+---
 
-### Common transitions
+## モーション
 
-| Element | Transition |
+### 原則
+
+- モーションは目的のあるもののみ、装飾的な使用は禁止
+- 持続時間: マイクロインタラクションは 150〜250ms
+- イージング: `cubic-bezier(0.4, 0.0, 0.2, 1)`(Material 標準)または入場は `ease-out`
+- リダクテッドモーション: `@media (prefers-reduced-motion: reduce)` を尊重、非必須アニメは無効化
+
+### よく使うトランジション
+
+| 要素 | トランジション |
 |---|---|
-| Drawer / sidebar | Slide-in 200ms ease-out |
-| Modal | Fade + scale (0.96 → 1) 180ms |
-| Toast | Slide-up + fade 200ms |
-| Hover state | 120ms ease-out background/color |
-| Page transition | None (instant) — animation here is usually friction, not delight |
+| ドロワー / サイドバー | スライドイン 200ms ease-out |
+| モーダル | フェード + スケール(0.96 → 1)180ms |
+| トースト | スライドアップ + フェード 200ms |
+| ホバー状態 | 120ms ease-out で背景 / 色 |
+| 画面遷移 | なし(瞬時)— ツール画面の遷移アニメはむしろ摩擦になりやすい |
 
-Avoid bouncy springs, looping animations, or "wow factor" effects in tool screens — keep it calm.
+跳ねるスプリング・ループするアニメ・"wow"狙いの効果はツール画面では避ける。静かに保つ。
 
 ---
 
-## Implement every pattern as a shared component
+## すべてのパターンを共通コンポーネントとして実装する
 
-**Mandatory**: all patterns described in this document must be implemented as **shared
-components**, never duplicated per screen. Anything that appears (or is likely to appear) on
-two or more screens goes here.
+**必須**: 本文書に書かれたすべてのパターンは**共通コンポーネント**として実装する。
+画面ごとに再実装しない。2 画面以上で使う(または使いそう)なものはすべてここに集約する。
 
-### Components to share by default
+### デフォルトで共通化するコンポーネント
 
-| Group | Items |
+| グループ | 部品 |
 |---|---|
-| Navigation     | **Header**, **Sidebar**, Top tab bar |
-| Buttons        | **Buttons** (primary / secondary / ghost / danger variants), Icon button, **FAB** (Floating Action Button) |
-| Overlays       | **Modal**, **Confirmation dialog**, **Toast** notifications, Keyboard-shortcut help modal |
-| Form           | **Form field** (label + input + helper + error), Form group, Inline error, Form summary |
-| State          | **Loading skeleton**, Spinner, Progress bar, **Empty state card**, **Error card** |
-| Surfaces       | **Card**, Card grid, Action bar, Section heading |
-| Misc           | Theme toggle, Motion-aware wrapper, Icon |
+| ナビゲーション | **Header**(ヘッダー)・**Sidebar**(サイドバー)・トップタブバー |
+| ボタン         | **Buttons**(primary / secondary / ghost / danger バリアント)・Icon button・**FAB**(Floating Action Button) |
+| オーバーレイ   | **Modal**・**確認ダイアログ**・**Toast** 通知・キーボードショートカット ヘルプモーダル |
+| フォーム       | **Form field**(ラベル + 入力 + ヘルパー + エラー)・Form group・インラインエラー・Form summary |
+| 状態           | **Loading skeleton**・Spinner・Progress bar・**空状態カード**・**エラーカード** |
+| サーフェス     | **Card**・Card grid・Action bar・Section heading |
+| その他         | Theme toggle・Motion 対応ラッパー・Icon |
 
-This is the **default list**. If a piece is likely to be reused, add it here even if only one
-screen uses it today. "よく使うものはここに入れる" — when in doubt, add it to the shared layer.
+これは**デフォルトリスト**。再利用されそうなものは、今日 1 画面でしか使っていなくても
+ここに入れる。「よく使うものはここに入れる」 — 迷ったら共有層へ。
 
-### Placement
+### 配置
 
-- All of the above live in the project's `c-*` (Component) layer
-- Composites built specifically for one screen (e.g. `p-userList`, `p-settingsAccount`) live in
-  the `p-*` (Project) layer and **import the `c-*` components** above instead of reimplementing them
+- 上記すべてはプロジェクトの `c-*`(Component)レイヤーに置く
+- 1 画面専用のコンポジット(`p-userList`、`p-settingsAccount` 等)は `p-*`(Project)層に置き、
+  上記の `c-*` コンポーネントを**インポートして組み合わせる**だけ。再実装は禁止
 
-### Workflow
+### ワークフロー
 
-When implementing or mocking a screen, the **first step is always to look up the existing
-shared components** (`c-*`, `p-*`) before writing new markup. See the `dev-kit:html-implement`
-skill and the `.claude/rules/コンポーネントファースト.md` rule for the enforced workflow.
+画面の実装・モック作成時は **必ず最初に既存の共通コンポーネント**(`c-*`、`p-*`)を確認する。
+強制ワークフローは `dev-kit:html-implement` スキルと `.claude/rules/コンポーネントファースト.md` ルールを参照。
 
 ---
 
-## Mock generation hand-off
+## モック生成への引き継ぎ
 
-When generating mocks via `dev-kit:html-mock`, apply the patterns in this document.
-Each mock variant ("案 A/B/C/...") should explore a meaningful axis of difference
-(e.g. sidebar layout vs top-tab layout, dense vs spacious card grid), not just color changes.
+`dev-kit:html-mock` でモックを生成するときは、本ドキュメントのパターンを適用する。
+各モック案(「案 A / B / C...」)は**意味のある差分軸**を探る
+(例: サイドバー型 vs トップタブ型、密度の高い vs ゆとりのあるカードグリッド)。
+色違いだけのバリエーションにしない。

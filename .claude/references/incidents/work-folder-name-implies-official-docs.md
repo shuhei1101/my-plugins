@@ -1,25 +1,27 @@
-# `.work/specs/` Folder Name Implies Official Documents and Causes Staleness
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# `.work/specs/` フォルダ名が「仕様書」と誤解されてメンテナンスされなくなる
 
-## What happened
+## 発生状況
 
-The `.work/specs/` folder in work-kit was designed to hold temporary design memos and investigation notes per PR.
-However, the name `specs` (= specifications) carries a "formal specification document" connotation, causing:
+work-kit の `.work/specs/` フォルダは設計上、PR ごとの一時的な検討メモや設計ノートを置く場所として設計された。
+しかし `specs`（= specifications）という名前が「正式な仕様書」のニュアンスを持つため、
+以下の問題が生じていた：
 
-- Files appearing important because they look like official specs, even though they are not auto-loaded by Claude
-- Files going stale because they are actually temporary memos that don't get updated
-- Users feeling pressure to "write a spec", not doing it, leaving the folder empty, and the feature going unused
+- Claude に自動読み込みされないフォルダなのに、「仕様書」として扱われると重要ドキュメントのように見える
+- 実際には一時的なメモのため更新されず、古くなるゴミファイルになりやすい
+- ユーザーが「仕様書を書かなければ」というプレッシャーを感じ、書かない → フォルダが空のまま → 形骸化
 
-## Fix
+## 修正内容
 
-Renamed `.work/specs/` → `.work/notes/` and updated all references (PR88).
+`.work/specs/` → `.work/notes/` にリネームし、全参照箇所を更新（PR88）。
 
-The name `notes` communicates:
-- This is a temporary memo area, not official documentation
-- Stale files are "old notes" not "outdated specs" — lower psychological cost
-- Lower barrier to use → more likely to actually be used
+`notes` という名前にすることで：
+- 「一時的なメモ置き場」であることが明確になる
+- メンテナンスされなくなっても「ゴミ」ではなく「古いメモ」として扱われる
+- 心理的ハードルが下がり、使われやすくなる
 
-## Lesson
+## 教訓
 
-**Files in folders that are not auto-loaded by Claude will go stale if abandoned.**
-Name such folders with informal-sounding names (`notes/`, `scratch/`, `drafts/`) that don't imply maintenance obligations.
-Avoid names like `specs/`, `docs/`, `references/` — they imply a duty to keep files current.
+**AI に自動読み込みされないフォルダのファイルは、放置されると古くなる。**
+そのようなフォルダの命名は「正式なドキュメント置き場」を連想させない名前（`notes/`, `scratch/`, `drafts/`）にすること。
+逆に `specs/`, `docs/`, `references/` などの名前はメンテナンス義務を暗示するため避ける。

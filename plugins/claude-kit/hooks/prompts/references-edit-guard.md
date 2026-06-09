@@ -1,19 +1,20 @@
-You are about to edit or create a file under this plugin's `references/` directory. **Before performing the edit**, verify the registration so a missing entry doesn't slip through.
+<!-- This file is a Japanese mirror of references-edit-guard.md. When updating the English original, update this file too. -->
+このプラグインの `references/` 配下にあるリファレンスファイルを **これから** 編集または作成しようとしています。編集を実行する前に、下記の登録漏れがないか確認してください:
 
-## Checks
+## 確認事項
 
-1. **About to add a new reference file?**
-   - Before (or right after) creating it, register the path in `references/_index.yaml` and `references/_index.jp.yaml` with `path` + `description`
-   - If the new reference should be auto-injected for some path pattern, add a matching `pattern` entry in `references/_injection_rules.yaml` (under `required` or `optional`)
+1. **新規ファイルを追加しようとしている場合**
+   - 作成前（または直後）に、`references/_index.yaml` と `references/_index.jp.yaml` に `path` と `description` を登録する
+   - 自動注入が必要なリファレンスなら、`references/_injection_rules.yaml` の対応する `pattern` に `required` または `optional` として登録する
 
-2. **About to rename or move a reference file?**
-   - Update every occurrence of the old path inside `_index.yaml`, `_index.jp.yaml`, and `_injection_rules.yaml` in the same change
+2. **ファイル名・パスを変更しようとしている場合**
+   - 同じ作業の中で `_index.yaml` / `_index.jp.yaml` / `_injection_rules.yaml` 内の旧パスをすべて新パスへ更新する
 
-3. **Just editing the body of an existing reference?**
-   - No registry update needed — proceed with the edit as planned
+3. **既存リファレンスの中身だけを編集する場合**
+   - 登録情報の更新は不要 — このまま編集を進めて OK
 
-## Suggested action
+## 推奨アクション
 
-When (1) or (2) applies, open `_index.yaml` and `_injection_rules.yaml` with `Read` first and treat the registry update as part of the same change. This way the registry never drifts behind the actual `references/` files.
+(1) または (2) の場合は、編集を実行する前にまず `_index.yaml` と `_injection_rules.yaml` を `Read` で開いて、登録するエントリのイメージを掴んでから一連の編集を行う。これにより `references/` 本体と登録ファイルが乖離するのを防げる。
 
-This reminder fires only once per session.
+このリマインダーはセッション内 1 回だけ出ます。

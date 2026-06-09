@@ -1,23 +1,23 @@
 ---
 name: dev-kit:next-implement
 description: |
-  When implementing a Next.js App Router page, component, hook, API route, or Server Action.
-  Trigger when the user says "create a screen", "implement a component", "add an API route",
-  "write a Server Action", "follow Next.js conventions", or invokes `/dev-kit:next-implement` explicitly.
+  Next.js App Router でページ・コンポーネント・hook・API ルート・Server Action を新規作成・編集するとき。
+  ユーザーが「画面を作って」「コンポーネントを実装して」「API を追加して」「Server Action を書いて」「Next.js の規約に従って」と言ったとき、または `/dev-kit:next-implement` を明示的に呼び出したとき。
 ---
-# implement — Next.js Implementation Guide
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+# implement — Next.js 実装規約ガイド
 
-Implements pages, components, hooks, API routes, and Server Actions following Next.js App Router conventions (Next.js 16 + shadcn/ui + Tailwind + Drizzle + TanStack Query).
+Next.js App Router のページ・コンポーネント・hook・API ルート・Server Action を実装する。Next.js 16 + shadcn/ui + Tailwind + Drizzle + TanStack Query 前提。
 
 ---
 
-## Overview
+## 概要
 
-Use this skill when starting any Next.js implementation task.
+Next.js 実装作業を始めるときに呼ぶスキル。
 
 References は **1 ファイル = 1 ユースケース** で分割されている（PR135、QA-073）。編集対象のファイル種別に対応する reference だけを読む。
 
-**Stack**:
+**前提スタック**:
 - Next.js 16 (App Router, proxy.ts, Cache Components, Async Request APIs)
 - React 19.2 (View Transitions, useEffectEvent, React Compiler)
 - shadcn/ui + Tailwind
@@ -28,19 +28,19 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 ---
 
-## Tasks
+## タスク
 
-### Step 1: Identify the target file and read the matching reference
+### ステップ 1: 対象ファイルを特定し、対応する reference を読む
 
-#### Condition
+#### 条件
 
-- Always run first
+- 必ず最初に実行
 
-#### Process
+#### 処理
 
 1. 編集対象のファイル種別を特定（`*.tsx`, `route.ts`, `query.ts`, `actions.ts` 等）
 2. `references/CLAUDE.md` の「ファイル種別 → reference マッピング」を参照
-3. 該当する reference を 1〜数個読む（**1 ファイルに 1 ユースケース** で分割済み、不要な情報は読み込まない）
+3. 該当する reference を 1〜数個読む（**1 ファイルに 1 ユースケース** で分割済み）
 
 主要マッピング:
 
@@ -69,21 +69,21 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 全マッピングは `references/CLAUDE.md` 参照。
 
-→ Step 2 へ
+→ ステップ 2 へ
 
-#### Output
+#### 出力
 
 - 編集対象に対応する reference の読み込み完了
 
 ---
 
-### Step 2: Confirm folder and file placement
+### ステップ 2: フォルダと配置を確認
 
-#### Condition
+#### 条件
 
-- Step 1 complete
+- ステップ 1 完了
 
-#### Process
+#### 処理
 
 1. `frontend/feature-folder.md`、`frontend/route-groups.md`、`frontend/id-routing.md` で配置先を確認
 2. 命名規約は `frontend/conventions/naming.md`
@@ -94,21 +94,21 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 7. `form.ts` `actions.ts` は **フィーチャ直下**
 8. `components/` `hooks/` （アンダースコアなし、PR135 で変更）
 
-→ Step 3 へ
+→ ステップ 3 へ
 
-#### Output
+#### 出力
 
 - 配置パスを確認
 
 ---
 
-### Step 3: Implement following the matching reference
+### ステップ 3: 対応 reference に従って実装
 
-#### Condition
+#### 条件
 
-- Step 2 complete
+- ステップ 2 完了
 
-#### Process
+#### 処理
 
 1. 該当 reference の必須テンプレに従って実装
 2. ルール・禁止事項を厳守
@@ -129,18 +129,18 @@ References は **1 ファイル = 1 ユースケース** で分割されてい�
 
 → 完了
 
-#### Output
+#### 出力
 
 - 規約準拠の実装が完了
 
 ---
 
-## References
+## 参考資料
 
 - `references/CLAUDE.md` — 全 reference のファイル種別マッピング（インデックス）
-- `references/frontend/` — フロントエンド規約（page / Screen / form / hook / state / components 等、各 1 ユースケース）
-- `references/backend/` — バックエンド規約（route / client / service / db / query / actions / auth / db-* 等）
-- `references/shared/` — 共通（errors / logger / environment / security）
+- `references/frontend/` — フロントエンド規約
+- `references/backend/` — バックエンド規約
+- `references/shared/` — 共通
 - `references/testing/` — テスト戦略
 - `references/devtools/` — lint / storybook / mock
 - `references/devops/` — deploy

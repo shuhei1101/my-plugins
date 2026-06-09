@@ -1,67 +1,69 @@
-[work] **Before processing this prompt, complete the steps below. No skipping. No exceptions.**
+<!-- This file is a Japanese mirror of user-prompt-submit.md. When updating the English original, update this file too. -->
+
+[work] **このプロンプトを処理する前に、以下のステップを完了してください。スキップはありません。例外もありません。**
 
 ---
 
-### Step 1: Determine whether a branch is in progress
+### Step 1: 作業ブランチが進行中か判定
 
-#### Condition
+#### 条件
 
-- Always run this first
+- 常に — これを最初に実行
 
-#### Process
+#### 処理
 
-Check whether a working branch is in progress in **the current Claude Code conversation session**.
+カレントの Claude Code セッション内で作業ブランチが進行中かを判定。
 
-→ Branch exists → proceed to Step 2
-→ No branch → proceed to Step 3
+→ ブランチが存在 → Step 2 に進む
+→ ブランチなし → Step 3 に進む
 
-#### Notes
+#### 注記
 
-- "In-progress branch" means a working branch that was created or explicitly mentioned within this conversation.
-- Do NOT read `index.yaml` or any other files to look for in-progress branches.
-- If unsure, treat it as "no branch" and proceed to Step 3.
-
----
-
-### Step 2: Check QA before reading the rest of the task document
-
-#### Condition
-
-- A branch is in progress
-
-#### Process
-
-1. Use `git worktree list` to locate the in-progress branch's worktree and navigate to it
-2. Read the task document at `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md` (the single `.md` file in the task folder)
-3. If its `## QA` section has unresolved entries — **stop here** — ask the user to resolve them; do nothing further
-4. If `## QA` is clear (or empty), read the `## 作業内容` section of the same task document
-5. If the user's requested task is not already listed in `## 作業内容`, add it and commit before proceeding
-6. Continue work according to the document
-
-#### Notes
-
-##### Prohibitions
-
-- Continuing implementation while QA entries remain unresolved
-- Running git commit while on the master branch
+- 「進行中ブランチ」とは、このセッション内で作成・明示された作業ブランチを指す
+- `index.yaml` などのファイルを読んで進行中ブランチを探索してはいけない
+- 不確実な場合は「ブランチなし」として扱い、Step 3 に進む
 
 ---
 
-### Step 3: Run work:start before doing anything
+### Step 2: タスクドキュメントを読む前に QA をチェック
 
-#### Condition
+#### 条件
 
-- No working branch is in progress
+- ブランチが進行中
 
-#### Process
+#### 処理
 
-1. Run `/work:start` to create a branch
-2. Once the branch is created, proceed to Step 2
+1. `git worktree list` で進行中ブランチの worktree を探し、そこへ移動
+2. タスクドキュメントを `.work/tasks/{YYMMDD}_{title}/{YYMMDD}-{日本語タイトル}.task.md`（タスクフォルダ内の唯一の `.md` ファイル）で読む
+3. その `## QA` セクションに未解決エントリがあれば — **ここで止まる** — ユーザーにそれらを解決するよう要求。それ以上進まない
+4. `## QA` がクリア（または空）ならば、同じタスクドキュメントの `## 作業内容` セクションを読む
+5. ユーザーが要求したタスクが `## 作業内容` にまだ載っていなければ、それを追加してコミット
+6. ドキュメントに従って作業を続ける
 
-#### Notes
+#### 注記
 
-##### Prohibitions
+##### 禁止事項
 
-- Editing or committing files without running work:start first
-- Committing directly to master
-- Skipping this check "just this once"
+- QA エントリが未解決のまま実装を続ける
+- master ブランチに git commit を走らせる
+
+---
+
+### Step 3: work:start を実行して作業ブランチを作成
+
+#### 条件
+
+- 進行中ブランチなし
+
+#### 処理
+
+1. `/work:start` を実行してブランチを作成
+2. ブランチが作成されたら、Step 2 に進む
+
+#### 注記
+
+##### 禁止事項
+
+- work:start を実行せずファイル編集またはコミット
+- master に直接コミット
+- 「今回だけ」という理由でこのチェックをスキップ

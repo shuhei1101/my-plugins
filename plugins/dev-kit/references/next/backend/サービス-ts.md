@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of サービス-ts.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/service.ts
 
 ビジネスロジック層。**トランザクション境界** を持ち、複数の `query.ts` / `db.ts` 関数を組み合わせて 1 つの業務ユニットを実行する。

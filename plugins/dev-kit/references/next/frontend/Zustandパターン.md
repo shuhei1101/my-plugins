@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of Zustandパターン.md. When updating the English original, update this file too. -->
 # Zustand — クロスルート state パターン
 
 頻繁更新 / selector が必要な共有 state。Context で不十分なときに使う。

@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of useFormパターン.md. When updating the English original, update this file too. -->
 # hooks/use{Feature}Form.ts — フォーム state hook
 
 react-hook-form を内包し、Server から取得した値を初期値に流す hook。Edit Screen から使う。

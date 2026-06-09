@@ -1,23 +1,26 @@
+<!-- This file is a Japanese mirror of pretooluse-read-block-cancels-tool.md. When updating the English original, update this file too. -->
+
 # pretooluse-read-block-cancels-tool
 
-Japanese mirror: `.claude/references/incidents/pretooluse-read-block-cancels-tool.jp.md`
+英語オリジナル: `.claude/references/incidents/pretooluse-read-block-cancels-tool.md`
 
-## What happened
+## 何が起きたか
 
-`inject_references.py` returned `{"decision": "block", "reason": "..."}` for all four tool names
-(`Edit`, `Write`, `MultiEdit`, and `Read`). For `Edit`/`Write`/`MultiEdit` this is intentional —
-the hook cancels the call, injects reference context, and Claude retries with the context available.
+`inject_references.py` は `Edit`/`Write`/`MultiEdit`/`Read` の 4 種すべてに対して
+`{"decision": "block", "reason": "..."}` を返していた。`Edit`/`Write`/`MultiEdit` では
+意図通り — フックがツール呼び出しをキャンセルしてリファレンスコンテキストを注入し、
+Claude が再試行する。
 
-For `Read` the same output had an unintended side-effect: the Read was cancelled and Claude
-never received the file contents. Claude then fell back to `Bash` + `sed` to read the file.
+`Read` に対しても同じ出力を返した結果、Read がキャンセルされて Claude がファイル内容を
+受け取れなくなった。Claude は代替として `Bash` + `sed` でファイルを読み込んだ。
 
-## Root cause
+## 根本原因
 
-`decision: "block"` is the hook output format for events like `UserPromptSubmit`, `Stop`, and
-`PostToolUse`. When used in a `PreToolUse` hook it also works (legacy support), but the semantics
-are "cancel the tool call" — which is correct for Edit/Write but wrong for Read.
+`decision: "block"` は `UserPromptSubmit` / `Stop` / `PostToolUse` などのイベント向け
+フック出力フォーマット。`PreToolUse` フックで使うと「ツール呼び出しをキャンセルする」
+という動作になり、Edit/Write では正しいが Read では意図に反する。
 
-The `PreToolUse`-specific format for injecting context **without cancelling** is:
+**Read をキャンセルせずにコンテキストを注入する**には `PreToolUse` 専用フォーマットを使う:
 
 ```json
 {
@@ -29,9 +32,9 @@ The `PreToolUse`-specific format for injecting context **without cancelling** is
 }
 ```
 
-## Prevention
+## 防止策
 
-In a `PreToolUse` hook script, branch on `tool_name`:
+`PreToolUse` フックスクリプト内で `tool_name` に応じて分岐する:
 
 ```python
 if tool_name == "Read":
@@ -48,5 +51,5 @@ else:
     )
 ```
 
-The `additionalContext` field is shown to Claude as a `system-reminder` alongside the tool result,
-so the reference content is injected AND the file content is also delivered.
+`additionalContext` の内容はツール結果と並んで `system-reminder` として Claude に表示される。
+リファレンスコンテキストが注入されつつ、ファイル内容も届く。

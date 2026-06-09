@@ -1,10 +1,11 @@
-# packaging/pyproject — Complete pyproject.toml sample
+<!-- This file is a Japanese mirror of pyproject設定.md. When updating the English original, update this file too. -->
+# packaging/pyproject — pyproject.toml 完全サンプル
 
-Standard `pyproject.toml` template for new Python projects.
+新規 Python プロジェクトの `pyproject.toml` 標準テンプレート。
 
 ---
 
-## Full sample
+## 全体サンプル
 
 ```toml
 # ================================================================
@@ -166,10 +167,10 @@ exclude_lines = [
 
 ---
 
-## src layout
+## src レイアウト
 
-Place code under `src/mypkg/` (src layout).
-Compared to placing `mypkg/` directly at the root (flat layout), the src layout prevents confusion between tests and packages.
+`src/mypkg/` 配下にコードを置く（src レイアウト）。
+ルート直下に `mypkg/` を置く形式（flat レイアウト）より、テストとパッケージの混同を防げる。
 
 ```
 mypkg/
@@ -187,32 +188,32 @@ mypkg/
 
 ---
 
-## Explanation of required sections
+## 必須セクションの説明
 
 ### `[project]`
 
-PEP 621 standard. `name` / `version` / `requires-python` / `dependencies` are effectively required.
+PEP 621 標準。`name` / `version` / `requires-python` / `dependencies` は必須相当。
 
-Pin the minimum version with `requires-python = ">=3.12"` (so PEP 695 can be used).
+`requires-python = ">=3.12"` で最低バージョンを固定（PEP 695 使うため）。
 
 ### `dependencies` vs `optional-dependencies.dev`
 
-- `dependencies`: required in production. Installed by `pip install mypkg`.
-- `optional-dependencies.dev`: development only. Installed by `pip install -e ".[dev]"`.
+- `dependencies`: 本番で必要。`pip install mypkg` で入る
+- `optional-dependencies.dev`: 開発時のみ。`pip install -e ".[dev]"` で入る
 
-Keep test tools (pytest, etc.) **separated under dev**. This way `pytest` does not leak into the production image.
+テストツール（pytest 等）は **dev に分離**。本番イメージで `pytest` が混入しない。
 
 ### `[project.scripts]`
 
-If you write `mypkg = "mypkg.__main__:main"`, after `pip install` you can launch the CLI with `mypkg --arg foo`.
+`mypkg = "mypkg.__main__:main"` を書くと、`pip install` 後に `mypkg --arg foo` で CLI 起動できる。
 
 ### `[build-system]`
 
-`hatchling` is recommended. `setuptools` also works, but `hatchling` has shorter configuration.
+`hatchling` を推奨。`setuptools` でもよいが `hatchling` の方が設定が短い。
 
 ---
 
-## Operating with uv
+## uv での運用
 
 ```bash
 # プロジェクトを初期化
@@ -232,8 +233,8 @@ uv run pytest
 uv run python -m mypkg --arg foo
 ```
 
-`uv` is a fast unified version of `pip` + `venv` + `pip-tools`. In dev-kit Python projects, **uv is the standard**.
-See `packaging/依存パッケージ管理.md` for details.
+`uv` は `pip` + `venv` + `pip-tools` を統合した高速版。dev-kit Python プロジェクトでは **uv 標準**。
+詳細は `packaging/依存パッケージ管理.md`。
 
 ---
 
@@ -273,7 +274,7 @@ htmlcov/
 
 ## README.md
 
-The `readme = "README.md"` setting in `pyproject.toml` is what gets shown on PyPI. At minimum:
+`pyproject.toml` の `readme = "README.md"` が PyPI に表示される。最低限:
 
 ```markdown
 # mypkg
@@ -297,9 +298,9 @@ mypkg --arg foo
 
 ---
 
-## Related files
+## 関連ファイル
 
-- `packaging/依存パッケージ管理.md` — how to use uv
-- `packaging/配布設定.md` — publishing to PyPI
-- `packaging/Pythonバージョン.md` — version selection
-- `core/スタイル.md` — details of ruff / mypy configuration
+- `packaging/依存パッケージ管理.md` — uv の使い方
+- `packaging/配布設定.md` — PyPI 公開
+- `packaging/Pythonバージョン.md` — バージョン選定
+- `core/スタイル.md` — ruff / mypy 設定の詳細

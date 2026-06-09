@@ -1,69 +1,72 @@
----
-name: dev-kit:html-logging
-description: >
-  Set up a frontend logging convention — introduce a logger module (not raw console.log),
-  emit JSON Lines, define what to log at each level (debug/info/warn/error), and add a
-  runtime level switch. Trigger when a frontend project needs structured logs, when adding
-  observability to a development-support screen, or when reviewing existing logging code.
-  Examples: "ログ整備して", "console.log 散らかってるのを整理", "操作ログを出すようにして".
----
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
+# SKILL.jp.md — dev-kit:html-logging(日本語ミラー)
 
-# dev-kit:html-logging — Frontend Logging Setup
-
-Introduces a small logger module to a frontend project, defines what to log at each level,
-and outputs JSON Lines that downstream tools (Claude / log viewers / `jq`) can parse.
-
-Default level set: `debug` / `info` / `warn` / `error`. Critical incidents are logged at
-`error` with a clear marker — no separate `critical` level in the frontend (the level set
-mirrors common browser console categories).
+> 変更時は JP ミラーを先に更新し、その後 `SKILL.md` にも反映する。
 
 ---
 
-## Tasks
+**スキル名**: dev-kit:html-logging
+**トリガー**: フロントエンドプロジェクトでログ整備が必要なとき。
+ロガーモジュール導入(生 `console.log` を廃止)、JSON Lines 出力、レベル別出力指針、ランタイムレベル切替の整備。
+「ログ整備して」「console.log 散らかってるのを整理」「操作ログを出すようにして」など。
 
-### Step 1: Load principles
+---
 
-Read for context:
+# dev-kit:html-logging — フロントエンド ログ整備
+
+フロントエンドプロジェクトに小さなロガーモジュールを導入し、レベル別の出し分け方を定義し、
+JSON Lines 形式で下流ツール(Claude / ログビューア / `jq`)が読める形に統一する。
+
+レベル: `debug` / `info` / `warn` / `error` の 4 段階。
+重大事故も `error` で出す(メッセージ内で識別)。Web フロントエンドの実情に合わせた最小構成。
+
+---
+
+## タスク
+
+### ステップ1: 規約を読み込む
+
+参照:
 
 ```
-{plugin_root}/references/html/基本方針.md   # see Section 3 (JS Rules) and Section 1 (DRY)
+{plugin_root}/references/html/基本方針.md   # セクション 3(JS 規約)とセクション 1(DRY)
 ```
 
-The plugin root is two levels above this skill file.
+プラグインルートはこのスキルファイルの2階層上。
 
-→ Proceed to Step 2
-
----
-
-### Step 2: Inspect existing logging
-
-#### Process
-
-1. Search the project for `console.log` / `console.info` / `console.warn` / `console.error` usage.
-2. Note any existing logger module.
-3. Identify entry points (page boot, event handlers, API calls) where logs are emitted or missing.
-
-→ Proceed to Step 3
+→ ステップ2へ
 
 ---
 
-### Step 3: Create the logger module (if absent)
+### ステップ2: 既存のログを点検する
 
-#### Process
+#### 処理
 
-Place a small module at e.g. `static/logger.js` (or the project's JS directory). Use the
-template below — adjust paths and storage key to fit the project:
+1. プロジェクト内の `console.log` / `console.info` / `console.warn` / `console.error` 使用箇所を検索する。
+2. 既存のロガーモジュールがあれば確認する。
+3. ログが出る/出ていないエントリポイント(ページ起動・イベントハンドラ・API 呼び出し等)を把握する。
+
+→ ステップ3へ
+
+---
+
+### ステップ3: ロガーモジュールを作成(なければ)
+
+#### 処理
+
+`static/logger.js` 等に小さなモジュールを配置する。下記テンプレートを使い、パスや
+ストレージキーをプロジェクトに合わせて調整する:
 
 ```js
 // @ts-check
 /**
- * Minimal JSON-Lines logger for the browser.
+ * ブラウザ向け JSON Lines ロガー(最小)。
  *
- * Levels: debug < info < warn < error
- * Default level: error in production, debug while developing.
- * Storage key: localStorage["log.level"] — overrides the default.
+ * レベル: debug < info < warn < error
+ * デフォルト: 本番 error、開発中 debug。
+ * 保存キー: localStorage["log.level"] — デフォルトを上書き。
  *
- * Output: console.<level>(JSON.stringify({ ts, level, msg, ...ctx }))
+ * 出力: console.<level>(JSON.stringify({ ts, level, msg, ...ctx }))
  */
 
 /** @typedef {"debug"|"info"|"warn"|"error"} LogLevel */
@@ -87,7 +90,7 @@ function currentLevel() {
 function emit(level, msg, ctx) {
   if (ORDER[level] < ORDER[currentLevel()]) return;
   const record = { ts: new Date().toISOString(), level, msg, ...(ctx || {}) };
-  // One line per record — never pretty-print on disk
+  // 1 レコード 1 行 — ディスクには絶対 pretty-print しない
   // eslint-disable-next-line no-console
   console[level](JSON.stringify(record));
 }
@@ -105,41 +108,39 @@ export const error = (msg, ctx) => emit("error", msg, ctx);
 export const setLevel = (level) => localStorage.setItem("log.level", level);
 ```
 
-→ Proceed to Step 4
+→ ステップ4へ
 
 ---
 
-### Step 4: Apply the level-by-level guide
+### ステップ4: レベル別の使い分けガイドを適用する
 
-#### Process
+#### 処理
 
-For every place that emits a log, choose the right level based on the table below.
-When refactoring existing `console.log` calls, sort each into one of these:
+ログを出す箇所では、下表に従って適切なレベルを選ぶ。
+既存の `console.log` をリファクタするときも、それぞれを下記のどれかに振り分ける:
 
-| Level | When to use | Examples |
+| レベル | 使いどころ | 例 |
 |---|---|---|
-| `debug` | Verbose internal trace, only useful during development. Off by default in production. | Function entry/exit with args, intermediate state, "matched route X", "cache miss for key Y" |
-| `info`  | Normal operation, user actions, state transitions. Useful in production to follow what happened. | "user clicked Save", "page rendered: user_list", "form submitted: { fields: 3 }" |
-| `warn`  | Recoverable anomaly. Something unusual but handled (retry, fallback, deprecated path). | "API retry attempt 2/3", "missing optional field — using default", "deprecated route called" |
-| `error` | Unrecoverable failure, including critical incidents. Requires attention. | "API 500", "uncaught render exception", "data corruption detected — refused to save" |
+| `debug` | 開発時のみ必要な詳細トレース。本番ではデフォルト OFF | 関数の入口/出口と引数、中間状態、「ルート X にマッチ」「キー Y はキャッシュミス」 |
+| `info`  | 通常運用・ユーザー操作・状態遷移。本番でも追跡したい | 「ユーザーが保存ボタン押下」「画面描画: user_list」「フォーム送信: { fields: 3 }」 |
+| `warn`  | 回復可能な異常。リトライ・フォールバック・廃止予定の経路 | 「API リトライ 2/3」「任意フィールド未指定でデフォルト適用」「廃止予定ルートが呼ばれた」 |
+| `error` | 注意が必要な失敗(重大事故含む)。回復不能 | 「API 500」「描画中の未捕捉例外」「データ破損検出 — 保存中止」 |
 
-Notes:
-- No separate `critical` level — frontend tools (browser console, log aggregators) commonly
-  collapse the high end of the spectrum. Use `error` and mark severity in the message:
-  `error("PAYMENT_GATEWAY_DOWN", { incident: "critical" })`.
-- Be generous with `info` for user actions and state transitions — these are the trail
-  you'll follow when debugging.
-- Keep each call to one line of payload — never spread huge objects.
+注意:
+- 別レベル `critical` は設けない。ブラウザコンソール・ログ集約基盤の多くが上位を同等に扱うため、
+  重大度はメッセージ内で示す: `error("PAYMENT_GATEWAY_DOWN", { incident: "critical" })`
+- ユーザー操作・状態遷移には積極的に `info` を出す — デバッグの足跡になる
+- 1 ログは 1 行に収める — 巨大オブジェクトを展開しない
 
-→ Proceed to Step 5
+→ ステップ5へ
 
 ---
 
-### Step 5: Wire global error capture
+### ステップ5: 未捕捉エラーをグローバルに拾う
 
-#### Process
+#### 処理
 
-In the page bootstrap, capture uncaught errors and unhandled promise rejections:
+ページ起動時に未捕捉エラーと unhandled rejection を捕捉する:
 
 ```js
 // @ts-check
@@ -159,31 +160,31 @@ window.addEventListener("unhandledrejection", (e) => {
 });
 ```
 
-→ Proceed to Step 6
+→ ステップ6へ
 
 ---
 
-### Step 6: Replace raw console calls
+### ステップ6: 生 console 呼び出しを置換する
 
-#### Process
+#### 処理
 
-1. Replace every `console.log(...)` in non-test code with `logger.info(...)` (or another level per the guide).
-2. Allow temporary `console.debug` for ad-hoc work but remove before commit.
-3. The `debug-fab` widget collects all `console.<level>` calls anyway — so even after switching to the
-   logger, the FAB panel will still surface the entries.
+1. 非テストコード内の `console.log(...)` をすべて `logger.info(...)`(または別の適切なレベル)に置換する。
+2. アドホック作業の `console.debug` は一時的に許容するが、コミット前に削除する。
+3. `debug-fab` ウィジェットは `console.<level>` 呼び出しを全て収集するため、
+   ロガー経由に切り替えても FAB パネルにエントリが現れる。
 
-→ Done
+→ 完了
 
-#### Output
+#### 出力
 
-- Logger module installed, level switch available via `localStorage["log.level"]` (or `setLevel(...)`)
-- All call sites converted to use the logger
-- Global error capture wired
-- Each line is a single JSON record on its own line (JSON Lines)
+- ロガーモジュールが導入され、レベルは `localStorage["log.level"]`(または `setLevel(...)`)で切替可能
+- 全呼び出し箇所がロガー経由
+- 未捕捉エラーが捕捉済み
+- 各行は 1 レコード 1 行の JSON(JSON Lines)
 
 ---
 
-## References
+## 参考資料
 
-- `{plugin_root}/references/html/基本方針.md` — Section 3 (JS Rules) and Section 1 (Centralization)
-- `{plugin_root}/skills/debug-fab/SKILL.md` — debug widget that surfaces these logs in-screen
+- `{plugin_root}/references/html/基本方針.md` — セクション 3(JS 規約)とセクション 1(共通化)
+- `{plugin_root}/skills/debug-fab/SKILL.md` — ログを画面内に表示するデバッグウィジェット

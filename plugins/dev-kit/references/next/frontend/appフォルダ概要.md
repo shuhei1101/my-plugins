@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of appフォルダ概要.md. When updating the English original, update this file too. -->
 # app/ — フォルダ全体図
 
 Next.js App Router プロジェクトの `app/` 配下の構成。**モノレポ前提**で通常は `packages/web/app/`。

@@ -1,30 +1,30 @@
-# The session-start git snapshot is stale — a recorded "next PR" may already be merged
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# セッション開始時の git スナップショットは古い — 記録済みの「次PR」が既にマージ済みのことがある
 
-## What happened
+## 何が起きたか
 
-This session implemented PR160 (ref-inject two-tier injection cache). When the user then
-asked to "also do claude-kit", I initially treated it as the pending next-PR candidate I had
-recorded in PR160's TODO (`migrate-claude-kit-to-ref-inject`).
+このセッションでは PR160（ref-inject 二層注入キャッシュ）を実装した。その後ユーザーが
+「claude-kit もやって」と依頼したとき、私は当初これを PR160 の TODO に記録していた次PR候補
+（`migrate-claude-kit-to-ref-inject`）として扱った。
 
-Investigation showed that migration had **already been implemented and merged to master by
-another session as PR159** — and master had advanced two PRs (PR159 + PR161) past the commit
-shown in the session-start git status (`a26e1a8` → `e0f9344`). The git status injected at
-session start, and therefore my mental model of "what's on master", was stale.
+調査の結果、その移行は **別セッションで既に PR159 として実装・master にマージ済み**だった。
+さらに master はセッション開始時の git status に表示されたコミットから 2 つ先（PR159 + PR161）
+まで進んでいた（`a26e1a8` → `e0f9344`）。セッション開始時に注入された git status、ひいては
+「master の現状」に対する私の認識が古かった。
 
-## Root cause
+## 根本原因
 
-The git status provided at session start is a one-time snapshot ("will not update during the
-conversation"). On a long session, master can advance via other sessions / worktrees. I
-planned a follow-up — and had earlier recorded it as a next-PR candidate — based on that
-stale view rather than on the actual current master.
+セッション開始時に渡される git status は一度きりのスナップショット（「会話中は更新されない」）。
+長いセッションでは他セッション / ワークツリー経由で master が進むことがある。私は実際の現
+master ではなく、その古い情報を元に後続作業を計画し（かつ以前に次PR候補として記録し）ていた。
 
-A second consequence: the PR160 worktree had been branched off the stale `a26e1a8` (before
-PR159 merged), so it did not contain claude-kit's migrated files. Syncing claude-kit required
-a `git merge master` first (same family as `worktree-reserved-before-predecessor-merge`).
+副次的影響: PR160 のワークツリーは古い `a26e1a8`（PR159 マージ前）から分岐していたため、
+claude-kit の移行済みファイルを含んでいなかった。claude-kit を同期するにはまず `git merge
+master` が必要だった（`worktree-reserved-before-predecessor-merge` と同系統）。
 
-## Fix / Lesson
+## 修正 / 教訓
 
-Before proposing or starting any follow-up / next-PR / cross-PR work, check the **actual**
-current master (`git log -5 master`, `git worktree list`) instead of trusting the
-session-start snapshot. A next-PR candidate recorded earlier may already be merged by a
-parallel session, and the working branch may predate it.
+後続 / 次PR / PR横断の作業を提案・着手する前に、セッション開始時のスナップショットを信用
+せず**実際の現 master**（`git log -5 master`、`git worktree list`）を確認すること。以前に
+記録した次PR候補は並行セッションで既にマージ済みのことがあり、作業ブランチがそれより前の
+時点から分岐していることもある。

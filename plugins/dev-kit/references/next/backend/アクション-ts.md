@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of アクション-ts.md. When updating the English original, update this file too. -->
 # app/(authenticated)/{feature}/actions.ts
 
 Server Action 群。mutation の第一選択。ファイル冒頭に `'use server'` を置けば、export された全関数が Server Action になる。

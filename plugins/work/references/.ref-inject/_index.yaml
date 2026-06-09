@@ -1,38 +1,36 @@
-# work reference index (English; parsed by inject_references.py).
-# Each entry maps a reference file to a one-line description.
-#   path        : path relative to this references/ directory
-#   description : shown in the injected pointer (and as the section heading)
-# Keep this in sync with _index.jp.yaml and _injection_rules.yaml.
+# work リファレンス索引（日本語ミラー；人間用）。
+# WORK_INJECTION_LANG=jp のとき inject_references.py が description をここから取る。
+# _index.yaml（英語・正本）と _injection_rules.yaml に常に同期させること。
 references:
   - path: skill-sync/ストッププロンプト同期.md
-    description: Sync rule for work stop.md and stop-no-merge.md. The two files are a paired set; steps 1-3 must stay in sync between them. When editing either file, apply the same change to the other.
+    description: work の stop.md と stop-no-merge.md の同期ルール。この 2 ファイルは対称な組であり、ステップ 1〜3 を両ファイルで一致させること。いずれかを編集したら同じ変更をもう片方にも適用する。
 
   - path: skill-sync/マージスキル同期.md
-    description: Sync rule for work merge SKILL.md and the merge-flow note. When adding, removing, or reordering steps in SKILL.md, update the merge-flow description in .work/notes/work-kitスキル群.md so the note keeps reflecting the actual behavior.
+    description: work の merge SKILL.md とマージフローノートの同期ルール。SKILL.md でステップを追加・削除・並べ替えしたら、.work/notes/work-kitスキル群.md のマージフロー記述も更新し、ノートが実際の挙動を反映し続けるようにする。
 
   - path: skill-sync/スタートスキル同期.md
-    description: Sync rule for work-start, worktree-create, and vscode-workspace-sync skills. work-start Step 4 delegates to worktree-create, so their interfaces must stay aligned.
+    description: work-start・worktree-create・vscode-workspace-sync スキルの同期ルール。work-start の Step 4 は worktree-create に委譲するため、インターフェースを常に整合させること。
 
   - path: work-dir/ワークディレクトリ構成.md
-    description: High-level map of .work/ — directory structure, the role of each subfolder (tasks/notes/issues), and commit conventions (keep .work/ changes in a separate commit from implementation code). Points to the per-subfolder detail references.
+    description: .work/ の俯瞰図 — ディレクトリ構成・各サブフォルダ（tasks/notes/issues）の役割・コミット規約（.work/ 配下の変更は実装コードと別コミットにすること）。各サブフォルダの詳細リファレンスへの入り口。
 
   - path: work-dir/タスクドキュメント.md
-    description: Task document template and section fill-in guide. The task document is the single source of truth for one branch; created at .work/tasks/{folder}/{YYMMDD}-{日本語タイトル}.task.md. Author it directly from the injected template.
+    description: タスクドキュメントのテンプレートとセクション記入ガイド。タスクドキュメントは 1 ブランチの正本で、.work/tasks/{folder}/{YYMMDD}-{日本語タイトル}.task.md に作成する。注入されたテンプレートを元に直接作成する。
 
   - path: work-dir/タスクインデックス.md
-    description: Schema for .work/tasks/index.yaml (active branch index, git-ignored) and index.archive.yaml (archived branches). Normally maintained by index-tool.py and the merge skill.
+    description: .work/tasks/index.yaml（進行中ブランチ索引・git 管理外）と index.archive.yaml（アーカイブ済み）のスキーマ。通常は index-tool.py と merge スキルが管理する。
 
   - path: work-dir/イシュー.md
-    description: Issue file format (.work/issues/ISSUE-{N}.md) and the _index.yaml / _index.archive.yaml schema. issue-scan / issue-create author issue files from this template.
+    description: イシューファイル構成（.work/issues/ISSUE-{N}.md）と _index.yaml / _index.archive.yaml スキーマ。issue-scan / issue-create がこのテンプレートからイシューファイルを作成する。
 
   - path: notes/ノート命名規則.md
-    description: Naming and index rules for .work/notes/ files. File names and H1 titles must be in Japanese (technical identifiers stay as-is). Always update _index.md in the same commit when creating, renaming, or deleting a note.
+    description: .work/notes/ ファイルの命名・インデックス管理ルール。ファイル名と H1 タイトルは日本語（技術識別子はそのまま）。ノートを新規作成・リネーム・削除したときは同じコミットで _index.md も更新する。
 
   - path: notes/ノート記述内容ルール.md
-    description: What to write in a .work/notes/ note, plus the fixed note template. A note is a current spec sheet (snapshot) — write only the present state, no history/rationale in the body; record change only in the trailing 変更履歴 table. No YAML frontmatter.
+    description: .work/notes/ のノートに書く内容と固定ノートテンプレート。ノートは現在の仕様書（スナップショット） — 本文には現在状態のみを書き履歴・理由は書かない。変更は末尾の変更履歴テーブルにのみ残す。YAML frontmatter は付けない。
 
   - path: conversation/用語集.md
-    description: Inclusion bar and file format for the project glossary (.claude/rules/glossary.md, always loaded). Register a term only if it is project-specific, non-obvious from its name, recurring, and not already in CLAUDE.md / a rule / a skill description / the folder structure. When in doubt, discard.
+    description: プロジェクト用語集（.claude/rules/glossary.md、常時ロード）の採用基準とファイル形式。プロジェクト固有・名前から非自明・繰り返し出る・かつ CLAUDE.md / ルール / スキル description / フォルダ構成に既出でない場合のみ登録する。迷ったら破棄。
 
   - path: conversation/インシデント.md
-    description: Inclusion bar and file format for the recurrence-prevention log (incidents) — index .claude/rules/incidents.md (always loaded) + detail .claude/references/incidents/{slug}.md. Record only a real mistake that happened this session, generalizable, and not already enforced by a rule / CLAUDE.md / hook. If a rule should exist, create the rule instead.
+    description: 再発防止ログ（incidents）の採用基準とファイル形式 — インデックス .claude/rules/incidents.md（常時ロード）+ 詳細 .claude/references/incidents/{slug}.md。このセッションで実際に起きた一般化可能なミスで、かつ既存のルール / CLAUDE.md / フックで強制済みでない場合のみ記録する。ルールがあるべきなら incident でなくルールを作る。

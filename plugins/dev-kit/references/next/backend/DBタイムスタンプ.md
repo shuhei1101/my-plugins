@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of DBタイムスタンプ.md. When updating the English original, update this file too. -->
 # drizzle/schema.ts — 共通カラム（timestamps / auditFields）
 
 全テーブル共通の `createdAt` / `updatedAt` と、機密データ向けの `createdBy` / `updatedBy`。

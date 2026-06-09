@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of DBリレーション.md. When updating the English original, update this file too. -->
 # drizzle/schema.ts — Relations と Index
 
 外部キー定義、relations、index の付け方。

@@ -1,151 +1,146 @@
 ---
 name: dev-kit:plugin-migrate
 description: |
-  Inspect and fix dev-kit-generated artifacts in the project (both static templates and
-  source files that were created following dev-kit conventions) to ensure they comply with
-  the currently installed dev-kit version's conventions.
-  Covers both re-copying static templates and detecting/fixing convention deviations in
-  existing project source files.
-  Manual invocation only — use /dev-kit:plugin-migrate.
+  プロジェクト内の dev-kit 生成物（静的テンプレと dev-kit 規約に従って作られたコード・設定ファイル）が
+  現在インストール済みの dev-kit バージョンの規約を満たしているかを検査・修正する。
+  静的テンプレの再コピーと、既存プロジェクトファイルの規約逸脱の発見・修正が対象。
+  手動起動のみ — `/dev-kit:plugin-migrate` を使う。
 ---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# dev-kit:plugin-migrate — Bring dev-kit Artifacts into Compliance with Current Conventions
+# dev-kit:plugin-migrate — dev-kit 生成物を現行規約に揃える
 
-## What it does
+## 何をするか
 
-Two categories of dev-kit artifacts are handled differently:
+dev-kit がプロジェクトに関与した成果物を 2 種類に分けて扱う:
 
-| Category | Content | Action |
+| 種別 | 内容 | 処理 |
 |---|---|---|
-| Static templates | Rule files that `html-implement` ships to `.claude/rules/`, `uidev.css` / `uidev.js` that `html-debug-fab` deploys | Re-copy from plugin source (automatic) |
-| Convention-following files | Python / HTML-CSS-JS / Next.js source code written by the user following dev-kit conventions | Inspect against current references; fix deviations with user confirmation |
+| 静的テンプレ | html-implement が `.claude/rules/` に配布したルールファイル、html-debug-fab が配布した `uidev.css` / `uidev.js` | プラグイン本体から最新版を再コピー |
+| 規約遵守ファイル | dev-kit 規約に従って作られた Python / HTML-CSS-JS / Next.js のソースコード | 現行リファレンスと照合し、逸脱があれば修正 |
 
-Static template re-copy is automatic. Convention inspection is performed by Claude using the
-current references (auto-injected by the injection hook when each file is `Read`).
+静的テンプレの再コピーは自動。規約の検査・修正は Claude が現行リファレンスを参照して判断する（injection hook が対象ファイルを `Read` する際に自動注入される）。
 
-Which language conventions to inspect is controlled by `settings.json` env vars
-(`${DEV_KIT_PYTHON}` / `${DEV_KIT_HTML}` / `${DEV_KIT_NEXT}`).
+どの言語の規約を検査するかは `settings.json` の env 変数（`${DEV_KIT_PYTHON}` / `${DEV_KIT_HTML}` / `${DEV_KIT_NEXT}`）で決まる。
 
-This skill depends on no other plugin. Committing and merging are the user's responsibility.
+このスキルはどの他プラグインにも依存しない。コミット・マージはユーザーの責務。
 
 ---
 
-## Static templates (re-copied in Step 1)
+## 静的テンプレ一覧（ステップ1 で再コピーする対象）
 
-| Source (`${CLAUDE_PLUGIN_ROOT}/`) | Destination |
+| ソース (`${CLAUDE_PLUGIN_ROOT}/`) | 配布先 |
 |---|---|
-| `skills/html-debug-fab/templates/uidev.css` | Project static asset directory |
-|  | `uidev.js` in the same directory |
-|  | `CLAUDE.md` in the same directory |
-|  | `CLAUDE.jp.md` in the same directory |
+| `skills/html-debug-fab/templates/uidev.css` | プロジェクトの静的アセットディレクトリ |
+|  | `uidev.js` も同ディレクトリ |
+|  | `CLAUDE.md` も同ディレクトリ |
+|  | `CLAUDE.jp.md` も同ディレクトリ |
 
 ---
 
-## Tasks
+## タスク
 
-### Step 1: Re-copy html-debug-fab widget
+### ステップ1: html-debug-fab のウィジェットを再コピーする
 
-#### Condition
+#### 条件
 
-- `uidev.css` exists anywhere in the project (html-debug-fab considered deployed)
+- プロジェクトに `uidev.css` が存在する（html-debug-fab 導入済みと判定）
 
-#### Process
+#### 処理
 
-1. `find . -name 'uidev.css' -not -path '*/node_modules/*' -not -path '*/.git/*'`
-2. Not found → treat as not deployed; skip to Step 2
-3. Exactly one match → that directory is the target
-4. Multiple matches → ask the user which to target
-5. Copy `uidev.css` / `uidev.js` / `CLAUDE.md` / `CLAUDE.jp.md` from
-   `${CLAUDE_PLUGIN_ROOT}/skills/html-debug-fab/templates/` (skip `example.html`)
-6. Report which files were updated
+1. `find . -name 'uidev.css' -not -path '*/node_modules/*' -not -path '*/.git/*'` で検索
+2. 見つからなければ未導入としてステップ2 へスキップ
+3. 1 箇所のみ → そのディレクトリを配布先として確定
+4. 複数 → ユーザーに確認
+5. `${CLAUDE_PLUGIN_ROOT}/skills/html-debug-fab/templates/` から `uidev.css` / `uidev.js` / `CLAUDE.md` / `CLAUDE.jp.md` を上書きコピー（`example.html` は除く）
+6. 更新したファイル名を報告
 
-→ Proceed to Step 2
+→ ステップ2 へ
 
 ---
 
-### Step 2: Inspect Python source files (if `${DEV_KIT_PYTHON}` is enabled)
+### ステップ2: Python ソースファイルの規約検査（`${DEV_KIT_PYTHON}` が有効な場合）
 
-#### Condition
+#### 条件
 
-- `${DEV_KIT_PYTHON}` is truthy in `settings.json` env
+- `settings.json` の env で `${DEV_KIT_PYTHON}` が truthy
 
-#### Process
+#### 処理
 
-1. List Python files in the project
+1. プロジェクト内の Python ファイルを列挙する
    ```bash
    find . -name "*.py" -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/__pycache__/*"
    ```
-2. `Read` each file — the injection hook auto-injects the Python references
-3. Compare against the current conventions in the injected references; identify deviations
-   - Examples: missing type hints, non-standard logger implementation, incorrect settings structure
-4. For each file with deviations: show the deviation and proposed fix; get user confirmation before making changes
-5. Process in batches of ~10 files if the project is large
+2. ファイルを `Read` する（injection hook が Python リファレンスを自動注入する）
+3. 現行リファレンスの規約と照合し、逸脱箇所を特定する
+   - 例: 型ヒント欠如、ロガー実装が規約外、設定ファイルの構造が規約外
+4. 逸脱が見つかったファイルごとに内容と修正方針を提示し、ユーザーの確認を得てから修正する
+5. ファイル数が多い場合はバッチ処理（例: 10 ファイルずつ）
 
-→ Proceed to Step 3
+→ ステップ3 へ
 
-#### Notes
+#### 注意
 
-The Python references auto-injected from `references/python/` are the authoritative standard.
-Do not flag anything not explicitly stated in those references.
+injection hook が `Read` 時に自動注入した Python リファレンス群（`references/python/` 配下）が規約判断の根拠。リファレンスに明記されていない事項は逸脱として扱わない。
 
 ---
 
-### Step 3: Inspect HTML/CSS/JS source files (if `${DEV_KIT_HTML}` is enabled)
+### ステップ3: HTML/CSS/JS ソースファイルの規約検査（`${DEV_KIT_HTML}` が有効な場合）
 
-#### Condition
+#### 条件
 
-- `${DEV_KIT_HTML}` is truthy in `settings.json` env
+- `settings.json` の env で `${DEV_KIT_HTML}` が truthy
 
-#### Process
+#### 処理
 
-1. List HTML / CSS / JS files
+1. HTML / CSS / JS ファイルを列挙する
    ```bash
    find . \( -name "*.html" -o -name "*.css" -o -name "*.js" \) -not -path "*/node_modules/*" -not -path "*/.git/*"
    ```
-2. `Read` each file (HTML references are auto-injected)
-3. Inspect against current conventions (FLOCSS, design tokens, DebugFAB usage, etc.)
-4. For each deviation: show and propose fix, confirm with user before applying
+2. ファイルを `Read` する（HTML リファレンスが自動注入される）
+3. 現行リファレンスの規約（FLOCSS、デザイントークン、DebugFAB 使い方 など）と照合し、逸脱を特定
+4. 逸脱ファイルごとに提示・確認・修正
 
-→ Proceed to Step 4
+→ ステップ4 へ
 
 ---
 
-### Step 4: Inspect TypeScript/TSX source files (if `${DEV_KIT_NEXT}` is enabled)
+### ステップ4: TypeScript/TSX ソースファイルの規約検査（`${DEV_KIT_NEXT}` が有効な場合）
 
-#### Condition
+#### 条件
 
-- `${DEV_KIT_NEXT}` is truthy in `settings.json` env
+- `settings.json` の env で `${DEV_KIT_NEXT}` が truthy
 
-#### Process
+#### 処理
 
-1. List TS / TSX files
+1. TS / TSX ファイルを列挙する
    ```bash
    find . \( -name "*.ts" -o -name "*.tsx" \) -not -path "*/node_modules/*" -not -path "*/.git/*"
    ```
-2. `Read` each file (Next.js references are auto-injected)
-3. Inspect against current conventions (file placement, Server Actions, auth, DB helpers, etc.)
-4. For each deviation: show and propose fix, confirm with user before applying
+2. ファイルを `Read` する（Next.js リファレンスが自動注入される）
+3. 現行リファレンスの規約（ファイル配置、Server Actions、auth、DB ヘルパー 等）と照合
+4. 逸脱ファイルごとに提示・確認・修正
 
-→ Proceed to Step 5
+→ ステップ5 へ
 
 ---
 
-### Step 5: Report completion
+### ステップ5: 完了報告
 
-#### Process
+#### 処理
 
-1. List all static template files that were re-copied
-2. List all source files where convention deviations were found and fixed
-3. Show `git diff` for user review
-4. Present a suggested commit message; leave the actual commit to the user
-   - Suggested: `chore: sync dev-kit generated artifacts to v{N}`
-   - Read version from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`
+1. 再コピーした静的テンプレファイル一覧を表示
+2. 規約検査で修正したファイルと修正内容の一覧を表示
+3. 差分を `git diff` でユーザーに確認させる
+4. 提案コミットメッセージを提示し、コミットはユーザーに委ねる
+   - 提案例: `chore: sync dev-kit generated artifacts to v{N}`
+   - バージョンは `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` から取得
 
-→ Done
+→ 完了
 
-#### Notes
+#### 注意
 
-##### Prohibitions
+##### 禁止事項
 
-- Never commit to master / main directly
-- Never apply fixes to convention-following files without explicit user confirmation
+- master / main への直接コミット
+- ユーザー確認なしでの修正（規約検査の修正はすべてユーザーが承認する）

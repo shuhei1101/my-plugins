@@ -1,80 +1,80 @@
-# claude-kit Plugin Developer Guide
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
+# claude-kit プラグイン開発者ガイド
 
-## Authoring knowledge lives in `references/`, auto-injected
+## オーサリング知識は `references/` にあり、自動注入される
 
-The authoring guides for each instruction-file type live in `references/` (`common.md`,
-`skills.md`, `rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`, plus `glossary.md` /
-`incidents.md`). The `claude-kit-references-injection` hook (`hooks/scripts/inject_references.py`)
-injects the matching guide **in full body** when you edit the corresponding file (a `SKILL.md`, a
-rule, a `CLAUDE.md`, a `hooks.json`, a `plugin.json`, …) — see `references/_injection_rules.yaml`
-for the path→reference map.
+各指示ファイル種別のオーサリングガイドは `references/`（`common.md`, `skills.md`,
+`rules.md`, `hooks.md`, `claude-md.md`, `plugin-structure.md`, `glossary.md` /
+`incidents.md`）にある。
+`claude-kit-references-injection` フック（`hooks/scripts/inject_references.py`）が、対応するファイル
+（`SKILL.md` / ルール / `CLAUDE.md` / `hooks.json` / `plugin.json` …）を編集したとき、該当ガイドを
+**本文全量**で注入する。パス → reference の対応は `references/_injection_rules.yaml` 参照。
 
-- The creator skills (`skill-creator` / `rule-creator` / `hook-creator` / `claude-creator` /
-  `plugin-creator`) are **thin wrappers** that defer to these references. Edit the target file
-  directly; the guide is injected. The wrappers remain for explicit invocation and for callers
-  for explicit invocation.
-- **Do not load other skills in a Step 0** — reading skills at startup costs 2500 × N tokens. The
-  injection mechanism replaces the old "Step 0: read background materials" pattern.
+- creator スキル（`skill-creator` / `rule-creator` / `hook-creator` / `claude-creator` /
+  `plugin-creator`）は references に委譲する**薄いラッパー**。対象ファイルを直接編集すれば
+  ガイドが注入される。ラッパーは明示起動と呼び出し元のために残している。
+- **Step 0 で他スキルを読み込まない** — スキルの起動時読み込みは 2500 × N トークンを消費する。
+  注入機構が旧来の「Step 0: 背景資料を読む」パターンを置き換える。
 
-This injection structure is shared across all `*-kit` plugins (dev-kit / claude-kit) — see
-the `kit-hooks-index-sync` rule. Attach it to a plugin with `/ref-inject:apply <plugin>`; never
-hand-edit the mechanism per plugin (change the `ref-inject` templates and re-apply).
+この注入構造は全 `*-kit` プラグイン（dev-kit / claude-kit）で共通 — `kit-hooks-index-sync`
+ルール参照。プラグインへの付与は `/ref-inject:apply <plugin>`。機構をプラグインごとに手編集しない
+（`ref-inject` テンプレを変えて再適用する）。
 
-## Skills
+## スキル
 
-| Skill | Purpose |
+| スキル | 目的 |
 |---|---|
-| `claude-kit:claude-creator` | Create `CLAUDE.md` files |
-| `claude-kit:claude-refactor` | Refactor existing `CLAUDE.md` files |
-| `claude-kit:rule-creator` | Create path-scoped rules |
-| `claude-kit:skill-creator` | Create skills |
-| `claude-kit:hook-creator` | Create prompt-injection hooks |
-| `claude-kit:plugin-creator` | Create or update plugins |
-| `claude-kit:plugin-migrate` | Sync plugin-level artifacts to the current claude-kit conventions |
-| `claude-kit:jp-mirror-sync` | Sync JP mirror files (`.jp.md`) from English originals |
-| `claude-kit:env-sync` | Sync env var declarations across plugin files |
-| `claude-kit:statusline-setup` | Configure the Claude Code status line |
-| `claude-kit:plugin-config` | Interactively configure claude-kit env variables (JP mirror, injection language, TTL) |
+| `claude-kit:claude-creator` | `CLAUDE.md` ファイルを作成 |
+| `claude-kit:claude-refactor` | 既存の `CLAUDE.md` ファイルをリファクタ |
+| `claude-kit:rule-creator` | パススコープのルールを作成 |
+| `claude-kit:skill-creator` | スキルを作成 |
+| `claude-kit:hook-creator` | プロンプト注入フックを作成 |
+| `claude-kit:plugin-creator` | プラグインを作成・更新 |
+| `claude-kit:plugin-migrate` | プラグインレベルの成果物を現在の claude-kit 規約に同期 |
+| `claude-kit:jp-mirror-sync` | 英語原本から JP ミラーファイル（`.jp.md`）を同期 |
+| `claude-kit:env-sync` | プラグインファイル間で env 変数宣言を同期 |
+| `claude-kit:statusline-setup` | Claude Code のステータスラインを設定 |
+| `claude-kit:plugin-config` | claude-kit の env 変数（JP ミラー / 注入言語 / TTL）をインタラクティブに設定 |
 
-## Hooks
+## フック
 
-claude-kit ships a single hook: the `claude-kit-references-injection` hook
-(`hooks/scripts/inject_references.py`, `PreToolUse(Edit | Write | MultiEdit | Read)`). There are
-**no dispatch / check guards** — they were removed in favor of reference injection (creator-dispatch
-in PR159; `j2-stamp-check` and the PostToolUse `jp-mirror-check` in PR161). JP-mirror sync is
-enforced by the project's `*-jp-mirror-sync` rules.
+claude-kit のフックは 1 つだけ: `claude-kit-references-injection` フック
+（`hooks/scripts/inject_references.py`, `PreToolUse(Edit | Write | MultiEdit | Read)`）。
+**ディスパッチ/チェック系ガードは無い** — リファレンス注入へ寄せて廃止した
+（creator-dispatch は PR159、`j2-stamp-check` と PostToolUse の `jp-mirror-check` は PR161）。
+JP ミラー同期はプロジェクトの `*-jp-mirror-sync` ルールで担保。
 
-> General guidance if you ever add a guard-style hook back: use `PreToolUse` (not `UserPromptSubmit`,
-> which only scans the user's text); use a per-session flag (`/tmp/{hook}-{session_id}`) so it fires
-> once per session; extract the logic into a script file, not an inline `-c` one-liner (inline python
-> breaks on quote-nesting — incident `statusline-python-quote-nesting`). Hook scripts live under
-> `hooks/scripts/` with a per-plugin `_common.py` for shared helpers (introduced in PR180).
+> 今後ガード系フックを戻すときの一般指針: `UserPromptSubmit`（ユーザー入力テキストしか見ない）でなく
+> `PreToolUse` を使う。セッション単位フラグ（`/tmp/{hook}-{session_id}`）でセッション 1 回だけ発火させる。
+> ロジックはインライン `-c` でなくスクリプトファイルに抽出する（インライン python はクォートのネストで
+> 壊れやすい — incident `statusline-python-quote-nesting`）。フックスクリプトは `hooks/scripts/` 配下に置き、
+> 共通ヘルパーは plugin 内 `_common.py` に集約する（PR180 で導入）。
 
-## Environment Variables
+## 環境変数
 
-**Bold** = default value (applied when the key is unset). Booleans list `true` / `false` only (`1` / `yes` / `on` are also accepted as truthy).
+**太字** = デフォルト値（キー未設定時に適用）。真偽値は `true` / `false` のみ記載（`1` / `yes` / `on` も truthy として扱われる）。
 
-| Variable | Description | Values |
+| 変数名 | 説明 | 値 |
 |---|---|---|
-| `${CLAUDE_KIT_INJECTION_DISABLE}` | Master kill switch — a truthy value stops all reference injection | - true<br>- **false** |
-| `${CLAUDE_KIT_INJECTION_TTL}` | TTL for the per-session injection token (patterns and references); seconds (integer) | **3600** |
-| `${CLAUDE_KIT_INJECTION_LANG}` | Language for injected references (`jp` uses `index.jp.yaml` + `injection.jp.md.j2`) | - **en**<br>- jp |
-| `${CLAUDE_KIT_JP_MIRROR}` | When `false`, skip `.jp.md` mirror creation and write the main `.md` file in Japanese directly | - **true**<br>- false |
+| `${CLAUDE_KIT_INJECTION_DISABLE}` | マスターキルスイッチ — truthy で注入機構全体を停止 | - true<br>- **false** |
+| `${CLAUDE_KIT_INJECTION_TTL}` | セッション単位注入トークンの TTL（patterns / references 共通）。秒（整数） | **3600** |
+| `${CLAUDE_KIT_INJECTION_LANG}` | 注入リファレンスの言語（`jp` で `index.jp.yaml` + `injection.jp.md.j2` を使用） | - **en**<br>- jp |
+| `${CLAUDE_KIT_JP_MIRROR}` | `false` で `.jp.md` ミラーを作らず本体 `.md` を日本語で直接書く | - **true**<br>- false |
 
-## Changelog
+## 変更履歴
 
-| # | Version | Summary |
+| # | バージョン | 概要 |
 |---|---|---|
-| 1 | `3.56.0` | Remove the dead `provenance.md` concept — integrate the JP-mirror warning-comment format into `共通ガイド.md`'s JP/EN mirror section; rewrite all `provenance.md` references in `スキル.md`, the 5 creator skills, and `claude-refactor` to point there |
-| 2 | `3.55.0` | Restore `claude-kit:plugin-config` skill (renamed from `config`); restore `プラグイン設定.md` authoring reference and `plugin-config` mandate in `プラグイン構造.md`; add to injection rules for SKILL.md and plugin.json patterns |
-| 2 | `3.54.0` | Remove the interactive `work:plugin-config` / `dev-kit:plugin-config` skills and the `プラグイン設定.md` (config-skill) authoring reference; drop the `plugin-config` mandate from `plugin-creator` / `プラグイン構造.md`; redefine the env-table format in `プラグインCLAUDE-md.md` to the unified 3-column layout (Variable / Description / Values, default in **bold**) and reformat the `## Environment Variables` tables |
-| 2 | `3.53.0` | Remove `claude-kit:config` skill |
-| 3 | `3.52.0` | Add `claude-kit:jp-mirror-sync` skill (moved from `utils` plugin); remove `utils` plugin from marketplace |
-| 4 | `3.51.0` | Remove `claude-kit:setup-wizard` skill and `SessionStart` hook (`setup_check.py`) |
-| 5 | `3.49.1` | Remove branch-check step (master/main guard) from `plugin-migrate` — redundant with the work harness UserPromptSubmit hook |
-| 6 | `3.48.0` | Reorganize `references/` into role-based subfolders (`common/`, `skill/`, `hook/`, `claude-md/`, `plugin/`); add `plugin/バージョン同期.md`; inject version-sync reminder on `plugins/*/CLAUDE.md` edits |
-| 7 | `3.47.0` | Add `references/jinja2/templates.md` — authoring rules for Jinja2 templates that emit Markdown; auto-injected on `**/hooks/templates/*.j2` edits |
-| 8 | `3.46.0` | Add `references-edit-guard` PreToolUse hook — reminds to update `_index.yaml` / `_injection_rules.yaml` when editing `references/` |
-| 9 | `3.44.0` | Add `${CLAUDE_KIT_JP_MIRROR}` env var — when `false`, skip `.jp.md` mirrors and write the main file in Japanese |
-| 10 | `3.43.0` | Rename meta-YAML files under `references/` with `_` prefix; update plugin-name docs (PR179) |
-| 11 | `3.42.0` | Add `${CLAUDE_KIT_INJECTION_DISABLE}` kill switch env var |
+| 1 | `3.56.0` | 死リンクとなっていた `provenance.md` 概念を削除 — JP ミラー警告コメントのフォーマットを `共通ガイド.md` の JP/EN ミラー節に統合し、`スキル.md`・creator 系 5 スキル・`claude-refactor` の `provenance.md` 参照をすべてそこへ書き換え |
+| 2 | `3.55.0` | `claude-kit:plugin-config` スキルを復活（`config` からリネーム）。`プラグイン設定.md` 記述ガイドと `プラグイン構造.md` の `plugin-config` 必須記載を復元。SKILL.md / plugin.json パターンの注入ルールに追加 |
+| 2 | `3.54.0` | 対話式 `work:plugin-config` / `dev-kit:plugin-config` スキルと config スキル記述ガイド `プラグイン設定.md` を削除。`plugin-creator` / `プラグイン構造.md` から `plugin-config` 必須記載を除去。`プラグインCLAUDE-md.md` の env テーブル仕様を統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再定義し各プラグインの `## 環境変数` テーブルを再フォーマット |
+| 2 | `3.53.0` | `claude-kit:config` スキルを削除 |
+| 3 | `3.52.0` | `claude-kit:jp-mirror-sync` スキルを追加（`utils` プラグインから移動）；`utils` プラグインを marketplace から削除 |
+| 4 | `3.51.0` | `claude-kit:setup-wizard` スキルと `SessionStart` フック（`setup_check.py`）を削除 |
+| 5 | `3.49.1` | `plugin-migrate` のブランチチェックステップ（master/main ガード）を削除 — work ハーネスの UserPromptSubmit フックと責務が重複しているため |
+| 6 | `3.48.0` | `references/` をロール別サブフォルダ（`common/`・`skill/`・`hook/`・`claude-md/`・`plugin/`）に再編；`plugin/バージョン同期.md` を追加；`plugins/*/CLAUDE.md` 編集時にバージョン同期リマインダーを注入 |
+| 7 | `3.47.0` | `references/jinja2/templates.md` を追加 — Markdown を出力する Jinja2 テンプレートのオーサリングルール；`**/hooks/templates/*.j2` 編集時に自動注入 |
+| 8 | `3.46.0` | `references-edit-guard` PreToolUse フックを追加 — `references/` 編集前に `_index.yaml` / `_injection_rules.yaml` の更新漏れをリマインド |
+| 9 | `3.44.0` | `${CLAUDE_KIT_JP_MIRROR}` 環境変数を追加 — `false` の場合 `.jp.md` ミラーをスキップし本体ファイルを日本語で書く |
+| 10 | `3.43.0` | `references/` 配下のメタ YAML をアンダースコア接頭辞付きにリネーム；ドキュメントの plugin 名整理 (PR179) |
+| 11 | `3.42.0` | `${CLAUDE_KIT_INJECTION_DISABLE}` kill switch 環境変数を追加 |

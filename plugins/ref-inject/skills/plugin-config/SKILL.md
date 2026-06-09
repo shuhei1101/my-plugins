@@ -1,37 +1,38 @@
 ---
 name: ref-inject:plugin-config
 description: |
-  When /ref-inject:plugin-config is invoked.
-  Or when the user says "ref-inject の設定を変えたい", "注入を無効にしたい".
+  /ref-inject:plugin-config が呼び出されたとき。
+  またはユーザーが「ref-inject の設定を変えたい」「注入を無効にしたい」と言ったとき。
 ---
+<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
 
-# ref-inject:plugin-config — Plugin Toggle Configuration
+# ref-inject:plugin-config — プラグイントグル設定
 
-Interactively configures env toggle variables for the ref-inject plugin.
+ref-inject プラグインの env トグル変数をインタラクティブに設定するスキル。
 
-> **Note**: ref-inject currently has no user-facing env toggles of its own.
-> Consumer plugins (`dev-kit`, `claude-kit`) expose their own toggles via their respective
-> `plugin-config` skills. This skill is a placeholder for future toggles.
-
----
-
-## Managed Toggles
-
-Currently no managed toggles.
+> **注意**: ref-inject には現在ユーザー向けの env トグルがありません。
+> 消費プラグイン（`dev-kit`、`claude-kit`）は各自の `plugin-config` スキルでトグルを公開しています。
+> このスキルは将来のトグル追加に備えたプレースホルダーです。
 
 ---
 
-## Tasks
+## 管理対象トグル
 
-### Step 1: Report current state
+現在、管理対象のトグルはありません。
 
-#### Condition
+---
 
-- Always — run first
+## タスク
 
-#### Process
+### ステップ 1: 現在の状態を報告
 
-Inform the user:
+#### 条件
+
+- 常に実行 — 最初に行う
+
+#### 処理
+
+ユーザーに以下を伝える:
 
 ```
 ref-inject には現在ユーザー向けのトグルがありません。
@@ -41,10 +42,10 @@ ref-inject には現在ユーザー向けのトグルがありません。
   - /dev-kit:plugin-config   — dev-kit の言語 opt-in および TypeScript チェック
 ```
 
-→ Done.
+→ 完了。
 
 ---
 
-## Notes
+## 注意事項
 
 - ref-inject のキルスイッチ（`${CLAUDE_KIT_INJECTION_DISABLE}` / `${DEV_KIT_INJECTION_DISABLE}`）は逆極性のため、各プラグインの plugin-config では管理しない — `settings.json` を直接編集すること

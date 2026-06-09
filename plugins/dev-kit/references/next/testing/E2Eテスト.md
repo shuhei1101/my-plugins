@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of E2Eテスト.md. When updating the English original, update this file too. -->
 # Next.js App Router — E2E Tests (Playwright)
 
 > **Stack**: Playwright + Page Object Model。`tests/` 共通構造に準拠（テスト戦略.md）。

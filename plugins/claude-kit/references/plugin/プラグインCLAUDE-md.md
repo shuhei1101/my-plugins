@@ -1,187 +1,188 @@
-# Plugin CLAUDE.md Authoring Guide
+<!-- This file is a Japanese mirror of プラグインCLAUDE-md.md. When updating the English original, update this file too. -->
+# プラグイン CLAUDE.md 執筆ガイド
 
-How to write the root `CLAUDE.md` (and `CLAUDE.jp.md` mirror) for a plugin.
-This guide is self-contained: when injected (because you are editing a plugin's `CLAUDE.md`),
-follow it to author the file directly. Read `共通ガイド.md` alongside it.
-Japanese mirror: `references/plugin/プラグインCLAUDE-md.jp.md`
+プラグインのルート `CLAUDE.md`（と `CLAUDE.jp.md` ミラー）を書く方法。
+このガイドは自己完結しています：注入されたとき（プラグインの `CLAUDE.md` を編集しているとき）、
+これに従ってファイルを直接作成してください。`共通ガイド.md` と一緒に読んでください。
+英語原本：`references/plugin/プラグインCLAUDE-md.md`
 
 ---
 
-## Required sections
+## 必須セクション
 
-| Section | Content | Required |
+| セクション | 内容 | 必須 |
 |---|---|---|
-| H1 title | Plugin name | **Always required** |
-| `## Overview` | 1–3 sentence description of what the plugin does | **Always required** |
-| `## Skills` | Table: skill / description / caller (who invokes it) | **Always required** |
-| `## Changelog` | Table at the bottom: version / date / summary | **Always required** |
-| `## Hooks` | Table: trigger type (merged rows) / hook name / behavior | Required when plugin ships hooks |
-| `## Environment Variables` | Table: variable / description / values (one `- ` item per value, default in **bold**) | Required when plugin reads env vars |
-| `## Dependencies` | Table: plugin / relationship | Required when plugin has dependencies |
-| `## Overall Policy` | Major design decisions or version-transition notes | Optional |
-| `## Plugin Structure` | Directory tree | Optional |
-| `## Structure of references/` | Reference file hierarchy | Optional (for plugins with many references) |
+| H1 タイトル | プラグイン名 | **常に必須** |
+| `## 概要` | プラグインの目的を 1〜3 文で説明 | **常に必須** |
+| `## スキル一覧` | テーブル：スキル / 説明 / 呼び出し元 | **常に必須** |
+| `## 変更履歴` | テーブル（末尾）：バージョン / 日付 / 概要 | **常に必須** |
+| `## フック一覧` | テーブル：トリガー種別（マージ行）/ フック名 / 動作 | フックがある場合は必須 |
+| `## 環境変数` | テーブル：変数名 / 説明 / 値（値ごとに `- ` 項目、デフォルトは**太字**） | env 変数を読む場合は必須 |
+| `## 依存プラグイン` | テーブル：プラグイン名 / 関係 | 依存関係がある場合は必須 |
+| `## 設計方針` | 主要な設計決定やバージョン移行の注記 | 任意 |
+| `## プラグイン構成` | ディレクトリツリー | 任意 |
+| `## references/ 構成` | リファレンスファイルの階層 | 任意（references が大規模な場合） |
 
 ---
 
-## Overview section
+## 概要セクション
 
-Write 1–3 sentences explaining the plugin's purpose — what it does, who uses it, and the main
-problem it solves. Keep it self-contained so a reader knows the plugin's scope without reading
-any other file.
+プラグインの目的を 1〜3 文で書きます。何をするか・誰が使うか・何の問題を解決するかを
+簡潔に示し、他のファイルを読まなくてもスコープが分かるようにします。
 
 ```markdown
-## Overview
+## 概要
 
-{One-to-three sentence description of what this plugin does, who uses it, and what problem it solves.}
+{このプラグインが何をするか・誰が使うか・どんな問題を解決するかを 1〜3 文で説明。}
 ```
 
 ---
 
-## Skills table
+## スキル一覧テーブル
 
-List every skill the plugin ships. The **Caller** column records who or what invokes the skill —
-the SKILL.md description already carries the trigger condition, so here we note the dispatch path:
-explicit user call, a named hook, or another skill.
+プラグインが配布するすべてのスキルを記載します。**呼び出し元** 列には
+どこから呼び出されるかを記します — SKILL.md のdescription にトリガー条件は
+既に書かれているので、ここではディスパッチ経路（ユーザー直接・フック・別スキルなど）を示します。
 
 ```markdown
-## Skills
+## スキル一覧
 
-| Skill | Description | Caller |
+| スキル | 説明 | 呼び出し元 |
 |---|---|---|
-| `{plugin}:{skill}` | {one-line purpose} | User calls `/{plugin}:{skill}` explicitly |
-| `{plugin}:{skill-2}` | {one-line purpose} | Dispatched by the `{hook-name}` hook |
-| `{plugin}:{skill-3}` | {one-line purpose} | Called by `{plugin}:{other-skill}` Step 4 |
+| `{plugin}:{skill}` | {1 行の目的} | ユーザーが `/{plugin}:{skill}` を直接呼び出す |
+| `{plugin}:{skill-2}` | {1 行の目的} | `{hook-name}` フックによってディスパッチされる |
+| `{plugin}:{skill-3}` | {1 行の目的} | `{plugin}:{other-skill}` の Step 4 から呼び出される |
 ```
 
 ---
 
-## Hooks table
+## フック一覧テーブル
 
-Group rows by trigger type. When consecutive rows share the same trigger, leave the trigger cell
-blank (visual merging). Order: `PreToolUse` → `PostToolUse` → `UserPromptSubmit` → `Stop`.
+行をトリガー種別でグループ化します。連続する行が同じトリガーを持つ場合、
+下の行のトリガーセルは空白にします（視覚的な結合）。
+順序：`PreToolUse` → `PostToolUse` → `UserPromptSubmit` → `Stop`。
 
 ```markdown
-## Hooks
+## フック一覧
 
-| Trigger | Hook | Behavior |
+| トリガー | フック名 | 動作 |
 |---|---|---|
-| `PreToolUse(Edit \| Write)` | `{hook-name}` | {what it does on every edit/write} |
-| | `{hook-name-2}` | {second hook with the same trigger — trigger cell is blank} |
-| `UserPromptSubmit` | `{hook-name}` | {what it injects into context at prompt time} |
-| `Stop` | `{hook-name}` | {what it runs when Claude stops} |
+| `PreToolUse(Edit \| Write)` | `{hook-name}` | {編集/書き込みのたびに何をするか} |
+| | `{hook-name-2}` | {同じトリガーの 2 つ目のフック — トリガーセルは空白} |
+| `UserPromptSubmit` | `{hook-name}` | {プロンプト時にどの情報をコンテキストへ注入するか} |
+| `Stop` | `{hook-name}` | {Claude が停止したときに何を実行するか} |
 ```
 
 ---
 
-## Environment variables table
+## 環境変数テーブル
 
-List every env var the plugin reads. Three columns — **Variable / Description / Values**:
+プラグインが読むすべての env 変数を記載します。3 列 — **変数名 / 説明 / 値**：
 
-- In **Values**, write each accepted value as a `- ` item separated by `<br>`; **bold** the default (no separate Default column, no `(default)` text)
-- Write booleans as `true` / `false` only (not `1` / `yes` / `on`); always list both
-- For enum vars, explain what each value does in the **Description** column
-- For free-form values (integer, string, list), just bold the default value (e.g. `**3600**`, `**(unset)**`)
-- Add the legend line above the table
+- **値** 列は、許容値ごとに `- ` 項目を `<br>` で区切って並べ、デフォルト値を**太字**にする（専用のデフォルト列や `(デフォルト)` 表記は使わない）
+- 真偽値は `true` / `false` のみ記載（`1` / `yes` / `on` は書かない）。両方を必ず列挙する
+- enum の場合、各値の挙動は**説明**列で述べる
+- 自由値（整数・文字列・リスト）はデフォルト値を太字にするだけ（例: `**3600**`、`**(未設定)**`）
+- テーブルの上に凡例行を添える
 
 ```markdown
-## Environment Variables
+## 環境変数
 
-**Bold** = default value (applied when the key is unset). Booleans list `true` / `false` only (`1` / `yes` / `on` are also accepted as truthy).
+**太字** = デフォルト値（キー未設定時に適用）。真偽値は `true` / `false` のみ記載（`1` / `yes` / `on` も truthy として扱われる）。
 
-| Variable | Description | Values |
+| 変数名 | 説明 | 値 |
 |---|---|---|
-| `{PREFIX}_INJECTION_TTL` | TTL for the injection token cache; seconds (integer) | **3600** |
-| `{PREFIX}_INJECTION_LANG` | Language for injected descriptions | - **en**<br>- jp |
-| `{PREFIX}_SOME_TOGGLE` | Enables some behavior; truthy = on | - **true**<br>- false |
+| `{PREFIX}_INJECTION_TTL` | 注入トークンキャッシュの TTL。秒（整数） | **3600** |
+| `{PREFIX}_INJECTION_LANG` | 注入する説明の言語 | - **en**<br>- jp |
+| `{PREFIX}_SOME_TOGGLE` | 〇〇を有効化する。truthy = 有効 | - **true**<br>- false |
 ```
 
-Set these in `settings.json` → `env` block. Full guide: `環境変数.md`.
+`settings.json` の `env` ブロックで設定します。詳細は `環境変数.md` 参照。
 
 ---
 
-## Dependencies table
+## 依存プラグインテーブル
 
-List plugins this plugin depends on or closely coordinates with.
+このプラグインが依存または連携するプラグインを記載します。
 
 ```markdown
-## Dependencies
+## 依存プラグイン
 
-| Plugin | Relationship |
+| プラグイン名 | 関係 |
 |---|---|
-| `claude-kit` | Source of creator skills and hook policy |
-| `ref-inject` | Provides the injection hook template; regenerate via `/ref-inject:apply` |
+| `claude-kit` | クリエイタースキルと共通フック方針のソース |
+| `ref-inject` | 注入フックテンプレートを提供；`/ref-inject:apply` で再生成 |
 ```
 
 ---
 
-## Changelog table
+## 変更履歴テーブル
 
-Always placed **at the bottom** of the file. One row per version; newest at the top.
-Keep summaries brief — git history has the full diff.
-**Replaces the `changelogs/` directory** — do not create `changelogs/vX.Y.Z.md` files.
+常にファイルの**末尾**に配置します。バージョンごとに 1 行、新しい順に記載。
+概要は簡潔に — 詳細な diff は git 履歴を参照。
+**`changelogs/` ディレクトリの代替** — `changelogs/vX.Y.Z.md` は作成しないでください。
 
 ```markdown
-## Changelog
+## 変更履歴
 
-| Version | Date | Summary |
+| バージョン | 日付 | 概要 |
 |---|---|---|
-| 1.1.0 | YYYY-MM-DD | {brief summary of what changed} |
-| 1.0.0 | YYYY-MM-DD | Initial release |
+| 1.1.0 | YYYY-MM-DD | {変更内容の簡潔な概要} |
+| 1.0.0 | YYYY-MM-DD | 初版リリース |
 ```
 
 ---
 
-## Full template
+## 完全なテンプレート
 
-Copy this and fill in the placeholders:
+これをコピーしてプレースホルダーを埋めてください：
 
 ```markdown
-# {Plugin Name} Plugin Developer Guide
+# {プラグイン名} プラグイン開発ガイド
 
-## Overview
+## 概要
 
-{One-to-three sentence description of what this plugin does.}
+{このプラグインが何をするかを 1〜3 文で説明。}
 
 ---
 
-## Skills
+## スキル一覧
 
-| Skill | Description | Caller |
+| スキル | 説明 | 呼び出し元 |
 |---|---|---|
-| `{plugin}:{skill}` | {purpose} | {explicit / hook dispatch / called by skill} |
+| `{plugin}:{skill}` | {目的} | {直接呼び出し / フックディスパッチ / スキルから呼び出し} |
 
 ---
 
-## Hooks
+## フック一覧
 
-| Trigger | Hook | Behavior |
+| トリガー | フック名 | 動作 |
 |---|---|---|
-| `{trigger}` | `{hook-name}` | {behavior} |
+| `{trigger}` | `{hook-name}` | {動作の説明} |
 
 ---
 
-## Environment Variables
+## 環境変数
 
-| Key | Values | Description |
+| キー | 値 | 説明 |
 |---|---|---|
-| `{PREFIX}_{KEY}` | `{value}` **(default)**<br>`{alt}` | {description} |
+| `{PREFIX}_{KEY}` | `{value}` **(デフォルト)**<br>`{alt}` | {説明} |
 
 ---
 
-## Dependencies
+## 依存プラグイン
 
-| Plugin | Relationship |
+| プラグイン名 | 関係 |
 |---|---|
-| `{plugin}` | {relationship} |
+| `{plugin}` | {関係の説明} |
 
 ---
 
-## Changelog
+## 変更履歴
 
-| Version | Date | Summary |
+| バージョン | 日付 | 概要 |
 |---|---|---|
-| 1.0.0 | YYYY-MM-DD | Initial release |
+| 1.0.0 | YYYY-MM-DD | 初版リリース |
 ```
 
-Omit `## Hooks`, `## Environment Variables`, and `## Dependencies` sections if the plugin has none.
+フック・環境変数・依存プラグインのセクションは、該当するものがない場合は省略してください。

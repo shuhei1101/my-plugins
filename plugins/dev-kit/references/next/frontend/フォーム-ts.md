@@ -1,3 +1,4 @@
+<!-- This file is a Japanese mirror of フォーム-ts.md. When updating the English original, update this file too. -->
 # app/(authenticated)/{feature}/form.ts — Zod schema + Type
 
 フォーム用の Zod スキーマと型。**new と edit で共用**するためフィーチャ直下に置く（PR135）。

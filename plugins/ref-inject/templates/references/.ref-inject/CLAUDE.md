@@ -1,28 +1,29 @@
-# __PLUGIN_NAME__ references
+<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 
-Reference docs auto-injected by the `__LOG_TAG__` hook based on the edited file path.
+# __PLUGIN_NAME__ リファレンス
 
-## Reading manually
+`__LOG_TAG__` フックが編集ファイルのパスに基づいてリファレンスドキュメントを自動インジェクトする。
 
-- `_index.yaml` — the list of all references (path + one-line description; parsed by the hook)
-- `_injection_rules.yaml` — edit-path pattern → `required` / `optional` references
+## 手動で読む
 
-## Reading automatically
+- `_index.yaml` — 全リファレンスのリスト（パス + 1行説明; フックがパース）
+- `_injection_rules.yaml` — 編集パスのパターン → `required` / `optional` リファレンスのマッピング
 
-On `PreToolUse(Edit | Write | MultiEdit | Read)`, `hooks/scripts/inject_references.py`:
+## 自動で読み込まれる
 
-1. Matches the edited file path against `_injection_rules.yaml` patterns
-2. Injects each matched `required` reference **in full body**, and each `optional` as **path + description only**
-3. De-dupes via a two-tier TTL token at `~/.claude/tokens/__PLUGIN_NAME__/{session_id}.yaml`
-   (re-injects once `__ENV_PREFIX___INJECTION_TTL` seconds elapse, default __DEFAULT_TTL__):
-   - `patterns`: a matched pattern is skipped entirely while still fresh
-   - `references`: a `required` reference whose body was already injected this session (via any
-     pattern) is shown by **path only**, so a reference shared across patterns is never re-injected
+`PreToolUse(Edit | Write | MultiEdit | Read)` 時に `hooks/scripts/inject_references.py` が:
 
-Set `__ENV_PREFIX___INJECTION_LANG=jp` to inject Japanese descriptions (`_index.jp.yaml` + `injection.jp.md.j2`).
+1. 編集ファイルのパスを `_injection_rules.yaml` のパターンにマッチさせる
+2. マッチした `required` リファレンスを**本文全体**でインジェクト、`optional` は**パス + 説明のみ**でインジェクト
+3. `~/.claude/tokens/__PLUGIN_NAME__/{session_id}.yaml` の二段階 TTL トークンで重複除去
+   （`__ENV_PREFIX___INJECTION_TTL` 秒経過後に再インジェクト、デフォルト __DEFAULT_TTL__）:
+   - `patterns`: マッチしたパターンは有効期間中はスキップ
+   - `references`: 本文が既にセッション内でインジェクト済みの `required` リファレンスは（どのパターン経由でも）**パスのみ**表示し、複数パターンにまたがるリファレンスが二重インジェクトされない
 
-## Maintenance
+`__ENV_PREFIX___INJECTION_LANG=jp` を設定すると日本語説明（`_index.jp.yaml` + `injection.jp.md.j2`）でインジェクトする。
 
-- Add a reference: create the file, add it to `_index.yaml` (+ `_index.jp.yaml`), bind it to a pattern in `_injection_rules.yaml`
-- Keep `1 reference = 1 use case` so a single edited file does not pull in unrelated docs
-- After editing `_injection_rules.yaml`, verify no reference is orphaned (listed in index but bound to no pattern, or vice versa)
+## メンテナンス
+
+- リファレンスを追加: ファイルを作成し、`_index.yaml`（と `_index.jp.yaml`）に追加し、`_injection_rules.yaml` のパターンにバインドする
+- `1 リファレンス = 1 ユースケース` を維持し、単一の編集ファイルが無関係なドキュメントを引き込まないようにする
+- `_injection_rules.yaml` を編集したら、孤立したリファレンス（インデックスに載っているがパターンにバインドされていない、またはその逆）がないか確認する

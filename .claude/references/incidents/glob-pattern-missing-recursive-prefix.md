@@ -1,41 +1,42 @@
-# Glob pattern missing `**/` prefix for monorepo (PR140)
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# glob パターンに `**/` 前置忘れ（PR140）
 
-## What happened
+## 何が起きたか
 
-While adding a rule for "Python files under `tools/` should pull in `python-script.md`", AI wrote:
+「`tools/` 配下の Python ファイルには `python-script.md` を引き込む」という rule を追加するとき、AI は以下のように書いた:
 
 ```yaml
 - pattern: "tools/**/*.py"
   required: [scripts/python-script.md]
 ```
 
-User caught it: **「**/tools/ ってしなくていいの？」**.
+ユーザーが即指摘：**「**/tools/ ってしなくていいの？」**
 
-The pattern `tools/**/*.py` only matches `tools/foo.py` / `tools/sub/bar.py` at the project root. It does **not** match `packages/foo/tools/bar.py` or `apps/web/tools/script.py` in a monorepo structure. AI had not considered that py-kit might be applied to a multi-package repo.
+`tools/**/*.py` パターンは **プロジェクトルート直下の** `tools/foo.py` / `tools/sub/bar.py` にしかマッチしない。モノレポ構造の `packages/foo/tools/bar.py` や `apps/web/tools/script.py` には **マッチしない**。AI は py-kit がマルチパッケージリポジトリに適用される可能性を考慮していなかった。
 
-Fixed to `**/tools/**/*.py` which matches at any depth.
+`**/tools/**/*.py` に修正（任意の深さでマッチ）。
 
-## Root cause
+## 根本原因
 
-When writing path patterns for "by-convention folder names" (tools, scripts, tests, gui, etc.), AI defaulted to root-relative thinking. But:
+「慣習的なフォルダ名（tools, scripts, tests, gui 等）」のパスパターンを書く時、AI はルート相対思考でデフォルトを書いてしまった。しかし:
 
-- Many real projects are monorepos with multiple package roots
-- Even non-monorepos may nest helper folders deep (e.g. `backend/services/api/tools/`)
-- The original PR (PR140) targeted py-kit which has no opinion about repo layout — it must work in both flat and nested layouts
+- 多くの実プロジェクトはモノレポ（複数パッケージルート）
+- 非モノレポでもヘルパーフォルダはネストする（例: `backend/services/api/tools/`）
+- PR140 は py-kit 向け — py-kit はリポレイアウトに意見を持たない。フラット / ネスト両対応が必須
 
-## Lesson
+## 教訓
 
-**For "by-name folder" path patterns in glob rules, prefix with `**/` by default.**
+**glob rules の「フォルダ名」パターンは、デフォルトで `**/` を前置する。**
 
-| Pattern | Matches | Use when |
+| パターン | マッチ範囲 | 使うべき場合 |
 |---|---|---|
-| `tools/**/*.py` | Only root-level `tools/` | You specifically want to exclude nested `tools/` |
-| `**/tools/**/*.py` | `tools/` at any depth | Default — works in flat and monorepo layouts |
-| `src/tools/**/*.py` | Only `src/tools/` | You want a single specific location |
+| `tools/**/*.py` | ルート直下の `tools/` のみ | ネストされた `tools/` を意図的に除外したい時 |
+| `**/tools/**/*.py` | 任意の深さの `tools/` | デフォルト — フラットでもモノレポでも動く |
+| `src/tools/**/*.py` | `src/tools/` のみ | 特定の場所だけを対象にしたい時 |
 
-Apply to: `tools/`, `scripts/`, `tests/`, `gui/`, `benchmarks/`, `perf/`, and any conventional folder name. Reserve root-anchored patterns for files that *must* be at the project root (e.g. `.env`, `pyproject.toml`, `tsconfig.json`).
+適用対象: `tools/`, `scripts/`, `tests/`, `gui/`, `benchmarks/`, `perf/` など慣習的フォルダ名すべて。ルート固定パターンは **プロジェクトルートに必ずある** ファイル（`.env`, `pyproject.toml`, `tsconfig.json` 等）にだけ使う。
 
-## Related
+## 関連
 
-- PR140 fix: commit f1fd5ac
-- See also `plugins/py-kit/references/injection_rules.yaml` — most folder-name patterns use `**/`
+- PR140 修正: コミット f1fd5ac
+- 参考: `plugins/py-kit/references/injection_rules.yaml` — ほとんどのフォルダ名パターンが `**/` を使用

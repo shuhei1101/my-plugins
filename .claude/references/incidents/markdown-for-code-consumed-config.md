@@ -1,37 +1,38 @@
-# Markdown chosen for code-consumed config (PR140)
+<!-- This file is a Japanese mirror. When updating the English original, update this file too. -->
+# コードが parse する config を Markdown 化した（PR140）
 
-## What happened
+## 何が起きたか
 
-While reorganizing `plugins/py-kit/references/index.yaml`, AI converted it to `index.md` / `index.jp.md` (Markdown tables) on the grounds that "users browse it directly, Markdown is more readable". The Python hook `inject_references.py` had to be rewritten with a regex Markdown-table parser to extract `path → description`.
+`plugins/py-kit/references/index.yaml` を再編成する過程で、AI は「ユーザーが直接眺める、Markdown のほうが見やすい」という理由で `index.md` / `index.jp.md`（Markdown テーブル）に変換した。フック `inject_references.py` は path → description を抽出するために Markdown テーブルの正規表現パーサーで書き直しになった。
 
-User caught it on review: **"これ YAML にしとかなあかんでしょ / なんでマークダウンにした / Python の処理でさ注入できんやん"**. AI had to revert: `index.yaml` (English description) + `index.jp.yaml` (Japanese mirror) was restored, the regex parser was deleted, and `yaml.safe_load` direct iteration was restored.
+ユーザーがレビューで即指摘：**「これ YAML にしとかなあかんでしょ / なんでマークダウンにした / Python の処理でさ注入できんやん」**。AI は撤回せざるを得なくなり、`index.yaml`（英語 description）+ `index.jp.yaml`（日本語ミラー）を復元、正規表現パーサーを削除、`yaml.safe_load` 直接 iterate に戻した。
 
-## Root cause
+## 根本原因
 
-The conversion conflated two needs:
+この変換は 2 つのニーズを混同していた:
 
-- **Human browsing** of a reference list — Markdown tables look nicer
-- **Machine parsing** by a hook to look up descriptions — YAML is reliable, Markdown is fragile
+- **人間の閲覧** 用に reference 一覧を見せる → Markdown テーブルは見栄えが良い
+- **マシンの parse** で description を引く → YAML は信頼性◎、Markdown は壊れやすい
 
-When a single file serves both, **YAML wins** because:
+ファイルが両方を兼ねるとき、**YAML が勝つ** 理由:
 
-- `yaml.safe_load` is one line; regex over Markdown table rows is brittle (separator rows, escaped pipes, multi-line cells)
-- YAML supports comments naturally; Markdown can't
-- Humans reading YAML still get the path / description pairing clearly
+- `yaml.safe_load` は 1 行。Markdown テーブルの正規表現は脆い（セパレータ行、エスケープされたパイプ、複数行セル）
+- YAML はコメントが書ける、Markdown は書けない
+- YAML を読む人間も path / description のペアリングは明確に読める
 
-Markdown is for **prose with formatting**, not for **structured data with hover-over reads**.
+Markdown は **書式付きの散文** のためのフォーマット。**構造化データを目視確認** するためのものではない。
 
-## Lesson
+## 教訓
 
-**If a file is parsed by code, keep it in a structured format (YAML / JSON / TOML).** Convert to Markdown only when the *sole* consumer is a human reader.
+**ファイルがコードで parse されるなら、構造化フォーマット（YAML / JSON / TOML）で保持する。** Markdown 化は consumer が **人間だけ** の場合に限る。
 
-When the desire to "use Markdown for human readability" arises but the file is also code-consumed:
+「人間の可読性のために Markdown にしたい」という欲求が出たが、そのファイルがコードでも消費される場合:
 
-1. Keep the data in YAML
-2. If a Markdown view is genuinely needed, generate it from the YAML (don't hand-maintain Markdown as the source of truth)
-3. The original YAML stays as the single source of truth
+1. データは YAML のまま保持
+2. どうしても Markdown ビューが欲しいなら、YAML から生成する（Markdown を SoT として手書き保持しない）
+3. オリジナルの YAML が単一の真実源として残る
 
-## Related
+## 関連
 
-- Reverted in PR140 (commit bfe3f74)
-- Same principle applies to `injection_rules.yaml`, `prompts/index.yaml`, any catalog the hook reads
+- PR140 で撤回（コミット bfe3f74）
+- 同じ原則が適用される: `injection_rules.yaml`, `prompts/index.yaml`, フックが読むあらゆるカタログ
