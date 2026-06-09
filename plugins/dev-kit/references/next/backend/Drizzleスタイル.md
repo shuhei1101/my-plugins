@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/app/api/v1/**/db.ts"
+  - "**/app/api/v1/**/query.ts"
+---
 <!-- This file is a Japanese mirror of Drizzleスタイル.md. When updating the English original, update this file too. -->
 # Drizzle — SQL Builder vs Relational Queries
 

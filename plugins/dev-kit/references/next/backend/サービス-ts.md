@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/app/api/v1/**/service.ts"
+  - pattern: "**/app/(authenticated)/**/actions.ts"
+    required: false
+---
 <!-- This file is a Japanese mirror of サービス-ts.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/service.ts
 

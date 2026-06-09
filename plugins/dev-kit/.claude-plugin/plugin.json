@@ -1,5 +1,5 @@
 {
   "name": "dev-kit",
-  "description": "Development conventions toolkit — Python (py-script/py-project), HTML/CSS/JS (FLOCSS, debug-fab, logging, mock), Next.js 16 App Router (implement/plan), and Markdown. Reference auto-injection via PreToolUse(Edit/Write/MultiEdit/Read) gated by DEV_KIT_PYTHON / DEV_KIT_HTML / DEV_KIT_NEXT / DEV_KIT_MARKDOWN env opt-in; PostToolUse tsc check gated by DEV_KIT_NEXT_TS_CHECK. v4.11.0: add `dev-kit:plugin-config` skill. v4.11.1: remove redundant branch-check step from plugin-migrate.",
-  "version": "4.15.0"
+  "description": "Development conventions toolkit — Python (py-script/py-project), HTML/CSS/JS (FLOCSS, debug-fab, logging, mock), Next.js 16 App Router (implement/plan), and Markdown. Reference auto-injection via PreToolUse(Edit/Write/MultiEdit/Read); each reference file declares its own trigger patterns via YAML frontmatter (paths/required/tools). PostToolUse tsc check gated by DEV_KIT_NEXT_TS_CHECK. v4.16.0: replace _injection_rules.yaml/_index.yaml with per-file frontmatter; remove lang env-toggles.",
+  "version": "4.16.0"
 }

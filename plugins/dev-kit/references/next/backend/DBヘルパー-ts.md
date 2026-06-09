@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/app/api/v1/**/dbHelper.ts"
+---
 <!-- This file is a Japanese mirror of DBヘルパー-ts.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/dbHelper.ts
 

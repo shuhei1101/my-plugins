@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/drizzle/schema.ts"
+  - "**/drizzle/db.ts"
+---
 <!-- This file is a Japanese mirror of DB-ID設計.md. When updating the English original, update this file too. -->
 
 # drizzle/schema.ts — 主キー（ID）設計

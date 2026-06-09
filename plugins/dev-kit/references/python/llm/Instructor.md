@@ -1,3 +1,8 @@
+---
+paths:
+  - pattern: "**/integrations/llm/**/*.py"
+    required: false
+---
 <!-- This file is a Japanese mirror of Instructor.md. When updating the English original, update this file too. -->
 # llm/instructor — Instructor + Pydantic で構造化出力
 

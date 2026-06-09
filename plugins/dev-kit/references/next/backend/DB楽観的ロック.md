@@ -1,3 +1,11 @@
+---
+paths:
+  - pattern: "**/app/api/v1/**/service.ts"
+    required: false
+  - "**/app/api/v1/**/db.ts"
+  - pattern: "**/app/(authenticated)/**/*EditScreen.tsx"
+    required: false
+---
 <!-- This file is a Japanese mirror of DB楽観的ロック.md. When updating the English original, update this file too. -->
 # Drizzle — 楽観的ロック
 

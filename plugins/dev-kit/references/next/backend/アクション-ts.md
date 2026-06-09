@@ -1,3 +1,11 @@
+---
+paths:
+  - "**/app/(shared)/actions/auth.ts"
+  - "**/app/(authenticated)/**/actions.ts"
+  - "**/app/(shared)/actions/**/*.ts"
+  - "**/app/(authenticated)/**/*EditScreen.tsx"
+  - "**/app/(shared)/actions/types.ts"
+---
 <!-- This file is a Japanese mirror of アクション-ts.md. When updating the English original, update this file too. -->
 # app/(authenticated)/{feature}/actions.ts
 

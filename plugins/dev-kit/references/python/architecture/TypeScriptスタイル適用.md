@@ -1,3 +1,11 @@
+---
+paths:
+  - "**/features/**/types.py"
+  - "**/features/**/service.py"
+  - "**/features/**/query.py"
+  - "**/features/**/client.py"
+  - "**/integrations/**/client.py"
+---
 <!-- This file is a Japanese mirror of TypeScriptスタイル適用.md. When updating the English original, update this file too. -->
 # TypeScript 風 Python — 関数ファースト設計
 

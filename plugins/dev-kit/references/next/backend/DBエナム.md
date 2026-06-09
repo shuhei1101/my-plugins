@@ -1,3 +1,8 @@
+---
+paths:
+  - pattern: "**/drizzle/schema.ts"
+    required: false
+---
 <!-- This file is a Japanese mirror of DBエナム.md. When updating the English original, update this file too. -->
 # drizzle/schema.ts — Enum
 

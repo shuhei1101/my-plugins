@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/pyproject.toml"
+---
 <!-- This file is a Japanese mirror of pyproject設定.md. When updating the English original, update this file too. -->
 # packaging/pyproject — pyproject.toml 完全サンプル
 

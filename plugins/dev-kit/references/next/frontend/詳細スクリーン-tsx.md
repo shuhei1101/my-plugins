@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/app/(authenticated)/**/*ViewScreen.tsx"
+---
 <!-- This file is a Japanese mirror of 詳細スクリーン-tsx.md. When updating the English original, update this file too. -->
 # {Feature}ViewScreen.tsx — View Client Component
 

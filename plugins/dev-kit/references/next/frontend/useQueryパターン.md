@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/app/(authenticated)/**/*ListScreen.tsx"
+  - pattern: "**/hooks/use*.ts"
+    required: false
+---
 <!-- This file is a Japanese mirror of useQueryパターン.md. When updating the English original, update this file too. -->
 # hooks/use{Feature}.ts / use{Feature}s.ts — useQuery パターン
 

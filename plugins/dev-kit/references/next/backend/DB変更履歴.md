@@ -1,3 +1,8 @@
+---
+paths:
+  - pattern: "**/app/api/v1/**/service.ts"
+    required: false
+---
 <!-- This file is a Japanese mirror of DB変更履歴.md. When updating the English original, update this file too. -->
 # Drizzle — ハードデリート + 履歴テーブル
 

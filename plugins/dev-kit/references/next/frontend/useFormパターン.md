@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/hooks/use*Form.ts"
+---
 <!-- This file is a Japanese mirror of useFormパターン.md. When updating the English original, update this file too. -->
 # hooks/use{Feature}Form.ts — フォーム state hook
 

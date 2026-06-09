@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/app/(authenticated)/**/form.ts"
+  - "**/hooks/use*Form.ts"
+---
 <!-- This file is a Japanese mirror of フォーム-ts.md. When updating the English original, update this file too. -->
 # app/(authenticated)/{feature}/form.ts — Zod schema + Type
 

@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/{tool,tools,script,scripts}/**/*.py"
+---
 <!-- This file is a Japanese mirror of Pythonスクリプト.md. When updating the English original, update this file too. -->
 # python-script — 単一ファイルスクリプト
 

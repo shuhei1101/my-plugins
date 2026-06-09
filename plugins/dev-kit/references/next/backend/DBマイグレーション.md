@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/drizzle/migrations/**/*.sql"
+  - "**/drizzle.config.ts"
+---
 <!-- This file is a Japanese mirror of DBマイグレーション.md. When updating the English original, update this file too. -->
 # Drizzle — マイグレーション運用
 

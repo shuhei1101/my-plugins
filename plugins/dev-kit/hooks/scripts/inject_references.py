@@ -1,34 +1,28 @@
 """dev-kit references auto-injection hook (Python / HTML / Next.js / Markdown を一本化)。
 
 PreToolUse(Edit | Write | MultiEdit | Read) で発火し、対象ファイルパスを
-references/_injection_rules.yaml の rules と照合する。
+references/ 配下の各 .md ファイルのフロントマターと照合する。
 
-- `lang: python|html|next|markdown` を持つルールは、対応する env var
-  (`DEV_KIT_PYTHON` / `DEV_KIT_HTML` / `DEV_KIT_NEXT` / `DEV_KIT_MARKDOWN`) が
-  truthy (`true`/`1`/`yes`/`on`) のときのみ有効化される。**デフォルトは全 lang 無効**で、
-  プロジェクトで使う言語だけを `settings.json` の env に明示的に opt-in する。
-- `lang` を持たないルールは **常時有効**（env opt-in 不要）。全 lang が OFF でも発火する。
+各リファレンスファイルのフロントマターに以下のキーを記述する:
 
-マッチしたパターンの required reference は **本文全量** を、optional reference は
+  ---
+  paths:
+    - "**/*.py"                         # required: true (デフォルト)
+    - pattern: "**/*.py"
+      required: false                   # optional 扱い
+  tools: [Edit, Write, Read]            # 省略時は全ツール対象
+  ---
+
+マッチした required リファレンスは **本文全量** を、optional リファレンスは
 **パス + description のみ** を Jinja2 で整形して `decision: block` の reason に注入する。
 
-注入の重複は「パターン単位 + リファレンスファイル単位」の二層 TTL トークンで制御する:
+注入の重複はリファレンスファイル単位の TTL トークンで制御する:
     ~/.claude/tokens/dev-kit/{session_id}.yaml
-は `patterns` と `references` の 2 つの名前空間を持つ YAML マップで、各エントリに
-expires_at (epoch 秒) を持つ。expires_at は注入時に now + TTL で決まる。
-
-  - patterns: そのパターンのリファレンス集合を再注入するかの判定。`now < expires_at` の間は
-    そのパターンを丸ごとスキップする。
-  - references: required リファレンスの **本文** を再注入するかの判定。あるリファレンスが
-    別パターン経由で既にキャッシュ済み (`now < expires_at`) なら、required 欄には
-    **パス + description のみ** を出し本文は流さない。未キャッシュなら本文全量を注入し
-    キャッシュする。これにより複数パターンで共有される同一リファレンス本文の二重注入を防ぐ。
+は `references` 名前空間を持つ YAML マップで、各エントリに expires_at (epoch 秒) を持つ。
+required リファレンスが注入済み (now < expires_at) なら本文を省略しパスのみ出す。
 
 TTL はデフォルト 3600 秒、環境変数 DEV_KIT_INJECTION_TTL (秒) で上書きできる。
 DEV_KIT_INJECTION_DISABLE=true/1/yes/on で注入機構全体を停止できる (緊急停止用)。
-
-description は references/_index.yaml (英語) から path -> description として取得する。
-環境変数 DEV_KIT_INJECTION_LANG=jp で _index.jp.yaml + injection.jp.md.j2 に切替。
 
 依存:
     - PyYAML  (uv/pip install pyyaml)
@@ -47,24 +41,14 @@ PLUGIN_NAME = "dev-kit"
 ENV_PREFIX = "DEV_KIT"
 LOG_TAG = "dev-kit-references-injection"
 DEFAULT_TTL = 3600
-
-# lang -> env 変数名 のマップ。truthy のときのみ該当 lang のルールを有効化する。
-LANG_ENV_VARS = {
-    "python": "DEV_KIT_PYTHON",
-    "html": "DEV_KIT_HTML",
-    "next": "DEV_KIT_NEXT",
-    "markdown": "DEV_KIT_MARKDOWN",
-}
 TRUTHY = {"true", "1", "yes", "on"}
 
 
 def _eprint(msg: str) -> None:
-    """stderr に出力（フックの transcript に残り、Claude へは渡さない）。"""
     sys.stderr.write(f"[{LOG_TAG}] {msg}\n")
 
 
 def _plugin_root() -> pathlib.Path:
-    """plugin ルートを返す。"""
     env = os.environ.get("CLAUDE_PLUGIN_ROOT")
     if env:
         return pathlib.Path(env)
@@ -79,16 +63,6 @@ def _ttl() -> int:
         except ValueError:
             _eprint(f"{ENV_PREFIX}_INJECTION_TTL={raw!r} が不正な値です。デフォルト {DEFAULT_TTL} を使用します。")
     return DEFAULT_TTL
-
-
-def _enabled_langs() -> set[str]:
-    """env で有効化されている lang の集合を返す。"""
-    out: set[str] = set()
-    for lang, env_name in LANG_ENV_VARS.items():
-        val = os.environ.get(env_name, "").lower()
-        if val in TRUTHY:
-            out.add(lang)
-    return out
 
 
 # --------------------------------------------------------------------------- #
@@ -110,8 +84,12 @@ def _glob_to_regex(pattern: str) -> re.Pattern[str]:
         elif c == "?":
             parts.append("[^/]")
             i += 1
-        elif c in "[]":
-            parts.append(c)
+        elif c == "[":
+            # Next.js の [id] 等のルートパラメータをリテラルとして扱う
+            parts.append(r"\[")
+            i += 1
+        elif c == "]":
+            parts.append(r"\]")
             i += 1
         elif c == "{":
             parts.append("(?:")
@@ -134,9 +112,84 @@ def _match_any(pattern: str, candidates: list[str]) -> bool:
 
 
 # --------------------------------------------------------------------------- #
-# トークン (patterns / references の 2 名前空間を持つセッション単位 YAML マップ)
+# フロントマター解析
 # --------------------------------------------------------------------------- #
-TOKEN_NAMESPACES = ("patterns", "references")
+def _extract_description(content: str) -> str:
+    """フロントマター後の本文から最初の # 見出し行をdescriptionとして取得する。"""
+    for line in content.splitlines():
+        if line.startswith("# "):
+            return line[2:].strip()
+    return ""
+
+
+def _parse_frontmatter(content: str) -> dict | None:
+    """ファイル先頭の --- フロントマターを parse して dict で返す。なければ None。"""
+    if not content.startswith("---\n"):
+        return None
+    end = content.find("\n---\n", 4)
+    if end == -1:
+        return None
+    fm_text = content[4:end]
+    try:
+        import yaml
+        fm = yaml.safe_load(fm_text)
+        return fm if isinstance(fm, dict) else None
+    except Exception:
+        return None
+
+
+def _load_ref_entries(refs_dir: pathlib.Path, yaml) -> list[dict]:
+    """references/ 配下の全 .md のフロントマターを読み込む。
+
+    各エントリ:
+      {
+        "rel_path": str,
+        "patterns": [(pattern_str, required_bool), ...],
+        "tools": list[str] | None,   # None = 全ツール対象
+      }
+    """
+    result = []
+    for md_file in sorted(refs_dir.rglob("*.md")):
+        # .ref-inject/ は廃止フォルダのためスキップ
+        if ".ref-inject" in str(md_file):
+            continue
+        try:
+            content = md_file.read_text(encoding="utf-8")
+        except Exception as e:
+            _eprint(f"ファイル読み込みエラー ({md_file}): {e}")
+            continue
+        fm = _parse_frontmatter(content)
+        if fm is None:
+            continue
+        raw_paths = fm.get("paths")
+        if not raw_paths:
+            continue
+        patterns: list[tuple[str, bool]] = []
+        for p in raw_paths:
+            if isinstance(p, str):
+                patterns.append((p, True))
+            elif isinstance(p, dict):
+                pat = p.get("pattern", "")
+                req = p.get("required", True)
+                if pat:
+                    patterns.append((pat, bool(req)))
+        if not patterns:
+            continue
+        raw_tools = fm.get("tools")
+        tools = [str(t) for t in raw_tools] if raw_tools else None
+        rel_path = str(md_file.relative_to(refs_dir)).replace("\\", "/")
+        result.append({
+            "rel_path": rel_path,
+            "patterns": patterns,
+            "tools": tools,
+        })
+    return result
+
+
+# --------------------------------------------------------------------------- #
+# TTL トークン（references 名前空間）
+# --------------------------------------------------------------------------- #
+TOKEN_NAMESPACE = "references"
 
 
 def _load_token(path: pathlib.Path, yaml) -> dict[str, dict]:
@@ -167,8 +220,9 @@ def _cleanup_expired(token_dir: pathlib.Path, now: float, yaml) -> None:
             f.unlink(missing_ok=True)
             continue
         changed = False
+        # references 名前空間以外の古いキーを削除
         for key in list(data):
-            if key not in TOKEN_NAMESPACES:
+            if key != TOKEN_NAMESPACE:
                 del data[key]
                 changed = True
                 continue
@@ -196,7 +250,7 @@ def _cleanup_expired(token_dir: pathlib.Path, now: float, yaml) -> None:
 # main
 # --------------------------------------------------------------------------- #
 def main() -> int:
-    # ====== 強制停止スイッチ ======
+    # 強制停止スイッチ
     if os.environ.get(f"{ENV_PREFIX}_INJECTION_DISABLE", "").lower() in TRUTHY:
         return 0
 
@@ -222,48 +276,10 @@ def main() -> int:
     if not file_path:
         return 0
 
-    enabled = _enabled_langs()
-
     plugin_root = _plugin_root()
     refs_dir = plugin_root / "references"
-    ref_injects_dir = refs_dir / ".ref-inject"
 
-    # 言語選択: 環境変数 DEV_KIT_INJECTION_LANG=jp で日本語版
-    lang = os.environ.get(f"{ENV_PREFIX}_INJECTION_LANG", "en").lower()
-    index_filename = "_index.jp.yaml" if lang == "jp" else "_index.yaml"
-    template_filename = "injection.jp.md.j2" if lang == "jp" else "injection.md.j2"
-
-    rules_yaml = ref_injects_dir / "_injection_rules.yaml"
-    index_yaml = ref_injects_dir / index_filename
-    if not rules_yaml.exists():
-        _eprint(f"_injection_rules.yaml が見つかりません: {rules_yaml}")
-        return 0
-    if not index_yaml.exists():
-        _eprint(f"{index_filename} が見つかりません: {index_yaml}")
-        return 0
-
-    try:
-        rules_doc = yaml.safe_load(rules_yaml.read_text(encoding="utf-8")) or {}
-    except Exception as e:
-        _eprint(f"_injection_rules.yaml パースエラー: {e}")
-        return 0
-    rules = rules_doc.get("rules") or []
-
-    # 全 lang が OFF でも lang なしルール（常時有効）があれば続行する
-    if not enabled and not any(not r.get("lang") for r in rules):
-        return 0  # lang なしルールもない → ノーオペ
-
-    descriptions: dict[str, str] = {}
-    try:
-        idx_doc = yaml.safe_load(index_yaml.read_text(encoding="utf-8")) or {}
-        for ref in idx_doc.get("references") or []:
-            p = ref.get("path")
-            d = ref.get("description") or ""
-            if p:
-                descriptions[p] = d
-    except Exception as e:
-        _eprint(f"{index_filename} パースエラー: {e}")
-
+    # 対象ファイルパスを正規化（絶対パスと相対パスの両形式で照合）
     norm: list[str] = [file_path.replace("\\", "/")]
     project_dir = os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
     try:
@@ -271,6 +287,9 @@ def main() -> int:
         norm.append(str(rel).replace("\\", "/"))
     except (ValueError, OSError):
         pass
+
+    # 全リファレンスファイルのフロントマターを走査
+    ref_entries = _load_ref_entries(refs_dir, yaml)
 
     def _dedup(xs: list[str]) -> list[str]:
         seen: set[str] = set()
@@ -289,33 +308,38 @@ def main() -> int:
 
     token_path = token_dir / f"{session_id}.yaml"
     token_data = _load_token(token_path, yaml)
-    pattern_map = token_data.get("patterns")
-    if not isinstance(pattern_map, dict):
-        pattern_map = {}
-    ref_map = token_data.get("references")
+    ref_map = token_data.get(TOKEN_NAMESPACE)
     if not isinstance(ref_map, dict):
         ref_map = {}
 
-    def _is_fresh(entry_map: dict, key: str) -> bool:
-        entry = entry_map.get(key) or {}
+    def _is_fresh(key: str) -> bool:
+        entry = ref_map.get(key) or {}
         exp = entry.get("expires_at") if isinstance(entry, dict) else None
         return isinstance(exp, (int, float)) and now < exp
 
     required: list[str] = []
     optional: list[str] = []
-    patterns_to_mark: list[str] = []
-    for rule in rules:
-        rule_lang = rule.get("lang", "")
-        if rule_lang and rule_lang not in enabled:
-            continue  # この lang は env で OFF
-        pat = rule.get("pattern", "")
-        if not pat or not _match_any(pat, norm):
+
+    for entry in ref_entries:
+        # tools フィルタ: このリファレンスが現在のツール呼び出しで発火すべきか判定
+        if entry["tools"] is not None and tool_name not in entry["tools"]:
             continue
-        if _is_fresh(pattern_map, pat):
-            continue
-        patterns_to_mark.append(pat)
-        required.extend(rule.get("required") or [])
-        optional.extend(rule.get("optional") or [])
+
+        rel_path = entry["rel_path"]
+        # このリファレンスのパターンのいずれかが対象ファイルにマッチするか確認
+        matched_required = False
+        matched_optional = False
+        for pattern, is_required in entry["patterns"]:
+            if _match_any(pattern, norm):
+                if is_required:
+                    matched_required = True
+                else:
+                    matched_optional = True
+
+        if matched_required:
+            required.append(rel_path)
+        elif matched_optional:
+            optional.append(rel_path)
 
     required = _dedup(required)
     optional = _dedup([p for p in optional if p not in set(required)])
@@ -323,16 +347,14 @@ def main() -> int:
     if not required and not optional:
         return 0
 
-    refs_to_mark: list[str] = [p for p in required if not _is_fresh(ref_map, p)]
+    # TTL 未満の required は本文をスキップ（キャッシュ済み扱い）
+    refs_to_mark: list[str] = [p for p in required if not _is_fresh(p)]
 
     token_dir.mkdir(parents=True, exist_ok=True)
     expiry = int(now) + ttl
-    for pat in patterns_to_mark:
-        pattern_map[pat] = {"expires_at": expiry}
     for p in refs_to_mark:
         ref_map[p] = {"expires_at": expiry}
-    token_data["patterns"] = pattern_map
-    token_data["references"] = ref_map
+    token_data[TOKEN_NAMESPACE] = ref_map
     _save_token(token_path, token_data, yaml)
 
     fresh_refs = set(refs_to_mark)
@@ -341,39 +363,58 @@ def main() -> int:
         p = refs_dir / rel_path
         cached = rel_path not in fresh_refs
         body = ""
+        description = ""
         if not cached:
             try:
-                body = p.read_text(encoding="utf-8")
+                content = p.read_text(encoding="utf-8")
+                description = _extract_description(content)
+                # フロントマターを除いた本文を body に
+                if content.startswith("---\n"):
+                    end = content.find("\n---\n", 4)
+                    if end != -1:
+                        body = content[end + 5:]
+                    else:
+                        body = content
+                else:
+                    body = content
             except Exception as e:
                 _eprint(f"リファレンス読み込みエラー ({rel_path}): {e}")
         return {
             "path": rel_path,
             "abs_path": p.as_posix(),
-            "description": descriptions.get(rel_path, ""),
+            "description": description,
             "body": body,
             "cached": cached,
         }
 
     def _optional_ref(rel_path: str) -> dict[str, str]:
+        p = refs_dir / rel_path
+        description = ""
+        try:
+            content = p.read_text(encoding="utf-8")
+            description = _extract_description(content)
+        except Exception:
+            pass
         return {
             "path": rel_path,
-            "abs_path": (refs_dir / rel_path).as_posix(),
-            "description": descriptions.get(rel_path, ""),
+            "abs_path": p.as_posix(),
+            "description": description,
         }
 
     required_data = [_required_ref(p) for p in required]
     optional_data = [_optional_ref(p) for p in optional]
 
     tmpl_dir = plugin_root / "hooks" / "templates"
-    env = Environment(
+    jinja_env = Environment(
         loader=FileSystemLoader(str(tmpl_dir)),
         undefined=StrictUndefined,
         autoescape=False,
         trim_blocks=True,
         lstrip_blocks=True,
     )
+    template_filename = "injection.md.j2"
     try:
-        tmpl = env.get_template(template_filename)
+        tmpl = jinja_env.get_template(template_filename)
         reason = tmpl.render(
             file_path=file_path,
             required=required_data,

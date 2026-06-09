@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/app/**/error.tsx"
+  - "**/app/global-error.tsx"
+---
 <!-- This file is a Japanese mirror of エラー-tsx.md. When updating the English original, update this file too. -->
 # error.tsx / global-error.tsx — ルートエラーバウンダリ
 

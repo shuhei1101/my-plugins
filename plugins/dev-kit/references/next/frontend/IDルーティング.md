@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/app/(authenticated)/*/[id]/page.tsx"
+  - "**/app/(authenticated)/*/[id]/edit/page.tsx"
+---
 <!-- This file is a Japanese mirror of IDルーティング.md. When updating the English original, update this file too. -->
 # [id]/ — レコード単位のルーティング
 

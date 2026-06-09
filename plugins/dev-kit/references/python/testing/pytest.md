@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/tests/**/test_*.py"
+  - "**/tests/conftest.py"
+  - pattern: "**/benchmarks/**/*.py"
+    required: false
+---
 <!-- This file is a Japanese mirror of pytest.md. When updating the English original, update this file too. -->
 # testing/pytest — pytest 規約
 

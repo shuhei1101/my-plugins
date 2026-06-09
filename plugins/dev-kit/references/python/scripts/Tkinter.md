@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/gui/**/*.py"
+  - "**/*_gui.py"
+  - "**/gui.py"
+---
 <!-- This file is a Japanese mirror of Tkinter.md. When updating the English original, update this file too. -->
 # tkinter — GUI スクリプト規約
 

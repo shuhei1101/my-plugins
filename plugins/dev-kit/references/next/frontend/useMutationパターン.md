@@ -1,3 +1,8 @@
+---
+paths:
+  - pattern: "**/hooks/use*.ts"
+    required: false
+---
 <!-- This file is a Japanese mirror of useMutationパターン.md. When updating the English original, update this file too. -->
 # hooks/use{Verb}{Feature}.ts — useMutation パターン
 

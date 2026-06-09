@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/app/manifest.ts"
+  - "**/app/sw.ts"
+  - "**/public/sw.js"
+---
 <!-- This file is a Japanese mirror of PWA.md. When updating the English original, update this file too. -->
 # Next.js App Router — PWA / Offline
 

@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/*.html"
+  - "**/*.css"
+  - "**/*.js"
+---
 <!-- This file is a Japanese mirror of CSS-JSリンク.md. When updating the English original, update this file too. -->
 
 # CSS クラス ↔ JS DOM アクセスの紐付け

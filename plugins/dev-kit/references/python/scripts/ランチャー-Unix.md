@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/*.sh"
+---
 <!-- This file is a Japanese mirror of ランチャー-Unix.md. When updating the English original, update this file too. -->
 # launchers-unix — sh ランチャー
 

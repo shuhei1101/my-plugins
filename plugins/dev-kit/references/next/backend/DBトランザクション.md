@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/app/api/v1/**/service.ts"
+---
 <!-- This file is a Japanese mirror of DBトランザクション.md. When updating the English original, update this file too. -->
 # Drizzle — トランザクション規約
 

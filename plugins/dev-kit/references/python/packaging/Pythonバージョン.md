@@ -1,3 +1,8 @@
+---
+paths:
+  - pattern: "**/pyproject.toml"
+    required: false
+---
 <!-- This file is a Japanese mirror of Pythonバージョン.md. When updating the English original, update this file too. -->
 # packaging/python-versions — Python バージョン方針
 

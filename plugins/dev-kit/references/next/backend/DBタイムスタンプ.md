@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/drizzle/schema.ts"
+---
 <!-- This file is a Japanese mirror of DBタイムスタンプ.md. When updating the English original, update this file too. -->
 # drizzle/schema.ts — 共通カラム（timestamps / auditFields）
 

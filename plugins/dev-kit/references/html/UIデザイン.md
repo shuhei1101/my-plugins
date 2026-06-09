@@ -1,3 +1,12 @@
+---
+paths:
+  - pattern: "**/*.html"
+    required: false
+  - pattern: "**/*.css"
+    required: false
+  - pattern: "**/*.js"
+    required: false
+---
 <!-- This file is a Japanese mirror of UIデザイン.md. When updating the English original, update this file too. -->
 # UI Design — dev-kit (HTML) 共通リファレンス(日本語ミラー)
 

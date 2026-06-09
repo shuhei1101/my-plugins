@@ -1,3 +1,16 @@
+---
+paths:
+  - "**/app/**/sitemap.ts"
+  - "**/app/**/robots.ts"
+  - "**/app/manifest.ts"
+  - "**/app/**/opengraph-image.tsx"
+  - "**/app/**/twitter-image.tsx"
+  - "**/app/**/icon.tsx"
+  - pattern: "**/app/(authenticated)/*/page.tsx"
+    required: false
+  - pattern: "**/app/(authenticated)/*/[id]/page.tsx"
+    required: false
+---
 <!-- This file is a Japanese mirror of SEO.md. When updating the English original, update this file too. -->
 # Next.js App Router — SEO / Metadata
 

@@ -1,3 +1,12 @@
+---
+paths:
+  - "**/app/(authenticated)/*/page.tsx"
+  - "**/app/(authenticated)/**/*ListScreen.tsx"
+  - "**/app/(authenticated)/*/[id]/page.tsx"
+  - "**/app/(authenticated)/**/*ViewScreen.tsx"
+  - pattern: "**/app/(authenticated)/**/*.tsx"
+    required: false
+---
 <!-- This file is a Japanese mirror of サーバーvsクライアント.md. When updating the English original, update this file too. -->
 # Next.js App Router — Server vs Client Component
 

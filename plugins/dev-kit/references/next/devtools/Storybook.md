@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/*.stories.tsx"
+  - "**/*.stories.ts"
+  - "**/.storybook/main.ts"
+  - "**/.storybook/preview.ts"
+---
 <!-- This file is a Japanese mirror of Storybook.md. When updating the English original, update this file too. -->
 # Next.js App Router — Storybook
 

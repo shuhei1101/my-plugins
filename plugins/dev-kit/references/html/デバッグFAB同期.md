@@ -1,3 +1,7 @@
+---
+paths:
+  - "plugins/dev-kit/skills/html-debug-fab/templates/**"
+---
 <!-- This file is a Japanese mirror of デバッグFAB同期.md. When updating the English original, update this file too. -->
 # debug-fab テンプレート同期ルール
 

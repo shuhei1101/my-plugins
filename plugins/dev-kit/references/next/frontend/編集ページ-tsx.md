@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/app/(authenticated)/*/new/page.tsx"
+  - "**/app/(authenticated)/*/[id]/edit/page.tsx"
+---
 <!-- This file is a Japanese mirror of 編集ページ-tsx.md. When updating the English original, update this file too. -->
 
 # app/(authenticated)/{feature}/[id]/edit/page.tsx — Edit Server Component

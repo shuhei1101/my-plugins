@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/app/api/v1/**/query.ts"
+---
 <!-- This file is a Japanese mirror of クエリ-ts.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/query.ts
 

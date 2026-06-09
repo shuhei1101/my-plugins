@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/app/(authenticated)/*/[id]/page.tsx"
+---
 <!-- This file is a Japanese mirror of 詳細ページ-tsx.md. When updating the English original, update this file too. -->
 
 # app/(authenticated)/{feature}/[id]/page.tsx — View Server Component

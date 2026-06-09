@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/app/api/v1/**/route.ts"
+  - "**/app/api/v1/cron/**/route.ts"
+  - "**/app/api/v1/auth/**/route.ts"
+---
 <!-- This file is a Japanese mirror of ルート-ts.md. When updating the English original, update this file too. -->
 # app/api/v1/{resource}/route.ts
 
