@@ -20,11 +20,13 @@ Python / HTML-CSS-JS / Next.js 16 App Router / Markdown を 1 プラグインに
 
 ## フック
 
-フックスクリプトは `hooks/scripts/` 配下に集約し、共通ヘルパは plugin 内 `_common.py` に置く。
+リファレンス自動注入は `hooks/ref-inject/`（`main.py` + `references/` + 実行時生成の `cache.yaml`）に集約。
+その他のフックは `hooks/scripts/` 配下、共通ヘルパは `_common.py`。
 
 | フック | トリガー | 用途 |
 |---|---|---|
-| `scripts/inject_references.py` | PreToolUse(Edit/Write/Read) | リファレンス自動注入（各リファレンスファイルのフロントマターで制御） |
+| `ref-inject/main.py` | PreToolUse(Edit/Write/Read) | リファレンス自動注入（各リファレンスファイルのフロントマターで制御） |
+| `scripts/references_edit_guard.py` | PreToolUse(Edit/Write) | references 編集時にフロントマター記述漏れをリマインド |
 | `scripts/ts_check.py` | PostToolUse(Edit/Write) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
 | `scripts/_common.py` | — （ライブラリ） | stdin 読み・env truthy 判定・once-per-session トークン・block 理由出力 |
 
@@ -44,31 +46,44 @@ truthy = `true`/`1`/`yes`/`on`（大文字小文字無視）、falsy = それ以
 ## リファレンス構造
 
 ```
-references/
-├── python/      # Python 規約（47ファイル: architecture/, core/, fastapi/, llm/ など）
-├── html/        # HTML/CSS/JS 原則（principles.md, ui-design.md）
-├── next/        # Next.js 規約（90ファイル: backend/, frontend/, testing/ など）
-└── markdown/    # Markdown 規約（markdown-table.md, マークダウン編集.md）
+hooks/ref-inject/
+├── main.py          # フロントマター判定 + 注入スクリプト
+├── cache.yaml       # フロントマターのメタキャッシュ（実行時自動生成・gitignore）
+└── references/
+    ├── claude/      # Claude Code 全般（フック・ルール記述など）
+    ├── dev/         # 開発全般（コーディング規約・YAML SoT・タイムスタンプ等）
+    ├── html/        # HTML/CSS/JS 規約
+    ├── markdown/    # Markdown 規約
+    ├── next/        # Next.js 規約
+    ├── python/      # Python 規約
+    └── skill/       # スキル設計
 ```
 
-各リファレンスファイルの先頭に YAML フロントマターでトリガーパターンを記述する:
+各リファレンスファイルの先頭に YAML フロントマターでトリガーを記述する:
 
 ```yaml
 ---
 paths:
-  - "**/*.py"                      # required: true（デフォルト）
-  - pattern: "**/*.py"
-    required: false                # optional 扱い
-tools: [Edit, Write, Read]         # 省略時は全ツール
+  - **/*.py            # クォート有無どちらでも可
+  - "**/foo.py"
+required: false        # 省略時 true。false なら paths にマッチしても注入しない
+tools: [e, w]          # 省略時 [Edit, Write]。e/w/r・edit/write/read・大小文字可
 ---
 ```
 
-`inject_references.py` は references/ 配下のファイルを走査してフロントマターを読み、対象ファイルパスにマッチするリファレンスを自動注入する。`~/.claude/tokens/dev-kit/{session_id}.yaml` の TTL トークンで二重注入を防ぐ。
+- **paths**: トリガーする glob パターンの配列。ダブルクォート省略可。
+- **required**: 注入するか否かの単一の真偽値（既定 true）。`false` ならマッチしても注入しない（optional 概念は廃止）。
+- **tools**: 発火するツール。省略時 `[Edit, Write]`（Read では発火しない）。`e`/`w`/`r`、`edit`/`write`/`read`、大文字小文字を吸収。
+
+`main.py` は references/ を走査してフロントマターを `cache.yaml` にキャッシュし、以後はそれを読む。
+**references を更新したら `cache.yaml` を削除すれば再生成される。**
+注入は `~/.claude/tokens/dev-kit/{session_id}.yaml` の TTL トークンで二重注入を防ぐ。
 
 ## Changelog
 
 | Version | Date | Summary |
 |---|---|---|
+| 4.17.0 | 2026-06-10 | リファレンス注入を `hooks/ref-inject/`（`main.py` + `references/` + `cache.yaml`）に集約。`~/.claude/rules`（claude/dev/html/markdown/next/python/skill）を取り込み。required を単一真偽値化（optional 概念を廃止）。paths のクォート省略・tools エイリアス（e/w/r）対応。Jinja2 テンプレートを廃止。存在しない `MultiEdit` 参照を全削除 |
 | 4.16.0 | 2026-06-10 | `_injection_rules.yaml` / `_index.yaml` を廃止し、各リファレンスファイルの YAML フロントマター（paths / required / tools）で注入ルールを管理する設計に変更。`lang` env トグルを廃止。`[id]` glob バグを修正 |
 | 4.15.0 | 2026-06-02 | `dev-kit:plugin-config` スキルを復活 — 言語 opt-in / 機能トグルのインタラクティブな env 設定 |
 | 4.14.0 | 2026-06-02 | 対話式 `dev-kit:plugin-config` スキルを削除。env トグルのテーブルを統一 3 列形式（変数名 / 説明 / 値、デフォルトは太字）に再フォーマット |
