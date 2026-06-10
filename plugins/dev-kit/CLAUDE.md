@@ -24,8 +24,8 @@ Python / HTML-CSS-JS / Next.js 16 App Router / Markdown を 1 プラグインに
 
 | フック | トリガー | 用途 |
 |---|---|---|
-| `scripts/inject_references.py` | PreToolUse(Edit/Write/MultiEdit/Read) | リファレンス自動注入（各リファレンスファイルのフロントマターで制御） |
-| `scripts/ts_check.py` | PostToolUse(Edit/Write/MultiEdit) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
+| `scripts/inject_references.py` | PreToolUse(Edit/Write/Read) | リファレンス自動注入（各リファレンスファイルのフロントマターで制御） |
+| `scripts/ts_check.py` | PostToolUse(Edit/Write) | `*.ts` / `*.tsx` に対する `tsc --noEmit --incremental` |
 | `scripts/_common.py` | — （ライブラリ） | stdin 読み・env truthy 判定・once-per-session トークン・block 理由出力 |
 
 ## env トグル

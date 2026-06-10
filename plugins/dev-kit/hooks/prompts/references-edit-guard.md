@@ -14,7 +14,7 @@
      tools: [Edit, Write, Read]
      ---
      ```
-   - `tools` を省略すると Edit / Write / MultiEdit / Read すべてで発火する
+   - `tools` を省略すると Edit / Write で発火する（Read では発火しない）
 
 2. **ファイル名・パスを変更しようとしている場合**
    - 変更後のパスを他のリファレンスファイルが `optional_for` や別途参照していないか確認する

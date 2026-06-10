@@ -31,6 +31,9 @@ build/
 # Claude Code
 .claude/settings.local.json
 
+# dev-kit ref-inject フロントマターキャッシュ（実行時自動生成）
+plugins/dev-kit/hooks/ref-inject/cache.yaml
+
 # Skill session memories
 **/memories/*.md
 
