@@ -186,6 +186,10 @@ def _parse_frontmatter(content: str) -> dict | None:
                 if rest.startswith("["):
                     paths.extend(_parse_inline_list(rest))
                     current_key = None
+                elif rest:
+                    # paths: "**/foo" のように 1 値をインラインで書いた形
+                    paths.append(_unquote(rest))
+                    current_key = None
             elif key == "required":
                 required = _unquote(rest).lower() not in FALSY
                 current_key = None
