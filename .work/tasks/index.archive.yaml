@@ -1441,3 +1441,11 @@ branches:
   summary: .jp.mdの日本語内容を対応する.mdに上書きコピーし、.jp.mdを削除
   task: 260609_jp-mirror廃止
   completed: true
+- branch: refactor/ref-frontmatter
+  created: '2026-06-10'
+  title: リファレンスファイルのフロントマター形式移行
+  type: refactor
+  summary: _index.yaml / _injection_rules.yaml を廃止し、各リファレンスファイルの先頭にフロントマター（paths /
+    required / tools）を持つ設計に変更。inject_references.py を各ファイルのフロントマターを走査してマッチングする方式に書き換える。
+  task: 260610_リファレンスファイルのフロントマター形式移行
+  completed: true

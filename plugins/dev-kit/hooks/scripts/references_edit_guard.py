@@ -1,9 +1,9 @@
 # dev-kit references-edit-guard hook —
 # 編集／作成されたファイルが当プラグインの references/ 配下の .md なら、
-# 対応する _index.yaml / _index.jp.yaml / _injection_rules.yaml への登録漏れを
+# ファイル先頭フロントマター（paths / required / tools）の記述漏れを
 # リマインドするプロンプトを Claude に注入する。
 #
-# Trigger : PreToolUse(Edit | Write | MultiEdit) — 編集を実行する前に注入することで、
+# Trigger : PreToolUse(Edit | Write) — 編集を実行する前に注入することで、
 #           実際の編集前にユーザー／Claude が登録漏れを意識できるようにする。
 # Scope   : このプラグインの references/ 配下のみ。他プラグインの編集には反応しない。
 # Dedup   : セッションごとに 1 回だけ注入（_common.already_dispatched_this_session）。
@@ -24,7 +24,7 @@ def main() -> None:
 
     # フックスクリプトは {plugin_root}/hooks/scripts/references_edit_guard.py に置かれる。
     plugin_root = pathlib.Path(__file__).resolve().parents[2]
-    references_root = plugin_root / "references"
+    references_root = plugin_root / "hooks" / "rules"
 
     # 編集対象がこのプラグインの references/ 配下でなければ無視。
     try:

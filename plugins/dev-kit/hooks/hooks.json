@@ -8,7 +8,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject_references.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/rules/inject_rules.py"
             ]
           },
           {
@@ -28,27 +28,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject_references.py"
-            ]
-          },
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/references_edit_guard.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/references-edit-guard.md"
-            ]
-          }
-        ]
-      },
-      {
-        "matcher": "MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject_references.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/rules/inject_rules.py"
             ]
           },
           {
@@ -68,7 +48,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject_references.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/rules/inject_rules.py"
             ]
           }
         ]
@@ -89,18 +69,6 @@
       },
       {
         "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/ts_check.py"
-            ]
-          }
-        ]
-      },
-      {
-        "matcher": "MultiEdit",
         "hooks": [
           {
             "type": "command",

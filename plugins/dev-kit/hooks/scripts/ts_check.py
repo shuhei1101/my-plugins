@@ -1,6 +1,6 @@
 """dev-kit TypeScript type-check hook.
 
-PostToolUse(Edit | Write | MultiEdit) で発火し、編集対象が *.ts / *.tsx の場合に
+PostToolUse(Edit | Write) で発火し、編集対象が *.ts / *.tsx の場合に
 tsconfig.json を上方向に探索して `tsc --noEmit --incremental` を実行する。
 
 エラーがあれば stdout に出力（Claude がコンテキストとして受け取る）。
@@ -49,7 +49,7 @@ def main() -> int:
         _eprint(f"stdin parse error: {e}")
         return 0
 
-    if data.get("tool_name") not in ("Edit", "Write", "MultiEdit"):
+    if data.get("tool_name") not in ("Edit", "Write"):
         return 0
 
     file_path: str = data.get("tool_input", {}).get("file_path", "") or ""
