@@ -8,7 +8,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/ref-inject/main.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/rules/inject_rules.py"
             ]
           },
           {
@@ -28,7 +28,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/ref-inject/main.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/rules/inject_rules.py"
             ]
           },
           {
@@ -48,7 +48,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/ref-inject/main.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/rules/inject_rules.py"
             ]
           }
         ]

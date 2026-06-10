@@ -1,7 +1,7 @@
-"""dev-kit references auto-injection hook。
+"""dev-kit rules auto-injection hook。
 
-PreToolUse(Edit | Write | Read) で発火し、対象ファイルパスを references/ 配下の
-各 .md のフロントマターと照合する。マッチした注入対象リファレンスの本文を
+PreToolUse(Edit | Write | Read) で発火し、対象ファイルパスを同階層（hooks/rules/）配下の
+各 .md のフロントマターと照合する。マッチした注入対象ルールの本文を
 Claude Code フックの JSON 形式 (hookSpecificOutput) で注入する。
 
 フロントマター仕様:
@@ -10,15 +10,15 @@ Claude Code フックの JSON 形式 (hookSpecificOutput) で注入する。
     - **/*.py            # クォート有無どちらでも可
     - "**/foo.py"
   required: false        # 省略時 true。false なら paths にマッチしても注入しない
-  tools: [e, w]          # 省略時 [Edit, Write]。e/w/r・edit/write/read・大小文字可
   ---
 
 - paths: トリガーするファイルパターンの配列（glob）。クォート省略可。
 - required: 注入するか否かの単一の真偽値（既定 true）。false ならマッチしても注入しない。
-- tools: 発火するツール。省略時は [Edit, Write]（Read では発火しない）。
+
+Edit / Write / Read すべてで発火する。
 
 メタデータは同階層の cache.yaml にキャッシュする。cache.yaml があればそれを読み、
-無ければ references/ を走査して生成する。references を更新したら cache.yaml を
+無ければ hooks/rules/ 配下の .md を走査して生成する。ルールを更新したら cache.yaml を
 削除すれば次回再生成される。
 
 出力:
@@ -27,7 +27,7 @@ Claude Code フックの JSON 形式 (hookSpecificOutput) で注入する。
   いずれも exit 0 で返す（exit 2 だと stdout の JSON が無視されるため使わない）。
 
 注入の重複はセッション単位の TTL トークン (~/.claude/tokens/dev-kit/{session_id}.yaml)
-で防ぐ。一度注入したリファレンスは TTL 内は本文を省略しパスのみ出す。
+で防ぐ。一度注入したルールは TTL 内は本文を省略しパスのみ出す。
 TTL は既定 3600 秒、DEV_KIT_INJECTION_TTL(秒) で変更可。
 DEV_KIT_INJECTION_DISABLE=true/1/yes/on で注入機構全体を停止する。
 
@@ -44,20 +44,13 @@ import time
 
 PLUGIN_NAME = "dev-kit"
 ENV_PREFIX = "DEV_KIT"
-LOG_TAG = "dev-kit-references-injection"
+LOG_TAG = "dev-kit-rules-injection"
 DEFAULT_TTL = 3600
 TRUTHY = {"true", "1", "yes", "on"}
 FALSY = {"false", "0", "no", "off"}
 
-# tools 省略時に発火するツール（Read を含めないので読み取りでは注入しない）
-DEFAULT_TOOLS = ["Edit", "Write"]
-
-# tools 指定の正規化テーブル（e/w/r・edit/write/read・大文字小文字を吸収）
-TOOL_ALIASES = {
-    "e": "Edit", "edit": "Edit",
-    "w": "Write", "write": "Write",
-    "r": "Read", "read": "Read",
-}
+# 発火対象ツール（Edit / Write / Read すべて）
+TARGET_TOOLS = ("Edit", "Write", "Read")
 
 
 def _eprint(msg: str) -> None:
@@ -68,8 +61,8 @@ def _self_dir() -> pathlib.Path:
     return pathlib.Path(__file__).resolve().parent
 
 
-def _refs_dir() -> pathlib.Path:
-    return _self_dir() / "references"
+def _rules_dir() -> pathlib.Path:
+    return _self_dir()
 
 
 def _cache_path() -> pathlib.Path:
@@ -145,7 +138,7 @@ def _parse_inline_list(s: str) -> list[str]:
 
 
 def _parse_frontmatter(content: str) -> dict | None:
-    """先頭の --- フロントマターを行ベースで解析し paths/required/tools を返す。
+    """先頭の --- フロントマターを行ベースで解析し paths/required を返す。
 
     YAML safe_load は `- **/*.py` のようなクォートなし glob をエイリアス参照と
     解釈して壊すため、フロントマターは行単位で独自に解析する。
@@ -163,7 +156,6 @@ def _parse_frontmatter(content: str) -> dict | None:
 
     paths: list[str] = []
     required = True
-    tools: list[str] | None = None
     current_key: str | None = None
 
     for line in lines[1:end]:
@@ -171,11 +163,8 @@ def _parse_frontmatter(content: str) -> dict | None:
         if not stripped or stripped.startswith("#"):
             continue
         if stripped.startswith("- "):
-            val = _unquote(stripped[2:])
             if current_key == "paths":
-                paths.append(val)
-            elif current_key == "tools":
-                tools = (tools or []) + [val]
+                paths.append(_unquote(stripped[2:]))
             continue
         if ":" in stripped:
             key, _, rest = stripped.partition(":")
@@ -193,36 +182,18 @@ def _parse_frontmatter(content: str) -> dict | None:
             elif key == "required":
                 required = _unquote(rest).lower() not in FALSY
                 current_key = None
-            elif key == "tools":
-                if rest.startswith("["):
-                    tools = _parse_inline_list(rest)
-                    current_key = None
-                elif rest:
-                    tools = [rest]
-                    current_key = None
             else:
                 current_key = None
 
     if not paths:
         return None
-    return {"paths": paths, "required": required, "tools": tools}
+    return {"paths": paths, "required": required}
 
 
-def _normalize_tools(raw: list[str] | None) -> list[str] | None:
-    if not raw:
-        return None
-    out: list[str] = []
-    for t in raw:
-        norm = TOOL_ALIASES.get(str(t).strip().lower())
-        if norm and norm not in out:
-            out.append(norm)
-    return out or None
-
-
-def _scan_references() -> list[dict]:
-    refs_dir = _refs_dir()
+def _scan_rules() -> list[dict]:
+    rules_dir = _rules_dir()
     entries: list[dict] = []
-    for md in sorted(refs_dir.rglob("*.md")):
+    for md in sorted(rules_dir.rglob("*.md")):
         try:
             content = md.read_text(encoding="utf-8")
         except Exception as e:
@@ -232,10 +203,9 @@ def _scan_references() -> list[dict]:
         if not fm:
             continue
         entries.append({
-            "rel_path": str(md.relative_to(refs_dir)).replace("\\", "/"),
+            "rel_path": str(md.relative_to(rules_dir)).replace("\\", "/"),
             "paths": fm["paths"],
             "required": fm["required"],
-            "tools": _normalize_tools(fm["tools"]),
         })
     return entries
 
@@ -249,7 +219,7 @@ def _load_entries(yaml) -> list[dict]:
                 return data
         except Exception as e:
             _eprint(f"cache 読み込みエラー: {e}")
-    entries = _scan_references()
+    entries = _scan_rules()
     try:
         cache_path.write_text(
             yaml.safe_dump(entries, allow_unicode=True, sort_keys=False),
@@ -351,7 +321,7 @@ def main() -> int:
         return 0
 
     tool_name = data.get("tool_name", "")
-    if tool_name not in ("Edit", "Write", "Read"):
+    if tool_name not in TARGET_TOOLS:
         return 0
 
     file_path: str = (data.get("tool_input") or {}).get("file_path", "") or ""
@@ -372,9 +342,6 @@ def main() -> int:
     seen: set[str] = set()
     for entry in entries:
         if not entry.get("required", True):
-            continue
-        tools = entry.get("tools") or DEFAULT_TOOLS
-        if tool_name not in tools:
             continue
         if any(_match_any(p, norm) for p in entry.get("paths", [])):
             rp = entry["rel_path"]
@@ -411,17 +378,17 @@ def main() -> int:
     token_data["references"] = ref_map
     _save_token(token_path, token_data, yaml)
 
-    refs_dir = _refs_dir()
+    rules_dir = _rules_dir()
     fresh_set = set(to_inject)
     blocks: list[str] = []
     for rp in matched:
-        abs_path = (refs_dir / rp).as_posix()
+        abs_path = (rules_dir / rp).as_posix()
         if rp in fresh_set:
             content = ""
             try:
-                content = (refs_dir / rp).read_text(encoding="utf-8")
+                content = (rules_dir / rp).read_text(encoding="utf-8")
             except Exception as e:
-                _eprint(f"リファレンス読み込みエラー ({rp}): {e}")
+                _eprint(f"ルール読み込みエラー ({rp}): {e}")
             body, desc = _split_body(content)
             header = f"## {rp}" + (f" — {desc}" if desc else "")
             blocks.append(f"{header}\n\n{body}")
@@ -431,8 +398,8 @@ def main() -> int:
             )
 
     reason = (
-        "# dev-kit リファレンス — 自動注入\n\n"
-        f"`{file_path}` を編集するにあたり、以下の規約に従ってください。"
+        "# dev-kit ルール — 自動注入\n\n"
+        f"`{file_path}` を扱うにあたり、以下の規約に従ってください。"
         "未注入のものは本文を展開し、注入済みのものはパスのみ記載します。\n\n"
         "---\n\n"
         + "\n\n---\n\n".join(blocks)

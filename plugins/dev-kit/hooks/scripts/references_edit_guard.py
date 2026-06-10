@@ -24,7 +24,7 @@ def main() -> None:
 
     # フックスクリプトは {plugin_root}/hooks/scripts/references_edit_guard.py に置かれる。
     plugin_root = pathlib.Path(__file__).resolve().parents[2]
-    references_root = plugin_root / "hooks" / "ref-inject" / "references"
+    references_root = plugin_root / "hooks" / "rules"
 
     # 編集対象がこのプラグインの references/ 配下でなければ無視。
     try:
