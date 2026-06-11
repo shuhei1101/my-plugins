@@ -7,15 +7,44 @@
 
 from __future__ import annotations
 
+import json
+import os
 import pathlib
 import sys
 
-from _common import (
-    emit_block_reason,
-    env_truthy,
-    exit_if_stop_loop,
-    read_hook_input,
-)
+_FALSY = {"false", "0", "no", "off"}
+_TRUTHY = {"true", "1", "yes", "on"}
+
+
+def read_hook_input() -> dict:
+    """フック入力 JSON を標準入力から読み込む。"""
+    return json.loads(sys.stdin.read())
+
+
+def env_truthy(name: str, default: bool = True) -> bool:
+    """環境変数が truthy かどうかを返す。"""
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    val = raw.strip().lower()
+    if default:
+        return val not in _FALSY
+    return val in _TRUTHY
+
+
+def exit_if_stop_loop(input_data: dict) -> None:
+    """Stop フックが再発火（stop_hook_active）のとき、静かに終了する。"""
+    if input_data.get("stop_hook_active"):
+        sys.exit(0)
+
+
+def emit_block_reason(prompt_path: pathlib.Path) -> None:
+    """`{decision: block, reason: <プロンプト本文>}` JSON を標準出力に書き出す。"""
+    if not prompt_path.exists():
+        return
+    body = prompt_path.read_text("utf-8")
+    payload = {"decision": "block", "reason": body}
+    sys.stdout.buffer.write(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
 
 
 def main() -> None:
