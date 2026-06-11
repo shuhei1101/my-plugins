@@ -1,12 +1,8 @@
-<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
-# SKILL.jp.md — work:setup スキル（日本語ミラー）
-
 ---
-
-**スキル名**: setup
-**トリガー**: ユーザーが `/work:setup` を実行したとき（自動起動なし）
-
+name: work:setup
+description: ユーザーが `/work:setup` を実行したとき（自動起動なし）
 ---
+# SKILL.jp.md — work:setup スキル
 
 ## 概要
 

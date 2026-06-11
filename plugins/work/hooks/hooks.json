@@ -2,49 +2,14 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Edit",
+        "matcher": "Edit|Write|Read",
         "hooks": [
           {
+            "_description": "ルールを注入",
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject_references.py"
-            ]
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject_references.py"
-            ]
-          }
-        ]
-      },
-      {
-        "matcher": "MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject_references.py"
-            ]
-          }
-        ]
-      },
-      {
-        "matcher": "Read",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject_references.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/rules/inject_rules.py"
             ]
           }
         ]
@@ -53,19 +18,21 @@
         "matcher": "Bash",
         "hooks": [
           {
+            "_description": "マスターコミットガード",
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/master-commit-guard.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/master-commit-guard.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/master-commit-guard.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/master-commit-guard.md"
             ]
           },
           {
+            "_description": "push / merge を検出して確認を挟む",
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/git-guard.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/git-guard.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/git-guard.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/git-guard.md"
             ]
           }
         ]
@@ -75,11 +42,12 @@
       {
         "hooks": [
           {
+            "_description": "workスキル実行指示",
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/user-prompt-submit.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/user-prompt-submit.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit.md"
             ]
           }
         ]
@@ -89,11 +57,12 @@
       {
         "hooks": [
           {
+            "_description": "レスポンス終了時に TODO / QA リマインダーを出力",
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/stop.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/stop.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/stop.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/stop.md"
             ]
           }
         ]
@@ -103,12 +72,19 @@
       {
         "hooks": [
           {
+            "_description": "圧縮前にセッション知識をアーティファクト化するスキルを実行",
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pre-compact.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/prompts/pre-compact.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact.md"
             ]
+          },
+          {
+            "_description": "圧縮前にセッショントークンを削除",
+            "type": "command",
+            "command": "python",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/rules/clear_session_token.py"]
           }
         ]
       }

@@ -1,16 +1,10 @@
-<!-- This file is a Japanese mirror of SKILL.md. When updating the English original, update this file too. -->
-
 ---
 name: work:branch-index-cleanup
-description: |
-  git ブランチと index.yaml / index.archive.yaml を照合し、未登録ブランチを整理する。
-  各ブランチを A（削除）/ B（archive 追記 → 削除）/ C（index 追記）に分類して実行。
-  「ブランチを整理して」「未登録ブランチを片付けて」「branch-index-cleanup して」
-  または `/work:branch-index-cleanup` で起動。
+description: 
 disable-model-invocation: true
 ---
 
-# work:branch-index-cleanup — 未登録ブランチの整理
+# branch-index-cleanup — 未登録ブランチの整理
 
 ローカルブランチと `index.yaml` / `index.archive.yaml` を比較し、
 未登録ブランチをインタラクティブに分類・整理する。
@@ -20,12 +14,6 @@ disable-model-invocation: true
 ## タスク
 
 ### ステップ 1: 未登録ブランチの収集
-
-#### 条件
-
-- 常に — 最初に実行
-
-#### 処理
 
 1. ローカルブランチをすべて取得:
 
@@ -55,21 +43,13 @@ print('BRANCHES:', ' '.join(sorted(branches)))
    - どちらにも当てはまらないブランチは未登録として扱う
 4. **未登録ブランチ** のリストを作成
 
-→ ステップ 2 へ
+未登録ブランチが 0 件なら以下を報告して終了:
 
-#### 出力
-
-- 未登録ブランチ名のリスト
+> すべてのブランチが index.yaml / index.archive.yaml に登録済みです。整理は不要です。
 
 ---
 
 ### ステップ 2: 各ブランチを分類
-
-#### 条件
-
-- Step 1 完了 — 少なくとも1つの未登録ブランチが見つかった
-
-#### 処理
 
 1. 未登録ブランチを表形式で表示:
 
@@ -93,23 +73,13 @@ print('BRANCHES:', ' '.join(sorted(branches)))
 
 4. B/C ブランチの推定メタデータを修正したい場合は、進める前に受け入れる
 
-→ ステップ 3 へ
-
-#### 出力
-
-- 分類マップ: `{ branch: { class: A|B|C, id, title, type, summary? } }`
+結果は分類マップ: `{ branch: { class: A|B|C, id, title, type, summary? } }`
 
 ---
 
 ### ステップ 3: 分類ごとに処置を実行
 
-#### 条件
-
-- Step 2 完了 — ユーザーがすべての分類を確認済み
-
-#### 処理
-
-B → C → A の順で実行:
+B → C → A の順で実行する。
 
 **Class B — archive 追記 + 削除**:
 
@@ -146,7 +116,7 @@ git branch -d {branch}   # 未マージの場合は -D を使う
 **Class C — index.yaml に追記**:
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
+python {PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
   --branch "{branch}" \
   --title "{title}" \
   --type {type} \
@@ -160,22 +130,13 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
 git branch -d {branch}   # 未マージの場合は -D を使う
 ```
 
-→ ステップ 4 へ
-
-#### 注記
-
+注記:
 - `git branch -d` が失敗した場合（完全にマージされていない）、ユーザーに警告して強制削除（`-D`）を確認
-- `${CLAUDE_PLUGIN_ROOT}` はプラグインルートパスを指すシェル変数
+- `{PLUGIN_ROOT}` はワークスペースプラグインルートパスを指す
 
 ---
 
 ### ステップ 4: 結果を報告
-
-#### 条件
-
-- Step 3 完了
-
-#### 処理
 
 サマリーテーブルを出力:
 
@@ -190,19 +151,3 @@ git branch -d {branch}   # 未マージの場合は -D を使う
 ```bash
 git branch --format='%(refname:short)' | grep -v master | grep -v main
 ```
-
-→ 完了
-
----
-
-### ステップ 5: 何もすることなし（すべてのブランチが登録済み）
-
-#### 条件
-
-- Step 1 で未登録ブランチが 0 件
-
-#### 処理
-
-以下を報告:
-
-> すべてのブランチが index.yaml / index.archive.yaml に登録済みです。整理は不要です。

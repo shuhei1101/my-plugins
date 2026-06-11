@@ -67,7 +67,7 @@ def main() -> None:
     if not prompt_path.exists():
         return
 
-    response = {"decision": "block", "reason": prompt_path.read_text("utf-8")}
+    response = {"decision": "block", "additionalContext": prompt_path.read_text("utf-8")}
     sys.stdout.buffer.write(json.dumps(response, ensure_ascii=False).encode("utf-8"))
 
 

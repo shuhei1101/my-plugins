@@ -109,7 +109,7 @@ def main() -> None:
 
     reason = base + "\n\n---\n\ngit status:\n\n```\n" + status_out + "\n```"
     sys.stdout.buffer.write(
-        json.dumps({"decision": "block", "reason": reason}, ensure_ascii=False).encode("utf-8")
+        json.dumps({"decision": "block", "additionalContext": reason}, ensure_ascii=False).encode("utf-8")
     )
 
 

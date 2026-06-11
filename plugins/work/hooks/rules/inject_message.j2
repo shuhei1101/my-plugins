@@ -1,0 +1,32 @@
+{% if overflow %}
+<!--
+以下のルールファイルが現在のファイルに適用されます。
+注入するルールの合計が 10,000 文字を超えるため、ファイルパスのみを提供します。
+以下の各ファイルを Read ツールで直接読み込んで内容を確認してください。
+-->
+{% for block in blocks %}
+- `{{ block.abs_path }}`{% if block.patterns %} (適用パターン: {{ block.patterns | join(", ") }}){% endif %}
+
+{% endfor %}
+{% else %}
+<!--
+ファイル編集ルールが注入されました。
+今後、`適用パターン`に一致するファイルを編集するときは該当ルールに従ってください。
+ -->
+
+{% for block in blocks %}
+
+---
+
+> 適用ルール: {{ block.abs_path }}
+{% if block.patterns %}
+> 適用パターン: {{ block.patterns | join(", ") }}
+
+{% endif %}
+
+{{ block.body | trim }}
+
+{% endfor %}
+
+---
+{% endif %}
