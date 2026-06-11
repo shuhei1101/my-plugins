@@ -11,10 +11,13 @@ import json
 import re
 import subprocess
 import pathlib
+import time
 
 REPO_ROOT = pathlib.Path(__file__).parent.parent.parent
 
-d = json.loads(sys.stdin.read())
+# TTY から直接実行された場合は空の入力として扱う（stdin 待ちで固まるのを防ぐ）
+raw = "" if sys.stdin.isatty() else sys.stdin.read()
+d = json.loads(raw) if raw.strip() else {}
 
 if d.get("tool_name") != "Bash":
     sys.exit(0)
@@ -41,7 +44,12 @@ if "CONFLICT" in str(d.get("tool_response") or ""):
     sys.exit(0)
 
 # 1. master を push
-subprocess.run(["git", "push", "origin", "master"], cwd=REPO_ROOT, check=False)
+# WSL から HTTPS push は認証できないため Windows 側の git.exe を使う
+_git_cmd = ["git.exe", "push", "origin", "master"] if sys.platform != "win32" else ["git", "push", "origin", "master"]
+subprocess.run(_git_cmd, cwd=REPO_ROOT, check=False)
+
+# push が GitHub に反映されるまで待機
+time.sleep(2)
 
 # 2. marketplace upgrade
 subprocess.run(

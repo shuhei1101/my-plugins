@@ -12,7 +12,9 @@ import pathlib
 
 REPO_ROOT = pathlib.Path(__file__).parent.parent.parent
 
-d = json.loads(sys.stdin.read())
+# TTY から直接実行された場合は空の入力として扱う（stdin 待ちで固まるのを防ぐ）
+raw = "" if sys.stdin.isatty() else sys.stdin.read()
+d = json.loads(raw) if raw.strip() else {}
 
 if d.get("tool_name") != "Bash":
     sys.exit(0)
@@ -112,6 +114,11 @@ for p in not_bumped:
 lines.append("```\n")
 
 ctx = "".join(lines)
-sys.stdout.buffer.write(
-    json.dumps({"decision": "block", "additionalContext": ctx}, ensure_ascii=False).encode("utf-8")
-)
+output = {
+    "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "deny",
+        "additionalContext": ctx,
+    },
+}
+sys.stdout.buffer.write(json.dumps(output, ensure_ascii=False).encode("utf-8"))
