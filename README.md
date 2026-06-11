@@ -11,6 +11,25 @@ python tools/marketplace.py upgrade
 python tools/sync_plugin_cache.py
 ```
 
+- pushコマンド
+```bash
+python .claude/hooks/post-merge-upgrade.py
+```
+
+- バージョンアップ（minor）
+```bash
+python tools/bump-version.py minor
+```
+
+- バージョンアップ（major）
+```bash
+python tools/bump-version.py major
+```
+
+
+
+
+
 
 
 Claude Code プラグインのマーケットプレイスです。
