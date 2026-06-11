@@ -46,8 +46,8 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/work_start_reminder.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/work_start_reminder.md"
             ]
           }
         ]
@@ -57,12 +57,12 @@
       {
         "hooks": [
           {
-            "_description": "レスポンス終了時に TODO / QA リマインダーを出力",
+            "_description": "レスポンス終了時に QA・マージ提案リマインダーを出力",
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/stop.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/stop.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/work_complete_check.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/work_complete_check.md"
             ]
           }
         ]
