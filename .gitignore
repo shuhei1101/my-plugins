@@ -30,6 +30,7 @@ build/
 
 # Claude Code
 .claude/settings.local.json
+.claude/worktrees/
 
 # dev-kit ref-inject フロントマターキャッシュ（実行時自動生成）
 plugins/dev-kit/hooks/rules/cache.json

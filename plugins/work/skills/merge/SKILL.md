@@ -23,34 +23,21 @@ description: ブランチマージするスキル。「マージして」って�
 
 - ワークツリーの `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md`を読む
   - タスクドキュメントの `## 関連イシュー` セクションを読み込み
-- テーブルの各行について、ワークツリー内 で以下クローズコマンドを実行
-```bash
-python "/home/shuhei2441/.claude/work-scripts/issue-tool.py" close \
-  --issues-dir {WORKTREE_PATH}/.work/issues \
-  --issue-id ISSUE-{NNN} \
-  --resolution {resolved|wontfix} \
-  --linked-branch {BRANCH_NAME}
-```
-
+- テーブルの各行について `issue_close` MCP ツール（work-tools サーバー）を実行:
+  - issues_dir: `{WORKTREE_PATH}/.work/issues` / issue_id: `ISSUE-{NNN}` / resolution: `resolved|wontfix` / linked_branch: `{BRANCH_NAME}`
 - 変更内容を現在の作業ブランチでコミットする
 
 ### ステップ 4: index.yaml で完了とマーク
 
-メインリポジトリ ディレクトリから実行してください（ワークツリーではなく） — `index.yaml` は gitignored で、メインリポのみに存在。コミットは不要。
-```bash
-python "/home/shuhei2441/.claude/work-scripts/index-tool.py" set-completed \
-  .work/tasks/index.yaml --branch {full-branch-name}
-```
+`index_set_completed` MCP ツール（work-tools サーバー）を実行する:
+- branch: `{full-branch-name}`
+- `index.yaml` は gitignored でメインリポのみに存在するため、コミットは不要
 
 ### ステップ 5: 完了したインデックスエントリをアーカイブ
 
-1. 以下のコマンドを実行して、完了したエントリを ワークツリーの `index.archive.yaml`
-   に移動します（メインリポの `index.yaml` から読み込み、ワークツリーの `index.archive.yaml` に書き込み）：
-```bash
-python "/home/shuhei2441/.claude/work-scripts/index-tool.py" archive \
-  .work/tasks/index.yaml \
-  {WORKTREE_PATH}/.work/tasks/index.archive.yaml
-```
+1. `index_archive` MCP ツール（work-tools サーバー）を実行する:
+   - archive_path: `{WORKTREE_PATH}/.work/tasks/index.archive.yaml`
+   - メインリポの `index.yaml` から完了エントリを読み込み、ワークツリーの `index.archive.yaml` に移動する
 2. エントリが移動された場合、ワークツリー内の `index.archive.yaml` をコミット
 
 ### ステップ 6: マージ先ブランチをこのブランチに取り込む（ワークツリー内）
@@ -70,10 +57,10 @@ git merge --no-ff -m "{type}: {title}" {BRANCH_NAME}
 ```
 
 ### ステップ 8: ワークツリーとブランチを削除
-```bash
-git worktree remove {WORKTREE_PATH}
-git branch -d {BRANCH_NAME}
-```
+
+`worktree_remove` MCP ツール（work-tools サーバー）を実行する:
+- branch: `{BRANCH_NAME}`
+- ワークツリーとブランチが削除され、Stop リマインダー用のセッショントークンも消える
 
 ### ステップ 9: 次ブランチ候補を予約する
 
