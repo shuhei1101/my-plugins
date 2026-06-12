@@ -5,6 +5,6 @@ description: pushする。スキルを実行すると自動でpush処理が実�
 
 ## pushを実行する
 ```!
-python .claude/hooks/post-merge-upgrade.py
+python tools/post_merge_upgrade.py
 ```
 - master へのマージ後に push + marketplace upgrade + reload-plugins を実行。
