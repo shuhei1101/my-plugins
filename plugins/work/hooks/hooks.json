@@ -92,6 +92,14 @@
               "${CLAUDE_PLUGIN_ROOT}/hooks/work_complete_check.py",
               "${CLAUDE_PLUGIN_ROOT}/hooks/work_complete_check.md"
             ]
+          },
+          {
+            "_description": "保留中の /reload-plugins を自セッションへ遅延送信",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/reload_deferred.py"
+            ]
           }
         ]
       }
