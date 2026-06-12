@@ -53,3 +53,4 @@ work プラグインのスキルが使うコマンド群を MCP ツールとし�
 - `plugins/work/mcp/server.py`: FastMCP サーバー本体
 - `plugins/work/scripts/worktree-tool.py`: ワークツリー + トークン管理 CLI
 - `plugins/work/hooks/work_complete_check.py`: トークンゲート付き Stop フック
+- `plugins/dev-kit/hooks/rules/claude/mcp.md`: MCP サーバー作成ルール（MCP 関連ファイル編集時に自動注入）
