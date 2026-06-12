@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "my-plugins-tools": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--with", "mcp",
+        "python",
+        "tools/mcp_server.py"
+      ]
+    }
+  }
+}
