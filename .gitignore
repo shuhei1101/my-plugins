@@ -32,6 +32,9 @@ build/
 .claude/settings.local.json
 .claude/worktrees/
 
+# work プラグインの進行中タスク索引（メインリポのみに存在・コミット対象外）
+.work/tasks/index.yaml
+
 # dev-kit ref-inject フロントマターキャッシュ（実行時自動生成）
 plugins/dev-kit/hooks/rules/cache.json
 

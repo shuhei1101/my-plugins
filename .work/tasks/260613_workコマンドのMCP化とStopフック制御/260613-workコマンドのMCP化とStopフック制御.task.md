@@ -36,6 +36,7 @@ work プラグインのスキルが Bash で叩いているコマンド群（wor
 | 13 | 済 | worktree 作成/削除時の VS Code ワークスペース連携（`VSCODE_WORKSPACE_FILE` 環境変数、未設定ならスキップ） |
 | 14 | 済 | master-commit-guard を完全ブロック化（`WORK_ALLOW_MASTER_COMMIT=1` で解除可） |
 | 15 | 済 | SessionStart フックで work プラグイン概要を注入（参照切れだった session_start.py を新規作成） |
+| 16 | 済 | `.gitignore` に `.work/tasks/index.yaml` を追加 |
 
 ## 変更内容
 
