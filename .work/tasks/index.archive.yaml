@@ -20,3 +20,10 @@ branches:
   summary: workプラグインのコマンド群をMCPツール化し、Stopフックをworktree作業中のみ発火するようセッショントークンで制御する
   task: 260613_workコマンドのMCP化とStopフック制御
   completed: true
+- branch: fix/reload-self-deferred
+  created: '2026-06-13'
+  title: reload-pluginsの自セッション遅延実行
+  type: fix
+  summary: reload送信時に自セッションはターン処理中で取りこぼすため、Stopフックで遅延実行する仕組みに変更
+  task: 260613_reload-pluginsの自セッション遅延実行
+  completed: true

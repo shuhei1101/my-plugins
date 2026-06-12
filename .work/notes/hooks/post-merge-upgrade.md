@@ -26,7 +26,21 @@ stdin あり（フック起動）の場合のみ以下を確認してスキッ�
 2. `python tools/marketplace.py upgrade`
 3. `python tools/reload_plugins.py`（tmux セッションに `/reload-plugins` 送信）
 
+## reload の自セッション遅延実行
+
+実行者自身のセッションはターン処理中で send-keys を取りこぼすため、即時送信しない:
+
+1. `reload_plugins.py` が自セッション（`$TMUX` + `tmux display-message`）を検出したら、送信せず保留トークン `~/.claude/tokens/work/reload-pending/<tmux_session>` を書く
+2. work プラグインの Stop フック `reload_deferred.py` がターン終了時にトークンを消費し、3 秒遅延のバックグラウンドプロセスで自セッションへ send-keys する
+3. トークンがなければ Stop フックは何もしない
+
+## 既知の課題
+
+- フックの merge 検出正規表現が `git merge` のみで、`git -C <path> merge` 形式にマッチしない（pre-merge-version-check も同様）
+
 ## 参考リンク
 
 - `.claude/hooks/post-merge-upgrade.py`: フック（シン・ラッパー）
 - `tools/post_merge_upgrade.py`: コア処理
+- `tools/reload_plugins.py`: reload 送信（自セッションは保留トークン化）
+- `plugins/work/hooks/reload_deferred.py`: Stop フック（保留分の遅延送信）
