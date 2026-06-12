@@ -19,29 +19,33 @@ REPO_ROOT = pathlib.Path(__file__).parent.parent.parent
 raw = "" if sys.stdin.isatty() else sys.stdin.read()
 d = json.loads(raw) if raw.strip() else {}
 
-if d.get("tool_name") != "Bash":
-    sys.exit(0)
+direct_run = not d  # stdin なし（TTY 直接実行）の場合は True
 
-cmd = (d.get("tool_input") or {}).get("command", "") or ""
+if not direct_run:
+    # フックとして起動された場合のみ以下のチェックを行う
+    if d.get("tool_name") != "Bash":
+        sys.exit(0)
 
-if not re.search(r"\bgit\s+merge\b", cmd):
-    sys.exit(0)
+    cmd = (d.get("tool_input") or {}).get("command", "") or ""
 
-# master/main を取り込む操作（git merge origin/master など）はスキップ
-if re.search(r"\bgit\s+merge\s+(origin/)?(master|main)\b", cmd):
-    sys.exit(0)
+    if not re.search(r"\bgit\s+merge\b", cmd):
+        sys.exit(0)
 
-# 現在のブランチが master でなければスキップ
-branch = subprocess.run(
-    ["git", "branch", "--show-current"],
-    capture_output=True, text=True, cwd=REPO_ROOT,
-).stdout.strip()
-if branch != "master":
-    sys.exit(0)
+    # master/main を取り込む操作（git merge origin/master など）はスキップ
+    if re.search(r"\bgit\s+merge\s+(origin/)?(master|main)\b", cmd):
+        sys.exit(0)
 
-# コンフリクトがあればスキップ
-if "CONFLICT" in str(d.get("tool_response") or ""):
-    sys.exit(0)
+    # 現在のブランチが master でなければスキップ
+    branch = subprocess.run(
+        ["git", "branch", "--show-current"],
+        capture_output=True, text=True, cwd=REPO_ROOT,
+    ).stdout.strip()
+    if branch != "master":
+        sys.exit(0)
+
+    # コンフリクトがあればスキップ
+    if "CONFLICT" in str(d.get("tool_response") or ""):
+        sys.exit(0)
 
 # 1. master を push
 # WSL から HTTPS push は認証できないため Windows 側の git.exe を使う
