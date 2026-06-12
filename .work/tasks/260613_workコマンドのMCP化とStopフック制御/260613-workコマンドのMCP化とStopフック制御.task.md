@@ -21,15 +21,15 @@ work プラグインのスキルが Bash で叩いているコマンド群（wor
 
 | No | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | `plugins/work/scripts/worktree-tool.py` 新規作成（create/remove + トークン管理） |
-| 2 | - | `plugins/work/mcp/server.py` 新規作成（worktree_create/worktree_remove/index_add/index_set_completed/index_archive/issue_close） |
-| 3 | - | `plugins/work/.mcp.json` でプラグイン MCP サーバーを登録 |
-| 4 | - | `work_complete_check.py` をトークン存在時のみ発火するよう修正 |
-| 5 | - | `worktree-create` スキルを撤廃 |
-| 6 | - | `start` / `merge` スキルを MCP ツール使用に書き換え |
-| 7 | - | `.gitignore` に `.claude/worktrees/` を追加 |
-| 8 | - | work プラグインのバージョンバンプ |
-| 9 | - | `.work/notes/` の関連ノートを更新する |
+| 1 | 済 | `plugins/work/scripts/worktree-tool.py` 新規作成（create/remove + トークン管理） |
+| 2 | 済 | `plugins/work/mcp/server.py` 新規作成（worktree_create/worktree_remove/index_add/index_set_completed/index_archive/issue_close） |
+| 3 | 済 | `plugins/work/.mcp.json` でプラグイン MCP サーバーを登録 |
+| 4 | 済 | `work_complete_check.py` をトークン存在時のみ発火するよう修正 |
+| 5 | 済 | `worktree-create` スキルを撤廃 |
+| 6 | 済 | `start` / `merge` スキルを MCP ツール使用に書き換え |
+| 7 | 済 | `.gitignore` に `.claude/worktrees/` を追加 |
+| 8 | 済 | work プラグインのバージョンバンプ（1.2 → 1.3） |
+| 9 | 済 | `.work/notes/` の関連ノートを更新する |
 
 ## 変更内容
 
@@ -48,7 +48,7 @@ work プラグインのスキルが Bash で叩いているコマンド群（wor
 
 | No | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | worktree-tool.py create でワークツリーとトークンが作成される | (未実施) | - |
-| 2 | worktree-tool.py remove でワークツリーとトークンが削除される | (未実施) | - |
-| 3 | MCP サーバーの全ツールでスキーマが正しく生成される | (未実施) | - |
-| 4 | work_complete_check がトークンなしで exit 0、ありでブロックする | (未実施) | - |
+| 1 | worktree-tool.py create でワークツリーとトークンが作成される | 一時リポジトリで .claude/worktrees/ 配下に作成・トークン JSON 書き込みを確認 | OK |
+| 2 | worktree-tool.py remove でワークツリーとトークンが削除される | ワークツリー・ブランチ・トークンすべて削除を確認 | OK |
+| 3 | MCP サーバーの全ツールでスキーマが正しく生成される | 全 6 ツールで title・引数説明・outputSchema の生成を確認 | OK |
+| 4 | work_complete_check がトークンなしで exit 0、ありでブロックする | トークンなし→出力なし exit 0、あり→decision:block、stop_hook_active→exit 0 を確認 | OK |
