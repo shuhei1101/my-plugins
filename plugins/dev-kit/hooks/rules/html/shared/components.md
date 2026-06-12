@@ -1,0 +1,9 @@
+---
+paths:
+  - "**/frontend/shared/components/**"
+---
+
+# shared/components
+
+- ドメインをまたいで使う共通 UI を置く。
+- ボタン等の素の共通スタイルは `{name}.css` で持ち、トークン参照・セレクタ毎コメントは CSS 共通ルールに従う。

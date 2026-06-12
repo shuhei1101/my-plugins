@@ -1,4 +1,4 @@
-"""起動中の tmux セッション (ait-1〜10 / plg-1〜10) に /reload-plugins を送信する。
+"""起動中の tmux セッション (ait-0〜10 / plg-1〜10) に /reload-plugins を送信する。
 
 # 実行方法
 python tools/reload_plugins.py
@@ -8,7 +8,7 @@ from __future__ import annotations
 import subprocess
 import sys
 
-SESSIONS = [f"ait-{i}" for i in range(1, 11)] + [f"plg-{i}" for i in range(1, 11)]
+SESSIONS = [f"ait-{i}" for i in range(0, 11)] + [f"plg-{i}" for i in range(1, 11)]
 
 
 def reload_plugins() -> None:
