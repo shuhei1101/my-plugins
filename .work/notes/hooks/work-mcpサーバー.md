@@ -28,6 +28,14 @@ work プラグインのスキルが使うコマンド群を MCP ツールとし�
 - `.gitignore` に `.claude/worktrees/` を登録済み
 - 旧形式（`../{repo}-wt-*`）のワークツリーも `worktree_remove` は `git worktree list` から探して削除できる
 
+## VS Code ワークスペース連携
+
+- 環境変数 `VSCODE_WORKSPACE_FILE` に `.code-workspace` のパスを設定すると有効化（未設定ならスキップ）
+  - 設定場所: settings.json の `env` フィールド（例: `"env": {"VSCODE_WORKSPACE_FILE": "C:/Users/shuhe/repo/my.code-workspace"}` 相当の WSL パス）
+- worktree 作成時に `folders` 末尾へ `{name: ブランチ名, path: ワークツリーパス}` を追加、削除時に取り除く
+- WSL の `/mnt/<drive>/` パスは Windows 形式（`C:/...`）に変換して書き込む
+- コメント付き JSONC など解析できないワークスペースファイルは壊さずスキップする
+
 ## トークンのディレクトリ構造
 
 `~/.claude/tokens/{プラグイン}/{用途}/<session_id>.json` に統一:

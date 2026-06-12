@@ -11,6 +11,10 @@ python worktree-tool.py remove --branch feat/my-feature
 トークン:
   作成時に ~/.claude/tokens/work/worktree/<CLAUDE_CODE_SESSION_ID>.json を書き、削除時に消す。
   Stop フック（work_complete_check.py）がこのトークンの有無で発火を制御する。
+
+VS Code ワークスペース連携:
+  環境変数 VSCODE_WORKSPACE_FILE に .code-workspace のパスが設定されていれば、
+  作成時に folders 末尾へワークツリーを追加し、削除時に取り除く。未設定ならスキップ。
 """
 from __future__ import annotations
 
@@ -39,6 +43,68 @@ def _repo_root() -> Path:
 def _session_id() -> str | None:
     """Claude Code セッション ID を環境変数から取得する（直接実行時は None）。"""
     return os.environ.get("CLAUDE_CODE_SESSION_ID")
+
+
+def _to_vscode_path(path: Path) -> str:
+    """WSL の /mnt/<drive>/ パスを Windows 形式（C:/...）に変換する（該当しなければそのまま）。"""
+    m = re.match(r"^/mnt/([a-z])/(.*)$", str(path))
+    if m:
+        return f"{m.group(1).upper()}:/{m.group(2)}"
+    return str(path)
+
+
+def _load_workspace() -> tuple[Path, dict] | None:
+    """環境変数 VSCODE_WORKSPACE_FILE からワークスペース定義を読み込む。
+
+    未設定・ファイルなし・JSON 不正の場合は None（連携スキップ）。
+    """
+    raw = os.environ.get("VSCODE_WORKSPACE_FILE")
+    if not raw:
+        return None
+    ws_path = Path(raw)
+    if not ws_path.is_file():
+        print(f"注意: VSCODE_WORKSPACE_FILE が見つかりません: {ws_path}", file=sys.stderr)
+        return None
+    try:
+        return ws_path, json.loads(ws_path.read_text("utf-8"))
+    except json.JSONDecodeError as e:
+        # コメント付き JSONC などパースできない場合は壊さずスキップする
+        print(f"注意: ワークスペースファイルを解析できないためスキップ: {e}", file=sys.stderr)
+        return None
+
+
+def _add_to_vscode_workspace(branch: str, worktree_path: Path) -> None:
+    """ワークスペースの folders 末尾にワークツリーを追加する。"""
+    loaded = _load_workspace()
+    if loaded is None:
+        return
+    ws_path, data = loaded
+
+    entry_path = _to_vscode_path(worktree_path)
+    folders = data.setdefault("folders", [])
+    # 同じパスが既にあれば追加しない
+    if any(f.get("path") == entry_path for f in folders):
+        return
+    folders.append({"name": branch, "path": entry_path})
+    ws_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"VS Code ワークスペースに追加: {entry_path}")
+
+
+def _remove_from_vscode_workspace(worktree_path: Path) -> None:
+    """ワークスペースの folders からワークツリーを取り除く。"""
+    loaded = _load_workspace()
+    if loaded is None:
+        return
+    ws_path, data = loaded
+
+    entry_path = _to_vscode_path(worktree_path)
+    folders = data.get("folders", [])
+    kept = [f for f in folders if f.get("path") != entry_path]
+    if len(kept) == len(folders):
+        return
+    data["folders"] = kept
+    ws_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"VS Code ワークスペースから削除: {entry_path}")
 
 
 def _cleanup_stale_tokens() -> None:
@@ -114,6 +180,7 @@ def cmd_create(branch_type: str, title: str) -> int:
         return result.returncode
 
     _write_token(branch, worktree_path)
+    _add_to_vscode_workspace(branch, worktree_path)
     print(f"ブランチ: {branch}")
     print(f"ワークツリー: {worktree_path}")
     return 0
@@ -163,6 +230,7 @@ def cmd_remove(branch: str) -> int:
         print(f"ブランチ削除: {branch}")
 
     _remove_from_token(branch)
+    _remove_from_vscode_workspace(worktree_path)
     return 0
 
 
