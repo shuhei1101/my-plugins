@@ -1,0 +1,8 @@
+branches:
+- branch: fix/post-merge-upgrade-direct-run
+  created: '2026-06-12'
+  title: post-merge-upgradeの直接実行対応
+  type: fix
+  summary: TTY直接実行時にフックチェックをスキップして本処理が走るよう修正
+  task: 260612_post-merge-upgrade直接実行対応
+  completed: true
