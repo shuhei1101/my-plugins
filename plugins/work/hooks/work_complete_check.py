@@ -1,7 +1,11 @@
 """workspace / work-complete-check — Stop フック。
 
-レスポンス終了時に QA・マージ提案リマインダーを additionalContext として注入し、
-Claude に処理を継続させる（decision: block で継続）。
+worktree 作業中のセッションのみ、レスポンス終了時に QA・マージ提案リマインダーを
+additionalContext として注入する（decision: block で継続）。
+
+発火条件:
+    ~/.claude/tokens/work/worktree/<session_id>.json が存在すること。
+    トークンは worktree-tool.py create で作成され、remove で削除される。
 
 env トグル:
     WORK_STOP_REMINDER（デフォルト truthy）— falsy で全体を無効化する
@@ -39,6 +43,12 @@ def main() -> None:
     # stop_hook_active は Stop フックが再発火していることを示す — 無限ループ防止
     data = json.loads(sys.stdin.read())
     if data.get("stop_hook_active"):
+        sys.exit(0)
+
+    # worktree 作業中のセッションのみ発火（トークンは worktree-tool.py が管理）
+    session_id = data.get("session_id", "")
+    token_path = pathlib.Path.home() / ".claude" / "tokens" / "work" / "worktree" / f"{session_id}.json"
+    if not token_path.is_file():
         sys.exit(0)
 
     if len(sys.argv) < 2:

@@ -8,13 +8,13 @@
       "name": "work",
       "source": "./plugins/work",
       "description": "作業場を作成するプラグイン",
-      "version": "1.2"
+      "version": "1.3"
     },
     {
       "name": "dev-kit",
       "source": "./plugins/dev-kit",
       "description": "編集対象ファイルに応じた開発ルールを自動注入するプラグイン",
-      "version": "1.0"
+      "version": "1.1"
     }
   ]
 }

@@ -13,3 +13,10 @@ branches:
   summary: フックのビジネスロジックをtools/に分割し、MCPサーバーとして登録する
   task: 260612_ツールスクリプト分割とMCP登録
   completed: true
+- branch: feat/work-mcp-tools
+  created: '2026-06-13'
+  title: workコマンドのMCP化とStopフック制御
+  type: feat
+  summary: workプラグインのコマンド群をMCPツール化し、Stopフックをworktree作業中のみ発火するようセッショントークンで制御する
+  task: 260613_workコマンドのMCP化とStopフック制御
+  completed: true

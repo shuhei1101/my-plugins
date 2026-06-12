@@ -11,19 +11,15 @@ description: ブランチを作成して作業を開始する。実装すると�
 
 <!-- もしカレントディレクトリに.workフォルダが存在しない場合、ユーザに /work:setup の実行を促してください。 -->
 
-以下のコマンドを実行して新しいブランチエントリを追加します：
-
-```bash
-python /home/shuhei2441/.claude/work-scripts/index-tool.py add .work/tasks/index.yaml \
-  --branch "{ブランチ名}" \
-  --title "{日本語タイトル}" \
-  --type {type} \
-  --summary "{概要を入力}" \
-  --task "{YYMMDD}_{日本語タイトル}"
-```
+`index_add` MCP ツール（work-tools サーバー）で新しいブランチエントリを追加する:
+- branch: `{ブランチ名}` / title: `{日本語タイトル}` / branch_type: `{type}` / summary: `{概要}` / task: `{YYMMDD}_{日本語タイトル}`
 
 ### ステップ 3: ワークツリーを作成
-`/worktree-create` スキルを実行し、ワークツリーを作成する
+
+`worktree_create` MCP ツール（work-tools サーバー）でブランチとワークツリーを作成する:
+- branch_type: `{type}` / title: `{title}`
+- ワークツリーは `{リポジトリ}/.claude/worktrees/{type}-{title}` に作成される
+- あわせて Stop リマインダー用のセッショントークンが作成される
 
 ### ステップ 4: タスクフォルダを決定（ワークツリー内）
 
