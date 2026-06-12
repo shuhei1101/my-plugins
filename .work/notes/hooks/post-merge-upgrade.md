@@ -2,14 +2,25 @@
 
 ## 概要
 
-master へのマージ後に `git push`、marketplace upgrade、tmux セッションへの `/reload-plugins` 送信を自動実行するフック。TTY 直接実行にも対応。
+master へのマージ後に `git push`、marketplace upgrade、tmux セッションへの `/reload-plugins` 送信を自動実行する。フック（シン・ラッパー）とツール（コア処理）に分離している。
 
-## 動作モード
+## 構成
 
-- フック起動（stdin あり）: PostToolUse として動作。`git merge` コマンドが対象で、master ブランチかつコンフリクトなしの場合のみ本処理を実行
-- 直接実行（TTY / stdin なし）: フックチェックをスキップして本処理を直接実行
+| 役割 | ファイル |
+|---|---|
+| フック（シン・ラッパー） | `.claude/hooks/post-merge-upgrade.py` |
+| コア処理 | `tools/post_merge_upgrade.py` |
 
-## 処理の流れ
+## フックの条件チェック
+
+stdin あり（フック起動）の場合のみ以下を確認してスキップ判定する:
+- `tool_name` が `Bash` であること
+- コマンドに `git merge` を含むこと
+- `git merge origin/master`（master 取り込み）はスキップ
+- 現在ブランチが `master` であること
+- `CONFLICT` がレスポンスに含まれていないこと
+
+## コア処理の流れ
 
 1. `git.exe push origin master`（WSL では `git.exe` を使用）
 2. `python tools/marketplace.py upgrade`
@@ -17,4 +28,5 @@ master へのマージ後に `git push`、marketplace upgrade、tmux セッシ�
 
 ## 参考リンク
 
-- `.claude/hooks/post-merge-upgrade.py`: スクリプト本体
+- `.claude/hooks/post-merge-upgrade.py`: フック（シン・ラッパー）
+- `tools/post_merge_upgrade.py`: コア処理
