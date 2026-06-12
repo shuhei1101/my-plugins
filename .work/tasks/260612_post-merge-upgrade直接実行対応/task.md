@@ -20,4 +20,4 @@
 
 ## 参考ドキュメント
 
-なし
+- [post-merge-upgrade ノート](../../notes/hooks/post-merge-upgrade.md)
