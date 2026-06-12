@@ -34,6 +34,7 @@ work プラグインのスキルが Bash で叩いているコマンド群（wor
 | 11 | 済 | dev-kit プラグインのバージョンバンプ（1.0 → 1.1） |
 | 12 | 済 | MCP サーバー作成ルール（`dev-kit/hooks/rules/claude/mcp.md`）を追加 |
 | 13 | 済 | worktree 作成/削除時の VS Code ワークスペース連携（`VSCODE_WORKSPACE_FILE` 環境変数、未設定ならスキップ） |
+| 14 | 済 | master-commit-guard を完全ブロック化（`WORK_ALLOW_MASTER_COMMIT=1` で解除可） |
 
 ## 変更内容
 

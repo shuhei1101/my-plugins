@@ -1,14 +1,14 @@
 """workspace / master-commit-guard — PreToolUse(Bash) hook.
 
 `git commit` を `master` / `main` / `develop` ブランチ上で実行しようとしたとき、
-プロンプト注入 (`decision: block`) でユーザーに確認を求める。
+完全にブロックする（再実行しても通らない）。
 
 検出ロジック:
 - `git commit` または `git -C <path> commit` を検出
 - 対応する作業ディレクトリの `branch --show-current` を取得し、
   保護ブランチ (`master` / `main` / `develop`) のときだけ発火
 - マージ中 (`MERGE_HEAD` 存在) は通過 — マージコミットの完成を阻まないため
-- ループ防止: 一時トークンファイルで 1 回ブロックしたら 2 回目以降は素通り
+- env `WORK_ALLOW_MASTER_COMMIT` が truthy なら通過 — 例外作業用の明示的な解除手段
 - block 時の `reason` には `git status` の出力を追記し、何が staged/unstaged かを
   そのまま Claude に見せる
 
@@ -25,7 +25,6 @@ import pathlib
 import re
 import subprocess
 import sys
-import tempfile
 
 # env `WORK_PROTECTED_BRANCHES` でカンマ区切り上書き可（空要素は除外）。
 # 未設定時はデフォルト `master,main,develop` で完全な後方互換。
@@ -88,15 +87,9 @@ def main() -> None:
     if merge_proc.returncode == 0:
         return
 
-    # セッション単位のワンタイムトークンで「確認 → 通過」を一度だけ実現
-    session_id = payload.get("session_id", "default")
-    token = pathlib.Path(tempfile.gettempdir()) / f"workspace-master-commit-guard-{session_id}"
-    if token.exists():
-        # 2 回目以降：トークンを消費して素通り
-        token.unlink()
+    # 明示的な解除手段: 例外的に保護ブランチへ直接コミットしたいときだけ env で許可する
+    if os.environ.get("WORK_ALLOW_MASTER_COMMIT", "").strip().lower() in {"true", "1", "yes", "on"}:
         return
-    # 1 回目：トークンを作成してブロック
-    token.touch()
 
     # プロンプト本文を読み込み、git status を末尾に追記してブロック理由とする
     prompt_path = pathlib.Path(sys.argv[1])

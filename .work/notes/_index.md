@@ -6,3 +6,4 @@
 - [pre-merge-version-check](hooks/pre-merge-version-check.md): マージ前バージョンチェックフック
 - [mcp-server](hooks/mcp-server.md): my-plugins MCP サーバー（ツール群の MCP 公開）
 - [work-mcpサーバー](hooks/work-mcpサーバー.md): work-tools MCP サーバー（work コマンドの MCP 公開と Stop フック制御）
+- [master-commit-guard](hooks/master-commit-guard.md): 保護ブランチへの直接コミットを完全ブロック
