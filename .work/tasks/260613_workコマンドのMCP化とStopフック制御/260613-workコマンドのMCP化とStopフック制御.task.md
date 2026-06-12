@@ -32,6 +32,7 @@ work プラグインのスキルが Bash で叩いているコマンド群（wor
 | 9 | 済 | `.work/notes/` の関連ノートを更新する |
 | 10 | 済 | トークンを `tokens/{プラグイン}/{用途}/` 構造に整理（dev-kit/rules・work/rules・work/worktree） |
 | 11 | 済 | dev-kit プラグインのバージョンバンプ（1.0 → 1.1） |
+| 12 | 済 | MCP サーバー作成ルール（`dev-kit/hooks/rules/claude/mcp.md`）を追加 |
 
 ## 変更内容
 
