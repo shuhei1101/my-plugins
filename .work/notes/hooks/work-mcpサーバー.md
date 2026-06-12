@@ -28,6 +28,11 @@ work プラグインのスキルが使うコマンド群を MCP ツールとし�
 - `.gitignore` に `.claude/worktrees/` を登録済み
 - 旧形式（`../{repo}-wt-*`）のワークツリーも `worktree_remove` は `git worktree list` から探して削除できる
 
+## SessionStart での概要注入
+
+- `plugins/work/hooks/session_start.py` がセッション開始時に `session_start.md`（作業フロー・MCP ツール一覧・ガード・cwd 注意）を additionalContext として注入する
+- 新しいセッションが work プラグインの使い方を最初から把握できる
+
 ## VS Code ワークスペース連携
 
 - 環境変数 `VSCODE_WORKSPACE_FILE` に `.code-workspace` のパスを設定すると有効化（未設定ならスキップ）
