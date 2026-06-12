@@ -4,7 +4,7 @@ worktree 作業中のセッションのみ、レスポンス終了時に QA・�
 additionalContext として注入する（decision: block で継続）。
 
 発火条件:
-    ~/.claude/tokens/worktree/<session_id>.json が存在すること。
+    ~/.claude/tokens/work/worktree/<session_id>.json が存在すること。
     トークンは worktree-tool.py create で作成され、remove で削除される。
 
 env トグル:
@@ -47,7 +47,7 @@ def main() -> None:
 
     # worktree 作業中のセッションのみ発火（トークンは worktree-tool.py が管理）
     session_id = data.get("session_id", "")
-    token_path = pathlib.Path.home() / ".claude" / "tokens" / "worktree" / f"{session_id}.json"
+    token_path = pathlib.Path.home() / ".claude" / "tokens" / "work" / "worktree" / f"{session_id}.json"
     if not token_path.is_file():
         sys.exit(0)
 

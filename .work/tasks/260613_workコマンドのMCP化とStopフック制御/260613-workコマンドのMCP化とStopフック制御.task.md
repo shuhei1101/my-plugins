@@ -30,6 +30,8 @@ work プラグインのスキルが Bash で叩いているコマンド群（wor
 | 7 | 済 | `.gitignore` に `.claude/worktrees/` を追加 |
 | 8 | 済 | work プラグインのバージョンバンプ（1.2 → 1.3） |
 | 9 | 済 | `.work/notes/` の関連ノートを更新する |
+| 10 | 済 | トークンを `tokens/{プラグイン}/{用途}/` 構造に整理（dev-kit/rules・work/rules・work/worktree） |
+| 11 | 済 | dev-kit プラグインのバージョンバンプ（1.0 → 1.1） |
 
 ## 変更内容
 
@@ -43,6 +45,10 @@ work プラグインのスキルが Bash で叩いているコマンド群（wor
 | 6 | `plugins/work/skills/start/SKILL.md` | 編集 | index_add / worktree_create ツール使用に変更 |
 | 7 | `plugins/work/skills/merge/SKILL.md` | 編集 | issue_close / index_set_completed / index_archive / worktree_remove ツール使用に変更 |
 | 8 | `.gitignore` | 編集 | `.claude/worktrees/` を追加 |
+| 9 | `plugins/dev-kit/hooks/rules/inject_rules.py` | 編集 | トークン保存先を `tokens/dev-kit/rules/` に変更 |
+| 10 | `plugins/dev-kit/hooks/rules/clear_session_token.py` | 編集 | 〃 |
+| 11 | `plugins/work/hooks/rules/inject_rules.py` | 編集 | トークン保存先を `tokens/work/rules/` に変更 |
+| 12 | `plugins/work/hooks/rules/clear_session_token.py` | 編集 | 〃 |
 
 ## テスト
 

@@ -9,7 +9,7 @@ python worktree-tool.py create --type feat --title my-feature
 python worktree-tool.py remove --branch feat/my-feature
 
 トークン:
-  作成時に ~/.claude/tokens/worktree/<CLAUDE_CODE_SESSION_ID>.json を書き、削除時に消す。
+  作成時に ~/.claude/tokens/work/worktree/<CLAUDE_CODE_SESSION_ID>.json を書き、削除時に消す。
   Stop フック（work_complete_check.py）がこのトークンの有無で発火を制御する。
 """
 from __future__ import annotations
@@ -23,7 +23,7 @@ import sys
 import time
 from pathlib import Path
 
-TOKEN_DIR = Path.home() / ".claude" / "tokens" / "worktree"
+TOKEN_DIR = Path.home() / ".claude" / "tokens" / "work" / "worktree"
 TOKEN_TTL_SECONDS = 7 * 24 * 3600  # 放置トークンの掃除期限（7日）
 
 

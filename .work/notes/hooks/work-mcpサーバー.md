@@ -28,9 +28,19 @@ work プラグインのスキルが使うコマンド群を MCP ツールとし�
 - `.gitignore` に `.claude/worktrees/` を登録済み
 - 旧形式（`../{repo}-wt-*`）のワークツリーも `worktree_remove` は `git worktree list` から探して削除できる
 
+## トークンのディレクトリ構造
+
+`~/.claude/tokens/{プラグイン}/{用途}/<session_id>.json` に統一:
+
+| パス | 書き手 | 用途 |
+|---|---|---|
+| `tokens/dev-kit/rules/` | dev-kit の inject_rules.py | ルール注入済みリスト |
+| `tokens/work/rules/` | work の inject_rules.py | 〃 |
+| `tokens/work/worktree/` | work の worktree-tool.py | worktree 作業中フラグ |
+
 ## Stop フックのセッショントークン制御
 
-- トークン: `~/.claude/tokens/worktree/<session_id>.json`（inject_rules のフラットトークンとはサブフォルダで分離）
+- トークン: `~/.claude/tokens/work/worktree/<session_id>.json`
 - 中身: `{"worktrees": [{"branch", "path"}]}` — 1 セッション複数ワークツリー対応
 - ライフサイクル: `worktree-tool.py create` で作成・`remove` で削除（worktrees が空になるとトークンごと削除）
 - `work_complete_check.py` は stdin の `session_id` でトークンを引き、なければ exit 0（リマインダーを出さない）
