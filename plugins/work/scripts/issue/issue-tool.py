@@ -3,32 +3,26 @@ issue-tool — workspace の `.work/issues/` 操作用 CLI。
 
 使い方:
   python issue-tool.py close --issue-id ISSUE-N --resolution {resolved|wontfix} [--linked-branch BRANCH] [--issues-dir .work/issues]
+  python issue-tool.py move-to-progress --issue-id ISSUE-N [--issues-dir .work/issues]
   python issue-tool.py set-status --issue-id ISSUE-N --status {not_started|in_progress} [--issues-dir .work/issues]
   python issue-tool.py add-branch --issue-id ISSUE-N --branch BRANCH [--issues-dir .work/issues]
 
 サブコマンド:
-  close          イシューを 1 件クローズする:
-                   1. .work/issues/ISSUE-{N}.md を .work/issues/closed/ISSUE-{N}.md に移動
-                   2. _index.yaml から該当エントリを削除
-                   3. _index.archive.yaml の closed_issues に linked_branch 付きで追記
-                 --linked-branch は対応ブランチ名（任意・wontfix で未着手のまま閉じる場合は省略可）。
-  set-status     _index.yaml の該当エントリの status を更新する（作業状態の正である
-                 _index.yaml を AI 側が更新するために使用。エントリが無ければ警告のみ）。
-  add-branch     _index.yaml の該当エントリの branches 配列にブランチ名を追記する
-                 （イシューに対応するブランチ作成時に work:start が呼ぶ。重複は無視。
-                 エントリが無ければ警告のみ）。
+  close              イシューを 1 件クローズする:
+                       1. ISSUE-{N}.md を closed/ に移動
+                       2. _index.yaml から該当エントリを削除
+                       3. _index.archive.yaml の closed_issues に linked_branch 付きで追記
+                     --linked-branch は対応ブランチ名（任意・wontfix で未着手のまま閉じる場合は省略可）。
+  move-to-progress   イシューを targets/ から progress/ へ移し、_index.yaml の status を in_progress にする。
+  set-status         _index.yaml の該当エントリの status を更新する（ファイルは移動しない）。
+  add-branch         _index.yaml の該当エントリの branches 配列にブランチ名を追記する。
 
 イシューファイルはフロントマターを持たない（# ISSUE-N から始まる）。作業状態（status / branches）は
 すべて _index.yaml が正で、このスクリプト経由で更新する。
-
-`.work/issues/` 配下の YAML 読み書きをこのスクリプト経由に集約することで、
-Claude Code のコンテキストに YAML ファイルを丸ごと読み込ませずに済み、
-イシュー記述ルール（work-dir/イシュー.md）に沿った一貫したフォーマットで書き込める。
 """
 
 from __future__ import annotations
 
-# ── 標準ライブラリ ──────────────────────────────────────────
 import argparse
 import shutil
 import sys
@@ -37,18 +31,15 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-# ── サードパーティ ──────────────────────────────────────────
 try:
-    import yaml  # pip install pyyaml
+    import yaml
 except ImportError:
     print("エラー: PyYAML がインストールされていません。`pip install pyyaml` を実行してください。", file=sys.stderr)
     sys.exit(1)
 
-# ── 定数 ────────────────────────────────────────────────────
 DEFAULT_ISSUES_DIR = Path(".work/issues")
 
 
-# ── 内部ヘルパ ──────────────────────────────────────────────
 def _load(path: Path) -> dict:
     if not path.exists():
         return {}
@@ -56,7 +47,6 @@ def _load(path: Path) -> dict:
 
 
 def _save(path: Path, data: dict, original_text: str) -> None:
-    """先頭のコメント行を保持したまま YAML を書き戻す。"""
     comment_lines = [l for l in original_text.splitlines() if l.startswith("#")]
     header = "\n".join(comment_lines) + "\n\n" if comment_lines else ""
     path.write_text(
@@ -65,7 +55,6 @@ def _save(path: Path, data: dict, original_text: str) -> None:
     )
 
 
-# ── サブコマンドハンドラ ─────────────────────────────────────
 def cmd_close(args: argparse.Namespace) -> None:
     """イシューを 1 件クローズする: ファイル移動・_index.yaml 更新・_index.archive.yaml 追記。"""
     issues_dir = Path(args.issues_dir)
@@ -79,10 +68,16 @@ def cmd_close(args: argparse.Namespace) -> None:
 
     index_path = issues_dir / "_index.yaml"
     archive_path = issues_dir / "_index.archive.yaml"
-    issue_file = issues_dir / f"{issue_id}.md"
     closed_dir = issues_dir / "closed"
 
-    # 1. _index.yaml を読んで、削除前にイシューのメタ情報を控えておく
+    # イシューファイルを targets/ か progress/ か直下から探す
+    candidates = [
+        issues_dir / f"{issue_id}.md",
+        issues_dir / "targets" / f"{issue_id}.md",
+        issues_dir / "progress" / f"{issue_id}.md",
+    ]
+    issue_file = next((p for p in candidates if p.exists()), None)
+
     index_original = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
     index_data: dict = yaml.safe_load(index_original) or {} if index_original else {}
     issues: list[dict] = index_data.get("issues", [])
@@ -91,21 +86,18 @@ def cmd_close(args: argparse.Namespace) -> None:
         print(f"Warning: {issue_id} not found in {index_path}", file=sys.stderr)
         entry = {"id": issue_id, "title": "", "tags": []}
 
-    # 2. イシューファイルを closed/ に移動する（存在する場合のみ）
-    if issue_file.exists():
+    if issue_file:
         closed_dir.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(issue_file), str(closed_dir / issue_file.name))
+        shutil.move(str(issue_file), str(closed_dir / f"{issue_id}.md"))
     else:
-        print(f"Warning: {issue_file} not found; skipping file move", file=sys.stderr)
+        print(f"Warning: {issue_id}.md not found in {issues_dir}; skipping file move", file=sys.stderr)
 
-    # 3. _index.yaml から該当エントリを削除する
     if entry in issues:
         issues.remove(entry)
         index_data["issues"] = issues
         if index_path.exists():
             _save(index_path, index_data, index_original)
 
-    # 4. _index.archive.yaml の closed_issues に追記する
     archive_original = archive_path.read_text(encoding="utf-8") if archive_path.exists() else ""
     archive_data: dict = yaml.safe_load(archive_original) or {} if archive_original else {}
     closed_issues: list[dict] = archive_data.get("closed_issues", [])
@@ -128,8 +120,43 @@ def cmd_close(args: argparse.Namespace) -> None:
     print(f"Closed {issue_id} (resolution={resolution}, linked_branch={linked_branch})")
 
 
+def cmd_move_to_progress(args: argparse.Namespace) -> None:
+    """イシューを targets/ から progress/ へ移し、_index.yaml の status を in_progress にする。"""
+    issues_dir = Path(args.issues_dir)
+    issue_id: str = args.issue_id
+
+    targets_dir = issues_dir / "targets"
+    progress_dir = issues_dir / "progress"
+    src = targets_dir / f"{issue_id}.md"
+
+    if not src.exists():
+        print(f"Warning: {src} not found; skipping file move", file=sys.stderr)
+    else:
+        progress_dir.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(src), str(progress_dir / f"{issue_id}.md"))
+        print(f"Moved {issue_id}.md: targets/ → progress/")
+
+    index_path = issues_dir / "_index.yaml"
+    if not index_path.exists():
+        print(f"Skip: {index_path} does not exist", file=sys.stderr)
+        return
+
+    index_original = index_path.read_text(encoding="utf-8")
+    index_data: dict = yaml.safe_load(index_original) or {}
+    issues: list[dict] = index_data.get("issues", [])
+    entry = next((i for i in issues if i.get("id") == issue_id), None)
+    if entry is None:
+        print(f"Warning: {issue_id} not found in {index_path}", file=sys.stderr)
+        return
+
+    entry["status"] = "in_progress"
+    index_data["issues"] = issues
+    _save(index_path, index_data, index_original)
+    print(f"Set {issue_id} status=in_progress")
+
+
 def cmd_set_status(args: argparse.Namespace) -> None:
-    """_index.yaml の該当イシューエントリの status を更新する。"""
+    """_index.yaml の該当イシューエントリの status を更新する（ファイルは移動しない）。"""
     issues_dir = Path(args.issues_dir)
     issue_id: str = args.issue_id
     status: str = args.status
@@ -183,11 +210,11 @@ def cmd_add_branch(args: argparse.Namespace) -> None:
     print(f"Added branch {branch} to {issue_id}")
 
 
-# ── main ────────────────────────────────────────────────────
 def main() -> int:
     args = parse_args()
     handlers = {
         "close": cmd_close,
+        "move-to-progress": cmd_move_to_progress,
         "set-status": cmd_set_status,
         "add-branch": cmd_add_branch,
     }
@@ -210,30 +237,24 @@ def parse_args() -> argparse.Namespace:
     sub = parser.add_subparsers(dest="subcommand", required=True)
 
     p_close = sub.add_parser("close", help="イシューを 1 件クローズしてアーカイブに記録する")
-    p_close.add_argument("--issue-id", required=True, help="例: ISSUE-001")
-    p_close.add_argument(
-        "--resolution",
-        required=True,
-        choices=["resolved", "wontfix"],
-        help="クローズ時の解決区分",
-    )
-    p_close.add_argument("--linked-branch", default=None, help="このイシューをクローズしたブランチ名（任意）")
-    p_close.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR), help=".work/issues/ のパス")
+    p_close.add_argument("--issue-id", required=True)
+    p_close.add_argument("--resolution", required=True, choices=["resolved", "wontfix"])
+    p_close.add_argument("--linked-branch", default=None)
+    p_close.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR))
 
-    p_status = sub.add_parser("set-status", help="_index.yaml の status を更新する")
-    p_status.add_argument("--issue-id", required=True, help="例: ISSUE-001")
-    p_status.add_argument(
-        "--status",
-        required=True,
-        choices=["not_started", "in_progress"],
-        help="設定するステータス",
-    )
-    p_status.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR), help=".work/issues/ のパス")
+    p_prog = sub.add_parser("move-to-progress", help="targets/ から progress/ へ移し in_progress にする")
+    p_prog.add_argument("--issue-id", required=True)
+    p_prog.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR))
+
+    p_status = sub.add_parser("set-status", help="_index.yaml の status を更新する（ファイルは移動しない）")
+    p_status.add_argument("--issue-id", required=True)
+    p_status.add_argument("--status", required=True, choices=["not_started", "in_progress"])
+    p_status.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR))
 
     p_branch = sub.add_parser("add-branch", help="_index.yaml の branches にブランチ名を追記する")
-    p_branch.add_argument("--issue-id", required=True, help="例: ISSUE-001")
-    p_branch.add_argument("--branch", required=True, help="追記するブランチ名（例: fix/foo）")
-    p_branch.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR), help=".work/issues/ のパス")
+    p_branch.add_argument("--issue-id", required=True)
+    p_branch.add_argument("--branch", required=True)
+    p_branch.add_argument("--issues-dir", default=str(DEFAULT_ISSUES_DIR))
 
     return parser.parse_args()
 
