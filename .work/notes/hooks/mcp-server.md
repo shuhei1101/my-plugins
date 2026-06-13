@@ -17,7 +17,7 @@
 | `push` | `tools/post_merge_upgrade.py` | push + marketplace upgrade + reload-plugins | 書き込み・非破壊 |
 | `bump_version` | `tools/bump-version.py` | プラグインバージョンバンプ | 〃 |
 | `marketplace` | `tools/marketplace.py` | マーケットプレイス管理 | 書き込み・破壊的（remove で uninstall） |
-| `reload_plugins` | `tools/reload_plugins.py` | tmux セッションに /reload-plugins 送信 | 書き込み・非破壊 |
+| `reload_plugins` | `tools/reload_plugins.py` | marketplace upgrade 後に tmux セッションへ /reload-plugins 送信 | 書き込み・非破壊 |
 | `sync_plugin_cache` | `tools/sync_plugin_cache.py` | ローカル編集をキャッシュに同期 | 書き込み・破壊的（キャッシュ削除→コピー） |
 | `pre_merge_check` | `tools/pre_merge_check.py` | マージ前バージョンチェック | 読み取りのみ |
 
