@@ -43,10 +43,8 @@ disable-model-invocation: true
 ### Step 4: サブエージェント実行準備
 
 1. 移譲前に、メインリポジトリの `_index.yaml` でイシューを in-progress にする
-```bash
-python "/home/shuhei2441/.claude/work-scripts/issue-tool.py" set-status \
-  --issues-dir .work/issues --issue-id ISSUE-{N} --status in_progress
-```
+   - `issue_set_status` MCP ツール（work-tools サーバー）を実行:
+     - issues_dir: `.work/issues` / issue_id: `ISSUE-{N}` / status: `in_progress`
 
 ### Step 5 `issue-resolver`をサブエージェントで実行する
 以下を渡す

@@ -115,14 +115,8 @@ git branch -d {branch}   # 未マージの場合は -D を使う
 
 **Class C — index.yaml に追記**:
 
-```bash
-python {PLUGIN_ROOT}/scripts/index-tool.py add .work/tasks/index.yaml \
-  --branch "{branch}" \
-  --title "{title}" \
-  --type {type} \
-  --summary "{summary}" \
-  --task "{task_dir}"
-```
+`index_add` MCP ツール（work-tools サーバー）で新しいブランチエントリを追加する:
+- branch: `{branch}` / title: `{title}` / branch_type: `{type}` / summary: `{summary}` / task: `{task_dir}`
 
 **Class A — 削除のみ**:
 
