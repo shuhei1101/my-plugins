@@ -16,8 +16,8 @@ uninstallコマンドに`--scope {scope}`を追加して修正する。
 
 | No | 完了 | 作業内容 |
 |---|---|---|
-| 1 |  | `tools/marketplace.py`のcmd_upgrade()でuninstallコマンドに`--scope`を追加 |
-| 2 |  | workプラグインのバージョンバンプ（1.5 → 1.6） |
+| 1 | 済 | `tools/marketplace.py`のcmd_upgrade()でuninstallコマンドに`--scope`を追加 |
+| 2 | 済 | workプラグインのバージョンバンプ（1.5 → 1.6） |
 
 ## 変更内容
 
@@ -25,3 +25,7 @@ uninstallコマンドに`--scope {scope}`を追加して修正する。
 |---|---|---|---|
 | 1 | `tools/marketplace.py` | 編集 | cmd_upgrade()のuninstallに`--scope scope`を追加 |
 | 2 | `plugins/work/.claude-plugin/plugin.json` | 編集 | バージョン1.5→1.6 |
+
+## 参考ドキュメント
+
+- [MCP サーバー](.work/notes/hooks/mcp-server.md)

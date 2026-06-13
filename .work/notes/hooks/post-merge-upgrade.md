@@ -37,6 +37,7 @@ stdin あり（フック起動）の場合のみ以下を確認してスキッ�
 ## 既知の課題
 
 - フックの merge 検出正規表現が `git merge` のみで、`git -C <path> merge` 形式にマッチしない（pre-merge-version-check も同様）
+- ~~cmd_upgrade()のuninstallコマンドに`--scope`を指定していなかったため、localスコープのプラグインのアンインストールが失敗していた~~ → fix/cmd-upgrade-scope で修正済み
 
 ## 参考リンク
 
