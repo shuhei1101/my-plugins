@@ -6,7 +6,7 @@ import json
 import pathlib
 import sys
 
-TOKEN_DIR = pathlib.Path.home() / ".claude" / "tokens" / "work" / "rules"
+TOKEN_DIR = pathlib.Path.home() / ".claude" / "tokens" / "dev-kit" / "rules"
 
 data = json.loads(sys.stdin.read())
 session_id = data.get("session_id", "")

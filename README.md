@@ -13,6 +13,7 @@ python tools/sync_plugin_cache.py
 
 - pushコマンド
 ```bash
+python tools/bump-version.py minor
 python .claude/hooks/post-merge-upgrade.py
 ```
 

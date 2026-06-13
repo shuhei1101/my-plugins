@@ -12,7 +12,7 @@ TARGET_TOOLS = ("Edit", "Write", "Read")
 
 RULES_DIR  = pathlib.Path(__file__).resolve().parent   # .md ルールファイルの置き場所
 CACHE_PATH = RULES_DIR / "cache.json"                  # スキャン結果キャッシュ
-TOKEN_DIR  = pathlib.Path.home() / ".claude" / "tokens" / "work" / "rules"  # セッショントークン保存先（プラグイン別）
+TOKEN_DIR  = pathlib.Path.home() / ".claude" / "tokens" / "dev-kit" / "rules"  # セッショントークン保存先（プラグイン別）
 
 
 def _eprint(msg: str) -> None:
@@ -195,11 +195,12 @@ def _split_body(content: str) -> str:
 CHAR_LIMIT = 10_000
 
 
-def _render_injection(blocks: list[dict], overflow: bool = False) -> str:
+def _render_injection(blocks: list[dict], **ctx: object) -> str:
     """inject_message.j2 テンプレートをレンダリングして注入テキストを生成する。
 
     blocks の各要素: {"abs_path": str, "patterns": list[str], "body": str}
-    overflow=True のとき、ファイルパスリストのみを出力するフォールバックモードになる。
+    ctx に進捗変数 (remaining_count, loaded_files, total_files, packed_chars, total_chars) を渡すと
+    テンプレート内の進捗セクションが展開される。
     """
     try:
         from jinja2 import Environment, FileSystemLoader
@@ -210,11 +211,12 @@ def _render_injection(blocks: list[dict], overflow: bool = False) -> str:
     env = Environment(
         loader=FileSystemLoader(str(RULES_DIR)),
         keep_trailing_newline=True,
-        trim_blocks=True,    # {% %} タグ直後の改行を自動除去
-        lstrip_blocks=True,  # {% %} タグ行の先頭空白を自動除去
+        trim_blocks=True,
+        lstrip_blocks=True,
     )
     tmpl = env.get_template("inject_message.j2")
-    return tmpl.render(blocks=blocks, overflow=overflow)
+    ctx.setdefault("remaining_count", 0)
+    return tmpl.render(blocks=blocks, **ctx)
 
 
 def main() -> int:
@@ -271,8 +273,6 @@ def main() -> int:
         return 0
 
     TOKEN_DIR.mkdir(parents=True, exist_ok=True)
-    token_data["rules"] = list(set(injected_rules) | set(to_inject))  # 注入済みリストを更新
-    _save_token(token_path, token_data)
 
     # rel_path → glob パターン一覧の引き当てマップ
     entry_paths_map = {entry["rel_path"]: entry.get("paths", []) for entry in entries}
@@ -294,23 +294,65 @@ def main() -> int:
             "body": body,           # フロントマターを除いた本文
         })
 
-    reason = _render_injection(blocks)
-    overflow = len(reason) > CHAR_LIMIT
-    if overflow:
-        reason = _render_injection(blocks, overflow=True)
-    file_list = ", ".join(to_inject)
+    # rel_path を blocks に埋め込む（パック後のトークン更新に使う）
+    for block, rel_path in zip(blocks, to_inject):
+        block["rel_path"] = rel_path
 
-    overflow_notice = (
-        f"⚠️ 注入するコンテキストが {CHAR_LIMIT:,} 文字を超えたため、ファイルパスのみを通知します。\n"
-        if overflow else ""
+    # 全ブロックの総文字数を算出（進捗表示用）
+    total_rendered = _render_injection(blocks)
+    total_chars = len(total_rendered)
+
+    # CHAR_LIMIT に収まる分だけ貪欲にパック
+    packed_blocks: list[dict] = []
+    for i, block in enumerate(blocks):
+        candidate = packed_blocks + [block]
+        rendered = _render_injection(candidate)
+        if len(rendered) <= CHAR_LIMIT:
+            packed_blocks.append(block)
+        elif i == 0:
+            # 1件だけでも超える場合は仕方なく含めてブロック
+            packed_blocks.append(block)
+            break
+        else:
+            break
+
+    remaining_count = len(blocks) - len(packed_blocks)
+    packed_rel_paths = [b["rel_path"] for b in packed_blocks]
+
+    # 注入済みリストをパック分だけ更新（残りは次回呼び出しで注入）
+    token_data["rules"] = list(set(injected_rules) | set(packed_rel_paths))
+    _save_token(token_path, token_data)
+
+    loaded_files = len(injected_rules) + len(packed_blocks)
+    total_files = len(injected_rules) + len(blocks)
+    # packed_chars は進捗なし時のレンダリング結果で算出（進捗セクションを含まない）
+    packed_body_chars = len(_render_injection(packed_blocks))
+
+    # 進捗なし（全注入完了）の場合は remaining_count=0 のままテンプレートへ渡す
+    reason = _render_injection(
+        packed_blocks,
+        remaining_count=remaining_count,
+        loaded_files=loaded_files,
+        total_files=total_files,
+        packed_chars=f"{packed_body_chars:,}",
+        total_chars=f"{total_chars:,}",
     )
+    decision = "deny" if remaining_count > 0 else "allow"
+
+    progress_line = (
+        f"  ⚠️ 読み込み中: {loaded_files}/{total_files} ファイル / "
+        f"{packed_body_chars:,}/{total_chars:,} 文字 — 残り {remaining_count} ファイル\n"
+        if remaining_count > 0 else ""
+    )
+    system_msg = "[rules-injection]\n" + progress_line + "".join(f"  · {f}\n" for f in packed_rel_paths)
+
     output = {
         "hookSpecificOutput": {
             "hookEventName": "PreToolUse",
-            "permissionDecision": "allow",
+            "permissionDecision": decision,
             "additionalContext": reason,
         },
-        "systemMessage": "[rules-injection] " + overflow_notice + "\n" + "".join(f"  · {f}\n" for f in to_inject),
+        "systemMessage": system_msg,
     }
     sys.stdout.buffer.write(json.dumps(output, ensure_ascii=False).encode("utf-8"))
     return 0
