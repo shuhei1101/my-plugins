@@ -15,12 +15,12 @@ pushスキルをMCPツールに移行し、フックとコア処理スクリプ�
 
 | No | 完了 | 作業内容 |
 |---|---|---|
-| 1 |  | `scripts/`フォルダを作成し`post_merge_upgrade.py`を移動 |
-| 2 |  | `.claude/hooks/post-merge-upgrade.py`が`scripts/`を呼ぶ形に変更 |
-| 3 |  | `tools/mcp_server.py`にpushツールを追加（`scripts/`呼び出し） |
-| 4 |  | `tools/post_merge_upgrade.py`を削除 |
-| 5 |  | `.claude/skills/push/SKILL.md`を削除 |
-| 6 |  | workプラグインのバージョンバンプ（1.5 → 1.6） |
+| 1 | 済 | `scripts/`フォルダを作成し`post_merge_upgrade.py`を移動 |
+| 2 | 済 | `.claude/hooks/post-merge-upgrade.py`が`scripts/`を呼ぶ形に変更 |
+| 3 | 済 | `tools/mcp_server.py`にpushツールを追加（`scripts/`呼び出し） |
+| 4 | 済 | `tools/post_merge_upgrade.py`を削除 |
+| 5 | 済 | `.claude/skills/push/SKILL.md`を削除 |
+| 6 | 済 | workプラグインのバージョンバンプ（1.5 → 1.6） |
 
 ## 変更内容
 
@@ -31,3 +31,8 @@ pushスキルをMCPツールに移行し、フックとコア処理スクリプ�
 | 3 | `tools/mcp_server.py` | 編集 | pushツールをscripts/呼び出しに変更 |
 | 4 | `tools/post_merge_upgrade.py` | 削除 | scripts/に移動済み |
 | 5 | `.claude/skills/push/SKILL.md` | 削除 | MCPツールに移行 |
+
+## 参考ドキュメント
+
+- [post-merge-upgrade](.work/notes/hooks/post-merge-upgrade.md)
+- [MCP サーバー](.work/notes/hooks/mcp-server.md)

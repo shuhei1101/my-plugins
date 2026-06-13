@@ -14,7 +14,7 @@
 
 | ツール名 | 委譲先 | 概要 | annotations |
 |---|---|---|---|
-| `push` | `tools/post_merge_upgrade.py` | push + marketplace upgrade + reload-plugins | 書き込み・非破壊 |
+| `push` | `scripts/post_merge_upgrade.py` | push + marketplace upgrade + reload-plugins | 書き込み・非破壊 |
 | `bump_version` | `tools/bump-version.py` | プラグインバージョンバンプ | 〃 |
 | `marketplace` | `tools/marketplace.py` | マーケットプレイス管理 | 書き込み・破壊的（remove で uninstall） |
 | `reload_plugins` | `tools/reload_plugins.py` | marketplace upgrade 後に tmux セッションへ /reload-plugins 送信 | 書き込み・非破壊 |
