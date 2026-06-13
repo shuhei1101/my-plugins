@@ -5,6 +5,7 @@
       "args": [
         "run",
         "--with", "mcp",
+        "--with", "pyyaml",
         "python",
         "${CLAUDE_PLUGIN_ROOT}/mcp/server.py"
       ]
