@@ -93,7 +93,7 @@ def marketplace(
     annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False),
 )
 def reload_plugins() -> CommandResult:
-    """起動中の tmux セッション（ait-0〜10 / plg-1〜10）に /reload-plugins コマンドを送信する。"""
+    """marketplace.py upgrade でキャッシュを最新化してから、起動中の tmux セッション（ait-0〜10 / plg-1〜10）に /reload-plugins コマンドを送信する。"""
     return _run_tool([str(TOOLS / "reload_plugins.py")])
 
 

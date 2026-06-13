@@ -15,9 +15,9 @@
 
 | No | 完了 | 作業内容 |
 |---|---|---|
-| 1 |  | `tools/reload_plugins.py` でtmux送信前に`marketplace.py upgrade`を実行する |
-| 2 |  | `mcp_server.py` の`reload_plugins`ツールのdescriptionを更新する |
-| 3 |  | workプラグインのバージョンバンプ（1.4 → 1.5） |
+| 1 | 済 | `tools/reload_plugins.py` でtmux送信前に`marketplace.py upgrade`を実行する |
+| 2 | 済 | `mcp_server.py` の`reload_plugins`ツールのdescriptionを更新する |
+| 3 | 済 | workプラグインのバージョンバンプ（1.4 → 1.5） |
 
 ## 変更内容
 
@@ -33,3 +33,7 @@
 |---|---|---|---|
 | 1 | reload_plugins実行時にupgradeが先に走る |  |  |
 | 2 | upgrade後にtmuxへ/reload-pluginsが送信される |  |  |
+
+## 参考ドキュメント
+
+- [MCP サーバー](.work/notes/hooks/mcp-server.md)
