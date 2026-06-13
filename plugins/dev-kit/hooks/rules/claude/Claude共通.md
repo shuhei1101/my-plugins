@@ -3,7 +3,10 @@ paths:
   - "**/skills/**/SKILL.md"
   - "**/rules/**/*.md"
   - "**/hooks/**/*.md"
+  - "**/mcp/**"
   - "**/CLAUDE.md"
+  - "**/mcp_server.py"
+  - "**/.mcp.json"
 ---
 
 # Claude 成果物の共通ルール
@@ -31,3 +34,10 @@ paths:
 ```md
 ブラウザに出す依存を増やさない。フレームワーク（React/Vue）・状態管理ライブラリ・UI ライブラリは使わない。外部依存がどうしても必要なときだけ vendoring する（`html/shared/vendor.md`）。dev ツール（tsc / eslint / vitest 等）は別（`html/tooling/tsc運用.md`）。
 ```
+
+## スクリプトの配置場所
+- スクリプトは`{pluginsルート}/scripts/{任意のカテゴリフォルダ}/`配下に配置します。
+  - スクリプトは機能ごとにフォルダを分けてください。
+- スキルから特定スクリプトを呼ぶときにmcpを仲介すること
+  - これにより、スクリプト実行時の説明や引数の説明をスキル側に記載しなくてよいため
+  - スキル内でスクリプトを呼ぶ場合は極力stdioのmcpに登録すると良い。
