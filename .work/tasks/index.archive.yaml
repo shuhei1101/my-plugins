@@ -27,3 +27,11 @@ branches:
   summary: reload送信時に自セッションはターン処理中で取りこぼすため、Stopフックで遅延実行する仕組みに変更
   task: 260613_reload-pluginsの自セッション遅延実行
   completed: true
+- branch: feat/reload-with-upgrade
+  created: '2026-06-13'
+  title: reload-plugins時にmarketplace upgradeも実行する
+  type: feat
+  summary: reload_plugins.py（およびMCPツール）がtmuxに/reload-pluginsを送信する前にmarketplace.py
+    upgradeを実行するよう変更する。これによりキャッシュが常に最新状態に更新される。
+  task: 260613_reload-pluginsにupgrade組み込み
+  completed: true
