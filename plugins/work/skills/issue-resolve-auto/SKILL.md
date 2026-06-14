@@ -10,8 +10,8 @@ disable-model-invocation: true
 
 ### Step 1: 最上位の対応可能イシューを探す
 
-- `.work/issues/target/`配下にISSUEが無ければ → 報告して停止。
-- `.work/issues/target/` の候補を上から5つ決定する。
+- `.work/issues/targets/`配下にISSUEが無ければ → 報告して停止。
+- `.work/issues/targets/` の候補を上から5つ決定する。
    - 決定した5つのイシューを`.work/issues/progress/`に移す
 - 各イシューファイルを開き `対応する／対応しない` のチェックボックスを読む：
    - `- [x] 対応しない` → REJECT アクション（Step 2）。
@@ -62,7 +62,7 @@ disable-model-invocation: true
 
 ### Step 7 結果報告書の作成
 - Step 6で受けた報告をもとに報告書を作成する
-  - 配置場所: `{YYMMDD-HHMM}-{title}.resolve.md`
+  - 配置場所: `.work/issues/logs/{YYMMDD-HHMM}-{title}.resolve.md`
   - 記載ルールは作成時に読み込まれる
   - `/worktree-create`スキルでブランチ作成、ワークツリー作成し、その中で記載
   - 完了後、`/merge`スキルを実行しmasterにマージする
