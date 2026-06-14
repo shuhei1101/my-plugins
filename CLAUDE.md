@@ -1,4 +1,3 @@
-<!-- This file is a Japanese mirror of CLAUDE.md. When updating the English original, update this file too. -->
 # CLAUDE.jp.md — my-plugins 開発者ガイド（日本語訳）
 
 ---
@@ -29,16 +28,3 @@ my-plugins/
 ```
 
 ---
-
-## 参考リンク
-
-| トピック | URL |
-|---------|-----|
-| スキル | https://code.claude.com/docs/ja/skills |
-| プラグイン | https://code.claude.com/docs/ja/plugins |
-| プラグインのインストール | https://code.claude.com/docs/ja/discover-plugins |
-| マーケットプレイス | https://code.claude.com/docs/ja/plugin-marketplaces |
-| プラグインリファレンス（スキーマ） | https://code.claude.com/docs/ja/plugins-reference |
-| サブエージェント | https://code.claude.com/docs/ja/sub-agents |
-| フック | https://code.claude.com/docs/ja/hooks |
-| MCP サーバー | https://code.claude.com/docs/ja/mcp |
