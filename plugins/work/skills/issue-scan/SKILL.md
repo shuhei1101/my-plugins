@@ -71,7 +71,7 @@ description: イシューをスキャンするスキル
   - `/merge`スキルを実行し当該ブランチを完了させる（特にrefactor typeのものとか）
 
 ### ステップ3b: サブエージェントの作業がすべて完了後
-- `/worktree-create`スキルを使用し、ブランチとワークツリーを作成する
+- `worktree_create` MCP ツール（work-tools サーバー）でブランチとワークツリーを作成する
 
 `.work/issues/ISSUE-{N}.md` を書き出す
 先頭に `# ISSUE-{N}: {title}` を書く
@@ -87,7 +87,7 @@ description: イシューをスキャンするスキル
 - Step 3aで受けた報告をもとに報告書を作成する
   - 配置場所: `{YYMMDD-HHMM}-{title}.scan.md`
   - 記載ルールは作成時に読み込まれる
-  - `/worktree-create`スキルでブランチ作成、ワークツリー作成し、その中で記載、完了後masterにマージする
+  - `worktree_create` MCP ツール（work-tools サーバー）でブランチ作成、ワークツリー作成し、その中で記載、完了後masterにマージする
 
 ### ステップ5: コミットする
 `.work/issues/`と結果報告書 をステージしてコミットする

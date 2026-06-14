@@ -21,7 +21,7 @@ disable-model-invocation: true
 
 ### Step 2: REJECT — 使い捨てブランチでクローズし即 master へマージ
 - ブランチを作成する
-- `/worktree-create`スキルを実行し、ワークツリーを作成する
+- `worktree_create` MCP ツール（work-tools サーバー）を実行し、ワークツリーを作成する
 - リジェクトされたイシューごとに `issue_close` MCP ツール（work-tools サーバー）を実行する:
   - issues_dir: `{リポジトリルート}/.work/issues` の絶対パス（`.work/issues/progress/` ではなく `.work/issues/` を指定すること）
   - issue_id: `ISSUE-{N}`
@@ -66,5 +66,5 @@ disable-model-invocation: true
 - Step 6で受けた報告をもとに報告書を作成する
   - 配置場所: `.work/issues/logs/{YYMMDD-HHMM}-{title}.resolve.md`
   - 記載ルールは作成時に読み込まれる
-  - `/worktree-create`スキルでブランチ作成、ワークツリー作成し、その中で記載
+  - `worktree_create` MCP ツール（work-tools サーバー）でブランチ作成、ワークツリー作成し、その中で記載
   - 完了後、`/merge`スキルを実行しmasterにマージする
