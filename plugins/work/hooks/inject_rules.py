@@ -12,7 +12,12 @@ TARGET_TOOLS = ("Edit", "Write", "Read")
 
 RULES_DIR  = pathlib.Path(__file__).resolve().parent.parent / "rules"  # .md ルールファイルの置き場所
 CACHE_PATH = RULES_DIR / "cache.json"                  # スキャン結果キャッシュ
-TOKEN_DIR  = pathlib.Path.home() / ".claude" / "tokens" / "dev-kit" / "rules"  # セッショントークン保存先（プラグイン別）
+TOKEN_DIR  = pathlib.Path.home() / ".claude" / "tokens" / "work" / "rules"  # セッショントークン保存先（プラグイン別）
+
+# 1回の注入で許可する最大文字数（Claude の additional_context 上限）
+CHAR_LIMIT = 10_000
+# 分割注入時に最低確保する body 文字数（これ未満なら分割せず次ブロックで打ち切る）
+MIN_PARTIAL_CHARS = 200
 
 
 def _eprint(msg: str) -> None:
@@ -173,26 +178,26 @@ def _save_token(path: pathlib.Path, data: dict) -> None:
         _eprint(f"トークン書き込みエラー ({path.name}): {e}")
 
 
-
-def _split_body(content: str) -> str:
-    """フロントマターを除いた本文を返す。"""
+def _split_body(content: str, offset: int = 0) -> str:
+    """フロントマターを除いた本文を返す。offset が指定された場合は先頭 offset 文字をスキップする。"""
     if not content.startswith("---"):
-        return content.lstrip("\n")
-    lines = content.splitlines(keepends=True)
-    count = 0
-    end_index = 0
-    for i, line in enumerate(lines):
-        if line.strip() == "---":
-            count += 1
-            if count == 2:
-                end_index = i + 1
-                break
-    if count < 2:
-        return content.lstrip("\n")
-    return "".join(lines[end_index:]).lstrip("\n")
-
-
-CHAR_LIMIT = 10_000
+        body = content.lstrip("\n")
+    else:
+        lines = content.splitlines(keepends=True)
+        count = 0
+        end_index = 0
+        for i, line in enumerate(lines):
+            if line.strip() == "---":
+                count += 1
+                if count == 2:
+                    end_index = i + 1
+                    break
+        if count < 2:
+            body = content.lstrip("\n")
+        else:
+            body = "".join(lines[end_index:]).lstrip("\n")
+    # offset 分スキップして残りを返す
+    return body[offset:]
 
 
 def _render_injection(blocks: list[dict], **ctx: object) -> str:
@@ -216,7 +221,12 @@ def _render_injection(blocks: list[dict], **ctx: object) -> str:
         lstrip_blocks=True,
     )
     tmpl = env.get_template("inject_message.j2")
+    # テンプレートが常に参照する進捗変数のデフォルト値
     ctx.setdefault("remaining_count", 0)
+    ctx.setdefault("loaded_files", 0)
+    ctx.setdefault("total_files", 0)
+    ctx.setdefault("packed_chars", "0")
+    ctx.setdefault("total_chars", "0")
     return tmpl.render(blocks=blocks, **ctx)
 
 
@@ -238,8 +248,8 @@ def main() -> int:
     # マッチング用に絶対パスと cwd 相対パスの両方を用意する
     norm: list[str] = [file_path.replace("\\", "/")]
     try:
-        rel_path = pathlib.Path(file_path).resolve().relative_to(pathlib.Path(os.getcwd()).resolve())
-        norm.append(str(rel_path).replace("\\", "/"))
+        rel = pathlib.Path(file_path).resolve().relative_to(pathlib.Path(os.getcwd()).resolve())
+        norm.append(str(rel).replace("\\", "/"))
     except (ValueError, OSError):
         pass
 
@@ -250,10 +260,10 @@ def main() -> int:
     seen: set[str] = set()
     for entry in entries:
         if any(_match_any(p, norm) for p in entry.get("paths", [])):
-            rel_path = entry["rel_path"]
-            if rel_path not in seen:
-                seen.add(rel_path)
-                matched.append(rel_path)
+            r = entry["rel_path"]
+            if r not in seen:
+                seen.add(r)
+                matched.append(r)
 
     if not matched:
         return 0
@@ -262,12 +272,16 @@ def main() -> int:
     token_path = TOKEN_DIR / f"{session_id}.json"
     token_data = _load_token(token_path)
 
-    # 注入済みルールのリスト（セッション中は有効期限なし）
+    # partial: 部分読み込み済みファイルのオフセット {rel_path: int}
+    _partial = token_data.get("partial")
+    partial_offsets: dict[str, int] = _partial if isinstance(_partial, dict) else {}
+
+    # injected_rules: 完全読み込み済みファイルのリスト
     _rules = token_data.get("rules")
     injected_rules: list[str] = _rules if isinstance(_rules, list) else []
 
-    # このセッションでまだ注入していないルールだけ抽出
-    to_inject = [rel_path for rel_path in matched if rel_path not in injected_rules]
+    # 未完了（完全未読 + partial残り）のファイルを抽出
+    to_inject = [r for r in matched if r not in injected_rules]
 
     # 新規注入がなければ何も出力しない（全ルールが注入済み）
     if not to_inject:
@@ -275,76 +289,100 @@ def main() -> int:
 
     TOKEN_DIR.mkdir(parents=True, exist_ok=True)
 
-    # rel_path → glob パターン一覧の引き当てマップ
     entry_paths_map = {entry["rel_path"]: entry.get("paths", []) for entry in entries}
 
-    # 注入済みは渡さない。to_inject のみ本文展開してテンプレートへ渡す
+    # ブロックを構築（partial がある場合はオフセットから読む）
     blocks: list[dict] = []
-    for rel_path in to_inject:
-        abs_path = (RULES_DIR / rel_path).as_posix()
-        patterns = entry_paths_map.get(rel_path, [])
+    remaining_total_chars = 0  # to_inject 全体の残り body 文字数合計（進捗表示用）
+    for r in to_inject:
+        abs_path = (RULES_DIR / r).as_posix()
+        patterns = entry_paths_map.get(r, [])
         rule_content = ""
         try:
-            rule_content = (RULES_DIR / rel_path).read_text(encoding="utf-8")
+            rule_content = (RULES_DIR / r).read_text(encoding="utf-8")
         except Exception as e:
-            _eprint(f"ルール読み込みエラー ({rel_path}): {e}")
-        body = _split_body(rule_content)
+            _eprint(f"ルール読み込みエラー ({r}): {e}")
+        offset = partial_offsets.get(r, 0)      # 部分読み込みのオフセット（0なら先頭から）
+        remaining_body = _split_body(rule_content, offset)  # 今回読む対象
+        remaining_total_chars += len(remaining_body)
         blocks.append({
-            "abs_path": abs_path,   # 絶対パス（AI が参照用に使う）
-            "patterns": [f"`{p}`" for p in patterns],  # glob パターン一覧（`...` でクォート）
-            "body": body,           # フロントマターを除いた本文
+            "abs_path": abs_path,
+            "patterns": [f"`{p}`" for p in patterns],
+            "body": remaining_body,
+            "rel_path": r,
+            "offset": offset,
         })
 
-    # rel_path を blocks に埋め込む（パック後のトークン更新に使う）
-    for block, rel_path in zip(blocks, to_inject):
-        block["rel_path"] = rel_path
-
-    # 全ブロックの総文字数を算出（進捗表示用）
-    total_rendered = _render_injection(blocks)
-    total_chars = len(total_rendered)
-
     # CHAR_LIMIT に収まる分だけ貪欲にパック
+    # 大きなファイルは部分的に含め、残りは partial として次回へ
     packed_blocks: list[dict] = []
+    newly_completed: list[str] = []           # 今回完全読み終えたファイル
+    new_partial_offsets: dict[str, int] = {}  # 今回部分読みになったファイル
+
     for i, block in enumerate(blocks):
         candidate = packed_blocks + [block]
         rendered = _render_injection(candidate)
+
         if len(rendered) <= CHAR_LIMIT:
+            # 収まる → 完全追加
             packed_blocks.append(block)
-        elif i == 0:
-            # 1件だけでも超える場合は仕方なく含めてブロック
-            packed_blocks.append(block)
-            break
+            newly_completed.append(block["rel_path"])
         else:
+            # 収まらない → 利用可能な body 文字数を計算して分割を試みる
+            current_len = len(_render_injection(packed_blocks)) if packed_blocks else 0
+            # 空 body でオーバーヘッドを計算
+            overhead_block = {**block, "body": ""}
+            overhead_len = len(_render_injection(packed_blocks + [overhead_block])) - current_len
+            available_body_chars = CHAR_LIMIT - current_len - overhead_len
+
+            if available_body_chars >= MIN_PARTIAL_CHARS:
+                # 最低文字数以上確保できる → 部分注入して次回へ続きを残す
+                partial_body = block["body"][:available_body_chars]
+                packed_blocks.append({**block, "body": partial_body})
+                new_partial_offsets[block["rel_path"]] = block["offset"] + available_body_chars
+            elif i == 0:
+                # 最初の1件から既にオーバーかつ MIN_PARTIAL_CHARS も確保できない
+                # → CHAR_LIMIT 分だけ強制注入（無限ループ防止）
+                partial_body = block["body"][:CHAR_LIMIT]
+                packed_blocks.append({**block, "body": partial_body})
+                new_partial_offsets[block["rel_path"]] = block["offset"] + CHAR_LIMIT
+            # else: 前ブロックまでで打ち切り
             break
 
-    remaining_count = len(blocks) - len(packed_blocks)
-    packed_rel_paths = [b["rel_path"] for b in packed_blocks]
-
-    # 注入済みリストをパック分だけ更新（残りは次回呼び出しで注入）
-    token_data["rules"] = list(set(injected_rules) | set(packed_rel_paths))
+    # トークン更新: 完全読み込み済みリストと partial オフセットを更新
+    token_data["rules"] = list(set(injected_rules) | set(newly_completed))
+    # 完全読み込み済みを partial から削除し、新しい partial を追加
+    updated_partial = {k: v for k, v in partial_offsets.items() if k not in newly_completed}
+    updated_partial.update(new_partial_offsets)
+    token_data["partial"] = updated_partial
     _save_token(token_path, token_data)
 
-    loaded_files = len(injected_rules) + len(packed_blocks)
-    total_files = len(injected_rules) + len(blocks)
-    # packed_chars は進捗なし時のレンダリング結果で算出（進捗セクションを含まない）
-    packed_body_chars = len(_render_injection(packed_blocks))
+    # 進捗変数
+    # remaining_count: 次回も処理が必要な件数（partial中 + 未着手）
+    remaining_count = len(new_partial_offsets) + (len(blocks) - len(packed_blocks))
+    loaded_files = len(injected_rules) + len(newly_completed)
+    total_files = len(injected_rules) + len(to_inject)
+    packed_body_chars = sum(len(b["body"]) for b in packed_blocks)
 
-    # 進捗なし（全注入完了）の場合は remaining_count=0 のままテンプレートへ渡す
     reason = _render_injection(
         packed_blocks,
         remaining_count=remaining_count,
         loaded_files=loaded_files,
         total_files=total_files,
         packed_chars=f"{packed_body_chars:,}",
-        total_chars=f"{total_chars:,}",
+        total_chars=f"{remaining_total_chars:,}",
     )
     decision = "deny" if remaining_count > 0 else "allow"
 
-    progress_line = (
-        f"  ⚠️ 読み込み中: {loaded_files}/{total_files} ファイル / "
-        f"{packed_body_chars:,}/{total_chars:,} 文字 — 残り {remaining_count} ファイル\n"
-        if remaining_count > 0 else ""
-    )
+    # systemMessage: 完了・未完了を問わず常に件数を表示する
+    if remaining_count > 0:
+        progress_line = (
+            f"  ⚠️ 読み込み中: {loaded_files}/{total_files} ファイル / "
+            f"{packed_body_chars:,}/{remaining_total_chars:,} 文字 — 残り {remaining_count} 未完了\n"
+        )
+    else:
+        progress_line = f"  ✅ 読み込み完了: {loaded_files}/{total_files} ファイル\n"
+    packed_rel_paths = [b["rel_path"] for b in packed_blocks]
     system_msg = "[rules-injection]\n" + progress_line + "".join(f"  · {f}\n" for f in packed_rel_paths)
 
     output = {
