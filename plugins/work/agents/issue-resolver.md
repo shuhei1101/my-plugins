@@ -13,7 +13,7 @@ model: sonnet
 
 ## 作業内容
 1. ブランチ名を決める（`type/kebab-title`）
-2. `worktree-create`スキルを実行し、ワークツリーを作る
+2. `worktree_create` MCP ツール（work-tools サーバー）を実行し、ワークツリーを作る
 3. `/work:start`スキルを実行し、作業を進める
 4. 関連イシューの`direct_merge`が
    - **false** → 停止。マージ待ちでユーザーに残す

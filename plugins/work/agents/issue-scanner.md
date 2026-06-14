@@ -53,7 +53,7 @@ model: sonnet
 
 実装する際は以下流れに沿う
 1. ブランチ名を決める（`type/kebab-title`
-2. `worktree-create`スキルを実行し、ワークツリーを作る
+2. `worktree_create` MCP ツール（work-tools サーバー）を実行し、ワークツリーを作る
 3. `/work:start`スキルを実行し、作業を進める
 4. 作業完了後、`/merge`スキルを実行しマージする → 処理を終了する
 
