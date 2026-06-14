@@ -125,3 +125,11 @@ branches:
   summary: 破壊マージ防止のため、git mergeコマンド検出時にmasterが対象ブランチの祖先かどうかを事前チェックするフックを実装する（案B）
   task: 260614_pre-merge-master取り込みチェックガード実装
   completed: true
+- branch: feat/merge-safety-guards
+  created: '2026-06-14'
+  title: マージ事故防止ガード一括追加
+  type: feat
+  summary: サブエージェントのコンフリクト自動解消禁止プロンプト追加、静かなフックガード（worktree remove force / git rm 重要ファイル
+    / Stop hook 大量削除検知）、worktree base ref を origin/master 強制
+  task: 260614_マージ事故防止ガード一括追加
+  completed: true
