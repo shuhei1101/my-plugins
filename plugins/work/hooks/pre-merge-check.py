@@ -11,16 +11,12 @@
 
 適用除外: `git merge master/main`（上流取り込み）
 env: WORK_GUARD=false/0/no/off で無効化可能
-
-Args:
-    sys.argv[1]: プロンプト本文のMarkdownファイルパス
 """
 
 from __future__ import annotations
 
 import json
 import os
-import pathlib
 import re
 import subprocess
 import sys
@@ -80,25 +76,21 @@ def main() -> None:
 
     git_args = _build_git_args(git_dir)
 
-    prompt_path = pathlib.Path(sys.argv[1])
-    base_text = prompt_path.read_text(encoding="utf-8") if prompt_path.exists() else ""
-
-    # チェック1: masterがブランチの祖先かを確認（案B）
-    # returncode=0 → masterはbranchの祖先（branchがmasterを取り込み済み）
+    # masterがブランチの祖先かを確認（masterを取り込み済みかどうか）
+    # returncode=0 → masterはbranchの祖先（取り込み済み）
     ancestor_check = subprocess.run(
         git_args + ["merge-base", "--is-ancestor", "master", branch],
         capture_output=True,
     )
     if ancestor_check.returncode != 0:
         _block(
-            base_text
-            + f"\n\n---\n\n[チェック1 NG] `{branch}` は `master` の最新内容を取り込んでいません。\n"
+            f"`{branch}` は `master` の最新内容を取り込んでいません。\n"
             "先に以下を実行してから再度マージしてください:\n\n"
             f"```bash\ngit -C <worktree> merge master\n```"
         )
         return
 
-    # チェック2: dry-runマージでコンフリクト有無を確認
+    # dry-runマージでコンフリクト有無を確認
     dry_run = subprocess.run(
         git_args + ["merge", "--no-commit", "--no-ff", branch],
         capture_output=True,
@@ -109,11 +101,9 @@ def main() -> None:
     subprocess.run(git_args + ["merge", "--abort"], capture_output=True)
 
     if dry_run.returncode != 0:
-        # コンフリクト情報を収集して表示
         conflict_info = dry_run.stdout.strip() or dry_run.stderr.strip()
         _block(
-            base_text
-            + f"\n\n---\n\n[チェック2 NG] `{branch}` とのマージでコンフリクトが発生します。\n\n"
+            f"`{branch}` とのマージでコンフリクトが発生します。\n\n"
             f"コンフリクト詳細:\n```\n{conflict_info}\n```\n\n"
             "コンフリクトを解消してから再度マージしてください。"
         )

@@ -44,8 +44,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-merge-check.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-merge-check.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-merge-check.py"
             ]
           },
           {
