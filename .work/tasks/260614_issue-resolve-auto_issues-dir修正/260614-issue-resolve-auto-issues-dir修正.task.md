@@ -40,3 +40,4 @@
 
 - `plugins/work/skills/issue-resolve-auto/SKILL.md`: issue-resolve-auto スキル定義
 - `plugins/work/hooks/protected-branch-guard.py`: 保護ブランチガードフック
+- [protected-branch-guard ノート](../../notes/hooks/protected-branch-guard.md): フック仕様メモ
