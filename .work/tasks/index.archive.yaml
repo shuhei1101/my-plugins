@@ -49,3 +49,11 @@ branches:
   summary: pushスキルを削除しMCPツールに登録。scriptsフォルダを作成しコア処理を分離。フック（post-merge-upgrade.py）はscripts/をラップする形に整理する。
   task: 260613_pushMCP移行とフックスクリプト分離
   completed: true
+- branch: refactor/hooks-rules-relocate
+  created: '2026-06-14'
+  title: hooksルール配置変更
+  type: refactor
+  summary: work/dev-kit プラグインの hooks/rules/ 内スクリプトを hooks/ 直下に移動し、rules/ フォルダを plugin
+    直下に再配置する。参照パスも合わせて更新。
+  task: 260614_hooksルール配置変更
+  completed: true
