@@ -80,3 +80,11 @@ branches:
     フォルダ以下に closed/ と _index.archive.yaml が誤作成されるバグを修正する。
   task: 260614_issue-resolve-auto_issues-dir修正
   completed: true
+- branch: fix/inject-rules-improvements
+  created: '2026-06-14'
+  title: inject_rules スクリプト改善
+  type: fix
+  summary: inject_rules.py の3件修正：進捗表示の統一（完了時も件数表示）、大ファイル分割読み込み（オフセット管理）、TOKEN_DIR
+    のバグ修正（workプラグインが"dev-kit"パスを参照）
+  task: 260614_inject_rulesスクリプト改善
+  completed: true

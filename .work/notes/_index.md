@@ -10,3 +10,4 @@
 - [protected-branch-guard](hooks/protected-branch-guard.md): 保護ブランチへの直接ファイル編集をブロック（Edit/Write フック）
 
 - [rules-structure](hooks/rules-structure.md): hooksルール配置構成（スクリプトとルールの分離）
+- [inject_rules注入ロジック](hooks/inject_rules注入ロジック.md): inject_rules.py の注入動作・トークン管理・分割読み込み仕様
