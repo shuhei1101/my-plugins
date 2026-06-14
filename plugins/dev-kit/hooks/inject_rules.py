@@ -10,7 +10,7 @@ import sys
 LOG_TAG      = "rules-injection"
 TARGET_TOOLS = ("Edit", "Write", "Read")
 
-RULES_DIR  = pathlib.Path(__file__).resolve().parent   # .md ルールファイルの置き場所
+RULES_DIR  = pathlib.Path(__file__).resolve().parent.parent / "rules"  # .md ルールファイルの置き場所
 CACHE_PATH = RULES_DIR / "cache.json"                  # スキャン結果キャッシュ
 TOKEN_DIR  = pathlib.Path.home() / ".claude" / "tokens" / "dev-kit" / "rules"  # セッショントークン保存先（プラグイン別）
 
@@ -208,8 +208,9 @@ def _render_injection(blocks: list[dict], **ctx: object) -> str:
         raise ImportError(
             f"jinja2 が見つかりません: {e}。`pip install jinja2` でインストールしてください。"
         ) from e
+    _hooks_dir = pathlib.Path(__file__).resolve().parent
     env = Environment(
-        loader=FileSystemLoader(str(RULES_DIR)),
+        loader=FileSystemLoader(str(_hooks_dir)),
         keep_trailing_newline=True,
         trim_blocks=True,
         lstrip_blocks=True,
