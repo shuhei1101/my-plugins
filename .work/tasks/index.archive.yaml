@@ -118,3 +118,10 @@ branches:
     に gitignore 対象ファイルの除外を追加する。
   task: 260614_ガードgitignore除外修正
   completed: true
+- branch: feat/pre-merge-master-check
+  created: '2026-06-14'
+  title: pre-merge master取り込みチェックガード実装
+  type: feat
+  summary: 破壊マージ防止のため、git mergeコマンド検出時にmasterが対象ブランチの祖先かどうかを事前チェックするフックを実装する（案B）
+  task: 260614_pre-merge-master取り込みチェックガード実装
+  completed: true
