@@ -103,3 +103,10 @@ branches:
   summary: メインリポジトリ（master/main/develop）上での git add コマンドをフックで検出・ブロックし、ワークツリーでの作業を強制する
   task: 260614_git_add_guard
   completed: true
+- branch: fix/master-commit-guard-gitignore
+  created: '2026-06-14'
+  title: master-commit-guard gitignore対象ファイルのガード除外
+  type: fix
+  summary: master-commit-guard で staged ファイルが全て gitignore 対象の場合はブロックしないよう修正する。
+  task: 260614_master-commit-guard gitignore対象ファイルのガード除外
+  completed: true
