@@ -1,7 +1,4 @@
-"""PostToolUse フック: master マージ後アップグレードのシン・ラッパー。
-
-ビジネスロジックは tools/post_merge_upgrade.py に委譲する。
-"""
+"""PostToolUse フック: master マージ後に scripts/post_merge_upgrade.py を実行する。"""
 import sys
 import json
 import re
@@ -38,8 +35,7 @@ if d:
     if "CONFLICT" in str(d.get("tool_response") or ""):
         sys.exit(0)
 
-# ビジネスロジックを tools/post_merge_upgrade.py に委譲
 subprocess.run(
-    [sys.executable, str(REPO_ROOT / "tools" / "post_merge_upgrade.py")],
+    [sys.executable, str(REPO_ROOT / "scripts" / "post_merge_upgrade.py")],
     cwd=REPO_ROOT, check=False,
 )

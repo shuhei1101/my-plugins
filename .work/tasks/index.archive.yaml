@@ -42,3 +42,10 @@ branches:
   summary: cmd_upgrade()のuninstallコマンドにスコープを指定していないため、localスコープのプラグインのアンインストールが失敗しupgradeが機能しない問題を修正する。
   task: 260613_cmd_upgradeスコープ修正
   completed: true
+- branch: refactor/push-mcp-hooks-separation
+  created: '2026-06-13'
+  title: pushスキルをMCPに移行・フック/スクリプト分離
+  type: refactor
+  summary: pushスキルを削除しMCPツールに登録。scriptsフォルダを作成しコア処理を分離。フック（post-merge-upgrade.py）はscripts/をラップする形に整理する。
+  task: 260613_pushMCP移行とフックスクリプト分離
+  completed: true
