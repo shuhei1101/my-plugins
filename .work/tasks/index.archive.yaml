@@ -110,3 +110,11 @@ branches:
   summary: master-commit-guard で staged ファイルが全て gitignore 対象の場合はブロックしないよう修正する。
   task: 260614_master-commit-guard gitignore対象ファイルのガード除外
   completed: true
+- branch: fix/guard-gitignore-exemption
+  created: '2026-06-14'
+  title: ガード gitignore 除外修正（master-commit-guard revert + protected-branch-guard fix）
+  type: fix
+  summary: master-commit-guard の不要な gitignore チェックを revert し、protected-branch-guard
+    に gitignore 対象ファイルの除外を追加する。
+  task: 260614_ガードgitignore除外修正
+  completed: true
