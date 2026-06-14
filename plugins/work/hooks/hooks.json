@@ -31,6 +31,15 @@
         "matcher": "Bash",
         "hooks": [
           {
+            "_description": ".git / .claude 配下への削除操作を永久ブロック",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/delete-guard.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/delete-guard.md"
+            ]
+          },
+          {
             "_description": "マスターコミットガード",
             "type": "command",
             "command": "python",

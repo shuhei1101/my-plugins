@@ -9,6 +9,7 @@
 - [work-mcpサーバー](hooks/work-mcpサーバー.md): work-tools MCP サーバー（work コマンドの MCP 公開と Stop フック制御）
 - [master-commit-guard](hooks/master-commit-guard.md): 保護ブランチへの直接コミットを完全ブロック
 - [protected-branch-guard](hooks/protected-branch-guard.md): 保護ブランチへの直接ファイル編集をブロック（Edit/Write フック）
+- [delete-guard](hooks/delete-guard.md): .git / .claude ディレクトリへの削除操作を永久ブロック
 
 - [rules-structure](hooks/rules-structure.md): hooksルール配置構成（スクリプトとルールの分離）
 - [inject_rules注入ロジック](hooks/inject_rules注入ロジック.md): inject_rules.py の注入動作・トークン管理・分割読み込み仕様
