@@ -31,12 +31,22 @@
         "matcher": "Bash",
         "hooks": [
           {
-            "_description": ".git / .claude 配下への削除操作を永久ブロック",
+            "_description": ".git / .claude / .gitignore / .gitattributes への削除操作を永久ブロック",
             "type": "command",
             "command": "python",
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/hooks/delete-guard.py",
               "${CLAUDE_PLUGIN_ROOT}/hooks/delete-guard.md"
+            ]
+          },
+
+          {
+            "_description": "危険な git コマンド（worktree remove --force / git rm 重要ファイル / -X ours/theirs 等）を永久ブロック",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/dangerous-git-guard.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/dangerous-git-guard.md"
             ]
           },
           {
@@ -108,6 +118,15 @@
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/hooks/work_complete_check.py",
               "${CLAUDE_PLUGIN_ROOT}/hooks/work_complete_check.md"
+            ]
+          },
+
+          {
+            "_description": "直近コミットでN件超のファイル削除があれば警告コンテキストを注入",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/post-commit-deletion-check.py"
             ]
           },
           {

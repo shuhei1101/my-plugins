@@ -1,7 +1,7 @@
 """workspace / delete-guard — PreToolUse(Bash) hook.
 
-`rm` または `rmdir` で `.git` または `.claude` ディレクトリを削除しようとしたとき、
-永久にブロックする（再実行しても通らない）。
+`rm` または `rmdir` で重要ファイル/ディレクトリ（`.git` `.claude` `.gitignore`
+`.gitattributes`）を削除しようとしたとき、永久にブロックする（再実行しても通らない）。
 
 Args:
     sys.argv[1]: ブロックメッセージの Markdown ファイルパス
@@ -17,9 +17,19 @@ import sys
 # rm / rmdir コマンドの検出
 _RM_PATTERN = re.compile(r"\b(?:rm|rmdir)\b")
 
-# .git または .claude がパスコンポーネントとして登場するパターン
-# .gitignore 等は除外（.git の直後が英数字なら非対象）
-_PROTECTED_PATH = re.compile(r"(?:^|[\s/\"\'\\])\.(?:git|claude)(?:[/\s\"\'\\]|$)")
+# 保護対象パターン:
+#   .git / .claude — ディレクトリ（後ろに / か区切りが続く、または末尾）
+#   .gitignore / .gitattributes — ファイル名そのもの（後ろに英数字が続かない＝完全一致）
+_PROTECTED_PATH = re.compile(
+    r"(?:^|[\s/\"\'\\])"
+    r"\.(?:git|claude)(?:[/\s\"\'\\]|$)"
+    r"|"
+    r"(?:^|[\s/\"\'\\])"
+    r"\.gitignore(?:[\s\"\'\\]|$)"
+    r"|"
+    r"(?:^|[\s/\"\'\\])"
+    r"\.gitattributes(?:[\s\"\'\\]|$)"
+)
 
 
 def main() -> None:
