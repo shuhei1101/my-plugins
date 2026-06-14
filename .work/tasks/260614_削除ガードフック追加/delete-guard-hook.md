@@ -20,3 +20,5 @@
 - env `WORK_GUARD=false` でも無効化しない（意図的に恒久ブロック）
 
 ## 参考ドキュメント
+
+- [delete-guard ノート](../../notes/hooks/delete-guard.md)
