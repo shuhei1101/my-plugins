@@ -72,6 +72,14 @@ branches:
     description 空、resolve-auto Step 7 のレポート配置先未記載などを修正
   task: 260614_work-plugin-v1-7-bugs
   completed: true
+- branch: fix/issue-resolve-auto-issues-dir
+  created: '2026-06-14'
+  title: issue-resolve-auto の issues_dir パス未指定バグ修正
+  type: fix
+  summary: issue-resolve-auto スキルの Step 2 で issue_close MCP ツールへ渡す issues_dir が未明記のため、progress
+    フォルダ以下に closed/ と _index.archive.yaml が誤作成されるバグを修正する。
+  task: 260614_issue-resolve-auto_issues-dir修正
+  completed: true
 - branch: fix/inject-rules-improvements
   created: '2026-06-14'
   title: inject_rules スクリプト改善

@@ -33,10 +33,13 @@ def resolve_check_dir(data: dict) -> str:
     """ブランチチェック対象ディレクトリを決定する。"""
     file_path = data.get("tool_input", {}).get("file_path", "")
     if file_path:
-        # ファイルパスの親ディレクトリを優先（存在しない場合は cwd にフォールバック）
-        parent = os.path.dirname(os.path.abspath(file_path))
-        if os.path.exists(parent):
-            return parent
+        # ファイルパスの祖先ディレクトリを辿り、最初に存在するものを使う
+        # 新規ファイル作成時に親ディレクトリがまだ存在しない場合に対応
+        candidate = os.path.dirname(os.path.abspath(file_path))
+        while candidate and candidate != os.path.dirname(candidate):
+            if os.path.exists(candidate):
+                return candidate
+            candidate = os.path.dirname(candidate)
     return data.get("cwd", ".")
 
 
