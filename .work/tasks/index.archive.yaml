@@ -88,3 +88,11 @@ branches:
     のバグ修正（workプラグインが"dev-kit"パスを参照）
   task: 260614_inject_rulesスクリプト改善
   completed: true
+- branch: fix/issue-resolve-auto-worktree-mcp
+  created: '2026-06-14'
+  title: issue-resolve-auto のworktree-createスキル参照をMCPツール呼び出しに更新
+  type: fix
+  summary: issue-resolve-auto/SKILL.md 内の廃止済み /worktree-create スキル参照を worktree_create
+    MCP ツール呼び出しに置き換える
+  task: 260614_issue-resolve-auto worktree-createスキル参照をMCP化
+  completed: true
