@@ -44,11 +44,7 @@ _DANGEROUS_PATTERNS: list[tuple[re.Pattern[str], str]] = [
         re.compile(
             r"\bgit\s+merge\b[^\n]*\s(?:-X\s*(?:ours|theirs)|--strategy-option[= ](?:ours|theirs))\b"
         ),
-        "git merge -X ours/theirs（自動コンフリクト解消は事故の元）",
-    ),
-    (
-        re.compile(r"\bgit\s+(?:checkout|merge)\b[^\n]*\s--(?:ours|theirs)\b"),
-        "git checkout/merge --ours/--theirs（自動コンフリクト解消は事故の元）",
+        "git merge -X ours/theirs（一括自動解消は事故の元 — ファイル単位で `git checkout --ours/--theirs -- <path>` を使う）",
     ),
 ]
 

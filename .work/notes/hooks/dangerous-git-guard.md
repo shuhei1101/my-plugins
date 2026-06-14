@@ -12,8 +12,10 @@
 | 1 | `git worktree remove --force` / `-f` | 作業中ワークツリーを強制削除して in-progress 作業が消える |
 | 2 | `git rm` で `.gitignore` / `.gitattributes` / `.claude/` | 重要ファイルの追跡削除 |
 | 3 | `git checkout/restore` で同上 | 重要ファイルの上書き復元 |
-| 4 | `git merge -X ours/theirs` / `--strategy-option=ours/theirs` | 自動コンフリクト解消 — master 側追加ファイル誤削除の原因 |
-| 5 | `git checkout/merge --ours/--theirs` | 同上 |
+| 4 | `git merge -X ours/theirs` / `--strategy-option=ours/theirs` | 一括自動コンフリクト解消 — master 側追加ファイル誤削除の原因 |
+
+`git checkout --ours/--theirs -- <path>` のような **ファイル単位の指定は許可**（AI が個別判断する正規ルート）。
+無引数の `git checkout --ours` 一括解消は SKILL.md の運用ルールで禁止する（フックでは弾かない）。
 
 ## 設計上のポイント
 
