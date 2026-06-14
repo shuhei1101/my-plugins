@@ -9,5 +9,5 @@ protected-branch-guard に gitignore 対象ファイルの除外を追加する�
 
 | 作業 | 完了 |
 | ---- | ---- |
-| `master-commit-guard.py` の gitignore チェックを revert | |
-| `protected-branch-guard.py` に gitignore 対象ファイルの除外を追加 | |
+| `master-commit-guard.py` の gitignore チェックを revert | 済 |
+| `protected-branch-guard.py` に gitignore 対象ファイルの除外を追加 | 済 |
