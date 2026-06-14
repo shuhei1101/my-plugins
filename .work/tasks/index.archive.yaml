@@ -96,3 +96,10 @@ branches:
     MCP ツール呼び出しに置き換える
   task: 260614_issue-resolve-auto worktree-createスキル参照をMCP化
   completed: true
+- branch: feat/git-add-guard
+  created: '2026-06-14'
+  title: メインリポジトリでの git add をブロックするフック追加
+  type: feat
+  summary: メインリポジトリ（master/main/develop）上での git add コマンドをフックで検出・ブロックし、ワークツリーでの作業を強制する
+  task: 260614_git_add_guard
+  completed: true
