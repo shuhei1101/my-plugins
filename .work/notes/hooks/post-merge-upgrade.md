@@ -26,6 +26,15 @@ stdin あり（フック起動）の場合のみ以下を確認してスキッ�
 2. `python tools/marketplace.py upgrade`
 3. `python tools/reload_plugins.py`（tmux セッションに `/reload-plugins` 送信）
 
+各サブステップは `_run_step()` 経由で実行され、以下を必ず行う:
+- `capture_output=True` で stdout / stderr を取得
+- 30 秒 timeout でハング検知（タイムアウト時は FAIL レポート）
+- 結果を Markdown レポート形式（`### {label}: OK/FAIL` + stdout/stderr）に整形
+- すべての結果を `run()` が結合して 1 つの文字列で return
+
+`main()` でレポートを print → フック側がそれを取得して `hookSpecificOutput.additionalContext` で会話に注入する。
+これにより silent fail（push 失敗が握り潰されて気付けない）を防ぐ。
+
 ## reload の自セッション遅延実行
 
 実行者自身のセッションはターン処理中で send-keys を取りこぼすため、即時送信しない:

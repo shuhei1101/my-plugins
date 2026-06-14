@@ -133,3 +133,11 @@ branches:
     / Stop hook 大量削除検知）、worktree base ref を origin/master 強制
   task: 260614_マージ事故防止ガード一括追加
   completed: true
+- branch: fix/post-merge-upgrade-silent-fail
+  created: '2026-06-14'
+  title: post-merge-upgrade のサイレント失敗を恒久対策
+  type: fix
+  summary: push 失敗を握り潰している post_merge_upgrade.py に capture_output + returncode チェックを入れ、WSL
+    パス変換とフックからの会話注入で必ず可視化されるようにする
+  task: 260614_post-merge-upgrade-silent-fail対策
+  completed: true
