@@ -21,7 +21,7 @@
 | 1 | 済 | `SKILL.md` Step 2 の `issue_close` 呼び出しに `issues_dir` の絶対パス指定を明記 |
 | 2 | 済 | `SKILL.md` Step 4 の `issue_set_status` の `issues_dir` にも絶対パス明記 |
 | 3 | 済 | `protected-branch-guard.py` の `resolve_check_dir` を祖先辿りロジックに修正 |
-| 4 | - | `.work/notes/` の関連ノートを更新する |
+| 4 | 済 | `.work/notes/` の関連ノートを更新する |
 
 ## 変更内容
 
