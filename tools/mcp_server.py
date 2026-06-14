@@ -16,7 +16,6 @@ from pydantic import BaseModel, Field
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TOOLS = REPO_ROOT / "tools"
-SCRIPTS = REPO_ROOT / "scripts"
 
 mcp = FastMCP("my-plugins-tools")
 
@@ -45,7 +44,7 @@ def _run_tool(args: list[str]) -> CommandResult:
 )
 def push() -> CommandResult:
     """master を origin に push し、marketplace upgrade と全 tmux セッションへの /reload-plugins 送信まで一括実行する。"""
-    return _run_tool([str(SCRIPTS / "post_merge_upgrade.py")])
+    return _run_tool([str(TOOLS / "post_merge_upgrade.py")])
 
 
 @mcp.tool(
