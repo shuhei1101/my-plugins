@@ -8,14 +8,14 @@ ISSUE-361 のマージ事故（2849 ファイル誤削除）を踏まえ、確�
 
 | No | 作業 | 完了 |
 | --- | --- | --- |
-| 1 | `skills/merge/SKILL.md` のコンフリクト自動解消方針を「停止して報告」に書き換え | 未 |
-| 2 | `agents/issue-resolver.md` にコンフリクト時の自動解消禁止を明記 | 未 |
-| 3 | `skills/issue-resolve-auto/SKILL.md` のサブエージェント呼び出し時の指示にも明記 | 未 |
-| 4 | `delete-guard.py` を拡張して `.gitignore` / `.gitattributes` も対象に | 未 |
-| 5 | 新規 `dangerous-git-guard.py` 追加（`worktree remove --force` / `git rm` 重要ファイル / `git checkout --` 重要ファイル を block） | 未 |
-| 6 | 新規 `post-commit-deletion-check.py`（Stop hook）追加（直近コミットで N 件超削除なら警告） | 未 |
-| 7 | `worktree-tool.py` の `cmd_create` で `origin/<current_branch>` を fetch して base ref に使う | 未 |
-| 8 | バージョンアップ（plugin.json / marketplace.json） | 未 |
+| 1 | `skills/merge/SKILL.md` のコンフリクト自動解消方針を「停止して報告」に書き換え | 済 |
+| 2 | `agents/issue-resolver.md` にコンフリクト時の自動解消禁止を明記 | 済 |
+| 3 | `skills/issue-resolve-auto/SKILL.md` のサブエージェント呼び出し時の指示にも明記 | 済 |
+| 4 | `delete-guard.py` を拡張して `.gitignore` / `.gitattributes` も対象に | 済 |
+| 5 | 新規 `dangerous-git-guard.py` 追加（`worktree remove --force` / `git rm` 重要ファイル / `git checkout --` 重要ファイル を block） | 済 |
+| 6 | 新規 `post-commit-deletion-check.py`（Stop hook）追加（直近コミットで N 件超削除なら警告） | 済 |
+| 7 | `worktree-tool.py` の `cmd_create` で `origin/<current_branch>` を fetch して base ref に使う | 済 |
+| 8 | バージョンアップ（plugin.json / marketplace.json） | 済 |
 
 ## 仕様
 
@@ -24,3 +24,8 @@ Phase 2: 静かなガード — 確認プロンプトを挟まず、危険コマ
 Phase 3: base ref 修正 — worktree 作成時に `origin/<parent_branch>` を fetch してから base にする。古い HEAD からの分岐を防ぐ。
 
 ## 参考ドキュメント
+
+- [delete-guard ノート](../../notes/hooks/delete-guard.md)
+- [dangerous-git-guard ノート](../../notes/hooks/dangerous-git-guard.md)
+- [post-commit-deletion-check ノート](../../notes/hooks/post-commit-deletion-check.md)
+- [worktree-base-ref ノート](../../notes/hooks/worktree-base-ref.md)
