@@ -9,7 +9,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/rules/inject_rules.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/inject_rules.py"
             ]
           }
         ]
@@ -120,7 +120,7 @@
             "_description": "圧縮前にセッショントークンを削除",
             "type": "command",
             "command": "python",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/rules/clear_session_token.py"]
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/clear_session_token.py"]
           }
         ]
       }
