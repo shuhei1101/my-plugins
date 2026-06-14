@@ -30,13 +30,13 @@ _DANGEROUS_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     ),
     (
         re.compile(
-            r"\bgit\s+rm\b[^\n]*\b(?:\.gitignore|\.gitattributes|\.claude/)"
+            r"\bgit\s+rm\b[^\n]*(?:\s|/|^)(?:\.gitignore|\.gitattributes|\.claude/)"
         ),
         "git rm で重要ファイル（.gitignore / .gitattributes / .claude/）を削除",
     ),
     (
         re.compile(
-            r"\bgit\s+(?:checkout|restore)\b[^\n]*\b(?:\.gitignore|\.gitattributes|\.claude/)"
+            r"\bgit\s+(?:checkout|restore)\b[^\n]*(?:\s|/|^)(?:\.gitignore|\.gitattributes|\.claude/)"
         ),
         "git checkout/restore で重要ファイル（.gitignore / .gitattributes / .claude/）を上書き",
     ),
