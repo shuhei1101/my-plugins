@@ -10,9 +10,10 @@ disable-model-invocation: true
 
 ### Step 1: 最上位の対応可能イシューを探す
 
-- `.work/issues/` が無ければ → 報告して停止。
-- `.work/issues/_index.yaml` を読む。`status: not_started` のエントリをイシュー番号の昇順で収集する。
-- 候補を上から走査する。各エントリのイシューファイルを開き `対応する／対応しない` のチェックボックスを読む：
+- `.work/issues/target/`配下にISSUEが無ければ → 報告して停止。
+- `.work/issues/target/` の候補を上から5つ決定する。
+   - 決定した5つのイシューを`.work/issues/progress/`に移す
+- 各イシューファイルを開き `対応する／対応しない` のチェックボックスを読む：
    - `- [x] 対応しない` → REJECT アクション（Step 2）。
    - `- [x] 対応する` → ACCEPT アクション（Step 3）。
    - 全て `- [ ]`（未チェック＝未レビュー）→ スキップ。
@@ -26,7 +27,7 @@ disable-model-invocation: true
 
 ### Step 3: `direct_merge` の値を決定する:
 #### `direct_merge: true`
-- イシューが`対応する`かつ`マージ確認`にチェックが入っていない場合
+- イシューが`対応する`かつ`マージ前確認不要`にチェックが入っている場合
 - リファクタリング（表面の動作は変わらない変更）
 - 命名規則変更
 - タイムゾーン挙動

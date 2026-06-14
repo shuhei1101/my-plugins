@@ -24,7 +24,7 @@ description: ブランチマージするスキル。「マージして」って�
 - ワークツリーの `.work/tasks/{date}_{title}/{YYMMDD}-{日本語タイトル}.task.md`を読む
   - タスクドキュメントの `## 関連イシュー` セクションを読み込み
 - テーブルの各行について `issue_close` MCP ツール（work-tools サーバー）を実行:
-  - issues_dir: `{WORKTREE_PATH}/.work/issues` / issue_id: `ISSUE-{NNN}` / resolution: `resolved|wontfix` / linked_branch: `{BRANCH_NAME}`
+  - issues_dir: `{WORKTREE_PATH}/.work/issues/progress` / issue_id: `ISSUE-{NNN}` / resolution: `resolved|wontfix` / linked_branch: `{BRANCH_NAME}`
 - 変更内容を現在の作業ブランチでコミットする
 
 ### ステップ 4: index.yaml で完了とマーク
