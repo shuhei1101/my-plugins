@@ -22,8 +22,10 @@ disable-model-invocation: true
 ### Step 2: REJECT — 使い捨てブランチでクローズし即 master へマージ
 - ブランチを作成する
 - `/worktree-create`スキルを実行し、ワークツリーを作成する
-- メインリポジトリの`_index.yaml`からリジェクトされていたイシューをクローズし、すべて`_index.archive.yaml`に移動する
-- リジェクトのイシューファイルをすべて`.work/issues/closed/`に移動する
+- リジェクトされたイシューごとに `issue_close` MCP ツール（work-tools サーバー）を実行する:
+  - issues_dir: `{リポジトリルート}/.work/issues` の絶対パス（`.work/issues/progress/` ではなく `.work/issues/` を指定すること）
+  - issue_id: `ISSUE-{N}`
+  - resolution: `wontfix`
 
 ### Step 3: `direct_merge` の値を決定する:
 #### `direct_merge: true`
@@ -45,7 +47,7 @@ disable-model-invocation: true
 
 1. 移譲前に、メインリポジトリの `_index.yaml` でイシューを in-progress にする
    - `issue_set_status` MCP ツール（work-tools サーバー）を実行:
-     - issues_dir: `.work/issues` / issue_id: `ISSUE-{N}` / status: `in_progress`
+     - issues_dir: `{リポジトリルート}/.work/issues` の絶対パス / issue_id: `ISSUE-{N}` / status: `in_progress`
 
 ### Step 5 `issue-resolver`をサブエージェントで実行する
 以下を渡す
