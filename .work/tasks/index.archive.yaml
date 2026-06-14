@@ -35,3 +35,10 @@ branches:
     upgradeを実行するよう変更する。これによりキャッシュが常に最新状態に更新される。
   task: 260613_reload-pluginsにupgrade組み込み
   completed: true
+- branch: refactor/push-mcp-hooks-separation
+  created: '2026-06-13'
+  title: pushスキルをMCPに移行・フック/スクリプト分離
+  type: refactor
+  summary: pushスキルを削除しMCPツールに登録。scriptsフォルダを作成しコア処理を分離。フック（post-merge-upgrade.py）はscripts/をラップする形に整理する。
+  task: 260613_pushMCP移行とフックスクリプト分離
+  completed: true
