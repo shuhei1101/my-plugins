@@ -8,6 +8,7 @@
 - 対応する作業ディレクトリの `branch --show-current` を取得し、
   保護ブランチ (`master` / `main` / `develop`) のときだけ発火
 - マージ中 (`MERGE_HEAD` 存在) は通過 — マージコミットの完成を阻まないため
+- staged ファイルが全て `.gitignore` 対象の場合は通過 — gitignore ファイルのみのコミットは許可
 - env `WORK_ALLOW_MASTER_COMMIT` が truthy なら通過 — 例外作業用の明示的な解除手段
 - block 時の `reason` には `git status` の出力を追記し、何が staged/unstaged かを
   そのまま Claude に見せる
@@ -33,6 +34,36 @@ PROTECTED_BRANCHES = tuple(
     for b in os.environ.get("WORK_PROTECTED_BRANCHES", "master,main,develop").split(",")
     if b.strip()
 )
+
+
+def _all_staged_files_are_gitignored(git_args: list[str]) -> bool:
+    """staged されている全ファイルが gitignore 対象かどうかを返す。"""
+    # staged ファイルの一覧を取得
+    staged_proc = subprocess.run(
+        git_args + ["diff", "--name-only", "--cached"],
+        capture_output=True,
+        text=True,
+    )
+    if staged_proc.returncode != 0:
+        return False
+
+    staged_files = [f for f in staged_proc.stdout.strip().splitlines() if f]
+
+    # staged ファイルが空なら git commit 自体が失敗するのでガード不要
+    if not staged_files:
+        return False
+
+    # 全ファイルが gitignore 対象か確認（1 つでも対象外があればガードする）
+    for file in staged_files:
+        check_proc = subprocess.run(
+            git_args + ["check-ignore", "-q", file],
+            capture_output=True,
+        )
+        # returncode が 0 以外 = gitignore 対象外ファイルが存在する
+        if check_proc.returncode != 0:
+            return False
+
+    return True
 
 
 def _git_dir_from_command(command: str) -> str | None:
@@ -85,6 +116,10 @@ def main() -> None:
         capture_output=True,
     )
     if merge_proc.returncode == 0:
+        return
+
+    # staged ファイルが全て gitignore 対象なら通過（gitignore 済みファイルのみのコミットは許可）
+    if _all_staged_files_are_gitignored(git_args):
         return
 
     # 明示的な解除手段: 例外的に保護ブランチへ直接コミットしたいときだけ env で許可する
