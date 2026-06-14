@@ -158,8 +158,60 @@ def _remove_from_token(branch: str) -> None:
         print(f"トークン削除: {token_path}")
 
 
+def _current_branch(repo: Path) -> str | None:
+    """メインリポの現在ブランチ名を返す。取れなければ None。"""
+    result = subprocess.run(
+        ["git", "branch", "--show-current"],
+        capture_output=True, text=True, cwd=repo,
+    )
+    if result.returncode != 0:
+        return None
+    name = result.stdout.strip()
+    return name or None
+
+
+def _resolve_base_ref(repo: Path) -> str | None:
+    """新しいワークツリーの base ref として `origin/<current>` を返す。
+
+    `git fetch origin <current>` で最新を取得してから返す。
+    origin がない / fetch 失敗 / リモート追跡がない場合は None（呼び出し側で HEAD にフォールバック）。
+    """
+    parent = _current_branch(repo)
+    if not parent:
+        return None
+
+    # origin 自体があるか確認
+    remotes = subprocess.run(
+        ["git", "remote"], capture_output=True, text=True, cwd=repo,
+    )
+    if remotes.returncode != 0 or "origin" not in remotes.stdout.split():
+        return None
+
+    # 最新を取りに行く（失敗してもフォールバックするので致命的ではない）
+    fetch = subprocess.run(
+        ["git", "fetch", "origin", parent],
+        capture_output=True, text=True, cwd=repo,
+    )
+    if fetch.returncode != 0:
+        print(f"注意: git fetch origin {parent} に失敗 — HEAD を base にします", file=sys.stderr)
+        return None
+
+    ref = f"origin/{parent}"
+    verify = subprocess.run(
+        ["git", "rev-parse", "--verify", ref],
+        capture_output=True, text=True, cwd=repo,
+    )
+    if verify.returncode != 0:
+        return None
+    return ref
+
+
 def cmd_create(branch_type: str, title: str) -> int:
-    """ブランチとワークツリーを作成し、セッショントークンを書く。"""
+    """ブランチとワークツリーを作成し、セッショントークンを書く。
+
+    base ref は `origin/<current_branch>` を fetch して使う（古い HEAD からの分岐を防ぐ）。
+    fetch / リモート参照に失敗した場合は HEAD にフォールバック。
+    """
     repo = _repo_root()
     branch = f"{branch_type}/{title}"
     # ブランチ名の / をディレクトリ名に使えないため - に変換する
@@ -171,10 +223,16 @@ def cmd_create(branch_type: str, title: str) -> int:
         return 1
 
     worktree_path.parent.mkdir(parents=True, exist_ok=True)
-    result = subprocess.run(
-        ["git", "worktree", "add", str(worktree_path), "-b", branch],
-        capture_output=True, text=True, cwd=repo,
-    )
+
+    base_ref = _resolve_base_ref(repo)
+    cmd = ["git", "worktree", "add", str(worktree_path), "-b", branch]
+    if base_ref:
+        cmd.append(base_ref)
+        print(f"Base ref: {base_ref}")
+    else:
+        print("Base ref: HEAD（フォールバック）")
+
+    result = subprocess.run(cmd, capture_output=True, text=True, cwd=repo)
     if result.returncode != 0:
         print(result.stderr, file=sys.stderr)
         return result.returncode
