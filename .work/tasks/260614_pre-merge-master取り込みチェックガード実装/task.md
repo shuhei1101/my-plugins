@@ -12,11 +12,11 @@
 
 | 完了 | 作業 |
 | --- | --- |
-| | 案B: masterが対象ブランチの祖先かチェックするフック作成 |
-| | dry-run: コンフリクト有無を事前確認するチェックを同フックに追加 |
-| | hooks.json にフックエントリを追加 |
-| | プロンプトMDファイル作成 |
-| | バージョンバンプ（marketplace.json / plugin.json） |
+| 済 | 案B: masterが対象ブランチの祖先かチェックするフック作成 |
+| 済 | dry-run: コンフリクト有無を事前確認するチェックを同フックに追加 |
+| 済 | hooks.json にフックエントリを追加 |
+| 済 | プロンプトMDファイル作成 |
+| 済 | バージョンバンプ（marketplace.json / plugin.json） |
 
 ## 実装詳細
 
@@ -34,6 +34,10 @@
 
 - `git merge master` / `git merge main`（上流取り込み）は対象外
 - `WORK_GUARD=false` で無効化可能
+
+## 参考ドキュメント
+
+- [pre-merge-check ノート](../../notes/hooks/pre-merge-check.md)
 
 ## QA
 

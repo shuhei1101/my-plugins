@@ -40,6 +40,15 @@
             ]
           },
           {
+            "_description": "マージ前にmaster取り込み確認＋dry-runコンフリクトチェック",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-merge-check.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-merge-check.md"
+            ]
+          },
+          {
             "_description": "push / merge を検出して確認を挟む",
             "type": "command",
             "command": "python",
