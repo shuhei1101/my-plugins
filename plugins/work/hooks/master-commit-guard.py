@@ -1,13 +1,13 @@
 """workspace / master-commit-guard — PreToolUse(Bash) hook.
 
-`git commit` を `master` / `main` / `develop` ブランチ上で実行しようとしたとき、
+`git commit` / `git add` を `master` / `main` / `develop` ブランチ上で実行しようとしたとき、
 完全にブロックする（再実行しても通らない）。
 
 検出ロジック:
-- `git commit` または `git -C <path> commit` を検出
+- `git commit` / `git add`、または `git -C <path> commit/add` を検出
 - 対応する作業ディレクトリの `branch --show-current` を取得し、
   保護ブランチ (`master` / `main` / `develop`) のときだけ発火
-- マージ中 (`MERGE_HEAD` 存在) は通過 — マージコミットの完成を阻まないため
+- マージ中 (`MERGE_HEAD` 存在) は通過 — マージコミット完成・コンフリクト解消ステージングを阻まないため
 - env `WORK_ALLOW_MASTER_COMMIT` が truthy なら通過 — 例外作業用の明示的な解除手段
 - block 時の `reason` には `git status` の出力を追記し、何が staged/unstaged かを
   そのまま Claude に見せる
@@ -39,12 +39,12 @@ def _git_dir_from_command(command: str) -> str | None:
     """コマンド文字列から git の対象作業ディレクトリを抜き出す。
 
     優先順位:
-        1. `git -C <path> commit ...`
-        2. `cd <path>; git commit ...` / `cd <path> && git commit ...`
+        1. `git -C <path> <commit|add> ...`
+        2. `cd <path>; git <commit|add> ...` / `cd <path> && git <commit|add> ...`
         3. なし (= 現在の cwd)
     """
-    # パターン1: `git -C <path> commit` 形式
-    m = re.search(r"\bgit\s+-C\s+(\S+)\s+commit\b", command)
+    # パターン1: `git -C <path> <commit|add>` 形式
+    m = re.search(r"\bgit\s+-C\s+(\S+)\s+(?:commit|add)\b", command)
     if m:
         return m.group(1)
     # パターン2: セミコロン / && / | の前後にある `cd <path>` 形式
@@ -58,8 +58,10 @@ def main() -> None:
     payload = json.loads(sys.stdin.read())
     command = payload.get("tool_input", {}).get("command", "")
 
-    # git commit を含まないコマンドはスキップ
-    if not re.search(r"\bgit(\s+-C\s+\S+)?\s+commit\b", command):
+    # git commit / git add を含まないコマンドはスキップ
+    is_commit = bool(re.search(r"\bgit(\s+-C\s+\S+)?\s+commit\b", command))
+    is_add = bool(re.search(r"\bgit(\s+-C\s+\S+)?\s+add\b", command))
+    if not (is_commit or is_add):
         return
 
     # コマンド文字列から作業ディレクトリを特定して git コマンドを組み立て
@@ -79,7 +81,7 @@ def main() -> None:
     if branch_proc.returncode != 0 or branch_proc.stdout.strip() not in PROTECTED_BRANCHES:
         return
 
-    # マージコミット完成中はブロックしない（コンフリクト解消コミットを阻害しないため）
+    # マージコミット完成中はブロックしない（コンフリクト解消ステージングとコミットを阻害しないため）
     merge_proc = subprocess.run(
         git_args + ["rev-parse", "--verify", "MERGE_HEAD"],
         capture_output=True,
@@ -87,7 +89,7 @@ def main() -> None:
     if merge_proc.returncode == 0:
         return
 
-    # 明示的な解除手段: 例外的に保護ブランチへ直接コミットしたいときだけ env で許可する
+    # 明示的な解除手段: 例外的に保護ブランチへ直接操作したいときだけ env で許可する
     if os.environ.get("WORK_ALLOW_MASTER_COMMIT", "").strip().lower() in {"true", "1", "yes", "on"}:
         return
 
