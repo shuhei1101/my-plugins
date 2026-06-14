@@ -35,3 +35,10 @@ branches:
     upgradeを実行するよう変更する。これによりキャッシュが常に最新状態に更新される。
   task: 260613_reload-pluginsにupgrade組み込み
   completed: true
+- branch: fix/cmd-upgrade-scope
+  created: '2026-06-13'
+  title: cmd_upgradeのuninstallに--scope指定を追加
+  type: fix
+  summary: cmd_upgrade()のuninstallコマンドにスコープを指定していないため、localスコープのプラグインのアンインストールが失敗しupgradeが機能しない問題を修正する。
+  task: 260613_cmd_upgradeスコープ修正
+  completed: true
