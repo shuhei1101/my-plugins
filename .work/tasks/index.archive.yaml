@@ -64,3 +64,11 @@ branches:
   summary: scripts/post_merge_upgrade.py を tools/ に移動し、フック・MCPサーバーの参照パスを更新する。scriptsフォルダが空になれば削除。
   task: 260614_post_merge_upgradeをtoolsに移動
   completed: true
+- branch: fix/work-plugin-v1-7-bugs
+  created: '2026-06-14'
+  title: work プラグイン v1.7 のバグ修正
+  type: fix
+  summary: issue-resolve-auto の target 単数形 typo、3 ファイルの /work-start 誤参照、issue-resolve
+    description 空、resolve-auto Step 7 のレポート配置先未記載などを修正
+  task: 260614_work-plugin-v1-7-bugs
+  completed: true
