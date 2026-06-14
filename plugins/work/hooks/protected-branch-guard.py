@@ -2,6 +2,7 @@
 
 PreToolUse フックとして動作し、main/master/develop ブランチへの
 Edit・Write ツール呼び出しを阻止して /work:start の使用を促す。
+ただし、対象ファイルが .gitignore に一致する場合は通過させる。
 
 Usage:
 python protected_branch_guard.py
@@ -27,6 +28,17 @@ def get_git_branch(path: str) -> str:
         timeout=5,
     )
     return result.stdout.strip()
+
+
+def is_gitignored(check_dir: str, file_path: str) -> bool:
+    """ファイルが git によって無視（gitignore）されているかを返す。"""
+    result = subprocess.run(
+        ["git", "-C", check_dir, "check-ignore", "-q", file_path],
+        capture_output=True,
+        timeout=5,
+    )
+    # returncode 0 = gitignore 対象、1 = 対象外
+    return result.returncode == 0
 
 
 def resolve_check_dir(data: dict) -> str:
@@ -81,6 +93,11 @@ def main() -> int:
 
     # 保護ブランチ以外はそのまま通過
     if branch not in PROTECTED_BRANCHES:
+        return 0
+
+    # gitignore 対象ファイルの編集は通過（git に影響しないため）
+    file_path = data.get("tool_input", {}).get("file_path", "")
+    if file_path and is_gitignored(check_dir, file_path):
         return 0
 
     # 保護ブランチへの編集をブロック
