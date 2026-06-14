@@ -537,7 +537,7 @@ def cmd_remove(branch: str) -> None:
         for plugin_full in installed:
             name: str = plugin_full.rsplit("@", 1)[0]
             uninstalled_names.append(name)
-            run_claude_cmd(["plugin", "uninstall", plugin_full], allow_fail=True)
+            run_claude_cmd(["plugin", "uninstall", plugin_full, "--scope", scope], allow_fail=True)
         print()
 
     # マーケットプレイス自体を削除
