@@ -9,7 +9,7 @@ master へのマージ後に `git push`、marketplace upgrade、tmux セッシ�
 | 役割 | ファイル |
 |---|---|
 | フック（条件チェック＋呼び出し） | `.claude/hooks/post-merge-upgrade.py` |
-| コア処理 | `scripts/post_merge_upgrade.py` |
+| コア処理 | `tools/post_merge_upgrade.py` |
 
 ## フックの条件チェック
 
@@ -42,6 +42,6 @@ stdin あり（フック起動）の場合のみ以下を確認してスキッ�
 ## 参考リンク
 
 - `.claude/hooks/post-merge-upgrade.py`: フック（シン・ラッパー）
-- `scripts/post_merge_upgrade.py`: コア処理（pushスキル廃止、MCPツールおよびフックが直接呼び出す）
+- `tools/post_merge_upgrade.py`: コア処理（pushスキル廃止、MCPツールおよびフックが直接呼び出す）
 - `tools/reload_plugins.py`: reload 送信（自セッションは保留トークン化）
 - `plugins/work/hooks/reload_deferred.py`: Stop フック（保留分の遅延送信）

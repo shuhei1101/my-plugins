@@ -57,3 +57,10 @@ branches:
     直下に再配置する。参照パスも合わせて更新。
   task: 260614_hooksルール配置変更
   completed: true
+- branch: refactor/post-merge-upgrade-to-tools
+  created: '2026-06-14'
+  title: post_merge_upgradeをtoolsに移動
+  type: refactor
+  summary: scripts/post_merge_upgrade.py を tools/ に移動し、フック・MCPサーバーの参照パスを更新する。scriptsフォルダが空になれば削除。
+  task: 260614_post_merge_upgradeをtoolsに移動
+  completed: true

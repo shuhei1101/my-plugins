@@ -1,4 +1,4 @@
-"""PostToolUse フック: master マージ後に scripts/post_merge_upgrade.py を実行する。"""
+"""PostToolUse フック: master マージ後に tools/post_merge_upgrade.py を実行する。"""
 import sys
 import json
 import re
@@ -36,6 +36,6 @@ if d:
         sys.exit(0)
 
 subprocess.run(
-    [sys.executable, str(REPO_ROOT / "scripts" / "post_merge_upgrade.py")],
+    [sys.executable, str(REPO_ROOT / "tools" / "post_merge_upgrade.py")],
     cwd=REPO_ROOT, check=False,
 )
