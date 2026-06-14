@@ -8,10 +8,10 @@
 
 | No | 作業 | 完了 |
 | --- | --- | --- |
-| 1 | `delete-guard.py` を作成 | 未 |
-| 2 | `delete-guard.md` を作成（ブロックメッセージ） | 未 |
-| 3 | `hooks.json` に登録 | 未 |
-| 4 | バージョンアップ（plugin.json / marketplace.json） | 未 |
+| 1 | `delete-guard.py` を作成 | 済 |
+| 2 | `delete-guard.md` を作成（ブロックメッセージ） | 済 |
+| 3 | `hooks.json` に登録 | 済 |
+| 4 | バージョンアップ（plugin.json / marketplace.json） | 済 |
 
 ## 仕様
 
