@@ -13,6 +13,7 @@
 | 2 | `.claude` ディレクトリ | 設定・ルール・プラグインキャッシュ |
 | 3 | `.gitignore` | 消失すると build artifacts / node_modules が tracked 扱いになる |
 | 4 | `.gitattributes` | マージドライバや改行設定が失われる |
+| 5 | lock ファイル | `package-lock.json` / `yarn.lock` / `pnpm-lock.yaml` / `npm-shrinkwrap.json` / `Cargo.lock` / `Gemfile.lock` / `Pipfile.lock` / `poetry.lock` / `uv.lock` / `composer.lock` / `go.sum` — 依存解決の SoT |
 
 ## 仕様
 

@@ -24,6 +24,16 @@
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/hooks/protected-branch-guard.py"
             ]
+          },
+
+          {
+            "_description": ".git/** および主要パッケージマネージャの lock ファイルへの Edit/Write を永久ブロック",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/dotgit-lockfile-guard.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/dotgit-lockfile-guard.md"
+            ]
           }
         ]
       },

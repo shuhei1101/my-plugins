@@ -9,7 +9,8 @@
 - [work-mcpサーバー](hooks/work-mcpサーバー.md): work-tools MCP サーバー（work コマンドの MCP 公開と Stop フック制御）
 - [master-commit-guard](hooks/master-commit-guard.md): 保護ブランチへの直接コミットを完全ブロック
 - [protected-branch-guard](hooks/protected-branch-guard.md): 保護ブランチへの直接ファイル編集をブロック（Edit/Write フック）
-- [delete-guard](hooks/delete-guard.md): .git / .claude / .gitignore / .gitattributes への削除操作を永久ブロック
+- [delete-guard](hooks/delete-guard.md): .git / .claude / .gitignore / .gitattributes / lock ファイルへの削除操作を永久ブロック
+- [dotgit-lockfile-guard](hooks/dotgit-lockfile-guard.md): .git/** および lock ファイルへの Edit/Write を永久ブロック
 - [dangerous-git-guard](hooks/dangerous-git-guard.md): 危険な git コマンド（worktree remove --force / git rm 重要ファイル / -X ours/theirs 等）を永久ブロック
 - [post-commit-deletion-check](hooks/post-commit-deletion-check.md): 直近コミットで N 件超の削除を検知したら警告コンテキストを注入（Stop hook）
 - [worktree-base-ref](hooks/worktree-base-ref.md): worktree 作成時の base ref を origin/&lt;current&gt; に強制（古い HEAD 分岐防止）
