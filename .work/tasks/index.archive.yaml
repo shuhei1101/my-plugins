@@ -141,3 +141,11 @@ branches:
     パス変換とフックからの会話注入で必ず可視化されるようにする
   task: 260614_post-merge-upgrade-silent-fail対策
   completed: true
+- branch: feat/dotgit-lockfile-guard
+  created: '2026-06-15'
+  title: .git とロックファイルへの Edit/Write/削除を全面ブロック
+  type: feat
+  summary: work プラグインに新規ガードフックを追加し、.git/** と主要パッケージマネージャのロックファイルに対する Edit/Write/Bash
+    経由の削除をすべてブロックする。
+  task: 260615_dotgit-lockfile-guard
+  completed: true
