@@ -11,6 +11,7 @@
 - [protected-branch-guard](hooks/protected-branch-guard.md): 保護ブランチへの直接ファイル編集をブロック（Edit/Write フック）
 - [delete-guard](hooks/delete-guard.md): .git / .claude / .gitignore / .gitattributes / lock ファイルへの削除操作を永久ブロック
 - [dotgit-lockfile-guard](hooks/dotgit-lockfile-guard.md): .git/** および lock ファイルへの Edit/Write を永久ブロック
+- [scripts-branch-guard](hooks/scripts-branch-guard.md): work プラグイン scripts (index-tool / issue-tool / trim-index) を master/main/develop で実行禁止にするスクリプト側ガード
 - [dangerous-git-guard](hooks/dangerous-git-guard.md): 危険な git コマンド（worktree remove --force / git rm 重要ファイル / -X ours/theirs 等）を永久ブロック
 - [post-commit-deletion-check](hooks/post-commit-deletion-check.md): 直近コミットで N 件超の削除を検知したら警告コンテキストを注入（Stop hook）
 - [worktree-base-ref](hooks/worktree-base-ref.md): worktree 作成時の base ref を origin/&lt;current&gt; に強制（古い HEAD 分岐防止）

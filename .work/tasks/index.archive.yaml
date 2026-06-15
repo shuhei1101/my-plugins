@@ -149,3 +149,11 @@ branches:
     経由の削除をすべてブロックする。
   task: 260615_dotgit-lockfile-guard
   completed: true
+- branch: feat/master-script-guard
+  created: '2026-06-15'
+  title: master上スクリプト実行ガード
+  type: feat
+  summary: work プラグインの index-tool.py / issue-tool.py / trim-index.py が master/main/develop
+    上で実行された場合に拒否するガードを追加する。MCP 経由でも CLI 直叩きでも、CLAUDE_PROJECT_DIR の git ブランチが保護対象なら明示エラーで止める。
+  task: 260615_master上スクリプト実行ガード
+  completed: true
