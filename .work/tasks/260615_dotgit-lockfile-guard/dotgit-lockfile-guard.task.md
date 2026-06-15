@@ -27,13 +27,13 @@ Claude からの編集・新規作成・削除を全面的にブロックする�
 
 | No | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | 未解決事項を `## QA` に記録する |
-| 2 | - | `dotgit-lockfile-guard.py` を作成（PreToolUse Edit/Write 用） |
-| 3 | - | `dotgit-lockfile-guard.md` を作成（ブロックメッセージ） |
-| 4 | - | `delete-guard.py` にロックファイル名を追加（Bash 削除側） |
-| 5 | - | `hooks.json` に新フックを登録 |
-| 6 | - | バージョンアップ（plugin.json / marketplace.json） |
-| 7 | - | `.work/notes/` の関連ノートを更新する |
+| 1 | 済 | 未解決事項を `## QA` に記録する（QA なし） |
+| 2 | 済 | `dotgit-lockfile-guard.py` を作成（PreToolUse Edit/Write 用） |
+| 3 | 済 | `dotgit-lockfile-guard.md` を作成（ブロックメッセージ） |
+| 4 | 済 | `delete-guard.py` にロックファイル名を追加（Bash 削除側） |
+| 5 | 済 | `hooks.json` に新フックを登録 |
+| 6 | 済 | バージョンアップ（plugin.json / marketplace.json） |
+| 7 | 済 | `.work/notes/` の関連ノートを更新する |
 
 ## 仕様
 
@@ -78,17 +78,24 @@ Claude からの編集・新規作成・削除を全面的にブロックする�
 
 | No | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | `.git/HEAD` を Read できる | (未実施) | - |
-| 2 | `.git/HEAD` を Edit するとブロック | (未実施) | - |
-| 3 | 存在しない `.git/foo` を Write するとブロック | (未実施) | - |
-| 4 | `package-lock.json` を Edit するとブロック | (未実施) | - |
-| 5 | `uv.lock` を Write するとブロック | (未実施) | - |
-| 6 | `Bash: rm package-lock.json` がブロックされる | (未実施) | - |
-| 7 | 通常ファイル（`foo.py` 等）の Edit は通る | (未実施) | - |
+| 1 | `.git/HEAD` への Edit/Write 想定の `file_path` で deny 出力 | T1 deny 出力確認 | ✅ |
+| 2 | `package-lock.json` Edit 想定で deny 出力 | T2 deny 出力確認 | ✅ |
+| 3 | `uv.lock` Write 想定で deny 出力 | T3 deny 出力確認 | ✅ |
+| 4 | 通常ファイル（`foo.py`）はスルー | T4 出力なし | ✅ |
+| 5 | `package-lock.json.bak` は通過（完全一致でないため） | T5 出力なし | ✅ |
+| 6 | `.gitignored/foo` は通過（`.git` 成分でないため） | T6 出力なし | ✅ |
+| 7 | Windows パス `.git\HEAD` も deny | T7 deny 出力確認 | ✅ |
+| 8 | Bash `rm package-lock.json` を delete-guard が block | B1 block | ✅ |
+| 9 | Bash `rm uv.lock` を block | B2 block | ✅ |
+| 10 | Bash `rm ./go.sum` を block | B3 block | ✅ |
+| 11 | Bash `rm normal.txt` は通過 | B4 通過 | ✅ |
+| 12 | Bash `rm package-lock.json.bak` は通過（完全一致でない） | B5 通過 | ✅ |
+| 13 | Bash `rm -rf .git` は引き続き block（既存リグレッション） | B6 block | ✅ |
 
 ## 参考リンク
 
-- `plugins/work/hooks/delete-guard.py`: 既存削除ガード（同じ思想で実装する）
+- `.work/notes/hooks/dotgit-lockfile-guard.md`: 本フックの現行仕様ノート
+- `.work/notes/hooks/delete-guard.md`: 拡張対象の既存削除ガード
 - `plugins/work/hooks/protected-branch-guard.py`: PreToolUse Edit/Write でブロックする既存例
 - `plugins/work/hooks/hooks.json`: 登録先
 

@@ -1,7 +1,8 @@
 """workspace / delete-guard — PreToolUse(Bash) hook.
 
 `rm` または `rmdir` で重要ファイル/ディレクトリ（`.git` `.claude` `.gitignore`
-`.gitattributes`）を削除しようとしたとき、永久にブロックする（再実行しても通らない）。
+`.gitattributes`、主要パッケージマネージャの lock ファイル）を削除しようとしたとき、
+永久にブロックする（再実行しても通らない）。
 
 Args:
     sys.argv[1]: ブロックメッセージの Markdown ファイルパス
@@ -17,9 +18,26 @@ import sys
 # rm / rmdir コマンドの検出
 _RM_PATTERN = re.compile(r"\b(?:rm|rmdir)\b")
 
+# 削除を恒久ブロックするロックファイル名（basename 完全一致）
+_LOCK_FILENAMES = (
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+    "npm-shrinkwrap.json",
+    "Cargo.lock",
+    "Gemfile.lock",
+    "Pipfile.lock",
+    "poetry.lock",
+    "uv.lock",
+    "composer.lock",
+    "go.sum",
+)
+_LOCKFILE_ALT = "|".join(re.escape(n) for n in _LOCK_FILENAMES)
+
 # 保護対象パターン:
 #   .git / .claude — ディレクトリ（後ろに / か区切りが続く、または末尾）
 #   .gitignore / .gitattributes — ファイル名そのもの（後ろに英数字が続かない＝完全一致）
+#   lock ファイル — ファイル名完全一致（前後がパス区切り/空白/クォート）
 _PROTECTED_PATH = re.compile(
     r"(?:^|[\s/\"\'\\])"
     r"\.(?:git|claude)(?:[/\s\"\'\\]|$)"
@@ -29,6 +47,8 @@ _PROTECTED_PATH = re.compile(
     r"|"
     r"(?:^|[\s/\"\'\\])"
     r"\.gitattributes(?:[\s\"\'\\]|$)"
+    r"|"
+    rf"(?:^|[\s/\"\'\\])(?:{_LOCKFILE_ALT})(?:[\s\"\'\\]|$)"
 )
 
 
