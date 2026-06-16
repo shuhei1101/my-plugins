@@ -21,12 +21,12 @@
 
 | No | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | 未解決事項を `## QA` に記録する |
-| 2 | - | `dotgit-lockfile-guard.py` のパス判定に `.gitignore` / `.gitattributes` を追加 |
-| 3 | - | `dotgit-lockfile-guard.md` のメッセージ本文に追記 |
-| 4 | - | 手動テスト (Edit/Write 対象でブロック、他は通過) |
-| 5 | - | `.work/notes/hooks/dotgit-lockfile-guard.md` を更新 |
-| 6 | - | `plugin.json` / `marketplace.json` の version bump |
+| 1 | 済 | 未解決事項を `## QA` に記録する (QA なし) |
+| 2 | 済 | `dotgit-lockfile-guard.py` のパス判定に `.gitignore` / `.gitattributes` を追加 |
+| 3 | 済 | `dotgit-lockfile-guard.md` のメッセージ本文に追記 |
+| 4 | 済 | 手動テスト (Edit/Write 対象でブロック、他は通過) |
+| 5 | 済 | `.work/notes/hooks/dotgit-lockfile-guard.md` を更新 |
+| 6 | 済 | `plugin.json` / `marketplace.json` の version bump |
 
 ## 仕様
 
@@ -56,13 +56,14 @@
 
 | No | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | `.gitignore` への Edit で deny 出力 | (未実施) | - |
-| 2 | `.gitignore` への Write で deny 出力 | (未実施) | - |
-| 3 | `.gitattributes` への Edit で deny 出力 | (未実施) | - |
-| 4 | `.gitignore.bak` (派生名) は通過 | (未実施) | - |
-| 5 | `foo/.gitignore` (サブディレクトリ) も deny | (未実施) | - |
-| 6 | `.git/HEAD` 既存ガードに影響なし | (未実施) | - |
-| 7 | 通常ファイル (`foo.py`) は通過 | (未実施) | - |
+| 1 | `.gitignore` への Edit で deny 出力 | deny 出力確認 | ✅ |
+| 2 | `.gitignore` への Write で deny 出力 (相対パス) | deny 出力確認 | ✅ |
+| 3 | `.gitattributes` への Edit で deny 出力 | deny 出力確認 | ✅ |
+| 4 | `.gitignore.bak` (派生名) は通過 | 出力なし (通過) | ✅ |
+| 5 | `foo/.gitignore` (サブディレクトリ) も deny | deny 出力確認 | ✅ |
+| 6 | `.git/HEAD` 既存ガードに影響なし | `.git/** 配下のファイル` で deny 維持 | ✅ |
+| 7 | 通常ファイル (`foo.py`) は通過 | 出力なし (通過) | ✅ |
+| 8 | Windows パス `C:\repo\.gitignore` も deny | deny 出力確認 | ✅ |
 
 ## 参考リンク
 

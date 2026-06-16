@@ -1,7 +1,8 @@
 """workspace / dotgit-lockfile-guard — PreToolUse(Edit|Write) hook.
 
-`.git/**` 配下、および主要パッケージマネージャの lock ファイルへの Edit / Write を
-永久ブロックする（再実行しても通らない）。Read はガードしない。
+`.git/**` 配下、主要パッケージマネージャの lock ファイル、および
+`.gitignore` / `.gitattributes` への Edit / Write を永久ブロックする
+（再実行しても通らない）。Read はガードしない。
 
 Args:
     sys.argv[1]: ブロックメッセージの Markdown ファイルパス
@@ -32,6 +33,10 @@ _LOCK_FILENAMES = frozenset(
     }
 )
 
+# Claude 由来の削除/上書き事故を恒久ブロックしたい dotfile（basename 完全一致）
+# .gitignore を失うと tracked 不要なファイルが一気に working tree に湧くため
+_PROTECTED_DOTFILES = frozenset({".gitignore", ".gitattributes"})
+
 
 def _is_dotgit_path(file_path: str) -> bool:
     """パスに `.git` 成分が含まれるかを判定する。"""
@@ -44,6 +49,12 @@ def _is_lockfile_path(file_path: str) -> bool:
     """パスの basename がロックファイル一覧に該当するかを判定する。"""
     basename = os.path.basename(file_path.replace("\\", "/"))
     return basename in _LOCK_FILENAMES
+
+
+def _is_protected_dotfile_path(file_path: str) -> bool:
+    """パスの basename が保護対象 dotfile (`.gitignore` 等) と完全一致するかを判定する。"""
+    basename = os.path.basename(file_path.replace("\\", "/"))
+    return basename in _PROTECTED_DOTFILES
 
 
 def _build_block_output(reason: str, context: str) -> dict:
@@ -59,7 +70,7 @@ def _build_block_output(reason: str, context: str) -> dict:
 
 
 def main() -> int:
-    """フックのエントリーポイント。.git / lock ファイルへの Edit/Write をブロックする。"""
+    """フックのエントリーポイント。.git / lock ファイル / 保護 dotfile への Edit/Write をブロックする。"""
     data = json.load(sys.stdin)
     file_path = data.get("tool_input", {}).get("file_path", "")
 
@@ -67,11 +78,13 @@ def main() -> int:
     if not file_path:
         return 0
 
-    # .git 配下、またはロックファイル名にマッチしたら永久ブロック
+    # .git 配下、ロックファイル、保護 dotfile (.gitignore/.gitattributes) のいずれかにマッチしたら永久ブロック
     if _is_dotgit_path(file_path):
         target_label = ".git/** 配下のファイル"
     elif _is_lockfile_path(file_path):
         target_label = f"ロックファイル ({os.path.basename(file_path)})"
+    elif _is_protected_dotfile_path(file_path):
+        target_label = f"保護 dotfile ({os.path.basename(file_path)})"
     else:
         # 対象外パスは通過
         return 0
@@ -85,7 +98,8 @@ def main() -> int:
 
     reason = (
         f"{target_label} への Edit/Write はブロックされました。\n"
-        ".git は Git CLI 経由でのみ、lock ファイルはパッケージマネージャ CLI 経由でのみ更新してください。"
+        ".git は Git CLI 経由でのみ、lock ファイルはパッケージマネージャ CLI 経由でのみ、"
+        ".gitignore / .gitattributes はユーザー手動でのみ更新してください。"
     )
 
     print(json.dumps(_build_block_output(reason, context), ensure_ascii=False))
