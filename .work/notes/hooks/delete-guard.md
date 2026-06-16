@@ -15,6 +15,12 @@
 | 4 | `.gitattributes` | マージドライバや改行設定が失われる |
 | 5 | lock ファイル | `package-lock.json` / `yarn.lock` / `pnpm-lock.yaml` / `npm-shrinkwrap.json` / `Cargo.lock` / `Gemfile.lock` / `Pipfile.lock` / `poetry.lock` / `uv.lock` / `composer.lock` / `go.sum` — 依存解決の SoT |
 
+## 例外（削除を許可するパス）
+
+| No | パス | 理由 |
+| --- | --- | --- |
+| 1 | `.claude/worktrees/<branch>` | ワークツリー後片付け時に symlink を削除する必要があるため |
+
 ## 仕様
 
 - トリガー: `rm` / `rmdir` を含む Bash コマンドに保護対象がパスコンポーネントとして登場
@@ -24,8 +30,9 @@
 ## 検出ロジック
 
 1. `\b(?:rm|rmdir)\b` でコマンドに削除操作が含まれるか確認
-2. 保護対象パターンが含まれるか確認（ディレクトリは末尾区切り、ファイルは完全一致）
-3. 両方ヒット → `decision: block`
+2. コマンドから `.claude/worktrees/<branch>` パターン（`\S*\.claude/worktrees/\S+`）を除去
+3. 除去後のコマンドに保護対象パターンが含まれるか確認
+4. 両方ヒット → `decision: block`
 
 ## 参考リンク
 
