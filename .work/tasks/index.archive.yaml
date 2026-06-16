@@ -165,3 +165,10 @@ branches:
     delete-guard で対応済みなので、抜けている dotgit-lockfile-guard 側に対象を追加する。'
   task: 260616_gitignore-edit-guard
   completed: true
+- branch: fix/delete-guard-worktrees-allow
+  created: '2026-06-17'
+  title: delete-guard .claude/worktrees/ 配下の削除を許可
+  type: fix
+  summary: .claude/worktrees/ 配下のワークツリーシンボリックリンク削除が delete-guard にブロックされる問題を修正
+  task: 260617_delete-guard worktrees配下を許可
+  completed: true
