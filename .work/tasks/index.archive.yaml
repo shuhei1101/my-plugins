@@ -149,3 +149,11 @@ branches:
     経由の削除をすべてブロックする。
   task: 260615_dotgit-lockfile-guard
   completed: true
+- branch: feat/gitignore-edit-guard
+  created: '2026-06-16'
+  title: .gitignore/.gitattributes の Edit/Write 禁止
+  type: feat
+  summary: '`.gitignore` および `.gitattributes` に対する Edit/Write 経路をブロックする。Bash 経路は既存
+    delete-guard で対応済みなので、抜けている dotgit-lockfile-guard 側に対象を追加する。'
+  task: 260616_gitignore-edit-guard
+  completed: true
