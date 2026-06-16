@@ -14,6 +14,7 @@
 - [dangerous-git-guard](hooks/dangerous-git-guard.md): 危険な git コマンド（worktree remove --force / git rm 重要ファイル / -X ours/theirs 等）を永久ブロック
 - [post-commit-deletion-check](hooks/post-commit-deletion-check.md): 直近コミットで N 件超の削除を検知したら警告コンテキストを注入（Stop hook）
 - [worktree-base-ref](hooks/worktree-base-ref.md): worktree 作成時の base ref を origin/&lt;current&gt; に強制（古い HEAD 分岐防止）
+- [session_start](hooks/session_start.md): SessionStart 時に「やってはいけないこと」を Jinja2 経由で注入し、env (WORK_*) で出し分け
 
 - [rules-structure](hooks/rules-structure.md): hooksルール配置構成（スクリプトとルールの分離）
 - [inject_rules注入ロジック](hooks/inject_rules注入ロジック.md): inject_rules.py の注入動作・トークン管理・分割読み込み仕様
