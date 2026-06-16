@@ -157,3 +157,11 @@ branches:
     上で実行された場合に拒否するガードを追加する。MCP 経由でも CLI 直叩きでも、CLAUDE_PROJECT_DIR の git ブランチが保護対象なら明示エラーで止める。
   task: 260615_master上スクリプト実行ガード
   completed: true
+- branch: feat/gitignore-edit-guard
+  created: '2026-06-16'
+  title: .gitignore/.gitattributes の Edit/Write 禁止
+  type: feat
+  summary: '`.gitignore` および `.gitattributes` に対する Edit/Write 経路をブロックする。Bash 経路は既存
+    delete-guard で対応済みなので、抜けている dotgit-lockfile-guard 側に対象を追加する。'
+  task: 260616_gitignore-edit-guard
+  completed: true

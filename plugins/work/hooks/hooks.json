@@ -97,7 +97,7 @@
             "command": "python",
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/session_start.md"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/session_start.j2"
             ]
           }
         ]
