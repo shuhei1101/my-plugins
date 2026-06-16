@@ -27,6 +27,7 @@
 | 4 | 済 | 手動テスト (Edit/Write 対象でブロック、他は通過) |
 | 5 | 済 | `.work/notes/hooks/dotgit-lockfile-guard.md` を更新 |
 | 6 | 済 | `plugin.json` / `marketplace.json` の version bump |
+| 7 | 済 | `session_start.md` を「やってはいけないこと」の箇条書きに刷新 |
 
 ## 仕様
 
@@ -51,6 +52,7 @@
 | 3 | `plugins/work/.claude-plugin/plugin.json` | 編集 | version bump | |
 | 4 | `.claude-plugin/marketplace.json` | 編集 | work エントリの version bump | |
 | 5 | `.work/notes/hooks/dotgit-lockfile-guard.md` | 編集 | 適用範囲表に 2 行追加 | |
+| 6 | `plugins/work/hooks/session_start.md` | 編集 | 「フックによるガード」表を「やってはいけないこと」の箇条書きに刷新 | Claude 視点で禁止アクションを列挙 |
 
 ## テスト
 
