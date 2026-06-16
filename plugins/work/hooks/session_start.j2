@@ -2,17 +2,24 @@
 
 ## 作業フロー
 
+{% if branch_enforcement %}
 1. 実装・修正の依頼を受けたら `/work:start` を実行する（質問・調査のみなら不要）
 2. ワークツリー内で実装し、タスクドキュメントを更新する
 3. 完了したら `/work:merge` を提案し、ユーザー承認後にマージする
+{% else %}
+1. ワークツリー内で実装し、タスクドキュメントを更新する（`WORK_BRANCH_ENFORCEMENT=false` のためブランチ強制はオフ）
+2. 完了したら `/work:merge` を提案し、ユーザー承認後にマージする
+{% endif %}
 
 ## やってはいけないこと
 
 以下は常時ブロックされています。ブロックされたら原因を確認してから対処すること（無確認の再実行は禁止）。
 
-- `master` / `main` / `develop` ブランチに直接コミットしないこと（マージコミットのみ可）
-- `master` / `main` / `develop` ブランチ上で直接ファイルを Edit / Write しないこと（`/work:start` でワークツリーを作る）
-- `master` / `main` / `develop` ブランチ上で work プラグインの `index-tool.py` / `issue-tool.py` / `trim-index.py` を実行しないこと（worktree から呼ぶ）
+{% if not allow_master_commit %}
+- {{ protected_branches_display }} ブランチに直接コミットしないこと（マージコミットのみ可）
+- {{ protected_branches_display }} ブランチ上で直接ファイルを Edit / Write しないこと（`/work:start` でワークツリーを作る）
+- {{ protected_branches_display }} ブランチ上で work プラグインの `index-tool.py` / `issue-tool.py` / `trim-index.py` を実行しないこと（worktree から呼ぶ）
+{% endif %}
 - `.git/` 配下のファイルを Edit / Write / `rm` / `rmdir` しないこと（Git CLI 経由でのみ操作）
 - `.gitignore` / `.gitattributes` を Edit / Write / `rm` / `rmdir` しないこと（ユーザー手動でのみ更新）
 - `.claude/` ディレクトリを `rm` / `rmdir` しないこと
@@ -20,15 +27,29 @@
 - `git worktree remove --force` / `--force` 付き worktree 削除をしないこと
 - `git merge` に `-X ours` / `-X theirs` / `--strategy-option=ours/theirs` を渡さないこと
 - `git rm` で `.git` / `.claude` / `.gitignore` / `.gitattributes` / lock ファイル等の重要ファイルを消さないこと
+{% if guard_enabled %}
 - `git push` / `git merge` 実行時に表示される確認は読まずに再実行しないこと（一度ブロックされる仕様。再実行前に意図を再確認する）
 - master へのマージ前に `pre-merge-check` で出る master 取り込み・コンフリクト確認をスキップしないこと
+{% endif %}
 
 ## 補足
 
-- `master/main/develop` への直接コミットでブロックされる典型原因は cwd ずれ。`git -C {ワークツリーパス}` 形式で実行し直す
+{% if not allow_master_commit %}
+- {{ protected_branches_display }} への直接コミットでブロックされる典型原因は cwd ずれ。`git -C {ワークツリーパス}` 形式で実行し直す
+{% endif %}
 - 直近コミットで N 件以上のファイル削除があると Stop フックで警告コンテキストが注入される（実害がなければ続行可）
 
 ## 規約
 
 - メインリポジトリは常に master を踏んだ状態を維持し、ブランチ作業は必ずワークツリー（`.claude/worktrees/` 配下）で行う
 - シェルの cwd はコマンドごとにリセットされることがあるため、ワークツリー内での git 操作は `git -C {ワークツリーパス}` 形式を使う
+
+{% if env_overrides %}
+## 環境変数オーバーライド (現在のセッション)
+
+| 環境変数 | 現在値 |
+|---|---|
+{% for name, value in env_overrides %}
+| `{{ name }}` | `{{ value }}` |
+{% endfor %}
+{% endif %}
