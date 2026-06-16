@@ -18,8 +18,8 @@
 
 | No | 完了 | 作業内容 |
 |---|---|---|
-| 1 | - | `delete-guard.py` に `.claude/worktrees/<branch>` を例外として追加 |
-| 2 | - | `.work/notes/` の関連ノートを更新する |
+| 1 | 済 | `delete-guard.py` に `.claude/worktrees/<branch>` を例外として追加 |
+| 2 | 済 | `.work/notes/` の関連ノートを更新する |
 
 ## 変更内容
 
@@ -31,8 +31,8 @@
 
 | No | 確認内容 | 実測結果 | 判定 |
 |---|---|---|---|
-| 1 | `.claude/worktrees/test-branch` の `rm -rf` がブロックされないこと | (未実施) | - |
-| 2 | `.claude/settings.json` など worktrees 以外の `.claude` 削除は引き続きブロックされること | (未実施) | - |
+| 1 | `.claude/worktrees/test-branch` の `rm -rf` がブロックされないこと | ロジック確認済み（sanitize後に保護パスなし） | OK |
+| 2 | `.claude/settings.json` など worktrees 以外の `.claude` 削除は引き続きブロックされること | ロジック確認済み（sanitize後も`.claude`残存） | OK |
 
 ## QA
 
@@ -41,3 +41,4 @@
 ## 参考リンク
 
 - `plugins/work/hooks/delete-guard.py`: 削除ガード本体
+- `.work/notes/hooks/delete-guard.md`: フック仕様ノート
