@@ -8,7 +8,7 @@
       "name": "work",
       "source": "./plugins/work",
       "description": "作業場を作成するプラグイン",
-      "version": "1.18"
+      "version": "1.19"
     },
     {
       "name": "dev-kit",

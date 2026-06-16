@@ -4,6 +4,8 @@
 `.gitattributes`、主要パッケージマネージャの lock ファイル）を削除しようとしたとき、
 永久にブロックする（再実行しても通らない）。
 
+ただし `.claude/worktrees/<branch>` 配下はワークツリー後片付けのため許可する。
+
 Args:
     sys.argv[1]: ブロックメッセージの Markdown ファイルパス
 """
@@ -34,6 +36,10 @@ _LOCK_FILENAMES = (
 )
 _LOCKFILE_ALT = "|".join(re.escape(n) for n in _LOCK_FILENAMES)
 
+# .claude/worktrees/<branch> パスを除去するパターン（worktree 後片付けを許可するため）
+# \S* で前置パス（/abs/path/ や引用符など）も吸収し、\S+ で branch 名部分を要求する
+_WORKTREE_PATH = re.compile(r"\S*\.claude/worktrees/\S+")
+
 # 保護対象パターン:
 #   .git / .claude — ディレクトリ（後ろに / か区切りが続く、または末尾）
 #   .gitignore / .gitattributes — ファイル名そのもの（後ろに英数字が続かない＝完全一致）
@@ -61,8 +67,12 @@ def main() -> None:
     if not _RM_PATTERN.search(command):
         return
 
+    # .claude/worktrees/<branch> 部分を除去してからチェック
+    # → worktrees 配下のみへの削除は保護対象から外れてスキップされる
+    sanitized = _WORKTREE_PATH.sub("", command)
+
     # 保護対象パスが含まれていなければスキップ
-    if not _PROTECTED_PATH.search(command):
+    if not _PROTECTED_PATH.search(sanitized):
         return
 
     prompt_path = pathlib.Path(sys.argv[1])

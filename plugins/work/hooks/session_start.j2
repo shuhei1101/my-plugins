@@ -22,7 +22,7 @@
 {% endif %}
 - `.git/` 配下のファイルを Edit / Write / `rm` / `rmdir` しないこと（Git CLI 経由でのみ操作）
 - `.gitignore` / `.gitattributes` を Edit / Write / `rm` / `rmdir` しないこと（ユーザー手動でのみ更新）
-- `.claude/` ディレクトリを `rm` / `rmdir` しないこと
+- `.claude/` ディレクトリを `rm` / `rmdir` しないこと（`.claude/worktrees/<branch>` 配下はワークツリー後片付けのため削除可）
 - パッケージマネージャの lock ファイル（`package-lock.json` / `yarn.lock` / `pnpm-lock.yaml` / `npm-shrinkwrap.json` / `Cargo.lock` / `Gemfile.lock` / `Pipfile.lock` / `poetry.lock` / `uv.lock` / `composer.lock` / `go.sum`）を Edit / Write / `rm` しないこと（CLI 経由で再生成）
 - `git worktree remove --force` / `--force` 付き worktree 削除をしないこと
 - `git merge` に `-X ours` / `-X theirs` / `--strategy-option=ours/theirs` を渡さないこと
