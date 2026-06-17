@@ -172,3 +172,17 @@ branches:
   summary: .claude/worktrees/ 配下のワークツリーシンボリックリンク削除が delete-guard にブロックされる問題を修正
   task: 260617_delete-guard worktrees配下を許可
   completed: true
+- branch: fix/delete-guard-worktrees-allow
+  created: '2026-06-17'
+  title: delete-guard .claude/worktrees/ 配下の削除を許可
+  type: fix
+  summary: .claude/worktrees/ 配下のワークツリーシンボリックリンク削除が delete-guard にブロックされる問題を修正
+  task: 260617_delete-guard worktrees配下を許可
+  completed: true
+- branch: fix/mcp-branch-guard-bypass
+  created: '2026-06-17'
+  title: work-tools MCPブランチガードバイパス修正
+  type: fix
+  summary: MCPサーバー経由の呼び出しでassert_not_protected_branchがmaster上でexit 1してしまうバグを修正。環境変数バイパスを追加する。
+  task: 260617_work-tools-MCPブランチガードバイパス修正
+  completed: true

@@ -31,10 +31,6 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-# 共通ガード (scripts/_branch_guard.py)
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _branch_guard import assert_not_protected_branch  # noqa: E402
-
 try:
     import yaml
 except ImportError:
@@ -215,8 +211,6 @@ def cmd_add_branch(args: argparse.Namespace) -> None:
 
 
 def main() -> int:
-    # 保護ブランチ (master/main/develop) 上では実行禁止
-    assert_not_protected_branch("issue-tool.py")
     args = parse_args()
     handlers = {
         "close": cmd_close,

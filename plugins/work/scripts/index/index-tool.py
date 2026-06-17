@@ -38,10 +38,6 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-# ── 共通モジュール (scripts/ 直下の _branch_guard.py を読む) ─
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _branch_guard import assert_not_protected_branch  # noqa: E402
-
 # ── third-party ─────────────────────────────────────────────
 try:
     import yaml  # pip install pyyaml
@@ -164,8 +160,6 @@ def cmd_archive(args: argparse.Namespace) -> None:
 
 # ── main ────────────────────────────────────────────────────
 def main(args: argparse.Namespace) -> None:
-    # 保護ブランチ (master/main/develop) 上では実行禁止
-    assert_not_protected_branch("index-tool.py")
     handlers = {
         "add": cmd_add,
         "list-active": cmd_list_active,

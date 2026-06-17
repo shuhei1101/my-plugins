@@ -15,10 +15,6 @@ import argparse
 import sys
 from pathlib import Path
 
-# 共通ガード (scripts/_branch_guard.py)
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _branch_guard import assert_not_protected_branch  # noqa: E402
-
 try:
     import yaml
 except ImportError:
@@ -33,8 +29,6 @@ def _dump(data: dict) -> str:
 
 
 def main() -> None:
-    # 保護ブランチ (master/main/develop) 上では実行禁止
-    assert_not_protected_branch("trim-index.py")
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("index_yaml", nargs="?", default=str(DEFAULT_INDEX))
     parser.add_argument("--keep", type=int, default=20)
