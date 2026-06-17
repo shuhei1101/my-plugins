@@ -6,7 +6,6 @@
         "hooks": [
           {
             "type": "command",
-            "_description": "masterマージ前にプラグインバージョン更新漏れを検知してブロックする",
             "command": "python",
             "args": [
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-merge-version-check.py"
@@ -21,7 +20,6 @@
         "hooks": [
           {
             "type": "command",
-            "_description": "masterマージ後にpush + marketplace upgrade + reload-pluginsを実行する",
             "command": "python",
             "args": [
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/post-merge-upgrade.py"
@@ -30,5 +28,8 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "dev-kit@mentaiko-claude-plugins": true
   }
 }
