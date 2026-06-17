@@ -16,7 +16,7 @@
 |---|---|---|
 | 1 | 済 | `index-tool.py` / `issue-tool.py` / `trim-index.py` から `assert_not_protected_branch` の import と呼び出しを削除 |
 | 2 | 済 | 動作確認：master上でスクリプトが正常に動作することを確認 |
-| 3 | - | `.work/notes/` の関連ノートを更新する |
+| 3 | 済 | `.work/notes/` の関連ノートを更新する |
 
 ## 変更内容
 
@@ -39,3 +39,4 @@
 
 - `plugins/work/scripts/_branch_guard.py`: ブランチガード共通モジュール
 - `plugins/work/mcp/server.py`: work-tools MCPサーバー
+- `.work/notes/hooks/scripts-branch-guard.md`: 関連ノート
