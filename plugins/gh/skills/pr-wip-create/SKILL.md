@@ -1,70 +1,89 @@
 ---
 name: gh:pr-wip-create
-description: ラベル `go` の付いた Issue から Draft PR-WIP を作成する（1 Issue から複数派生可）
+description: ラベル `go` の Issue を全件取り、各 Issue から Draft PR-WIP を作成する（1 Issue 複数派生対応）
 ---
 
-# pr-wip-create — Draft PR の雛形を切る
+# pr-wip-create — go Issue を Draft PR 化
 
-ユーザーとの議論が終わって `go` ラベルが付いた Issue から、実装着手用の Draft PR を作る。1 Issue から複数派生してよい（粒度分割が必要なときは複数回起動）。実装は別途 `/gh:issue-resolve` か手作業で進める。
+ユーザーとの議論が終わって `go` ラベルが付いた Issue を全件巡回し、それぞれから Draft PR を作る。1 Issue から複数派生してよい（粒度分割が必要なときは同 Issue を分割スコープごとに複数回処理）。実装は別途 `/gh:pr-implement-auto` が担当。
+
+## 環境変数
+
+| 変数 | 既定 | 用途 |
+|---|---|---|
+| `GH_PR_WIP_CREATE_PARALLEL` | `5` | 並列起動するサブエージェント上限件数 |
+| `GH_GO_LABEL` | `go` | 対象 Issue を識別するラベル |
 
 ## 入力
 
 | 引数 | 必須 | 内容 |
 |---|---|---|
-| Issue 番号 | 必須 | 例: `#42` |
-| 分割スコープ | 任意 | 1 Issue から複数派生する場合の各 PR のスコープ説明（例: 「ルーター層だけ」「DB スキーマだけ」） |
+| Issue 番号 | 任意 | 指定時はその 1 件のみ処理 |
+| 分割スコープ | 任意 | 1 Issue から複数派生する場合のスコープ名（カンマ区切り） |
 
-引数なしで起動した場合は `go` ラベル付き Issue を全件巡回し、ユーザーに「どの Issue / どのスコープで切るか」を `AskUserQuestion` で確認する。
+引数なしのときは `go` ラベル付き Issue を全件取得し、各 Issue について `issue-review` の AI コメントから「分割提案」を読んで自動で分割スコープを決定する。
 
 ## タスク
 
-### ステップ 1: Issue を取得
+### ステップ 1: 対象 Issue を収集
 
-`get_issue` で Issue 本文・コメント（特に `issue-review` の AI コメント）を読む。
-
-| ラベル状態 | 動作 |
+| 状況 | 取得方法 |
 |---|---|
-| `go` あり | 続行 |
-| `go` なし | 「`go` ラベル未付与」と報告して停止 |
+| Issue 番号指定あり | `get_issue` で 1 件取得 |
+| 指定なし | `list_issues`（`state: open`、`labels: ${GH_GO_LABEL}`）昇順 |
 
-### ステップ 2: PR-WIP の雛形を作成
+0 件なら「`go` ラベル付き Issue はありません」と報告して停止。
 
-[サブエージェントで実行・完了を待つ] `pr-wip-creator` サブエージェントに以下を渡す。
-（戻り値: `{branch, pr_url, pr_number}`）
+### ステップ 2: 各 Issue から作る Draft PR の数を決定
 
-入力:
-- Issue 番号 / タイトル
-- 分割スコープ（未指定なら Issue 全体）
-- ブランチ名候補: `{type}/issue-{N}-{kebab-scope}`（同 Issue から複数派生時は scope で識別）
-- PR 本文に必須で入れる文言:
-  - `Refs #{Issue 番号}`（**`Closes` ではなく `Refs`** — 1 Issue 複数 PR を考慮し、最後の PR がマージされるまで Issue を閉じない）
-  - 分割スコープの説明
-  - 「このスコープで実装予定」のチェックボックス（雛形）
+| 条件 | 作る PR 数 |
+|---|---|
+| `split-needed` ラベルあり + `issue-review` コメントに分割提案表あり | 分割提案表の行数（各スコープ 1 PR） |
+| 引数で分割スコープ指定あり | 指定数 |
+| 上記なし | 1 PR（Issue 全体） |
 
-サブエージェントは:
-1. `/work:start` でブランチ + worktree 作成
-2. Issue 本文を引用した PR 用 README を最初のコミットとして積む（実装はまだ）
-3. `git push -u origin {branch}`
-4. `create_pull_request` で **draft: true** で PR 作成
+各 Draft PR の生成タスクを並列実行待ち行列に積む（上限 **N**）。
 
-### ステップ 3: 後処理
+### ステップ 3: 排他制御
 
 | No | 動作 |
 |---|---|
-| 1 | PR にラベル `wip` を付与 |
-| 2 | 元 Issue にコメント「PR #{新 PR 番号} を起票しました（スコープ: {scope}）」を投稿 |
-| 3 | 元 Issue の `go` ラベルは外さない（複数 PR を派生させる場合のため）。全派生が完了した時点でユーザーが手動で外す or 別スキルで一括処理 |
+| 1 | 各 Issue にラベル `wip-creating` を一時付与（処理中の他セッション衝突防止） |
 
-### ステップ 4: 結果報告
+`go` ラベル自体は外さない（複数派生で何度も処理対象になるため。全派生完了後にユーザーが手動で外す）。
+
+### ステップ 4: pr-wip-creator を並列起動
+
+[サブエージェントで並列実行・完了を待つ] 各 Draft PR 生成タスクに `pr-wip-creator` サブエージェントを起動する。
+（戻り値: `[{branch, pr_url, pr_number}]`）
+
+各サブエージェントに渡す入力:
+- Issue 番号 / タイトル
+- 分割スコープ（未指定なら Issue 全体）
+- ブランチ名候補: `{type}/issue-{N}-{kebab-scope}`
+- base ブランチ
+
+### ステップ 5: 後処理
+
+| No | 動作 |
+|---|---|
+| 1 | 作成された各 PR にラベル `wip` を付与 |
+| 2 | 元 Issue に「PR #{番号} を起票（スコープ: {scope}）」コメントを追記 |
+| 3 | `wip-creating` ラベルを外す |
+
+### ステップ 6: 完了報告
 
 | No | 報告項目 |
 |---|---|
-| 1 | 作成したブランチ名 |
-| 2 | 作成した Draft PR の URL と番号 |
-| 3 | 次のアクション（`/gh:issue-resolve #{PR番号}` で実装着手、または手動実装） |
+| 1 | 対象 Issue 件数 / 作成した Draft PR 件数 |
+| 2 | 各 PR の URL と紐づく Issue 番号 |
+| 3 | 次のアクション（`/gh:pr-implement-auto` を実行） |
 
 ## 注意
 
-- 必ず **draft** で作成する（`pr-review-auto` がレビュー対象に含めないため）
-- `Closes #{Issue}` ではなく `Refs #{Issue}` を使う（1 Issue 複数 PR で Issue が早期クローズされるのを防ぐ）
-- 同一 Issue から派生する PR はブランチ名でスコープを識別する（`issue-42-router` / `issue-42-schema` 等）
+| No | 内容 |
+|---|---|
+| 1 | 必ず **draft** で作成（`pr-review-auto` の対象外に置くため） |
+| 2 | `Closes #N` ではなく `Refs #N` を使う（1 Issue 複数 PR で Issue が早期クローズされるのを防ぐ） |
+| 3 | 同一 Issue から派生する PR はブランチ名のスコープで識別（`issue-42-router` / `issue-42-schema` 等） |
+| 4 | `go` ラベルは外さない（外す判断はユーザー） |

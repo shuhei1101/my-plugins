@@ -9,8 +9,8 @@ flowchart TD
   U[ユーザー or /gh:issue-scan] -->|Issue 起票| Issue[(GitHub Issue)]
   Issue -->|/gh:issue-review| Review[AI が方針/質問を Issue コメント投稿]
   Review -->|議論 → goラベル| Go[(go ラベル付き Issue)]
-  Go -->|/gh:pr-wip-create<br>1Issue→複数派生可| WIP[(Draft PR + wip ラベル)]
-  WIP -->|/gh:issue-resolve<br>または /gh:issue-resolve-auto| Ready[(Ready PR + auto-review ラベル)]
+  Go -->|/gh:pr-wip-create<br>1 Issue から複数派生可| WIP[(Draft PR + wip ラベル)]
+  WIP -->|/gh:pr-implement-auto| Ready[(Ready PR + auto-review ラベル)]
   Ready -->|/gh:pr-review-auto| Master[master]
 ```
 
@@ -35,10 +35,9 @@ flowchart TD
 |---|---|---|
 | 1 | `/gh:issue-scan` | コードベースを観点ごとにスキャンして Issue を起票 |
 | 2 | `/gh:issue-review` | 未レビュー Issue を読み、方針/質問を Issue コメント投稿 |
-| 3 | `/gh:pr-wip-create` | `go` ラベル付き Issue から Draft PR を 1 つ作る（1 Issue 複数派生可） |
-| 4 | `/gh:issue-resolve` | 1 Draft PR を拾って実装 → Ready 化 |
-| 5 | `/gh:issue-resolve-auto` | `wip` ラベルの Draft PR を N 件並列で実装 → Ready 化 |
-| 6 | `/gh:pr-review-auto` | `auto-review` ラベルの Ready PR を直列でレビュー → 合格ならマージ |
+| 3 | `/gh:pr-wip-create` | `go` ラベル Issue を全件取り、各 Issue から Draft PR を作成（1 Issue 複数派生可） |
+| 4 | `/gh:pr-implement-auto` | `wip` ラベルの Draft PR を N 件並列で実装 → Ready 化 |
+| 5 | `/gh:pr-review-auto` | `auto-review` ラベルの Ready PR を直列でレビュー → 合格ならマージ |
 
 ## サブエージェント一覧
 
@@ -47,7 +46,7 @@ flowchart TD
 | 1 | `issue-scanner` | `/gh:issue-scan` | 1 観点でスキャンし findings を返す |
 | 2 | `issue-reviewer` | `/gh:issue-review` | 1 Issue を読みコメント本文を返す |
 | 3 | `pr-wip-creator` | `/gh:pr-wip-create` | 1 Issue から Draft PR の雛形を作る |
-| 4 | `issue-resolver` | `/gh:issue-resolve` / `issue-resolve-auto` | 1 Draft PR の中身を実装し Ready 化 |
+| 4 | `pr-implementer` | `/gh:pr-implement-auto` | 1 Draft PR の中身を実装し Ready 化 |
 | 5 | `pr-reviewer` | `/gh:pr-review-auto` | 1 PR をレビューし、合格なら自身でマージまで |
 
 ## ラベル設計
@@ -60,14 +59,15 @@ flowchart TD
 | `ready-for-go` | go サイン候補 | `issue-review` | go ラベル付与時に手動 |
 | `split-needed` | 分割推奨 | `issue-review` | 分割完了時に手動 |
 | `go` | 実装着手 OK | ユーザー | 全派生 PR 完了時に手動 |
-| `wip` | Draft PR | `pr-wip-create` | `issue-resolve` が ready 化時 |
-| `resolving` | 実装中（排他） | `issue-resolve-auto` 取得時 | 完了時 |
-| `auto-review` | レビュー対象 | `issue-resolve` 完了時 | `pr-review-auto` 取得時 |
+| `wip` | Draft PR | `pr-wip-create` | `pr-implement-auto` 取得時 |
+| `wip-creating` | Draft PR 作成中（排他） | `pr-wip-create` | 完了時 |
+| `implementing` | 実装中（排他） | `pr-implement-auto` 取得時 | 完了時 |
+| `auto-review` | レビュー対象 | `pr-implement-auto` 完了時 | `pr-review-auto` 取得時 |
 | `reviewing` | レビュー中（排他） | `pr-review-auto` 取得時 | 完了時 |
 | `needs-fix` | request_changes された PR | `pr-review-auto` | 再 push 後に手動 |
 | `conflict-needs-human` | コンフリクト未解消 | `pr-review-auto` | 人手解消後 |
 | `auto-review-failed` | レビュー or マージ失敗 | `pr-review-auto` | 人手対応後 |
-| `resolve-failed` | 実装失敗 | `issue-resolve-auto` | 人手対応後 |
+| `implement-failed` | 実装失敗 | `pr-implement-auto` | 人手対応後 |
 
 ## 直列マージ原則
 
