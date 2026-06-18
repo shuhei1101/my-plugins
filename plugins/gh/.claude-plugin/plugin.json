@@ -1,5 +1,5 @@
 {
   "name": "gh",
   "description": "GitHub Issues/PR を活用した作業フロー（スキャン・解決・自動マージ・レビュー）",
-  "version": "0.2"
+  "version": "0.3"
 }

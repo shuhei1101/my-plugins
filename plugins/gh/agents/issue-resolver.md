@@ -1,6 +1,6 @@
 ---
 name: issue-resolver
-description: 1 件の GitHub Issue について実装し、PR を作成して返すエージェント
+description: 既存 Draft PR の中身を実装し、Ready 化して返すエージェント（新規ブランチ/PR 作成はしない）
 model: sonnet
 ---
 
@@ -8,64 +8,71 @@ model: sonnet
 
 | 引数 | 内容 |
 |---|---|
-| Issue 番号 | 例: 42 |
-| Issue タイトル | PR タイトルにも使う |
-| Issue 本文 | 実装方針の根拠 |
-| ブランチ名候補 | `type/issue-{N}-kebab-title` |
-| 採用方針 | 採用案 + QA 回答 + 補足 |
-| `auto_merge_ok` | true / false（true なら最終的に PR ラベルへ `merge-ok` を付ける） |
+| PR 番号 | 例: 42 |
+| ブランチ名 | 例: `feat/issue-42-router` |
+| base ブランチ | 通常 `master` |
+| Issue 番号 | 紐づく Issue 番号 |
+| 採用方針 | Issue コメントの `issue-review` 結果から抽出した実装方針 |
+| 分割スコープ | この PR で扱うスコープ |
 
-## ステップ 1: ブランチとワークツリーを作成
+## ステップ 1: ワークツリーを復帰
 
-`/work:start` スキルを実行（work プラグイン依存）。これで以下が揃う:
-- ブランチ作成
-- worktree 作成
-- タスクドキュメント雛形
+| 状況 | 動作 |
+|---|---|
+| `.claude/worktrees/{type}-{title}` がある | そのまま使う |
+| ない | `worktree_create` MCP ツールで作成 |
 
-タスクドキュメントの `## 関連イシュー` セクションには Issue 番号を記載。
+remote と同期:
+
+```bash
+git -C {WORKTREE} fetch origin
+git -C {WORKTREE} reset --hard origin/{BRANCH}
+```
 
 ## ステップ 2: 実装
 
-採用方針に従って実装する。コミットは細かく刻んで構わない。
-
-## ステップ 3: テストと最終コミット
+採用方針に従って実装する。コミットは細かく刻んでよい。雛形 `PR.md` のチェックボックスを進捗に応じて更新する。
 
 | No | 動作 |
 |---|---|
-| 1 | 影響範囲のテストを追加/更新 |
-| 2 | プロジェクトのテストを実行 |
-| 3 | `.work/notes/` の関連ノート更新 |
-| 4 | 最終コミット |
+| 1 | 採用方針の通りにコード変更 |
+| 2 | 影響範囲のテストを追加/更新 |
+| 3 | プロジェクトのテストを実行 |
+| 4 | `.work/notes/` の関連ノート更新 |
 
-## ステップ 4: ブランチを push
+## ステップ 3: push
 
-`git -C {WORKTREE} push -u origin {branch}` で remote に push する。
+```bash
+git -C {WORKTREE} push origin {BRANCH}
+```
 
-## ステップ 5: PR を作成
+## ステップ 4: PR を Ready 化
 
-MCP `create_pull_request` で PR を作成:
-
-| 引数 | 値 |
+| No | 動作 |
 |---|---|
-| `title` | `{type}: {Issue タイトル}` |
-| `body` | 実装サマリ + `Closes #{Issue 番号}` + タスクドキュメントの該当節を引用 |
-| `base` | 親ブランチ（通常 `master`） |
-| `head` | 作業ブランチ |
-| `labels` | `auto_merge_ok=true` のとき `[merge-ok]`、false のとき `[needs-review]` |
+| 1 | `update_pull_request` で `draft: false` に変更 |
+| 2 | PR にコメント「実装完了。レビュー待ち。」を追記（変更サマリ付き） |
 
-## ステップ 6: 結果を返す
+ラベル付け替え（`wip` → `auto-review`）はメイン（呼び出し側スキル）の責務。
+
+## ステップ 5: 戻り値
 
 ```json
 {
-  "branch": "{branch}",
-  "pr_url": "{url}",
-  "pr_number": 123,
-  "status": "ready"
+  "branch": "feat/issue-42-router",
+  "pr_number": 42,
+  "status": "ready",
+  "commits_added": 5
 }
 ```
 
+| status | 条件 |
+|---|---|
+| ready | 実装完了 + draft 解除済み |
+| failed | 実装中にエラー（理由を別フィールド `message` に） |
+
 ## 制約
 
-- マージはしない（auto-merge の責務）
-- PR 作成までで停止
+- 新規ブランチ・新規 PR は作成しない（`pr-wip-create` 専門）
+- マージはしない（`pr-review-auto` 専門）
 - コンフリクトが発生したら親に報告して停止（自前で `-X ours/theirs` を使わない）

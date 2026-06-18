@@ -7,8 +7,8 @@
     {
       "name": "work",
       "source": "./plugins/work",
-      "description": "作業場を作成するプラグイン",
-      "version": "1.22"
+      "description": "ワークツリー駆動のブランチ作業基盤（start / merge / setup と保護フック群）",
+      "version": "2.0"
     },
     {
       "name": "dev-kit",
@@ -19,8 +19,8 @@
     {
       "name": "gh",
       "source": "./plugins/gh",
-      "description": "GitHub Issues/PR を活用した作業フロー（スキャン・解決・レビュー＋マージ）",
-      "version": "0.2"
+      "description": "GitHub Issues/PR を真実のソースとした作業フロー（scan / review / wip-create / resolve / pr-review-auto）",
+      "version": "0.3"
     }
   ]
 }

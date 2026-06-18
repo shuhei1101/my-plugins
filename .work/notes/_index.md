@@ -2,7 +2,8 @@
 
 ## プラグイン
 
-- [ghプラグイン](プラグイン/ghプラグイン.md): GitHub Issues/PR ベースの作業フロー（issue-scan / issue-resolve / issue-resolve-auto / pr-review-auto と対応サブエージェント）
+- [workプラグイン](プラグイン/workプラグイン.md): ワークツリー駆動のブランチ作業基盤（v2.0 で縮小、タスク/イシュー管理は gh プラグインへ移管）
+- [ghプラグイン](プラグイン/ghプラグイン.md): GitHub Issues/PR を真実のソースとした作業フロー（scan / review / wip-create / resolve / pr-review-auto）
 
 ## フック・自動化
 

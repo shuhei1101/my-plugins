@@ -1,60 +1,65 @@
 ---
 name: gh:issue-resolve
-description: 指定された GitHub Issue を 1 件解決する（ブランチ作成 → 実装 → PR 作成）
+description: Draft PR を 1 件拾って実装を完了させる（ready 化 + auto-review ラベル付与まで）
 ---
 
-# issue-resolve — Issue を解決する
+# issue-resolve — Draft PR の中身を実装する
+
+`/gh:pr-wip-create` で作られた Draft PR を拾い、実装を完了させて ready 化する。**ブランチ・PR の作成は行わない**（それは pr-wip-create の責務）。
 
 ## 入力
 
 | 引数 | 必須 | 内容 |
 |---|---|---|
-| Issue 番号 | 必須 | 例: `#42`。指定がなければユーザーに聞く |
-| 採用方針 | 任意 | コメント欄で議論済みの結論を引用する場合 |
+| PR 番号 | 必須 | 例: `#42`。省略時は `wip` ラベル付き Draft PR を一覧してユーザーに選ばせる |
 
 ## タスク
 
-### ステップ 1: Issue を読み込む
+### ステップ 1: Draft PR を読み込む
 
-MCP `get_issue` で本文・ラベル・コメントを取得する。
+| No | MCP ツール | 用途 |
+|---|---|---|
+| 1 | `get_pull_request` | PR メタ情報・ブランチ名・base/head |
+| 2 | `get_pull_request_files` | 既存差分（雛形コミット内容） |
+| 3 | 紐づく Issue（PR 本文の `Refs #N` から特定） | `get_issue` + `get_issue_comments` で議論経緯を把握 |
 
-`assignee` を自分（または bot user）に設定し、ラベルに `in-progress` を追加する（`update_issue`）。
+`draft: false` の PR が指定された場合は「Draft ではない」と報告して停止。
 
 ### ステップ 2: 実装方針を確定
 
-| 観点 | 判定 |
-|---|---|
-| 対応案が複数 | 直近コメントで採用案が決まっているか確認。決まってなければユーザーに `AskUserQuestion` で聞く（このスキルは AskUserQuestion 使用可） |
-| `auto-merge` ラベルが付いているか | 付いていれば PR 作成後にレビューフェーズを飛ばして `targets/`（auto-merge 対象）に流す（ラベル `merge-ok` を付ける） |
+Issue コメント（特に `issue-review` の AI 提案）と PR 本文のスコープ説明から実装方針を抽出。曖昧な点が残っていれば `AskUserQuestion` で確認（議論は本来 Issue 上で完結している前提）。
 
-### ステップ 3: ブランチ作成 → 実装
+### ステップ 3: 実装を委譲
 
-[サブエージェントで実行・完了を待つ] `issue-resolver` サブエージェントに以下を渡して起動する。
-（戻り値: `{branch, pr_url, pr_number, status}`）
+[サブエージェントで実行・完了を待つ] `issue-resolver` サブエージェントに以下を渡す。
+（戻り値: `{branch, pr_number, status, commits_added}`）
 
 入力:
-- Issue 番号 / Issue タイトル / Issue 本文
-- ブランチ名候補（`type/issue-{N}-kebab-title`）
-- 採用方針（採用案 + 補足）
-- `auto_merge_ok`（`auto-merge` ラベルの有無）
+- PR 番号 / PR ブランチ名 / base ブランチ
+- Issue 番号 / 採用方針 / 分割スコープ
+- ワークツリーパス（既存 worktree が `.claude/worktrees/{type}-{title}` にあれば再利用、なければ `worktree_create`）
 
-### ステップ 4: 後処理
+サブエージェントは worktree でコミットを積み、`git push` して PR を更新する。
 
-| 結果 | 動作 |
+### ステップ 4: PR を Ready 化
+
+| No | 動作 |
 |---|---|
-| PR 作成成功 + `auto_merge_ok=true` | PR にラベル `merge-ok` を付与（`add_labels`）。`/gh:auto-merge` が拾う |
-| PR 作成成功 + `auto_merge_ok=false` | PR にラベル `needs-review` を付与。ユーザーがレビュー後 `merge-ok` ラベルへ手動で切替 |
-| 失敗 | Issue に失敗理由をコメント投稿し、`in-progress` ラベルを外す |
+| 1 | `wip` ラベルを外す |
+| 2 | `auto-review` ラベルを付与（`/gh:pr-review-auto` の対象になる） |
+| 3 | PR の draft 状態を解除（`mark_pull_request_ready_for_review` 相当）→ `update_pull_request` で `draft: false` |
+| 4 | PR 本文の末尾に「実装完了。レビュー待ち。」コメントを追記 |
 
 ### ステップ 5: 結果報告
 
 | No | 報告項目 |
 |---|---|
-| 1 | 作成したブランチ名 |
-| 2 | 作成した PR URL と番号 |
-| 3 | 次のアクション（auto-merge 待ち / ユーザーレビュー待ち / 失敗対応） |
+| 1 | 追加コミット数 |
+| 2 | PR の現在ステータス（ready_for_review / auto-review 待ち） |
+| 3 | 次のアクション（`/gh:pr-review-auto` を実行） |
 
 ## 注意
 
-- このスキルは PR 作成までで終わる（マージはしない）。マージは `/gh:auto-merge` の責務
-- Issue クローズも GitHub 側に任せる（PR 本文に `Closes #N` を入れる → マージ時に自動クローズ）
+- 新規ブランチ・新規 PR は作成しない（pr-wip-create 専門）
+- マージはしない（pr-review-auto 専門）
+- 既存 worktree がある場合は `fetch + reset --hard origin/{branch}` で remote と同期してから着手

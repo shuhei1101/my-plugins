@@ -1,5 +1,5 @@
 {
   "name": "work",
-  "description": "作業場を作成するプラグイン",
-  "version": "1.22"
+  "description": "ワークツリー駆動のブランチ作業基盤（start / merge / setup と保護フック群）。タスク/イシュー管理は gh プラグインへ移管",
+  "version": "2.0"
 }
