@@ -1,13 +1,20 @@
 ---
 name: gh-kit:pr-wip-create
-description: ラベル `go` の Issue を全件取り、各 Issue から Draft PR-WIP を作成する（1 Issue 複数派生対応）
+description: needs-* がすべて外れた open Issue を全件取り、各 Issue から Draft PR-WIP を作成する（1 Issue 複数派生対応）
 ---
 
 # pr-wip-create
 
-`go` ラベル付き Issue を全件巡回し、それぞれから Draft PR を作る。
-1 Issue から複数派生してよい（粒度分割が必要なときは同 Issue を分割スコープごとに複数回処理）。
-実装は別途 `/gh-kit:pr-implement-auto` が担当。
+「実装着手 OK」になった Issue を全件巡回し、それぞれから Draft PR を作る。
+1 Issue から複数派生してよい。実装は別途 `/gh-kit:pr-implement-auto` が担当。
+
+「実装着手 OK」の条件:
+
+| No | 条件 |
+|---|---|
+| 1 | `state: open` |
+| 2 | `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも付いていない |
+| 3 | Issue 本文・コメントの todo チェックボックス（`- [ ]`）がすべて埋まっている（推奨案・QA 回答が選択済み） |
 
 ## 環境変数
 
@@ -22,24 +29,34 @@ description: ラベル `go` の Issue を全件取り、各 Issue から Draft P
 | Issue 番号 | 任意 | 指定時はその 1 件のみ処理 |
 | 分割スコープ | 任意 | 1 Issue から複数派生する場合のスコープ名（カンマ区切り） |
 
-引数なしのときは `go` ラベル付き Issue を全件取得し、各 Issue について `issue-review` の AI コメントから「分割提案」を読んで自動で分割スコープを決定する。
+引数なしのときは上記条件の Issue を全件取得し、`issue-review` の AI コメントの分割提案を読んで自動で分割スコープを決定する。
+
+## ラベル定義の読み込み
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+```
 
 ## タスク
 
 ### ステップ 1: 対象 Issue を収集
 
-| 状況 | コマンド |
-|---|---|
-| Issue 番号指定あり | `gh issue view {N} --json number,title,body,labels,comments` |
-| 指定なし | `gh issue list --state open --label go --json number,title,labels,comments --limit 50`（昇順） |
+```bash
+gh issue list --state open --json number,title,body,labels,comments --limit 100
+```
 
-0 件なら「`go` ラベル付き Issue はありません」と報告して停止。
+取得結果を以下でフィルタ:
+
+- `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも含まない
+- Issue 本文・コメントを連結して `- [ ]` の残数 0（推奨案・QA 回答が選択済み）
+
+0 件なら停止。
 
 ### ステップ 2: 各 Issue から作る Draft PR の数を決定
 
 | 条件 | 作る PR 数 |
 |---|---|
-| `split-needed` ラベル + `issue-review` コメントに分割提案表あり | 分割提案表の行数（各スコープ 1 PR） |
+| `issue-review` コメントに分割提案表あり | 分割提案表の行数（各スコープ 1 PR） |
 | 引数で分割スコープ指定あり | 指定数 |
 | 上記なし | 1 PR（Issue 全体） |
 
@@ -47,13 +64,9 @@ description: ラベル `go` の Issue を全件取り、各 Issue から Draft P
 
 ### ステップ 3: 排他制御
 
-各 Issue にラベル `wip-creating` を一時付与:
-
 ```bash
-gh issue edit {N} --add-label wip-creating
+gh issue edit {N} --add-label "$LABEL_PROCESSING"
 ```
-
-`go` ラベル自体は外さない（複数派生で何度も処理対象になるため）。
 
 ### ステップ 4: pr-wip-creator を並列起動
 
@@ -69,12 +82,12 @@ gh issue edit {N} --add-label wip-creating
 ### ステップ 5: 後処理
 
 ```bash
-# 作成された各 PR にラベル `wip` を付与
-gh pr edit {PR番号} --add-label wip
+# 作成された各 PR にラベル wip を付与
+gh pr edit {PR番号} --add-label "$LABEL_WIP"
 
-# 元 Issue にコメント追加 + wip-creating ラベル除去
+# 元 Issue にコメント追加 + processing 解除
 gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
-gh issue edit {N} --remove-label wip-creating
+gh issue edit {N} --remove-label "$LABEL_PROCESSING"
 ```
 
 ### ステップ 6: 完了報告
@@ -90,6 +103,5 @@ gh issue edit {N} --remove-label wip-creating
 | No | 内容 |
 |---|---|
 | 1 | 必ず **draft** で作成（`--draft` フラグ） |
-| 2 | `Closes #N` ではなく `Refs #N` を使う（1 Issue 複数 PR で Issue が早期クローズされるのを防ぐ） |
+| 2 | `Closes #N` ではなく `Refs #N` を使う |
 | 3 | 同一 Issue から派生する PR はブランチ名のスコープで識別 |
-| 4 | `go` ラベルは外さない（外す判断はユーザー） |

@@ -19,8 +19,8 @@
     {
       "name": "gh-kit",
       "source": "./plugins/gh-kit",
-      "description": "GitHub Issues/PR を真実のソースとした作業フローキット（gh CLI ベース・code-scan-auto / issue-review / pr-wip-create / pr-implement-auto / pr-review-auto）",
-      "version": "0.6"
+      "description": "GitHub Issues/PR を真実のソースとした作業フローキット（gh CLI + ラベル一元管理）",
+      "version": "0.7"
     }
   ]
 }

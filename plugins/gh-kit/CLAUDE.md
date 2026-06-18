@@ -2,17 +2,19 @@
 
 GitHub Issues / Pull Request を真実のソースとして作業フローを回すプラグイン。
 GitHub 操作はすべて `gh` CLI に統一（MCP は使わない）。
+ラベル名は `scripts/labels.sh` に一元化。
 
 ## ワークフロー
 
 ```mermaid
 flowchart TD
-  U[ユーザー or /gh-kit:code-scan-auto] -->|Issue 起票| Issue[(GitHub Issue)]
-  Issue -->|/gh-kit:issue-review| Review[AI が方針/質問を Issue コメント投稿]
-  Review -->|議論 → go ラベル| Go[(go ラベル付き Issue)]
-  Go -->|/gh-kit:pr-wip-create| WIP[(Draft PR + wip ラベル)]
-  WIP -->|/gh-kit:pr-implement-auto| Ready[(Ready PR + auto-review ラベル)]
-  Ready -->|/gh-kit:pr-review-auto| Master[master]
+  U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + needs-ai-review| Issue[(GitHub Issue)]
+  Issue -->|/gh-kit:issue-review| Review[AI が方針/質問を Issue コメント<br>needs-ai-review 除去]
+  Review -->|needs-* なし + todo 全埋め| Ready[(Issue Ready)]
+  Ready -->|/gh-kit:pr-wip-create| WIP[(Draft PR + wip)]
+  WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 processing]
+  Implementing -->|完了| NAR[(Ready PR + needs-ai-review)]
+  NAR -->|/gh-kit:pr-review-auto| Merged[master]
 ```
 
 ## セットアップ
@@ -28,64 +30,56 @@ flowchart TD
 | No | スキル | 概要 |
 |---|---|---|
 | 1 | `/gh-kit:code-scan-auto` | コードベース観点別スキャン → `code-scanner` が `gh issue create` で直接起票 |
-| 2 | `/gh-kit:issue-review` | 未レビュー Issue を読み、AI が方針/質問を Issue コメント投稿 |
-| 3 | `/gh-kit:pr-wip-create` | `go` ラベル Issue を全件巡回 → Draft PR を作成（1 Issue 複数派生可） |
+| 2 | `/gh-kit:issue-review` | `needs-ai-review` 付きの Issue を AI レビュー、コメント投稿 |
+| 3 | `/gh-kit:pr-wip-create` | needs-* なしの Issue 全件 → Draft PR を作成 |
 | 4 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
-| 5 | `/gh-kit:pr-review-auto` | `auto-review` Ready PR を直列でレビュー → 合格ならマージ |
+| 5 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
 
 ## サブエージェント一覧
 
 | No | エージェント | 呼び元 | 役割 |
 |---|---|---|---|
-| 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でスキャンし `gh issue create` で直接起票して Issue 番号配列を返す |
-| 2 | `issue-reviewer` | `/gh-kit:issue-review` | 1 Issue を読みコメント本文を返す（投稿はメイン） |
-| 3 | `pr-wip-creator` | `/gh-kit:pr-wip-create` | `/work:start` でブランチ + worktree → 雛形コミット → Draft PR 起票 |
-| 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化 |
-| 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は自身でマージまで実行 |
+| 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でスキャンし `gh issue create` で直接起票 |
+| 2 | `issue-reviewer` | `/gh-kit:issue-review` | 1 Issue を読みコメント本文と `needs-user-review` 要否を返す |
+| 3 | `pr-wip-creator` | `/gh-kit:pr-wip-create` | `/work:start` + 雛形コミット + Draft PR 起票 |
+| 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、`needs-user-review` 要否を返す |
+| 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は `/work:merge` まで実行 |
 
-## 共通リソース（テンプレート）
+## 共通リソース
 
-`plugins/gh-kit/templates/` 配下に置き、SKILL/agent から `!`cat ...`` で直展開する。
-パスは環境変数で差し替え可（未設定なら同梱版を使う）。
-
-| テンプレート | 用途 | 差し替え用 env |
+| パス | 用途 | 差し替え用 env |
 |---|---|---|
-| `スキャン観点.md` | code-scan-auto が選ぶ観点メニュー | `GH_KIT_SCAN_PERSPECTIVES_PATH` |
-| `ファイル解決.md` | code-scanner の観点→実ファイル変換ルール | `GH_KIT_FILE_RESOLUTION_PATH` |
-| `イシュー本文テンプレート.md` | code-scanner が起票する Issue 本文 | `GH_KIT_ISSUE_BODY_TEMPLATE_PATH` |
+| `plugins/gh-kit/scripts/labels.sh` | ラベル名一元定義（source で読み込み） | （固定） |
+| `plugins/gh-kit/templates/スキャン観点.md` | code-scan-auto の観点メニュー | `GH_KIT_SCAN_PERSPECTIVES_PATH` |
+| `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール | `GH_KIT_FILE_RESOLUTION_PATH` |
+| `plugins/gh-kit/templates/イシュー本文テンプレート.md` | code-scanner が起票する Issue 本文 | `GH_KIT_ISSUE_BODY_TEMPLATE_PATH` |
+| `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` を付けるか判定基準 | `GH_KIT_USER_REVIEW_CRITERIA_PATH` |
 
-## ラベル・状態一覧
+## ラベル一覧
 
-別ノート `.work/notes/プラグイン/gh-kitラベル設計.md` に集約。
-（簡易版は本ファイル末尾の Quick Reference に残置）
+詳細は `.work/notes/プラグイン/gh-kitラベル設計.md`（状態遷移図含む）。
 
-### Quick Reference — Issue 状態遷移
+### 共通
 
-```mermaid
-stateDiagram-v2
-  [*] --> Open: gh issue create
-  Open --> AIReviewed: /gh-kit:issue-review が ai-reviewed 付与
-  AIReviewed --> Go: ユーザーが go 付与
-  AIReviewed --> NeedsClarification: 質問あり (needs-clarification)
-  NeedsClarification --> AIReviewed: ユーザー回答 → 再 issue-review
-  Go --> WipCreated: /gh-kit:pr-wip-create が PR 派生
-  WipCreated --> Closed: 最終 PR マージで gh CLI が close
-```
+| ラベル | 意味 |
+|---|---|
+| `processing` | 何らかの作業中（排他マーカー） |
+| `needs-ai-review` | AI レビュー必要（必ず付く） |
+| `needs-user-review` | ユーザーレビュー必要（AI 判定で付く） |
+| `needs-fix` | レビュー結果、修正必要 |
 
-### Quick Reference — PR 状態遷移
+### Issue 専用
 
-```mermaid
-stateDiagram-v2
-  [*] --> Draft_wip: /gh-kit:pr-wip-create
-  Draft_wip --> Implementing: /gh-kit:pr-implement-auto 取得時 (implementing)
-  Implementing --> Ready_AutoReview: 完了時 (auto-review)
-  Ready_AutoReview --> Reviewing: /gh-kit:pr-review-auto 取得時 (reviewing)
-  Reviewing --> Merged: approve → /work:merge → push
-  Reviewing --> NeedsFix: request_changes (needs-fix)
-  NeedsFix --> Ready_AutoReview: 再 push で再エントリー
-  Reviewing --> ConflictNeedsHuman: コンフリクト未解消
-  Reviewing --> AutoReviewFailed: その他失敗
-```
+| ラベル | 意味 |
+|---|---|
+| `ai-code-scan` | claude code がスキャンして起票（出自タグ） |
+| `type:*` / `priority:*` | 種別・優先度 |
+
+### PR 専用
+
+| ラベル | 意味 |
+|---|---|
+| `wip` | Draft 雛形 PR |
 
 ## 直列マージ原則
 

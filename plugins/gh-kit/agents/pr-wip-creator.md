@@ -14,6 +14,12 @@ model: sonnet
 | ブランチ名候補 | 例: `feat/issue-42-router` |
 | base ブランチ | 通常 `master` |
 
+## ラベル定義の読み込み
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+```
+
 ## ステップ 1: ブランチ + worktree 作成
 
 `/work:start` スキルを実行する。
@@ -75,3 +81,4 @@ EOF
 - 実装はしない（雛形コミットのみ）
 - `Closes #N` を使わない
 - 必ず `--draft` で作成
+- ラベル付与（`wip` 等）は呼び出し側（pr-wip-create）の責務

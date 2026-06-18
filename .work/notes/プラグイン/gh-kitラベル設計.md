@@ -6,6 +6,31 @@ gh-kit プラグインは Issue と PR を GitHub のラベルで状態管理す
 状態遷移はラベルの付け外しで表現し、各スキル/エージェントは特定ラベルの付与・除去を排他制御兼マーカーとして使う。
 **「ラベル」が真実のソース** — ローカルに状態ファイルは持たない。
 
+ラベル名は `plugins/gh-kit/scripts/labels.sh` に集約。変更するときはここだけ書き換える。
+
+## ラベル一覧（共通）
+
+| No | ラベル | 意味 | 付与 | 外す |
+|---|---|---|---|---|
+| 1 | `processing` | 何らかの作業中（排他マーカー） | 各スキルが対象を拾った瞬間 | 完了/失敗時に必ず |
+| 2 | `needs-ai-review` | AI レビュー必要。**Issue/PR 作成時に必ず付く** | AI が自動 | AI レビュー完了時 |
+| 3 | `needs-user-review` | ユーザーレビュー必要。状況に応じて AI が判断 | AI が自動（判定基準は `templates/ユーザーレビュー要否判定.md`） | ユーザーが手動で外す |
+| 4 | `needs-fix` | レビュー結果、修正必要 | AI/ユーザーがレビューで判断 | 修正完了後にレビューしたほうが外す |
+
+## ラベル一覧（Issue 専用）
+
+| No | ラベル | 意味 | 付与 | 外す |
+|---|---|---|---|---|
+| 1 | `ai-code-scan` | claude code がスキャンして起票（出自タグ） | `code-scanner` | 通常外さない |
+| 2 | `type:{refactor,bug,feat,docs,chore,test}` | 種別 | `code-scanner` / ユーザー | 必要に応じて |
+| 3 | `priority:{high,medium,low}` | 優先度 | `code-scanner` / ユーザー | 必要に応じて |
+
+## ラベル一覧（PR 専用）
+
+| No | ラベル | 意味 | 付与 | 外す |
+|---|---|---|---|---|
+| 1 | `wip` | Draft 雛形 PR | `pr-wip-create` | `pr-implement-auto` が実装に入るとき |
+
 ## 状態遷移図
 
 ### Issue
@@ -13,116 +38,95 @@ gh-kit プラグインは Issue と PR を GitHub のラベルで状態管理す
 ```mermaid
 stateDiagram-v2
   [*] --> Open: gh issue create
-  Open --> AIReviewed: /gh-kit:issue-review で ai-reviewed 付与
-  AIReviewed --> Go: ユーザーが go 付与
-  AIReviewed --> NeedsClarification: 質問あり (needs-clarification 付与)
-  NeedsClarification --> AIReviewed: ユーザー回答 → ai-reviewed 外して再 issue-review
-  Go --> WipCreated: /gh-kit:pr-wip-create が PR 派生（go は維持）
-  WipCreated --> Closed: 最終 PR マージで gh CLI が close（PR 本文の Refs/Closes）
+  Open --> NeedsAIReview: needs-ai-review 自動付与（作成側が）
+  NeedsAIReview --> Processing: /gh-kit:issue-review 取得時
+  Processing --> NeedsUserReview: AI レビュー完了 (needs-ai-review 除去・必要なら needs-user-review 付与)
+  NeedsUserReview --> Ready: ユーザー回答 → needs-user-review 除去
+  Processing --> Ready: AI 判定で needs-user-review 不要だった場合 (即 ready)
+  Ready --> PrWipCreating: /gh-kit:pr-wip-create が拾う (processing 付与)
+  PrWipCreating --> Closed: PR がマージされて GitHub が自動 close
 ```
+
+「Ready」= needs-* なし、open、質問にすべて回答済み。`/gh-kit:pr-wip-create` の対象。
 
 ### PR
 
 ```mermaid
 stateDiagram-v2
   [*] --> Draft_wip: /gh-kit:pr-wip-create で wip 付与
-  Draft_wip --> Implementing: /gh-kit:pr-implement-auto 取得時 (implementing 付与・wip 除去)
-  Implementing --> Ready_AutoReview: 完了時 (implementing 除去・auto-review 付与・draft 解除)
-  Implementing --> ImplementFailed: 失敗 (implement-failed)
-  Ready_AutoReview --> Reviewing: /gh-kit:pr-review-auto 取得時 (reviewing 付与・auto-review 除去)
-  Reviewing --> Merged: approve → /work:merge → push (reviewing 除去、GitHub が自動 close)
-  Reviewing --> NeedsFix: request_changes (needs-fix 付与・reviewing 除去)
-  NeedsFix --> Ready_AutoReview: 再 push → ユーザー or 自動で auto-review に戻す
-  Reviewing --> ConflictNeedsHuman: コンフリクト未解消 (conflict-needs-human)
-  Reviewing --> AutoReviewFailed: その他失敗 (auto-review-failed)
+  Draft_wip --> Processing: /gh-kit:pr-implement-auto 取得時 (processing 付与・wip 除去)
+  Processing --> NeedsAIReview: 実装完了 (processing 除去・needs-ai-review 付与・必要なら needs-user-review・draft 解除)
+  NeedsAIReview --> Reviewing: /gh-kit:pr-review-auto 取得時 (processing 付与)
+  Reviewing --> Merged: approve → /work:merge → push (processing/needs-ai-review 除去 + needs-user-review なし)
+  Reviewing --> NeedsFix: AI レビュー結果 修正必要 (processing 除去・needs-fix 付与)
+  Reviewing --> NeedsUserReview_Only: AI OK だがユーザー判断必要 (processing/needs-ai-review 除去、needs-user-review は残す)
+  NeedsFix --> Processing: 修正 push → 再 pr-implement-auto or 手動
+  NeedsUserReview_Only --> Merged: ユーザーが needs-user-review 除去 → マージ実行
 ```
 
-## Issue ラベル一覧
+「マージ可能」= needs-* がすべて外れた + processing なし + draft でない + CI green。
 
-| No | ラベル | 意味 | 付与 | 外す |
-|---|---|---|---|---|
-| 1  | `code-scan` | `/gh-kit:code-scan-auto` で起票された Issue | `code-scanner` | 通常外さない（出自タグ） |
-| 2  | `type:{refactor,bug,feat,docs,chore,test}` | Issue の種類 | `code-scanner` / ユーザー | 必要なら手動 |
-| 3  | `priority:{high,medium,low}` | 優先度 | `code-scanner` / ユーザー | 必要なら手動 |
-| 4  | `ai-reviewed` | `/gh-kit:issue-review` 済み | `issue-review` | 再レビューしたいとき手動 |
-| 5  | `needs-clarification` | AI から QA を投げた状態（ユーザー回答待ち） | `issue-review` | ユーザー回答後、`ai-reviewed` も外して再レビュー |
-| 6  | `ready-for-go` | AI レビューで質問なく方針確定。go 候補 | `issue-review` | `go` 付与時に手動 or 自動 |
-| 7  | `split-needed` | AI レビューで分割提案あり | `issue-review` | 分割完了後に手動 |
-| 8  | `go` | 実装着手 OK（ユーザー承認サイン） | ユーザー | 全派生 PR 完了時に手動 |
-| 9  | `wip-creating` | `/gh-kit:pr-wip-create` 処理中（排他） | `pr-wip-create` 取得時 | 完了時 |
+## ライフサイクル詳細
 
-### Issue 用ステータス補足
+### Issue 側
 
-| 状況 | 該当ラベル |
-|---|---|
-| 起票直後（AI レビュー未） | （ラベルなし）or `code-scan` のみ |
-| AI レビュー済み・ユーザー判断待ち | `ai-reviewed` + `ready-for-go` / `needs-clarification` / `split-needed` |
-| ユーザー go 出した | `ai-reviewed` + `go` |
-| 派生 PR が走っている | `ai-reviewed` + `go` + (一時的に `wip-creating`) |
-| 完了（GitHub が自動 close） | open でなくなる |
+1. AI（`code-scanner`）または人間が Issue 作成
+2. AI が `needs-ai-review` を自動付与
+   - `code-scanner` 起票なら起票時に
+   - 人間起票なら `/gh-kit:issue-review` 起動時に「未付与なら付ける」
+3. AI が `templates/ユーザーレビュー要否判定.md` に従い `needs-user-review` を付けるか判定して必要なら付与
+4. `/gh-kit:issue-review` が `needs-ai-review` 付きを拾う → `processing` 付与
+5. AI レビュー実施（実装方針案・QA todo・分割提案）
+6. 完了 → `processing` 除去、`needs-ai-review` 除去、コメント投稿
+7. ユーザーが QA todo にチェックを入れる
+8. ユーザーが内容に満足したら `needs-user-review` を手動で外す（不要なら最初から付いてない）
+9. **次工程に進める条件**: open + needs-* なし + processing なし + 質問の todo がすべて埋まっている
+10. `/gh-kit:pr-wip-create` の対象になる
 
-## PR ラベル一覧
+### PR 側
 
-| No | ラベル | 意味 | 付与 | 外す |
-|---|---|---|---|---|
-| 1  | `wip` | Draft PR（実装待ち） | `pr-wip-create` | `pr-implement-auto` 取得時 |
-| 2  | `implementing` | `pr-implement-auto` 処理中（排他） | `pr-implement-auto` 取得時 | 完了時 |
-| 3  | `auto-review` | レビュー対象（Ready PR） | `pr-implement-auto` 完了時 | `pr-review-auto` 取得時 |
-| 4  | `reviewing` | `pr-review-auto` 処理中（排他） | `pr-review-auto` 取得時 | 完了時 |
-| 5  | `needs-fix` | `request_changes` された PR | `pr-review-auto` | 再 push 後にユーザー or 自動で `auto-review` に戻す |
-| 6  | `conflict-needs-human` | マージコンフリクトが自走解消できなかった | `pr-review-auto` | 人手解消後に手動 |
-| 7  | `auto-review-failed` | レビュー or マージで失敗 | `pr-review-auto` | 人手対応後に手動 |
-| 8  | `implement-failed` | 実装で失敗 | `pr-implement-auto` | 人手対応後に手動 |
+1. `/gh-kit:pr-wip-create` が Issue から Draft PR を作成し `wip` 付与
+2. `/gh-kit:pr-implement-auto` が `wip` を拾う → `processing` 付与、`wip` 除去
+3. 実装完了 → `processing` 除去、`needs-ai-review` を必ず付与、`needs-user-review` を必要に応じて付与、`gh pr ready` で draft 解除
+4. `/gh-kit:pr-review-auto` が `needs-ai-review` を拾う → `processing` 付与
+5. AI レビュー実施
+   - 合格 → `processing` / `needs-ai-review` 除去
+     - `needs-user-review` がなければ即マージ
+     - `needs-user-review` があれば残す（ユーザー待ち）
+   - 修正必要 → `processing` 除去、`needs-fix` 付与
+6. ユーザーが `needs-user-review` を手動で外す
+7. **マージ可能条件**: open + needs-* なし + processing なし + draft でない + CI green
 
-### PR 用ステータス補足
+`needs-fix` 解消フロー: 修正 push 後にユーザーまたは AI が `needs-fix` を外し、再度 `needs-ai-review` を付ければレビューフェーズに戻る。
 
-| 状況 | 該当ラベル + draft |
-|---|---|
-| Draft 雛形作成直後 | `draft: true` + `wip` |
-| 実装中 | `draft: true` + `implementing` |
-| 実装完了・レビュー待ち | `draft: false` + `auto-review` |
-| レビュー中 | `draft: false` + `reviewing` |
-| 修正待ち | `draft: false` + `needs-fix` |
-| コンフリクト発生 | `draft: false` + `conflict-needs-human` |
-| マージ済み（GitHub が自動 close） | open でなくなる |
+## 排他制御
 
-## 排他制御の根拠
+`processing` がついた Issue/PR は **他セッションが触らない**。各スキルは取得時に必ず:
 
-並列セッションが同じ Issue/PR を二重処理しないよう、取得時に「処理中ラベル」を付ける:
+```bash
+gh {issue|pr} edit {N} --add-label "$LABEL_PROCESSING" --remove-label "$LABEL_<前段>"
+```
 
-| 取得処理 | 付ける処理中ラベル | 外す処理中ラベル（前段） |
+完了/失敗時に必ず:
+
+```bash
+gh {issue|pr} edit {N} --remove-label "$LABEL_PROCESSING" [--add-label "$LABEL_<次段>"]
+```
+
+## 検討事項（残課題）
+
+| No | 論点 | 現状の方針 |
 |---|---|---|
-| `pr-wip-create` が `go` Issue を拾う | `wip-creating` | （なし） |
-| `pr-implement-auto` が `wip` PR を拾う | `implementing` | `wip` |
-| `pr-review-auto` が `auto-review` PR を拾う | `reviewing` | `auto-review` |
-
-別セッションは処理中ラベル付きを **常にスキップ**。
-
-## 出自タグ vs 状態タグ vs 排他タグ
-
-| 種類 | 例 | 寿命 | 外すか |
-|---|---|---|---|
-| 出自タグ | `code-scan` / `type:*` / `priority:*` | 永続 | 通常外さない |
-| AI レビュー結果タグ | `ai-reviewed` / `needs-clarification` / `ready-for-go` / `split-needed` | 状態と連動 | 状態が変われば外す |
-| ユーザーシグナル | `go` | 派生完了まで | ユーザー判断で外す |
-| 排他タグ | `wip-creating` / `implementing` / `reviewing` | 取得〜完了 | スキル完了時に必ず外す |
-| 失敗タグ | `implement-failed` / `auto-review-failed` / `conflict-needs-human` / `needs-fix` | 人手対応まで | 人手対応後に外す |
-| 進捗タグ（PR） | `wip` / `auto-review` | 次フェーズで自動入れ替え | 次フェーズが外す |
-
-## 検討事項（未確定 — 設計レビュー対象）
-
-| No | 論点 | 案 |
-|---|---|---|
-| 1 | `code-scan` を出自タグとして残すか、状態が進んだら外すか | 残す案を採用中（`gh issue list --label code-scan` で出自で絞り込める）|
-| 2 | `ready-for-go` と `go` の二段階は冗長か | `go` だけにする案もある。`ready-for-go` は AI 提案、`go` はユーザー承認サイン、と分けると意味は明確だが運用が冗長 |
-| 3 | 失敗系（`implement-failed` 等）から人手対応後に再エントリーする経路 | ユーザーが失敗ラベルを外して `wip` / `auto-review` に戻す手動運用 |
-| 4 | `needs-clarification` 解消後の再レビュー起動方法 | ユーザーが `ai-reviewed` を外して `/gh-kit:issue-review {N}` を再実行 |
-| 5 | `code-scanner` が type / priority ラベルを推定するルール | 観点と問題内容から推定。明確な根拠が無ければ付けない |
+| 1 | 失敗系（旧 `implement-failed` 等）の扱い | タグでは管理せず、PR にコメントで失敗理由を残す。再着手は `needs-fix` 付与 + 修正 push 経由 |
+| 2 | コンフリクト時の扱い（旧 `conflict-needs-human`） | `needs-user-review` + `needs-fix` の組み合わせで表現。コメントで diff を残す |
+| 3 | `needs-fix` を AI が解消するスキルを設けるか | 当面は手動。需要が出たら別スキルを検討 |
+| 4 | `needs-user-review` の自動付与判定の精度 | `templates/ユーザーレビュー要否判定.md` を運用しながら磨く。疑わしきは付ける側に倒す |
 
 ## 参考リンク
 
+- `plugins/gh-kit/scripts/labels.sh`: ラベル名定義（変更時はここだけ）
+- `plugins/gh-kit/templates/ユーザーレビュー要否判定.md`: `needs-user-review` の判定基準
 - `plugins/gh-kit/CLAUDE.md`: 同梱ドキュメント
-- `plugins/gh-kit/skills/*/SKILL.md`: 各スキルでのラベル操作
-- `plugins/gh-kit/agents/*.md`: 各エージェントでのラベル操作
+- `plugins/gh-kit/skills/*/SKILL.md` / `plugins/gh-kit/agents/*.md`: 各スキル・エージェントのラベル操作
 - [gh issue edit reference](https://cli.github.com/manual/gh_issue_edit)
 - [gh pr edit reference](https://cli.github.com/manual/gh_pr_edit)

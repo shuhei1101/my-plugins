@@ -15,7 +15,8 @@ model: sonnet
 
 ## ステップ 1: コードベースを読む
 
-Issue が言及している領域・関連ファイルを Read で実際に確認する。Read 時に PreToolUse フックがファイル系ルールを自動注入する — 提案はそのルールに整合させる。
+Issue が言及している領域・関連ファイルを Read で実際に確認する。
+Read 時に PreToolUse フックがファイル系ルールを自動注入する — 提案はそのルールに整合させる。
 
 | 確認内容 |
 |---|
@@ -23,9 +24,17 @@ Issue が言及している領域・関連ファイルを Read で実際に確�
 | 既存の似た機能・抽象化 |
 | 想定される影響範囲（呼び出し元・テスト） |
 
-## ステップ 2: コメント本文を作成
+## ステップ 2: `needs-user-review` の要否を判定
 
-以下構造の Markdown を作る。対応案は **todo リスト形式** で書き、推奨案は本文末尾で明示する。
+判定基準を直展開する:
+
+!`cat "${GH_KIT_USER_REVIEW_CRITERIA_PATH:-${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md}"`
+
+`needs_user_review: true|false` を決定する。
+
+## ステップ 3: コメント本文を作成
+
+対応案・QA は **todo リスト形式** で書く。推奨案は本文末尾で明示する。
 
 ```markdown
 ## 実装方針案
@@ -62,29 +71,23 @@ Issue が言及している領域・関連ファイルを Read で実際に確�
 | 1 | `{path}` | {何が変わるか} |
 ```
 
-質問が無く方針が確定している場合は「## 確認したい質問」セクションごと省略する。分割不要なら「## 分割提案」も省略。
+質問が無く方針が確定している場合は「## 確認したい質問」セクションごと省略する。
+分割不要なら「## 分割提案」も省略。
 
-## ステップ 3: 戻り値
+## ステップ 4: 戻り値
 
 ```json
 {
   "issue_number": 42,
-  "comment_body": "（ステップ 2 の Markdown）",
-  "suggested_labels": ["ready-for-go"],
+  "comment_body": "（ステップ 3 の Markdown）",
+  "needs_user_review": true,
   "status": "ok"
 }
 ```
-
-`suggested_labels` の候補:
-
-| ラベル | 条件 |
-|---|---|
-| `needs-clarification` | QA を含む |
-| `ready-for-go` | QA なし・方針確定 |
-| `split-needed` | 分割提案あり |
 
 ## 制約
 
 - gh CLI への投稿はしない（メインが行う）
 - 推奨案は必ず明示（「後で決める」「TBD」禁止）
 - 既存コメントで議論済みの論点は蒸し返さない
+- `needs_user_review` は判定基準に厳格に従う（疑わしきは true）

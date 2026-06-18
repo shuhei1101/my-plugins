@@ -15,11 +15,21 @@ description: コードベースを観点ごとにスキャンし、見つかっ�
 | `GH_KIT_CODE_SCAN_PARALLEL` | `5` | 1 回のスキャンで起動するスキャナー数 |
 | `GH_KIT_SCAN_PERSPECTIVES_PATH` | （未設定時は同梱版） | スキャン観点メニューのパス |
 
+## ラベル定義の読み込み
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+```
+
 ## タスク
 
 ### ステップ 1: 既存 Issue を確認
 
-`gh issue list --state all --label code-scan --limit 50` で直近の起票を取得し、観点の重複を避ける材料にする。
+```bash
+gh issue list --state all --label "$LABEL_AI_CODE_SCAN" --limit 50
+```
+
+直近の起票を取得し、観点の重複を避ける材料にする。
 
 ### ステップ 2: スキャン観点を N 件選ぶ
 
@@ -27,7 +37,7 @@ description: コードベースを観点ごとにスキャンし、見つかっ�
 
 !`cat "${GH_KIT_SCAN_PERSPECTIVES_PATH:-${CLAUDE_PLUGIN_ROOT}/templates/スキャン観点.md}"`
 
-このメニューから既存 Issue とかぶらない観点を **N** 件（`GH_KIT_CODE_SCAN_PARALLEL`）選ぶ。
+このメニューから既存 Issue とかぶらない観点を **N** 件選ぶ。
 
 ### ステップ 3: code-scanner を並列起動
 

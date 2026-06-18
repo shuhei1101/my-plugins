@@ -47,22 +47,32 @@ git -C {WORKTREE} reset --hard origin/{BRANCH}
 git -C {WORKTREE} push origin {BRANCH}
 ```
 
-## ステップ 4: PR を Ready 化
+## ステップ 4: `needs-user-review` 要否を判定
+
+判定基準を直展開する:
+
+!`cat "${GH_KIT_USER_REVIEW_CRITERIA_PATH:-${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md}"`
+
+実装結果（実コード変更内容）から `needs_user_review: true|false` を再判定する。
+Issue 起票時と判断が変わる可能性あり（例: refactor のはずが仕様に踏み込んだ場合は true）。
+
+## ステップ 5: PR を Ready 化
 
 ```bash
 gh pr ready {PR_NUMBER}
 gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サマリ}"
 ```
 
-ラベル付け替え（`implementing` → `auto-review`）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
+ラベル付与（`needs-ai-review` / `needs-user-review`）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
 
-## ステップ 5: 戻り値
+## ステップ 6: 戻り値
 
 ```json
 {
   "branch": "feat/issue-42-router",
   "pr_number": 42,
   "status": "ready",
+  "needs_user_review": true,
   "commits_added": 5,
   "message": "詳細メッセージ"
 }

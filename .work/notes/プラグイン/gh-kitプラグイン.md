@@ -31,11 +31,11 @@ flowchart TD
 
 | No | スキル | 概要 |
 |---|---|---|
-| 1 | `/gh-kit:code-scan-auto` | 観点別スキャン → `code-scanner` が `gh issue create` で直接起票 |
-| 2 | `/gh-kit:issue-review` | 未レビュー Issue に AI 方針/質問を Issue コメント投稿 |
-| 3 | `/gh-kit:pr-wip-create` | `go` ラベル Issue 全件巡回 → Draft PR 生成 |
-| 4 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列実装 → Ready 化 |
-| 5 | `/gh-kit:pr-review-auto` | `auto-review` Ready PR を直列でレビュー → 合格ならマージ |
+| 1 | `/gh-kit:code-scan-auto` | 観点別スキャン → `code-scanner` が `gh issue create` で直接起票（`needs-ai-review` 必須付与） |
+| 2 | `/gh-kit:issue-review` | `needs-ai-review` 付きの Issue に AI 方針/質問を投稿 |
+| 3 | `/gh-kit:pr-wip-create` | needs-* なしの open Issue 全件 → Draft PR 生成（`wip` 付与） |
+| 4 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列実装 → Ready 化（`needs-ai-review` 必須付与 + `needs-user-review` 状況判断） |
+| 5 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
 
 ## サブエージェント一覧
 
@@ -54,30 +54,32 @@ flowchart TD
 | `plugins/gh-kit/templates/スキャン観点.md` | `code-scan-auto` が選ぶ観点メニュー | `GH_KIT_SCAN_PERSPECTIVES_PATH` |
 | `plugins/gh-kit/templates/ファイル解決.md` | `code-scanner` の観点→実ファイル変換ルール | `GH_KIT_FILE_RESOLUTION_PATH` |
 | `plugins/gh-kit/templates/イシュー本文テンプレート.md` | `code-scanner` が起票する Issue 本文 | `GH_KIT_ISSUE_BODY_TEMPLATE_PATH` |
+| `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` を付けるか判定基準 | `GH_KIT_USER_REVIEW_CRITERIA_PATH` |
+| `plugins/gh-kit/scripts/labels.sh` | ラベル名一元定義 | （固定） |
 
-SKILL/agent からは `!`cat "${ENV:-${CLAUDE_PLUGIN_ROOT}/templates/...}"`` で直展開する。
+SKILL/agent からは `!`cat "${ENV:-${CLAUDE_PLUGIN_ROOT}/templates/...}"`` で直展開、ラベル名は `. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"` で source。
 
 ## ラベル設計
 
-詳細は `.work/notes/プラグイン/gh-kitラベル設計.md` を参照。
+詳細は `.work/notes/プラグイン/gh-kitラベル設計.md` を参照。ラベル名は `plugins/gh-kit/scripts/labels.sh` に一元化。
+
 要点:
 
-| ラベル種 | 例 | 寿命 |
-|---|---|---|
-| 出自 | `code-scan` / `type:*` / `priority:*` | 永続 |
-| AI レビュー結果 | `ai-reviewed` / `needs-clarification` / `ready-for-go` / `split-needed` | 状態と連動 |
-| ユーザーシグナル | `go` | 派生完了まで |
-| 排他 | `wip-creating` / `implementing` / `reviewing` | 取得〜完了 |
-| 進捗（PR） | `wip` / `auto-review` | 次フェーズで自動入れ替え |
-| 失敗 | `implement-failed` / `auto-review-failed` / `conflict-needs-human` / `needs-fix` | 人手対応まで |
+| ラベル種 | 例 |
+|---|---|
+| 共通排他 | `processing` |
+| 共通レビュー | `needs-ai-review` / `needs-user-review` / `needs-fix` |
+| Issue 出自 | `ai-code-scan` / `type:*` / `priority:*` |
+| PR フェーズ | `wip` |
 
 ## 直列マージ原則
 
 | 原則 | 内容 |
 |---|---|
 | 並列起動禁止 | `pr-review-auto` は `pr-reviewer` を 1 件ずつ呼ぶ |
-| ラベル排他 | `reviewing` / `implementing` / `wip-creating` が付いた対象は他セッションが触らない |
-| Draft 隔離 | `wip` ラベル + `draft: true` の PR は `pr-review-auto` の対象外 |
+| ラベル排他 | `processing` が付いた対象は他セッションが触らない |
+| Draft 隔離 | `wip` + `draft: true` の PR は `pr-review-auto` の対象外 |
+| マージ可能条件 | `needs-*` がすべて外れた + processing なし + draft でない + open |
 | コンフリクト方針 | `/work:merge` SKILL.md の方針に従う |
 | Issue 早期クローズ防止 | PR 本文は `Refs #N`（`Closes` ではない） |
 
