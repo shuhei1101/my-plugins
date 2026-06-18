@@ -23,16 +23,15 @@ GitHub Issues/Pull Request 上で作業フロー（スキャン・解決・自�
 |---|---|---|---|
 | 1 | スキル | `/gh:issue-scan` | コードベースを観点ごとにスキャンして GitHub Issue を起票 |
 | 2 | 〃     | `/gh:issue-resolve` | 1 件の Issue を解決（ブランチ作成 → 実装 → PR 作成） |
-| 3 | 〃     | `/gh:auto-merge` | レビュー OK の PR を直列でマージ |
-| 4 | 〃     | `/gh:pr-review` | PR を観点別に AI レビューしコメント投稿 |
+| 3 | 〃     | `/gh:issue-resolve-auto` | ラベル `auto-resolve` の Issue を N 件並列で消化（PR 作成まで） |
+| 4 | 〃     | `/gh:pr-review-auto` | ラベル `auto-review` の PR を直列でレビュー → 合格ならマージ |
 | 5 | サブエージェント | `issue-scanner` | `issue-scan` から観点単位で並列起動 |
-| 6 | 〃               | `issue-resolver` | `issue-resolve` から 1 件の Issue 実装を担当 |
-| 7 | 〃               | `auto-merger` | `auto-merge` から 1 PR ずつ直列で呼ばれる |
-| 8 | 〃               | `pr-reviewer` | `pr-review` から観点単位で並列起動 |
+| 6 | 〃               | `issue-resolver` | `issue-resolve` / `issue-resolve-auto` から呼ばれて 1 Issue を実装 → PR 作成 |
+| 7 | 〃               | `pr-reviewer` | `pr-review-auto` から 1 PR ずつ呼ばれる。レビュー + 合格ならマージまで担当 |
 
 ## マージ直列化
 
-`auto-merge` は **必ず 1 件ずつ** 処理し、並列起動しない（master 取り込みとマージの競合を避けるため）。並列実装は許容、並列マージは禁止。
+`pr-review-auto` は **必ず 1 件ずつ** 処理し、`pr-reviewer` を並列起動しない（master 取り込みとマージの競合を避けるため）。並列実装は許容、並列マージは禁止。
 
 ## 前提
 
