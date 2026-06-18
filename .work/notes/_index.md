@@ -1,5 +1,9 @@
 # ノートインデックス
 
+## プラグイン
+
+- [ghプラグイン](プラグイン/ghプラグイン.md): GitHub Issues/PR ベースの作業フロー（issue-scan / issue-resolve / issue-resolve-auto / pr-review-auto と対応サブエージェント）
+
 ## フック・自動化
 
 - [post-merge-upgrade](hooks/post-merge-upgrade.md): マージ後自動 push & upgrade フック
