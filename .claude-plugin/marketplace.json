@@ -15,6 +15,12 @@
       "source": "./plugins/dev-kit",
       "description": "編集対象ファイルに応じた開発ルールを自動注入するプラグイン",
       "version": "1.6"
+    },
+    {
+      "name": "gh",
+      "source": "./plugins/gh",
+      "description": "GitHub Issues/PR を活用した作業フロー（スキャン・解決・自動マージ・レビュー）",
+      "version": "0.1"
     }
   ]
 }
