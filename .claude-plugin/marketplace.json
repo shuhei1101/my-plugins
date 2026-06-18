@@ -19,8 +19,8 @@
     {
       "name": "gh",
       "source": "./plugins/gh",
-      "description": "GitHub Issues/PR を真実のソースとした作業フロー（scan / review / wip-create / pr-implement-auto / pr-review-auto）",
-      "version": "0.4"
+      "description": "GitHub Issues/PR を真実のソースとした作業フロー（code-scan / issue-review / pr-wip-create / pr-implement-auto / pr-review-auto）",
+      "version": "0.5"
     }
   ]
 }

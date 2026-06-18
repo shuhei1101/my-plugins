@@ -8,7 +8,7 @@ GitHub 公式 MCP（Remote HTTP）を `.mcp.json` で同梱し、Issues / Pull R
 
 ```mermaid
 flowchart TD
-  U[ユーザー or /gh:issue-scan] -->|Issue 起票| Issue[(GitHub Issue)]
+  U[ユーザー or /gh:code-scan] -->|Issue 起票| Issue[(GitHub Issue)]
   Issue -->|/gh:issue-review| Review[AI が方針/質問を Issue コメント]
   Review -->|議論→go ラベル| Go[(go ラベル付き Issue)]
   Go -->|/gh:pr-wip-create| WIP[(Draft PR + wip)]
@@ -34,7 +34,7 @@ flowchart TD
 
 | No | スキル | 概要 |
 |---|---|---|
-| 1 | `/gh:issue-scan` | 観点別スキャン → `create_issue` で Issue 起票 |
+| 1 | `/gh:code-scan` | 観点別スキャン（観点メニュー + ファイル解決 + 本文テンプレを `templates/` から注入）。起票は `code-scanner` が直接実施 |
 | 2 | `/gh:issue-review` | 未レビュー Issue を読み AI 方針/質問を Issue コメント投稿 |
 | 3 | `/gh:pr-wip-create` | `go` ラベル Issue を全件取り各 Issue から Draft PR を作成（1 Issue 複数派生可） |
 | 4 | `/gh:pr-implement-auto` | `wip` Draft PR を N 件並列実装 → Ready 化 |
@@ -44,7 +44,7 @@ flowchart TD
 
 | No | エージェント | 呼び元 | 役割 |
 |---|---|---|---|
-| 1 | `issue-scanner` | `/gh:issue-scan` | 1 観点でファイル走査し findings を返す |
+| 1 | `code-scanner` | `/gh:code-scan` | 1 観点でファイル走査し `create_issue` で直接起票、Issue 番号配列を返す |
 | 2 | `issue-reviewer` | `/gh:issue-review` | 1 Issue を読みコメント本文を返す |
 | 3 | `pr-wip-creator` | `/gh:pr-wip-create` | `/work:start` でブランチ作成 → Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化 |
@@ -54,7 +54,7 @@ flowchart TD
 
 | ラベル | 意味 | 付与 | 外し |
 |---|---|---|---|
-| `scan` / `scan:{scope}` | `/gh:issue-scan` 起票 / 観点識別 | `issue-scan` | 通常外さない |
+| `code-scan` | `/gh:code-scan` で起票された Issue | `code-scanner` | 通常外さない |
 | `ai-reviewed` | `/gh:issue-review` 済み | `issue-review` | 再レビュー時は手動 |
 | `needs-clarification` | QA 待ち | `issue-review` | 議論で解消後に手動 |
 | `ready-for-go` | go 候補 | `issue-review` | `go` 付与時に手動 |
@@ -94,5 +94,6 @@ flowchart TD
 - `plugins/gh/.mcp.json`: GitHub MCP 接続定義
 - `plugins/gh/skills/`: 5 スキルの SKILL.md
 - `plugins/gh/agents/`: 5 サブエージェント定義
+- `plugins/gh/templates/`: `code-scan-perspectives.md` / `file-resolution.md` / `issue-body-template.md`（SKILL/agent から `!`cat ...`` で注入）
 - [GitHub MCP Server (公式)](https://github.com/github/github-mcp-server)
 - [Install GitHub MCP in Claude Code](https://github.com/github/github-mcp-server/blob/main/docs/installation-guides/install-claude.md)

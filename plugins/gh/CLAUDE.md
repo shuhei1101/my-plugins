@@ -6,7 +6,7 @@ GitHub Issues / Pull Request を真実のソースとして作業フローを回
 
 ```mermaid
 flowchart TD
-  U[ユーザー or /gh:issue-scan] -->|Issue 起票| Issue[(GitHub Issue)]
+  U[ユーザー or /gh:code-scan] -->|Issue 起票| Issue[(GitHub Issue)]
   Issue -->|/gh:issue-review| Review[AI が方針/質問を Issue コメント投稿]
   Review -->|議論 → goラベル| Go[(go ラベル付き Issue)]
   Go -->|/gh:pr-wip-create<br>1 Issue から複数派生可| WIP[(Draft PR + wip ラベル)]
@@ -33,7 +33,7 @@ flowchart TD
 
 | No | スキル | 概要 |
 |---|---|---|
-| 1 | `/gh:issue-scan` | コードベースを観点ごとにスキャンして Issue を起票 |
+| 1 | `/gh:code-scan` | コードベースを観点ごとにスキャンして Issue を起票（起票は `code-scanner` が直接実施） |
 | 2 | `/gh:issue-review` | 未レビュー Issue を読み、方針/質問を Issue コメント投稿 |
 | 3 | `/gh:pr-wip-create` | `go` ラベル Issue を全件取り、各 Issue から Draft PR を作成（1 Issue 複数派生可） |
 | 4 | `/gh:pr-implement-auto` | `wip` ラベルの Draft PR を N 件並列で実装 → Ready 化 |
@@ -43,7 +43,7 @@ flowchart TD
 
 | No | エージェント | 呼び元 | 役割 |
 |---|---|---|---|
-| 1 | `issue-scanner` | `/gh:issue-scan` | 1 観点でスキャンし findings を返す |
+| 1 | `code-scanner` | `/gh:code-scan` | 1 観点でスキャンし、find した問題を `create_issue` で直接起票して Issue 番号配列を返す |
 | 2 | `issue-reviewer` | `/gh:issue-review` | 1 Issue を読みコメント本文を返す |
 | 3 | `pr-wip-creator` | `/gh:pr-wip-create` | 1 Issue から Draft PR の雛形を作る |
 | 4 | `pr-implementer` | `/gh:pr-implement-auto` | 1 Draft PR の中身を実装し Ready 化 |
@@ -53,7 +53,7 @@ flowchart TD
 
 | ラベル | 意味 | 付与 | 外し |
 |---|---|---|---|
-| `scan` / `scan:{scope}` | issue-scan 起票 | `issue-scan` | 通常外さない |
+| `code-scan` | code-scan で起票された Issue | `code-scanner` | 通常外さない |
 | `ai-reviewed` | issue-review 済み | `issue-review` | 再レビューしたい時は手動 |
 | `needs-clarification` | QA 待ち | `issue-review` | 議論で解消したら手動 |
 | `ready-for-go` | go サイン候補 | `issue-review` | go ラベル付与時に手動 |
