@@ -17,22 +17,21 @@ model: sonnet
 
 ## ステップ 1: PR 情報を取得
 
-| No | MCP ツール | 用途 |
-|---|---|---|
-| 1 | `get_pull_request` | メタ情報・ラベル・assignee |
-| 2 | `get_pull_request_files` | 変更ファイル一覧と diff |
-| 3 | `get_pull_request_status` | CI status |
-| 4 | `get_issue_comments`（PR 番号で） | 既存の議論やレビューコメント |
+```bash
+gh pr view {N} --json number,title,body,headRefName,baseRefName,labels,statusCheckRollup,comments,reviews
+gh pr diff {N} > /tmp/pr-{N}.diff
+gh pr view {N} --json files
+```
 
 CI が failure なら以降は実行せず `failed` で返す。
 
 ## ステップ 2: ファイル走査とルール注入
 
-変更ファイルを Read で読む。Read 時に PreToolUse フックが該当ルール（`**/skills/**/SKILL.md` / `**/.work/**` 等の適用パターン）を **自動注入** する — このルールセットが本エージェントの第一審査基準になる。
+変更ファイルを Read で読む。Read 時に PreToolUse フックがファイル系ルールを自動注入する — このルールセットが第一審査基準。
 
 | 観点 | 確認内容 |
 |---|---|
-| 注入ルール準拠 | 注入されたルール（命名・配置・記述ルール・テンプレート遵守等）を 1 件ずつ照合 |
+| 注入ルール準拠 | 注入されたルールを 1 件ずつ照合（命名・配置・記述ルール・テンプレート遵守等） |
 | correctness | バグ・ロジック誤り・エッジケース・例外処理の妥当性 |
 | security | 認証・入力検証・シークレット混入 |
 | maintainability | 命名・重複・複雑度（補助観点） |
@@ -41,37 +40,39 @@ CI が failure なら以降は実行せず `failed` で返す。
 
 ## ステップ 3: findings を作成
 
-各 finding は以下の構造:
-
 | フィールド | 内容 |
 |---|---|
 | `path` | ファイルパス |
 | `line` | 行番号 |
-| `side` | `RIGHT` (追加 / 変更後) / `LEFT` (削除 / 変更前) |
+| `side` | `RIGHT`（追加 / 変更後）/ `LEFT`（削除 / 変更前） |
 | `severity` | `blocker` / `critical` / `major` / `minor` / `nit` |
-| `body` | コメント本文（Markdown）— なぜ問題か + 提案を 2〜4 行で |
+| `body` | コメント本文（Markdown）— なぜ問題か + 提案を 2〜4 行 |
 | `perspective` | 観点ラベル（例 `rule:タスクドキュメント` / `correctness`） |
 
 注入ルール由来の finding は body の冒頭に「ルール: {ルール名}」を明記する。
 
-## ステップ 4: GitHub にレビューを投稿
+## ステップ 4: gh CLI でレビューを投稿
 
-| No | 動作 |
-|---|---|
-| 1 | `create_pending_pull_request_review` でドラフト開始 |
-| 2 | finding ごとに `add_comment_to_pending_review` で inline 追加 |
-| 3 | 観点別サマリ（観点 → 件数 → 主要指摘）を body に組み立て |
-| 4 | event を判定して `submit_pending_pull_request_review` で確定 |
+```bash
+# inline コメント付き review（複数 finding をまとめて投稿）
+gh pr review {N} \
+  --approve|--comment|--request-changes \
+  --body-file <(cat <<'EOF'
+{観点別サマリ（観点 → 件数 → 主要指摘）}
+EOF
+)
+# inline コメントは gh CLI 単体では制限が強いので、必要なら gh api repos/:owner/:repo/pulls/{N}/comments を使う
+```
 
 event 判定:
 
 | 条件 | event |
 |---|---|
-| blocker / critical を 1 件以上含む | `REQUEST_CHANGES` → ステップ 6-A へ |
-| major のみ（blocker/critical なし） | `REQUEST_CHANGES` → ステップ 6-A へ |
-| minor / nit のみ、または 0 件 | `APPROVE` → ステップ 5 へ |
+| blocker / critical を 1 件以上含む | `--request-changes` → ステップ 6-A へ |
+| major のみ（blocker/critical なし） | `--request-changes` → ステップ 6-A へ |
+| minor / nit のみ、または 0 件 | `--approve` → ステップ 5 へ |
 
-自分が作成した PR で `APPROVE` が拒否された場合は `COMMENT` にフォールバックしてから ステップ 5 に進む。
+自分が作成した PR で `--approve` が拒否された場合は `--comment` にフォールバックしてからステップ 5 に進む。
 
 ## ステップ 5: マージを実行（approve のときのみ）
 
@@ -110,7 +111,7 @@ event 判定:
 
 | No | 禁止 |
 |---|---|
-| 1 | 自身の中でさらにサブエージェントを起動してはならない（直列マージ原則のため） |
+| 1 | 自身の中でさらにサブエージェントを起動してはならない |
 | 2 | `git push --force` を使わない |
-| 3 | レビュー前にマージしてはならない（必ず submit → approve を経てからマージ） |
+| 3 | レビュー前にマージしてはならない |
 | 4 | 変更行から離れた箇所に inline コメントを付けない |

@@ -2,7 +2,7 @@
 
 ## 概要
 
-ワークツリーでブランチ作業を行うための最小限の基盤プラグイン。`/work:start` でブランチ + worktree を作り、実装を進め、`/work:merge` で親に取り込む。タスクドキュメント・タスクインデックス・ローカルイシュー管理は v2.0 で全廃止され、それらは gh プラグイン経由で GitHub Issues/PR として扱う。
+ワークツリーでブランチ作業を行うための最小限の基盤プラグイン。`/work:start` でブランチ + worktree を作り、実装を進め、`/work:merge` で親に取り込む。タスクドキュメント・タスクインデックス・ローカルイシュー管理は v2.0 で全廃止され、それらは gh-kit プラグイン経由で GitHub Issues/PR として扱う。
 
 ## バージョン
 
@@ -47,12 +47,12 @@
 | 廃止対象 | 移管先 |
 |---|---|
 | タスクドキュメント (`*.task.md`) / タスクインデックス (`tasks/index.yaml`) | 廃止（GitHub PR 本文で代替） |
-| ローカルイシュー (`.work/issues/*.md`) | gh プラグインの GitHub Issues |
-| `/work:issue-scan` / `issue-review` / `issue-create` / `issue-resolve` / `issue-resolve-auto` | gh プラグインの対応スキル |
-| `/work:impl-review` | gh プラグインの `/gh:pr-review-auto`（PR diff レビュー） |
+| ローカルイシュー (`.work/issues/*.md`) | gh-kit プラグインの GitHub Issues |
+| `/work:issue-scan` / `issue-review` / `issue-create` / `issue-resolve` / `issue-resolve-auto` | gh-kit プラグインの対応スキル |
+| `/work:impl-review` | gh-kit プラグインの `/gh-kit:pr-review-auto`（PR diff レビュー） |
 | `/work:branch-blank-work` / `branch-index-cleanup` / `branch-reserve` | 廃止 |
 | MCP ツール `index_*` / `issue_*` | 廃止 |
-| `issue-resolver` / `issue-scanner` / `branch-blank-worker` サブエージェント | gh プラグイン側に再構築 |
+| `issue-resolver` / `issue-scanner` / `branch-blank-worker` サブエージェント | gh-kit プラグイン側に再構築 |
 
 ## ディレクトリ構成
 
