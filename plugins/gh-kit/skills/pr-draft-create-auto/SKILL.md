@@ -33,6 +33,40 @@ description: needs-* なしの open Issue 全件から Draft PR を並列で作�
 
 ## タスク
 
+### ステップ 0: Monitor でイベント待機
+
+対象 Issue が既に存在する場合はそのままステップ 1 へ進む。
+存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
+
+対象条件: `state: open` かつ `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも付いていない Issue。
+
+```bash
+# Monitor に渡すポーリングスクリプト
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
+while true; do
+  # needs-* / processing なし・open の Issue を取得
+  AVAILABLE=$(gh issue list --state open \
+    --json number,labels \
+    --jq "[.[] | select(
+      (.labels | map(.name) | (
+        index(\"$LABEL_NEEDS_AI_REVIEW\") == null and
+        index(\"$LABEL_NEEDS_USER_REVIEW\") == null and
+        index(\"$LABEL_NEEDS_FIX\") == null and
+        index(\"$LABEL_PROCESSING\") == null
+      ))
+    )] | length" 2>/dev/null || echo 0)
+  if [ "$AVAILABLE" -gt 0 ]; then
+    echo "TRIGGER:pr-draft-create-auto:count=$AVAILABLE"
+    break
+  fi
+  sleep 30
+done
+```
+
+Monitor の stdout に `TRIGGER:pr-draft-create-auto` が来たらステップ 1 へ進む。
+手動停止は TaskStop で行う。
+
 ### ステップ 1: 対象 Issue を収集
 
 ```bash

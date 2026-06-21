@@ -15,6 +15,36 @@ description: needs-ai-review の Ready PR を 1 件ずつ直列でレビュー�
 
 ## タスク
 
+### ステップ 0: Monitor でイベント待機
+
+対象 PR が既に存在する場合はそのままステップ 1 へ進む。
+存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
+
+対象条件: `needs-ai-review` ラベル付きの Ready（非 Draft）PR（`processing` 付きは除外）。
+直列制約は維持（Monitor 検知後もステップ 1→4 の直列ループを継続する）。
+
+```bash
+# Monitor に渡すポーリングスクリプト
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
+while true; do
+  AVAILABLE=$(gh pr list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
+    --json number,labels,isDraft \
+    --jq "[.[] | select(
+      .isDraft == false and
+      (.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)
+    )] | length" 2>/dev/null || echo 0)
+  if [ "$AVAILABLE" -gt 0 ]; then
+    echo "TRIGGER:pr-review-auto:count=$AVAILABLE"
+    break
+  fi
+  sleep 30
+done
+```
+
+Monitor の stdout に `TRIGGER:pr-review-auto` が来たらステップ 1 へ進む。
+手動停止は TaskStop で行う。
+
 ### ステップ 1: レビュー対象 PR を収集
 
 ```bash
