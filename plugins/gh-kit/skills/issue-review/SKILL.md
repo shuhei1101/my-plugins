@@ -115,6 +115,29 @@ gh issue close {N}
 
 Issue が言及する領域・関連ファイルを Read で確認。Read 時に PreToolUse フックがファイル系ルールを自動注入する。
 
+### Step 3a: Fetch official documentation (only when external tool/library names are present)
+
+If the Issue title or body contains the name of an external tool, library, framework, or service:
+1. Use `WebFetch` to retrieve the official documentation page(s) most relevant to the Issue.
+2. If fetching fails, note "参照不可（理由）" and continue without blocking.
+3. Record each successfully retrieved URL in `{doc_urls}` for use in the review-result comment.
+
+Skip entirely when the Issue contains no external tool/library names.
+
+## Step 3.5: Behavior verification (optional — when feasible)
+
+Attempt to confirm whether the reported problem actually occurs in the current codebase.
+
+| Issue type | Verification method |
+|---|---|
+| Skill / Claude Code behavior | Launch a sub-agent and reproduce the scenario described in the Issue |
+| Code bug (test exists) | Run the relevant test suite and check for failures |
+| Code bug (no test) | Perform manual behavior confirmation |
+| Verification not feasible | Note "確認不可（理由）" and continue |
+
+Store the result in `{verification_result}` for inclusion in the review-result comment.
+This step is **optional** — if infrastructure or context makes it impossible, skip gracefully.
+
 ## ステップ 4: 本文補完コメントを投稿（必要時のみ）
 
 人間起票で **本文に欠けているセクション** があるときに限り、`イシュードキュメント.j2` に沿って
