@@ -53,10 +53,10 @@ flowchart TD
 | `plugins/gh-kit/scripts/labels.sh` | ラベル名一元定義（SKILL/agent 先頭で `!`cat`` 展開） |
 | `plugins/gh-kit/templates/観点メニュー.md` | コード品質観点リスト（code-scan-auto / pr-reviewer が共通参照） |
 | `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール |
-| `plugins/gh-kit/templates/イシュー本文テンプレート.md` | code-scanner が起票する Issue 本文 |
+| `plugins/gh-kit/templates/イシュードキュメント.md.j2` | code-scanner が起票する Issue 本文（Jinja2） |
 | `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` 判定基準（ブラックリスト） |
-| `plugins/gh-kit/templates/レビュー結果コメント.md` | issue-reviewer が投稿するレビュー結果コメント本文 |
-| `plugins/gh-kit/templates/PR本文テンプレート.md` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文 |
+| `plugins/gh-kit/templates/レビュー結果コメント.md.j2` | issue-reviewer が投稿するレビュー結果コメント本文（Jinja2） |
+| `plugins/gh-kit/templates/PRドキュメント.md.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
 
 ## 環境変数

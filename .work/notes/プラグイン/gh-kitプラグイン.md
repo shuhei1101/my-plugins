@@ -54,10 +54,10 @@ flowchart TD
 |---|---|
 | `plugins/gh-kit/templates/観点メニュー.md` | コード品質観点リスト（code-scan-auto / pr-reviewer が共通参照） |
 | `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール |
-| `plugins/gh-kit/templates/イシュー本文テンプレート.md` | code-scanner が起票する Issue 本文 |
+| `plugins/gh-kit/templates/イシュードキュメント.md.j2` | code-scanner が起票する Issue 本文（Jinja2） |
 | `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` 判定基準（ブラックリスト） |
-| `plugins/gh-kit/templates/レビュー結果コメント.md` | issue-reviewer が投稿するレビュー結果コメント本文 |
-| `plugins/gh-kit/templates/PR本文テンプレート.md` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文 |
+| `plugins/gh-kit/templates/レビュー結果コメント.md.j2` | issue-reviewer が投稿するレビュー結果コメント本文（Jinja2） |
+| `plugins/gh-kit/templates/PRドキュメント.md.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/labels.sh` | ラベル名一元定義 |
 
 注入方法はスキルとエージェントで異なる:
@@ -204,6 +204,6 @@ flowchart LR
 - `plugins/gh-kit/CLAUDE.md`: 同梱ドキュメント
 - `plugins/gh-kit/skills/`: 5 スキルの SKILL.md
 - `plugins/gh-kit/agents/`: 5 サブエージェント定義
-- `plugins/gh-kit/templates/`: 観点メニュー / ファイル解決 / イシュー本文テンプレート / ユーザーレビュー要否判定 / レビュー結果コメント / PR本文テンプレート
+- `plugins/gh-kit/templates/`: 観点メニュー / ファイル解決 / イシュードキュメント.j2 / ユーザーレビュー要否判定 / レビュー結果コメント.j2 / PRドキュメント.j2
 - `.work/notes/プラグイン/gh-kitラベル設計.md`: ラベル一覧・状態遷移図
 - [gh CLI manual](https://cli.github.com/manual/)

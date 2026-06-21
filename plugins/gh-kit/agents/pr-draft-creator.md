@@ -17,7 +17,7 @@ model: sonnet
 ## ステップ 1: PR 本文テンプレートを取得
 
 ```bash
-cat "${CLAUDE_PLUGIN_ROOT}/templates/PR本文テンプレート.md"
+cat "${CLAUDE_PLUGIN_ROOT}/templates/PRドキュメント.md.j2"
 ```
 
 このテンプレを実値で埋めて Draft PR 本文として使う。
