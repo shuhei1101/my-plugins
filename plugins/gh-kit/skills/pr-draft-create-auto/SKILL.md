@@ -1,6 +1,7 @@
 ---
 name: gh-kit:pr-draft-create-auto
 description: needs-* なしの open Issue 全件から Draft PR を並列で作成する（1 Issue 複数派生対応）
+disable-model-invocation: true
 ---
 
 # pr-draft-create-auto

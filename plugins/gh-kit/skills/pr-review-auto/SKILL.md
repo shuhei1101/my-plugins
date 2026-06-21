@@ -1,6 +1,7 @@
 ---
 name: gh-kit:pr-review-auto
 description: needs-ai-review の Ready PR を 1 件ずつ直列でレビューし、合格 + needs-user-review なしならマージまで実行
+disable-model-invocation: true
 ---
 
 # pr-review-auto

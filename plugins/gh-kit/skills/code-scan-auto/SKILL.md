@@ -1,6 +1,7 @@
 ---
 name: gh-kit:code-scan-auto
 description: コードベースを観点ごとにスキャンし、見つかった問題を gh issue create で起票する
+disable-model-invocation: true
 ---
 
 # code-scan-auto
@@ -38,4 +39,3 @@ gh issue list --state all --label "$LABEL_AI_CODE_SCAN" --limit 50
 （戻り値: `[{issue_number, issue_url, title}]`）
 
 各サブエージェントに渡す入力: 観点（メニューから 1 件抜粋）
-
