@@ -15,6 +15,20 @@
         ]
       }
     ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "_description": "作業前に必ず Task ツールでタスク管理させるルールを注入",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit/inject_task_rule.py"
+            ]
+          }
+        ]
+      }
+    ],
     "PreCompact": [
       {
         "hooks": [
