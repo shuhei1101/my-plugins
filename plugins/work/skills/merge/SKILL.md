@@ -1,5 +1,5 @@
 ---
-name: gh-kit:merge
+name: work:merge
 description: ブランチをマージするスキル。「マージして」と言われたら起動
 ---
 
@@ -76,7 +76,7 @@ git merge --no-ff -m "{type}: {title}" {BRANCH_NAME}
 
 ### ステップ 4: ワークツリーとブランチを削除
 
-`worktree_remove` MCP ツール（`gh-kit-tools` サーバー）を実行:
+`worktree_remove` MCP ツール（`work-tools` サーバー）を実行:
 
 - branch: `{BRANCH_NAME}`
 - ワークツリー・ブランチ・セッショントークンが削除される

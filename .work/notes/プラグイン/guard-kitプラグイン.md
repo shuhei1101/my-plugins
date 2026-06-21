@@ -2,20 +2,20 @@
 
 ## 概要
 
-ローカル Git 操作に対するガード群を提供する最小プラグイン。master 直接コミット阻止、危険 git コマンド阻止、`.git/` と lock ファイルの保護、削除検知、セッション開始時の規約注入。`/work:start` `/work:merge` などのスキルと worktree MCP は guard-kit リネーム時に gh-kit へ移管された。
+ローカル Git 操作に対するガード群を提供する最小プラグイン。master 直接コミット阻止、危険 git コマンド阻止、`.git/` と lock ファイルの保護、削除検知、セッション開始時の規約注入。`/work:start` `/work:merge` などのスキルと worktree MCP は work プラグインに分離された。
 
 ## バージョン
 
 | バージョン | 主な変更 |
 |---|---|
-| 1.0（旧 work 2.3 相当） | プラグイン名を `work` → `guard-kit` にリネーム。start/merge スキル + worktree MCP + リマインダーフック（start_reminder / merge_reminder / pre-merge-check）を gh-kit へ移管。保護フックと session_start のみ残存 |
+| 1.0 | 旧 work（v2.3）から保護フックだけを切り出した新規プラグイン。`work` プラグイン自体は v3.0 として再構築され、start/merge スキル + worktree MCP + start_reminder / merge_reminder / pre-merge-check / task_reminder を担当 |
 
 ## フック一覧
 
 | No | フック | イベント | 役割 |
 |---|---|---|---|
 | 1 | `inject_rules` | PreToolUse(Edit/Write/Read) | rules/ 配下の .md ルールを自動注入 |
-| 2 | `protected-branch-guard` | PreToolUse(Edit/Write) | 保護ブランチでの Edit/Write を阻止し `/gh-kit:start` を促す |
+| 2 | `protected-branch-guard` | PreToolUse(Edit/Write) | 保護ブランチでの Edit/Write を阻止し `/work:start` を促す |
 | 3 | `dotgit-lockfile-guard` | PreToolUse(Edit/Write) | `.git/**` と各種 lock ファイルの編集を永久ブロック |
 | 4 | `delete-guard` | PreToolUse(Bash) | `.git` / `.claude` / `.gitignore` 等の削除操作をブロック |
 | 5 | `dangerous-git-guard` | PreToolUse(Bash) | `-X ours/theirs` / `git rm` 重要ファイル等の危険操作を永久ブロック |
@@ -32,7 +32,7 @@
 |---|---|
 | `GUARD_KIT_GUARD` | `false` で `git-guard` を無効化 |
 | `GUARD_KIT_ALLOW_MASTER_COMMIT` | `true` で `master-commit-guard` を通過させる（例外作業用） |
-| `GH_KIT_BRANCH_ENFORCEMENT` | `false` で session_start の作業フロー注入を簡略化（gh-kit 側の start リマインダーも無効化される） |
+| `WORK_BRANCH_ENFORCEMENT` | `false` で session_start の作業フロー注入を簡略化（work 側の start リマインダーも無効化される） |
 
 ## トークンパス
 

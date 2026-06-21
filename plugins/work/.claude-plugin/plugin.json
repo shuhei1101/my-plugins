@@ -1,0 +1,5 @@
+{
+  "name": "work",
+  "description": "ローカル Git ワークツリー作業基盤（start / merge スキル + worktree MCP + Claude Code タスク連携リマインダー）。GitHub 依存なし、gh-kit から独立。",
+  "version": "3.0"
+}

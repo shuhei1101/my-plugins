@@ -1,5 +1,5 @@
 ---
-name: gh-kit:start
+name: work:start
 description: ブランチを作成してワークツリーで作業を開始する。実装に入るときに起動する。
 ---
 
@@ -11,7 +11,7 @@ description: ブランチを作成してワークツリーで作業を開始す�
 
 ### ステップ 2: ワークツリーを作成
 
-`worktree_create` MCP ツール（`gh-kit-tools` サーバー）を実行する:
+`worktree_create` MCP ツール（`work-tools` サーバー）を実行する:
 
 - branch_type: `{type}` / title: `{title}`
 - ワークツリー: `{リポジトリ}/.claude/worktrees/{type}-{title}` に作成
@@ -26,6 +26,6 @@ description: ブランチを作成してワークツリーで作業を開始す�
 | 状況 | 次のアクション |
 |---|---|
 | GitHub Issue 駆動の作業 | `/gh-kit:pr-draft-create-auto` 経由で Draft PR にコミットを積み、ready 化後 `/gh-kit:pr-review-auto` でマージ |
-| ローカル単独作業 | `/gh-kit:merge {ブランチ名}` を提案 |
+| ローカル単独作業 | `/work:merge {ブランチ名}` を提案 |
 
 仕様スナップショットは GitHub Wiki（`/gh-kit:wiki-create`）に書く。

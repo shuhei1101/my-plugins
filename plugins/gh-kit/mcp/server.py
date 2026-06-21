@@ -1,11 +1,10 @@
-"""gh-kit プラグインの MCP サーバー（テンプレート取得 + ワークツリー操作）。
+"""gh-kit プラグインのテンプレート取得用 MCP サーバー。
 
 # 実行方法（プラグインの .mcp.json から自動起動）
 uv run --with mcp python ${CLAUDE_PLUGIN_ROOT}/mcp/server.py
 """
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -16,10 +15,6 @@ from mcp.types import ToolAnnotations
 from pydantic import BaseModel, Field
 
 SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
-
-
-def _project_dir() -> str:
-    return os.environ["CLAUDE_PROJECT_DIR"]
 
 mcp = FastMCP("gh-kit-tools")
 
@@ -54,45 +49,6 @@ def template_get(
     return CommandResult(
         success=result.returncode == 0,
         output=result.stdout if result.returncode == 0 else result.stderr,
-    )
-
-
-@mcp.tool(
-    title="ワークツリー作成",
-    annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False),
-)
-def worktree_create(
-    branch_type: Annotated[Literal["feat", "fix", "docs", "chore", "refactor", "test"], Field(description="ブランチ種別")],
-    title: Annotated[str, Field(description="ブランチタイトル（英数字ケバブケース。例: my-feature）")],
-) -> CommandResult:
-    """ブランチ {type}/{title} とワークツリー（.claude/worktrees/ 配下）を作成し、Stop リマインダー用のセッショントークンを書く。"""
-    result = subprocess.run(
-        [sys.executable, str(SCRIPTS / "worktree" / "worktree-tool.py"),
-         "create", "--type", branch_type, "--title", title],
-        capture_output=True, text=True, cwd=_project_dir(),
-    )
-    return CommandResult(
-        success=result.returncode == 0,
-        output=result.stdout + result.stderr,
-    )
-
-
-@mcp.tool(
-    title="ワークツリー削除",
-    annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=True),
-)
-def worktree_remove(
-    branch: Annotated[str, Field(description="削除対象のブランチ名（例: feat/my-feature）。ワークツリーとブランチを両方削除する")],
-) -> CommandResult:
-    """マージ済みブランチのワークツリーとブランチを削除し、セッショントークンを消す。"""
-    result = subprocess.run(
-        [sys.executable, str(SCRIPTS / "worktree" / "worktree-tool.py"),
-         "remove", "--branch", branch],
-        capture_output=True, text=True, cwd=_project_dir(),
-    )
-    return CommandResult(
-        success=result.returncode == 0,
-        output=result.stdout + result.stderr,
     )
 
 

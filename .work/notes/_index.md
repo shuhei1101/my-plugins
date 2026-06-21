@@ -2,8 +2,9 @@
 
 ## プラグイン
 
-- [guard-kitプラグイン](プラグイン/guard-kitプラグイン.md): ローカル Git 保護フック群（旧 work、v1.0 で guard-kit にリネーム）
-- [gh-kitプラグイン](プラグイン/gh-kitプラグイン.md): GitHub Issues/PR/Wiki + ワークツリー基盤のフルキット（gh CLI ベース、start/merge/worktree MCP を内蔵）
+- [workプラグイン](プラグイン/workプラグイン.md): ローカル Git ワークツリー作業基盤（start/merge スキル + worktree MCP + タスク連携リマインダー、GitHub 依存なし）
+- [guard-kitプラグイン](プラグイン/guard-kitプラグイン.md): ローカル Git 保護フック群（master 直接コミット阻止 / 危険 git コマンド阻止 / セッション規約注入）
+- [gh-kitプラグイン](プラグイン/gh-kitプラグイン.md): GitHub Issues/PR/Wiki を真実のソースとした作業フローキット（gh CLI ベース）
 - [gh-kitラベル設計](プラグイン/gh-kitラベル設計.md): Issue/PR の状態を表すラベル一覧と状態遷移図
 
 ## フック・自動化

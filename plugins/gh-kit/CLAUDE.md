@@ -35,8 +35,6 @@ flowchart TD
 | 4 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
 | 5 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
 | 6 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
-| 7 | `/gh-kit:start` | ブランチ + ワークツリーを作成して作業を開始 |
-| 8 | `/gh-kit:merge` | 親取り込み + コンフリクト処理 + マージ + ワークツリー削除 |
 
 ## サブエージェント一覧
 
@@ -44,9 +42,9 @@ flowchart TD
 |---|---|---|---|
 | 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でスキャンし `gh issue create` で直接起票 |
 | 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | 1 Issue を読みコメント本文と `needs-user-review` 要否を返す |
-| 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `/gh-kit:start` + 雛形コミット + Draft PR 起票 |
+| 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `/work:start` + 雛形コミット + Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、`needs-user-review` 要否を返す |
-| 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は `/gh-kit:merge` まで実行 |
+| 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は `/work:merge` まで実行 |
 
 ## 共通リソース
 
@@ -61,27 +59,20 @@ flowchart TD
 | `plugins/gh-kit/templates/PRドキュメント.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
 | `plugins/gh-kit/scripts/templates/template_get.py` | templates/ 配下の指定ファイルを stdout に出す CLI |
-| `plugins/gh-kit/scripts/worktree/worktree-tool.py` | worktree 作成・削除 CLI（`~/.claude/tokens/gh-kit/worktree/` でセッショントークンを管理） |
 | `plugins/gh-kit/mcp/server.py` | `gh-kit-tools` MCP サーバー（FastMCP）|
 | `plugins/gh-kit/.mcp.json` | MCP サーバー起動設定 |
-| `plugins/gh-kit/hooks/` | `pre-merge-check` / `start_reminder`（UserPromptSubmit）/ `merge_reminder`（Stop） |
 
 ## MCP ツール
 
 | ツール | サーバー | 用途 |
 |---|---|---|
 | `template_get` | `gh-kit-tools` | テンプレート 6 種（`.j2` × 3 + `.md` × 3）の本文取得。`template_name` は Literal で制約 |
-| `worktree_create` | `gh-kit-tools` | ブランチ `{type}/{title}` とワークツリー作成 + Stop リマインダー用トークン書き込み |
-| `worktree_remove` | `gh-kit-tools` | マージ済みブランチのワークツリー + ブランチ + トークンを削除 |
 
 ## 環境変数
 
 | 変数 | 用途 | 使うスキル |
 |---|---|---|
 | `GH_KIT_WIKI_PATH` | GitHub Wiki のローカル clone パス（例: `/path/to/repo.wiki`） | `wiki-create` |
-| `GH_KIT_BRANCH_ENFORCEMENT` | `false` で UserPromptSubmit の start リマインダーを無効化 | start_reminder |
-| `GH_KIT_STOP_REMINDER` | `false` で Stop の merge リマインダーを無効化 | merge_reminder |
-| `GH_KIT_MERGE_PROPOSAL` | `false` でマージ提案を省略 | merge_reminder |
 
 ## ラベル一覧
 
@@ -120,3 +111,4 @@ flowchart TD
 | 1 | GitHub remote（`origin` が github.com）があること |
 | 2 | `gh` CLI 認証済み（`gh auth status` が OK） |
 | 3 | guard-kit プラグインが有効（保護フック群） |
+| 4 | work プラグインが有効（`/work:start` / `/work:merge` + `worktree_create` / `worktree_remove` MCP） |

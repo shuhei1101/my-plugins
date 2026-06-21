@@ -9,8 +9,8 @@ python worktree-tool.py create --type feat --title my-feature
 python worktree-tool.py remove --branch feat/my-feature
 
 トークン:
-  作成時に ~/.claude/tokens/gh-kit/worktree/<CLAUDE_CODE_SESSION_ID>.json を書き、削除時に消す。
-  Stop フック（merge_reminder.py）がこのトークンの有無で発火を制御する。
+  作成時に ~/.claude/tokens/work/worktree/<CLAUDE_CODE_SESSION_ID>.json を書き、削除時に消す。
+  Stop フック（work_complete_check.py）がこのトークンの有無で発火を制御する。
 
 VS Code ワークスペース連携:
   環境変数 VSCODE_WORKSPACE_FILE に .code-workspace のパスが設定されていれば、
@@ -27,7 +27,7 @@ import sys
 import time
 from pathlib import Path
 
-TOKEN_DIR = Path.home() / ".claude" / "tokens" / "gh-kit" / "worktree"
+TOKEN_DIR = Path.home() / ".claude" / "tokens" / "work" / "worktree"
 TOKEN_TTL_SECONDS = 7 * 24 * 3600  # 放置トークンの掃除期限（7日）
 
 

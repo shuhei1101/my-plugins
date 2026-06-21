@@ -4,12 +4,12 @@ worktree 作業中のセッションのみ、レスポンス終了時に /gh-kit
 additionalContext として注入する（decision: block で継続）。
 
 発火条件:
-    ~/.claude/tokens/gh-kit/worktree/<session_id>.json が存在すること。
+    ~/.claude/tokens/work/worktree/<session_id>.json が存在すること。
     トークンは worktree-tool.py create で作成され、remove で削除される。
 
 env トグル:
-    GH_KIT_STOP_REMINDER（デフォルト truthy）— falsy で全体を無効化する
-    GH_KIT_MERGE_PROPOSAL（デフォルト truthy）— falsy でマージ提案を省略する
+    WORK_STOP_REMINDER（デフォルト truthy）— falsy で全体を無効化する
+    WORK_MERGE_PROPOSAL（デフォルト truthy）— falsy でマージ提案を省略する
 """
 
 from __future__ import annotations
@@ -37,7 +37,7 @@ def env_truthy(name: str, default: bool = True) -> bool:
 
 def main() -> None:
     """Stop フック: リマインダーを additionalContext として注入して処理を継続させる。"""
-    if not env_truthy("GH_KIT_STOP_REMINDER", default=True):
+    if not env_truthy("WORK_STOP_REMINDER", default=True):
         return
 
     # stop_hook_active は Stop フックが再発火していることを示す — 無限ループ防止
@@ -47,7 +47,7 @@ def main() -> None:
 
     # worktree 作業中のセッションのみ発火（トークンは worktree-tool.py が管理）
     session_id = data.get("session_id", "")
-    token_path = pathlib.Path.home() / ".claude" / "tokens" / "gh-kit" / "worktree" / f"{session_id}.json"
+    token_path = pathlib.Path.home() / ".claude" / "tokens" / "work" / "worktree" / f"{session_id}.json"
     if not token_path.is_file():
         sys.exit(0)
 
@@ -55,10 +55,10 @@ def main() -> None:
         return
 
     prompts_dir = pathlib.Path(sys.argv[1]).parent
-    # GH_KIT_MERGE_PROPOSAL が falsy の場合はマージ提案なしのプロンプトを使用
+    # WORK_MERGE_PROPOSAL が falsy の場合はマージ提案なしのプロンプトを使用
     fname = (
         "merge_reminder.md"
-        if env_truthy("GH_KIT_MERGE_PROPOSAL", default=True)
+        if env_truthy("WORK_MERGE_PROPOSAL", default=True)
         else "merge_reminder_no_proposal.md"
     )
     prompt_path = prompts_dir / fname

@@ -34,7 +34,7 @@ def _build_context() -> dict:
     raw_guard = os.environ.get("GUARD_KIT_GUARD")
     guard_enabled = _is_true(raw_guard, default=True)
 
-    raw_enforcement = os.environ.get("GH_KIT_BRANCH_ENFORCEMENT")
+    raw_enforcement = os.environ.get("WORK_BRANCH_ENFORCEMENT")
     branch_enforcement = _is_true(raw_enforcement, default=True)
 
     # ユーザーが明示的に上書きしている env だけを表示する（情報過多を防ぐ）
@@ -43,7 +43,7 @@ def _build_context() -> dict:
         ("WORK_PROTECTED_BRANCHES", raw_protected),
         ("GUARD_KIT_ALLOW_MASTER_COMMIT", raw_allow_master),
         ("GUARD_KIT_GUARD", raw_guard),
-        ("GH_KIT_BRANCH_ENFORCEMENT", raw_enforcement),
+        ("WORK_BRANCH_ENFORCEMENT", raw_enforcement),
     ):
         if raw is not None:
             overrides.append((name, raw))

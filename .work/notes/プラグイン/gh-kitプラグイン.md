@@ -37,8 +37,6 @@ flowchart TD
 | 4 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列実装 → Ready 化（`needs-ai-review` 必須付与 + `needs-user-review` 状況判断） |
 | 5 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
 | 6 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push（`GH_KIT_WIKI_PATH` 必須） |
-| 7 | `/gh-kit:start` | ブランチ + ワークツリーを作成して作業を開始（旧 `/gh-kit:start`） |
-| 8 | `/gh-kit:merge` | 親取り込み + コンフリクト処理 + マージ + ワークツリー削除（旧 `/gh-kit:merge`） |
 
 ## サブエージェント一覧
 
@@ -46,9 +44,9 @@ flowchart TD
 |---|---|---|---|
 | 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でファイル走査し `gh issue create` で直接起票 |
 | 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | 1 Issue を読みコメント本文を返す（投稿はメイン） |
-| 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `/gh-kit:start` でブランチ作成 → Draft PR 起票 |
+| 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `/work:start` でブランチ作成 → Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化 |
-| 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は `/gh-kit:merge` まで実行 |
+| 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は `/work:merge` まで実行 |
 
 ## テンプレート（共通リソース）
 
@@ -70,8 +68,6 @@ flowchart TD
 | ツール | サーバー | 用途 |
 |---|---|---|
 | `template_get` | `gh-kit-tools` | templates/ 配下の 6 ファイル（`.j2` × 3 + `.md` × 3）の本文取得。`template_name` は Literal で enum 制約 |
-| `worktree_create` | `gh-kit-tools` | ブランチ `{type}/{title}` + ワークツリー作成 + Stop リマインダー用トークン書き込み |
-| `worktree_remove` | `gh-kit-tools` | マージ済みブランチのワークツリー + ブランチ + トークン削除 |
 
 エージェント側はテンプレ取得を `cat` ではなく `template_get` MCP ツール呼び出しに統一（パスの間違いを enum で防ぐ）。
 
@@ -105,15 +101,15 @@ flowchart TD
 | ラベル排他 | `processing` が付いた対象は他セッションが触らない |
 | Draft 隔離 | `wip` + `draft: true` の PR は `pr-review-auto` の対象外 |
 | マージ可能条件 | `needs-*` がすべて外れた + processing なし + draft でない + open |
-| コンフリクト方針 | `/gh-kit:merge` SKILL.md の方針に従う |
+| コンフリクト方針 | `/work:merge` SKILL.md の方針に従う |
 | Issue 早期クローズ防止 | PR 本文は `Refs #N`（`Closes` ではない） |
 
 ## プラグイン依存
 
 | 機能 | 依存先 |
 |---|---|
-| ブランチ + worktree 作成 | `/gh-kit:start`（内蔵） |
-| 親取り込み + コンフリクト処理 + マージ + worktree 削除 | `/gh-kit:merge`（内蔵） |
+| ブランチ + worktree 作成 | `/work:start`（内蔵） |
+| 親取り込み + コンフリクト処理 + マージ + worktree 削除 | `/work:merge`（内蔵） |
 | 危険操作ガード | guard-kit プラグインの hooks |
 
 ## 全体シーケンス（スキャン → マージ → push まで）
@@ -133,7 +129,7 @@ flowchart TD
 |---|---|---|---|
 | 1 | `pr-draft-creator` | Draft PR 作成直前 | 作業ブランチを `git push -u origin {branch}`（`--allow-empty` の空コミット 1 個） |
 | 2 | `pr-implementer` | 実装コミット後・PR Ready 化直前 | 作業ブランチを `git push origin {branch}` |
-| 3 | `pr-reviewer` | `/gh-kit:merge` 完了直後 | base ブランチ（通常 master）を `git push origin {base}`（マージコミット含む） |
+| 3 | `pr-reviewer` | `/work:merge` 完了直後 | base ブランチ（通常 master）を `git push origin {base}`（マージコミット含む） |
 
 つまり「作業ブランチは Draft PR 作成時 + 実装後 の 2 回」「master は最終マージ後 1 回」が push 発生点。`code-scanner` `issue-reviewer` `pr-draft-create`（メイン側）`pr-implement-auto`（メイン側）`pr-review-auto`（メイン側）は push しない。
 
@@ -169,7 +165,7 @@ sequenceDiagram
   User->>AI: /gh-kit:pr-draft-create-auto
   AI->>GH: gh issue list --state open<br/>(needs-* なしを抽出 + todo 全埋め確認)
   AI->>GH: gh issue edit --add-label processing
-  AI->>Local: /gh-kit:start でブランチ + worktree 作成
+  AI->>Local: /work:start でブランチ + worktree 作成
   AI->>Local: git commit --allow-empty（PR 作成のため最低 1 コミット）
   AI->>GH: git push -u origin {branch}  ★push 1
   AI->>GH: gh pr create --draft --label wip
@@ -192,7 +188,7 @@ sequenceDiagram
   AI->>GH: gh pr review --approve / --request-changes
 
   alt approve かつ needs-user-review なし
-    AI->>Local: /gh-kit:merge（親取り込み + マージ + worktree 削除）
+    AI->>Local: /work:merge（親取り込み + マージ + worktree 削除）
     AI->>GH: git push origin master  ★push 3
     Note over GH: PR が自動 close + Issue も Refs から close
     AI->>GH: gh pr edit --remove-label processing,needs-ai-review

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "work-tools": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--with", "mcp",
+        "python",
+        "${CLAUDE_PLUGIN_ROOT}/mcp/server.py"
+      ]
+    }
+  }
+}

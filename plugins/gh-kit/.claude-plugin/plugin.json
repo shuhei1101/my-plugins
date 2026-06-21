@@ -1,5 +1,5 @@
 {
   "name": "gh-kit",
-  "description": "GitHub Issues/PR/Wiki + ワークツリー基盤のフルキット（gh CLI + Jinja2 テンプレ + start/merge スキル + worktree MCP + リマインダーフック + Wiki ページ作成）",
-  "version": "0.13"
+  "description": "GitHub Issues/PR/Wiki を真実のソースとした作業フローキット（gh CLI + Jinja2 テンプレ + template_get MCP + Wiki ページ作成）。ワークツリー操作は work プラグインに依存",
+  "version": "0.14"
 }

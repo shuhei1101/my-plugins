@@ -3,12 +3,12 @@
 ## 作業フロー
 
 {% if branch_enforcement %}
-1. 実装・修正の依頼を受けたら `/gh-kit:start` を実行する（質問・調査のみなら不要）
+1. 実装・修正の依頼を受けたら `/work:start` を実行する（質問・調査のみなら不要）
 2. ワークツリー内で実装する
-3. 完了したら `/gh-kit:merge` を提案し、ユーザー承認後にマージする
+3. 完了したら `/work:merge` を提案し、ユーザー承認後にマージする
 {% else %}
-1. ワークツリー内で実装する（`GH_KIT_BRANCH_ENFORCEMENT=false` のためブランチ強制はオフ）
-2. 完了したら `/gh-kit:merge` を提案し、ユーザー承認後にマージする
+1. ワークツリー内で実装する（`WORK_BRANCH_ENFORCEMENT=false` のためブランチ強制はオフ）
+2. 完了したら `/work:merge` を提案し、ユーザー承認後にマージする
 {% endif %}
 
 ## やってはいけないこと
@@ -17,7 +17,7 @@
 
 {% if not allow_master_commit %}
 - {{ protected_branches_display }} ブランチに直接コミットしないこと（マージコミットのみ可）
-- {{ protected_branches_display }} ブランチ上で直接ファイルを Edit / Write しないこと（`/gh-kit:start` でワークツリーを作る）
+- {{ protected_branches_display }} ブランチ上で直接ファイルを Edit / Write しないこと（`/work:start` でワークツリーを作る）
 - {{ protected_branches_display }} ブランチ上で guard-kit プラグインのスクリプトを実行しないこと（worktree から呼ぶ）
 {% endif %}
 - `.git/` 配下のファイルを Edit / Write / `rm` / `rmdir` しないこと（Git CLI 経由でのみ操作）

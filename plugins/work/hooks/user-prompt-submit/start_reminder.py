@@ -19,7 +19,7 @@ import sys
 def main() -> None:
     """gh-kit:start リマインダーを additionalContext として注入する。"""
     # 環境変数で無効化されている場合はスキップ
-    if os.environ.get("GH_KIT_BRANCH_ENFORCEMENT", "true").lower() in ("false", "0", "no", "off"):
+    if os.environ.get("WORK_BRANCH_ENFORCEMENT", "true").lower() in ("false", "0", "no", "off"):
         return
 
     if len(sys.argv) < 2:

@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: 1 PR をレビューし、合格 + needs-user-review なしなら /gh-kit:merge → push まで実行
+description: 1 PR をレビューし、合格 + needs-user-review なしなら /work:merge → push まで実行
 model: sonnet
 ---
 
@@ -78,7 +78,7 @@ git -C "$WT" fetch origin
 git -C "$WT" reset --hard origin/{HEAD_BRANCH}
 ```
 
-続いて `/gh-kit:merge` スキルを実行（親取り込み・コンフリクト処理・マージ・worktree 削除）。
+続いて `/work:merge` スキルを実行（親取り込み・コンフリクト処理・マージ・worktree 削除）。
 完了後:
 
 ```bash
