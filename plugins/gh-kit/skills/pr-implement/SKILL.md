@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-implement
-description: "gh-kit:wip Draft PR を 1 件実装する: worktree 復帰 → fetch/reset → 実装 → コミット → push → gh pr ready。pr-implementer エージェントから呼ばれる。"
+description: "wip Draft PR を 1 件実装する: worktree 復帰 → fetch/reset → 実装 → コミット → push → gh pr ready。pr-implementer エージェントから呼ばれる。"
 ---
 
 # pr-implement
@@ -68,7 +68,7 @@ gh pr ready {PR_NUMBER}
 gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サマリ}"
 ```
 
-`gh-kit:needs-ai-review` ラベル付与と assignees 追加（`needs_user_review: true` の場合）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
+`needs-ai-review` ラベル付与と assignees 追加（`needs_user_review: true` の場合）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
 
 ## ステップ 7: 戻り値
 

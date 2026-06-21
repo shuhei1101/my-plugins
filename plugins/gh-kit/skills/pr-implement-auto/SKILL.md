@@ -1,14 +1,12 @@
 ---
 name: gh-kit:pr-implement-auto
-description: ラベル gh-kit:wip / gh-kit:needs-fix の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
+description: ラベル wip / needs-fix の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
 disable-model-invocation: true
 ---
 
 # pr-implement-auto
 
 `pr-draft-create-auto` で雛形化された Draft PR を拾い、中身を実装して Ready for review に切り替える。
-
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
 ## 環境変数
 
@@ -56,33 +54,31 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 
 ### ステップ 1: 対象 PR を収集
 
-`gh-kit:wip`（初回実装待ち）と `gh-kit:needs-fix`（レビューで差し戻された再実装待ち）の Draft PR
+`wip`（初回実装待ち）と `needs-fix`（レビューで差し戻された再実装待ち）の Draft PR
 を両方拾う。gh CLI のラベル絞り込みは AND 扱いになるので 2 回呼んでマージする。
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 # 指定なしのとき
 {
-  gh pr list --state open --label "$LABEL_WIP" --draft \
+  gh pr list --state open --label "$GH_KIT_LABEL_WIP" --draft \
     --json number,title,headRefName,baseRefName,body,labels --limit 50
-  gh pr list --state open --label "$LABEL_NEEDS_FIX" --draft \
+  gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_FIX" --draft \
     --json number,title,headRefName,baseRefName,body,labels --limit 50
 } | jq -s 'add | unique_by(.number)'
 # 指定ありのとき
 gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 ```
 
-`gh-kit:processing` 付きは除外。`isDraft: false` は対象外。昇順 → 上位 **N** 件。0 件なら停止。
+`processing` 付きは除外。`isDraft: false` は対象外。昇順 → 上位 **N** 件。0 件なら停止。
 
 ### ステップ 2: 排他制御
 
-`gh-kit:wip` / `gh-kit:needs-fix` どちらが付いていても外せるよう、両方 `--remove-label` する
+`wip` / `needs-fix` どちらが付いていても外せるよう、両方 `--remove-label` する
 （存在しないラベルを外そうとしてもエラーにはならない）。
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh pr edit {N} --add-label "$LABEL_PROCESSING" \
-  --remove-label "$LABEL_WIP" --remove-label "$LABEL_NEEDS_FIX"
+gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING" \
+  --remove-label "$GH_KIT_LABEL_WIP" --remove-label "$GH_KIT_LABEL_NEEDS_FIX"
 gh issue edit {N} --add-assignee @me
 ```
 
@@ -95,7 +91,7 @@ gh issue edit {N} --add-assignee @me
 # PR 本文から Issue 番号を抽出して付与
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --add-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+  gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
 fi
 ```
 
@@ -105,10 +101,8 @@ fi
 ### ステップ 4: 後処理
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-
 # 成功
-gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_AI_REVIEW"
+gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"
 if [ "{needs_user_review}" = "true" ]; then
   GH_LOGIN="$(gh api user --jq '.login')"
   gh pr edit {N} --add-assignee "$GH_LOGIN"
@@ -116,21 +110,21 @@ fi
 # Issue の processing:pr-implement を除去
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+  gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
 fi
 
 # 失敗
-gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"
+gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX"
 gh pr comment {N} --body "{失敗理由}"
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+  gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
 fi
 ```
 
 ### ステップ 5: pr-review-auto を連鎖実行
 
-ステップ 4 で 1 件以上 `gh-kit:needs-ai-review` を付与した PR が存在すれば、続けて
+ステップ 4 で 1 件以上 `needs-ai-review` を付与した PR が存在すれば、続けて
 `/gh-kit:pr-review-auto` を呼び出して直列レビュー → マージへ進める。
 
 ## 厳守事項

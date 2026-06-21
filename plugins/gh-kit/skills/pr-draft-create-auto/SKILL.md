@@ -14,11 +14,9 @@ disable-model-invocation: true
 | No | 条件 |
 |---|---|
 | 1 | `state: open` |
-| 2 | `gh-kit:needs-ai-review` / `gh-kit:needs-fix` / `gh-kit:processing` のいずれも付いていない |
+| 2 | `needs-ai-review` / `needs-fix` / `processing` のいずれも付いていない |
 | 3 | `assignees` が空（ユーザー確認待ちでない） |
 | 4 | Issue 本文・コメントの `- [ ]` がすべて埋まっている（推奨案・QA 回答が選択済み） |
-
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
 ## 環境変数
 
@@ -44,17 +42,15 @@ disable-model-invocation: true
 
 ```bash
 # Monitor に渡すポーリングスクリプト
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-
 while true; do
   # needs-* / processing なし・open の Issue を取得
   AVAILABLE=$(gh issue list --state open \
     --json number,labels \
     --jq "[.[] | select(
       (.labels | map(.name) | (
-        index(\"$LABEL_NEEDS_AI_REVIEW\") == null and
-        index(\"$LABEL_NEEDS_FIX\") == null and
-        index(\"$LABEL_PROCESSING\") == null
+        index(\"$GH_KIT_LABEL_NEEDS_AI_REVIEW\") == null and
+        index(\"$GH_KIT_LABEL_NEEDS_FIX\") == null and
+        index(\"$GH_KIT_LABEL_PROCESSING\") == null
       )) and
       (.assignees | length == 0)
     )] | length" 2>/dev/null || echo 0)
@@ -75,7 +71,7 @@ Monitor の stdout に `TRIGGER:pr-draft-create-auto` が来たらステップ 1
 gh issue list --state open --json number,title,body,labels,assignees,comments --limit 100
 ```
 
-`gh-kit:needs-ai-review` / `gh-kit:needs-fix` / `gh-kit:processing` のいずれも含まず、`assignees` が空で、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
+`needs-ai-review` / `needs-fix` / `processing` のいずれも含まず、`assignees` が空で、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
 
 ### ステップ 2: 各 Issue から作る Draft PR 数を決定
 
@@ -90,8 +86,7 @@ gh issue list --state open --json number,title,body,labels,assignees,comments --
 ### ステップ 3: 排他制御
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh issue edit {N} --add-label "$LABEL_PROCESSING"
+gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 ```
 
 ### ステップ 4: pr-draft-creator を並列起動
@@ -102,10 +97,9 @@ gh issue edit {N} --add-label "$LABEL_PROCESSING"
 ### ステップ 5: 後処理
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh pr edit {PR番号} --add-label "$LABEL_WIP"
+gh pr edit {PR番号} --add-label "$GH_KIT_LABEL_WIP"
 gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
-gh issue edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_PROCESSING_PR_DRAFT"
+gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_PROCESSING_PR_DRAFT"
 ```
 
 ### ステップ 6: 完了報告

@@ -1,14 +1,12 @@
 ---
 name: gh-kit:issue-review-auto
-description: gh-kit:needs-ai-review ラベルの Issue を並列で AI レビューし、コメント投稿する
+description: needs-ai-review ラベルの Issue を並列で AI レビューし、コメント投稿する
 disable-model-invocation: true
 ---
 
 # issue-review-auto
 
-`gh-kit:needs-ai-review` 付きの Issue を `issue-reviewer` に並列で渡す。
-
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
+`needs-ai-review` 付きの Issue を `issue-reviewer` に並列で渡す。
 
 ## 環境変数
 
@@ -20,7 +18,7 @@ disable-model-invocation: true
 
 | 引数 | 必須 | 内容 |
 |---|---|---|
-| Issue 番号 | 任意 | 省略時は `gh-kit:needs-ai-review` 付きを全件巡回 |
+| Issue 番号 | 任意 | 省略時は `needs-ai-review` 付きを全件巡回 |
 
 ## フロー概要
 
@@ -43,15 +41,13 @@ needs-ai-review 付き Issue 収集
 
 ```bash
 # Monitor に渡すポーリングスクリプト
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-
 while true; do
-  COUNT=$(gh issue list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
+  COUNT=$(gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
     --json number --jq 'length' 2>/dev/null || echo 0)
   # processing 付きを除いたカウント
-  AVAILABLE=$(gh issue list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
+  AVAILABLE=$(gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
     --json number,labels \
-    --jq "[.[] | select(.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)] | length" 2>/dev/null || echo 0)
+    --jq "[.[] | select(.labels | map(.name) | index(\"$GH_KIT_LABEL_PROCESSING\") | not)] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:issue-review-auto:count=$AVAILABLE"
     break
@@ -66,20 +62,18 @@ Monitor の stdout に `TRIGGER:issue-review-auto` が来たらステップ 1 �
 ### ステップ 1: 対象 Issue を収集
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 # 指定なしのとき
-gh issue list --state open --label "$LABEL_NEEDS_AI_REVIEW" --json number,title,labels --limit 100
+gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --json number,title,labels --limit 100
 # 指定ありのとき
 gh issue view {N} --json number,title,body,labels,comments
 ```
 
-`gh-kit:processing` 付きは除外（他セッションが処理中）。0 件なら停止。
+`processing` 付きは除外（他セッションが処理中）。0 件なら停止。
 
 ### ステップ 2: 排他制御
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh issue edit {N} --add-label "$LABEL_PROCESSING"
+gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 ```
 
 ### ステップ 3: issue-reviewer を並列起動
@@ -94,17 +88,15 @@ gh issue edit {N} --add-label "$LABEL_PROCESSING"
 **status が `ok` の場合（通常レビュー完了）:**
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-
 # status: waiting の場合 — ユーザー返答待ちのため processing のみ除去
 if [ "{status}" = "waiting" ]; then
-  gh issue edit {N} --remove-label "$LABEL_PROCESSING"
+  gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING"
   # needs-ai-review は維持（次回以降も待機継続）
   return
 fi
 
 # status: ok の場合 — processing と needs-ai-review を除去
-ARGS=(--remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW")
+ARGS=(--remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW")
 gh issue edit {N} "${ARGS[@]}"
 
 # needs_user_review: true の場合は assignee を追加
@@ -124,8 +116,7 @@ Issue はすでにクローズされているため、ラベル付け替えは�
 `processing` ラベルのみ除去する（クローズ済み Issue には add-label が効かないため remove のみ）:
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh issue edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW" 2>/dev/null || true
+gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" 2>/dev/null || true
 ```
 
 ### ステップ 5: 結果報告
