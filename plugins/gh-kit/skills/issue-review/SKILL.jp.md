@@ -3,11 +3,11 @@ name: gh-kit:issue-review
 description: 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを gh CLI で投稿し、needs_user_review 判定を返す
 ---
 
-# issue-review
+# issue-review（日本語版）
+
+> このファイルは `SKILL.md` の日本語訳です。自動読み込みはされません。参照専用。
 
 GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿する。
-
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
 ## 入力
 
@@ -17,7 +17,7 @@ GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿�
 
 ## ステップ 1: ラベル定義とテンプレートを読み込む
 
-ラベル定数は bash 経由で取得（上記 `!` 構文で注入済み）。
+ラベル定数は bash 経由で取得。
 テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得:
 
 | 用途 | template_name |
@@ -48,8 +48,7 @@ Issue のタイトル・本文からキーワードを 2〜4 個抽出し、`gh 
 gh issue list --state open --search "{キーワード1} {キーワード2}" --json number,title,body --limit 20
 ```
 
-レビュー対象の Issue 自身は結果から除外する。
-全検索で最大 20 件の候補を収集する。
+レビュー対象の Issue 自身は結果から除外する。全検索で最大 20 件の候補を収集する。
 
 ## ステップ 2.6: 類似度判定と処理分岐
 
@@ -63,80 +62,19 @@ gh issue list --state open --search "{キーワード1} {キーワード2}" --js
 | `full_duplicate` | 現 Issue の内容が既存 Issue に完全に含まれる | 現 Issue を既存 Issue リンク付きでクローズ（転記なし） |
 | `unrelated` | 有意な重複なし | スキップ（ステップ 3 へ進む） |
 
-**partial_overlap 時の処理:**
-
-```bash
-# 1. 差分情報を抽出・要約（現 Issue にあって既存 Issue にない情報のみ）
-# 2. 抽出内容を既存 Issue にコメント投稿
-gh issue comment {EXISTING_N} --body-file <(cat <<'EOF'
-> 🤖 issue-reviewer による関連 Issue からの情報追記
-
-## 追記情報（Issue #{N} より）
-
-{差分要約: 既存 Issue に含まれていない追加情報のみを記載}
-
-元 Issue: #{N}
-EOF
-)
-
-# 3. 現 Issue をクローズコメント付きでクローズ
-gh issue comment {N} --body-file <(cat <<'EOF'
-> 🤖 issue-reviewer による重複検出
-
-類似する Issue #{EXISTING_N} が既に存在するため、この Issue をクローズします。
-追加情報は #{EXISTING_N} にコメントとして転記しました。
-
-移行先 Issue: {EXISTING_ISSUE_URL}
-EOF
-)
-gh issue close {N}
-```
-
-**full_duplicate 時の処理:**
-
-```bash
-# 現 Issue をクローズコメント付きでクローズ
-gh issue comment {N} --body-file <(cat <<'EOF'
-> 🤖 issue-reviewer による重複検出
-
-Issue #{EXISTING_N} と完全に重複しているため、この Issue をクローズします。
-
-既存 Issue: {EXISTING_ISSUE_URL}
-EOF
-)
-gh issue close {N}
-```
-
-`partial_overlap` または `full_duplicate` が検出された場合、**ステップ 3〜6 をスキップ**してステップ 7 に直接ジャンプし、`status: "duplicate_merged"` または `status: "duplicate_closed"` を返す。
-
-複数の候補がある場合は、類似度が高い順 → Issue 番号が小さい順（古い順）で優先する。
+`partial_overlap` または `full_duplicate` が検出された場合、ステップ 3〜6 をスキップしてステップ 7 へ直接ジャンプし、`status: "duplicate_merged"` または `status: "duplicate_closed"` を返す。
 
 ## ステップ 3: コードベースを読む
 
-Issue が言及する領域・関連ファイルを Read で確認。Read 時に PreToolUse フックがファイル系ルールを自動注入する。
+Issue が言及する領域・関連ファイルを Read で確認。
 
-### Step 3a: Fetch official documentation (only when external tool/library names are present)
+### ステップ 3a: 公式ドキュメント取得（外部ツール・ライブラリ名がある場合のみ）
 
-If the Issue title or body contains the name of an external tool, library, framework, or service:
-1. Use `WebFetch` to retrieve the official documentation page(s) most relevant to the Issue.
-2. If fetching fails, note "参照不可（理由）" and continue without blocking.
-3. Record each successfully retrieved URL in `{doc_urls}` for use in the review-result comment.
+Issue タイトルや本文に外部ツール・ライブラリ・フレームワーク・サービス名が含まれる場合、`WebFetch` で公式ドキュメントを取得する。含まれない場合はスキップ。
 
-Skip entirely when the Issue contains no external tool/library names.
+### ステップ 3.5: 動作確認（任意 — 実施可能な場合のみ）
 
-## Step 3.5: Behavior verification (optional — when feasible)
-
-Attempt to confirm whether the reported problem actually occurs in the current codebase.
-
-| Issue type | Verification method |
-|---|---|
-| Skill / Claude Code behavior | Launch a sub-agent and reproduce the scenario described in the Issue |
-| Code bug (test exists) | Run the relevant test suite and check for failures |
-| Code bug (no test) | Perform manual behavior confirmation |
-| Verification not feasible | Note "確認不可（理由）" and continue |
-
-Store the result in `{verification_result}` for inclusion in the review-result comment.
-This step is **optional** — if infrastructure or context makes it impossible, skip gracefully.
+報告された問題が現在のコードベースで実際に発生するかを確認する。確認不可の場合はスキップ。
 
 ## ステップ 3.75: タイトル更新（人間起票のみ）
 
@@ -161,39 +99,16 @@ gh issue edit {N} --title "{生成したタイトル}"
 
 ## ステップ 4: 本文補完コメントを投稿（必要時のみ）
 
-人間起票で **本文に欠けているセクション** があるときに限り、`イシュードキュメント.j2` に沿って
-**不足セクションだけ補う追加コメント** を投稿する。既に書かれているセクションは再掲しない。
+人間起票で **本文に欠けているセクション** があるときに限り、`イシュードキュメント.j2` に沿って **不足セクションだけ補う追加コメント** を投稿する。既に書かれているセクションは再掲しない。
 本文が揃っている場合（AI 起票 or 人間起票でも完備）はこのステップをスキップ。
-
-```bash
-gh issue comment {N} --body-file <(cat <<'EOF'
-> 🤖 issue-reviewer による本文補完
-
-## 概要
-（欠けていた概要を記入）
-
-## 背景
-（欠けていた背景を記入）
-EOF
-)
-```
 
 ## ステップ 5: レビュー結果コメントを投稿
 
 ステップ 1 で取得した `レビュー結果コメント.j2` に沿って実装方針 / 質問 / 分割提案 / 影響範囲を書く。
-質問・分割提案がなければ該当セクションごと省略。
-
-```bash
-gh issue comment {N} --body-file <(cat <<'EOF'
-{レビュー結果本文}
-EOF
-)
-```
 
 ## ステップ 6: `needs-user-review` 要否判定
 
-ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らして判定する。
-ステップ 5 で質問が含まれる場合・分割提案がある場合は無条件で true。
+ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らして判定する。ステップ 5 で質問が含まれる場合・分割提案がある場合は無条件で true。
 
 ## ステップ 7: 戻り値
 
