@@ -8,7 +8,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-merge-version-check.py"
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/PreToolUse/pre-merge-version-check.py"
             ]
           }
         ]
@@ -22,7 +22,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/post-merge-upgrade.py"
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/PostToolUse/post-merge-upgrade.py"
             ]
           }
         ]
