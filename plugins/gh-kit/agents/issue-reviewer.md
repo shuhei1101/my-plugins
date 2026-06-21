@@ -25,6 +25,7 @@ model: sonnet
 {
   "issue_number": 42,
   "needs_user_review": true,
+  "priority": "priority:medium",
   "status": "ok"
 }
 ```
