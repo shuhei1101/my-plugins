@@ -66,11 +66,11 @@ gh issue edit {N} --add-assignee @me
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 
 # 成功
-ARGS=(--remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_AI_REVIEW")
+gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_AI_REVIEW"
 if [ "{needs_user_review}" = "true" ]; then
-  ARGS+=(--add-label "$LABEL_NEEDS_USER_REVIEW")
+  GH_LOGIN="$(gh api user --jq '.login')"
+  gh pr edit {N} --add-assignee "$GH_LOGIN"
 fi
-gh pr edit {N} "${ARGS[@]}"
 
 # 失敗
 gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"

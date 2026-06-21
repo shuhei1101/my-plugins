@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: 1 PR をレビューし、合格 + needs-user-review なしなら base 取り込み→マージ→worktree 削除→push まで実行
+description: 1 PR をレビューし、合格 + assignees なしなら base 取り込み→マージ→worktree 削除→push まで実行
 model: sonnet
 ---
 
@@ -14,7 +14,7 @@ model: sonnet
 | ベースブランチ | 例: `master` |
 | ヘッドブランチ | 例: `feat/foo-bar` |
 | リポジトリ root | メインリポジトリの絶対パス |
-| 現在ラベル一覧 | `needs-user-review` の有無を判定するのに使う |
+| 現在 assignees 一覧 | assignees の有無を判定するのに使う |
 
 ## タスク
 

@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-review-auto
-description: needs-ai-review の Ready PR を 1 件ずつ直列でレビューし、合格 + needs-user-review なしならマージまで実行
+description: needs-ai-review の Ready PR を 1 件ずつ直列でレビューし、合格 + assignees なしならマージまで実行
 ---
 
 # pr-review-auto
@@ -8,8 +8,8 @@ description: needs-ai-review の Ready PR を 1 件ずつ直列でレビュー�
 `needs-ai-review` 付き Ready PR をキューとして 1 件ずつ消化する。
 **並列実行は絶対にしない**（master 取り込みとマージが競合してバグるため）。
 
-`needs-user-review` が残っている PR はレビューだけ実施してマージしない。
-ユーザーが `needs-user-review` を外したら別途再エントリー（`needs-ai-review` を付け直す）。
+PR に assignees が設定されている場合はレビューだけ実施してマージしない。
+ユーザーが assignees を外したら別途再エントリー（`needs-ai-review` を付け直す）。
 
 !`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
@@ -42,7 +42,7 @@ CI が failure なら failed へ。
 入力:
 - PR 番号 / タイトル / base / head
 - リポジトリ root
-- 現在ラベル一覧（`needs-user-review` の有無）
+- 現在 assignees 一覧（有無を判定するのに使う）
 
 ### ステップ 4: 後処理
 
@@ -53,9 +53,9 @@ CI が failure なら failed へ。
 | verdict | 動作 |
 |---|---|
 | approved-merged | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（マージは pr-reviewer が実施済み） |
-| approved-user-review-pending | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（`needs-user-review` は残す） |
+| approved-user-review-pending | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（assignees はそのまま残す） |
 | changes-requested | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"` |
-| conflict / failed | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX" --add-label "$LABEL_NEEDS_USER_REVIEW" && gh pr comment {N} --body "{詳細}"` |
+| conflict / failed | `GH_LOGIN="$(gh api user --jq '.login')" && gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX" --add-assignee "$GH_LOGIN" && gh pr comment {N} --body "{詳細}"` |
 
 ステップ 2 に戻ってキューが空になるまで繰り返す。
 

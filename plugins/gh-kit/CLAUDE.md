@@ -59,7 +59,7 @@ flowchart TD
 | `plugins/gh-kit/templates/観点メニュー.md` | コード品質観点リスト（code-scan-auto / pr-reviewer が共通参照） |
 | `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール |
 | `plugins/gh-kit/templates/イシュードキュメント.j2` | code-scanner が起票する Issue 本文（Jinja2） |
-| `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` 判定基準（ブラックリスト） |
+| `plugins/gh-kit/templates/ユーザー確認要否判定.md` | ユーザー確認要否の判定基準（ブラックリスト + assignee 操作手順） |
 | `plugins/gh-kit/templates/レビュー結果コメント.j2` | `issue-review` スキルが投稿するレビュー結果コメント本文（Jinja2） |
 | `plugins/gh-kit/templates/PRドキュメント.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
@@ -73,7 +73,7 @@ flowchart TD
 
 | ツール | サーバー | 用途 |
 |---|---|---|
-| `template_get` | `gh-kit-tools` | テンプレート 6 種（`.j2` × 3 + `.md` × 3）の本文取得。`template_name` は Literal で制約 |
+| `template_get` | `gh-kit-tools` | テンプレート 6 種（`.j2` × 4 + `.md` × 2）の本文取得。`template_name` は Literal で制約 |
 | `worktree_create` | `gh-kit-tools` | ブランチ `{type}/{title}` + `.claude/worktrees/{type}-{title}` 作成。pr-draft-creator / pr-implementer が呼ぶ |
 | `worktree_remove` | `gh-kit-tools` | マージ済みワークツリーとブランチを削除。pr-reviewer がマージ完了後に呼ぶ |
 
@@ -93,8 +93,13 @@ flowchart TD
 |---|---|
 | `processing` | 何らかの作業中（排他マーカー） |
 | `needs-ai-review` | AI レビュー必要（必ず付く） |
-| `needs-user-review` | ユーザーレビュー必要（AI 判定で付く） |
 | `needs-fix` | レビュー結果、修正必要 |
+
+### ユーザー確認待ち（assignees）
+
+`needs-user-review` ラベルは廃止。ユーザー確認が必要な場合は `gh {issue|pr} edit --add-assignee "{GH_LOGIN}"` で自分をアサインする。
+判定基準は `plugins/gh-kit/templates/ユーザー確認要否判定.md`。
+ユーザーが確認済みになったら assignees を手動で外す。
 
 ### Issue 専用
 

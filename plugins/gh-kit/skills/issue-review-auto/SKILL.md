@@ -47,15 +47,15 @@ gh issue edit {N} --add-label "$LABEL_PROCESSING"
 [サブエージェントで並列実行・完了を待つ] 上位 N 件を並列処理する。
 （戻り値: `{issue_number, needs_user_review, status}` — エージェントが gh CLI でコメント投稿を完結させる）
 
-### ステップ 4: ラベル更新
+### ステップ 4: ラベル更新 + assignee 追加
 
 ```bash
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-ARGS=(--remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW")
+gh issue edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"
 if [ "{needs_user_review}" = "true" ]; then
-  ARGS+=(--add-label "$LABEL_NEEDS_USER_REVIEW")
+  GH_LOGIN="$(gh api user --jq '.login')"
+  gh issue edit {N} --add-assignee "$GH_LOGIN"
 fi
-gh issue edit {N} "${ARGS[@]}"
 ```
 
 ### ステップ 5: 結果報告
@@ -63,4 +63,4 @@ gh issue edit {N} "${ARGS[@]}"
 | 項目 | 内容 |
 |---|---|
 | レビュー件数 | 番号一覧 |
-| needs-user-review | 付与/非付与の内訳 |
+| ユーザー確認要 | assignee 追加/非追加の内訳 |
