@@ -1,6 +1,7 @@
 ---
 name: gh-kit:code-scan-auto
 description: コードベースを観点ごとにスキャンし、見つかった問題を gh issue create で起票する
+disable-model-invocation: true
 ---
 
 # code-scan-auto
@@ -42,4 +43,4 @@ gh issue list --state all --label "$LABEL_AI_CODE_SCAN" --limit 50
 ### ステップ 4: 起票結果に対して issue-review-auto を連鎖実行
 
 ステップ 3 で 1 件以上 Issue が起票されたら、続けて `/gh-kit:issue-review-auto` を呼び出して
-新規 Issue を AI レビューしてしまう（`needs-ai-review` 付きの Issue が対象）。
+新規 Issue を AI レビューしてしまう（`gh-kit:needs-ai-review` 付きの Issue が対象）。

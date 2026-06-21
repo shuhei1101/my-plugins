@@ -1,11 +1,12 @@
 ---
 name: gh-kit:issue-review-auto
-description: needs-ai-review ラベルの Issue を並列で AI レビューし、コメント投稿する
+description: gh-kit:needs-ai-review ラベルの Issue を並列で AI レビューし、コメント投稿する
+disable-model-invocation: true
 ---
 
 # issue-review-auto
 
-`needs-ai-review` 付きの Issue を `issue-reviewer` に並列で渡す。
+`gh-kit:needs-ai-review` 付きの Issue を `issue-reviewer` に並列で渡す。
 
 !`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
@@ -19,7 +20,19 @@ description: needs-ai-review ラベルの Issue を並列で AI レビューし�
 
 | 引数 | 必須 | 内容 |
 |---|---|---|
-| Issue 番号 | 任意 | 省略時は `needs-ai-review` 付きを全件巡回 |
+| Issue 番号 | 任意 | 省略時は `gh-kit:needs-ai-review` 付きを全件巡回 |
+
+## フロー概要
+
+```
+needs-ai-review 付き Issue 収集
+  → issue-reviewer に渡す（初回レビュー or 再レビュー）
+    → re_review_needed: false → needs-ai-review 除去 → Draft PR 作成フローへ
+    → re_review_needed: true  → needs-ai-review 除去のみ（ユーザーが必要なら再付与）
+    → status: waiting         → ラベル変更なし（ユーザー返答待ち）
+```
+
+**ユーザーが再レビューを要求する場合:** ユーザーが Issue にコメントを追記した後、手動で `needs-ai-review` を再付与すると、次回の `issue-review-auto` 実行時に `issue-reviewer` が再レビューモードで動作する。
 
 ## タスク
 
@@ -33,7 +46,7 @@ gh issue list --state open --label "$LABEL_NEEDS_AI_REVIEW" --json number,title,
 gh issue view {N} --json number,title,body,labels,comments
 ```
 
-`processing` 付きは除外（他セッションが処理中）。0 件なら停止。
+`gh-kit:processing` 付きは除外（他セッションが処理中）。0 件なら停止。
 
 ### ステップ 2: 排他制御
 
@@ -45,22 +58,32 @@ gh issue edit {N} --add-label "$LABEL_PROCESSING"
 ### ステップ 3: issue-reviewer を並列起動
 
 [サブエージェントで並列実行・完了を待つ] 上位 N 件を並列処理する。
-（戻り値: `{issue_number, needs_user_review, status}` — エージェントが gh CLI でコメント投稿を完結させる）
+（戻り値: `{issue_number, re_review_needed, status}` — エージェントが gh CLI でコメント投稿を完結させる）
 
 ### ステップ 4: ラベル更新
 
-`status` の値に応じて処理を分岐する:
+戻り値の `status` と `re_review_needed` に応じてラベルを操作する。
 
 **status が `ok` の場合（通常レビュー完了）:**
 
 ```bash
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-ARGS=(--remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW")
-if [ "{needs_user_review}" = "true" ]; then
-  ARGS+=(--add-label "$LABEL_NEEDS_USER_REVIEW")
+
+# status: waiting の場合 — ユーザー返答待ちのため processing のみ除去
+if [ "{status}" = "waiting" ]; then
+  gh issue edit {N} --remove-label "$LABEL_PROCESSING"
+  # needs-ai-review は維持（次回以降も待機継続）
+  return
 fi
+
+# status: ok の場合 — processing と needs-ai-review を除去
+ARGS=(--remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW")
 gh issue edit {N} "${ARGS[@]}"
+
+# re_review_needed: false かつ needs-* が他になければ Draft PR フローへ進める（呼び出し元が判定）
 ```
+
+**注意:** `needs-user-review` ラベルは付与しない。ユーザーが AI の追加質問に返答した後、再度 AI レビューが必要と判断した場合は手動で `needs-ai-review` を付け直す。
 
 **status が `duplicate_merged` または `duplicate_closed` の場合（重複検出・クローズ済み）:**
 
@@ -77,5 +100,7 @@ gh issue edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEED
 | 項目 | 内容 |
 |---|---|
 | レビュー件数 | 番号一覧 |
-| needs-user-review | 付与/非付与の内訳 |
+| gh-kit:needs-user-review | 付与/非付与の内訳 |
+| re_review_needed | true/false の内訳 |
+| waiting | 返答待ちで未処理の件数 |
 | 重複検出 | `duplicate_merged` / `duplicate_closed` になった Issue 番号と移行先 Issue 番号 |

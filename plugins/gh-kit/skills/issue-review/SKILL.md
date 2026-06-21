@@ -1,73 +1,73 @@
 ---
 name: gh-kit:issue-review
-description: Review one Issue — fetch templates, read codebase, post a body-supplement comment (if needed), post a review-result comment, and return needs_user_review judgment.
+description: 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを gh CLI で投稿し、needs_user_review 判定を返す
 ---
 
 # issue-review
 
-Reviews one GitHub Issue and posts the result as comments via gh CLI.
+GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿する。
 
 !`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
-## Input
+## 入力
 
-| Argument | Content |
+| 引数 | 内容 |
 |---|---|
-| Issue number | e.g. 42 |
+| Issue 番号 | 例: 42 |
 
-## Step 1: Load label definitions and templates
+## ステップ 1: ラベル定義とテンプレートを読み込む
 
-Label constants are sourced via bash (injected above via `!` syntax).
-Fetch template bodies via the `gh-kit-tools` MCP `template_get` tool:
+ラベル定数は bash 経由で取得（上記 `!` 構文で注入済み）。
+テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得:
 
-| Purpose | template_name |
+| 用途 | template_name |
 |---|---|
-| Issue body template | `イシュードキュメント.j2` |
-| Review result comment | `レビュー結果コメント.j2` |
-| `needs-user-review` criteria | `ユーザーレビュー要否判定.md` |
+| Issue 本文テンプレート | `イシュードキュメント.j2` |
+| レビュー結果コメント | `レビュー結果コメント.j2` |
+| `gh-kit:needs-user-review` 判定基準 | `ユーザーレビュー要否判定.md` |
 
-## Step 2: Fetch Issue and labels
+## ステップ 2: Issue とラベルを取得
 
 ```bash
 gh issue view {N} --json number,title,body,labels,comments
 ```
 
-Determine the origin from label presence:
+ラベルに `gh-kit:ai-code-scan` が含まれるかで起票元を判定:
 
-| Label | Origin | Body state |
+| ラベル | 起票元 | 本文の状態 |
 |---|---|---|
-| `ai-code-scan` present | claude code (`code-scanner`) | Template-compliant, complete |
-| absent | Human | May be missing sections (overview, background, etc.) |
+| あり | claude code（`code-scanner`） | テンプレ準拠で揃っている |
+| なし | 人間 | 概要・背景などが欠けている可能性大 |
 
-## Step 2.5: Search for similar Issues
+## ステップ 2.5: 類似 Issue を検索
 
-Extract 2–4 keywords from the Issue title and body, then search for open Issues using `gh issue list`:
+Issue のタイトル・本文からキーワードを 2〜4 個抽出し、`gh issue list` でオープン Issue を検索する:
 
 ```bash
-# Run for each keyword combination (2–3 searches total, skip closed issues)
-gh issue list --state open --search "{keyword1} {keyword2}" --json number,title,body --limit 20
+# キーワードの組み合わせで 2〜3 回検索（クローズ済みは除外）
+gh issue list --state open --search "{キーワード1} {キーワード2}" --json number,title,body --limit 20
 ```
 
-Exclude the Issue being reviewed from results.
-Collect up to 20 candidates total across all searches.
+レビュー対象の Issue 自身は結果から除外する。
+全検索で最大 20 件の候補を収集する。
 
-## Step 2.6: Similarity judgment and branching
+## ステップ 2.6: 類似度判定と処理分岐
 
-Using the candidate list from Step 2.5, use LLM to judge similarity for each candidate.
+ステップ 2.5 の候補リストに対し、LLM で各候補との類似度を判定する。
 
-Classify each pair as one of three categories:
+各ペアを以下の 3 分類に振り分ける:
 
-| Category | Definition | Action |
+| 分類 | 定義 | 処理 |
 |---|---|---|
-| `partial_overlap` | Current Issue contains information not in the existing Issue, but topics overlap | Transfer additional info to existing Issue as comment → close current Issue with reference link |
-| `full_duplicate` | Current Issue is completely covered by an existing Issue | Close current Issue with reference link (no comment transfer) |
-| `unrelated` | No meaningful overlap | Skip (proceed to Step 3) |
+| `partial_overlap` | 現 Issue に既存 Issue にない情報が含まれるが、テーマが重複 | 差分を既存 Issue にコメント転記 → 現 Issue を転記先リンク付きでクローズ |
+| `full_duplicate` | 現 Issue の内容が既存 Issue に完全に含まれる | 現 Issue を既存 Issue リンク付きでクローズ（転記なし） |
+| `unrelated` | 有意な重複なし | スキップ（ステップ 3 へ進む） |
 
-**partial_overlap processing:**
+**partial_overlap 時の処理:**
 
 ```bash
-# 1. Extract and summarize differential information (info in current Issue but not in existing Issue)
-# 2. Post the extracted content as a comment on the existing Issue
+# 1. 差分情報を抽出・要約（現 Issue にあって既存 Issue にない情報のみ）
+# 2. 抽出内容を既存 Issue にコメント投稿
 gh issue comment {EXISTING_N} --body-file <(cat <<'EOF'
 > 🤖 issue-reviewer による関連 Issue からの情報追記
 
@@ -79,7 +79,7 @@ gh issue comment {EXISTING_N} --body-file <(cat <<'EOF'
 EOF
 )
 
-# 3. Close the current Issue with a reference comment
+# 3. 現 Issue をクローズコメント付きでクローズ
 gh issue comment {N} --body-file <(cat <<'EOF'
 > 🤖 issue-reviewer による重複検出
 
@@ -92,10 +92,10 @@ EOF
 gh issue close {N}
 ```
 
-**full_duplicate processing:**
+**full_duplicate 時の処理:**
 
 ```bash
-# Close the current Issue with a reference comment
+# 現 Issue をクローズコメント付きでクローズ
 gh issue comment {N} --body-file <(cat <<'EOF'
 > 🤖 issue-reviewer による重複検出
 
@@ -107,20 +107,42 @@ EOF
 gh issue close {N}
 ```
 
-When a `partial_overlap` or `full_duplicate` is found, **skip Steps 3–6** and jump directly to Step 7 with `status: "duplicate_merged"` or `status: "duplicate_closed"`.
+`partial_overlap` または `full_duplicate` が検出された場合、**ステップ 3〜6 をスキップ**してステップ 7 に直接ジャンプし、`status: "duplicate_merged"` または `status: "duplicate_closed"` を返す。
 
-If multiple candidates are found, prioritize by: highest similarity → smallest Issue number (oldest).
+複数の候補がある場合は、類似度が高い順 → Issue 番号が小さい順（古い順）で優先する。
 
-## Step 3: Read codebase
+## ステップ 3: コードベースを読む
 
-Use the Read tool to check the areas and related files mentioned in the Issue.
-The PreToolUse hook auto-injects file-level rules on each Read call.
+Issue が言及する領域・関連ファイルを Read で確認。Read 時に PreToolUse フックがファイル系ルールを自動注入する。
 
-## Step 4: Post body-supplement comment (only when needed)
+### Step 3a: Fetch official documentation (only when external tool/library names are present)
 
-Only when the Issue was human-authored **and** sections are missing: post an **additive comment** filling in only the missing sections, following `イシュードキュメント.j2`.
-Do NOT restate sections already present.
-Skip this step entirely when the body is already complete (AI-authored or human-authored but complete).
+If the Issue title or body contains the name of an external tool, library, framework, or service:
+1. Use `WebFetch` to retrieve the official documentation page(s) most relevant to the Issue.
+2. If fetching fails, note "参照不可（理由）" and continue without blocking.
+3. Record each successfully retrieved URL in `{doc_urls}` for use in the review-result comment.
+
+Skip entirely when the Issue contains no external tool/library names.
+
+## Step 3.5: Behavior verification (optional — when feasible)
+
+Attempt to confirm whether the reported problem actually occurs in the current codebase.
+
+| Issue type | Verification method |
+|---|---|
+| Skill / Claude Code behavior | Launch a sub-agent and reproduce the scenario described in the Issue |
+| Code bug (test exists) | Run the relevant test suite and check for failures |
+| Code bug (no test) | Perform manual behavior confirmation |
+| Verification not feasible | Note "確認不可（理由）" and continue |
+
+Store the result in `{verification_result}` for inclusion in the review-result comment.
+This step is **optional** — if infrastructure or context makes it impossible, skip gracefully.
+
+## ステップ 4: 本文補完コメントを投稿（必要時のみ）
+
+人間起票で **本文に欠けているセクション** があるときに限り、`イシュードキュメント.j2` に沿って
+**不足セクションだけ補う追加コメント** を投稿する。既に書かれているセクションは再掲しない。
+本文が揃っている場合（AI 起票 or 人間起票でも完備）はこのステップをスキップ。
 
 ```bash
 gh issue comment {N} --body-file <(cat <<'EOF'
@@ -135,26 +157,26 @@ EOF
 )
 ```
 
-## Step 5: Post review-result comment
+## ステップ 5: レビュー結果コメントを投稿
 
-Using `レビュー結果コメント.j2` fetched in Step 1, write the implementation policy, questions, split proposals, and impact scope.
-Omit sections for questions and split proposals when there are none.
+ステップ 1 で取得した `レビュー結果コメント.j2` に沿って実装方針 / 質問 / 分割提案 / 影響範囲を書く。
+質問・分割提案がなければ該当セクションごと省略。
 
 **Omission rule for the "対応案" section**: If the Issue body (or the body-supplement comment posted in Step 4) already contains a "対応案" section, **omit the "対応案" section** from the review-result comment entirely. Do not duplicate it.
 
 ```bash
 gh issue comment {N} --body-file <(cat <<'EOF'
-{review result body}
+{レビュー結果本文}
 EOF
 )
 ```
 
-## Step 6: `needs-user-review` judgment
+## ステップ 6: `gh-kit:needs-user-review` 要否判定
 
-Evaluate against `ユーザーレビュー要否判定.md` fetched in Step 1.
-Unconditionally `true` when Step 5 includes questions or a split proposal.
+ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らして判定する。
+ステップ 5 で質問が含まれる場合・分割提案がある場合は無条件で true。
 
-## Step 7: Return value
+## ステップ 7: 戻り値
 
 ```json
 {
@@ -164,18 +186,18 @@ Unconditionally `true` when Step 5 includes questions or a split proposal.
 }
 ```
 
-`status` possible values:
+`status` 取りうる値:
 
-| Value | Meaning |
+| 値 | 意味 |
 |---|---|
-| `ok` | Normal review completed |
-| `duplicate_merged` | Partial overlap — differential info transferred to existing Issue, current Issue closed |
-| `duplicate_closed` | Full duplicate — current Issue closed with reference link |
+| `ok` | 通常レビュー完了 |
+| `duplicate_merged` | 部分重複 — 差分情報を既存 Issue に転記し、現 Issue をクローズ |
+| `duplicate_closed` | 完全重複 — 現 Issue をリンク付きでクローズ |
 
-Label updates are the caller's responsibility (`issue-review-auto`).
+ラベル付け替えは呼び出し側（`issue-review-auto`）の責務。
 
-## Constraints
+## 制約
 
-- Do NOT rewrite the main Issue body (do not call the GitHub Issue `update` API)
-- Skip Step 4 if all sections are already present
-- Always state a recommended approach explicitly (no "TBD" or "decide later")
+- メイン Issue 本文は書き換えない（GitHub Issue API の `update` を呼ばない）
+- 既存セクションが揃っているなら本文補完コメント（ステップ 4）はスキップ
+- 推奨案は必ず明示（「後で決める」「TBD」禁止）
