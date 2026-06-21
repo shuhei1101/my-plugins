@@ -19,8 +19,8 @@
     {
       "name": "gh-kit",
       "source": "./plugins/gh-kit",
-      "description": "GitHub Issues/PR/Wiki を真実のソースとした作業フローキット（gh CLI + ラベル/テンプレ一元管理 + チェーン自動化 + Wiki ページ作成）",
-      "version": "0.10"
+      "description": "GitHub Issues/PR/Wiki を真実のソースとした作業フローキット（gh CLI + Jinja2 テンプレ + template_get MCP + ラベル一元管理 + チェーン自動化 + Wiki ページ作成）",
+      "version": "0.12"
     }
   ]
 }

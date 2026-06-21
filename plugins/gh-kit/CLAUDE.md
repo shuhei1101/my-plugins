@@ -1,8 +1,8 @@
 # gh-kit プラグイン
 
 GitHub Issues / Pull Request を真実のソースとして作業フローを回すプラグイン。
-GitHub 操作はすべて `gh` CLI に統一（MCP は使わない）。
-ラベル名は `scripts/labels.sh` に一元化。
+GitHub 操作はすべて `gh` CLI に統一。
+テンプレ取得は `gh-kit-tools` MCP の `template_get` 経由（ラベル名は `scripts/labels.sh` に一元化）。
 
 ## ワークフロー
 
@@ -53,11 +53,20 @@ flowchart TD
 | `plugins/gh-kit/scripts/labels.sh` | ラベル名一元定義（SKILL/agent 先頭で `!`cat`` 展開） |
 | `plugins/gh-kit/templates/観点メニュー.md` | コード品質観点リスト（code-scan-auto / pr-reviewer が共通参照） |
 | `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール |
-| `plugins/gh-kit/templates/イシュー本文テンプレート.md` | code-scanner が起票する Issue 本文 |
+| `plugins/gh-kit/templates/イシュードキュメント.j2` | code-scanner が起票する Issue 本文（Jinja2） |
 | `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` 判定基準（ブラックリスト） |
-| `plugins/gh-kit/templates/レビュー結果コメント.md` | issue-reviewer が投稿するレビュー結果コメント本文 |
-| `plugins/gh-kit/templates/PR本文テンプレート.md` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文 |
+| `plugins/gh-kit/templates/レビュー結果コメント.j2` | issue-reviewer が投稿するレビュー結果コメント本文（Jinja2） |
+| `plugins/gh-kit/templates/PRドキュメント.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
+| `plugins/gh-kit/scripts/templates/template_get.py` | templates/ 配下の指定ファイルを stdout に出す CLI |
+| `plugins/gh-kit/mcp/server.py` | `gh-kit-tools` MCP サーバー（FastMCP）|
+| `plugins/gh-kit/.mcp.json` | MCP サーバー起動設定 |
+
+## MCP ツール
+
+| ツール | サーバー | 用途 |
+|---|---|---|
+| `template_get` | `gh-kit-tools` | テンプレート 6 種（`.j2` × 3 + `.md` × 3）の本文取得。`template_name` は Literal で制約 |
 
 ## 環境変数
 

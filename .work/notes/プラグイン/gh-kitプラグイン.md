@@ -54,11 +54,22 @@ flowchart TD
 |---|---|
 | `plugins/gh-kit/templates/観点メニュー.md` | コード品質観点リスト（code-scan-auto / pr-reviewer が共通参照） |
 | `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール |
-| `plugins/gh-kit/templates/イシュー本文テンプレート.md` | code-scanner が起票する Issue 本文 |
+| `plugins/gh-kit/templates/イシュードキュメント.j2` | code-scanner が起票する Issue 本文（Jinja2） |
 | `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` 判定基準（ブラックリスト） |
-| `plugins/gh-kit/templates/レビュー結果コメント.md` | issue-reviewer が投稿するレビュー結果コメント本文 |
-| `plugins/gh-kit/templates/PR本文テンプレート.md` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文 |
+| `plugins/gh-kit/templates/レビュー結果コメント.j2` | issue-reviewer が投稿するレビュー結果コメント本文（Jinja2） |
+| `plugins/gh-kit/templates/PRドキュメント.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/labels.sh` | ラベル名一元定義 |
+| `plugins/gh-kit/scripts/templates/template_get.py` | templates/ 配下の指定ファイルを stdout に出す CLI |
+| `plugins/gh-kit/mcp/server.py` | `gh-kit-tools` MCP サーバー本体（FastMCP）|
+| `plugins/gh-kit/.mcp.json` | MCP サーバー起動設定（uv run --with mcp） |
+
+## MCP ツール
+
+| ツール | サーバー | 用途 |
+|---|---|---|
+| `template_get` | `gh-kit-tools` | templates/ 配下の 6 ファイル（`.j2` × 3 + `.md` × 3）の本文取得。`template_name` は Literal で enum 制約 |
+
+エージェント側はテンプレ取得を `cat` ではなく `template_get` MCP ツール呼び出しに統一（パスの間違いを enum で防ぐ）。
 
 注入方法はスキルとエージェントで異なる:
 
@@ -204,6 +215,6 @@ flowchart LR
 - `plugins/gh-kit/CLAUDE.md`: 同梱ドキュメント
 - `plugins/gh-kit/skills/`: 5 スキルの SKILL.md
 - `plugins/gh-kit/agents/`: 5 サブエージェント定義
-- `plugins/gh-kit/templates/`: 観点メニュー / ファイル解決 / イシュー本文テンプレート / ユーザーレビュー要否判定 / レビュー結果コメント / PR本文テンプレート
+- `plugins/gh-kit/templates/`: 観点メニュー / ファイル解決 / イシュードキュメント.j2 / ユーザーレビュー要否判定 / レビュー結果コメント.j2 / PRドキュメント.j2
 - `.work/notes/プラグイン/gh-kitラベル設計.md`: ラベル一覧・状態遷移図
 - [gh CLI manual](https://cli.github.com/manual/)
