@@ -7,7 +7,7 @@ model: sonnet
 ## 役割
 
 `/gh-kit:pr-implement` スキルの薄ラッパー。
-受け取った引数をそのままスキルに渡し、スキルの戻り値 JSON をそのまま返す。
+受け取った引数をそのままスキルに渡し、実行完了後に下記戻り値 JSON を呼び出し元へ返す。
 
 ## 入力
 
@@ -27,7 +27,7 @@ model: sonnet
 
 ## 戻り値
 
-スキルの戻り値をそのまま返す:
+スキル実行完了後、以下の JSON を呼び出し元に返す:
 
 ```json
 {
@@ -39,3 +39,12 @@ model: sonnet
   "message": "詳細メッセージ"
 }
 ```
+
+| フィールド | 内容 |
+|---|---|
+| `branch` | 実装したブランチ名 |
+| `pr_number` | Ready 化した PR 番号 |
+| `status` | `ready` / `failed` |
+| `needs_user_review` | ユーザーレビュー要否（`pr-implement-auto` がラベル付与判断に使う） |
+| `commits_added` | 追加したコミット数 |
+| `message` | 変更サマリ・失敗理由など |
