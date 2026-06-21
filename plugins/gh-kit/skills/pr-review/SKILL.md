@@ -137,9 +137,10 @@ gh pr edit {PR_NUMBER} --add-assignee @me
 git -C {REPO_ROOT} merge --no-ff -m "{type}: {title}" {HEAD_BRANCH}
 ```
 
-`gh-kit-tools` MCP の `worktree_remove`（`branch={HEAD_BRANCH}`）を呼んでワークツリーとブランチを削除。最後に push。
+`gh-kit-tools` MCP の `worktree_remove`（`branch={HEAD_BRANCH}`）を呼んでワークツリーとブランチを削除。リモートブランチを削除してから base ブランチを push する。
 
 ```bash
+git push origin --delete {HEAD_BRANCH}
 git -C {REPO_ROOT} push origin {BASE_BRANCH}
 ```
 
