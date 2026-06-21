@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-implement
-description: "wip Draft PR を 1 件実装する: worktree 復帰 → fetch/reset → 実装 → コミット → push → gh pr ready。pr-implementer エージェントから呼ばれる。"
+description: "gh-kit:wip Draft PR を 1 件実装する: worktree 復帰 → fetch/reset → 実装 → コミット → push → gh pr ready。pr-implementer エージェントから呼ばれる。"
 ---
 
 # pr-implement
@@ -19,7 +19,7 @@ description: "wip Draft PR を 1 件実装する: worktree 復帰 → fetch/rese
 | 採用方針 | 必須 | Issue コメントの `issue-reviewer` 結果から抽出 |
 | 分割スコープ | 任意 | この PR で扱うスコープ（1 Issue 複数 PR 時） |
 
-## ステップ 1: needs-user-review 判定基準を読み込む
+## ステップ 1: gh-kit:needs-user-review 判定基準を読み込む
 
 ```bash
 cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"
@@ -55,7 +55,7 @@ git -C "$WT" reset --hard origin/{branch}
 git -C "$WT" push origin {branch}
 ```
 
-## ステップ 5: `needs-user-review` 要否を再判定
+## ステップ 5: `gh-kit:needs-user-review` 要否を再判定
 
 ステップ 1 で読み込んだ基準に照らし、実装結果（実コード変更内容）から
 `needs_user_review: true|false` を決める。
@@ -68,7 +68,7 @@ gh pr ready {PR_NUMBER}
 gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サマリ}"
 ```
 
-ラベル付与（`needs-ai-review` / `needs-user-review`）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
+ラベル付与（`gh-kit:needs-ai-review` / `gh-kit:needs-user-review`）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
 
 ## ステップ 7: 戻り値
 
