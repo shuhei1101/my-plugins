@@ -29,7 +29,8 @@ flowchart TD
 
 | No | スキル | 概要 |
 |---|---|---|
-| 1 | `/gh-kit:code-scan-auto` | コードベース観点別スキャン → `code-scanner` が `gh issue create` で直接起票 |
+| 1 | `/gh-kit:code-scan-auto` | コードベース観点別スキャン → `code-scanner` が `issue-create` スキル経由で起票 |
+| 1a | `/gh-kit:issue-create` | Issue を 1 件起票する（`needs-ai-review` 強制付与）。`code-scanner` や手動呼び出しの両方から使える |
 | 2 | `/gh-kit:issue-review` | 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを投稿 |
 | 3 | `/gh-kit:issue-review-auto` | `needs-ai-review` 付きの Issue を AI レビュー、コメント投稿 |
 | 4 | `/gh-kit:pr-draft-create-auto` | needs-* なしの Issue 全件 → Draft PR を作成 |
@@ -43,7 +44,8 @@ flowchart TD
 
 | No | エージェント | 呼び元 | 役割 |
 |---|---|---|---|
-| 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でスキャンし `gh issue create` で直接起票 |
+| 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でスキャンし `gh-kit:issue-create` スキル経由で起票 |
+| 1a | `issue-creator` | `/gh-kit:issue-create` | `issue-create` スキルの薄ラッパー（Agent ツール経由での起票に使用） |
 | 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | `gh-kit:issue-review` スキルの薄ラッパー。1 Issue をレビューし戻り値を返す |
 | 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `worktree_create` MCP + 雛形コミット + Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、`needs-user-review` 要否を返す |
