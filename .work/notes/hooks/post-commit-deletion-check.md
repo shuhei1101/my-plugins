@@ -17,4 +17,4 @@ block しない — 気付かせるだけ。マージ事故で大量ファイル
 
 ## 参考リンク
 
-- `plugins/work/hooks/post-commit-deletion-check.py`: フックスクリプト本体
+- `plugins/work/hooks/stop/post-commit-deletion-check.py`: フックスクリプト本体

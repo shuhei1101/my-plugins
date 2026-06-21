@@ -20,4 +20,4 @@ PreToolUse フックとして動作し、`Edit` / `Write` ツール呼び出し�
 
 ## 参考リンク
 
-- `plugins/work/hooks/protected-branch-guard.py`: フックスクリプト本体
+- `plugins/work/hooks/pre-tool-use/protected-branch-guard.py`: フックスクリプト本体

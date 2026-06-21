@@ -47,6 +47,6 @@
 
 ## 参考リンク
 
-- `plugins/work/hooks/inject_rules.py`: work プラグインのスクリプト
-- `plugins/dev-kit/hooks/inject_rules.py`: dev-kit プラグインのスクリプト
-- `plugins/work/hooks/inject_message.j2`: additionalContext のテンプレート（work・dev-kit 共通内容）
+- `plugins/work/hooks/pre-tool-use/inject_rules.py`: work プラグインのスクリプト
+- `plugins/dev-kit/hooks/pre-tool-use/inject_rules.py`: dev-kit プラグインのスクリプト
+- `plugins/work/hooks/pre-tool-use/inject_message.j2`: additionalContext のテンプレート（work・dev-kit 共通内容）

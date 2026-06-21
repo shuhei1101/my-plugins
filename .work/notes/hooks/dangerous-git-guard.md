@@ -24,5 +24,5 @@
 
 ## 参考リンク
 
-- `plugins/work/hooks/dangerous-git-guard.py`: フックスクリプト本体
-- `plugins/work/hooks/dangerous-git-guard.md`: ブロック時のユーザー向けメッセージ
+- `plugins/work/hooks/pre-tool-use/dangerous-git-guard.py`: フックスクリプト本体
+- `plugins/work/hooks/pre-tool-use/dangerous-git-guard.md`: ブロック時のユーザー向けメッセージ

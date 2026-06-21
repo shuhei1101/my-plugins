@@ -21,5 +21,5 @@ PreToolUse(Bash) フック。`master` / `main` / `develop` 上での `git add` /
 
 ## 参考リンク
 
-- `plugins/work/hooks/master-commit-guard.py`: フック本体
-- `plugins/work/hooks/master-commit-guard.md`: ブロック時メッセージ
+- `plugins/work/hooks/pre-tool-use/master-commit-guard.py`: フック本体
+- `plugins/work/hooks/pre-tool-use/master-commit-guard.md`: ブロック時メッセージ
