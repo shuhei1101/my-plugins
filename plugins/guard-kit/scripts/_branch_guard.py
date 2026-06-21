@@ -41,7 +41,7 @@ def assert_not_protected_branch(script_label: str | None = None) -> None:
     label = f"`{script_label}` " if script_label else ""
     print(
         f"ERROR: 保護ブランチ '{branch}' 上では {label}を実行できません。\n"
-        "/work:start でブランチとワークツリーを作成し、そこから実行してください。",
+        "`worktree_create` MCP（gh-kit-tools）でブランチとワークツリーを作成し、そこから実行してください。",
         file=sys.stderr,
     )
     sys.exit(1)

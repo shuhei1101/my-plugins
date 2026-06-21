@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "_description": "マージ前に master 取り込み確認＋dry-run コンフリクトチェック（AI 自動マージの安全網）",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use/pre-merge-check.py"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

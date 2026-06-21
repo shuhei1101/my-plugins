@@ -68,6 +68,8 @@ flowchart TD
 | ツール | サーバー | 用途 |
 |---|---|---|
 | `template_get` | `gh-kit-tools` | templates/ 配下の 6 ファイル（`.j2` × 3 + `.md` × 3）の本文取得。`template_name` は Literal で enum 制約 |
+| `worktree_create` | `gh-kit-tools` | ブランチ `{type}/{title}` + `.claude/worktrees/{type}-{title}` 作成。pr-draft-creator / pr-implementer が呼ぶ |
+| `worktree_remove` | `gh-kit-tools` | マージ済みワークツリー + ブランチ削除。pr-reviewer が呼ぶ |
 
 エージェント側はテンプレ取得を `cat` ではなく `template_get` MCP ツール呼び出しに統一（パスの間違いを enum で防ぐ）。
 
@@ -108,8 +110,10 @@ flowchart TD
 
 | 機能 | 依存先 |
 |---|---|
-| ブランチ + worktree 作成 | `/work:start`（内蔵） |
-| 親取り込み + コンフリクト処理 + マージ + worktree 削除 | `/work:merge`（内蔵） |
+| ブランチ + worktree 作成 | `worktree_create` MCP（gh-kit-tools、内蔵） |
+| 親取り込み + コンフリクト処理 + マージ | pr-reviewer エージェントが直接 git で実行 |
+| worktree 削除 | `worktree_remove` MCP（gh-kit-tools、内蔵）|
+| マージ前安全網 | `pre-merge-check` hook（内蔵） |
 | 危険操作ガード | guard-kit プラグインの hooks |
 
 ## 全体シーケンス（スキャン → マージ → push まで）

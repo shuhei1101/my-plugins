@@ -24,7 +24,7 @@ def _is_true(value: str | None, default: bool) -> bool:
 def _build_context() -> dict:
     """テンプレートに渡す変数と、デフォルトから外れている env 値の一覧を構築する。"""
     # 各フックが参照する env 名と既定値
-    raw_protected = os.environ.get("WORK_PROTECTED_BRANCHES")
+    raw_protected = os.environ.get("GUARD_KIT_PROTECTED_BRANCHES")
     protected_branches = (raw_protected or "master,main,develop").split(",")
     protected_branches_display = " / ".join(f"`{b.strip()}`" for b in protected_branches if b.strip())
 
@@ -34,16 +34,16 @@ def _build_context() -> dict:
     raw_guard = os.environ.get("GUARD_KIT_GUARD")
     guard_enabled = _is_true(raw_guard, default=True)
 
-    raw_enforcement = os.environ.get("WORK_BRANCH_ENFORCEMENT")
+    raw_enforcement = os.environ.get("GUARD_KIT_BRANCH_ENFORCEMENT")
     branch_enforcement = _is_true(raw_enforcement, default=True)
 
     # ユーザーが明示的に上書きしている env だけを表示する（情報過多を防ぐ）
     overrides: list[tuple[str, str]] = []
     for name, raw in (
-        ("WORK_PROTECTED_BRANCHES", raw_protected),
+        ("GUARD_KIT_PROTECTED_BRANCHES", raw_protected),
         ("GUARD_KIT_ALLOW_MASTER_COMMIT", raw_allow_master),
         ("GUARD_KIT_GUARD", raw_guard),
-        ("WORK_BRANCH_ENFORCEMENT", raw_enforcement),
+        ("GUARD_KIT_BRANCH_ENFORCEMENT", raw_enforcement),
     ):
         if raw is not None:
             overrides.append((name, raw))

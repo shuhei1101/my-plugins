@@ -1,15 +1,13 @@
 [guard-kit] 現在のプロジェクトでは guard-kit プラグインが有効になっています。以下の規約に従ってください。
 
-## 作業フロー
+## 作業フロー（リモート PR 駆動）
 
-{% if branch_enforcement %}
-1. 実装・修正の依頼を受けたら `/work:start` を実行する（質問・調査のみなら不要）
-2. ワークツリー内で実装する
-3. 完了したら `/work:merge` を提案し、ユーザー承認後にマージする
-{% else %}
-1. ワークツリー内で実装する（`WORK_BRANCH_ENFORCEMENT=false` のためブランチ強制はオフ）
-2. 完了したら `/work:merge` を提案し、ユーザー承認後にマージする
-{% endif %}
+実装はすべて GitHub Issue → PR → AI 自動実装の流れで進める。ローカルでの手動ブランチ作業は基本的に発生しない。
+
+- ユーザーは課題を `gh issue create` で起票する（gh-kit プラグインの `/gh-kit:code-scan-auto` を含む）
+- AI は `/gh-kit:pr-draft-create-auto` → `/gh-kit:pr-implement-auto` → `/gh-kit:pr-review-auto` の連鎖で Draft PR 作成 → 実装 → レビュー → マージ → push まで自走する
+- ワークツリーの作成・削除は `gh-kit-tools` MCP の `worktree_create` / `worktree_remove` を pr-* エージェントが呼ぶ
+- 手動でブランチ作業が必要な例外時のみ、`worktree_create` MCP を直接呼んでワークツリーを作る
 
 ## やってはいけないこと
 
@@ -17,7 +15,7 @@
 
 {% if not allow_master_commit %}
 - {{ protected_branches_display }} ブランチに直接コミットしないこと（マージコミットのみ可）
-- {{ protected_branches_display }} ブランチ上で直接ファイルを Edit / Write しないこと（`/work:start` でワークツリーを作る）
+- {{ protected_branches_display }} ブランチ上で直接ファイルを Edit / Write しないこと（`worktree_create` MCP でワークツリーを作る）
 - {{ protected_branches_display }} ブランチ上で guard-kit プラグインのスクリプトを実行しないこと（worktree から呼ぶ）
 {% endif %}
 - `.git/` 配下のファイルを Edit / Write / `rm` / `rmdir` しないこと（Git CLI 経由でのみ操作）

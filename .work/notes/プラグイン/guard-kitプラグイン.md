@@ -2,7 +2,7 @@
 
 ## 概要
 
-ローカル Git 操作に対するガード群を提供する最小プラグイン。master 直接コミット阻止、危険 git コマンド阻止、`.git/` と lock ファイルの保護、削除検知、セッション開始時の規約注入。`/work:start` `/work:merge` などのスキルと worktree MCP は work プラグインに分離された。
+ローカル Git 操作に対するガード群を提供する最小プラグイン。master 直接コミット阻止、危険 git コマンド阻止、`.git/` と lock ファイルの保護、削除検知、セッション開始時の規約注入。ワークツリー操作（`worktree_create` / `worktree_remove` MCP、pre-merge-check hook）は gh-kit プラグインに統合されている。
 
 ## バージョン
 
@@ -15,7 +15,7 @@
 | No | フック | イベント | 役割 |
 |---|---|---|---|
 | 1 | `inject_rules` | PreToolUse(Edit/Write/Read) | rules/ 配下の .md ルールを自動注入 |
-| 2 | `protected-branch-guard` | PreToolUse(Edit/Write) | 保護ブランチでの Edit/Write を阻止し `/work:start` を促す |
+| 2 | `protected-branch-guard` | PreToolUse(Edit/Write) | 保護ブランチでの Edit/Write を阻止し `worktree_create` MCP の利用を促す |
 | 3 | `dotgit-lockfile-guard` | PreToolUse(Edit/Write) | `.git/**` と各種 lock ファイルの編集を永久ブロック |
 | 4 | `delete-guard` | PreToolUse(Bash) | `.git` / `.claude` / `.gitignore` 等の削除操作をブロック |
 | 5 | `dangerous-git-guard` | PreToolUse(Bash) | `-X ours/theirs` / `git rm` 重要ファイル等の危険操作を永久ブロック |
@@ -32,7 +32,8 @@
 |---|---|
 | `GUARD_KIT_GUARD` | `false` で `git-guard` を無効化 |
 | `GUARD_KIT_ALLOW_MASTER_COMMIT` | `true` で `master-commit-guard` を通過させる（例外作業用） |
-| `WORK_BRANCH_ENFORCEMENT` | `false` で session_start の作業フロー注入を簡略化（work 側の start リマインダーも無効化される） |
+| `GUARD_KIT_BRANCH_ENFORCEMENT` | `false` で session_start の作業フロー注入を簡略化 |
+| `GUARD_KIT_PROTECTED_BRANCHES` | カンマ区切りで保護対象ブランチを上書き（既定: `master,main,develop`） |
 
 ## トークンパス
 
