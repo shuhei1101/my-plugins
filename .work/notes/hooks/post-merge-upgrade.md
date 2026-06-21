@@ -53,4 +53,4 @@ stdin あり（フック起動）の場合のみ以下を確認してスキッ�
 - `.claude/hooks/post-merge-upgrade.py`: フック（シン・ラッパー）
 - `tools/post_merge_upgrade.py`: コア処理（pushスキル廃止、MCPツールおよびフックが直接呼び出す）
 - `tools/reload_plugins.py`: reload 送信（自セッションは保留トークン化）
-- `plugins/work/hooks/reload_deferred.py`: Stop フック（保留分の遅延送信）
+- `plugins/work/hooks/stop/reload_deferred.py`: Stop フック（保留分の遅延送信）

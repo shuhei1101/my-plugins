@@ -38,6 +38,6 @@ Bash 経由の削除は `delete-guard` がカバー（lock ファイル名・`.g
 
 ## 参考リンク
 
-- `plugins/work/hooks/dotgit-lockfile-guard.py`: フックスクリプト本体
-- `plugins/work/hooks/dotgit-lockfile-guard.md`: ブロック時のユーザー向けメッセージ
+- `plugins/work/hooks/pre-tool-use/dotgit-lockfile-guard.py`: フックスクリプト本体
+- `plugins/work/hooks/pre-tool-use/dotgit-lockfile-guard.md`: ブロック時のユーザー向けメッセージ
 - `.work/notes/hooks/delete-guard.md`: Bash 経路の対となる削除ガード

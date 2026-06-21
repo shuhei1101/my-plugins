@@ -30,7 +30,7 @@ work プラグインのスキルが使うコマンド群を MCP ツールとし�
 
 ## SessionStart での概要注入
 
-- `plugins/work/hooks/session_start.py` がセッション開始時に `session_start.md`（作業フロー・MCP ツール一覧・ガード・cwd 注意）を additionalContext として注入する
+- `plugins/work/hooks/session-start/session_start.py` がセッション開始時に `session_start.md`（作業フロー・MCP ツール一覧・ガード・cwd 注意）を additionalContext として注入する
 - 新しいセッションが work プラグインの使い方を最初から把握できる
 
 ## VS Code ワークスペース連携
@@ -65,5 +65,5 @@ work プラグインのスキルが使うコマンド群を MCP ツールとし�
 - `plugins/work/.mcp.json`: MCP サーバー登録設定
 - `plugins/work/mcp/server.py`: FastMCP サーバー本体
 - `plugins/work/scripts/worktree-tool.py`: ワークツリー + トークン管理 CLI
-- `plugins/work/hooks/work_complete_check.py`: トークンゲート付き Stop フック
+- `plugins/work/hooks/stop/work_complete_check.py`: トークンゲート付き Stop フック
 - `plugins/dev-kit/hooks/rules/claude/mcp.md`: MCP サーバー作成ルール（MCP 関連ファイル編集時に自動注入）

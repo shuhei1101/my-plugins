@@ -36,6 +36,6 @@ env の値解釈は `_is_true()` ヘルパで統一: `false` / `0` / `no` / `off
 
 ## 参考リンク
 
-- `plugins/work/hooks/session_start.py`: render エントリ
-- `plugins/work/hooks/session_start.j2`: Jinja2 テンプレ本体
-- `plugins/work/hooks/inject_rules.py`: 同じ Jinja2 セットアップを参照 (`inject_message.j2` のレンダリングと共通)
+- `plugins/work/hooks/session-start/session_start.py`: render エントリ
+- `plugins/work/hooks/session-start/session_start.j2`: Jinja2 テンプレ本体
+- `plugins/work/hooks/pre-tool-use/inject_rules.py`: 同じ Jinja2 セットアップを参照 (`inject_message.j2` のレンダリングと共通)

@@ -20,6 +20,6 @@
 
 ## 参考リンク
 
-- `plugins/work/hooks/pre-merge-check.py`: フックスクリプト
-- `plugins/work/hooks/pre-merge-check.md`: プロンプトMD
+- `plugins/work/hooks/pre-tool-use/pre-merge-check.py`: フックスクリプト
+- `plugins/work/hooks/pre-tool-use/pre-merge-check.md`: プロンプトMD
 - `plugins/work/hooks/hooks.json`: フック登録

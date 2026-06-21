@@ -36,5 +36,5 @@
 
 ## 参考リンク
 
-- `plugins/work/hooks/delete-guard.py`: フックスクリプト本体
-- `plugins/work/hooks/delete-guard.md`: ブロック時のユーザー向けメッセージ
+- `plugins/work/hooks/pre-tool-use/delete-guard.py`: フックスクリプト本体
+- `plugins/work/hooks/pre-tool-use/delete-guard.md`: ブロック時のユーザー向けメッセージ
