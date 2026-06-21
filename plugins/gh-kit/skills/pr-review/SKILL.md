@@ -164,18 +164,6 @@ if [ -n "$ISSUE_N" ]; then
 fi
 ```
 
-## ステップ 8: 戻り値
-
-```json
-{
-  "verdict": "approved-merged" | "approved-user-review-pending" | "changes-requested" | "conflict" | "failed",
-  "pr_number": 42,
-  "branch": "feat/foo-bar",
-  "message": "詳細メッセージ",
-  "findings_count": {"blocker": 0, "critical": 0, "major": 1, "minor": 2, "nit": 3}
-}
-```
-
 ## 制約
 
 | No | 禁止 |

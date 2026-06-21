@@ -100,20 +100,11 @@ fi
 
 ### ステップ 4: 後処理
 
-```bash
-# 成功
-gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"
-if [ "{needs_user_review}" = "true" ]; then
-  GH_LOGIN="$(gh api user --jq '.login')"
-  gh pr edit {N} --add-assignee "$GH_LOGIN"
-fi
-# Issue の processing:pr-implement を除去
-ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
-if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
-fi
+ラベル付与（`needs-ai-review` / `needs-user-review` / `processing` 除去）は `pr-implement` スキル側で完結している。
+ここでは失敗時のリカバリのみ行う。
 
-# 失敗
+```bash
+# 失敗時のみ
 gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX"
 gh pr comment {N} --body "{失敗理由}"
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
