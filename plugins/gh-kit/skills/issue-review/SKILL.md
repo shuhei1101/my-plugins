@@ -183,10 +183,13 @@ EOF
 CURRENT_LABELS=$(gh issue view {N} --json labels --jq '.labels | map(.name) | .[]')
 
 # 優先度ラベルが未付与かつ AIコードスキャン 起票でない場合のみ付与
-if ! echo "$CURRENT_LABELS" | grep -q "AIコードスキャン"; then
-  if ! echo "$CURRENT_LABELS" | grep -qE "優先度:急ぎ|優先度:いつでも"; then
-    # LLM で重大度を判定して付与
-    gh issue edit {N} --add-label "{判定した優先度ラベル}"
+if ! echo "$CURRENT_LABELS" | grep -q "$GH_KIT_LABEL_AI_CODE_SCAN"; then
+  if ! echo "$CURRENT_LABELS" | grep -qE "$GH_KIT_LABEL_PRIORITY_URGENT|$GH_KIT_LABEL_PRIORITY_LOW"; then
+    # LLM で重大度を判定し、急ぎなら URGENT、それ以外は LOW を使う
+    # 急ぎの場合:
+    gh issue edit {N} --add-label "$GH_KIT_LABEL_PRIORITY_URGENT"
+    # いつでもの場合:
+    # gh issue edit {N} --add-label "$GH_KIT_LABEL_PRIORITY_LOW"
   fi
 fi
 ```

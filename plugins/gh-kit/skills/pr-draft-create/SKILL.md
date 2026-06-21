@@ -75,10 +75,10 @@ Issue に `優先度:急ぎ` または `優先度:いつでも` ラベルが付�
 ISSUE_LABELS=$(gh issue view {Issue 番号} --json labels --jq '.labels | map(.name) | .[]')
 
 # 優先度ラベルを PR に継承
-if echo "$ISSUE_LABELS" | grep -q "優先度:急ぎ"; then
-  gh pr edit {pr_number} --add-label "優先度:急ぎ"
-elif echo "$ISSUE_LABELS" | grep -q "優先度:いつでも"; then
-  gh pr edit {pr_number} --add-label "優先度:いつでも"
+if echo "$ISSUE_LABELS" | grep -q "$GH_KIT_LABEL_PRIORITY_URGENT"; then
+  gh pr edit {pr_number} --add-label "$GH_KIT_LABEL_PRIORITY_URGENT"
+elif echo "$ISSUE_LABELS" | grep -q "$GH_KIT_LABEL_PRIORITY_LOW"; then
+  gh pr edit {pr_number} --add-label "$GH_KIT_LABEL_PRIORITY_LOW"
 fi
 ```
 

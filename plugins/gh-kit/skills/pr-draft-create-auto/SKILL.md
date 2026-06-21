@@ -76,10 +76,10 @@ gh issue list --state open --json number,title,body,labels,assignees,comments --
 フィルタ後、`優先度:急ぎ` ラベルが付いている Issue を先頭に並べ、次に `優先度:いつでも` 付き、それ以外は番号昇順で処理する:
 
 ```bash
-# jq でラベル名に「優先度:急ぎ」を含むものを先頭に、次に「優先度:いつでも」、残りは番号昇順
-jq 'sort_by(
-  if (.labels | map(.name) | index("優先度:急ぎ")) then 0
-  elif (.labels | map(.name) | index("優先度:いつでも")) then 1
+# jq でラベル名に優先度:急ぎ を含むものを先頭に、次に優先度:いつでも、残りは番号昇順
+jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORITY_LOW" 'sort_by(
+  if (.labels | map(.name) | index($urgent)) then 0
+  elif (.labels | map(.name) | index($low)) then 1
   else 2
   end, .number
 )'

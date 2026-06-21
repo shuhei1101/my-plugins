@@ -52,10 +52,10 @@ gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
 `処理中` 付きは除外。`優先度:急ぎ` 付き PR を先頭に、次に `優先度:いつでも` 付き、それ以外は番号昇順でキューを形成する:
 
 ```bash
-# jq でラベル名に「優先度:急ぎ」を含むものを先頭に、次に「優先度:いつでも」、残りは番号昇順
-jq 'sort_by(
-  if (.labels | map(.name) | index("優先度:急ぎ")) then 0
-  elif (.labels | map(.name) | index("優先度:いつでも")) then 1
+# jq でラベル名に優先度:急ぎ を含むものを先頭に、次に優先度:いつでも、残りは番号昇順
+jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORITY_LOW" 'sort_by(
+  if (.labels | map(.name) | index($urgent)) then 0
+  elif (.labels | map(.name) | index($low)) then 1
   else 2
   end, .number
 )'
