@@ -6,9 +6,6 @@ import sys
 import json
 import re
 import subprocess
-import pathlib
-
-REPO_ROOT = pathlib.Path(__file__).parent.parent.parent
 
 raw = "" if sys.stdin.isatty() else sys.stdin.read()
 d = json.loads(raw) if raw.strip() else {}
@@ -25,6 +22,15 @@ if not re.search(r"\bgit\s+merge\b", cmd):
 if re.search(r"\bgit\s+merge\s+(origin/)?(master|main)\b", cmd):
     sys.exit(0)
 
+# REPO_ROOT を git rev-parse で動的解決（worktree 対応）
+repo_root_result = subprocess.run(
+    ["git", "rev-parse", "--show-toplevel"],
+    capture_output=True, text=True,
+)
+if repo_root_result.returncode != 0:
+    sys.exit(0)
+REPO_ROOT = repo_root_result.stdout.strip()
+
 # master ブランチ上でなければスキップ
 branch = subprocess.run(
     ["git", "branch", "--show-current"],
@@ -39,7 +45,7 @@ if not m:
 
 # ビジネスロジックを tools/pre_merge_check.py に委譲
 result = subprocess.run(
-    [sys.executable, str(REPO_ROOT / "tools" / "pre_merge_check.py"), m.group(1)],
+    [sys.executable, f"{REPO_ROOT}/tools/pre_merge_check.py", m.group(1)],
     capture_output=True, text=True, cwd=REPO_ROOT,
 )
 

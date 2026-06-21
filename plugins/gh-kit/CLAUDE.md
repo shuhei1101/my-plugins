@@ -101,7 +101,18 @@ flowchart TD
 | ラベル | 意味 |
 |---|---|
 | `ai-code-scan` | claude code がスキャンして起票（出自タグ） |
-| `type:*` / `priority:*` | 種別・優先度 |
+| `type:*` | 種別タグ（例: `type:bug`, `type:refactor`） |
+
+### 優先度（Issue 専用）
+
+`code-scanner` が起票時に自動付与。人間起票 Issue は `issue-reviewer` が付与する。
+マッピング基準は重大度ベース（セキュリティ/クラッシュ → high、機能不全 → medium、コード品質 → low）。
+
+| ラベル | 色 | 意味 |
+|---|---|---|
+| `priority:high` | 赤 (`B60205`) | セキュリティ脆弱性・クラッシュバグ・データ損失リスク |
+| `priority:medium` | 黄 (`E4E669`) | 機能不全・パフォーマンス劣化・重大なロジックエラー |
+| `priority:low` | 青 (`0075CA`) | コード品質（可読性・命名・重複）・ドキュメント不足 |
 
 ### PR 専用
 
