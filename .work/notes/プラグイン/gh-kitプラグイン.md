@@ -91,11 +91,109 @@ SKILL/agent からは `!`cat "${ENV:-${CLAUDE_PLUGIN_ROOT}/templates/...}"`` で
 | 親取り込み + コンフリクト処理 + マージ + worktree 削除 | `/work:merge` |
 | 危険操作ガード | work プラグインの hooks |
 
+## 全体シーケンス（スキャン → マージ → push まで）
+
+登場人物:
+
+| 登場人物 | 役割 |
+|---|---|
+| **User** | 人間。Issue にコメント / ラベル付け外しで AI と会話 |
+| **AI (Claude Code)** | スキル / サブエージェントを実行する主体 |
+| **LocalRepo** | メインリポジトリ + `.claude/worktrees/{type}-{title}` 配下のワークツリー |
+| **GitHub** | リモートリポジトリ + Issues + PR + ラベル（真実のソース） |
+
+**push のタイミングは 2 つだけ**:
+
+| No | 誰 | いつ | 何を |
+|---|---|---|---|
+| 1 | `pr-wip-creator` | Draft PR 作成直前 | 作業ブランチを `git push -u origin {branch}`（雛形コミット含む） |
+| 2 | `pr-implementer` | 実装コミット後・PR Ready 化直前 | 作業ブランチを `git push origin {branch}` |
+| 3 | `pr-reviewer` | `/work:merge` 完了直後 | base ブランチ（通常 master）を `git push origin {base}`（マージコミット含む） |
+
+つまり「作業ブランチは Draft PR 作成時 + 実装後 の 2 回」「master は最終マージ後 1 回」が push 発生点。`code-scanner` `issue-reviewer` `pr-wip-create`（メイン側）`pr-implement-auto`（メイン側）`pr-review-auto`（メイン側）は push しない。
+
+### シーケンス図
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor User
+  participant AI as AI (Claude Code)
+  participant Local as LocalRepo
+  participant GH as GitHub
+
+  Note over AI,GH: ① コードスキャン → Issue 起票
+  User->>AI: /gh-kit:code-scan-auto
+  AI->>GH: gh issue list --label code-scan (重複回避)
+  AI->>Local: Read コードベース（観点別に並列）
+  AI->>GH: gh issue create<br/>+ labels: ai-code-scan, needs-ai-review, [needs-user-review]
+  Note over GH: Issue が open + needs-ai-review
+
+  Note over AI,GH: ② Issue AI レビュー
+  User->>AI: /gh-kit:issue-review
+  AI->>GH: gh issue list --label needs-ai-review
+  AI->>GH: gh issue edit --add-label processing
+  AI->>Local: Read 関連コード
+  AI->>GH: gh issue comment（実装方針 + QA todo）
+  AI->>GH: gh issue edit --remove-label processing,needs-ai-review<br/>--add-label [needs-user-review]
+
+  Note over User,GH: ③ ユーザーレビュー（質問回答）
+  User->>GH: コメントの todo にチェック<br/>必要に応じて needs-user-review を外す
+
+  Note over AI,GH: ④ Draft PR 作成（needs-* なし + todo 全埋め）
+  User->>AI: /gh-kit:pr-wip-create
+  AI->>GH: gh issue list --state open<br/>(needs-* なしを抽出 + todo 全埋め確認)
+  AI->>GH: gh issue edit --add-label processing
+  AI->>Local: /work:start でブランチ + worktree 作成
+  AI->>Local: 雛形 PR.md コミット
+  AI->>GH: git push -u origin {branch}  ★push 1
+  AI->>GH: gh pr create --draft --label wip
+  AI->>GH: gh issue edit --remove-label processing
+
+  Note over AI,GH: ⑤ Draft PR 実装
+  User->>AI: /gh-kit:pr-implement-auto
+  AI->>GH: gh pr list --label wip --draft
+  AI->>GH: gh pr edit --add-label processing --remove-label wip
+  AI->>Local: fetch + reset --hard origin/{branch}<br/>実装 + テスト
+  AI->>GH: git push origin {branch}  ★push 2
+  AI->>GH: gh pr ready (draft 解除)
+  AI->>GH: gh pr edit --remove-label processing<br/>--add-label needs-ai-review, [needs-user-review]
+
+  Note over AI,GH: ⑥ PR AI レビュー
+  User->>AI: /gh-kit:pr-review-auto
+  AI->>GH: gh pr list --label needs-ai-review (直列で 1 件)
+  AI->>GH: gh pr edit --add-label processing
+  AI->>Local: Read 変更ファイル（ルール注入）
+  AI->>GH: gh pr review --approve / --request-changes
+
+  alt approve かつ needs-user-review なし
+    AI->>Local: /work:merge（親取り込み + マージ + worktree 削除）
+    AI->>GH: git push origin master  ★push 3
+    Note over GH: PR が自動 close + Issue も Refs から close
+    AI->>GH: gh pr edit --remove-label processing,needs-ai-review
+  else needs-user-review あり
+    AI->>GH: gh pr edit --remove-label processing,needs-ai-review<br/>(needs-user-review は残す)
+    User->>GH: 確認後 needs-user-review を外す<br/>→ 再度 /gh-kit:pr-review-auto 等で再エントリー
+  else changes-requested
+    AI->>GH: gh pr edit --remove-label processing --add-label needs-fix
+    User->>AI: 修正指示 → 再 pr-implement-auto
+  end
+```
+
+### 凡例: push 発生点
+
+```mermaid
+flowchart LR
+  W[作業ブランチ ローカル] -->|★push 1<br/>pr-wip-creator| WR[作業ブランチ remote]
+  W2[実装コミット ローカル] -->|★push 2<br/>pr-implementer| WR
+  M[マージ後 master ローカル] -->|★push 3<br/>pr-reviewer| MR[master remote]
+```
+
 ## 参考リンク
 
 - `plugins/gh-kit/CLAUDE.md`: 同梱ドキュメント
 - `plugins/gh-kit/skills/`: 5 スキルの SKILL.md
 - `plugins/gh-kit/agents/`: 5 サブエージェント定義
-- `plugins/gh-kit/templates/`: スキャン観点 / ファイル解決 / イシュー本文テンプレート
+- `plugins/gh-kit/templates/`: スキャン観点 / ファイル解決 / イシュー本文テンプレート / ユーザーレビュー要否判定
 - `.work/notes/プラグイン/gh-kitラベル設計.md`: ラベル一覧・状態遷移図
 - [gh CLI manual](https://cli.github.com/manual/)
