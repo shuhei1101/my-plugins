@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-review
-description: 1 件の PR をレビューし、承認かつ gh-kit:needs-user-review がなければ base 取り込み→コンフリクト解消→--no-ff マージ→worktree 削除→push まで自走する
+description: 1 件の PR をレビューし、承認かつ needs-user-review がなければ base 取り込み→コンフリクト解消→--no-ff マージ→worktree 削除→push まで自走する
 ---
 
 # pr-review
@@ -15,7 +15,7 @@ PR を 1 件レビューし、合格時はそのまま base ブランチへマ�
 | ベースブランチ | 例: `master` |
 | ヘッドブランチ | 例: `feat/foo-bar` |
 | リポジトリ root | メインリポジトリの絶対パス |
-| 現在ラベル一覧 | `gh-kit:needs-user-review` の有無を判定するのに使う |
+| 現在ラベル一覧 | `needs-user-review` の有無を判定するのに使う |
 
 ## ステップ 1: 観点メニューを取得
 
@@ -70,10 +70,10 @@ event 判定:
 | 条件 | event | 次の動作 |
 |---|---|---|
 | blocker / critical / major を含む | `--request-changes` | ステップ 7-A（マージしない） |
-| minor / nit のみ + `gh-kit:needs-user-review` なし | `--approve` | ステップ 6（マージへ） |
-| minor / nit のみ + `gh-kit:needs-user-review` あり | `--approve` | ステップ 7-B（マージしない） |
+| minor / nit のみ + `needs-user-review` なし | `--approve` | ステップ 6（マージへ） |
+| minor / nit のみ + `needs-user-review` あり | `--approve` | ステップ 7-B（マージしない） |
 
-## ステップ 6: マージ実行（approve + gh-kit:needs-user-review なしのみ）
+## ステップ 6: マージ実行（approve + needs-user-review なしのみ）
 
 ワークツリーを最新化したうえで親ブランチを取り込み、コンフリクトがあれば AI が解消し、`--no-ff` で base にマージ、worktree を削除して push する。
 
@@ -158,5 +158,5 @@ fi
 |---|---|
 | 1 | 自身の中でサブエージェントを起動しない |
 | 2 | `git push --force` を使わない |
-| 3 | `gh-kit:needs-user-review` 付き PR を AI 単独でマージしない |
+| 3 | `needs-user-review` 付き PR を AI 単独でマージしない |
 | 4 | 変更行から離れた箇所に inline コメントを付けない |

@@ -1,6 +1,6 @@
 ---
 name: gh-kit:issue-create
-description: GitHub Issue を 1 件起票する。gh-kit:needs-ai-review ラベルを強制付与し、AI レビューフローに確実に乗せる。code-scanner や手動呼び出しの両方から使える。
+description: GitHub Issue を 1 件起票する。needs-ai-review ラベルを強制付与し、AI レビューフローに確実に乗せる。code-scanner や手動呼び出しの両方から使える。
 ---
 
 # issue-create
@@ -18,7 +18,7 @@ Issue 起票後に AI レビューフロー（`/gh-kit:issue-review-auto`）が�
 | `body` | 必須 | Issue 本文（`イシュードキュメント.j2` テンプレを呼び出し側が展開済み） |
 | `type` | 必須 | Issue タイプラベル（例: `bug`, `enhancement`, `refactor`） |
 | `priority` | 必須 | 優先度ラベル（例: `priority-high`, `priority-medium`, `priority-low`） |
-| `needs_user_review` | 任意 | `true` の場合 `gh-kit:needs-user-review` ラベルを追加（既定: `false`） |
+| `needs_user_review` | 任意 | `true` の場合 `needs-user-review` ラベルを追加（既定: `false`） |
 | `extra_labels` | 任意 | 追加ラベルのカンマ区切り文字列（既定: なし） |
 
 ## 動作フロー
@@ -51,7 +51,7 @@ gh label list | grep -q "^${LABEL_NEEDS_USER_REVIEW}" || \
 ```bash
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 
-# gh-kit:needs-ai-review は呼び出し側が指定しなくても必ず付与する（構造的保証）
+# needs-ai-review は呼び出し側が指定しなくても必ず付与する（構造的保証）
 LABELS="${LABEL_AI_CODE_SCAN},${LABEL_NEEDS_AI_REVIEW},{type},{priority}"
 
 if [ "{needs_user_review}" = "true" ]; then

@@ -8,14 +8,14 @@ GitHub 操作はすべて `gh` CLI に統一。
 
 ```mermaid
 flowchart TD
-  U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + gh-kit:needs-ai-review| Issue[(GitHub Issue)]
-  Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント<br>gh-kit:needs-ai-review 除去]
+  U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + needs-ai-review| Issue[(GitHub Issue)]
+  Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント<br>needs-ai-review 除去]
   Review -->|re_review_needed: false<br>needs-* なし + todo 全埋め| Ready[(Issue Ready)]
   Review -->|re_review_needed: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
-  UserReply -->|ユーザーが手動で gh-kit:needs-ai-review 再付与| Issue
-  Ready -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + gh-kit:wip)]
-  WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 gh-kit:processing]
-  Implementing -->|完了| NAR[(Ready PR + gh-kit:needs-ai-review)]
+  UserReply -->|ユーザーが手動で needs-ai-review 再付与| Issue
+  Ready -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
+  WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 processing]
+  Implementing -->|完了| NAR[(Ready PR + needs-ai-review)]
   NAR -->|/gh-kit:pr-review-auto| Merged[master]
 ```
 
@@ -52,7 +52,7 @@ flowchart TD
 | 1a | `issue-creator` | `/gh-kit:issue-create` | `issue-create` スキルの薄ラッパー（Agent ツール経由での起票に使用） |
 | 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | `gh-kit:issue-review` スキルの薄ラッパー。1 Issue をレビューし戻り値を返す |
 | 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `worktree_create` MCP + 雛形コミット + Draft PR 起票 |
-| 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、`gh-kit:needs-user-review` 要否を返す |
+| 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、`needs-user-review` 要否を返す |
 | 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は base 取り込み・マージ・`worktree_remove`・push まで自走 |
 
 ## 共通リソース
@@ -89,16 +89,14 @@ flowchart TD
 
 ## ラベル一覧
 
-gh-kit フロー専用ラベルは `gh-kit:` プレフィックスで統一。`type:*` / `priority:*` / `processing:*` は既存プレフィックス済み。
-
 ### gh-kit フロー制御（共通）
 
 | ラベル | 意味 |
 |---|---|
-| `gh-kit:processing` | 何らかの作業中（排他マーカー） |
-| `gh-kit:needs-ai-review` | AI レビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
-| `gh-kit:needs-user-review` | ユーザーレビュー必要（AI 判定で付く） |
-| `gh-kit:needs-fix` | レビュー結果、修正必要 |
+| `processing` | 何らかの作業中（排他マーカー） |
+| `needs-ai-review` | AI レビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
+| `needs-user-review` | ユーザーレビュー必要（AI 判定で付く） |
+| `needs-fix` | レビュー結果、修正必要 |
 
 ### gh-kit フロー制御（processing 細分）
 
@@ -112,7 +110,7 @@ gh-kit フロー専用ラベルは `gh-kit:` プレフィックスで統一。`t
 
 | ラベル | 意味 |
 |---|---|
-| `gh-kit:ai-code-scan` | claude code がスキャンして起票（出自タグ） |
+| `ai-code-scan` | claude code がスキャンして起票（出自タグ） |
 | `type:*` | 種別タグ（例: `type:bug`, `type:refactor`） |
 | `processing:pr-draft` | `pr-draft-create-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
 | `processing:pr-implement` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
@@ -133,7 +131,7 @@ gh-kit フロー専用ラベルは `gh-kit:` プレフィックスで統一。`t
 
 | ラベル | 意味 |
 |---|---|
-| `gh-kit:wip` | Draft 雛形 PR |
+| `wip` | Draft 雛形 PR |
 
 ## 直列マージ原則
 

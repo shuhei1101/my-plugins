@@ -24,7 +24,7 @@ GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿�
 |---|---|
 | Issue 本文テンプレート | `イシュードキュメント.j2` |
 | レビュー結果コメント | `レビュー結果コメント.j2` |
-| `gh-kit:needs-user-review` 判定基準 | `ユーザーレビュー要否判定.md` |
+| `needs-user-review` 判定基準 | `ユーザーレビュー要否判定.md` |
 
 ## ステップ 2: Issue とラベルを取得
 
@@ -32,7 +32,7 @@ GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿�
 gh issue view {N} --json number,title,body,labels,comments
 ```
 
-ラベルに `gh-kit:ai-code-scan` が含まれるかで起票元を判定:
+ラベルに `ai-code-scan` が含まれるかで起票元を判定:
 
 | ラベル | 起票元 | 本文の状態 |
 |---|---|---|
@@ -171,7 +171,7 @@ EOF
 )
 ```
 
-## ステップ 6: `gh-kit:needs-user-review` 要否判定
+## ステップ 6: `needs-user-review` 要否判定
 
 ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らして判定する。
 ステップ 5 で質問が含まれる場合・分割提案がある場合は無条件で true。
