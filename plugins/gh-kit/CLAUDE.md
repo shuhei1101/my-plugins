@@ -33,10 +33,11 @@ flowchart TD
 | 2 | `/gh-kit:issue-review` | 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを投稿 |
 | 3 | `/gh-kit:issue-review-auto` | `needs-ai-review` 付きの Issue を AI レビュー、コメント投稿 |
 | 4 | `/gh-kit:pr-draft-create-auto` | needs-* なしの Issue 全件 → Draft PR を作成 |
-| 5 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
-| 6 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
-| 7 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
-| 8 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
+| 5 | `/gh-kit:pr-draft-create` | 1 Issue から Draft PR を 1 件作成（`pr-draft-creator` エージェントの実装本体） |
+| 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
+| 7 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
+| 8 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
+| 9 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
 
 ## サブエージェント一覧
 

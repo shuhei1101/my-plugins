@@ -1,81 +1,81 @@
 ---
 name: gh-kit:pr-review
-description: Review a single PR. If approved and needs-user-review is absent, take over base branch, resolve conflicts if needed, merge with --no-ff, remove worktree, and push.
+description: 1 件の PR をレビューし、承認かつ needs-user-review がなければ base 取り込み→コンフリクト解消→--no-ff マージ→worktree 削除→push まで自走する
 ---
 
 # pr-review
 
-Reviews one PR and, when it passes, merges it into the base branch automatically.
+PR を 1 件レビューし、合格時はそのまま base ブランチへマージする。
 
-## Input
+## 入力
 
-| Argument | Content |
+| 引数 | 内容 |
 |---|---|
-| PR number | e.g. 42 |
-| Base branch | e.g. `master` |
-| Head branch | e.g. `feat/foo-bar` |
-| Repository root | Absolute path to the main repository |
-| Current label list | Used to check for the `needs-user-review` label |
+| PR 番号 | 例: 42 |
+| ベースブランチ | 例: `master` |
+| ヘッドブランチ | 例: `feat/foo-bar` |
+| リポジトリ root | メインリポジトリの絶対パス |
+| 現在ラベル一覧 | `needs-user-review` の有無を判定するのに使う |
 
-## Step 1: Load review criteria
+## ステップ 1: 観点メニューを取得
 
 ```bash
 cat "${CLAUDE_PLUGIN_ROOT}/templates/観点メニュー.md"
 ```
 
-Use this in Step 3 as the review checklist.
+ステップ 3 で参照する。
 
-## Step 2: Fetch PR information
+## ステップ 2: PR 情報を取得
 
 ```bash
 gh pr view {N} --json number,title,body,headRefName,baseRefName,labels,statusCheckRollup,comments,reviews,isDraft
 gh pr diff {N} > /tmp/pr-{N}.diff
 ```
 
-If CI status is `failure`, return `failed` and stop.
+CI が failure なら `failed` で返して停止。
 
-## Step 3: File scan and rule injection
+## ステップ 3: ファイル走査とルール注入
 
-Read the changed files with the Read tool. The PreToolUse hook automatically injects file-level rules — these form the primary review criteria.
-Combine with the criteria menu from Step 1 to audit the diff.
+変更ファイルを Read で読む。Read 時に PreToolUse フックがファイル系ルールを自動注入する — これが第一審査基準。
+ステップ 1 で取得した観点メニューと組み合わせて変更 diff を審査する。
 
-When a finding originates from an injected rule, note `Rule: {name}` at the top of the body.
+注入ルール由来の finding は body 冒頭に「ルール: {名}」を明記する。
 
-## Step 4: Build findings list
+## ステップ 4: findings を作成
 
-Structure for each finding:
+各 finding の構造:
 
-| Field | Content |
+| フィールド | 内容 |
 |---|---|
-| `path` | File path |
-| `line` | Line number |
+| `path` | ファイルパス |
+| `line` | 行番号 |
 | `side` | `RIGHT` / `LEFT` |
 | `severity` | `blocker` / `critical` / `major` / `minor` / `nit` |
-| `body` | Comment body (Markdown) — why it is a problem + suggestion, 2-4 lines |
+| `body` | コメント本文（Markdown）— なぜ問題か + 提案を 2〜4 行 |
 
-## Step 5: Post review via gh CLI
+## ステップ 5: gh CLI でレビュー投稿
 
 ```bash
 gh pr review {N} \
   --approve|--comment|--request-changes \
   --body-file <(cat <<'EOF'
-{criteria-based summary}
+{観点別サマリ}
 EOF
 )
-# For inline comments use: gh api repos/:owner/:repo/pulls/{N}/comments
+# inline コメントが必要なら gh api repos/:owner/:repo/pulls/{N}/comments を使う
 ```
 
-Event decision:
+event 判定:
 
-| Condition | Event | Next action |
+| 条件 | event | 次の動作 |
 |---|---|---|
-| Contains blocker / critical / major | `--request-changes` | Step 7-A (do not merge) |
-| Only minor / nit + no `needs-user-review` | `--approve` | Step 6 (proceed to merge) |
-| Only minor / nit + `needs-user-review` present | `--approve` | Step 7-B (do not merge) |
+| blocker / critical / major を含む | `--request-changes` | ステップ 7-A（マージしない） |
+| minor / nit のみ + `needs-user-review` なし | `--approve` | ステップ 6（マージへ） |
+| minor / nit のみ + `needs-user-review` あり | `--approve` | ステップ 7-B（マージしない） |
 
-## Step 6: Merge (approve + no needs-user-review only)
+## ステップ 6: マージ実行（approve + needs-user-review なしのみ）
 
-Sync the worktree, take in the base branch, resolve any conflicts, merge with `--no-ff`, remove the worktree, and push.
+ワークツリーを最新化したうえで親ブランチを取り込み、コンフリクトがあれば AI が解消し、`--no-ff` で base にマージ、worktree を削除して push する。
 
 ```bash
 WT=".claude/worktrees/$(echo {HEAD_BRANCH} | tr '/' '-')"
@@ -84,49 +84,49 @@ git -C "$WT" reset --hard origin/{HEAD_BRANCH}
 git -C "$WT" merge origin/{BASE_BRANCH}
 ```
 
-If conflicts remain, inspect them with `git -C "$WT" status -s` (look for UU / AA / DD codes). Read both sides and resolve by preserving the stronger intent — never use `-X ours` / `-X theirs` for bulk resolution. After resolving: `git -C "$WT" add` / `git -C "$WT" commit`.
+コンフリクトが残ったら `git -C "$WT" status -s` で UU / AA / DD などのコードを確認し、両側の意図を読んで「意味が強い」方を採用または両立させる（`-X ours` / `-X theirs` 一括解消は禁止）。解消後 `git -C "$WT" add` / `git -C "$WT" commit`。
 
 ```bash
 git -C {REPO_ROOT} merge --no-ff -m "{type}: {title}" {HEAD_BRANCH}
 ```
 
-Call the `worktree_remove` tool from the `gh-kit-tools` MCP (`branch={HEAD_BRANCH}`) to delete the worktree and branch. Then push:
+`gh-kit-tools` MCP の `worktree_remove`（`branch={HEAD_BRANCH}`）を呼んでワークツリーとブランチを削除。最後に push。
 
 ```bash
 git -C {REPO_ROOT} push origin {BASE_BRANCH}
 ```
 
-| Outcome | Verdict |
+| 状況 | verdict |
 |---|---|
-| All steps succeeded | `approved-merged` |
-| Conflict could not be auto-resolved | `conflict` |
-| Other failure | `failed` |
+| 全て成功 | `approved-merged` |
+| コンフリクトが自走解消できず残る | `conflict` |
+| その他失敗 | `failed` |
 
-## Step 7-A: changes-requested
+## ステップ 7-A: changes-requested
 
-Do not merge. Return `verdict = changes-requested` with a summary of the key findings in `message`.
+マージしない。verdict = `changes-requested`、message に主要 finding を要約。
 
-## Step 7-B: approved-user-review-pending
+## ステップ 7-B: approved-user-review-pending
 
-Do not merge. Return `verdict = approved-user-review-pending` with `message` stating "awaiting user review" and the reason.
+マージしない。verdict = `approved-user-review-pending`、message に「ユーザーレビュー待ち」と理由。
 
-## Step 8: Return value
+## ステップ 8: 戻り値
 
 ```json
 {
   "verdict": "approved-merged" | "approved-user-review-pending" | "changes-requested" | "conflict" | "failed",
   "pr_number": 42,
   "branch": "feat/foo-bar",
-  "message": "Detailed message",
+  "message": "詳細メッセージ",
   "findings_count": {"blocker": 0, "critical": 0, "major": 1, "minor": 2, "nit": 3}
 }
 ```
 
-## Constraints
+## 制約
 
-| No | Prohibited |
+| No | 禁止 |
 |---|---|
-| 1 | Do not launch sub-agents internally |
-| 2 | Do not use `git push --force` |
-| 3 | Do not merge a PR that has `needs-user-review` without human approval |
-| 4 | Do not post inline comments on lines far from the changed lines |
+| 1 | 自身の中でサブエージェントを起動しない |
+| 2 | `git push --force` を使わない |
+| 3 | `needs-user-review` 付き PR を AI 単独でマージしない |
+| 4 | 変更行から離れた箇所に inline コメントを付けない |
