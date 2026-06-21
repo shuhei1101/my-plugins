@@ -102,6 +102,9 @@ flowchart TD
 |---|---|
 | `ai-code-scan` | claude code がスキャンして起票（出自タグ） |
 | `type:*` | 種別タグ（例: `type:bug`, `type:refactor`） |
+| `processing:pr-draft` | `pr-draft-create-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
+| `processing:pr-implement` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
+| `processing:pr-review` | `pr-review-auto` がレビュー中（レビュー開始〜マージ/Close まで Issue に付与） |
 
 ### 優先度（Issue 専用）
 
