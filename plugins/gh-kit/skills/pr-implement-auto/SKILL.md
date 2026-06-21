@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-implement-auto
-description: ラベル wip の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
+description: ラベル wip / needs-fix の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
 ---
 
 # pr-implement-auto
@@ -25,11 +25,18 @@ description: ラベル wip の Draft PR を N 件並列で実装し、Ready 化 
 
 ### ステップ 1: 対象 PR を収集
 
+`wip`（初回実装待ち）と `needs-fix`（レビューで差し戻された再実装待ち）の Draft PR
+を両方拾う。gh CLI のラベル絞り込みは AND 扱いになるので 2 回呼んでマージする。
+
 ```bash
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 # 指定なしのとき
-gh pr list --state open --label "$LABEL_WIP" --draft \
-  --json number,title,headRefName,baseRefName,body,labels --limit 50
+{
+  gh pr list --state open --label "$LABEL_WIP" --draft \
+    --json number,title,headRefName,baseRefName,body,labels --limit 50
+  gh pr list --state open --label "$LABEL_NEEDS_FIX" --draft \
+    --json number,title,headRefName,baseRefName,body,labels --limit 50
+} | jq -s 'add | unique_by(.number)'
 # 指定ありのとき
 gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 ```
@@ -38,9 +45,13 @@ gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 
 ### ステップ 2: 排他制御
 
+`wip` / `needs-fix` どちらが付いていても外せるよう、両方 `--remove-label` する
+（存在しないラベルを外そうとしてもエラーにはならない）。
+
 ```bash
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh pr edit {N} --add-label "$LABEL_PROCESSING" --remove-label "$LABEL_WIP"
+gh pr edit {N} --add-label "$LABEL_PROCESSING" \
+  --remove-label "$LABEL_WIP" --remove-label "$LABEL_NEEDS_FIX"
 gh issue edit {N} --add-assignee @me
 ```
 
