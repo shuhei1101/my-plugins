@@ -19,10 +19,10 @@ description: "wip Draft PR を 1 件実装する: worktree 復帰 → fetch/rese
 | 採用方針 | 必須 | Issue コメントの `issue-reviewer` 結果から抽出 |
 | 分割スコープ | 任意 | この PR で扱うスコープ（1 Issue 複数 PR 時） |
 
-## ステップ 1: needs-user-review 判定基準を読み込む
+## ステップ 1: ユーザー確認要否判定基準を読み込む
 
 ```bash
-cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"
+cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザー確認要否判定.md"
 ```
 
 ステップ 5 で参照する。
@@ -55,32 +55,28 @@ git -C "$WT" reset --hard origin/{branch}
 git -C "$WT" push origin {branch}
 ```
 
-## ステップ 5: `needs-user-review` 要否を再判定
+## ステップ 5: ユーザー確認要否を再判定
 
 ステップ 1 で読み込んだ基準に照らし、実装結果（実コード変更内容）から
 `needs_user_review: true|false` を決める。
 Issue 起票時の判断と変わる可能性あり（例: refactor 想定だったが仕様に踏み込んだ場合は true）。
 
-## ステップ 6: PR を Ready 化
+## ステップ 6: PR を Ready 化 + ラベル後処理
 
 ```bash
 gh pr ready {PR_NUMBER}
 gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サマリ}"
 ```
 
-ラベル付与（`needs-ai-review` / `needs-user-review`）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
+`processing` を除去し、レビュー待ちラベルを付与する。
 
-## ステップ 7: 戻り値
-
-```json
-{
-  "branch": "feat/issue-42-router",
-  "pr_number": 42,
-  "status": "ready",
-  "needs_user_review": true,
-  "commits_added": 5,
-  "message": "詳細メッセージ"
-}
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+ARGS=(--remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_AI_REVIEW")
+if [ "{needs_user_review}" = "true" ]; then
+  ARGS+=(--add-label "$LABEL_NEEDS_USER_REVIEW")
+fi
+gh pr edit {PR_NUMBER} "${ARGS[@]}"
 ```
 
 ## 制約

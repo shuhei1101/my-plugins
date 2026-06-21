@@ -91,7 +91,7 @@ gh issue edit {N} --add-assignee @me
 # PR 本文から Issue 番号を抽出して付与
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --add-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+  gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
 fi
 ```
 
@@ -100,25 +100,16 @@ fi
 
 ### ステップ 4: 後処理
 
-```bash
-# 成功
-ARGS=(--remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW")
-if [ "{needs_user_review}" = "true" ]; then
-  ARGS+=(--add-label "$GH_KIT_LABEL_NEEDS_USER_REVIEW")
-fi
-gh pr edit {N} "${ARGS[@]}"
-# Issue の processing:pr-implement を除去
-ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
-if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT"
-fi
+ラベル付与（`needs-ai-review` / `needs-user-review` / `processing` 除去）は `pr-implement` スキル側で完結している。
+ここでは失敗時のリカバリのみ行う。
 
-# 失敗
+```bash
+# 失敗時のみ
 gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX"
 gh pr comment {N} --body "{失敗理由}"
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+  gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
 fi
 ```
 

@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-draft-create-auto
-description: needs-* なしの open Issue 全件から Draft PR を並列で作成する（1 Issue 複数派生対応）
+description: needs-* なしかつ assignees 空の open Issue 全件から Draft PR を並列で作成する（1 Issue 複数派生対応）
 disable-model-invocation: true
 ---
 
@@ -14,8 +14,9 @@ disable-model-invocation: true
 | No | 条件 |
 |---|---|
 | 1 | `state: open` |
-| 2 | `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも付いていない |
-| 3 | Issue 本文・コメントの各 QA セクションに `- [x]` が 1 件以上ある（推奨案・QA 回答がいずれか選択済み） |
+| 2 | `needs-ai-review` / `needs-fix` / `processing` のいずれも付いていない |
+| 3 | `assignees` が空（ユーザー確認待ちでない） |
+| 4 | Issue 本文・コメントの `- [ ]` がすべて埋まっている（推奨案・QA 回答が選択済み） |
 
 ## 環境変数
 
@@ -37,7 +38,7 @@ disable-model-invocation: true
 対象 Issue が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `state: open` かつ `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも付いていない Issue。
+対象条件: `state: open` かつ `gh-kit:needs-ai-review` / `gh-kit:needs-fix` / `gh-kit:processing` のいずれも付いていない Issue かつ `assignees` が空。
 
 ```bash
 # Monitor に渡すポーリングスクリプト
@@ -48,10 +49,10 @@ while true; do
     --jq "[.[] | select(
       (.labels | map(.name) | (
         index(\"$GH_KIT_LABEL_NEEDS_AI_REVIEW\") == null and
-        index(\"$GH_KIT_LABEL_NEEDS_USER_REVIEW\") == null and
         index(\"$GH_KIT_LABEL_NEEDS_FIX\") == null and
         index(\"$GH_KIT_LABEL_PROCESSING\") == null
-      ))
+      )) and
+      (.assignees | length == 0)
     )] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:pr-draft-create-auto:count=$AVAILABLE"
@@ -67,10 +68,10 @@ Monitor の stdout に `TRIGGER:pr-draft-create-auto` が来たらステップ 1
 ### ステップ 1: 対象 Issue を収集
 
 ```bash
-gh issue list --state open --json number,title,body,labels,comments --limit 100
+gh issue list --state open --json number,title,body,labels,assignees,comments --limit 100
 ```
 
-needs-* / processing いずれも含まず、Issue 本文・コメントの各 QA セクションに `- [x]` が 1 件以上あるものをフィルタ（マルチセレクト形式では `- [x]` が 1 件でもあれば回答済みと判定する。`- [ ]` 残数 0 では判定しない）。0 件なら停止。
+`needs-ai-review` / `needs-fix` / `processing` のいずれも含まず、`assignees` が空で、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
 
 ### ステップ 2: 各 Issue から作る Draft PR 数を決定
 

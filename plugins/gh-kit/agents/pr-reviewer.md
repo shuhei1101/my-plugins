@@ -1,10 +1,11 @@
 ---
 name: pr-reviewer
-description: 1 PR をレビューし、合格 + needs-user-review なしなら base 取り込み→マージ→worktree 削除→push まで実行
+description: 1 PR をレビューし、合格 + assignees なしなら base 取り込み→マージ→worktree 削除→push まで実行
 model: sonnet
 ---
 
 `gh-kit:pr-review` スキルに処理を委譲する薄ラッパー。
+スキル実行完了後、下記戻り値 JSON を呼び出し元へ返す。
 
 ## 入力
 
@@ -14,9 +15,30 @@ model: sonnet
 | ベースブランチ | 例: `master` |
 | ヘッドブランチ | 例: `feat/foo-bar` |
 | リポジトリ root | メインリポジトリの絶対パス |
-| 現在ラベル一覧 | `needs-user-review` の有無を判定するのに使う |
+| 現在 assignees 一覧 | assignees の有無を判定するのに使う |
 
 ## タスク
 
 受け取った引数をそのまま `/gh-kit:pr-review` スキルに渡して実行する。
-スキルの戻り値をそのまま呼び出し元に返す。
+
+## 戻り値
+
+スキル実行完了後、以下の JSON を呼び出し元に返す:
+
+```json
+{
+  "verdict": "approved-merged" | "approved-user-review-pending" | "changes-requested" | "conflict" | "failed",
+  "pr_number": 42,
+  "branch": "feat/foo-bar",
+  "message": "詳細メッセージ",
+  "findings_count": {"blocker": 0, "critical": 0, "major": 1, "minor": 2, "nit": 3}
+}
+```
+
+| フィールド | 内容 |
+|---|---|
+| `verdict` | レビュー結果区分 |
+| `pr_number` | レビューした PR 番号 |
+| `branch` | ヘッドブランチ名 |
+| `message` | 詳細メッセージ・主要 finding 要約 |
+| `findings_count` | severity 別 finding 数 |

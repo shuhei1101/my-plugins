@@ -63,17 +63,7 @@ EOF
 ルール:
 - `Closes #N` は使わない — 本文先頭に `Refs #N` を置く（1 Issue 複数 PR に対応）。
 - 必ず `--draft` を付ける。
-- ラベル付与（`wip` 等）は呼び出し側（`/gh-kit:pr-draft-create-auto`）の責務。
-
-## ステップ 6: 戻り値
-
-```json
-{
-  "branch": "feat/issue-42-router",
-  "pr_url": "https://github.com/.../pull/123",
-  "pr_number": 123
-}
-```
+- ラベル付与（`wip` 等）は呼び出し側（`/gh-kit:pr-draft-create-auto`）の責務（Draft 雛形マーカーのため）。
 
 ## 制約
 

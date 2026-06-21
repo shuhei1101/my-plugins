@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-review
-description: 1 件の PR をレビューし、承認かつ needs-user-review がなければ base 取り込み→コンフリクト解消→--no-ff マージ→worktree 削除→push まで自走する
+description: 1 件の PR をレビューし、承認かつ assignees がなければ base 取り込み→コンフリクト解消→--no-ff マージ→worktree 削除→push まで自走する
 ---
 
 # pr-review
@@ -15,7 +15,7 @@ PR を 1 件レビューし、合格時はそのまま base ブランチへマ�
 | ベースブランチ | 例: `master` |
 | ヘッドブランチ | 例: `feat/foo-bar` |
 | リポジトリ root | メインリポジトリの絶対パス |
-| 現在ラベル一覧 | `needs-user-review` の有無を判定するのに使う |
+| 現在 assignees 一覧 | assignees の有無を判定するのに使う |
 
 ## ステップ 1: 観点メニューを取得
 
@@ -28,7 +28,7 @@ cat "${CLAUDE_PLUGIN_ROOT}/templates/観点メニュー.md"
 ## ステップ 2: PR 情報を取得
 
 ```bash
-gh pr view {N} --json number,title,body,headRefName,baseRefName,labels,statusCheckRollup,comments,reviews,isDraft
+gh pr view {N} --json number,title,body,headRefName,baseRefName,labels,assignees,statusCheckRollup,comments,reviews,isDraft
 gh pr diff {N} > /tmp/pr-{N}.diff
 ```
 
@@ -70,10 +70,10 @@ event 判定:
 | 条件 | event | 次の動作 |
 |---|---|---|
 | blocker / critical / major を含む | `--request-changes` | ステップ 7-A（マージしない） |
-| minor / nit のみ + `needs-user-review` なし | `--approve` | ステップ 6（マージへ） |
-| minor / nit のみ + `needs-user-review` あり | `--approve` | ステップ 7-B（マージしない） |
+| minor / nit のみ + assignees なし | `--approve` | ステップ 6（マージへ） |
+| minor / nit のみ + assignees あり | `--approve` | ステップ 7-B（マージしない） |
 
-## ステップ 6: マージ実行（approve + needs-user-review なしのみ）
+## ステップ 6: マージ実行（approve + assignees なしのみ）
 
 ワークツリーを最新化したうえで親ブランチを取り込み、コンフリクトがあれば AI が解消し、`--no-ff` で base にマージ、worktree を削除して push する。
 
@@ -85,6 +85,30 @@ git -C "$WT" merge origin/{BASE_BRANCH}
 ```
 
 コンフリクトが残ったら `git -C "$WT" status -s` で UU / AA / DD などのコードを確認し、両側の意図を読んで「意味が強い」方を採用または両立させる（`-X ours` / `-X theirs` 一括解消は禁止）。解消後 `git -C "$WT" add` / `git -C "$WT" commit`。
+
+自走解消できなかった場合（コンフリクトが残る場合）は、以下を実行してユーザーに通知する:
+
+```bash
+# コンフリクトファイル一覧を取得
+CONFLICT_FILES=$(git -C "$WT" status -s | grep '^UU\|^AA\|^DD' | awk '{print "- `" $2 "`"}')
+```
+
+`gh-kit-tools` MCP の `template_get` で `コンフリクト通知コメント.j2` を取得し、以下の変数を埋めて `gh pr comment` で投稿する:
+
+| 変数 | 内容 |
+|---|---|
+| `{head_branch}` | HEAD ブランチ名 |
+| `{base_branch}` | BASE ブランチ名 |
+| `{conflict_files}` | `$CONFLICT_FILES` の値 |
+| `{conflict_reason}` | AI が判断した解消不能の理由（例: 両側で同箇所に別ロジックが追加されており自動判定不可） |
+
+```bash
+# テンプレートに変数を埋めたコメントを投稿
+gh pr comment {PR_NUMBER} --body "{テンプレートに変数を埋めた本文}"
+
+# assignee にユーザーを追加して通知
+gh pr edit {PR_NUMBER} --add-assignee @me
+```
 
 ```bash
 git -C {REPO_ROOT} merge --no-ff -m "{type}: {title}" {HEAD_BRANCH}
@@ -114,7 +138,7 @@ fi
 | 状況 | verdict |
 |---|---|
 | 全て成功 | `approved-merged` |
-| コンフリクトが自走解消できず残る | `conflict` |
+| コンフリクトが自走解消できず残る（コメント通知 + assignee 追加済み） | `conflict` |
 | その他失敗 | `failed` |
 
 ## ステップ 7-A: changes-requested
@@ -123,7 +147,7 @@ fi
 
 ## ステップ 7-B: approved-user-review-pending
 
-マージしない。verdict = `approved-user-review-pending`、message に「ユーザーレビュー待ち」と理由。
+マージしない。verdict = `approved-user-review-pending`、message に「ユーザー確認待ち（assignees 設定済み）」と理由。
 
 ## ステップ 7-C: Drop（PR Close without merge）
 
@@ -140,23 +164,11 @@ if [ -n "$ISSUE_N" ]; then
 fi
 ```
 
-## ステップ 8: 戻り値
-
-```json
-{
-  "verdict": "approved-merged" | "approved-user-review-pending" | "changes-requested" | "conflict" | "failed",
-  "pr_number": 42,
-  "branch": "feat/foo-bar",
-  "message": "詳細メッセージ",
-  "findings_count": {"blocker": 0, "critical": 0, "major": 1, "minor": 2, "nit": 3}
-}
-```
-
 ## 制約
 
 | No | 禁止 |
 |---|---|
 | 1 | 自身の中でサブエージェントを起動しない |
 | 2 | `git push --force` を使わない |
-| 3 | `needs-user-review` 付き PR を AI 単独でマージしない |
+| 3 | assignees が設定されている PR を AI 単独でマージしない |
 | 4 | 変更行から離れた箇所に inline コメントを付けない |
