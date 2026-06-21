@@ -14,7 +14,7 @@ disable-model-invocation: true
 | No | 条件 |
 |---|---|
 | 1 | `state: open` |
-| 2 | `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも付いていない |
+| 2 | `gh-kit:needs-ai-review` / `gh-kit:needs-user-review` / `gh-kit:needs-fix` / `gh-kit:processing` のいずれも付いていない |
 | 3 | Issue 本文・コメントの `- [ ]` がすべて埋まっている（推奨案・QA 回答が選択済み） |
 
 !`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
@@ -40,7 +40,7 @@ disable-model-invocation: true
 gh issue list --state open --json number,title,body,labels,comments --limit 100
 ```
 
-needs-* / processing いずれも含まず、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
+needs-* / gh-kit:processing いずれも含まず、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
 
 ### ステップ 2: 各 Issue から作る Draft PR 数を決定
 
