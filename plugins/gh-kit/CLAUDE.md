@@ -8,18 +8,18 @@ GitHub 操作はすべて `gh` CLI に統一。
 
 ```mermaid
 flowchart TD
-  U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + needs-ai-review| Issue[(GitHub Issue)]
-  Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント<br>needs-ai-review 除去]
-  Review -->|re_review_needed: false<br>needs-* なし + todo 全埋め| Ready[(Issue Ready)]
+  U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + 確認:issue-reviewer| Issue[(GitHub Issue)]
+  Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント<br>確認:issue-reviewer 除去]
+  Review -->|re_review_needed: false<br>確認:* なし + todo 全埋め| Ready[(Issue Ready)]
   Review -->|re_review_needed: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
-  UserReply -->|ユーザーが手動で needs-ai-review 再付与| Issue
+  UserReply -->|ユーザーが手動で 確認:issue-reviewer 再付与| Issue
   Ready -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
-  WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 processing]
-  Implementing -->|完了| NAR[(Ready PR + needs-ai-review)]
+  WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 処理中]
+  Implementing -->|完了| NAR[(Ready PR + 確認:issue-reviewer)]
   NAR -->|/gh-kit:pr-review-auto| Merged[master]
 ```
 
-**再レビューループ:** AI がレビューコメントを投稿後、ユーザーが Issue にコメントで返答し、さらに AI に確認してほしい場合は手動で `needs-ai-review` を再付与する。次回 `/gh-kit:issue-review-auto` 実行時に再レビューモードで動作し、追加 QA またはラベル除去を行う。
+**再レビューループ:** AI がレビューコメントを投稿後、ユーザーが Issue にコメントで返答し、さらに AI に確認してほしい場合は手動で `確認:issue-reviewer` を再付与する。次回 `/gh-kit:issue-review-auto` 実行時に再レビューモードで動作し、追加 QA またはラベル除去を行う。
 
 ## セットアップ
 
@@ -34,10 +34,10 @@ flowchart TD
 | No | スキル | 概要 |
 |---|---|---|
 | 1 | `/gh-kit:code-scan-auto` | コードベース観点別スキャン → `code-scanner` が `issue-create` スキル経由で起票 |
-| 1a | `/gh-kit:issue-create` | Issue を 1 件起票する（`needs-ai-review` 強制付与）。`code-scanner` や手動呼び出しの両方から使える |
+| 1a | `/gh-kit:issue-create` | Issue を 1 件起票する（`確認:issue-reviewer` 強制付与）。`code-scanner` や手動呼び出しの両方から使える |
 | 2 | `/gh-kit:issue-review` | 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを投稿 |
-| 3 | `/gh-kit:issue-review-auto` | `needs-ai-review` 付きの Issue を AI レビュー、コメント投稿 |
-| 4 | `/gh-kit:pr-draft-create-auto` | needs-* なしの Issue 全件 → Draft PR を作成 |
+| 3 | `/gh-kit:issue-review-auto` | `確認:issue-reviewer` 付きの Issue を AI レビュー、コメント投稿 |
+| 4 | `/gh-kit:pr-draft-create-auto` | 確認:* なしの Issue 全件 → Draft PR を作成 |
 | 5 | `/gh-kit:pr-draft-create` | 1 Issue から Draft PR を 1 件作成（`pr-draft-creator` エージェントの実装本体） |
 | 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
 | 6a | `/gh-kit:pr-test-create` | PR のテスト計画を立案しテストコードを作成（`pr-test-creator` エージェントの実装本体） |
@@ -90,6 +90,7 @@ flowchart TD
 | 変数 | 用途 | 使うスキル |
 |---|---|---|
 | `GH_KIT_WIKI_PATH` | GitHub Wiki のローカル clone パス（例: `/path/to/repo.wiki`） | `wiki-create` |
+| `GH_KIT_CHECKLIST_PAGES` | Wiki チェックリストページ名のカンマ区切りリスト（例: `共通チェックリスト,テストチェックリスト`）。デフォルト: `共通チェックリスト`。指定したページが存在する場合のみコンテキストに注入される | `issue-review`, `pr-draft-create`, `pr-review` |
 
 ## ラベル一覧
 
@@ -97,17 +98,17 @@ flowchart TD
 
 | ラベル | 意味 |
 |---|---|
-| `processing` | 何らかの作業中（排他マーカー） |
-| `needs-ai-review` | AI レビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
-| `needs-fix` | レビュー結果、修正必要 |
+| `処理中` | 何らかの作業中（排他マーカー） |
+| `確認:issue-reviewer` | issue-reviewer スキルがレビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
+| `確認:pr-implementer` | レビュー結果、pr-implementer スキルが修正必要 |
 
 ### gh-kit フロー制御（processing 細分）
 
 | ラベル | 意味 |
 |---|---|
-| `processing:pr-draft` | Draft PR 作成処理中（`pr-draft-create-auto` が付与） |
-| `processing:pr-implement` | 実装エージェントが実装中（`pr-implement-auto` が付与） |
-| `processing:pr-review` | レビューエージェントがレビュー中（`pr-review-auto` が付与） |
+| `処理中:pr-draft` | Draft PR 作成処理中（`pr-draft-create-auto` が付与） |
+| `処理中:pr-implement` | 実装エージェントが実装中（`pr-implement-auto` が付与） |
+| `処理中:pr-review` | レビューエージェントがレビュー中（`pr-review-auto` が付与） |
 
 ### ユーザー確認待ち（assignees）
 
@@ -119,22 +120,23 @@ flowchart TD
 
 | ラベル | 意味 |
 |---|---|
-| `ai-code-scan` | claude code がスキャンして起票（出自タグ） |
+| `AIコードスキャン` | claude code がスキャンして起票（出自タグ） |
 | `type:*` | 種別タグ（例: `type:bug`, `type:refactor`） |
-| `processing:pr-draft` | `pr-draft-create-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
-| `processing:pr-implement` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
-| `processing:pr-review` | `pr-review-auto` がレビュー中（レビュー開始〜マージ/Close まで Issue に付与） |
+| `処理中:pr-draft` | `pr-draft-create-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
+| `処理中:pr-implement` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
+| `処理中:pr-review` | `pr-review-auto` がレビュー中（レビュー開始〜マージ/Close まで Issue に付与） |
 
-### 優先度（Issue 専用）
+### 優先度（Issue・PR 共通）
 
-`code-scanner` が起票時に自動付与。人間起票 Issue は `issue-reviewer` が付与する。
-マッピング基準は重大度ベース（セキュリティ/クラッシュ → high、機能不全 → medium、コード品質 → low）。
+`code-scanner` が起票時に自動付与。人間起票 Issue は `issue-reviewer` が付与する。`pr-draft-create` が Issue の優先度ラベルを PR にも継承させる。
+マッピング基準は重大度ベース（セキュリティ/クラッシュ → 急ぎ、コード品質 → いつでも）。
 
 | ラベル | 色 | 意味 |
 |---|---|---|
-| `priority:high` | 赤 (`B60205`) | セキュリティ脆弱性・クラッシュバグ・データ損失リスク |
-| `priority:medium` | 黄 (`E4E669`) | 機能不全・パフォーマンス劣化・重大なロジックエラー |
-| `priority:low` | 青 (`0075CA`) | コード品質（可読性・命名・重複）・ドキュメント不足 |
+| `優先度:急ぎ` | 赤 (`B60205`) | セキュリティ脆弱性・クラッシュバグ・データ損失リスクなど早急に対応が必要なもの |
+| `優先度:いつでも` | 青 (`0075CA`) | コード品質・ドキュメント不足など時期を問わず対応可能なもの |
+
+auto 系スキル（`issue-review-auto` / `pr-implement-auto` / `pr-review-auto` / `pr-draft-create-auto`）は `優先度:急ぎ` の対象を優先して処理する。
 
 ### PR 専用
 
