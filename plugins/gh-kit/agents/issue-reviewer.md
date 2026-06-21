@@ -10,13 +10,9 @@ model: sonnet
 |---|---|
 | Issue 番号 | 例: 42 |
 
-## ステップ 1: ラベル定義とテンプレートを読み込む
+## ステップ 1: テンプレートを読み込む
 
-ラベル定数は bash で取得し、テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得する:
-
-```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-```
+テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得する（ラベル定数は Session Start フックで自動展開済み）。
 
 次の MCP ツール呼び出しでテンプレ本文を取得:
 

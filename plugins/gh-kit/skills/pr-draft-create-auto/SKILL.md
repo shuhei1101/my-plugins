@@ -16,8 +16,6 @@ description: needs-* なしの open Issue 全件から Draft PR を並列で作�
 | 2 | `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも付いていない |
 | 3 | Issue 本文・コメントの `- [ ]` がすべて埋まっている（推奨案・QA 回答が選択済み） |
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## 環境変数
 
 | 変数 | 既定 | 用途 |
@@ -54,8 +52,7 @@ needs-* / processing いずれも含まず、`- [ ]` 残数 0 のものをフィ
 ### ステップ 3: 排他制御
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh issue edit {N} --add-label "$LABEL_PROCESSING"
+gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 ```
 
 ### ステップ 4: pr-draft-creator を並列起動
@@ -66,10 +63,9 @@ gh issue edit {N} --add-label "$LABEL_PROCESSING"
 ### ステップ 5: 後処理
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh pr edit {PR番号} --add-label "$LABEL_WIP"
+gh pr edit {PR番号} --add-label "$GH_KIT_LABEL_WIP"
 gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
-gh issue edit {N} --remove-label "$LABEL_PROCESSING"
+gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING"
 ```
 
 ### ステップ 6: 完了報告

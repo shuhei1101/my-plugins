@@ -10,13 +10,9 @@ model: sonnet
 |---|---|
 | 観点 | このスキャナーで扱う 1 観点（メインが選定済み） |
 
-## ステップ 1: ラベル定義と各種テンプレートを読み込む
+## ステップ 1: 各種テンプレートを読み込む
 
-ラベル定数は bash で取得し、テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得する:
-
-```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-```
+テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得する（ラベル定数は Session Start フックで自動展開済み）。
 
 次の MCP ツール呼び出しでテンプレ本文を取得（`template_get` の `template_name` 引数に渡す）:
 
@@ -50,19 +46,17 @@ Read 時に PreToolUse フックがプロジェクト規約を自動注入する
 ## ステップ 7: gh CLI で起票
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-
 # 必要ラベルが無ければ事前作成
-gh label list | grep -q "^${LABEL_AI_CODE_SCAN}" || \
-  gh label create "$LABEL_AI_CODE_SCAN" --color "$LABEL_COLOR_AI_CODE_SCAN" --description "claude code 起票"
-gh label list | grep -q "^${LABEL_NEEDS_AI_REVIEW}" || \
-  gh label create "$LABEL_NEEDS_AI_REVIEW" --color "$LABEL_COLOR_NEEDS_AI_REVIEW" --description "AI レビュー必要"
-gh label list | grep -q "^${LABEL_NEEDS_USER_REVIEW}" || \
-  gh label create "$LABEL_NEEDS_USER_REVIEW" --color "$LABEL_COLOR_NEEDS_USER_REVIEW" --description "ユーザーレビュー必要"
+gh label list | grep -q "^${GH_KIT_LABEL_AI_CODE_SCAN}" || \
+  gh label create "$GH_KIT_LABEL_AI_CODE_SCAN" --color "$GH_KIT_LABEL_COLOR_AI_CODE_SCAN" --description "claude code 起票"
+gh label list | grep -q "^${GH_KIT_LABEL_NEEDS_AI_REVIEW}" || \
+  gh label create "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --color "$GH_KIT_LABEL_COLOR_NEEDS_AI_REVIEW" --description "AI レビュー必要"
+gh label list | grep -q "^${GH_KIT_LABEL_NEEDS_USER_REVIEW}" || \
+  gh label create "$GH_KIT_LABEL_NEEDS_USER_REVIEW" --color "$GH_KIT_LABEL_COLOR_NEEDS_USER_REVIEW" --description "ユーザーレビュー必要"
 
-LABELS="${LABEL_AI_CODE_SCAN},${LABEL_NEEDS_AI_REVIEW},type:{type},priority:{priority}"
+LABELS="${GH_KIT_LABEL_AI_CODE_SCAN},${GH_KIT_LABEL_NEEDS_AI_REVIEW},type:{type},priority:{priority}"
 if [ "{needs_user_review_required}" = "true" ]; then
-  LABELS="${LABELS},${LABEL_NEEDS_USER_REVIEW}"
+  LABELS="${LABELS},${GH_KIT_LABEL_NEEDS_USER_REVIEW}"
 fi
 
 gh issue create \

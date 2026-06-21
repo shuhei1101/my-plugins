@@ -11,15 +11,12 @@ description: needs-ai-review の Ready PR を 1 件ずつ直列でレビュー�
 `needs-user-review` が残っている PR はレビューだけ実施してマージしない。
 ユーザーが `needs-user-review` を外したら別途再エントリー（`needs-ai-review` を付け直す）。
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## タスク
 
 ### ステップ 1: レビュー対象 PR を収集
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh pr list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
+gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
   --json number,title,headRefName,baseRefName,statusCheckRollup,labels --limit 50
 ```
 
@@ -28,8 +25,7 @@ gh pr list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
 ### ステップ 2: 上から 1 件取り出す
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh pr edit {N} --add-label "$LABEL_PROCESSING"
+gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 ```
 
 CI が failure なら failed へ。
@@ -46,16 +42,12 @@ CI が failure なら failed へ。
 
 ### ステップ 4: 後処理
 
-```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-```
-
 | verdict | 動作 |
 |---|---|
-| approved-merged | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（マージは pr-reviewer が実施済み） |
-| approved-user-review-pending | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（`needs-user-review` は残す） |
-| changes-requested | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"` |
-| conflict / failed | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX" --add-label "$LABEL_NEEDS_USER_REVIEW" && gh pr comment {N} --body "{詳細}"` |
+| approved-merged | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"`（マージは pr-reviewer が実施済み） |
+| approved-user-review-pending | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"`（`needs-user-review` は残す） |
+| changes-requested | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX"` |
+| conflict / failed | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX" --add-label "$GH_KIT_LABEL_NEEDS_USER_REVIEW" && gh pr comment {N} --body "{詳細}"` |
 
 ステップ 2 に戻ってキューが空になるまで繰り返す。
 

@@ -7,8 +7,6 @@ description: needs-ai-review ラベルの Issue を並列で AI レビューし�
 
 `needs-ai-review` 付きの Issue を `issue-reviewer` に並列で渡す。
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## 環境変数
 
 | 変数 | 既定 | 用途 |
@@ -26,9 +24,8 @@ description: needs-ai-review ラベルの Issue を並列で AI レビューし�
 ### ステップ 1: 対象 Issue を収集
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 # 指定なしのとき
-gh issue list --state open --label "$LABEL_NEEDS_AI_REVIEW" --json number,title,labels --limit 100
+gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --json number,title,labels --limit 100
 # 指定ありのとき
 gh issue view {N} --json number,title,body,labels,comments
 ```
@@ -38,8 +35,7 @@ gh issue view {N} --json number,title,body,labels,comments
 ### ステップ 2: 排他制御
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh issue edit {N} --add-label "$LABEL_PROCESSING"
+gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 ```
 
 ### ステップ 3: issue-reviewer を並列起動
@@ -50,10 +46,9 @@ gh issue edit {N} --add-label "$LABEL_PROCESSING"
 ### ステップ 4: ラベル更新
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-ARGS=(--remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW")
+ARGS=(--remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW")
 if [ "{needs_user_review}" = "true" ]; then
-  ARGS+=(--add-label "$LABEL_NEEDS_USER_REVIEW")
+  ARGS+=(--add-label "$GH_KIT_LABEL_NEEDS_USER_REVIEW")
 fi
 gh issue edit {N} "${ARGS[@]}"
 ```
