@@ -22,7 +22,7 @@ model: sonnet
 
 ## ステップ 2: ブランチ + worktree 作成
 
-`/work:start` を実行。
+`gh-kit-tools` MCP の `worktree_create` を呼ぶ（`branch_type` と `title` を渡す）。返り値の出力からワークツリーパスを取得する。
 
 ## ステップ 3: 空コミットを作成（Draft PR 作成のため最低 1 コミット必要）
 

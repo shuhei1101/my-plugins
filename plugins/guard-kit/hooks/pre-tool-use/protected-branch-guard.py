@@ -1,0 +1,109 @@
+"""保護ブランチへの直接ファイル編集を検出してブロックするフック。
+
+PreToolUse フックとして動作し、main/master/develop ブランチへの
+Edit・Write ツール呼び出しを阻止して gh-kit-tools の worktree_create MCP 呼び出しを促す。
+ただし、対象ファイルが .gitignore に一致する場合は通過させる。
+
+Usage:
+python protected_branch_guard.py
+# stdin に PreToolUse フックの JSON を渡す
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import subprocess
+import sys
+
+PROTECTED_BRANCHES = {"main", "master", "develop"}
+
+
+def get_git_branch(path: str) -> str:
+    """指定パスが属する git リポジトリの現在ブランチ名を返す。"""
+    result = subprocess.run(
+        ["git", "-C", path, "branch", "--show-current"],
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    return result.stdout.strip()
+
+
+def is_gitignored(check_dir: str, file_path: str) -> bool:
+    """ファイルが git によって無視（gitignore）されているかを返す。"""
+    result = subprocess.run(
+        ["git", "-C", check_dir, "check-ignore", "-q", file_path],
+        capture_output=True,
+        timeout=5,
+    )
+    # returncode 0 = gitignore 対象、1 = 対象外
+    return result.returncode == 0
+
+
+def resolve_check_dir(data: dict) -> str:
+    """ブランチチェック対象ディレクトリを決定する。"""
+    file_path = data.get("tool_input", {}).get("file_path", "")
+    if file_path:
+        # ファイルパスの祖先ディレクトリを辿り、最初に存在するものを使う
+        # 新規ファイル作成時に親ディレクトリがまだ存在しない場合に対応
+        candidate = os.path.dirname(os.path.abspath(file_path))
+        while candidate and candidate != os.path.dirname(candidate):
+            if os.path.exists(candidate):
+                return candidate
+            candidate = os.path.dirname(candidate)
+    return data.get("cwd", ".")
+
+
+def build_deny_output(branch: str) -> dict:
+    """ブロック用の JSON 出力を構築する。"""
+    return {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "deny",
+            "permissionDecisionReason": (
+                f"保護ブランチ '{branch}' への直接ファイル編集はブロックされました。\n\n"
+                "このワークキットでは main/master/develop ブランチへの直接編集は禁止されています。\n"
+                "必ず `worktree_create` MCP を呼んでワークツリーを作成し、そこで作業を行ってください。\n\n"
+                "ユーザーに以下を日本語で伝えてください：\n"
+                f"「{branch} ブランチへの直接編集はできません。"
+                "`worktree_create` MCP を呼んでワークツリーを作成してから作業を開始してください。」"
+            ),
+            "additionalContext": (
+                f"保護ブランチ '{branch}' への直接編集がブロックされました。\n"
+                "- 禁止理由: このプロジェクトはワークツリーを使った分離作業を必須としています\n"
+                "- 対処法: `worktree_create` MCP を呼んでブランチとワークツリーを作成する\n"
+                "- ワークツリー作成後は、そのパスで自由にファイルを編集できます"
+            ),
+        }
+    }
+
+
+def main() -> int:
+    """フックのエントリーポイント。ブランチを確認し必要に応じてブロックする。"""
+    data = json.load(sys.stdin)
+
+    check_dir = resolve_check_dir(data)
+
+    try:
+        branch = get_git_branch(check_dir)
+    except Exception:
+        # git コマンド失敗時はスルー（git 未インストール、git リポジトリ外など）
+        return 0
+
+    # 保護ブランチ以外はそのまま通過
+    if branch not in PROTECTED_BRANCHES:
+        return 0
+
+    # gitignore 対象ファイルの編集は通過（git に影響しないため）
+    file_path = data.get("tool_input", {}).get("file_path", "")
+    if file_path and is_gitignored(check_dir, file_path):
+        return 0
+
+    # 保護ブランチへの編集をブロック
+    print(json.dumps(build_deny_output(branch), ensure_ascii=False))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

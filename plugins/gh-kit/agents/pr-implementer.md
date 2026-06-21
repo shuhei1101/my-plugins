@@ -28,7 +28,7 @@ cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"
 ```bash
 WT=".claude/worktrees/$(echo {branch} | tr '/' '-')"
 if [ ! -d "$WT" ]; then
-  echo "worktree missing, please run /work:start with branch={branch}" >&2
+  echo "worktree missing, please call gh-kit-tools worktree_create MCP for branch={branch}" >&2
   exit 1
 fi
 git -C "$WT" fetch origin

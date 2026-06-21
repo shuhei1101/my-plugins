@@ -1,5 +1,0 @@
-{
-  "name": "work",
-  "description": "ワークツリー駆動のブランチ作業基盤（start / merge / setup と保護フック群）。タスク/イシュー管理は gh プラグインへ移管",
-  "version": "2.2"
-}

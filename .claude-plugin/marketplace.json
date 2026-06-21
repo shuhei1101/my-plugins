@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "work",
-      "source": "./plugins/work",
-      "description": "ワークツリー駆動のブランチ作業基盤（start / merge / setup と保護フック群）",
-      "version": "2.2"
+      "name": "guard-kit",
+      "source": "./plugins/guard-kit",
+      "description": "ローカル Git 保護フック群（master 直接コミット阻止 / 危険 git コマンド阻止 / .git・lock ファイル保護 / 削除検知 / セッション規約注入）",
+      "version": "1.0"
     },
     {
       "name": "dev-kit",
@@ -19,8 +19,8 @@
     {
       "name": "gh-kit",
       "source": "./plugins/gh-kit",
-      "description": "GitHub Issues/PR/Wiki を真実のソースとした作業フローキット（gh CLI + Jinja2 テンプレ + template_get MCP + ラベル一元管理 + チェーン自動化 + Wiki ページ作成）",
-      "version": "0.12"
+      "description": "GitHub Issues/PR/Wiki + ワークツリー操作のフルキット（gh CLI + Jinja2 テンプレ + template_get/worktree_create/worktree_remove MCP + pre-merge-check + Wiki ページ作成）。リモート PR 駆動の自走フロー一式",
+      "version": "0.15"
     }
   ]
 }

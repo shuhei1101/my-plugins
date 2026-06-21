@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: 1 PR をレビューし、合格 + needs-user-review なしなら /work:merge → push まで実行
+description: 1 PR をレビューし、合格 + needs-user-review なしなら base 取り込み→マージ→worktree 削除→push まで実行
 model: sonnet
 ---
 
@@ -72,14 +72,22 @@ event 判定:
 
 ## ステップ 6: マージ実行（approve + needs-user-review なしのみ）
 
+ワークツリーを最新化したうえで親ブランチを取り込み、コンフリクトがあれば AI が解消し、`--no-ff` で base にマージ、worktree を削除して push する。
+
 ```bash
 WT=".claude/worktrees/$(echo {HEAD_BRANCH} | tr '/' '-')"
 git -C "$WT" fetch origin
 git -C "$WT" reset --hard origin/{HEAD_BRANCH}
+git -C "$WT" merge origin/{BASE_BRANCH}
 ```
 
-続いて `/work:merge` スキルを実行（親取り込み・コンフリクト処理・マージ・worktree 削除）。
-完了後:
+コンフリクトが残ったら `git -C "$WT" status -s` で UU / AA / DD などのコードを確認し、両側の意図を読んで「意味が強い」方を採用または両立させる（`-X ours` / `-X theirs` 一括解消は禁止）。解消後 `git -C "$WT" add` / `git -C "$WT" commit`。
+
+```bash
+git -C {REPO_ROOT} merge --no-ff -m "{type}: {title}" {HEAD_BRANCH}
+```
+
+`gh-kit-tools` MCP の `worktree_remove`（`branch={HEAD_BRANCH}`）を呼んでワークツリーとブランチを削除。最後に push。
 
 ```bash
 git -C {REPO_ROOT} push origin {BASE_BRANCH}
