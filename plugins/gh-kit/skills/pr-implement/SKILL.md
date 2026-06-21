@@ -25,7 +25,7 @@ description: "wip Draft PR を 1 件実装する: worktree 復帰 → fetch/rese
 cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザー確認要否判定.md"
 ```
 
-ステップ 6 で参照する。
+ステップ 7 で参照する。
 
 ## ステップ 2: ワークツリー復帰 + remote 同期
 
@@ -92,6 +92,19 @@ git -C "$WT" push origin {branch}
 ステップ 1 で読み込んだ基準に照らし、実装結果（実コード変更内容）から
 `needs_user_review: true|false` を決める。
 Issue 起票時の判断と変わる可能性あり（例: refactor 想定だったが仕様に踏み込んだ場合は true）。
+
+## ステップ 7.5: PR 本文チェックリストを全チェック済みに更新
+
+実装が完了したタスクについて、PR 本文の `- [ ]` を `- [x]` に置換し `gh pr edit` で更新する。
+
+```bash
+# 現在の PR 本文を取得し、- [ ] を - [x] に置換して更新する
+CURRENT_BODY=$(gh pr view {PR_NUMBER} --json body --jq '.body')
+UPDATED_BODY=$(echo "$CURRENT_BODY" | sed 's/- \[ \]/- [x]/g')
+gh pr edit {PR_NUMBER} --body "$UPDATED_BODY"
+```
+
+未実装タスクが残っている場合は省略せず、その理由を PR コメントに記載する。
 
 ## ステップ 8: PR を Ready 化
 
