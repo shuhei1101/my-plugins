@@ -47,32 +47,19 @@ Read 時に PreToolUse フックがプロジェクト規約を自動注入する
 
 ステップ 1 で取得した `イシュードキュメント.j2` に沿って Markdown を組み立てる。
 
-## ステップ 7: gh CLI で起票
+## ステップ 7: `/gh-kit:issue-create` スキルで起票
 
-```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+finding ごとに `/gh-kit:issue-create` スキルを呼び出して起票する。
+ラベル準備・`needs-ai-review` 強制付与・`gh issue create` はスキルが担うため、エージェントは finding の内容を渡すだけでよい。
 
-# 必要ラベルが無ければ事前作成
-gh label list | grep -q "^${LABEL_AI_CODE_SCAN}" || \
-  gh label create "$LABEL_AI_CODE_SCAN" --color "$LABEL_COLOR_AI_CODE_SCAN" --description "claude code 起票"
-gh label list | grep -q "^${LABEL_NEEDS_AI_REVIEW}" || \
-  gh label create "$LABEL_NEEDS_AI_REVIEW" --color "$LABEL_COLOR_NEEDS_AI_REVIEW" --description "AI レビュー必要"
-gh label list | grep -q "^${LABEL_NEEDS_USER_REVIEW}" || \
-  gh label create "$LABEL_NEEDS_USER_REVIEW" --color "$LABEL_COLOR_NEEDS_USER_REVIEW" --description "ユーザーレビュー必要"
-
-LABELS="${LABEL_AI_CODE_SCAN},${LABEL_NEEDS_AI_REVIEW},type:{type},priority:{priority}"
-if [ "{needs_user_review_required}" = "true" ]; then
-  LABELS="${LABELS},${LABEL_NEEDS_USER_REVIEW}"
-fi
-
-gh issue create \
-  --title "{タイトル}" \
-  --body-file <(cat <<'EOF'
-{ステップ 6 で作った本文}
-EOF
-) \
-  --label "$LABELS"
-```
+| 引数 | 渡す値 |
+|---|---|
+| `title` | finding のタイトル |
+| `body` | ステップ 6 で組み立てた本文 |
+| `type` | finding の種別（`bug` / `enhancement` / `refactor` など） |
+| `priority` | finding の優先度（`priority-high` / `priority-medium` / `priority-low`） |
+| `needs_user_review` | ステップ 5 の判定結果（`true` / `false`） |
+| `extra_labels` | `ai-code-scan`（コードスキャン起票の出自タグ） |
 
 ## 戻り値
 
