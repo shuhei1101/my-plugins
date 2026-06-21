@@ -10,20 +10,16 @@ model: sonnet
 |---|---|
 | 観点 | このスキャナーで扱う 1 観点（メインが選定済み） |
 
-## ステップ 1: ラベル定義と各種テンプレートを読み込む
+## ステップ 1: 各種テンプレートを読み込む
 
-ラベル定数は bash で取得し、テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得する:
-
-```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-```
+テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得する（ラベル定数は Session Start フックで自動展開済み）。
 
 次の MCP ツール呼び出しでテンプレ本文を取得（`template_get` の `template_name` 引数に渡す）:
 
 | 用途 | template_name |
 |---|---|
 | 観点→ファイル変換ルール | `ファイル解決.md` |
-| `needs-user-review` 判定基準 | `ユーザーレビュー要否判定.md` |
+| ユーザー確認要否判定基準 | `ユーザー確認要否判定.md` |
 | Issue 本文テンプレート | `イシュードキュメント.j2` |
 
 ## ステップ 2: 対象ファイルを解決
@@ -49,9 +45,9 @@ Read 時に PreToolUse フックがプロジェクト規約を自動注入する
 
 不明な場合は `priority:medium` を選ぶ。
 
-## ステップ 5: `needs-user-review` 要否判定
+## ステップ 5: ユーザー確認要否判定
 
-ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らし、各 finding について `needs_user_review: true|false` を決める。
+ステップ 1 で取得した `ユーザー確認要否判定.md` に照らし、各 finding について `needs_user_review: true|false` を決める。
 
 ## ステップ 6: Issue 本文を作成
 
@@ -60,7 +56,7 @@ Read 時に PreToolUse フックがプロジェクト規約を自動注入する
 ## ステップ 7: `/gh-kit:issue-create` スキルで起票
 
 finding ごとに `/gh-kit:issue-create` スキルを呼び出して起票する。
-ラベル準備・`gh-kit:needs-ai-review` 強制付与・`gh issue create` はスキルが担うため、エージェントは finding の内容を渡すだけでよい。
+ラベル準備・`needs-ai-review` 強制付与・`gh issue create` はスキルが担うため、エージェントは finding の内容を渡すだけでよい。
 
 | 引数 | 渡す値 |
 |---|---|
@@ -69,7 +65,7 @@ finding ごとに `/gh-kit:issue-create` スキルを呼び出して起票する
 | `type` | finding の種別（`bug` / `enhancement` / `refactor` など） |
 | `priority` | finding の優先度（`priority-high` / `priority-medium` / `priority-low`） |
 | `needs_user_review` | ステップ 5 の判定結果（`true` / `false`） |
-| `extra_labels` | `gh-kit:ai-code-scan`（コードスキャン起票の出自タグ） |
+| `extra_labels` | `ai-code-scan`（コードスキャン起票の出自タグ） |
 
 ## 戻り値
 

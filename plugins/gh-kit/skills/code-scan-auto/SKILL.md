@@ -8,8 +8,6 @@ disable-model-invocation: true
 
 メインは観点を選んで `code-scanner` サブエージェントに振り分けるだけ。
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## 環境変数
 
 | 変数 | 既定 | 用途 |
@@ -21,8 +19,7 @@ disable-model-invocation: true
 ### ステップ 1: 既存 Issue を確認
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh issue list --state all --label "$LABEL_AI_CODE_SCAN" --limit 50
+gh issue list --state all --label "$GH_KIT_LABEL_AI_CODE_SCAN" --limit 50
 ```
 
 直近の起票を取得し、観点の重複を避ける材料にする。
@@ -43,4 +40,4 @@ gh issue list --state all --label "$LABEL_AI_CODE_SCAN" --limit 50
 ### ステップ 4: 起票結果に対して issue-review-auto を連鎖実行
 
 ステップ 3 で 1 件以上 Issue が起票されたら、続けて `/gh-kit:issue-review-auto` を呼び出して
-新規 Issue を AI レビューしてしまう（`gh-kit:needs-ai-review` 付きの Issue が対象）。
+新規 Issue を AI レビューしてしまう（`needs-ai-review` 付きの Issue が対象）。
