@@ -4,6 +4,8 @@ description: 既存 Draft PR の中身を実装し、Ready 化して返すエー
 model: sonnet
 ---
 
+!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
+
 ## 入力
 
 | 引数 | 内容 |
@@ -12,49 +14,44 @@ model: sonnet
 | ブランチ名 | 例: `feat/issue-42-router` |
 | base ブランチ | 通常 `master` |
 | Issue 番号 | 紐づく Issue 番号 |
-| 採用方針 | Issue コメント `issue-review` 結果から抽出した実装方針 |
+| 採用方針 | Issue コメントの `issue-reviewer` 結果から抽出 |
 | 分割スコープ | この PR で扱うスコープ |
 
-## ステップ 1: ワークツリーを復帰
-
-| 状況 | 動作 |
-|---|---|
-| `.claude/worktrees/{type}-{title}` がある | そのまま使う |
-| ない | `worktree_create` MCP ツール（work-tools サーバー）で作成 |
-
-remote と同期:
+## ステップ 1: ワークツリー復帰 + remote 同期
 
 ```bash
-git -C {WORKTREE} fetch origin
-git -C {WORKTREE} reset --hard origin/{BRANCH}
+WT=".claude/worktrees/$(echo {branch} | tr '/' '-')"
+if [ ! -d "$WT" ]; then
+  # ワークツリーが無ければ /work:start で作成
+  echo "worktree missing, please run /work:start with branch={branch}" >&2
+  exit 1
+fi
+git -C "$WT" fetch origin
+git -C "$WT" reset --hard origin/{branch}
 ```
 
 ## ステップ 2: 実装
 
-採用方針と分割スコープに従って実装する。
-雛形 `PR.md` のチェックボックスを進捗に応じて更新する。
+採用方針と分割スコープに従って実装する。コミットは細かく刻んでよい。
 
 | No | 動作 |
 |---|---|
 | 1 | 採用方針の通りにコード変更 |
 | 2 | 影響範囲のテストを追加/更新 |
 | 3 | プロジェクトのテストを実行 |
-| 4 | `.work/notes/` の関連ノート更新（対象の領域に影響を与える場合のみ） |
 
 ## ステップ 3: push
 
 ```bash
-git -C {WORKTREE} push origin {BRANCH}
+git -C "$WT" push origin {branch}
 ```
 
-## ステップ 4: `needs-user-review` 要否を判定
+## ステップ 4: `needs-user-review` 要否を再判定
 
-判定基準を直展開する:
+!`cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"`
 
-!`cat "${GH_KIT_USER_REVIEW_CRITERIA_PATH:-${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md}"`
-
-実装結果（実コード変更内容）から `needs_user_review: true|false` を再判定する。
-Issue 起票時と判断が変わる可能性あり（例: refactor のはずが仕様に踏み込んだ場合は true）。
+実装結果（実コード変更内容）から判定する。
+Issue 起票時の判断と変わる可能性あり（例: refactor 想定だったが仕様に踏み込んだ場合は true）。
 
 ## ステップ 5: PR を Ready 化
 
@@ -63,7 +60,7 @@ gh pr ready {PR_NUMBER}
 gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サマリ}"
 ```
 
-ラベル付与（`needs-ai-review` / `needs-user-review`）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
+ラベル付与（`$LABEL_NEEDS_AI_REVIEW` / `$LABEL_NEEDS_USER_REVIEW`）は呼び出し側の責務。
 
 ## ステップ 6: 戻り値
 
@@ -84,5 +81,5 @@ gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サ
 |---|---|
 | 1 | 新規ブランチ・新規 PR は作成しない |
 | 2 | マージはしない |
-| 3 | コンフリクトが発生したら親に報告して停止 |
+| 3 | コンフリクトが出たら親に報告して停止（`-X ours/theirs` 禁止） |
 | 4 | `git push --force` は使わない |

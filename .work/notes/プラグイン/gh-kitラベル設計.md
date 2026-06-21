@@ -39,21 +39,21 @@ gh-kit プラグインは Issue と PR を GitHub のラベルで状態管理す
 stateDiagram-v2
   [*] --> Open: gh issue create
   Open --> NeedsAIReview: needs-ai-review 自動付与（作成側が）
-  NeedsAIReview --> Processing: /gh-kit:issue-review 取得時
+  NeedsAIReview --> Processing: /gh-kit:issue-review-auto 取得時
   Processing --> NeedsUserReview: AI レビュー完了 (needs-ai-review 除去・必要なら needs-user-review 付与)
   NeedsUserReview --> Ready: ユーザー回答 → needs-user-review 除去
   Processing --> Ready: AI 判定で needs-user-review 不要だった場合 (即 ready)
-  Ready --> PrWipCreating: /gh-kit:pr-wip-create が拾う (processing 付与)
+  Ready --> PrWipCreating: /gh-kit:pr-wip-create-auto が拾う (processing 付与)
   PrWipCreating --> Closed: PR がマージされて GitHub が自動 close
 ```
 
-「Ready」= needs-* なし、open、質問にすべて回答済み。`/gh-kit:pr-wip-create` の対象。
+「Ready」= needs-* なし、open、質問にすべて回答済み。`/gh-kit:pr-wip-create-auto` の対象。
 
 ### PR
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Draft_wip: /gh-kit:pr-wip-create で wip 付与
+  [*] --> Draft_wip: /gh-kit:pr-wip-create-auto で wip 付与
   Draft_wip --> Processing: /gh-kit:pr-implement-auto 取得時 (processing 付与・wip 除去)
   Processing --> NeedsAIReview: 実装完了 (processing 除去・needs-ai-review 付与・必要なら needs-user-review・draft 解除)
   NeedsAIReview --> Reviewing: /gh-kit:pr-review-auto 取得時 (processing 付与)
@@ -73,19 +73,19 @@ stateDiagram-v2
 1. AI（`code-scanner`）または人間が Issue 作成
 2. AI が `needs-ai-review` を自動付与
    - `code-scanner` 起票なら起票時に
-   - 人間起票なら `/gh-kit:issue-review` 起動時に「未付与なら付ける」
+   - 人間起票なら `/gh-kit:issue-review-auto` 起動時に「未付与なら付ける」
 3. AI が `templates/ユーザーレビュー要否判定.md` に従い `needs-user-review` を付けるか判定して必要なら付与
-4. `/gh-kit:issue-review` が `needs-ai-review` 付きを拾う → `processing` 付与
+4. `/gh-kit:issue-review-auto` が `needs-ai-review` 付きを拾う → `processing` 付与
 5. AI レビュー実施（実装方針案・QA todo・分割提案）
 6. 完了 → `processing` 除去、`needs-ai-review` 除去、コメント投稿
 7. ユーザーが QA todo にチェックを入れる
 8. ユーザーが内容に満足したら `needs-user-review` を手動で外す（不要なら最初から付いてない）
 9. **次工程に進める条件**: open + needs-* なし + processing なし + 質問の todo がすべて埋まっている
-10. `/gh-kit:pr-wip-create` の対象になる
+10. `/gh-kit:pr-wip-create-auto` の対象になる
 
 ### PR 側
 
-1. `/gh-kit:pr-wip-create` が Issue から Draft PR を作成し `wip` 付与
+1. `/gh-kit:pr-wip-create-auto` が Issue から Draft PR を作成し `wip` 付与
 2. `/gh-kit:pr-implement-auto` が `wip` を拾う → `processing` 付与、`wip` 除去
 3. 実装完了 → `processing` 除去、`needs-ai-review` を必ず付与、`needs-user-review` を必要に応じて付与、`gh pr ready` で draft 解除
 4. `/gh-kit:pr-review-auto` が `needs-ai-review` を拾う → `processing` 付与

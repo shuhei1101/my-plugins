@@ -6,20 +6,14 @@ description: コードベースを観点ごとにスキャンし、見つかっ�
 # code-scan-auto
 
 メインは観点を選んで `code-scanner` サブエージェントに振り分けるだけ。
-起票はスキャナーが `gh issue create` で直接行う。
+
+!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
 ## 環境変数
 
 | 変数 | 既定 | 用途 |
 |---|---|---|
-| `GH_KIT_CODE_SCAN_PARALLEL` | `5` | 1 回のスキャンで起動するスキャナー数 |
-| `GH_KIT_SCAN_PERSPECTIVES_PATH` | （未設定時は同梱版） | スキャン観点メニューのパス |
-
-## ラベル定義の読み込み
-
-```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-```
+| `GH_KIT_CODE_SCAN_PARALLEL` | `5` | 並列起動するスキャナー数 |
 
 ## タスク
 
@@ -33,22 +27,18 @@ gh issue list --state all --label "$LABEL_AI_CODE_SCAN" --limit 50
 
 ### ステップ 2: スキャン観点を N 件選ぶ
 
-スキャン観点メニューを直展開する（未設定なら同梱版）。
+!`cat "${CLAUDE_PLUGIN_ROOT}/templates/観点メニュー.md"`
 
-!`cat "${GH_KIT_SCAN_PERSPECTIVES_PATH:-${CLAUDE_PLUGIN_ROOT}/templates/スキャン観点.md}"`
-
-このメニューから既存 Issue とかぶらない観点を **N** 件選ぶ。
+このメニューから既存 Issue とかぶらない観点を **N** 件（`GH_KIT_CODE_SCAN_PARALLEL`）選ぶ。
 
 ### ステップ 3: code-scanner を並列起動
 
 [サブエージェントで並列実行・完了を待つ] 観点ごとに `code-scanner` を 1 体ずつ並列起動する。
-（戻り値: `[{issue_number, issue_url, title}]` の配列）
+（戻り値: `[{issue_number, issue_url, title}]`）
 
-各サブエージェントに渡す入力: 観点（このメニューから 1 件抜粋）
+各サブエージェントに渡す入力: 観点（メニューから 1 件抜粋）
 
-### ステップ 4: 完了報告
+### ステップ 4: 起票結果に対して issue-review-auto を連鎖実行
 
-| No | 報告項目 |
-|---|---|
-| 1 | 起票された Issue 番号と URL の一覧 |
-| 2 | findings 0 件で終わった観点（あれば） |
+ステップ 3 で 1 件以上 Issue が起票されたら、続けて `/gh-kit:issue-review-auto` を呼び出して
+新規 Issue を AI レビューしてしまう（`needs-ai-review` 付きの Issue が対象）。
