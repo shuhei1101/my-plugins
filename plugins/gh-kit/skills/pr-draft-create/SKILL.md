@@ -65,7 +65,24 @@ EOF
 - 必ず `--draft` を付ける。
 - ラベル付与（`wip` 等）は呼び出し側（`/gh-kit:pr-draft-create-auto`）の責務。
 
-## ステップ 6: 戻り値
+## ステップ 6: Issue の優先度ラベルを PR に継承
+
+Issue に `優先度:急ぎ` または `優先度:いつでも` ラベルが付いていれば、同じラベルを Draft PR にも付与する。
+これにより `pr-implement-auto` と `pr-review-auto` の優先度順処理が正しく機能する。
+
+```bash
+# Issue のラベルを取得
+ISSUE_LABELS=$(gh issue view {Issue 番号} --json labels --jq '.labels | map(.name) | .[]')
+
+# 優先度ラベルを PR に継承
+if echo "$ISSUE_LABELS" | grep -q "優先度:急ぎ"; then
+  gh pr edit {pr_number} --add-label "優先度:急ぎ"
+elif echo "$ISSUE_LABELS" | grep -q "優先度:いつでも"; then
+  gh pr edit {pr_number} --add-label "優先度:いつでも"
+fi
+```
+
+## ステップ 7: 戻り値
 
 ```json
 {

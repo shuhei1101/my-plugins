@@ -1,16 +1,16 @@
 ---
 name: gh-kit:pr-review-auto
-description: needs-ai-review の Ready PR を 1 件ずつ直列でレビューし、合格 + assignees なしならマージまで実行
+description: 確認:issue-reviewer の Ready PR を 1 件ずつ直列でレビューし、合格 + assignees なしならマージまで実行
 disable-model-invocation: true
 ---
 
 # pr-review-auto
 
-`needs-ai-review` 付き Ready PR をキューとして 1 件ずつ消化する。
+`確認:issue-reviewer` 付き Ready PR をキューとして 1 件ずつ消化する。
 **並列実行は絶対にしない**（master 取り込みとマージが競合してバグるため）。
 
 PR に assignees が設定されている場合はレビューだけ実施してマージしない。
-ユーザーが assignees を外したら別途再エントリー（`needs-ai-review` を付け直す）。
+ユーザーが assignees を外したら別途再エントリー（`確認:issue-reviewer` を付け直す）。
 
 ## タスク
 
@@ -19,7 +19,7 @@ PR に assignees が設定されている場合はレビューだけ実施して
 対象 PR が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `needs-ai-review` ラベル付きの Ready（非 Draft）PR（`processing` 付きは除外）。
+対象条件: `確認:issue-reviewer` ラベル付きの Ready（非 Draft）PR（`処理中` 付きは除外）。
 直列制約は維持（Monitor 検知後もステップ 1→4 の直列ループを継続する）。
 
 ```bash
@@ -49,13 +49,23 @@ gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
   --json number,title,headRefName,baseRefName,statusCheckRollup,labels --limit 50
 ```
 
-`processing` 付きは除外。`created_at` 昇順。
+`処理中` 付きは除外。`優先度:急ぎ` 付き PR を先頭に、次に `優先度:いつでも` 付き、それ以外は番号昇順でキューを形成する:
+
+```bash
+# jq でラベル名に「優先度:急ぎ」を含むものを先頭に、次に「優先度:いつでも」、残りは番号昇順
+jq 'sort_by(
+  if (.labels | map(.name) | index("優先度:急ぎ")) then 0
+  elif (.labels | map(.name) | index("優先度:いつでも")) then 1
+  else 2
+  end, .number
+)'
+```
 
 ### ステップ 2: 上から 1 件取り出す
 
 ```bash
 gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
-# 紐づく Issue に processing:pr-review を付与
+# 紐づく Issue に 処理中:pr-review を付与
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
   gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"
@@ -77,7 +87,7 @@ CI が failure なら failed へ。
 ### ステップ 4: 後処理
 
 ```bash
-# 全 verdict 共通: Issue の processing:pr-review を除去
+# 全 verdict 共通: Issue の 処理中:pr-review を除去
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 ```
 

@@ -14,7 +14,7 @@ disable-model-invocation: true
 | No | 条件 |
 |---|---|
 | 1 | `state: open` |
-| 2 | `needs-ai-review` / `needs-fix` / `processing` のいずれも付いていない |
+| 2 | `確認:issue-reviewer` / `確認:pr-implementer` / `処理中` のいずれも付いていない |
 | 3 | `assignees` が空（ユーザー確認待ちでない） |
 | 4 | Issue 本文・コメントの `- [ ]` がすべて埋まっている（推奨案・QA 回答が選択済み） |
 
@@ -38,12 +38,12 @@ disable-model-invocation: true
 対象 Issue が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `state: open` かつ `gh-kit:needs-ai-review` / `gh-kit:needs-fix` / `gh-kit:processing` のいずれも付いていない Issue かつ `assignees` が空。
+対象条件: `state: open` かつ `確認:issue-reviewer` / `確認:pr-implementer` / `処理中` のいずれも付いていない Issue かつ `assignees` が空。
 
 ```bash
 # Monitor に渡すポーリングスクリプト
 while true; do
-  # needs-* / processing なし・open の Issue を取得
+  # 確認:* / 処理中 なし・open の Issue を取得
   AVAILABLE=$(gh issue list --state open \
     --json number,labels \
     --jq "[.[] | select(
@@ -71,7 +71,19 @@ Monitor の stdout に `TRIGGER:pr-draft-create-auto` が来たらステップ 1
 gh issue list --state open --json number,title,body,labels,assignees,comments --limit 100
 ```
 
-`needs-ai-review` / `needs-fix` / `processing` のいずれも含まず、`assignees` が空で、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
+`確認:issue-reviewer` / `確認:pr-implementer` / `処理中` のいずれも含まず、`assignees` が空で、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
+
+フィルタ後、`優先度:急ぎ` ラベルが付いている Issue を先頭に並べ、次に `優先度:いつでも` 付き、それ以外は番号昇順で処理する:
+
+```bash
+# jq でラベル名に「優先度:急ぎ」を含むものを先頭に、次に「優先度:いつでも」、残りは番号昇順
+jq 'sort_by(
+  if (.labels | map(.name) | index("優先度:急ぎ")) then 0
+  elif (.labels | map(.name) | index("優先度:いつでも")) then 1
+  else 2
+  end, .number
+)'
+```
 
 ### ステップ 2: 各 Issue から作る Draft PR 数を決定
 
