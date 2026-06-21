@@ -169,6 +169,40 @@ EOF
 )
 ```
 
+## ステップ 5.5: タイプラベル判定・付与
+
+Issue 本文・タイトル・補完コメント（ステップ 4）の内容から、適切な `type:*` ラベルを判定して付与する。
+
+### 判定基準
+
+| type ラベル | 付与条件 |
+|---|---|
+| `type:bug` | 既存の動作が仕様または期待と異なる問題の修正 |
+| `type:feat` | 新機能追加・既存機能の有意な拡張 |
+| `type:refactor` | 外部動作を変えずにコードを整理・改善 |
+| `type:docs` | ドキュメント・コメントのみの変更 |
+| `type:chore` | ビルド設定・依存更新・CI/CD など |
+| `type:test` | テストコードの追加・修正のみ |
+
+いずれにも当てはまらない場合は `type:feat` を選ぶ（デフォルト）。
+
+### ラベルを冪等に用意して付与
+
+```bash
+# 選んだタイプラベルを変数に設定（例: TYPE_LABEL="type:bug"）
+TYPE_LABEL="type:{判定したタイプ}"
+
+# ラベルが存在しなければ作成（冪等）
+gh label list | grep -q "^${TYPE_LABEL}" || \
+  gh label create "${TYPE_LABEL}" --color "0075CA" --description "Issue タイプ: ${TYPE_LABEL}"
+
+# Issue に付与
+gh issue edit {N} --add-label "${TYPE_LABEL}"
+```
+
+`ai-code-scan` ラベルがある（AI 起票）場合もこのステップを実行する（`code-scanner` が付与済みの場合は `--add-label` が冪等で安全）。
+既に `type:*` ラベルが付与されている場合はスキップ。
+
 ## ステップ 6: ユーザー確認要否判定
 
 ステップ 1 で取得した `ユーザー確認要否判定.md` に照らして判定する。
