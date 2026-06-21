@@ -186,3 +186,11 @@ branches:
   summary: MCPサーバー経由の呼び出しでassert_not_protected_branchがmaster上でexit 1してしまうバグを修正。環境変数バイパスを追加する。
   task: 260617_work-tools-MCPブランチガードバイパス修正
   completed: true
+- branch: feat/new-gh-plugin
+  created: '2026-06-18'
+  title: gh プラグインを追加
+  type: feat
+  summary: GitHub MCP 同梱の新プラグイン gh を追加し、issue-scan/issue-resolve/auto-merge/pr-review
+    の 4 スキルと対応サブエージェントを実装する
+  task: 260618_gh-プラグイン追加
+  completed: true
