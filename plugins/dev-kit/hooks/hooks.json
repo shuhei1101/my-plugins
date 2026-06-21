@@ -9,7 +9,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/inject_rules.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use/inject_rules.py"
             ]
           }
         ]
@@ -23,7 +23,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/clear_session_token.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact/clear_session_token.py"
             ]
           }
         ]
