@@ -20,7 +20,7 @@
       "name": "gh-kit",
       "source": "./plugins/gh-kit",
       "description": "GitHub Issues/PR/Wiki + ワークツリー操作のフルキット（gh CLI + Jinja2 テンプレ + template_get/worktree_create/worktree_remove MCP + pre-merge-check + Wiki ページ作成）。リモート PR 駆動の自走フロー一式",
-      "version": "0.25"
+      "version": "0.27"
     }
   ]
 }
