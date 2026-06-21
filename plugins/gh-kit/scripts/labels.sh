@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # gh-kit ラベル名定義。SKILL/agent 先頭で `!\`cat\`` 展開して読み込む。
+# すべての gh-kit フロー専用ラベルは "gh-kit:" プレフィックス付き。
 
-LABEL_PROCESSING="processing"
-LABEL_NEEDS_AI_REVIEW="needs-ai-review"
-LABEL_NEEDS_USER_REVIEW="needs-user-review"
-LABEL_NEEDS_FIX="needs-fix"
-LABEL_AI_CODE_SCAN="ai-code-scan"
-LABEL_WIP="wip"
+LABEL_PROCESSING="gh-kit:processing"
+LABEL_NEEDS_AI_REVIEW="gh-kit:needs-ai-review"
+LABEL_NEEDS_USER_REVIEW="gh-kit:needs-user-review"
+LABEL_NEEDS_FIX="gh-kit:needs-fix"
+LABEL_AI_CODE_SCAN="gh-kit:ai-code-scan"
+LABEL_WIP="gh-kit:wip"
 
 LABEL_COLOR_PROCESSING="FBCA04"
 LABEL_COLOR_NEEDS_AI_REVIEW="0E8A16"

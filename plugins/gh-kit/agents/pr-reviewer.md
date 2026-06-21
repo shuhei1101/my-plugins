@@ -14,7 +14,7 @@ model: sonnet
 | ベースブランチ | 例: `master` |
 | ヘッドブランチ | 例: `feat/foo-bar` |
 | リポジトリ root | メインリポジトリの絶対パス |
-| 現在ラベル一覧 | `needs-user-review` の有無を判定するのに使う |
+| 現在ラベル一覧 | `gh-kit:needs-user-review` の有無を判定するのに使う |
 
 ## タスク
 
