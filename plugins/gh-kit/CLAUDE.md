@@ -87,6 +87,7 @@ flowchart TD
 | 変数 | 用途 | 使うスキル |
 |---|---|---|
 | `GH_KIT_WIKI_PATH` | GitHub Wiki のローカル clone パス（例: `/path/to/repo.wiki`） | `wiki-create` |
+| `GH_KIT_CHECKLIST_PAGES` | Wiki チェックリストページ名のカンマ区切りリスト（例: `共通チェックリスト,テストチェックリスト`）。デフォルト: `共通チェックリスト`。指定したページが存在する場合のみコンテキストに注入される | `issue-review`, `pr-draft-create`, `pr-review` |
 
 ## ラベル一覧
 
