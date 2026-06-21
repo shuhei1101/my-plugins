@@ -23,7 +23,7 @@ model: sonnet
 | 用途 | template_name |
 |---|---|
 | 観点→ファイル変換ルール | `ファイル解決.md` |
-| `needs-user-review` 判定基準 | `ユーザーレビュー要否判定.md` |
+| ユーザー確認要否判定基準 | `ユーザー確認要否判定.md` |
 | Issue 本文テンプレート | `イシュードキュメント.j2` |
 
 ## ステップ 2: 対象ファイルを解決
@@ -39,9 +39,9 @@ Read 時に PreToolUse フックがプロジェクト規約を自動注入する
 
 注入されたルール + 一般的なコード品質観点に照らし、独立対応単位ごとに 1 件 = 1 Issue として findings を作る。
 
-## ステップ 5: `needs-user-review` 要否判定
+## ステップ 5: ユーザー確認要否判定
 
-ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らし、各 finding について `needs_user_review: true|false` を決める。
+ステップ 1 で取得した `ユーザー確認要否判定.md` に照らし、各 finding について `needs_user_review: true|false` を決める。
 
 ## ステップ 6: Issue 本文を作成
 

@@ -37,7 +37,7 @@ flowchart TD
 | 5 | `/gh-kit:pr-draft-create` | 1 Issue から Draft PR を 1 件作成（`pr-draft-creator` エージェントの実装本体） |
 | 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
 | 7 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
-| 8 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
+| 8 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + assignees 未設定ならマージ |
 | 9 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
 
 ## サブエージェント一覧
@@ -48,7 +48,7 @@ flowchart TD
 | 1a | `issue-creator` | `/gh-kit:issue-create` | `issue-create` スキルの薄ラッパー（Agent ツール経由での起票に使用） |
 | 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | `gh-kit:issue-review` スキルの薄ラッパー。1 Issue をレビューし戻り値を返す |
 | 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `worktree_create` MCP + 雛形コミット + Draft PR 起票 |
-| 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、`needs-user-review` 要否を返す |
+| 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、ユーザー確認要否を返す |
 | 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は base 取り込み・マージ・`worktree_remove`・push まで自走 |
 
 ## 共通リソース

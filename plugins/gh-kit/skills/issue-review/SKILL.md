@@ -24,7 +24,7 @@ Fetch template bodies via the `gh-kit-tools` MCP `template_get` tool:
 |---|---|
 | Issue body template | `イシュードキュメント.j2` |
 | Review result comment | `レビュー結果コメント.j2` |
-| `needs-user-review` criteria | `ユーザーレビュー要否判定.md` |
+| User review criteria | `ユーザー確認要否判定.md` |
 
 ## Step 2: Fetch Issue and labels
 
@@ -75,9 +75,9 @@ EOF
 )
 ```
 
-## Step 6: `needs-user-review` judgment
+## Step 6: User review judgment
 
-Evaluate against `ユーザーレビュー要否判定.md` fetched in Step 1.
+Evaluate against `ユーザー確認要否判定.md` fetched in Step 1.
 Unconditionally `true` when Step 5 includes questions or a split proposal.
 
 ## Step 7: Return value

@@ -18,7 +18,7 @@ Issue 起票後に AI レビューフロー（`/gh-kit:issue-review-auto`）が�
 | `body` | 必須 | Issue 本文（`イシュードキュメント.j2` テンプレを呼び出し側が展開済み） |
 | `type` | 必須 | Issue タイプラベル（例: `bug`, `enhancement`, `refactor`） |
 | `priority` | 必須 | 優先度ラベル（例: `priority-high`, `priority-medium`, `priority-low`） |
-| `needs_user_review` | 任意 | `true` の場合 `needs-user-review` ラベルを追加（既定: `false`） |
+| `needs_user_review` | 任意 | `true` の場合 `gh issue edit --add-assignee` でユーザーをアサイン（既定: `false`） |
 | `extra_labels` | 任意 | 追加ラベルのカンマ区切り文字列（既定: なし） |
 
 ## 動作フロー
