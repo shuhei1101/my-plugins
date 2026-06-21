@@ -162,6 +162,8 @@ EOF
 ステップ 1 で取得した `レビュー結果コメント.j2` に沿って実装方針 / 質問 / 分割提案 / 影響範囲を書く。
 質問・分割提案がなければ該当セクションごと省略。
 
+**Omission rule for the "対応案" section**: If the Issue body (or the body-supplement comment posted in Step 4) already contains a "対応案" section, **omit the "対応案" section** from the review-result comment entirely. Do not duplicate it.
+
 ```bash
 gh issue comment {N} --body-file <(cat <<'EOF'
 {レビュー結果本文}
