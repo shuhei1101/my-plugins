@@ -39,6 +39,78 @@ Determine the origin from label presence:
 | `ai-code-scan` present | claude code (`code-scanner`) | Template-compliant, complete |
 | absent | Human | May be missing sections (overview, background, etc.) |
 
+## Step 2.5: Search for similar Issues
+
+Extract 2–4 keywords from the Issue title and body, then search for open Issues using `gh issue list`:
+
+```bash
+# Run for each keyword combination (2–3 searches total, skip closed issues)
+gh issue list --state open --search "{keyword1} {keyword2}" --json number,title,body --limit 20
+```
+
+Exclude the Issue being reviewed from results.
+Collect up to 20 candidates total across all searches.
+
+## Step 2.6: Similarity judgment and branching
+
+Using the candidate list from Step 2.5, use LLM to judge similarity for each candidate.
+
+Classify each pair as one of three categories:
+
+| Category | Definition | Action |
+|---|---|---|
+| `partial_overlap` | Current Issue contains information not in the existing Issue, but topics overlap | Transfer additional info to existing Issue as comment → close current Issue with reference link |
+| `full_duplicate` | Current Issue is completely covered by an existing Issue | Close current Issue with reference link (no comment transfer) |
+| `unrelated` | No meaningful overlap | Skip (proceed to Step 3) |
+
+**partial_overlap processing:**
+
+```bash
+# 1. Extract and summarize differential information (info in current Issue but not in existing Issue)
+# 2. Post the extracted content as a comment on the existing Issue
+gh issue comment {EXISTING_N} --body-file <(cat <<'EOF'
+> 🤖 issue-reviewer による関連 Issue からの情報追記
+
+## 追記情報（Issue #{N} より）
+
+{差分要約: 既存 Issue に含まれていない追加情報のみを記載}
+
+元 Issue: #{N}
+EOF
+)
+
+# 3. Close the current Issue with a reference comment
+gh issue comment {N} --body-file <(cat <<'EOF'
+> 🤖 issue-reviewer による重複検出
+
+類似する Issue #{EXISTING_N} が既に存在するため、この Issue をクローズします。
+追加情報は #{EXISTING_N} にコメントとして転記しました。
+
+移行先 Issue: {EXISTING_ISSUE_URL}
+EOF
+)
+gh issue close {N}
+```
+
+**full_duplicate processing:**
+
+```bash
+# Close the current Issue with a reference comment
+gh issue comment {N} --body-file <(cat <<'EOF'
+> 🤖 issue-reviewer による重複検出
+
+Issue #{EXISTING_N} と完全に重複しているため、この Issue をクローズします。
+
+既存 Issue: {EXISTING_ISSUE_URL}
+EOF
+)
+gh issue close {N}
+```
+
+When a `partial_overlap` or `full_duplicate` is found, **skip Steps 3–6** and jump directly to Step 7 with `status: "duplicate_merged"` or `status: "duplicate_closed"`.
+
+If multiple candidates are found, prioritize by: highest similarity → smallest Issue number (oldest).
+
 ## Step 3: Read codebase
 
 Use the Read tool to check the areas and related files mentioned in the Issue.
@@ -89,6 +161,14 @@ Unconditionally `true` when Step 5 includes questions or a split proposal.
   "status": "ok"
 }
 ```
+
+`status` possible values:
+
+| Value | Meaning |
+|---|---|
+| `ok` | Normal review completed |
+| `duplicate_merged` | Partial overlap — differential info transferred to existing Issue, current Issue closed |
+| `duplicate_closed` | Full duplicate — current Issue closed with reference link |
 
 Label updates are the caller's responsibility (`issue-review-auto`).
 

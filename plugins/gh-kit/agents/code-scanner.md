@@ -39,6 +39,16 @@ Read 時に PreToolUse フックがプロジェクト規約を自動注入する
 
 注入されたルール + 一般的なコード品質観点に照らし、独立対応単位ごとに 1 件 = 1 Issue として findings を作る。
 
+各 finding の severity を次のマッピングで `priority` に変換する:
+
+| severity | priority ラベル | 判定基準 |
+|---|---|---|
+| critical / high | `priority:high` | セキュリティ脆弱性、クラッシュバグ、データ損失リスク |
+| medium | `priority:medium` | 機能不全、パフォーマンス劣化、重大なロジックエラー |
+| low | `priority:low` | コード品質（可読性・命名・重複）、ドキュメント不足 |
+
+不明な場合は `priority:medium` を選ぶ。
+
 ## ステップ 5: `needs-user-review` 要否判定
 
 ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らし、各 finding について `needs_user_review: true|false` を決める。

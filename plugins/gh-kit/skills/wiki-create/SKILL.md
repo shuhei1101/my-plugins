@@ -17,6 +17,19 @@ description: GitHub Wiki に新規ページを 1 件作成して push する。�
 未設定時は停止。`.claude/settings.local.json` で設定する想定。
 未クローンなら `gh repo view --json url -q .url` の URL に `.wiki.git` を付けて clone するようユーザーへ案内。
 
+## カテゴリ・Sidebar/Home 自動更新
+
+`--category` を指定すると以下が自動実行される:
+
+| No | 動作 |
+|---|---|
+| 1 | `_Sidebar.md` の該当カテゴリセクション末尾にリンク行を挿入する |
+| 2 | カテゴリが存在しない場合は `_Sidebar.md` 末尾に新規セクションを追加する |
+| 3 | カテゴリ階層は `##`（レベル2）・`###`（レベル3）の 2 段階まで |
+| 4 | `Home.md` を `_Sidebar.md` の内容から自動再生成する |
+
+カテゴリを指定しない場合は `_Sidebar.md` / `Home.md` の更新はスキップされる。
+
 ## ページ名規約
 
 | 項目 | 規約 |
@@ -48,15 +61,22 @@ description: GitHub Wiki に新規ページを 1 件作成して push する。�
 ```bash
 bash "${CLAUDE_PLUGIN_ROOT}/scripts/wiki-create.sh" \
   --page-name "{カテゴリ}-{対象名}.md" \
-  --body-file "{tmpファイルパス}"
+  --body-file "{tmpファイルパス}" \
+  --category "{カテゴリ名}" \
+  --category-level 2
 ```
+
+`--category` はオプション。省略時は `_Sidebar.md` / `Home.md` の更新をスキップする。
+`--category-level` は `2`（`##`）または `3`（`###`）を指定。デフォルトは `2`。
 
 スクリプトが以下を行う:
 
 | No | 動作 |
 |---|---|
 | 1 | `${GH_KIT_WIKI_PATH}/{page-name}` に本文を書き込む（既存なら上書き拒否で停止）|
-| 2 | Wiki リポで `git add` + `git commit` + `git push`（差分なしならスキップ）|
+| 2 | `--category` 指定時: `_Sidebar.md` の該当カテゴリにリンクを挿入（カテゴリ未存在なら新規追加）|
+| 3 | `--category` 指定時: `Home.md` を `_Sidebar.md` の内容から自動再生成 |
+| 4 | Wiki リポで `git add` + `git commit` + `git push`（差分なしならスキップ）|
 
 ### ステップ 4: 結果報告
 

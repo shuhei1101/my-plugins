@@ -1,23 +1,38 @@
-"""起動中の tmux セッション (ait-0〜10 / plg-1〜10) に /reload-plugins を送信する。
+"""起動中の全 tmux セッションに /reload-plugins を送信する。
 
 送信前に marketplace.py upgrade を実行してキャッシュを最新に更新する。
 自分自身が動いているセッションはターン処理中で入力を取りこぼすため、
 即時送信せず保留トークンを書く。Stop フック（reload_deferred.py）が
 ターン終了時にトークンを消費して遅延送信する。
 
+BLACKLIST_KEYWORDS のいずれかに glob パターンマッチするセッション名は除外する。
+例: ["*server*"] → "test-server-1" のようなセッションをスキップ
+
 # 実行方法
 python tools/reload_plugins.py
 """
 from __future__ import annotations
 
+import fnmatch
 import os
 import subprocess
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SESSIONS = [f"ait-{i}" for i in range(0, 11)] + [f"plg-{i}" for i in range(1, 11)]
+
+# ブラックリスト: glob パターンにマッチするセッション名は /reload-plugins を送信しない
+# 例: "*server*" → セッション名に "server" を含むものを除外
+BLACKLIST_KEYWORDS: list[str] = [
+    "*server*",
+]
+
 PENDING_DIR = Path.home() / ".claude" / "tokens" / "work" / "reload-pending"
+
+
+def _is_blacklisted(session: str) -> bool:
+    """セッション名がブラックリストの glob パターンにマッチするか判定する。"""
+    return any(fnmatch.fnmatch(session, pattern) for pattern in BLACKLIST_KEYWORDS)
 
 
 def _own_session() -> str | None:
@@ -40,7 +55,7 @@ def upgrade() -> None:
 
 
 def reload_plugins() -> None:
-    """起動中のセッションに /reload-plugins を送信する（自セッションは保留トークン化）。"""
+    """起動中の全セッションに /reload-plugins を送信する（自セッションは保留トークン化）。"""
     ls = subprocess.run(
         ["tmux", "ls", "-F", "#{session_name}"],
         capture_output=True,
@@ -50,10 +65,12 @@ def reload_plugins() -> None:
     if ls.returncode != 0:
         return
 
-    active = set(ls.stdout.strip().splitlines())
+    active = ls.stdout.strip().splitlines()
     own = _own_session()
-    for session in SESSIONS:
-        if session not in active:
+    for session in active:
+        # ブラックリストにマッチするセッションはスキップ
+        if _is_blacklisted(session):
+            print(f"スキップ（ブラックリスト）: {session}")
             continue
         # 自セッションはターン処理中のため即時送信せず、Stop フックに委ねる
         if session == own:
