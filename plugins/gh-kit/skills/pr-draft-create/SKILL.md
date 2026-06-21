@@ -19,6 +19,29 @@ description: "1 Issue から Draft PR を作成する: PR 本文テンプレ取�
 | base ブランチ | 必須 | 通常 `master` |
 | 分割スコープ | 任意 | 1 Issue 複数 PR の場合のスコープ名 |
 
+## ステップ 0: Wiki チェックリストを読み込む
+
+`GH_KIT_WIKI_PATH` と `GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをコンテキストに注入する。
+ページが存在しない場合は警告を出力して続行する（未設定プロジェクトでも従来通り動作する）。
+
+```bash
+IFS=',' read -ra PAGES <<< "${GH_KIT_CHECKLIST_PAGES:-共通チェックリスト}"
+for PAGE in "${PAGES[@]}"; do
+  PAGE=$(echo "$PAGE" | xargs)  # trim whitespace
+  if [ -n "$GH_KIT_WIKI_PATH" ]; then
+    FILE="$GH_KIT_WIKI_PATH/${PAGE}.md"
+    if [ -f "$FILE" ]; then
+      echo "# Wiki チェックリスト: $PAGE"
+      cat "$FILE"
+    else
+      echo "[INFO] Wiki チェックリストページが見つかりません: $FILE" >&2
+    fi
+  fi
+done
+```
+
+取得できたチェックリスト内容は、Draft PR 本文・タスクリストの作成時に参照する。
+
 ## ステップ 1: PR 本文テンプレートを取得
 
 `gh-kit-tools` MCP の `template_get` ツールを `template_name: "PRドキュメント.j2"` で呼ぶ。

@@ -13,6 +13,29 @@ GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿�
 |---|---|
 | Issue 番号 | 例: 42 |
 
+## ステップ 0: Wiki チェックリストを読み込む
+
+`GH_KIT_WIKI_PATH` と `GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをコンテキストに注入する。
+ページが存在しない場合は警告を出力して続行する（未設定プロジェクトでも従来通り動作する）。
+
+```bash
+IFS=',' read -ra PAGES <<< "${GH_KIT_CHECKLIST_PAGES:-共通チェックリスト}"
+for PAGE in "${PAGES[@]}"; do
+  PAGE=$(echo "$PAGE" | xargs)  # trim whitespace
+  if [ -n "$GH_KIT_WIKI_PATH" ]; then
+    FILE="$GH_KIT_WIKI_PATH/${PAGE}.md"
+    if [ -f "$FILE" ]; then
+      echo "# Wiki チェックリスト: $PAGE"
+      cat "$FILE"
+    else
+      echo "[INFO] Wiki チェックリストページが見つかりません: $FILE" >&2
+    fi
+  fi
+done
+```
+
+取得できたチェックリスト内容は、ステップ 5 のレビューで確認項目として参照する。
+
 ## ステップ 1: テンプレートを読み込む
 
 ラベル定数は Session Start フックで自動展開済み（`GH_KIT_LABEL_*` 変数が利用可能）。
