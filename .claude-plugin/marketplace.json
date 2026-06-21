@@ -8,7 +8,7 @@
       "name": "work",
       "source": "./plugins/work",
       "description": "ワークツリー駆動のブランチ作業基盤（start / merge / setup と保護フック群）",
-      "version": "2.0"
+      "version": "2.1"
     },
     {
       "name": "dev-kit",
