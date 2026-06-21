@@ -96,6 +96,21 @@ git -C {REPO_ROOT} merge --no-ff -m "{type}: {title}" {HEAD_BRANCH}
 git -C {REPO_ROOT} push origin {BASE_BRANCH}
 ```
 
+マージ完了後、紐づく Issue を Close し、`processing:*` ラベルを除去する。
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+# PR 本文から "Refs #N" または "Closes #N" で Issue 番号を抽出
+ISSUE_N=$(gh pr view {PR_NUMBER} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -n "$ISSUE_N" ]; then
+  gh issue close "$ISSUE_N"
+  gh issue edit "$ISSUE_N" \
+    --remove-label "$LABEL_PROCESSING_PR_DRAFT" \
+    --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT" \
+    --remove-label "$LABEL_PROCESSING_PR_REVIEW"
+fi
+```
+
 | 状況 | verdict |
 |---|---|
 | 全て成功 | `approved-merged` |
@@ -109,6 +124,21 @@ git -C {REPO_ROOT} push origin {BASE_BRANCH}
 ## ステップ 7-B: approved-user-review-pending
 
 マージしない。verdict = `approved-user-review-pending`、message に「ユーザーレビュー待ち」と理由。
+
+## ステップ 7-C: Drop（PR Close without merge）
+
+PR を `--close` した場合（failed / conflict）も `processing:*` ラベルを除去する（Issue は Close しない）。
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+ISSUE_N=$(gh pr view {PR_NUMBER} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -n "$ISSUE_N" ]; then
+  gh issue edit "$ISSUE_N" \
+    --remove-label "$LABEL_PROCESSING_PR_DRAFT" \
+    --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT" \
+    --remove-label "$LABEL_PROCESSING_PR_REVIEW"
+fi
+```
 
 ## ステップ 8: 戻り値
 

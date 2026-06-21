@@ -1,6 +1,7 @@
 ---
 name: gh-kit:pr-review-auto
 description: gh-kit:needs-ai-review の Ready PR を 1 件ずつ直列でレビューし、合格 + gh-kit:needs-user-review なしならマージまで実行
+disable-model-invocation: true
 ---
 
 # pr-review-auto
@@ -30,6 +31,11 @@ gh pr list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
 ```bash
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 gh pr edit {N} --add-label "$LABEL_PROCESSING"
+# 紐づく Issue に processing:pr-review を付与
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -n "$ISSUE_N" ]; then
+  gh issue edit "$ISSUE_N" --add-label "$LABEL_PROCESSING_PR_REVIEW"
+fi
 ```
 
 CI が failure なら failed へ。
@@ -48,14 +54,16 @@ CI が failure なら failed へ。
 
 ```bash
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+# 全 verdict 共通: Issue の processing:pr-review を除去
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 ```
 
 | verdict | 動作 |
 |---|---|
-| approved-merged | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（マージは pr-reviewer が実施済み） |
-| approved-user-review-pending | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（`gh-kit:needs-user-review` は残す） |
-| changes-requested | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"` |
-| conflict / failed | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX" --add-label "$LABEL_NEEDS_USER_REVIEW" && gh pr comment {N} --body "{詳細}"` |
+| approved-merged | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（マージは pr-reviewer が実施済み）+ `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
+| approved-user-review-pending | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（`gh-kit:needs-user-review` は残す）+ `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
+| changes-requested | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"` + `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
+| conflict / failed | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX" --add-label "$LABEL_NEEDS_USER_REVIEW" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
 
 ステップ 2 に戻ってキューが空になるまで繰り返す。
 

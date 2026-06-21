@@ -1,6 +1,7 @@
 ---
 name: gh-kit:pr-implement-auto
 description: ラベル gh-kit:wip / gh-kit:needs-fix の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
+disable-model-invocation: true
 ---
 
 # pr-implement-auto
@@ -57,6 +58,17 @@ gh issue edit {N} --add-assignee @me
 
 ### ステップ 3: pr-implementer を並列起動
 
+起動前に、紐づく Issue に `processing:pr-implement` を付与する。
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+# PR 本文から Issue 番号を抽出して付与
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -n "$ISSUE_N" ]; then
+  gh issue edit "$ISSUE_N" --add-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+fi
+```
+
 [サブエージェントで並列実行・完了を待つ]
 （戻り値: `[{branch, pr_number, status, needs_user_review, commits_added}]`）
 
@@ -71,10 +83,19 @@ if [ "{needs_user_review}" = "true" ]; then
   ARGS+=(--add-label "$LABEL_NEEDS_USER_REVIEW")
 fi
 gh pr edit {N} "${ARGS[@]}"
+# Issue の processing:pr-implement を除去
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -n "$ISSUE_N" ]; then
+  gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+fi
 
 # 失敗
 gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"
 gh pr comment {N} --body "{失敗理由}"
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -n "$ISSUE_N" ]; then
+  gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+fi
 ```
 
 ### ステップ 5: pr-review-auto を連鎖実行

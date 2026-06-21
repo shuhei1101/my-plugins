@@ -1,71 +1,71 @@
 ---
 name: gh-kit:pr-draft-create
-description: "Create a Draft PR for one Issue: fetch PR body template → worktree_create MCP → empty commit → push → gh pr create --draft. Called by pr-draft-creator agent."
+description: "1 Issue から Draft PR を作成する: PR 本文テンプレ取得 → worktree_create MCP → 空コミット → push → gh pr create --draft。pr-draft-creator エージェントから呼ばれる。"
 ---
 
 # pr-draft-create
 
-Create one Draft PR (empty commit only) from a single Issue.
-Do NOT implement anything — implementation is handled by `/gh-kit:pr-implement`.
+1 件の Issue から Draft PR（空コミットのみ）を作成する。
+実装は行わない — 実装は `/gh-kit:pr-implement` が担当。
 
-## Input
+## 入力
 
-| Argument | Required | Content |
+| 引数 | 必須 | 内容 |
 |---|---|---|
-| Issue number | Yes | e.g. 42 |
-| Issue title | Yes | Used to generate the PR title |
-| branch type | Yes | e.g. `feat`, `fix`, `refactor` |
-| branch title | Yes | kebab-case slug, e.g. `issue-42-router` |
-| base branch | Yes | usually `master` |
-| split scope | Optional | Scope label when 1 Issue → multiple PRs |
+| Issue 番号 | 必須 | 例: 42 |
+| Issue タイトル | 必須 | PR タイトル生成に使う |
+| ブランチ種別 | 必須 | 例: `feat`, `fix`, `refactor` |
+| ブランチタイトル | 必須 | ケバブケース、例: `issue-42-router` |
+| base ブランチ | 必須 | 通常 `master` |
+| 分割スコープ | 任意 | 1 Issue 複数 PR の場合のスコープ名 |
 
-## Step 1: Fetch PR body template
+## ステップ 1: PR 本文テンプレートを取得
 
-Call the `template_get` tool from the `gh-kit-tools` MCP with `template_name: "PRドキュメント.j2"`.
+`gh-kit-tools` MCP の `template_get` ツールを `template_name: "PRドキュメント.j2"` で呼ぶ。
 
-Fill the returned template with actual values to use as the Draft PR body.
+返却されたテンプレートを実値で埋め、Draft PR 本文として使用する。
 
-## Step 2: Create branch + worktree
+## ステップ 2: ブランチ + worktree を作成
 
-Call the `worktree_create` tool from the `gh-kit-tools` MCP (pass `branch_type` and `title`).
-Extract the worktree path from the return value.
+`gh-kit-tools` MCP の `worktree_create` ツールを呼ぶ（`branch_type` と `title` を渡す）。
+戻り値からワークツリーパスを取得する。
 
-## Step 3: Create an empty commit
+## ステップ 3: 空コミットを作成
 
-A Draft PR requires at least one commit to be pushed.
+Draft PR を作成するには最低 1 件のコミットが必要。
 
 ```bash
-git -C {WORKTREE} commit --allow-empty -m "chore: open draft PR for issue #{Issue number} ({split scope})"
+git -C {WORKTREE} commit --allow-empty -m "chore: open draft PR for issue #{Issue 番号} ({分割スコープ})"
 ```
 
-If `split scope` is empty, omit it from the commit message.
+分割スコープが空の場合は括弧ごと省略する。
 
-## Step 4: Push the branch
+## ステップ 4: ブランチを push
 
 ```bash
 git -C {WORKTREE} push -u origin {branch}
 ```
 
-## Step 5: Create Draft PR via gh CLI
+## ステップ 5: gh CLI で Draft PR を作成
 
 ```bash
 gh pr create \
   --draft \
   --base {base} \
   --head {branch} \
-  --title "{type}: {Issue title}" \
+  --title "{type}: {Issue タイトル}" \
   --body-file <(cat <<'EOF'
-{template body filled with actual values}
+{ステップ 1 のテンプレを実値で埋めた本文}
 EOF
 )
 ```
 
-Rules:
-- Do NOT use `Closes #N` — use `Refs #N` at the top of the body (supports 1 Issue → multiple PRs).
-- Always use `--draft`.
-- Label assignment (`wip`, etc.) is the responsibility of the caller (`/gh-kit:pr-draft-create-auto`).
+ルール:
+- `Closes #N` は使わない — 本文先頭に `Refs #N` を置く（1 Issue 複数 PR に対応）。
+- 必ず `--draft` を付ける。
+- ラベル付与（`wip` 等）は呼び出し側（`/gh-kit:pr-draft-create-auto`）の責務。
 
-## Step 6: Return value
+## ステップ 6: 戻り値
 
 ```json
 {
@@ -75,11 +75,11 @@ Rules:
 }
 ```
 
-## Constraints
+## 制約
 
-| No | Prohibited |
+| No | 禁止 |
 |---|---|
-| 1 | Do not implement anything (empty commit only) |
-| 2 | Do not use `Closes` — use `Refs` |
-| 3 | Always use `--draft` |
-| 4 | Do not create new Issues or branches beyond what worktree_create produces |
+| 1 | 実装はしない（空コミットのみ） |
+| 2 | `Closes` 禁止 — `Refs` を使う |
+| 3 | 必ず `--draft` |
+| 4 | worktree_create が生成するもの以外のブランチや Issue を作らない |

@@ -1,6 +1,7 @@
 ---
 name: gh-kit:pr-draft-create-auto
 description: needs-* なしの open Issue 全件から Draft PR を並列で作成する（1 Issue 複数派生対応）
+disable-model-invocation: true
 ---
 
 # pr-draft-create-auto
@@ -69,7 +70,7 @@ gh issue edit {N} --add-label "$LABEL_PROCESSING"
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 gh pr edit {PR番号} --add-label "$LABEL_WIP"
 gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
-gh issue edit {N} --remove-label "$LABEL_PROCESSING"
+gh issue edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_PROCESSING_PR_DRAFT"
 ```
 
 ### ステップ 6: 完了報告
