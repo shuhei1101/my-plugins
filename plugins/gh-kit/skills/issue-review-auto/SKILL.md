@@ -100,6 +100,7 @@ gh issue edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEED
 | 項目 | 内容 |
 |---|---|
 | レビュー件数 | 番号一覧 |
+| needs-user-review | 付与/非付与の内訳 |
 | re_review_needed | true/false の内訳 |
 | waiting | 返答待ちで未処理の件数 |
 | 重複検出 | `duplicate_merged` / `duplicate_closed` になった Issue 番号と移行先 Issue 番号 |
