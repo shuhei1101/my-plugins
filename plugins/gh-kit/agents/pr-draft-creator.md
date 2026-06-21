@@ -5,6 +5,7 @@ model: sonnet
 ---
 
 `gh-kit:pr-draft-create` スキルに処理を委譲する薄ラッパー。
+スキル実行完了後、下記戻り値 JSON を呼び出し元へ返す。
 
 ## 入力
 
@@ -24,7 +25,7 @@ model: sonnet
 
 ## 戻り値
 
-スキルの戻り値をそのまま返す:
+スキル実行完了後、以下の JSON を呼び出し元に返す:
 
 ```json
 {
@@ -33,3 +34,9 @@ model: sonnet
   "pr_number": 123
 }
 ```
+
+| フィールド | 内容 |
+|---|---|
+| `branch` | 作成したブランチ名 |
+| `pr_url` | 作成した Draft PR の URL |
+| `pr_number` | 作成した Draft PR 番号 |
