@@ -140,6 +140,8 @@ EOF
 Using `レビュー結果コメント.j2` fetched in Step 1, write the implementation policy, questions, split proposals, and impact scope.
 Omit sections for questions and split proposals when there are none.
 
+**Omission rule for the "対応案" section**: If the Issue body (or the body-supplement comment posted in Step 4) already contains a "対応案" section, **omit the "対応案" section** from the review-result comment entirely. Do not duplicate it.
+
 ```bash
 gh issue comment {N} --body-file <(cat <<'EOF'
 {review result body}
