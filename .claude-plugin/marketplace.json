@@ -20,7 +20,7 @@
       "name": "gh-kit",
       "source": "./plugins/gh-kit",
       "description": "GitHub Issues/PR を真実のソースとした作業フローキット（gh CLI + ラベル/テンプレ一元管理 + チェーン自動化）",
-      "version": "0.8"
+      "version": "0.9"
     }
   ]
 }

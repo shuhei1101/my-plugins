@@ -29,7 +29,7 @@ gh-kit プラグインは Issue と PR を GitHub のラベルで状態管理す
 
 | No | ラベル | 意味 | 付与 | 外す |
 |---|---|---|---|---|
-| 1 | `wip` | Draft 雛形 PR | `pr-wip-create` | `pr-implement-auto` が実装に入るとき |
+| 1 | `wip` | Draft 雛形 PR | `pr-draft-create` | `pr-implement-auto` が実装に入るとき |
 
 ## 状態遷移図
 
@@ -43,17 +43,17 @@ stateDiagram-v2
   Processing --> NeedsUserReview: AI レビュー完了 (needs-ai-review 除去・必要なら needs-user-review 付与)
   NeedsUserReview --> Ready: ユーザー回答 → needs-user-review 除去
   Processing --> Ready: AI 判定で needs-user-review 不要だった場合 (即 ready)
-  Ready --> PrWipCreating: /gh-kit:pr-wip-create-auto が拾う (processing 付与)
+  Ready --> PrWipCreating: /gh-kit:pr-draft-create-auto が拾う (processing 付与)
   PrWipCreating --> Closed: PR がマージされて GitHub が自動 close
 ```
 
-「Ready」= needs-* なし、open、質問にすべて回答済み。`/gh-kit:pr-wip-create-auto` の対象。
+「Ready」= needs-* なし、open、質問にすべて回答済み。`/gh-kit:pr-draft-create-auto` の対象。
 
 ### PR
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Draft_wip: /gh-kit:pr-wip-create-auto で wip 付与
+  [*] --> Draft_wip: /gh-kit:pr-draft-create-auto で wip 付与
   Draft_wip --> Processing: /gh-kit:pr-implement-auto 取得時 (processing 付与・wip 除去)
   Processing --> NeedsAIReview: 実装完了 (processing 除去・needs-ai-review 付与・必要なら needs-user-review・draft 解除)
   NeedsAIReview --> Reviewing: /gh-kit:pr-review-auto 取得時 (processing 付与)
@@ -81,11 +81,11 @@ stateDiagram-v2
 7. ユーザーが QA todo にチェックを入れる
 8. ユーザーが内容に満足したら `needs-user-review` を手動で外す（不要なら最初から付いてない）
 9. **次工程に進める条件**: open + needs-* なし + processing なし + 質問の todo がすべて埋まっている
-10. `/gh-kit:pr-wip-create-auto` の対象になる
+10. `/gh-kit:pr-draft-create-auto` の対象になる
 
 ### PR 側
 
-1. `/gh-kit:pr-wip-create-auto` が Issue から Draft PR を作成し `wip` 付与
+1. `/gh-kit:pr-draft-create-auto` が Issue から Draft PR を作成し `wip` 付与
 2. `/gh-kit:pr-implement-auto` が `wip` を拾う → `processing` 付与、`wip` 除去
 3. 実装完了 → `processing` 除去、`needs-ai-review` を必ず付与、`needs-user-review` を必要に応じて付与、`gh pr ready` で draft 解除
 4. `/gh-kit:pr-review-auto` が `needs-ai-review` を拾う → `processing` 付与

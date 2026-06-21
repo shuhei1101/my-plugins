@@ -1,10 +1,8 @@
 ---
-name: pr-wip-creator
+name: pr-draft-creator
 description: 1 Issue から Draft PR を作成するエージェント（実装はしない、空コミット + Draft PR まで）
 model: sonnet
 ---
-
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
 ## 入力
 
@@ -16,25 +14,31 @@ model: sonnet
 | ブランチ名候補 | 例: `feat/issue-42-router` |
 | base ブランチ | 通常 `master` |
 
-## ステップ 1: ブランチ + worktree 作成
+## ステップ 1: PR 本文テンプレートを取得
+
+```bash
+cat "${CLAUDE_PLUGIN_ROOT}/templates/PR本文テンプレート.md"
+```
+
+このテンプレを実値で埋めて Draft PR 本文として使う。
+
+## ステップ 2: ブランチ + worktree 作成
 
 `/work:start` を実行。
 
-## ステップ 2: 空コミットを作成（Draft PR 作成のため最低 1 コミット必要）
+## ステップ 3: 空コミットを作成（Draft PR 作成のため最低 1 コミット必要）
 
 ```bash
 git -C {WORKTREE} commit --allow-empty -m "chore: open draft PR for issue #{Issue 番号} ({分割スコープ})"
 ```
 
-## ステップ 3: ブランチを push
+## ステップ 4: ブランチを push
 
 ```bash
 git -C {WORKTREE} push -u origin {branch}
 ```
 
-## ステップ 4: PR 本文テンプレートを `gh pr create` に渡す
-
-!`cat "${CLAUDE_PLUGIN_ROOT}/templates/PR本文テンプレート.md"`
+## ステップ 5: gh CLI で Draft PR を作成
 
 ```bash
 gh pr create \
@@ -43,14 +47,14 @@ gh pr create \
   --head {branch} \
   --title "{type}: {Issue タイトル} — {分割スコープ}" \
   --body-file <(cat <<'EOF'
-{テンプレを実値で埋めた本文}
+{ステップ 1 のテンプレを実値で埋めた本文}
 EOF
 )
 ```
 
 `Closes #N` は使わない（1 Issue 複数 PR を考慮）。Issue 引用は `Refs #N` で本文先頭に置く。
 
-## ステップ 5: 戻り値
+## ステップ 6: 戻り値
 
 ```json
 {

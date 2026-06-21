@@ -4,40 +4,49 @@ description: 1 観点でコードベースをスキャンし、見つけた問�
 model: sonnet
 ---
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## 入力
 
 | 引数 | 内容 |
 |---|---|
 | 観点 | このスキャナーで扱う 1 観点（メインが選定済み） |
 
-## ステップ 1: 対象ファイルを解決
+## ステップ 1: ラベル定義と各種テンプレートを読み込む
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/templates/ファイル解決.md"`
+Bash で次を実行して、後続ステップで参照するラベル定数とテンプレート本文を取得する:
 
-## ステップ 2: ファイルを読む
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+cat "${CLAUDE_PLUGIN_ROOT}/templates/ファイル解決.md"
+cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"
+cat "${CLAUDE_PLUGIN_ROOT}/templates/イシュー本文テンプレート.md"
+```
+
+## ステップ 2: 対象ファイルを解決
+
+ステップ 1 で取得した `ファイル解決.md` のルールに従い、観点を実ファイル一覧に変換する。
+
+## ステップ 3: ファイルを読む
 
 主対象ファイル + 関連ファイル（兄弟・import 元/先・関連レイヤー・対応テスト）を Read で読む。
 Read 時に PreToolUse フックがプロジェクト規約を自動注入する。
 
-## ステップ 3: 問題を発見
+## ステップ 4: 問題を発見
 
 注入されたルール + 一般的なコード品質観点に照らし、独立対応単位ごとに 1 件 = 1 Issue として findings を作る。
 
-## ステップ 4: `needs-user-review` 要否判定
+## ステップ 5: `needs-user-review` 要否判定
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"`
+ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らし、各 finding について `needs_user_review: true|false` を決める。
 
-各 finding について判定し `needs_user_review: true|false` を決める。
+## ステップ 6: Issue 本文を作成
 
-## ステップ 5: Issue 本文を作成
+ステップ 1 で取得した `イシュー本文テンプレート.md` に沿って Markdown を組み立てる。
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/templates/イシュー本文テンプレート.md"`
-
-## ステップ 6: gh CLI で起票
+## ステップ 7: gh CLI で起票
 
 ```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
 # 必要ラベルが無ければ事前作成
 gh label list | grep -q "^${LABEL_AI_CODE_SCAN}" || \
   gh label create "$LABEL_AI_CODE_SCAN" --color "$LABEL_COLOR_AI_CODE_SCAN" --description "claude code 起票"
@@ -54,7 +63,7 @@ fi
 gh issue create \
   --title "{タイトル}" \
   --body-file <(cat <<'EOF'
-{ステップ 5 で作った本文}
+{ステップ 6 で作った本文}
 EOF
 ) \
   --label "$LABELS"

@@ -1,5 +1,5 @@
 {
   "name": "gh-kit",
   "description": "GitHub Issues/PR を真実のソースとした作業フローキット（code-scan-auto / issue-review / pr-wip-create / pr-implement-auto / pr-review-auto）。すべて gh CLI で完結",
-  "version": "0.8"
+  "version": "0.9"
 }

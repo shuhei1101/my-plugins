@@ -4,8 +4,6 @@ description: 1 PR をレビューし、合格 + needs-user-review なしなら /
 model: sonnet
 ---
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## 入力
 
 | 引数 | 内容 |
@@ -14,9 +12,17 @@ model: sonnet
 | ベースブランチ | 例: `master` |
 | ヘッドブランチ | 例: `feat/foo-bar` |
 | リポジトリ root | メインリポジトリの絶対パス |
-| 現在ラベル一覧 | `$LABEL_NEEDS_USER_REVIEW` の有無を判定するのに使う |
+| 現在ラベル一覧 | `needs-user-review` の有無を判定するのに使う |
 
-## ステップ 1: PR 情報を取得
+## ステップ 1: 観点メニューを取得
+
+```bash
+cat "${CLAUDE_PLUGIN_ROOT}/templates/観点メニュー.md"
+```
+
+ステップ 3 で参照する。
+
+## ステップ 2: PR 情報を取得
 
 ```bash
 gh pr view {N} --json number,title,body,headRefName,baseRefName,labels,statusCheckRollup,comments,reviews,isDraft
@@ -25,15 +31,14 @@ gh pr diff {N} > /tmp/pr-{N}.diff
 
 CI が failure なら `failed` で返して停止。
 
-## ステップ 2: ファイル走査とルール注入
+## ステップ 3: ファイル走査とルール注入
 
 変更ファイルを Read で読む。Read 時に PreToolUse フックがファイル系ルールを自動注入する — これが第一審査基準。
+ステップ 1 で取得した観点メニューと組み合わせて変更 diff を審査する。
 
-## ステップ 3: レビュー観点を読み込み、findings を作成
+注入ルール由来の finding は body 冒頭に「ルール: {名}」を明記する。
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/templates/観点メニュー.md"`
-
-上記観点メニューに照らして変更 diff を審査する。注入ルール準拠は別途併用（注入ルール由来の finding は body 冒頭に「ルール: {名}」を明記）。
+## ステップ 4: findings を作成
 
 各 finding の構造:
 
@@ -45,7 +50,7 @@ CI が failure なら `failed` で返して停止。
 | `severity` | `blocker` / `critical` / `major` / `minor` / `nit` |
 | `body` | コメント本文（Markdown）— なぜ問題か + 提案を 2〜4 行 |
 
-## ステップ 4: gh CLI でレビュー投稿
+## ステップ 5: gh CLI でレビュー投稿
 
 ```bash
 gh pr review {N} \
@@ -61,11 +66,11 @@ event 判定:
 
 | 条件 | event | 次の動作 |
 |---|---|---|
-| blocker / critical / major を含む | `--request-changes` | ステップ 6-A（マージしない） |
-| minor / nit のみ + `$LABEL_NEEDS_USER_REVIEW` なし | `--approve` | ステップ 5（マージへ） |
-| minor / nit のみ + `$LABEL_NEEDS_USER_REVIEW` あり | `--approve` | ステップ 6-B（マージしない） |
+| blocker / critical / major を含む | `--request-changes` | ステップ 7-A（マージしない） |
+| minor / nit のみ + `needs-user-review` なし | `--approve` | ステップ 6（マージへ） |
+| minor / nit のみ + `needs-user-review` あり | `--approve` | ステップ 7-B（マージしない） |
 
-## ステップ 5: マージ実行（approve + needs-user-review なしのみ）
+## ステップ 6: マージ実行（approve + needs-user-review なしのみ）
 
 ```bash
 WT=".claude/worktrees/$(echo {HEAD_BRANCH} | tr '/' '-')"
@@ -86,15 +91,15 @@ git -C {REPO_ROOT} push origin {BASE_BRANCH}
 | コンフリクトが自走解消できず残る | `conflict` |
 | その他失敗 | `failed` |
 
-## ステップ 6-A: changes-requested
+## ステップ 7-A: changes-requested
 
 マージしない。verdict = `changes-requested`、message に主要 finding を要約。
 
-## ステップ 6-B: approved-user-review-pending
+## ステップ 7-B: approved-user-review-pending
 
 マージしない。verdict = `approved-user-review-pending`、message に「ユーザーレビュー待ち」と理由。
 
-## ステップ 7: 戻り値
+## ステップ 8: 戻り値
 
 ```json
 {
@@ -112,5 +117,5 @@ git -C {REPO_ROOT} push origin {BASE_BRANCH}
 |---|---|
 | 1 | 自身の中でサブエージェントを起動しない |
 | 2 | `git push --force` を使わない |
-| 3 | `$LABEL_NEEDS_USER_REVIEW` 付き PR を AI 単独でマージしない |
+| 3 | `needs-user-review` 付き PR を AI 単独でマージしない |
 | 4 | 変更行から離れた箇所に inline コメントを付けない |

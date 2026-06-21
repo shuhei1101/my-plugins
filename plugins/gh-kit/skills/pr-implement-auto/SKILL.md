@@ -5,7 +5,7 @@ description: ラベル wip の Draft PR を N 件並列で実装し、Ready 化 
 
 # pr-implement-auto
 
-`pr-wip-create-auto` で雛形化された Draft PR を拾い、中身を実装して Ready for review に切り替える。
+`pr-draft-create-auto` で雛形化された Draft PR を拾い、中身を実装して Ready for review に切り替える。
 
 !`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
@@ -25,16 +25,21 @@ description: ラベル wip の Draft PR を N 件並列で実装し、Ready 化 
 
 ### ステップ 1: 対象 PR を収集
 
-| 状況 | コマンド |
-|---|---|
-| 指定あり | `gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft` |
-| 指定なし | `gh pr list --state open --label "$LABEL_WIP" --draft --json number,title,headRefName,baseRefName,body,labels --limit 50` |
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+# 指定なしのとき
+gh pr list --state open --label "$LABEL_WIP" --draft \
+  --json number,title,headRefName,baseRefName,body,labels --limit 50
+# 指定ありのとき
+gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
+```
 
-`$LABEL_PROCESSING` 付きは除外。`isDraft: false` は対象外。昇順 → 上位 **N** 件。0 件なら停止。
+`processing` 付きは除外。`isDraft: false` は対象外。昇順 → 上位 **N** 件。0 件なら停止。
 
 ### ステップ 2: 排他制御
 
 ```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 gh pr edit {N} --add-label "$LABEL_PROCESSING" --remove-label "$LABEL_WIP"
 gh issue edit {N} --add-assignee @me
 ```
@@ -47,6 +52,8 @@ gh issue edit {N} --add-assignee @me
 ### ステップ 4: 後処理
 
 ```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
 # 成功
 ARGS=(--remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_AI_REVIEW")
 if [ "{needs_user_review}" = "true" ]; then
@@ -61,7 +68,7 @@ gh pr comment {N} --body "{失敗理由}"
 
 ### ステップ 5: pr-review-auto を連鎖実行
 
-ステップ 4 で 1 件以上 `$LABEL_NEEDS_AI_REVIEW` を付与した PR が存在すれば、続けて
+ステップ 4 で 1 件以上 `needs-ai-review` を付与した PR が存在すれば、続けて
 `/gh-kit:pr-review-auto` を呼び出して直列レビュー → マージへ進める。
 
 ## 厳守事項
@@ -69,6 +76,6 @@ gh pr comment {N} --body "{失敗理由}"
 | No | 禁止 |
 |---|---|
 | 1 | マージしてはならない（マージは `pr-review-auto` の責務） |
-| 2 | `$LABEL_PROCESSING` 付き PR を別セッションが触ってはならない |
+| 2 | `processing` 付き PR を別セッションが触ってはならない |
 | 3 | Draft 以外の PR は触らない |
 | 4 | 新規ブランチ・新規 PR を作成しない |

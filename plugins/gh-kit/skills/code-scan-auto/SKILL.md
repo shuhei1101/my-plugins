@@ -20,6 +20,7 @@ description: コードベースを観点ごとにスキャンし、見つかっ�
 ### ステップ 1: 既存 Issue を確認
 
 ```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 gh issue list --state all --label "$LABEL_AI_CODE_SCAN" --limit 50
 ```
 

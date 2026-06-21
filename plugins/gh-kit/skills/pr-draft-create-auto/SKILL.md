@@ -1,9 +1,9 @@
 ---
-name: gh-kit:pr-wip-create-auto
-description: needs-* なしの open Issue 全件から Draft PR-WIP を並列で作成する（1 Issue 複数派生対応）
+name: gh-kit:pr-draft-create-auto
+description: needs-* なしの open Issue 全件から Draft PR を並列で作成する（1 Issue 複数派生対応）
 ---
 
-# pr-wip-create-auto
+# pr-draft-create-auto
 
 「実装着手 OK」になった Issue を全件巡回し、それぞれから Draft PR を作る。
 1 Issue から複数派生してよい。実装は `/gh-kit:pr-implement-auto` が担当。
@@ -13,7 +13,7 @@ description: needs-* なしの open Issue 全件から Draft PR-WIP を並列で
 | No | 条件 |
 |---|---|
 | 1 | `state: open` |
-| 2 | `$LABEL_NEEDS_AI_REVIEW` / `$LABEL_NEEDS_USER_REVIEW` / `$LABEL_NEEDS_FIX` / `$LABEL_PROCESSING` のいずれも付いていない |
+| 2 | `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも付いていない |
 | 3 | Issue 本文・コメントの `- [ ]` がすべて埋まっている（推奨案・QA 回答が選択済み） |
 
 !`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
@@ -22,7 +22,7 @@ description: needs-* なしの open Issue 全件から Draft PR-WIP を並列で
 
 | 変数 | 既定 | 用途 |
 |---|---|---|
-| `GH_KIT_PR_WIP_CREATE_PARALLEL` | `5` | 並列起動上限 |
+| `GH_KIT_PR_DRAFT_CREATE_PARALLEL` | `5` | 並列起動上限 |
 
 ## 入力
 
@@ -54,10 +54,11 @@ needs-* / processing いずれも含まず、`- [ ]` 残数 0 のものをフィ
 ### ステップ 3: 排他制御
 
 ```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 gh issue edit {N} --add-label "$LABEL_PROCESSING"
 ```
 
-### ステップ 4: pr-wip-creator を並列起動
+### ステップ 4: pr-draft-creator を並列起動
 
 [サブエージェントで並列実行・完了を待つ]
 （戻り値: `[{branch, pr_url, pr_number}]`）
@@ -65,6 +66,7 @@ gh issue edit {N} --add-label "$LABEL_PROCESSING"
 ### ステップ 5: 後処理
 
 ```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 gh pr edit {PR番号} --add-label "$LABEL_WIP"
 gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
 gh issue edit {N} --remove-label "$LABEL_PROCESSING"

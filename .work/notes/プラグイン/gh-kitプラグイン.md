@@ -14,7 +14,7 @@ flowchart TD
   U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create| Issue[(GitHub Issue)]
   Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント]
   Review -->|議論→go ラベル| Go[(go ラベル付き Issue)]
-  Go -->|/gh-kit:pr-wip-create-auto| WIP[(Draft PR + wip)]
+  Go -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
   WIP -->|/gh-kit:pr-implement-auto| Ready[(Ready PR + auto-review)]
   Ready -->|/gh-kit:pr-review-auto| Master[master]
 ```
@@ -33,7 +33,7 @@ flowchart TD
 |---|---|---|
 | 1 | `/gh-kit:code-scan-auto` | 観点別スキャン → `code-scanner` が `gh issue create` で直接起票（`needs-ai-review` 必須付与） |
 | 2 | `/gh-kit:issue-review-auto` | `needs-ai-review` 付きの Issue に AI 方針/質問を投稿 |
-| 3 | `/gh-kit:pr-wip-create-auto` | needs-* なしの open Issue 全件 → Draft PR 生成（`wip` 付与） |
+| 3 | `/gh-kit:pr-draft-create-auto` | needs-* なしの open Issue 全件 → Draft PR 生成（`wip` 付与） |
 | 4 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列実装 → Ready 化（`needs-ai-review` 必須付与 + `needs-user-review` 状況判断） |
 | 5 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
 
@@ -43,7 +43,7 @@ flowchart TD
 |---|---|---|---|
 | 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でファイル走査し `gh issue create` で直接起票 |
 | 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | 1 Issue を読みコメント本文を返す（投稿はメイン） |
-| 3 | `pr-wip-creator` | `/gh-kit:pr-wip-create-auto` | `/work:start` でブランチ作成 → Draft PR 起票 |
+| 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `/work:start` でブランチ作成 → Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化 |
 | 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は `/work:merge` まで実行 |
 
@@ -56,12 +56,17 @@ flowchart TD
 | `plugins/gh-kit/templates/イシュー本文テンプレート.md` | code-scanner が起票する Issue 本文 |
 | `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` 判定基準（ブラックリスト） |
 | `plugins/gh-kit/templates/レビュー結果コメント.md` | issue-reviewer が投稿するレビュー結果コメント本文 |
-| `plugins/gh-kit/templates/PR本文テンプレート.md` | pr-wip-creator が `gh pr create --body-file` に渡す PR 本文 |
+| `plugins/gh-kit/templates/PR本文テンプレート.md` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文 |
 | `plugins/gh-kit/scripts/labels.sh` | ラベル名一元定義 |
 
-SKILL/agent 先頭に `!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`` を置くことでロード時に
-ラベル定数（`$LABEL_*`）がコンテキストへ展開され、後続コマンドは `$LABEL_NEEDS_AI_REVIEW` などで参照する。
-テンプレート本体も同様に `!`cat "${CLAUDE_PLUGIN_ROOT}/templates/..."`` で展開する。
+注入方法はスキルとエージェントで異なる:
+
+| 種別 | 方法 |
+|---|---|
+| **SKILL.md** | ファイル先頭で `!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`` を 1 行だけ書いてラベル定義をスキルコンテキストに見せる。各 bash コードブロックの冒頭でも `. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"` を実行して bash 実行プロセスに変数を渡す。テンプレート本体も同様に `!`cat "${CLAUDE_PLUGIN_ROOT}/templates/..."`` で展開可能。 |
+| **agents/*.md** | 動的コンテキスト注入（`!` 構文 / `${VAR}` 展開）が **効かない** ため、すべての参照を bash コードブロック内で実行する。例: `. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"` で source、`cat "${CLAUDE_PLUGIN_ROOT}/templates/..."` でテンプレ取得。 |
+
+散文（説明文）の中ではラベル名を実値（`processing` / `needs-ai-review` 等）で書く（プレースホルダー展開されないため）。bash コードブロック内でのみ `$LABEL_*` 変数で参照する。
 
 ## ラベル設計
 
@@ -110,11 +115,11 @@ SKILL/agent 先頭に `!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`` を置�
 
 | No | 誰 | いつ | 何を |
 |---|---|---|---|
-| 1 | `pr-wip-creator` | Draft PR 作成直前 | 作業ブランチを `git push -u origin {branch}`（`--allow-empty` の空コミット 1 個） |
+| 1 | `pr-draft-creator` | Draft PR 作成直前 | 作業ブランチを `git push -u origin {branch}`（`--allow-empty` の空コミット 1 個） |
 | 2 | `pr-implementer` | 実装コミット後・PR Ready 化直前 | 作業ブランチを `git push origin {branch}` |
 | 3 | `pr-reviewer` | `/work:merge` 完了直後 | base ブランチ（通常 master）を `git push origin {base}`（マージコミット含む） |
 
-つまり「作業ブランチは Draft PR 作成時 + 実装後 の 2 回」「master は最終マージ後 1 回」が push 発生点。`code-scanner` `issue-reviewer` `pr-wip-create`（メイン側）`pr-implement-auto`（メイン側）`pr-review-auto`（メイン側）は push しない。
+つまり「作業ブランチは Draft PR 作成時 + 実装後 の 2 回」「master は最終マージ後 1 回」が push 発生点。`code-scanner` `issue-reviewer` `pr-draft-create`（メイン側）`pr-implement-auto`（メイン側）`pr-review-auto`（メイン側）は push しない。
 
 ### シーケンス図
 
@@ -145,7 +150,7 @@ sequenceDiagram
   User->>GH: コメントの todo にチェック<br/>必要に応じて needs-user-review を外す
 
   Note over AI,GH: ④ Draft PR 作成（needs-* なし + todo 全埋め）
-  User->>AI: /gh-kit:pr-wip-create-auto
+  User->>AI: /gh-kit:pr-draft-create-auto
   AI->>GH: gh issue list --state open<br/>(needs-* なしを抽出 + todo 全埋め確認)
   AI->>GH: gh issue edit --add-label processing
   AI->>Local: /work:start でブランチ + worktree 作成
@@ -188,7 +193,7 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-  W[作業ブランチ ローカル] -->|★push 1<br/>pr-wip-creator| WR[作業ブランチ remote]
+  W[作業ブランチ ローカル] -->|★push 1<br/>pr-draft-creator| WR[作業ブランチ remote]
   W2[実装コミット ローカル] -->|★push 2<br/>pr-implementer| WR
   M[マージ後 master ローカル] -->|★push 3<br/>pr-reviewer| MR[master remote]
 ```
