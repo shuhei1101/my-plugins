@@ -1,6 +1,7 @@
 ---
 name: gh-kit:pr-implement-auto
-description: ラベル wip / needs-fix の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
+description: ラベル gh-kit:wip / gh-kit:needs-fix の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
+disable-model-invocation: true
 ---
 
 # pr-implement-auto
@@ -55,7 +56,7 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 
 ### ステップ 1: 対象 PR を収集
 
-`wip`（初回実装待ち）と `needs-fix`（レビューで差し戻された再実装待ち）の Draft PR
+`gh-kit:wip`（初回実装待ち）と `gh-kit:needs-fix`（レビューで差し戻された再実装待ち）の Draft PR
 を両方拾う。gh CLI のラベル絞り込みは AND 扱いになるので 2 回呼んでマージする。
 
 ```bash
@@ -71,11 +72,11 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 ```
 
-`processing` 付きは除外。`isDraft: false` は対象外。昇順 → 上位 **N** 件。0 件なら停止。
+`gh-kit:processing` 付きは除外。`isDraft: false` は対象外。昇順 → 上位 **N** 件。0 件なら停止。
 
 ### ステップ 2: 排他制御
 
-`wip` / `needs-fix` どちらが付いていても外せるよう、両方 `--remove-label` する
+`gh-kit:wip` / `gh-kit:needs-fix` どちらが付いていても外せるよう、両方 `--remove-label` する
 （存在しないラベルを外そうとしてもエラーにはならない）。
 
 ```bash
@@ -129,7 +130,7 @@ fi
 
 ### ステップ 5: pr-review-auto を連鎖実行
 
-ステップ 4 で 1 件以上 `needs-ai-review` を付与した PR が存在すれば、続けて
+ステップ 4 で 1 件以上 `gh-kit:needs-ai-review` を付与した PR が存在すれば、続けて
 `/gh-kit:pr-review-auto` を呼び出して直列レビュー → マージへ進める。
 
 ## 厳守事項

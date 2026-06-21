@@ -1,6 +1,7 @@
 ---
 name: gh-kit:pr-draft-create-auto
 description: needs-* なしの open Issue 全件から Draft PR を並列で作成する（1 Issue 複数派生対応）
+disable-model-invocation: true
 ---
 
 # pr-draft-create-auto
@@ -13,7 +14,7 @@ description: needs-* なしの open Issue 全件から Draft PR を並列で作�
 | No | 条件 |
 |---|---|
 | 1 | `state: open` |
-| 2 | `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも付いていない |
+| 2 | `gh-kit:needs-ai-review` / `gh-kit:needs-user-review` / `gh-kit:needs-fix` / `gh-kit:processing` のいずれも付いていない |
 | 3 | Issue 本文・コメントの `- [ ]` がすべて埋まっている（推奨案・QA 回答が選択済み） |
 
 !`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
@@ -73,7 +74,7 @@ Monitor の stdout に `TRIGGER:pr-draft-create-auto` が来たらステップ 1
 gh issue list --state open --json number,title,body,labels,comments --limit 100
 ```
 
-needs-* / processing いずれも含まず、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
+needs-* / gh-kit:processing いずれも含まず、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
 
 ### ステップ 2: 各 Issue から作る Draft PR 数を決定
 

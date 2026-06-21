@@ -24,8 +24,9 @@ model: sonnet
 ```json
 {
   "issue_number": 42,
-  "needs_user_review": true,
-  "priority": "priority:medium",
+  "re_review_needed": true,
   "status": "ok"
 }
 ```
+
+`status` は `"ok"` または `"waiting"`（ユーザー返答待ちで AI コメント済みだがユーザー未返答の場合）。
