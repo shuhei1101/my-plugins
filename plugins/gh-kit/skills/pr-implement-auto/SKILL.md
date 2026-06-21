@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-implement-auto
-description: ラベル wip / needs-fix の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
+description: ラベル wip / needs-fix の Draft PR を N 件並列で実装し、Ready 化する
 ---
 
 # pr-implement-auto
@@ -76,11 +76,6 @@ gh pr edit {N} "${ARGS[@]}"
 gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"
 gh pr comment {N} --body "{失敗理由}"
 ```
-
-### ステップ 5: pr-review-auto を連鎖実行
-
-ステップ 4 で 1 件以上 `needs-ai-review` を付与した PR が存在すれば、続けて
-`/gh-kit:pr-review-auto` を呼び出して直列レビュー → マージへ進める。
 
 ## 厳守事項
 
