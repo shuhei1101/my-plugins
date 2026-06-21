@@ -11,7 +11,7 @@ model: sonnet
 | `title` | 必須 | Issue タイトル |
 | `body` | 必須 | Issue 本文（呼び出し側でテンプレ展開済み） |
 | `type` | 必須 | Issue タイプラベル（例: `bug`, `enhancement`, `refactor`） |
-| `priority` | 必須 | 優先度ラベル（例: `priority-high`, `priority-medium`, `priority-low`） |
+| `priority` | 必須 | 優先度ラベル（例: `優先度:急ぎ`, `優先度:いつでも`） |
 | `needs_user_review` | 任意 | `true` の場合 `gh issue edit --add-assignee` でユーザーをアサイン（既定: `false`） |
 | `extra_labels` | 任意 | 追加ラベルのカンマ区切り文字列 |
 
