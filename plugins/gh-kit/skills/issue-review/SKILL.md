@@ -24,7 +24,7 @@ Fetch template bodies via the `gh-kit-tools` MCP `template_get` tool:
 |---|---|
 | Issue body template | `イシュードキュメント.j2` |
 | Review result comment | `レビュー結果コメント.j2` |
-| `needs-user-review` criteria | `ユーザーレビュー要否判定.md` |
+| `re_review_needed` judgment criteria | `ユーザーレビュー要否判定.md` |
 
 ## Step 2: Fetch Issue, labels, and comments — determine review mode
 
