@@ -15,7 +15,7 @@ disable-model-invocation: true
 |---|---|
 | 1 | `state: open` |
 | 2 | `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも付いていない |
-| 3 | Issue 本文・コメントの `- [ ]` がすべて埋まっている（推奨案・QA 回答が選択済み） |
+| 3 | Issue 本文・コメントの各 QA セクションに `- [x]` が 1 件以上ある（推奨案・QA 回答がいずれか選択済み） |
 
 ## 環境変数
 
@@ -70,7 +70,7 @@ Monitor の stdout に `TRIGGER:pr-draft-create-auto` が来たらステップ 1
 gh issue list --state open --json number,title,body,labels,comments --limit 100
 ```
 
-needs-* / processing いずれも含まず、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
+needs-* / processing いずれも含まず、Issue 本文・コメントの各 QA セクションに `- [x]` が 1 件以上あるものをフィルタ（マルチセレクト形式では `- [x]` が 1 件でもあれば回答済みと判定する。`- [ ]` 残数 0 では判定しない）。0 件なら停止。
 
 ### ステップ 2: 各 Issue から作る Draft PR 数を決定
 
