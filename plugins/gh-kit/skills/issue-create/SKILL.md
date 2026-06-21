@@ -34,6 +34,49 @@ Issue 起票後に AI レビューフロー（`/gh-kit:issue-review-auto`）が�
 - `code-scanner` エージェント（ステップ 7 から移管）
 - ユーザーが `/gh-kit:issue-create` を直接呼び出す場合
 
+## ステップ 1: ラベルを冪等に用意する
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
+gh label list | grep -q "^${LABEL_NEEDS_AI_REVIEW}" || \
+  gh label create "$LABEL_NEEDS_AI_REVIEW" --color "$LABEL_COLOR_NEEDS_AI_REVIEW" --description "AI レビュー必要"
+
+gh label list | grep -q "^${LABEL_NEEDS_USER_REVIEW}" || \
+  gh label create "$LABEL_NEEDS_USER_REVIEW" --color "$LABEL_COLOR_NEEDS_USER_REVIEW" --description "ユーザーレビュー必要"
+```
+
+## ステップ 2: ラベル文字列を組み立てる
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
+# needs-ai-review は呼び出し側が指定しなくても必ず付与する（構造的保証）
+LABELS="${LABEL_AI_CODE_SCAN},${LABEL_NEEDS_AI_REVIEW},{type},{priority}"
+
+if [ "{needs_user_review}" = "true" ]; then
+  LABELS="${LABELS},${LABEL_NEEDS_USER_REVIEW}"
+fi
+
+if [ -n "{extra_labels}" ]; then
+  LABELS="${LABELS},{extra_labels}"
+fi
+```
+
+## ステップ 3: gh issue create で起票する
+
+```bash
+gh issue create \
+  --title "{title}" \
+  --body-file <(cat <<'EOF'
+{body}
+EOF
+) \
+  --label "$LABELS"
+```
+
+起票に成功したら `gh issue view` で `number` と `url` を取得する。
+
 ## 戻り値
 
 ```json

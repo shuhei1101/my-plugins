@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-implement-auto
-description: ラベル wip / needs-fix の Draft PR を N 件並列で実装し、Ready 化する
+description: ラベル wip / needs-fix の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
 disable-model-invocation: true
 ---
 
@@ -23,6 +23,36 @@ disable-model-invocation: true
 | PR 番号 | 任意 | 指定時はその 1 件のみ |
 
 ## タスク
+
+### ステップ 0: Monitor でイベント待機
+
+対象 PR が既に存在する場合はそのままステップ 1 へ進む。
+存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
+
+対象条件: `wip` または `needs-fix` ラベル付きの Draft PR（`processing` 付きは除外）。
+
+```bash
+# Monitor に渡すポーリングスクリプト
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
+while true; do
+  WIP_COUNT=$(gh pr list --state open --label "$LABEL_WIP" --draft \
+    --json number,labels \
+    --jq "[.[] | select(.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)] | length" 2>/dev/null || echo 0)
+  FIX_COUNT=$(gh pr list --state open --label "$LABEL_NEEDS_FIX" --draft \
+    --json number,labels \
+    --jq "[.[] | select(.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)] | length" 2>/dev/null || echo 0)
+  AVAILABLE=$((WIP_COUNT + FIX_COUNT))
+  if [ "$AVAILABLE" -gt 0 ]; then
+    echo "TRIGGER:pr-implement-auto:count=$AVAILABLE"
+    break
+  fi
+  sleep 30
+done
+```
+
+Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 へ進む。
+手動停止は TaskStop で行う。
 
 ### ステップ 1: 対象 PR を収集
 
@@ -97,6 +127,11 @@ if [ -n "$ISSUE_N" ]; then
   gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT"
 fi
 ```
+
+### ステップ 5: pr-review-auto を連鎖実行
+
+ステップ 4 で 1 件以上 `needs-ai-review` を付与した PR が存在すれば、続けて
+`/gh-kit:pr-review-auto` を呼び出して直列レビュー → マージへ進める。
 
 ## 厳守事項
 

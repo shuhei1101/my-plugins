@@ -89,16 +89,22 @@ flowchart TD
 
 ## ラベル一覧
 
-詳細は `.work/notes/プラグイン/gh-kitラベル設計.md`（状態遷移図含む）。
-
-### 共通
+### gh-kit フロー制御（共通）
 
 | ラベル | 意味 |
 |---|---|
 | `processing` | 何らかの作業中（排他マーカー） |
-| `needs-ai-review` | AI レビュー必要。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
-| `needs-user-review` | ※廃止済み。フロー上は使用しない（`needs-ai-review` 再付与のみで制御） |
+| `needs-ai-review` | AI レビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
+| `needs-user-review` | ユーザーレビュー必要（AI 判定で付く） |
 | `needs-fix` | レビュー結果、修正必要 |
+
+### gh-kit フロー制御（processing 細分）
+
+| ラベル | 意味 |
+|---|---|
+| `processing:pr-draft` | Draft PR 作成処理中（`pr-draft-create-auto` が付与） |
+| `processing:pr-implement` | 実装エージェントが実装中（`pr-implement-auto` が付与） |
+| `processing:pr-review` | レビューエージェントがレビュー中（`pr-review-auto` が付与） |
 
 ### Issue 専用
 

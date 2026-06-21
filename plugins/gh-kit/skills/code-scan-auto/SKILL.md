@@ -39,3 +39,8 @@ gh issue list --state all --label "$LABEL_AI_CODE_SCAN" --limit 50
 （戻り値: `[{issue_number, issue_url, title}]`）
 
 各サブエージェントに渡す入力: 観点（メニューから 1 件抜粋）
+
+### ステップ 4: 起票結果に対して issue-review-auto を連鎖実行
+
+ステップ 3 で 1 件以上 Issue が起票されたら、続けて `/gh-kit:issue-review-auto` を呼び出して
+新規 Issue を AI レビューしてしまう（`needs-ai-review` 付きの Issue が対象）。
