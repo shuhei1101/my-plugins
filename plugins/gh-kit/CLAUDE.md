@@ -10,12 +10,16 @@ GitHub 操作はすべて `gh` CLI に統一。
 flowchart TD
   U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + needs-ai-review| Issue[(GitHub Issue)]
   Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント<br>needs-ai-review 除去]
-  Review -->|needs-* なし + todo 全埋め| Ready[(Issue Ready)]
+  Review -->|re_review_needed: false<br>needs-* なし + todo 全埋め| Ready[(Issue Ready)]
+  Review -->|re_review_needed: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
+  UserReply -->|ユーザーが手動で needs-ai-review 再付与| Issue
   Ready -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
   WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 processing]
   Implementing -->|完了| NAR[(Ready PR + needs-ai-review)]
   NAR -->|/gh-kit:pr-review-auto| Merged[master]
 ```
+
+**再レビューループ:** AI がレビューコメントを投稿後、ユーザーが Issue にコメントで返答し、さらに AI に確認してほしい場合は手動で `needs-ai-review` を再付与する。次回 `/gh-kit:issue-review-auto` 実行時に再レビューモードで動作し、追加 QA またはラベル除去を行う。
 
 ## セットアップ
 
@@ -92,8 +96,8 @@ flowchart TD
 | ラベル | 意味 |
 |---|---|
 | `processing` | 何らかの作業中（排他マーカー） |
-| `needs-ai-review` | AI レビュー必要（必ず付く） |
-| `needs-user-review` | ユーザーレビュー必要（AI 判定で付く） |
+| `needs-ai-review` | AI レビュー必要。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
+| `needs-user-review` | ※廃止済み。フロー上は使用しない（`needs-ai-review` 再付与のみで制御） |
 | `needs-fix` | レビュー結果、修正必要 |
 
 ### Issue 専用
@@ -102,6 +106,9 @@ flowchart TD
 |---|---|
 | `ai-code-scan` | claude code がスキャンして起票（出自タグ） |
 | `type:*` | 種別タグ（例: `type:bug`, `type:refactor`） |
+| `processing:pr-draft` | `pr-draft-create-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
+| `processing:pr-implement` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
+| `processing:pr-review` | `pr-review-auto` がレビュー中（レビュー開始〜マージ/Close まで Issue に付与） |
 
 ### 優先度（Issue 専用）
 
