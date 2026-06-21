@@ -7,8 +7,8 @@
     {
       "name": "work",
       "source": "./plugins/work",
-      "description": "ワークツリー駆動のブランチ作業基盤（start / merge / setup と保護フック群）",
-      "version": "2.2"
+      "description": "ワークツリー駆動のブランチ作業基盤（start / merge と保護フック群）。ローカル Git のワークツリー管理に専念、ドキュメントは gh-kit Wiki へ",
+      "version": "2.3"
     },
     {
       "name": "dev-kit",
