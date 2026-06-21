@@ -67,7 +67,7 @@ EOF
 
 ## ステップ 6: Issue の優先度ラベルを PR に継承
 
-Issue に `優先度:急ぎ` または `優先度:いつでも` ラベルが付いていれば、同じラベルを Draft PR にも付与する。
+Issue に `$GH_KIT_LABEL_PRIORITY_URGENT` または `$GH_KIT_LABEL_PRIORITY_LOW` ラベルが付いていれば、同じラベルを Draft PR にも付与する。
 これにより `pr-implement-auto` と `pr-review-auto` の優先度順処理が正しく機能する。
 
 ```bash
