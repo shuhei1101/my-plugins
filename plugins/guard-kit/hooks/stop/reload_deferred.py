@@ -1,7 +1,7 @@
 """Stop フック: 保留中の /reload-plugins を自セッションへ遅延送信する。
 
 reload_plugins.py が自セッション宛に書いた保留トークン
-（~/.claude/tokens/work/reload-pending/<tmux_session>）を消費し、
+（~/.claude/tokens/guard-kit/reload-pending/<tmux_session>）を消費し、
 ターン終了後に入力が空くタイミングを狙ってバックグラウンドで send-keys する。
 トークンがなければ何もしない。
 """
@@ -11,7 +11,7 @@ import os
 import pathlib
 import subprocess
 
-PENDING_DIR = pathlib.Path.home() / ".claude" / "tokens" / "work" / "reload-pending"
+PENDING_DIR = pathlib.Path.home() / ".claude" / "tokens" / "guard-kit" / "reload-pending"
 
 # Stop フック完了 → 入力欄がアイドルに戻るまでの猶予秒数
 SEND_DELAY_SECONDS = 3
