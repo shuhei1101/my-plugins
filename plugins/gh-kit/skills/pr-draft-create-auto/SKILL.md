@@ -17,8 +17,6 @@ disable-model-invocation: true
 | 2 | `needs-ai-review` / `needs-user-review` / `needs-fix` / `processing` のいずれも付いていない |
 | 3 | Issue 本文・コメントの `- [ ]` がすべて埋まっている（推奨案・QA 回答が選択済み） |
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## 環境変数
 
 | 変数 | 既定 | 用途 |
@@ -43,18 +41,16 @@ disable-model-invocation: true
 
 ```bash
 # Monitor に渡すポーリングスクリプト
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-
 while true; do
   # needs-* / processing なし・open の Issue を取得
   AVAILABLE=$(gh issue list --state open \
     --json number,labels \
     --jq "[.[] | select(
       (.labels | map(.name) | (
-        index(\"$LABEL_NEEDS_AI_REVIEW\") == null and
-        index(\"$LABEL_NEEDS_USER_REVIEW\") == null and
-        index(\"$LABEL_NEEDS_FIX\") == null and
-        index(\"$LABEL_PROCESSING\") == null
+        index(\"$GH_KIT_LABEL_NEEDS_AI_REVIEW\") == null and
+        index(\"$GH_KIT_LABEL_NEEDS_USER_REVIEW\") == null and
+        index(\"$GH_KIT_LABEL_NEEDS_FIX\") == null and
+        index(\"$GH_KIT_LABEL_PROCESSING\") == null
       ))
     )] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
@@ -89,8 +85,7 @@ needs-* / processing いずれも含まず、`- [ ]` 残数 0 のものをフィ
 ### ステップ 3: 排他制御
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh issue edit {N} --add-label "$LABEL_PROCESSING"
+gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 ```
 
 ### ステップ 4: pr-draft-creator を並列起動
@@ -101,10 +96,9 @@ gh issue edit {N} --add-label "$LABEL_PROCESSING"
 ### ステップ 5: 後処理
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh pr edit {PR番号} --add-label "$LABEL_WIP"
+gh pr edit {PR番号} --add-label "$GH_KIT_LABEL_WIP"
 gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
-gh issue edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_PROCESSING_PR_DRAFT"
+gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_PROCESSING_PR_DRAFT"
 ```
 
 ### ステップ 6: 完了報告

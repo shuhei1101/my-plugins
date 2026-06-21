@@ -12,8 +12,6 @@ disable-model-invocation: true
 `needs-user-review` が残っている PR はレビューだけ実施してマージしない。
 ユーザーが `needs-user-review` を外したら別途再エントリー（`needs-ai-review` を付け直す）。
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## タスク
 
 ### ステップ 0: Monitor でイベント待機
@@ -26,14 +24,12 @@ disable-model-invocation: true
 
 ```bash
 # Monitor に渡すポーリングスクリプト
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-
 while true; do
-  AVAILABLE=$(gh pr list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
+  AVAILABLE=$(gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
     --json number,labels,isDraft \
     --jq "[.[] | select(
       .isDraft == false and
-      (.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)
+      (.labels | map(.name) | index(\"$GH_KIT_LABEL_PROCESSING\") | not)
     )] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:pr-review-auto:count=$AVAILABLE"
@@ -49,8 +45,7 @@ Monitor の stdout に `TRIGGER:pr-review-auto` が来たらステップ 1 へ�
 ### ステップ 1: レビュー対象 PR を収集
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh pr list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
+gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
   --json number,title,headRefName,baseRefName,statusCheckRollup,labels --limit 50
 ```
 
@@ -59,12 +54,11 @@ gh pr list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
 ### ステップ 2: 上から 1 件取り出す
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh pr edit {N} --add-label "$LABEL_PROCESSING"
+gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 # 紐づく Issue に processing:pr-review を付与
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --add-label "$LABEL_PROCESSING_PR_REVIEW"
+  gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"
 fi
 ```
 
@@ -83,17 +77,16 @@ CI が failure なら failed へ。
 ### ステップ 4: 後処理
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 # 全 verdict 共通: Issue の processing:pr-review を除去
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 ```
 
 | verdict | 動作 |
 |---|---|
-| approved-merged | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（マージは pr-reviewer が実施済み）+ `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
-| approved-user-review-pending | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（`needs-user-review` は残す）+ `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
-| changes-requested | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"` + `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
-| conflict / failed | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX" --add-label "$LABEL_NEEDS_USER_REVIEW" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
+| approved-merged | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"`（マージは pr-reviewer が実施済み）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"` |
+| approved-user-review-pending | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"`（`needs-user-review` は残す）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"` |
+| changes-requested | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"` |
+| conflict / failed | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX" --add-label "$GH_KIT_LABEL_NEEDS_USER_REVIEW" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"` |
 
 ステップ 2 に戻ってキューが空になるまで繰り返す。
 

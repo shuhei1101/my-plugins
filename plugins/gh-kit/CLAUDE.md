@@ -2,7 +2,7 @@
 
 GitHub Issues / Pull Request を真実のソースとして作業フローを回すプラグイン。
 GitHub 操作はすべて `gh` CLI に統一。
-テンプレ取得は `gh-kit-tools` MCP の `template_get` 経由（ラベル名は `scripts/labels.sh` に一元化）。
+テンプレ取得は `gh-kit-tools` MCP の `template_get` 経由（ラベル名等の定数は `scripts/constants.sh` に一元化し、Session Start フックで自動展開）。
 
 ## ワークフロー
 
@@ -59,7 +59,7 @@ flowchart TD
 
 | パス | 用途 |
 |---|---|
-| `plugins/gh-kit/scripts/labels.sh` | ラベル名一元定義（SKILL/agent 先頭で `!`cat`` 展開） |
+| `plugins/gh-kit/scripts/constants.sh` | ラベル名等の定数一元定義（Session Start フックで環境変数として自動展開、`GH_KIT_` プレフィックス付き） |
 | `plugins/gh-kit/templates/観点メニュー.md` | コード品質観点リスト（code-scan-auto / pr-reviewer が共通参照） |
 | `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール |
 | `plugins/gh-kit/templates/イシュードキュメント.j2` | code-scanner が起票する Issue 本文（Jinja2） |

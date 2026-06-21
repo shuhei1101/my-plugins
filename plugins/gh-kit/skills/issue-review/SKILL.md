@@ -7,17 +7,15 @@ description: 1 Issue をレビューし、本文補完コメント（必要時�
 
 GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿する。
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## 入力
 
 | 引数 | 内容 |
 |---|---|
 | Issue 番号 | 例: 42 |
 
-## ステップ 1: ラベル定義とテンプレートを読み込む
+## ステップ 1: テンプレートを読み込む
 
-ラベル定数は bash 経由で取得（上記 `!` 構文で注入済み）。
+ラベル定数は Session Start フックで自動展開済み（`GH_KIT_LABEL_*` 変数が利用可能）。
 テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得:
 
 | 用途 | template_name |

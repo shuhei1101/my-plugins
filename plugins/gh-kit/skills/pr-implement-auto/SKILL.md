@@ -8,8 +8,6 @@ disable-model-invocation: true
 
 `pr-draft-create-auto` で雛形化された Draft PR を拾い、中身を実装して Ready for review に切り替える。
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## 環境変数
 
 | 変数 | 既定 | 用途 |
@@ -60,12 +58,11 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 を両方拾う。gh CLI のラベル絞り込みは AND 扱いになるので 2 回呼んでマージする。
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 # 指定なしのとき
 {
-  gh pr list --state open --label "$LABEL_WIP" --draft \
+  gh pr list --state open --label "$GH_KIT_LABEL_WIP" --draft \
     --json number,title,headRefName,baseRefName,body,labels --limit 50
-  gh pr list --state open --label "$LABEL_NEEDS_FIX" --draft \
+  gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_FIX" --draft \
     --json number,title,headRefName,baseRefName,body,labels --limit 50
 } | jq -s 'add | unique_by(.number)'
 # 指定ありのとき
@@ -80,9 +77,8 @@ gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 （存在しないラベルを外そうとしてもエラーにはならない）。
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-gh pr edit {N} --add-label "$LABEL_PROCESSING" \
-  --remove-label "$LABEL_WIP" --remove-label "$LABEL_NEEDS_FIX"
+gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING" \
+  --remove-label "$GH_KIT_LABEL_WIP" --remove-label "$GH_KIT_LABEL_NEEDS_FIX"
 gh issue edit {N} --add-assignee @me
 ```
 
@@ -105,12 +101,10 @@ fi
 ### ステップ 4: 後処理
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-
 # 成功
-ARGS=(--remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_AI_REVIEW")
+ARGS=(--remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW")
 if [ "{needs_user_review}" = "true" ]; then
-  ARGS+=(--add-label "$LABEL_NEEDS_USER_REVIEW")
+  ARGS+=(--add-label "$GH_KIT_LABEL_NEEDS_USER_REVIEW")
 fi
 gh pr edit {N} "${ARGS[@]}"
 # Issue の processing:pr-implement を除去
@@ -120,7 +114,7 @@ if [ -n "$ISSUE_N" ]; then
 fi
 
 # 失敗
-gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"
+gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX"
 gh pr comment {N} --body "{失敗理由}"
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
