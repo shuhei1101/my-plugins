@@ -36,6 +36,7 @@ flowchart TD
 | 3 | `/gh-kit:pr-draft-create-auto` | needs-* なしの open Issue 全件 → Draft PR 生成（`wip` 付与） |
 | 4 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列実装 → Ready 化（`needs-ai-review` 必須付与 + `needs-user-review` 状況判断） |
 | 5 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
+| 6 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push（`GH_KIT_WIKI_PATH` 必須） |
 
 ## サブエージェント一覧
 
