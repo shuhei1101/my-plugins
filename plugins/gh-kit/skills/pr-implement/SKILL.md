@@ -1,33 +1,33 @@
 ---
 name: gh-kit:pr-implement
-description: "Implement a single wip Draft PR: restore worktree → fetch/reset → implement → commit → push → gh pr ready. Called by pr-implementer agent."
+description: "wip Draft PR を 1 件実装する: worktree 復帰 → fetch/reset → 実装 → コミット → push → gh pr ready。pr-implementer エージェントから呼ばれる。"
 ---
 
 # pr-implement
 
-Implement the content of one existing Draft PR and mark it Ready for review.
-Do NOT create new branches or PRs.
+既存 Draft PR の中身を実装し、Ready for review にする。
+新規ブランチ・新規 PR の作成は行わない。
 
-## Input
+## 入力
 
-| Argument | Required | Content |
+| 引数 | 必須 | 内容 |
 |---|---|---|
-| PR number | Yes | e.g. 42 |
-| branch | Yes | e.g. `feat/issue-42-router` |
-| base branch | Yes | usually `master` |
-| Issue number | Yes | linked Issue number |
-| adopted policy | Yes | extracted from `issue-reviewer` comment on the Issue |
-| split scope | Optional | scope handled by this PR (when 1 Issue → multiple PRs) |
+| PR 番号 | 必須 | 例: 42 |
+| branch | 必須 | 例: `feat/issue-42-router` |
+| base ブランチ | 必須 | 通常 `master` |
+| Issue 番号 | 必須 | 紐づく Issue 番号 |
+| 採用方針 | 必須 | Issue コメントの `issue-reviewer` 結果から抽出 |
+| 分割スコープ | 任意 | この PR で扱うスコープ（1 Issue 複数 PR 時） |
 
-## Step 1: Load needs-user-review judgment criteria
+## ステップ 1: needs-user-review 判定基準を読み込む
 
 ```bash
 cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"
 ```
 
-Referenced in Step 5.
+ステップ 5 で参照する。
 
-## Step 2: Restore worktree and sync with remote
+## ステップ 2: ワークツリー復帰 + remote 同期
 
 ```bash
 WT=".claude/worktrees/$(echo {branch} | tr '/' '-')"
@@ -39,37 +39,38 @@ git -C "$WT" fetch origin
 git -C "$WT" reset --hard origin/{branch}
 ```
 
-## Step 3: Implement
+## ステップ 3: 実装
 
-Follow the adopted policy and split scope to make code changes. Commits may be granular.
+採用方針と分割スコープに従ってコード変更する。コミットは細かく刻んでよい。
 
-| No | Action |
+| No | 動作 |
 |---|---|
-| 1 | Change code according to the adopted policy |
-| 2 | Add / update tests for affected scope |
-| 3 | Run project tests |
+| 1 | 採用方針の通りにコード変更 |
+| 2 | 影響範囲のテストを追加/更新 |
+| 3 | プロジェクトのテストを実行 |
 
-## Step 4: Push
+## ステップ 4: push
 
 ```bash
 git -C "$WT" push origin {branch}
 ```
 
-## Step 5: Re-evaluate `needs-user-review`
+## ステップ 5: `needs-user-review` 要否を再判定
 
-Based on the criteria loaded in Step 1, determine `needs_user_review: true|false` from the actual code changes.
-The judgment may differ from the one made at Issue creation time (e.g., if what was planned as a refactor turns out to touch specs → true).
+ステップ 1 で読み込んだ基準に照らし、実装結果（実コード変更内容）から
+`needs_user_review: true|false` を決める。
+Issue 起票時の判断と変わる可能性あり（例: refactor 想定だったが仕様に踏み込んだ場合は true）。
 
-## Step 6: Mark PR Ready
+## ステップ 6: PR を Ready 化
 
 ```bash
 gh pr ready {PR_NUMBER}
-gh pr comment {PR_NUMBER} --body "Implementation complete. Awaiting review. {change summary}"
+gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サマリ}"
 ```
 
-Label assignment (`needs-ai-review` / `needs-user-review`) is the responsibility of the caller (`/gh-kit:pr-implement-auto`).
+ラベル付与（`needs-ai-review` / `needs-user-review`）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
 
-## Step 7: Return value
+## ステップ 7: 戻り値
 
 ```json
 {
@@ -78,15 +79,15 @@ Label assignment (`needs-ai-review` / `needs-user-review`) is the responsibility
   "status": "ready",
   "needs_user_review": true,
   "commits_added": 5,
-  "message": "detailed message"
+  "message": "詳細メッセージ"
 }
 ```
 
-## Constraints
+## 制約
 
-| No | Prohibited |
+| No | 禁止 |
 |---|---|
-| 1 | Do not create new branches or PRs |
-| 2 | Do not merge |
-| 3 | Stop and report to caller on conflict (no `-X ours/theirs`) |
-| 4 | Do not use `git push --force` |
+| 1 | 新規ブランチ・新規 PR は作成しない |
+| 2 | マージはしない |
+| 3 | コンフリクトが出たら親に報告して停止（`-X ours/theirs` 禁止） |
+| 4 | `git push --force` は使わない |
