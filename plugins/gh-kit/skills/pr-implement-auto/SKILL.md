@@ -91,7 +91,7 @@ gh issue edit {N} --add-assignee @me
 # PR 本文から Issue 番号を抽出して付与
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --add-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+  gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
 fi
 ```
 
@@ -109,7 +109,7 @@ gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LA
 gh pr comment {N} --body "{失敗理由}"
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+  gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
 fi
 ```
 

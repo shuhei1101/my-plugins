@@ -18,7 +18,7 @@ Issue 起票後に AI レビューフロー（`/gh-kit:issue-review-auto`）が�
 | `body` | 必須 | Issue 本文（`イシュードキュメント.j2` テンプレを呼び出し側が展開済み） |
 | `type` | 必須 | Issue タイプラベル（例: `bug`, `enhancement`, `refactor`） |
 | `priority` | 必須 | 優先度ラベル（例: `priority-high`, `priority-medium`, `priority-low`） |
-| `needs_user_review` | 任意 | `true` の場合 `needs-user-review` ラベルを追加（既定: `false`） |
+| `needs_user_review` | 任意 | `true` の場合 `gh issue edit --add-assignee` でユーザーをアサイン（既定: `false`） |
 | `extra_labels` | 任意 | 追加ラベルのカンマ区切り文字列（既定: なし） |
 
 ## 動作フロー
@@ -39,8 +39,6 @@ Issue 起票後に AI レビューフロー（`/gh-kit:issue-review-auto`）が�
 gh label list | grep -q "^${GH_KIT_LABEL_NEEDS_AI_REVIEW}" || \
   gh label create "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --color "$GH_KIT_LABEL_COLOR_NEEDS_AI_REVIEW" --description "AI レビュー必要"
 
-gh label list | grep -q "^${GH_KIT_LABEL_NEEDS_USER_REVIEW}" || \
-  gh label create "$GH_KIT_LABEL_NEEDS_USER_REVIEW" --color "$GH_KIT_LABEL_COLOR_NEEDS_USER_REVIEW" --description "ユーザーレビュー必要"
 ```
 
 ## ステップ 2: ラベル文字列を組み立てる
@@ -49,8 +47,10 @@ gh label list | grep -q "^${GH_KIT_LABEL_NEEDS_USER_REVIEW}" || \
 # needs-ai-review は呼び出し側が指定しなくても必ず付与する（構造的保証）
 LABELS="${GH_KIT_LABEL_AI_CODE_SCAN},${GH_KIT_LABEL_NEEDS_AI_REVIEW},{type},{priority}"
 
+GH_LOGIN=$(gh api user --jq '.login')
+ASSIGNEE_OPT=""
 if [ "{needs_user_review}" = "true" ]; then
-  LABELS="${LABELS},${GH_KIT_LABEL_NEEDS_USER_REVIEW}"
+  ASSIGNEE_OPT="--assignee ${GH_LOGIN}"
 fi
 
 if [ -n "{extra_labels}" ]; then
@@ -61,16 +61,23 @@ fi
 ## ステップ 3: gh issue create で起票する
 
 ```bash
-gh issue create \
+ISSUE_URL=$(gh issue create \
   --title "{title}" \
   --body-file <(cat <<'EOF'
 {body}
 EOF
 ) \
-  --label "$LABELS"
+  --label "$LABELS")
+ISSUE_NUMBER=$(echo "$ISSUE_URL" | grep -o '[0-9]*$')
 ```
 
-起票に成功したら `gh issue view` で `number` と `url` を取得する。
+起票に成功したら、`needs_user_review` が `true` の場合は assignee を追加する:
+
+```bash
+if [ -n "$ASSIGNEE_OPT" ]; then
+  gh issue edit "$ISSUE_NUMBER" $ASSIGNEE_OPT
+fi
+```
 
 ## 戻り値
 

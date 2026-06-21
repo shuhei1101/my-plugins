@@ -19,10 +19,10 @@ description: "wip Draft PR を 1 件実装する: worktree 復帰 → fetch/rese
 | 採用方針 | 必須 | Issue コメントの `issue-reviewer` 結果から抽出 |
 | 分割スコープ | 任意 | この PR で扱うスコープ（1 Issue 複数 PR 時） |
 
-## ステップ 1: needs-user-review 判定基準を読み込む
+## ステップ 1: ユーザー確認要否判定基準を読み込む
 
 ```bash
-cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"
+cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザー確認要否判定.md"
 ```
 
 ステップ 5 で参照する。
@@ -55,7 +55,7 @@ git -C "$WT" reset --hard origin/{branch}
 git -C "$WT" push origin {branch}
 ```
 
-## ステップ 5: `needs-user-review` 要否を再判定
+## ステップ 5: ユーザー確認要否を再判定
 
 ステップ 1 で読み込んだ基準に照らし、実装結果（実コード変更内容）から
 `needs_user_review: true|false` を決める。
