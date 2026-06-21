@@ -3,7 +3,7 @@ name: gh-kit:issue-create
 description: GitHub Issue を 1 件起票する。needs-ai-review ラベルを強制付与し、AI レビューフローに確実に乗せる。code-scanner や手動呼び出しの両方から使える。
 ---
 
-# issue-create（日本語解説）
+# issue-create
 
 このスキルは Issue 起票の責務を一か所に集約するために作られた。
 
