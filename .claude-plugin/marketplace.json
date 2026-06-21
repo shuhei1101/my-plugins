@@ -8,13 +8,13 @@
       "name": "work",
       "source": "./plugins/work",
       "description": "ワークツリー駆動のブランチ作業基盤（start / merge と保護フック群）。ローカル Git のワークツリー管理に専念、ドキュメントは gh-kit Wiki へ",
-      "version": "2.2"
+      "version": "2.3"
     },
     {
       "name": "dev-kit",
       "source": "./plugins/dev-kit",
       "description": "編集対象ファイルに応じた開発ルールを自動注入するプラグイン",
-      "version": "1.9"
+      "version": "1.10"
     },
     {
       "name": "gh-kit",
