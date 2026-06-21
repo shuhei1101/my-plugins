@@ -18,7 +18,7 @@ Bash で次を実行して、後続ステップで参照するラベル定数と
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 cat "${CLAUDE_PLUGIN_ROOT}/templates/ファイル解決.md"
 cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"
-cat "${CLAUDE_PLUGIN_ROOT}/templates/イシュードキュメント.md.j2"
+cat "${CLAUDE_PLUGIN_ROOT}/templates/イシュードキュメント.j2"
 ```
 
 ## ステップ 2: 対象ファイルを解決
@@ -40,7 +40,7 @@ Read 時に PreToolUse フックがプロジェクト規約を自動注入する
 
 ## ステップ 6: Issue 本文を作成
 
-ステップ 1 で取得した `イシュードキュメント.md.j2` に沿って Markdown を組み立てる。
+ステップ 1 で取得した `イシュードキュメント.j2` に沿って Markdown を組み立てる。
 
 ## ステップ 7: gh CLI で起票
 
