@@ -12,14 +12,19 @@ model: sonnet
 
 ## ステップ 1: ラベル定義と各種テンプレートを読み込む
 
-Bash で次を実行して、後続ステップで参照するラベル定数とテンプレート本文を取得する:
+ラベル定数は bash で取得し、テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得する:
 
 ```bash
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-cat "${CLAUDE_PLUGIN_ROOT}/templates/ファイル解決.md"
-cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"
-cat "${CLAUDE_PLUGIN_ROOT}/templates/イシュードキュメント.j2"
 ```
+
+次の MCP ツール呼び出しでテンプレ本文を取得（`template_get` の `template_name` 引数に渡す）:
+
+| 用途 | template_name |
+|---|---|
+| 観点→ファイル変換ルール | `ファイル解決.md` |
+| `needs-user-review` 判定基準 | `ユーザーレビュー要否判定.md` |
+| Issue 本文テンプレート | `イシュードキュメント.j2` |
 
 ## ステップ 2: 対象ファイルを解決
 

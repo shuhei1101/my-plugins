@@ -1,8 +1,8 @@
 # gh-kit プラグイン
 
 GitHub Issues / Pull Request を真実のソースとして作業フローを回すプラグイン。
-GitHub 操作はすべて `gh` CLI に統一（MCP は使わない）。
-ラベル名は `scripts/labels.sh` に一元化。
+GitHub 操作はすべて `gh` CLI に統一。
+テンプレ取得は `gh-kit-tools` MCP の `template_get` 経由（ラベル名は `scripts/labels.sh` に一元化）。
 
 ## ワークフロー
 
@@ -58,6 +58,15 @@ flowchart TD
 | `plugins/gh-kit/templates/レビュー結果コメント.j2` | issue-reviewer が投稿するレビュー結果コメント本文（Jinja2） |
 | `plugins/gh-kit/templates/PRドキュメント.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
+| `plugins/gh-kit/scripts/templates/template_get.py` | templates/ 配下の指定ファイルを stdout に出す CLI |
+| `plugins/gh-kit/mcp/server.py` | `gh-kit-tools` MCP サーバー（FastMCP）|
+| `plugins/gh-kit/.mcp.json` | MCP サーバー起動設定 |
+
+## MCP ツール
+
+| ツール | サーバー | 用途 |
+|---|---|---|
+| `template_get` | `gh-kit-tools` | テンプレート 6 種（`.j2` × 3 + `.md` × 3）の本文取得。`template_name` は Literal で制約 |
 
 ## 環境変数
 

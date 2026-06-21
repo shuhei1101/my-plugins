@@ -16,9 +16,7 @@ model: sonnet
 
 ## ステップ 1: PR 本文テンプレートを取得
 
-```bash
-cat "${CLAUDE_PLUGIN_ROOT}/templates/PRドキュメント.j2"
-```
+`gh-kit-tools` MCP の `template_get` を呼び、`template_name: "PRドキュメント.j2"` で本文を取得する。
 
 このテンプレを実値で埋めて Draft PR 本文として使う。
 

@@ -59,6 +59,17 @@ flowchart TD
 | `plugins/gh-kit/templates/レビュー結果コメント.j2` | issue-reviewer が投稿するレビュー結果コメント本文（Jinja2） |
 | `plugins/gh-kit/templates/PRドキュメント.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/labels.sh` | ラベル名一元定義 |
+| `plugins/gh-kit/scripts/templates/template_get.py` | templates/ 配下の指定ファイルを stdout に出す CLI |
+| `plugins/gh-kit/mcp/server.py` | `gh-kit-tools` MCP サーバー本体（FastMCP）|
+| `plugins/gh-kit/.mcp.json` | MCP サーバー起動設定（uv run --with mcp） |
+
+## MCP ツール
+
+| ツール | サーバー | 用途 |
+|---|---|---|
+| `template_get` | `gh-kit-tools` | templates/ 配下の 6 ファイル（`.j2` × 3 + `.md` × 3）の本文取得。`template_name` は Literal で enum 制約 |
+
+エージェント側はテンプレ取得を `cat` ではなく `template_get` MCP ツール呼び出しに統一（パスの間違いを enum で防ぐ）。
 
 注入方法はスキルとエージェントで異なる:
 
