@@ -10,6 +10,7 @@
 |---|---|
 | 1.x | タスク + ローカルイシュー管理を含むフル機能 |
 | 2.0 | タスク/イシュー機能を全廃止。`/work:start` `/work:merge` `/work:setup` + 保護フック群に縮小 |
+| 2.2 | `/work:setup` と `rules/work/` を削除。ノート管理を gh-kit Wiki へ完全移管 |
 
 ## スキル一覧
 
@@ -17,7 +18,6 @@
 |---|---|---|
 | 1 | `/work:start` | ブランチ + worktree 作成、実装開始 |
 | 2 | `/work:merge` | 親取り込み + コンフリクト処理 + マージ + worktree 削除 |
-| 3 | `/work:setup` | `.work/notes/` を初期化 |
 
 ## MCP ツール
 
@@ -54,18 +54,9 @@
 | MCP ツール `index_*` / `issue_*` | 廃止 |
 | `issue-resolver` / `issue-scanner` / `branch-blank-worker` サブエージェント | gh-kit プラグイン側に再構築 |
 
-## ディレクトリ構成
-
-```txt
-.work/
-└── notes/
-    ├── _index.md
-    └── {カテゴリ}/{topic}.md
-```
-
 ## 参考リンク
 
 - `plugins/work/CLAUDE.md`: 同梱ドキュメント
-- `plugins/work/skills/`: `start` / `merge` / `setup` の SKILL.md
+- `plugins/work/skills/`: `start` / `merge` の SKILL.md
 - `plugins/work/hooks/`: 保護フック群
 - `plugins/work/mcp/server.py`: `worktree_create` / `worktree_remove` の MCP 定義

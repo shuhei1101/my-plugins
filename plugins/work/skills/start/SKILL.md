@@ -21,19 +21,11 @@ description: ブランチを作成してワークツリーで作業を開始す�
 
 ワークツリー内で実装を進める。コミットは細かく刻んでよい。
 
-### ステップ 4: ノートを更新（実装完了後）
-
-ワークツリーの `.work/notes/` で関連ノートを確認:
-
-- 見つかった場合 → 現在の状態を反映するように更新
-- 見つからない場合 → 新規作成
-- `.work/notes/_index.md` を同コミットで更新
-
-### ステップ 5: 完了後の流れ
+### ステップ 4: 完了後の流れ
 
 | 状況 | 次のアクション |
 |---|---|
-| GitHub Issue 駆動の作業 | `/gh:pr-wip-create` で Draft PR にコミットを積み、ready 化後 `/gh:pr-review-auto` でマージ |
+| GitHub Issue 駆動の作業 | `/gh-kit:pr-draft-create-auto` 経由で Draft PR にコミットを積み、ready 化後 `/gh-kit:pr-review-auto` でマージ |
 | ローカル単独作業 | `/work:merge {ブランチ名}` を提案 |
 
-タスクドキュメント・タスクインデックスは廃止された。GitHub Issue/PR が真実のソース。
+仕様スナップショットは GitHub Wiki（`/gh-kit:wiki-create`）に書く。`.work/notes/` は廃止予定。
