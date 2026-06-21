@@ -22,7 +22,7 @@ model: sonnet
 
 ## ステップ 2: ブランチ + worktree 作成
 
-`/work:start` を実行。
+`/gh-kit:start` を実行。
 
 ## ステップ 3: 空コミットを作成（Draft PR 作成のため最低 1 コミット必要）
 

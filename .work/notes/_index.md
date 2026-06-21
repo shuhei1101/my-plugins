@@ -2,8 +2,8 @@
 
 ## プラグイン
 
-- [workプラグイン](プラグイン/workプラグイン.md): ワークツリー駆動のブランチ作業基盤（v2.0 で縮小、タスク/イシュー管理は gh-kit へ移管）
-- [gh-kitプラグイン](プラグイン/gh-kitプラグイン.md): GitHub Issues/PR を真実のソースとした作業フローキット（gh CLI ベース）
+- [guard-kitプラグイン](プラグイン/guard-kitプラグイン.md): ローカル Git 保護フック群（旧 work、v1.0 で guard-kit にリネーム）
+- [gh-kitプラグイン](プラグイン/gh-kitプラグイン.md): GitHub Issues/PR/Wiki + ワークツリー基盤のフルキット（gh CLI ベース、start/merge/worktree MCP を内蔵）
 - [gh-kitラベル設計](プラグイン/gh-kitラベル設計.md): Issue/PR の状態を表すラベル一覧と状態遷移図
 
 ## フック・自動化

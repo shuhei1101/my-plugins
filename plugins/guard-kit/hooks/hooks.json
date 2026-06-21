@@ -18,7 +18,7 @@
         "matcher": "Edit|Write",
         "hooks": [
           {
-            "_description": "保護ブランチ（main/master/develop）への直接編集をブロックし /work:start の使用を促す",
+            "_description": "保護ブランチ（main/master/develop）への直接編集をブロックし /gh-kit:start の使用を促す",
             "type": "command",
             "command": "python",
             "args": [
@@ -69,14 +69,6 @@
             ]
           },
           {
-            "_description": "マージ前にmaster取り込み確認＋dry-runコンフリクトチェック",
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use/pre-merge-check.py"
-            ]
-          },
-          {
             "_description": "push / merge を検出して確認を挟む",
             "type": "command",
             "command": "python",
@@ -92,7 +84,7 @@
       {
         "hooks": [
           {
-            "_description": "セッション開始時に work プラグイン概要を注入",
+            "_description": "セッション開始時に guard-kit プラグイン概要を注入",
             "type": "command",
             "command": "python",
             "args": [
@@ -103,34 +95,9 @@
         ]
       }
     ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "_description": "workスキル実行指示",
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit/work_start_reminder.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit/work_start_reminder.md"
-            ]
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [
-          {
-            "_description": "レスポンス終了時に QA・マージ提案リマインダーを出力",
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/stop/work_complete_check.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/stop/work_complete_check.md"
-            ]
-          },
-
           {
             "_description": "直近コミットでN件超のファイル削除があれば警告コンテキストを注入",
             "type": "command",
@@ -153,15 +120,6 @@
     "PreCompact": [
       {
         "hooks": [
-          {
-            "_description": "圧縮前にセッション知識をアーティファクト化するスキルを実行",
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact/pre-compact.py",
-              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact/pre-compact.md"
-            ]
-          },
           {
             "_description": "圧縮前にセッショントークンを削除",
             "type": "command",

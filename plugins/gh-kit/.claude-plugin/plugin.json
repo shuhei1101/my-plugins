@@ -1,5 +1,5 @@
 {
   "name": "gh-kit",
-  "description": "GitHub Issues/PR/Wiki を真実のソースとした作業フローキット（code-scan-auto / issue-review / pr-draft-create / pr-implement-auto / pr-review-auto / wiki-create）。すべて gh CLI で完結",
-  "version": "0.12"
+  "description": "GitHub Issues/PR/Wiki + ワークツリー基盤のフルキット（gh CLI + Jinja2 テンプレ + start/merge スキル + worktree MCP + リマインダーフック + Wiki ページ作成）",
+  "version": "0.13"
 }

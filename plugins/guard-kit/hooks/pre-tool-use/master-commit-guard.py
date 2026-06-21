@@ -8,7 +8,7 @@
 - 対応する作業ディレクトリの `branch --show-current` を取得し、
   保護ブランチ (`master` / `main` / `develop`) のときだけ発火
 - マージ中 (`MERGE_HEAD` 存在) は通過 — マージコミット完成・コンフリクト解消ステージングを阻まないため
-- env `WORK_ALLOW_MASTER_COMMIT` が truthy なら通過 — 例外作業用の明示的な解除手段
+- env `GUARD_KIT_ALLOW_MASTER_COMMIT` が truthy なら通過 — 例外作業用の明示的な解除手段
 - block 時の `reason` には `git status` の出力を追記し、何が staged/unstaged かを
   そのまま Claude に見せる
 
@@ -90,7 +90,7 @@ def main() -> None:
         return
 
     # 明示的な解除手段: 例外的に保護ブランチへ直接操作したいときだけ env で許可する
-    if os.environ.get("WORK_ALLOW_MASTER_COMMIT", "").strip().lower() in {"true", "1", "yes", "on"}:
+    if os.environ.get("GUARD_KIT_ALLOW_MASTER_COMMIT", "").strip().lower() in {"true", "1", "yes", "on"}:
         return
 
     # プロンプト本文を読み込み、git status を末尾に追記してブロック理由とする

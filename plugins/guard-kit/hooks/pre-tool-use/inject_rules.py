@@ -12,7 +12,7 @@ TARGET_TOOLS = ("Edit", "Write", "Read")
 
 RULES_DIR  = pathlib.Path(__file__).resolve().parent.parent / "rules"  # .md ルールファイルの置き場所
 CACHE_PATH = RULES_DIR / "cache.json"                  # スキャン結果キャッシュ
-TOKEN_DIR  = pathlib.Path.home() / ".claude" / "tokens" / "work" / "rules"  # セッショントークン保存先（プラグイン別）
+TOKEN_DIR  = pathlib.Path.home() / ".claude" / "tokens" / "guard-kit" / "rules"  # セッショントークン保存先（プラグイン別）
 
 # 1回の注入で許可する最大文字数（Claude の additional_context 上限）
 CHAR_LIMIT = 10_000

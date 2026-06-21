@@ -13,7 +13,7 @@
 (= 同一セッションで同じコマンドを再実行できる)。
 
 env トグル:
-    WORK_GUARD: `false` / `0` / `no` / `off` で無効化（デフォルト有効）
+    GUARD_KIT_GUARD: `false` / `0` / `no` / `off` で無効化（デフォルト有効）
 
 Args:
     sys.argv[1]: プロンプト本文の Markdown ファイルパス
@@ -37,7 +37,7 @@ _SAFE_MERGE = re.compile(
 
 def main() -> None:
     # env で無効化されていれば何もしない
-    if os.environ.get("WORK_GUARD", "true").lower() in ("false", "0", "no", "off"):
+    if os.environ.get("GUARD_KIT_GUARD", "true").lower() in ("false", "0", "no", "off"):
         return
 
     payload = json.loads(sys.stdin.read())
