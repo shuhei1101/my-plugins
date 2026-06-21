@@ -34,6 +34,7 @@ flowchart TD
 | 3 | `/gh-kit:pr-draft-create-auto` | needs-* なしの Issue 全件 → Draft PR を作成 |
 | 4 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
 | 5 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
+| 6 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
 
 ## サブエージェント一覧
 
@@ -56,6 +57,13 @@ flowchart TD
 | `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` 判定基準（ブラックリスト） |
 | `plugins/gh-kit/templates/レビュー結果コメント.md` | issue-reviewer が投稿するレビュー結果コメント本文 |
 | `plugins/gh-kit/templates/PR本文テンプレート.md` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文 |
+| `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
+
+## 環境変数
+
+| 変数 | 用途 | 使うスキル |
+|---|---|---|
+| `GH_KIT_WIKI_PATH` | GitHub Wiki のローカル clone パス（例: `/path/to/repo.wiki`） | `wiki-create` |
 
 ## ラベル一覧
 
