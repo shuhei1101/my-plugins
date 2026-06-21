@@ -81,7 +81,7 @@ gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 [サブエージェントで並列実行・完了を待つ] 上位 N 件を並列処理する。
 （戻り値: `{issue_number, re_review_needed, status}` — エージェントが gh CLI でコメント投稿を完結させる）
 
-### ステップ 4: ラベル更新
+### ステップ 4: ラベル更新 + assignee 追加
 
 戻り値の `status` と `re_review_needed` に応じてラベルを操作する。
 
@@ -99,10 +99,16 @@ fi
 ARGS=(--remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW")
 gh issue edit {N} "${ARGS[@]}"
 
+# needs_user_review: true の場合は assignee を追加
+if [ "{needs_user_review}" = "true" ]; then
+  GH_LOGIN="$(gh api user --jq '.login')"
+  gh issue edit {N} --add-assignee "$GH_LOGIN"
+fi
+
 # re_review_needed: false かつ needs-* が他になければ Draft PR フローへ進める（呼び出し元が判定）
 ```
 
-**注意:** `needs-user-review` ラベルは付与しない。ユーザーが AI の追加質問に返答した後、再度 AI レビューが必要と判断した場合は手動で `needs-ai-review` を付け直す。
+**注意:** `needs-user-review` ラベルは使用しない。ユーザー確認が必要な場合は assignee を追加する。ユーザーが AI の追加質問に返答した後、再度 AI レビューが必要と判断した場合は手動で `needs-ai-review` を付け直す。
 
 **status が `duplicate_merged` または `duplicate_closed` の場合（重複検出・クローズ済み）:**
 
@@ -118,7 +124,7 @@ gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_
 | 項目 | 内容 |
 |---|---|
 | レビュー件数 | 番号一覧 |
-| needs-user-review | 付与/非付与の内訳 |
+| ユーザー確認要 | assignee 追加/非追加の内訳 |
 | re_review_needed | true/false の内訳 |
 | waiting | 返答待ちで未処理の件数 |
 | 重複検出 | `duplicate_merged` / `duplicate_closed` になった Issue 番号と移行先 Issue 番号 |
