@@ -49,6 +49,10 @@ gh issue edit {N} --add-label "$LABEL_PROCESSING"
 
 ### ステップ 4: ラベル更新
 
+`status` の値に応じて処理を分岐する:
+
+**status が `ok` の場合（通常レビュー完了）:**
+
 ```bash
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 ARGS=(--remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW")
@@ -58,9 +62,20 @@ fi
 gh issue edit {N} "${ARGS[@]}"
 ```
 
+**status が `duplicate_merged` または `duplicate_closed` の場合（重複検出・クローズ済み）:**
+
+Issue はすでにクローズされているため、ラベル付け替えは不要。
+`processing` ラベルのみ除去する（クローズ済み Issue には add-label が効かないため remove のみ）:
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+gh issue edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW" 2>/dev/null || true
+```
+
 ### ステップ 5: 結果報告
 
 | 項目 | 内容 |
 |---|---|
 | レビュー件数 | 番号一覧 |
 | needs-user-review | 付与/非付与の内訳 |
+| 重複検出 | `duplicate_merged` / `duplicate_closed` になった Issue 番号と移行先 Issue 番号 |
