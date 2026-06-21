@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
-# gh-kit 定数定義。Session Start フックで自動実行され、環境変数としてセッション内に展開される。
+# gh-kit 定数定義。Session Start フックで自動実行され、$CLAUDE_ENV_FILE に書き込まれて
+# Claude Code セッション全体に環境変数として展開される。
 # 定数名にはプラグイン名プレフィックス GH_KIT_ を付与する。
+#
+# 注意: サブシェルで export しても親プロセス（Claude Code）には伝わらない。
+#       $CLAUDE_ENV_FILE への追記により Claude Code が環境変数として読み込む。
 
-export GH_KIT_LABEL_PROCESSING="processing"
-export GH_KIT_LABEL_NEEDS_AI_REVIEW="needs-ai-review"
-export GH_KIT_LABEL_NEEDS_USER_REVIEW="needs-user-review"
-export GH_KIT_LABEL_NEEDS_FIX="needs-fix"
-export GH_KIT_LABEL_AI_CODE_SCAN="ai-code-scan"
-export GH_KIT_LABEL_WIP="wip"
+echo "export GH_KIT_LABEL_PROCESSING=processing" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_NEEDS_AI_REVIEW=needs-ai-review" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_NEEDS_USER_REVIEW=needs-user-review" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_NEEDS_FIX=needs-fix" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_AI_CODE_SCAN=ai-code-scan" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_WIP=wip" >> "$CLAUDE_ENV_FILE"
 
-export GH_KIT_LABEL_COLOR_PROCESSING="FBCA04"
-export GH_KIT_LABEL_COLOR_NEEDS_AI_REVIEW="0E8A16"
-export GH_KIT_LABEL_COLOR_NEEDS_USER_REVIEW="C5DEF5"
-export GH_KIT_LABEL_COLOR_NEEDS_FIX="D93F0B"
-export GH_KIT_LABEL_COLOR_AI_CODE_SCAN="1D76DB"
-export GH_KIT_LABEL_COLOR_WIP="C2E0C6"
+echo "export GH_KIT_LABEL_COLOR_PROCESSING=FBCA04" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_NEEDS_AI_REVIEW=0E8A16" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_NEEDS_USER_REVIEW=C5DEF5" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_NEEDS_FIX=D93F0B" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_AI_CODE_SCAN=1D76DB" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_WIP=C2E0C6" >> "$CLAUDE_ENV_FILE"

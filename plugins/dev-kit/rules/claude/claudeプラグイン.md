@@ -28,7 +28,9 @@ paths: "**/plugins/**"
 - `constants.sh` には以下のルールを適用すること
   - `#!/usr/bin/env bash` で始める
   - 定数名にはプラグイン名をアッパースネークケースで付与する（例: `GH_KIT_LABEL_WIP`）
-  - 各変数は `export` で宣言する（環境変数としてサブプロセスに引き継ぐため）
+  - 各変数は `echo "export VAR=VALUE" >> "$CLAUDE_ENV_FILE"` で `$CLAUDE_ENV_FILE` に追記する
+    - **`export VAR=VALUE` だけでは不可**: サブシェルで実行されるため、親プロセス（Claude Code）に環境変数が伝わらない
+    - `$CLAUDE_ENV_FILE` への追記により Claude Code がセッション開始時に環境変数として読み込む
 - `hooks/hooks.json` の `SessionStart` フックで `constants.sh` を自動実行する
 
 ```json
