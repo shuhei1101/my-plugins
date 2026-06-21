@@ -4,6 +4,11 @@ description: 既存 Draft PR の中身を実装し、Ready 化して返すエー
 model: sonnet
 ---
 
+## 役割
+
+`/gh-kit:pr-implement` スキルの薄ラッパー。
+受け取った引数をそのままスキルに渡し、スキルの戻り値 JSON をそのまま返す。
+
 ## 入力
 
 | 引数 | 内容 |
@@ -15,58 +20,14 @@ model: sonnet
 | 採用方針 | Issue コメントの `issue-reviewer` 結果から抽出 |
 | 分割スコープ | この PR で扱うスコープ |
 
-## ステップ 1: 判定基準テンプレートを取得
+## タスク
 
-```bash
-cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザーレビュー要否判定.md"
-```
+`/gh-kit:pr-implement` スキルを呼び出す。
+詳細な手順はスキル定義（`plugins/gh-kit/skills/pr-implement/SKILL.md`）に記載。
 
-ステップ 4 で参照する。
+## 戻り値
 
-## ステップ 2: ワークツリー復帰 + remote 同期
-
-```bash
-WT=".claude/worktrees/$(echo {branch} | tr '/' '-')"
-if [ ! -d "$WT" ]; then
-  echo "worktree missing, please call gh-kit-tools worktree_create MCP for branch={branch}" >&2
-  exit 1
-fi
-git -C "$WT" fetch origin
-git -C "$WT" reset --hard origin/{branch}
-```
-
-## ステップ 3: 実装
-
-採用方針と分割スコープに従って実装する。コミットは細かく刻んでよい。
-
-| No | 動作 |
-|---|---|
-| 1 | 採用方針の通りにコード変更 |
-| 2 | 影響範囲のテストを追加/更新 |
-| 3 | プロジェクトのテストを実行 |
-
-## ステップ 4: push
-
-```bash
-git -C "$WT" push origin {branch}
-```
-
-## ステップ 5: `needs-user-review` 要否を再判定
-
-ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らし、実装結果（実コード変更内容）から
-`needs_user_review: true|false` を決める。
-Issue 起票時の判断と変わる可能性あり（例: refactor 想定だったが仕様に踏み込んだ場合は true）。
-
-## ステップ 6: PR を Ready 化
-
-```bash
-gh pr ready {PR_NUMBER}
-gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サマリ}"
-```
-
-ラベル付与（`needs-ai-review` / `needs-user-review`）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
-
-## ステップ 7: 戻り値
+スキルの戻り値をそのまま返す:
 
 ```json
 {
@@ -78,12 +39,3 @@ gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サ
   "message": "詳細メッセージ"
 }
 ```
-
-## 制約
-
-| No | 禁止 |
-|---|---|
-| 1 | 新規ブランチ・新規 PR は作成しない |
-| 2 | マージはしない |
-| 3 | コンフリクトが出たら親に報告して停止（`-X ours/theirs` 禁止） |
-| 4 | `git push --force` は使わない |
