@@ -86,6 +86,30 @@ git -C "$WT" merge origin/{BASE_BRANCH}
 
 コンフリクトが残ったら `git -C "$WT" status -s` で UU / AA / DD などのコードを確認し、両側の意図を読んで「意味が強い」方を採用または両立させる（`-X ours` / `-X theirs` 一括解消は禁止）。解消後 `git -C "$WT" add` / `git -C "$WT" commit`。
 
+自走解消できなかった場合（コンフリクトが残る場合）は、以下を実行してユーザーに通知する:
+
+```bash
+# コンフリクトファイル一覧を取得
+CONFLICT_FILES=$(git -C "$WT" status -s | grep '^UU\|^AA\|^DD' | awk '{print "- `" $2 "`"}')
+```
+
+`gh-kit-tools` MCP の `template_get` で `コンフリクト通知コメント.j2` を取得し、以下の変数を埋めて `gh pr comment` で投稿する:
+
+| 変数 | 内容 |
+|---|---|
+| `{head_branch}` | HEAD ブランチ名 |
+| `{base_branch}` | BASE ブランチ名 |
+| `{conflict_files}` | `$CONFLICT_FILES` の値 |
+| `{conflict_reason}` | AI が判断した解消不能の理由（例: 両側で同箇所に別ロジックが追加されており自動判定不可） |
+
+```bash
+# テンプレートに変数を埋めたコメントを投稿
+gh pr comment {PR_NUMBER} --body "{テンプレートに変数を埋めた本文}"
+
+# assignee にユーザーを追加して通知
+gh pr edit {PR_NUMBER} --add-assignee @me
+```
+
 ```bash
 git -C {REPO_ROOT} merge --no-ff -m "{type}: {title}" {HEAD_BRANCH}
 ```
@@ -114,7 +138,7 @@ fi
 | 状況 | verdict |
 |---|---|
 | 全て成功 | `approved-merged` |
-| コンフリクトが自走解消できず残る | `conflict` |
+| コンフリクトが自走解消できず残る（コメント通知 + assignee 追加済み） | `conflict` |
 | その他失敗 | `failed` |
 
 ## ステップ 7-A: changes-requested

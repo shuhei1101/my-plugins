@@ -64,6 +64,7 @@ flowchart TD
 | `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール |
 | `plugins/gh-kit/templates/イシュードキュメント.j2` | code-scanner が起票する Issue 本文（Jinja2） |
 | `plugins/gh-kit/templates/ユーザー確認要否判定.md` | ユーザー確認要否の判定基準（ブラックリスト + assignee 操作手順） |
+| `plugins/gh-kit/templates/コンフリクト通知コメント.j2` | コンフリクト自走解消失敗時に PR へ投稿する選択肢付きコメント（Jinja2） |
 | `plugins/gh-kit/templates/レビュー結果コメント.j2` | `issue-review` スキルが投稿するレビュー結果コメント本文（Jinja2） |
 | `plugins/gh-kit/templates/PRドキュメント.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
