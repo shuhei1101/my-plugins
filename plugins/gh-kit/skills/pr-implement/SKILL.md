@@ -61,22 +61,26 @@ git -C "$WT" push origin {branch}
 `needs_user_review: true|false` を決める。
 Issue 起票時の判断と変わる可能性あり（例: refactor 想定だったが仕様に踏み込んだ場合は true）。
 
-## ステップ 6: PR を Ready 化 + ラベル後処理
+## ステップ 6: PR を Ready 化
 
 ```bash
 gh pr ready {PR_NUMBER}
 gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サマリ}"
 ```
 
-`processing` を除去し、レビュー待ちラベルを付与する。
+`$GH_KIT_LABEL_NEEDS_AI_REVIEW` ラベル付与と assignees 追加（`needs_user_review: true` の場合）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
 
-```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-ARGS=(--remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_AI_REVIEW")
-if [ "{needs_user_review}" = "true" ]; then
-  ARGS+=(--add-label "$LABEL_NEEDS_USER_REVIEW")
-fi
-gh pr edit {PR_NUMBER} "${ARGS[@]}"
+## ステップ 7: 戻り値
+
+```json
+{
+  "branch": "feat/issue-42-router",
+  "pr_number": 42,
+  "status": "ready",
+  "needs_user_review": true,
+  "commits_added": 5,
+  "message": "詳細メッセージ"
+}
 ```
 
 ## 制約

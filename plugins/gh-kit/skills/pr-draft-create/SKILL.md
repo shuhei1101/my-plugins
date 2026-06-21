@@ -63,7 +63,34 @@ EOF
 ルール:
 - `Closes #N` は使わない — 本文先頭に `Refs #N` を置く（1 Issue 複数 PR に対応）。
 - 必ず `--draft` を付ける。
-- ラベル付与（`wip` 等）は呼び出し側（`/gh-kit:pr-draft-create-auto`）の責務（Draft 雛形マーカーのため）。
+- ラベル付与（`wip` 等）は呼び出し側（`/gh-kit:pr-draft-create-auto`）の責務。
+
+## ステップ 6: Issue の優先度ラベルを PR に継承
+
+Issue に `$GH_KIT_LABEL_PRIORITY_URGENT` または `$GH_KIT_LABEL_PRIORITY_LOW` ラベルが付いていれば、同じラベルを Draft PR にも付与する。
+これにより `pr-implement-auto` と `pr-review-auto` の優先度順処理が正しく機能する。
+
+```bash
+# Issue のラベルを取得
+ISSUE_LABELS=$(gh issue view {Issue 番号} --json labels --jq '.labels | map(.name) | .[]')
+
+# 優先度ラベルを PR に継承
+if echo "$ISSUE_LABELS" | grep -q "$GH_KIT_LABEL_PRIORITY_URGENT"; then
+  gh pr edit {pr_number} --add-label "$GH_KIT_LABEL_PRIORITY_URGENT"
+elif echo "$ISSUE_LABELS" | grep -q "$GH_KIT_LABEL_PRIORITY_LOW"; then
+  gh pr edit {pr_number} --add-label "$GH_KIT_LABEL_PRIORITY_LOW"
+fi
+```
+
+## ステップ 7: 戻り値
+
+```json
+{
+  "branch": "feat/issue-42-router",
+  "pr_url": "https://github.com/.../pull/123",
+  "pr_number": 123
+}
+```
 
 ## 制約
 
