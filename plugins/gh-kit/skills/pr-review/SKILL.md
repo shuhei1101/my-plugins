@@ -17,6 +17,29 @@ PR を 1 件レビューし、合格時はそのまま base ブランチへマ�
 | リポジトリ root | メインリポジトリの絶対パス |
 | 現在 assignees 一覧 | assignees の有無を判定するのに使う |
 
+## ステップ 0: Wiki チェックリストを読み込む
+
+`GH_KIT_WIKI_PATH` と `GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをコンテキストに注入する。
+ページが存在しない場合は警告を出力して続行する（未設定プロジェクトでも従来通り動作する）。
+
+```bash
+IFS=',' read -ra PAGES <<< "${GH_KIT_CHECKLIST_PAGES:-共通チェックリスト}"
+for PAGE in "${PAGES[@]}"; do
+  PAGE=$(echo "$PAGE" | xargs)  # trim whitespace
+  if [ -n "$GH_KIT_WIKI_PATH" ]; then
+    FILE="$GH_KIT_WIKI_PATH/${PAGE}.md"
+    if [ -f "$FILE" ]; then
+      echo "# Wiki チェックリスト: $PAGE"
+      cat "$FILE"
+    else
+      echo "[INFO] Wiki チェックリストページが見つかりません: $FILE" >&2
+    fi
+  fi
+done
+```
+
+取得できたチェックリスト内容は、ステップ 3 のレビューで確認項目として観点メニューと合わせて参照する。
+
 ## ステップ 1: 観点メニューを取得
 
 ```bash
@@ -163,18 +186,6 @@ if [ -n "$ISSUE_N" ]; then
     --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT" \
     --remove-label "$LABEL_PROCESSING_PR_REVIEW"
 fi
-```
-
-## ステップ 8: 戻り値
-
-```json
-{
-  "verdict": "approved-merged" | "approved-user-review-pending" | "changes-requested" | "conflict" | "failed",
-  "pr_number": 42,
-  "branch": "feat/foo-bar",
-  "message": "詳細メッセージ",
-  "findings_count": {"blocker": 0, "critical": 0, "major": 1, "minor": 2, "nit": 3}
-}
 ```
 
 ## 制約
