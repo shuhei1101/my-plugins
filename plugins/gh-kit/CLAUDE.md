@@ -30,20 +30,21 @@ flowchart TD
 | No | スキル | 概要 |
 |---|---|---|
 | 1 | `/gh-kit:code-scan-auto` | コードベース観点別スキャン → `code-scanner` が `gh issue create` で直接起票 |
-| 2 | `/gh-kit:issue-review-auto` | `needs-ai-review` 付きの Issue を AI レビュー、コメント投稿 |
-| 3 | `/gh-kit:pr-draft-create-auto` | needs-* なしの Issue 全件 → Draft PR を作成 |
-| 4 | `/gh-kit:pr-draft-create` | 1 Issue から Draft PR を 1 件作成（`pr-draft-creator` エージェントの実装本体） |
-| 5 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
-| 6 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
-| 7 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
-| 8 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
+| 2 | `/gh-kit:issue-review` | 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを投稿 |
+| 3 | `/gh-kit:issue-review-auto` | `needs-ai-review` 付きの Issue を AI レビュー、コメント投稿 |
+| 4 | `/gh-kit:pr-draft-create-auto` | needs-* なしの Issue 全件 → Draft PR を作成 |
+| 5 | `/gh-kit:pr-draft-create` | 1 Issue から Draft PR を 1 件作成（`pr-draft-creator` エージェントの実装本体） |
+| 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
+| 7 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
+| 8 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
+| 9 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
 
 ## サブエージェント一覧
 
 | No | エージェント | 呼び元 | 役割 |
 |---|---|---|---|
 | 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でスキャンし `gh issue create` で直接起票 |
-| 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | 1 Issue を読みコメント本文と `needs-user-review` 要否を返す |
+| 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | `gh-kit:issue-review` スキルの薄ラッパー。1 Issue をレビューし戻り値を返す |
 | 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `worktree_create` MCP + 雛形コミット + Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、`needs-user-review` 要否を返す |
 | 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は base 取り込み・マージ・`worktree_remove`・push まで自走 |
@@ -57,7 +58,7 @@ flowchart TD
 | `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール |
 | `plugins/gh-kit/templates/イシュードキュメント.j2` | code-scanner が起票する Issue 本文（Jinja2） |
 | `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` 判定基準（ブラックリスト） |
-| `plugins/gh-kit/templates/レビュー結果コメント.j2` | issue-reviewer が投稿するレビュー結果コメント本文（Jinja2） |
+| `plugins/gh-kit/templates/レビュー結果コメント.j2` | `issue-review` スキルが投稿するレビュー結果コメント本文（Jinja2） |
 | `plugins/gh-kit/templates/PRドキュメント.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
 | `plugins/gh-kit/scripts/templates/template_get.py` | templates/ 配下の指定ファイルを stdout に出す CLI |
