@@ -1,19 +1,50 @@
 ---
 name: gh-kit:pr-review-auto
-description: needs-ai-review の Ready PR を 1 件ずつ直列でレビューし、合格 + needs-user-review なしならマージまで実行
+description: gh-kit:needs-ai-review の Ready PR を 1 件ずつ直列でレビューし、合格 + gh-kit:needs-user-review なしならマージまで実行
+disable-model-invocation: true
 ---
 
 # pr-review-auto
 
-`needs-ai-review` 付き Ready PR をキューとして 1 件ずつ消化する。
+`gh-kit:needs-ai-review` 付き Ready PR をキューとして 1 件ずつ消化する。
 **並列実行は絶対にしない**（master 取り込みとマージが競合してバグるため）。
 
-`needs-user-review` が残っている PR はレビューだけ実施してマージしない。
-ユーザーが `needs-user-review` を外したら別途再エントリー（`needs-ai-review` を付け直す）。
+`gh-kit:needs-user-review` が残っている PR はレビューだけ実施してマージしない。
+ユーザーが `gh-kit:needs-user-review` を外したら別途再エントリー（`gh-kit:needs-ai-review` を付け直す）。
 
 !`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
 ## タスク
+
+### ステップ 0: Monitor でイベント待機
+
+対象 PR が既に存在する場合はそのままステップ 1 へ進む。
+存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
+
+対象条件: `needs-ai-review` ラベル付きの Ready（非 Draft）PR（`processing` 付きは除外）。
+直列制約は維持（Monitor 検知後もステップ 1→4 の直列ループを継続する）。
+
+```bash
+# Monitor に渡すポーリングスクリプト
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
+while true; do
+  AVAILABLE=$(gh pr list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
+    --json number,labels,isDraft \
+    --jq "[.[] | select(
+      .isDraft == false and
+      (.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)
+    )] | length" 2>/dev/null || echo 0)
+  if [ "$AVAILABLE" -gt 0 ]; then
+    echo "TRIGGER:pr-review-auto:count=$AVAILABLE"
+    break
+  fi
+  sleep 30
+done
+```
+
+Monitor の stdout に `TRIGGER:pr-review-auto` が来たらステップ 1 へ進む。
+手動停止は TaskStop で行う。
 
 ### ステップ 1: レビュー対象 PR を収集
 
@@ -23,7 +54,7 @@ gh pr list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
   --json number,title,headRefName,baseRefName,statusCheckRollup,labels --limit 50
 ```
 
-`processing` 付きは除外。`created_at` 昇順。
+`gh-kit:processing` 付きは除外。`created_at` 昇順。
 
 ### ステップ 2: 上から 1 件取り出す
 
@@ -47,7 +78,7 @@ CI が failure なら failed へ。
 入力:
 - PR 番号 / タイトル / base / head
 - リポジトリ root
-- 現在ラベル一覧（`needs-user-review` の有無）
+- 現在ラベル一覧（`gh-kit:needs-user-review` の有無）
 
 ### ステップ 4: 後処理
 
@@ -60,7 +91,7 @@ ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fix
 | verdict | 動作 |
 |---|---|
 | approved-merged | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（マージは pr-reviewer が実施済み）+ `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
-| approved-user-review-pending | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（`needs-user-review` は残す）+ `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
+| approved-user-review-pending | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEEDS_AI_REVIEW"`（`gh-kit:needs-user-review` は残す）+ `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
 | changes-requested | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX"` + `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
 | conflict / failed | `gh pr edit {N} --remove-label "$LABEL_PROCESSING" --add-label "$LABEL_NEEDS_FIX" --add-label "$LABEL_NEEDS_USER_REVIEW" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_REVIEW"` |
 

@@ -60,7 +60,7 @@ Read 時に PreToolUse フックがプロジェクト規約を自動注入する
 ## ステップ 7: `/gh-kit:issue-create` スキルで起票
 
 finding ごとに `/gh-kit:issue-create` スキルを呼び出して起票する。
-ラベル準備・`needs-ai-review` 強制付与・`gh issue create` はスキルが担うため、エージェントは finding の内容を渡すだけでよい。
+ラベル準備・`gh-kit:needs-ai-review` 強制付与・`gh issue create` はスキルが担うため、エージェントは finding の内容を渡すだけでよい。
 
 | 引数 | 渡す値 |
 |---|---|
@@ -69,7 +69,7 @@ finding ごとに `/gh-kit:issue-create` スキルを呼び出して起票する
 | `type` | finding の種別（`bug` / `enhancement` / `refactor` など） |
 | `priority` | finding の優先度（`priority-high` / `priority-medium` / `priority-low`） |
 | `needs_user_review` | ステップ 5 の判定結果（`true` / `false`） |
-| `extra_labels` | `ai-code-scan`（コードスキャン起票の出自タグ） |
+| `extra_labels` | `gh-kit:ai-code-scan`（コードスキャン起票の出自タグ） |
 
 ## 戻り値
 

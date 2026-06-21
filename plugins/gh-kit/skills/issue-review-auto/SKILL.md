@@ -1,11 +1,12 @@
 ---
 name: gh-kit:issue-review-auto
-description: needs-ai-review ラベルの Issue を並列で AI レビューし、コメント投稿する
+description: gh-kit:needs-ai-review ラベルの Issue を並列で AI レビューし、コメント投稿する
+disable-model-invocation: true
 ---
 
 # issue-review-auto
 
-`needs-ai-review` 付きの Issue を `issue-reviewer` に並列で渡す。
+`gh-kit:needs-ai-review` 付きの Issue を `issue-reviewer` に並列で渡す。
 
 !`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
 
@@ -19,7 +20,7 @@ description: needs-ai-review ラベルの Issue を並列で AI レビューし�
 
 | 引数 | 必須 | 内容 |
 |---|---|---|
-| Issue 番号 | 任意 | 省略時は `needs-ai-review` 付きを全件巡回 |
+| Issue 番号 | 任意 | 省略時は `gh-kit:needs-ai-review` 付きを全件巡回 |
 
 ## フロー概要
 
@@ -35,6 +36,33 @@ needs-ai-review 付き Issue 収集
 
 ## タスク
 
+### ステップ 0: Monitor でイベント待機
+
+対象 Issue が既に存在する場合はそのままステップ 1 へ進む。
+存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
+
+```bash
+# Monitor に渡すポーリングスクリプト
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
+while true; do
+  COUNT=$(gh issue list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
+    --json number --jq 'length' 2>/dev/null || echo 0)
+  # processing 付きを除いたカウント
+  AVAILABLE=$(gh issue list --state open --label "$LABEL_NEEDS_AI_REVIEW" \
+    --json number,labels \
+    --jq "[.[] | select(.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)] | length" 2>/dev/null || echo 0)
+  if [ "$AVAILABLE" -gt 0 ]; then
+    echo "TRIGGER:issue-review-auto:count=$AVAILABLE"
+    break
+  fi
+  sleep 30
+done
+```
+
+Monitor の stdout に `TRIGGER:issue-review-auto` が来たらステップ 1 へ進む。
+手動停止は TaskStop で行う。
+
 ### ステップ 1: 対象 Issue を収集
 
 ```bash
@@ -45,7 +73,7 @@ gh issue list --state open --label "$LABEL_NEEDS_AI_REVIEW" --json number,title,
 gh issue view {N} --json number,title,body,labels,comments
 ```
 
-`processing` 付きは除外（他セッションが処理中）。0 件なら停止。
+`gh-kit:processing` 付きは除外（他セッションが処理中）。0 件なら停止。
 
 ### ステップ 2: 排他制御
 
@@ -99,6 +127,7 @@ gh issue edit {N} --remove-label "$LABEL_PROCESSING" --remove-label "$LABEL_NEED
 | 項目 | 内容 |
 |---|---|
 | レビュー件数 | 番号一覧 |
+| gh-kit:needs-user-review | 付与/非付与の内訳 |
 | re_review_needed | true/false の内訳 |
 | waiting | 返答待ちで未処理の件数 |
 | 重複検出 | `duplicate_merged` / `duplicate_closed` になった Issue 番号と移行先 Issue 番号 |
