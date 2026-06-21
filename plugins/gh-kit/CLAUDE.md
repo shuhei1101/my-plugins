@@ -10,12 +10,16 @@ GitHub 操作はすべて `gh` CLI に統一。
 flowchart TD
   U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + needs-ai-review| Issue[(GitHub Issue)]
   Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント<br>needs-ai-review 除去]
-  Review -->|needs-* なし + todo 全埋め| Ready[(Issue Ready)]
+  Review -->|re_review_needed: false<br>needs-* なし + todo 全埋め| Ready[(Issue Ready)]
+  Review -->|re_review_needed: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
+  UserReply -->|ユーザーが手動で needs-ai-review 再付与| Issue
   Ready -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
   WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 processing]
   Implementing -->|完了| NAR[(Ready PR + needs-ai-review)]
   NAR -->|/gh-kit:pr-review-auto| Merged[master]
 ```
+
+**再レビューループ:** AI がレビューコメントを投稿後、ユーザーが Issue にコメントで返答し、さらに AI に確認してほしい場合は手動で `needs-ai-review` を再付与する。次回 `/gh-kit:issue-review-auto` 実行時に再レビューモードで動作し、追加 QA またはラベル除去を行う。
 
 ## セットアップ
 
@@ -29,20 +33,24 @@ flowchart TD
 
 | No | スキル | 概要 |
 |---|---|---|
-| 1 | `/gh-kit:code-scan-auto` | コードベース観点別スキャン → `code-scanner` が `gh issue create` で直接起票 |
-| 2 | `/gh-kit:issue-review-auto` | `needs-ai-review` 付きの Issue を AI レビュー、コメント投稿 |
-| 3 | `/gh-kit:pr-draft-create-auto` | needs-* なしの Issue 全件 → Draft PR を作成 |
-| 4 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
-| 5 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
-| 6 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
-| 7 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
+| 1 | `/gh-kit:code-scan-auto` | コードベース観点別スキャン → `code-scanner` が `issue-create` スキル経由で起票 |
+| 1a | `/gh-kit:issue-create` | Issue を 1 件起票する（`needs-ai-review` 強制付与）。`code-scanner` や手動呼び出しの両方から使える |
+| 2 | `/gh-kit:issue-review` | 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを投稿 |
+| 3 | `/gh-kit:issue-review-auto` | `needs-ai-review` 付きの Issue を AI レビュー、コメント投稿 |
+| 4 | `/gh-kit:pr-draft-create-auto` | needs-* なしの Issue 全件 → Draft PR を作成 |
+| 5 | `/gh-kit:pr-draft-create` | 1 Issue から Draft PR を 1 件作成（`pr-draft-creator` エージェントの実装本体） |
+| 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
+| 7 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
+| 8 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + needs-user-review なしならマージ |
+| 9 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
 
 ## サブエージェント一覧
 
 | No | エージェント | 呼び元 | 役割 |
 |---|---|---|---|
-| 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でスキャンし `gh issue create` で直接起票 |
-| 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | 1 Issue を読みコメント本文と `needs-user-review` 要否を返す |
+| 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でスキャンし `gh-kit:issue-create` スキル経由で起票 |
+| 1a | `issue-creator` | `/gh-kit:issue-create` | `issue-create` スキルの薄ラッパー（Agent ツール経由での起票に使用） |
+| 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | `gh-kit:issue-review` スキルの薄ラッパー。1 Issue をレビューし戻り値を返す |
 | 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `worktree_create` MCP + 雛形コミット + Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、`needs-user-review` 要否を返す |
 | 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は base 取り込み・マージ・`worktree_remove`・push まで自走 |
@@ -56,7 +64,7 @@ flowchart TD
 | `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール |
 | `plugins/gh-kit/templates/イシュードキュメント.j2` | code-scanner が起票する Issue 本文（Jinja2） |
 | `plugins/gh-kit/templates/ユーザーレビュー要否判定.md` | `needs-user-review` 判定基準（ブラックリスト） |
-| `plugins/gh-kit/templates/レビュー結果コメント.j2` | issue-reviewer が投稿するレビュー結果コメント本文（Jinja2） |
+| `plugins/gh-kit/templates/レビュー結果コメント.j2` | `issue-review` スキルが投稿するレビュー結果コメント本文（Jinja2） |
 | `plugins/gh-kit/templates/PRドキュメント.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
 | `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
 | `plugins/gh-kit/scripts/templates/template_get.py` | templates/ 配下の指定ファイルを stdout に出す CLI |
@@ -81,23 +89,43 @@ flowchart TD
 
 ## ラベル一覧
 
-詳細は `.work/notes/プラグイン/gh-kitラベル設計.md`（状態遷移図含む）。
-
-### 共通
+### gh-kit フロー制御（共通）
 
 | ラベル | 意味 |
 |---|---|
 | `processing` | 何らかの作業中（排他マーカー） |
-| `needs-ai-review` | AI レビュー必要（必ず付く） |
+| `needs-ai-review` | AI レビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
 | `needs-user-review` | ユーザーレビュー必要（AI 判定で付く） |
 | `needs-fix` | レビュー結果、修正必要 |
+
+### gh-kit フロー制御（processing 細分）
+
+| ラベル | 意味 |
+|---|---|
+| `processing:pr-draft` | Draft PR 作成処理中（`pr-draft-create-auto` が付与） |
+| `processing:pr-implement` | 実装エージェントが実装中（`pr-implement-auto` が付与） |
+| `processing:pr-review` | レビューエージェントがレビュー中（`pr-review-auto` が付与） |
 
 ### Issue 専用
 
 | ラベル | 意味 |
 |---|---|
 | `ai-code-scan` | claude code がスキャンして起票（出自タグ） |
-| `type:*` / `priority:*` | 種別・優先度 |
+| `type:*` | 種別タグ（例: `type:bug`, `type:refactor`） |
+| `processing:pr-draft` | `pr-draft-create-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
+| `processing:pr-implement` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
+| `processing:pr-review` | `pr-review-auto` がレビュー中（レビュー開始〜マージ/Close まで Issue に付与） |
+
+### 優先度（Issue 専用）
+
+`code-scanner` が起票時に自動付与。人間起票 Issue は `issue-reviewer` が付与する。
+マッピング基準は重大度ベース（セキュリティ/クラッシュ → high、機能不全 → medium、コード品質 → low）。
+
+| ラベル | 色 | 意味 |
+|---|---|---|
+| `priority:high` | 赤 (`B60205`) | セキュリティ脆弱性・クラッシュバグ・データ損失リスク |
+| `priority:medium` | 黄 (`E4E669`) | 機能不全・パフォーマンス劣化・重大なロジックエラー |
+| `priority:low` | 青 (`0075CA`) | コード品質（可読性・命名・重複）・ドキュメント不足 |
 
 ### PR 専用
 

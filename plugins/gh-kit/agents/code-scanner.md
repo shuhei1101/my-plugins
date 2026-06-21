@@ -35,6 +35,16 @@ Read 時に PreToolUse フックがプロジェクト規約を自動注入する
 
 注入されたルール + 一般的なコード品質観点に照らし、独立対応単位ごとに 1 件 = 1 Issue として findings を作る。
 
+各 finding の severity を次のマッピングで `priority` に変換する:
+
+| severity | priority ラベル | 判定基準 |
+|---|---|---|
+| critical / high | `priority:high` | セキュリティ脆弱性、クラッシュバグ、データ損失リスク |
+| medium | `priority:medium` | 機能不全、パフォーマンス劣化、重大なロジックエラー |
+| low | `priority:low` | コード品質（可読性・命名・重複）、ドキュメント不足 |
+
+不明な場合は `priority:medium` を選ぶ。
+
 ## ステップ 5: `needs-user-review` 要否判定
 
 ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らし、各 finding について `needs_user_review: true|false` を決める。
@@ -43,30 +53,19 @@ Read 時に PreToolUse フックがプロジェクト規約を自動注入する
 
 ステップ 1 で取得した `イシュードキュメント.j2` に沿って Markdown を組み立てる。
 
-## ステップ 7: gh CLI で起票
+## ステップ 7: `/gh-kit:issue-create` スキルで起票
 
-```bash
-# 必要ラベルが無ければ事前作成
-gh label list | grep -q "^${GH_KIT_LABEL_AI_CODE_SCAN}" || \
-  gh label create "$GH_KIT_LABEL_AI_CODE_SCAN" --color "$GH_KIT_LABEL_COLOR_AI_CODE_SCAN" --description "claude code 起票"
-gh label list | grep -q "^${GH_KIT_LABEL_NEEDS_AI_REVIEW}" || \
-  gh label create "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --color "$GH_KIT_LABEL_COLOR_NEEDS_AI_REVIEW" --description "AI レビュー必要"
-gh label list | grep -q "^${GH_KIT_LABEL_NEEDS_USER_REVIEW}" || \
-  gh label create "$GH_KIT_LABEL_NEEDS_USER_REVIEW" --color "$GH_KIT_LABEL_COLOR_NEEDS_USER_REVIEW" --description "ユーザーレビュー必要"
+finding ごとに `/gh-kit:issue-create` スキルを呼び出して起票する。
+ラベル準備・`needs-ai-review` 強制付与・`gh issue create` はスキルが担うため、エージェントは finding の内容を渡すだけでよい。
 
-LABELS="${GH_KIT_LABEL_AI_CODE_SCAN},${GH_KIT_LABEL_NEEDS_AI_REVIEW},type:{type},priority:{priority}"
-if [ "{needs_user_review_required}" = "true" ]; then
-  LABELS="${LABELS},${GH_KIT_LABEL_NEEDS_USER_REVIEW}"
-fi
-
-gh issue create \
-  --title "{タイトル}" \
-  --body-file <(cat <<'EOF'
-{ステップ 6 で作った本文}
-EOF
-) \
-  --label "$LABELS"
-```
+| 引数 | 渡す値 |
+|---|---|
+| `title` | finding のタイトル |
+| `body` | ステップ 6 で組み立てた本文 |
+| `type` | finding の種別（`bug` / `enhancement` / `refactor` など） |
+| `priority` | finding の優先度（`priority-high` / `priority-medium` / `priority-low`） |
+| `needs_user_review` | ステップ 5 の判定結果（`true` / `false`） |
+| `extra_labels` | `ai-code-scan`（コードスキャン起票の出自タグ） |
 
 ## 戻り値
 

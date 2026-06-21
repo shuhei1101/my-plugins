@@ -7,24 +7,22 @@ description: 1 Issue をレビューし、本文補完コメント（必要時�
 
 GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿する。
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"`
-
 ## 入力
 
 | 引数 | 内容 |
 |---|---|
 | Issue 番号 | 例: 42 |
 
-## ステップ 1: ラベル定義とテンプレートを読み込む
+## ステップ 1: テンプレートを読み込む
 
-ラベル定数は bash 経由で取得（上記 `!` 構文で注入済み）。
+ラベル定数は Session Start フックで自動展開済み（`GH_KIT_LABEL_*` 変数が利用可能）。
 テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得:
 
 | 用途 | template_name |
 |---|---|
 | Issue 本文テンプレート | `イシュードキュメント.j2` |
 | レビュー結果コメント | `レビュー結果コメント.j2` |
-| `gh-kit:needs-user-review` 判定基準 | `ユーザーレビュー要否判定.md` |
+| `needs-user-review` 判定基準 | `ユーザーレビュー要否判定.md` |
 
 ## ステップ 2: Issue とラベルを取得
 
@@ -32,7 +30,7 @@ GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿�
 gh issue view {N} --json number,title,body,labels,comments
 ```
 
-ラベルに `gh-kit:ai-code-scan` が含まれるかで起票元を判定:
+ラベルに `ai-code-scan` が含まれるかで起票元を判定:
 
 | ラベル | 起票元 | 本文の状態 |
 |---|---|---|
@@ -171,7 +169,7 @@ EOF
 )
 ```
 
-## ステップ 6: `gh-kit:needs-user-review` 要否判定
+## ステップ 6: `needs-user-review` 要否判定
 
 ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らして判定する。
 ステップ 5 で質問が含まれる場合・分割提案がある場合は無条件で true。

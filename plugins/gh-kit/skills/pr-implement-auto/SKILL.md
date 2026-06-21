@@ -1,6 +1,7 @@
 ---
 name: gh-kit:pr-implement-auto
 description: ラベル wip / needs-fix の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
+disable-model-invocation: true
 ---
 
 # pr-implement-auto
@@ -20,6 +21,36 @@ description: ラベル wip / needs-fix の Draft PR を N 件並列で実装し�
 | PR 番号 | 任意 | 指定時はその 1 件のみ |
 
 ## タスク
+
+### ステップ 0: Monitor でイベント待機
+
+対象 PR が既に存在する場合はそのままステップ 1 へ進む。
+存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
+
+対象条件: `wip` または `needs-fix` ラベル付きの Draft PR（`processing` 付きは除外）。
+
+```bash
+# Monitor に渡すポーリングスクリプト
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
+while true; do
+  WIP_COUNT=$(gh pr list --state open --label "$LABEL_WIP" --draft \
+    --json number,labels \
+    --jq "[.[] | select(.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)] | length" 2>/dev/null || echo 0)
+  FIX_COUNT=$(gh pr list --state open --label "$LABEL_NEEDS_FIX" --draft \
+    --json number,labels \
+    --jq "[.[] | select(.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)] | length" 2>/dev/null || echo 0)
+  AVAILABLE=$((WIP_COUNT + FIX_COUNT))
+  if [ "$AVAILABLE" -gt 0 ]; then
+    echo "TRIGGER:pr-implement-auto:count=$AVAILABLE"
+    break
+  fi
+  sleep 30
+done
+```
+
+Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 へ進む。
+手動停止は TaskStop で行う。
 
 ### ステップ 1: 対象 PR を収集
 
@@ -53,6 +84,17 @@ gh issue edit {N} --add-assignee @me
 
 ### ステップ 3: pr-implementer を並列起動
 
+起動前に、紐づく Issue に `processing:pr-implement` を付与する。
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+# PR 本文から Issue 番号を抽出して付与
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -n "$ISSUE_N" ]; then
+  gh issue edit "$ISSUE_N" --add-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+fi
+```
+
 [サブエージェントで並列実行・完了を待つ]
 （戻り値: `[{branch, pr_number, status, needs_user_review, commits_added}]`）
 
@@ -65,10 +107,19 @@ if [ "{needs_user_review}" = "true" ]; then
   ARGS+=(--add-label "$GH_KIT_LABEL_NEEDS_USER_REVIEW")
 fi
 gh pr edit {N} "${ARGS[@]}"
+# Issue の processing:pr-implement を除去
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -n "$ISSUE_N" ]; then
+  gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+fi
 
 # 失敗
 gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX"
 gh pr comment {N} --body "{失敗理由}"
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -n "$ISSUE_N" ]; then
+  gh issue edit "$ISSUE_N" --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT"
+fi
 ```
 
 ### ステップ 5: pr-review-auto を連鎖実行
