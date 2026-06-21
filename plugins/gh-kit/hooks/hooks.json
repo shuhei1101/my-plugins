@@ -1,0 +1,49 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "_description": "マージ前に master 取り込み確認＋dry-run コンフリクトチェック",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use/pre-merge-check.py"
+            ]
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "_description": "ユーザープロンプト送信時に /gh-kit:start スキル実行指示を出す",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit/start_reminder.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit/start_reminder.md"
+            ]
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "_description": "レスポンス終了時に /gh-kit:merge 提案リマインダーを出力",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/stop/merge_reminder.py",
+              "${CLAUDE_PLUGIN_ROOT}/hooks/stop/merge_reminder.md"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
