@@ -30,6 +30,7 @@
     ]
   },
   "enabledPlugins": {
-    "dev-kit@mentaiko-claude-plugins": true
+    "dev-kit@mentaiko-claude-plugins": true,
+    "gh-kit@mentaiko-claude-plugins": true
   }
 }
