@@ -74,17 +74,46 @@ EOF
 )
 ```
 
-## ステップ 6: `needs-user-review` 要否判定
+## ステップ 6: priority ラベルを付与
+
+Issue に `priority:*` ラベルが付いていない場合、Issue 内容から重大度を判定してラベルを付与する。
+
+**マッピング基準（重大度ベース）:**
+
+| 重大度 | 付与ラベル | 判定基準 |
+|---|---|---|
+| 高 | `priority:high` | セキュリティ脆弱性、クラッシュバグ、データ損失リスク |
+| 中 | `priority:medium` | 機能不全、パフォーマンス劣化、重大なロジックエラー |
+| 低 | `priority:low` | コード品質（可読性・命名・重複）、ドキュメント不足 |
+
+不明な場合は `priority:medium` を選ぶ。
+
+```bash
+. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+
+# priority ラベルが未付与なら付与（gh-kit の priority:* ラベル名は labels.sh を参照）
+EXISTING_PRIORITY=$(gh issue view {N} --json labels --jq '.labels[].name | select(startswith("priority:"))')
+if [ -z "$EXISTING_PRIORITY" ]; then
+  # 判定結果に応じて以下のいずれかを実行:
+  # gh issue edit {N} --add-label "$LABEL_PRIORITY_HIGH"
+  # gh issue edit {N} --add-label "$LABEL_PRIORITY_MEDIUM"
+  # gh issue edit {N} --add-label "$LABEL_PRIORITY_LOW"
+  gh issue edit {N} --add-label "$LABEL_PRIORITY_{判定結果}"
+fi
+```
+
+## ステップ 7: `needs-user-review` 要否判定
 
 ステップ 1 で取得した `ユーザーレビュー要否判定.md` に照らして判定する。
 ステップ 5 で質問が含まれる場合・分割提案がある場合は無条件で true。
 
-## ステップ 7: 戻り値
+## ステップ 8: 戻り値
 
 ```json
 {
   "issue_number": 42,
   "needs_user_review": true,
+  "priority": "priority:medium",
   "status": "ok"
 }
 ```
