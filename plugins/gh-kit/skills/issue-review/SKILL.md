@@ -213,6 +213,45 @@ EOF
 )
 ```
 
+## ステップ 5.5: タイプラベル判定・付与
+
+Issue 本文・タイトル・補完コメント（ステップ 4）の内容から、適切な `type:*` ラベルを判定して付与する。
+
+### 判定基準
+
+| type ラベル | 変数 | 付与条件 |
+|---|---|---|
+| `type:bug` | `$GH_KIT_LABEL_TYPE_BUG` | 既存の動作が仕様または期待と異なる問題の修正 |
+| `type:feat` | `$GH_KIT_LABEL_TYPE_FEAT` | 新機能追加・既存機能の有意な拡張 |
+| `type:refactor` | `$GH_KIT_LABEL_TYPE_REFACTOR` | 外部動作を変えずにコードを整理・改善 |
+| `type:docs` | `$GH_KIT_LABEL_TYPE_DOCS` | ドキュメント・コメントのみの変更 |
+| `type:chore` | `$GH_KIT_LABEL_TYPE_CHORE` | ビルド設定・依存更新・CI/CD など |
+| `type:test` | `$GH_KIT_LABEL_TYPE_TEST` | テストコードの追加・修正のみ |
+
+いずれにも当てはまらない場合は `$GH_KIT_LABEL_TYPE_FEAT` を選ぶ（デフォルト）。
+
+### 既付与時スキップ + 冪等付与
+
+```bash
+# 既に type:* ラベルが付与されている場合はスキップ
+EXISTING_TYPE=$(gh issue view {N} --json labels --jq '.labels[].name' | grep '^type:' | head -1)
+if [ -n "$EXISTING_TYPE" ]; then
+  echo "type ラベル ${EXISTING_TYPE} 付与済みのためスキップ"
+else
+  # 選んだタイプラベルを変数に設定（例: TYPE_LABEL="$GH_KIT_LABEL_TYPE_BUG"）
+  TYPE_LABEL="$GH_KIT_LABEL_TYPE_{判定したタイプ}"
+
+  # ラベルが存在しなければ作成（冪等）
+  gh label list --json name --jq '.[].name' | grep -q "^${TYPE_LABEL}$" || \
+    gh label create "${TYPE_LABEL}" --color "$GH_KIT_LABEL_COLOR_TYPE" --description "Issue タイプ: ${TYPE_LABEL}"
+
+  # Issue に付与
+  gh issue edit {N} --add-label "${TYPE_LABEL}"
+fi
+```
+
+`AIコードスキャン` ラベルがある（AI 起票）場合もこのステップを実行する（`code-scanner` が付与済みの場合は `--add-label` が冪等で安全）。
+
 ## ステップ 6: 優先度ラベルを付与（人間起票 Issue のみ）
 
 ラベルに `AIコードスキャン` が含まれない（= 人間起票）かつ、Issue に優先度ラベルがまだ付いていない場合に限り、以下の基準で優先度を判定して付与する。

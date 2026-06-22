@@ -29,3 +29,11 @@ echo "export GH_KIT_LABEL_PRIORITY_URGENT=優先度:急ぎ" >> "$CLAUDE_ENV_FILE
 echo "export GH_KIT_LABEL_PRIORITY_LOW=優先度:いつでも" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_PRIORITY_URGENT=B60205" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_PRIORITY_LOW=0075CA" >> "$CLAUDE_ENV_FILE"
+
+echo "export GH_KIT_LABEL_TYPE_BUG=type:bug" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_TYPE_FEAT=type:feat" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_TYPE_REFACTOR=type:refactor" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_TYPE_DOCS=type:docs" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_TYPE_CHORE=type:chore" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_TYPE_TEST=type:test" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_TYPE=0075CA" >> "$CLAUDE_ENV_FILE"
