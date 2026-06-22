@@ -57,6 +57,45 @@ gh pr diff {N} > /tmp/pr-{N}.diff
 
 CI が failure なら `failed` で返して停止。
 
+## ステップ 2.5: PR 本文チェックリスト未消化チェック（最優先）
+
+**このチェックは他のすべての verdict より優先される。**
+
+ステップ 2 で取得した PR 本文を対象に、未消化チェックリスト（`- [ ]`）が 1 件以上残っていないか確認する。
+
+```bash
+# PR 本文の未消化チェックリスト数を確認
+UNCHECKED=$(gh pr view {N} --json body --jq '.body' | python3 -c "import sys; print(sys.stdin.read().count('- [ ]'))")
+echo "未消化チェックリスト数: $UNCHECKED"
+```
+
+| 条件 | 動作 |
+|---|---|
+| `- [ ]` の件数 >= 1 | **即座に `needs-fix` ラベルを付与して差し戻し（ステップ 7-A へスキップ）** |
+| `- [ ]` の件数 == 0 | ステップ 3 以降に進む |
+
+`- [ ]` が残っている場合は以下を実行して処理を終了する:
+
+```bash
+# needs-fix ラベルを付与
+gh pr edit {N} --add-label "needs-fix"
+
+# 差し戻しコメントを投稿
+gh pr comment {N} --body "$(cat <<'EOF'
+## レビュー差し戻し: PR 本文にチェックリスト未消化が残っています
+
+PR 本文に `- [ ]` が残っているため、レビューを開始できません。
+
+**対応手順:**
+1. `pr-implement` スキルのステップ 7.5 に従い、実装済みタスクを `- [x]` に更新してください
+2. 未実装タスクが残る場合は、その理由を PR コメントに記載してください
+3. 全チェックが完了したら再度 Ready にしてください
+EOF
+)"
+```
+
+verdict = `needs-fix`（changes-requested と同等の差し戻し扱い）でスキルを終了する。
+
 ## ステップ 3: ファイル走査とルール注入
 
 変更ファイルを Read で読む。Read 時に PreToolUse フックがファイル系ルールを自動注入する — これが第一審査基準。
@@ -88,13 +127,14 @@ EOF
 # inline コメントが必要なら gh api repos/:owner/:repo/pulls/{N}/comments を使う
 ```
 
-event 判定:
+event 判定（優先度順）:
 
-| 条件 | event | 次の動作 |
-|---|---|---|
-| blocker / critical / major を含む | `--request-changes` | ステップ 7-A（ラベルなし） |
-| minor / nit のみ + assignees なし | `--approve` | ステップ 6（`approved-merge-ok` ラベル付与） |
-| minor / nit のみ + assignees あり | `--approve` | ステップ 7-B（ラベルなし） |
+| 優先度 | 条件 | event | verdict | 次の動作 |
+|---|---|---|---|---|
+| 1（最優先） | PR 本文に `- [ ]` が 1 件以上残っている | ステップ 2.5 で処理済み | `needs-fix` | ステップ 7-A へスキップ（ここには到達しない） |
+| 2 | blocker / critical / major を含む | `--request-changes` | `changes-requested` | ステップ 7-A（ラベルなし） |
+| 3 | minor / nit のみ + assignees なし | `--approve` | `approved-merge-ok` | ステップ 6（`approved-merge-ok` ラベル付与） |
+| 4 | minor / nit のみ + assignees あり | `--approve` | `approved-user-review-pending` | ステップ 7-B（ラベルなし） |
 
 ## ステップ 6: approved-merge-ok ラベル付与（approve + assignees なしのみ）
 
