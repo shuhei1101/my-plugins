@@ -19,21 +19,20 @@ PR を 1 件レビューし、合格時はそのまま base ブランチへマ�
 
 ## ステップ 0: Wiki チェックリストを読み込む
 
-`GH_KIT_WIKI_PATH` と `GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをコンテキストに注入する。
-ページが存在しない場合は警告を出力して続行する（未設定プロジェクトでも従来通り動作する）。
+`GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをリモート Wiki から取得してコンテキストに注入する。
+ページが存在しない場合は警告を出力して続行する。
 
 ```bash
+REPO_SLUG=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
 IFS=',' read -ra PAGES <<< "${GH_KIT_CHECKLIST_PAGES:-共通チェックリスト}"
 for PAGE in "${PAGES[@]}"; do
   PAGE=$(echo "$PAGE" | xargs)  # trim whitespace
-  if [ -n "$GH_KIT_WIKI_PATH" ]; then
-    FILE="$GH_KIT_WIKI_PATH/${PAGE}.md"
-    if [ -f "$FILE" ]; then
-      echo "# Wiki チェックリスト: $PAGE"
-      cat "$FILE"
-    else
-      echo "[INFO] Wiki チェックリストページが見つかりません: $FILE" >&2
-    fi
+  CONTENT=$(curl -fsSL "https://raw.githubusercontent.com/wiki/${REPO_SLUG}/${PAGE}.md" 2>/dev/null)
+  if [ -n "$CONTENT" ]; then
+    echo "# Wiki チェックリスト: $PAGE"
+    echo "$CONTENT"
+  else
+    echo "[INFO] Wiki チェックリストページが見つかりません: ${PAGE}.md" >&2
   fi
 done
 ```
@@ -43,7 +42,7 @@ done
 ## ステップ 1: 観点メニューを取得
 
 ```bash
-cat "${CLAUDE_PLUGIN_ROOT}/templates/観点メニュー.md"
+curl -fsSL "https://raw.githubusercontent.com/wiki/$(gh repo view --json nameWithOwner --jq '.nameWithOwner')/観点メニュー.md"
 ```
 
 ステップ 3 で参照する。
@@ -116,7 +115,12 @@ git -C "$WT" merge origin/{BASE_BRANCH}
 CONFLICT_FILES=$(git -C "$WT" status -s | grep '^UU\|^AA\|^DD' | awk '{print "- `" $2 "`"}')
 ```
 
-`gh-kit-tools` MCP の `template_get` で `コンフリクト通知コメント.j2` を取得し、以下の変数を埋めて `gh pr comment` で投稿する:
+リモート Wiki から `コンフリクト通知コメント` ページを取得し、以下の変数を埋めて `gh pr comment` で投稿する:
+
+```bash
+# Wiki からテンプレートを取得
+curl -fsSL "https://raw.githubusercontent.com/wiki/$(gh repo view --json nameWithOwner --jq '.nameWithOwner')/コンフリクト通知コメント.md"
+```
 
 | 変数 | 内容 |
 |---|---|
@@ -172,6 +176,12 @@ fi
 ## ステップ 7-B: approved-user-review-pending
 
 マージしない。verdict = `approved-user-review-pending`、message に「ユーザー確認待ち（assignees 設定済み）」と理由。
+
+ユーザーが内容を確認したら、以下の操作をすることで次回 `pr-review-auto` の Monitor が自動検知してマージフローへ進む:
+1. PR に `user-reviewed` ラベルを付与する
+2. assignees を外す（自身を remove する）
+
+`pr-review-auto` は `user-reviewed` ラベル付きの Ready PR（assignees なし）を検知したとき、AI レビュー済みとみなしてマージを実行する。
 
 ## ステップ 7-C: Drop（PR Close without merge）
 

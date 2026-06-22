@@ -21,21 +21,20 @@ description: "1 Issue から Draft PR を作成する: PR 本文テンプレ取�
 
 ## ステップ 0: Wiki チェックリストを読み込む
 
-`GH_KIT_WIKI_PATH` と `GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをコンテキストに注入する。
-ページが存在しない場合は警告を出力して続行する（未設定プロジェクトでも従来通り動作する）。
+`GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをリモート Wiki から取得してコンテキストに注入する。
+ページが存在しない場合は警告を出力して続行する。
 
 ```bash
+REPO_SLUG=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
 IFS=',' read -ra PAGES <<< "${GH_KIT_CHECKLIST_PAGES:-共通チェックリスト}"
 for PAGE in "${PAGES[@]}"; do
   PAGE=$(echo "$PAGE" | xargs)  # trim whitespace
-  if [ -n "$GH_KIT_WIKI_PATH" ]; then
-    FILE="$GH_KIT_WIKI_PATH/${PAGE}.md"
-    if [ -f "$FILE" ]; then
-      echo "# Wiki チェックリスト: $PAGE"
-      cat "$FILE"
-    else
-      echo "[INFO] Wiki チェックリストページが見つかりません: $FILE" >&2
-    fi
+  CONTENT=$(curl -fsSL "https://raw.githubusercontent.com/wiki/${REPO_SLUG}/${PAGE}.md" 2>/dev/null)
+  if [ -n "$CONTENT" ]; then
+    echo "# Wiki チェックリスト: $PAGE"
+    echo "$CONTENT"
+  else
+    echo "[INFO] Wiki チェックリストページが見つかりません: ${PAGE}.md" >&2
   fi
 done
 ```
@@ -44,7 +43,11 @@ done
 
 ## ステップ 1: PR 本文テンプレートを取得
 
-`gh-kit-tools` MCP の `template_get` ツールを `template_name: "PRドキュメント.j2"` で呼ぶ。
+リモート Wiki から `PRドキュメント` ページを取得する。
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/wiki/$(gh repo view --json nameWithOwner --jq '.nameWithOwner')/PRドキュメント.md"
+```
 
 返却されたテンプレートを実値で埋め、Draft PR 本文として使用する。
 

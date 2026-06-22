@@ -26,7 +26,7 @@ gh issue list --state all --label "$GH_KIT_LABEL_AI_CODE_SCAN" --limit 50
 
 ### ステップ 2: スキャン観点を N 件選ぶ
 
-!`cat "${CLAUDE_PLUGIN_ROOT}/templates/観点メニュー.md"`
+!`curl -fsSL "https://raw.githubusercontent.com/wiki/$(gh repo view --json nameWithOwner --jq '.nameWithOwner')/観点メニュー.md" 2>/dev/null || echo "[WARN] 観点メニュー Wiki ページを取得できませんでした"`
 
 このメニューから既存 Issue とかぶらない観点を **N** 件（`GH_KIT_CODE_SCAN_PARALLEL`）選ぶ。
 
