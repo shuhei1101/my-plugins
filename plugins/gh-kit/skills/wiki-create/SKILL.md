@@ -12,7 +12,7 @@ description: GitHub Wiki に新規ページを 1 件作成して push する。�
 
 | 変数 | 必須 | 用途 |
 |---|---|---|
-| `GH_KIT_WIKI_PATH` | 必須 | Wiki ローカルリポジトリ絶対パス（例: `/path/to/repo.wiki`） |
+| `GH_KIT_WIKI_PATH` | 必須 | Wiki ローカルリポジトリ絶対パス（例: `/path/to/repo.wiki`）。Session Start フックで自動 pull される |
 
 未設定時は停止。`.claude/settings.local.json` で設定する想定。
 未クローンなら `gh repo view --json url -q .url` の URL に `.wiki.git` を付けて clone するようユーザーへ案内。

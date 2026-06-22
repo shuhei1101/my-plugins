@@ -28,6 +28,17 @@ flowchart TD
 | 1 | `gh` CLI をインストール（https://cli.github.com/） |
 | 2 | `gh auth login` で認証（or `GH_TOKEN` 環境変数を設定） |
 | 3 | `gh auth status` で接続確認 |
+| 4 | `.claude/settings.local.json` の `env` に `GH_KIT_REPO_PATH` を設定（自動 pull 対象のメインリポジトリ絶対パス） |
+| 5 | `.claude/settings.local.json` の `env` に `GH_KIT_WIKI_PATH` を設定（Wiki 自動 pull も有効にする場合） |
+
+```json
+{
+  "env": {
+    "GH_KIT_REPO_PATH": "/absolute/path/to/repo",
+    "GH_KIT_WIKI_PATH": "/absolute/path/to/repo.wiki"
+  }
+}
+```
 
 ## スキル一覧
 
@@ -77,6 +88,7 @@ flowchart TD
 | `plugins/gh-kit/mcp/server.py` | `gh-kit-tools` MCP サーバー（FastMCP）|
 | `plugins/gh-kit/.mcp.json` | MCP サーバー起動設定 |
 | `plugins/gh-kit/hooks/pre-tool-use/pre-merge-check.py` | AI 自動マージ前に base 取り込み確認 + dry-run コンフリクト検証 |
+| `plugins/gh-kit/scripts/session-start-pull.sh` | Session Start 時に `GH_KIT_REPO_PATH` / `GH_KIT_WIKI_PATH` を参照してリポジトリを自動 pull する |
 
 ## MCP ツール
 
@@ -90,7 +102,8 @@ flowchart TD
 
 | 変数 | 用途 | 使うスキル |
 |---|---|---|
-| `GH_KIT_WIKI_PATH` | GitHub Wiki のローカル clone パス（例: `/path/to/repo.wiki`） | `wiki-create`, `template_get` |
+| `GH_KIT_REPO_PATH` | メインリポジトリの絶対パス（例: `/path/to/repo`）。Session Start フックで自動 pull する | Session Start フック |
+| `GH_KIT_WIKI_PATH` | GitHub Wiki のローカル clone パス（例: `/path/to/repo.wiki`）。Session Start フックで自動 pull する | `wiki-create`, `template_get`, Session Start フック |
 | `GH_KIT_CHECKLIST_PAGES` | Wiki チェックリストページ名のカンマ区切りリスト（例: `共通チェックリスト,テストチェックリスト`）。デフォルト: `共通チェックリスト`。指定したページが存在する場合のみコンテキストに注入される | `issue-review`, `pr-draft-create`, `pr-review` |
 
 ## ラベル一覧
