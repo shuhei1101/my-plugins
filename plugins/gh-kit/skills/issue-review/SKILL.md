@@ -136,28 +136,49 @@ gh issue close {N}
 
 Issue が言及する領域・関連ファイルを Read で確認。Read 時に PreToolUse フックがファイル系ルールを自動注入する。
 
-### Step 3a: Fetch official documentation (only when external tool/library names are present)
+### ステップ 3a: 公式ドキュメント取得（外部ツール・ライブラリ名がある場合のみ）
 
-If the Issue title or body contains the name of an external tool, library, framework, or service:
-1. Use `WebFetch` to retrieve the official documentation page(s) most relevant to the Issue.
-2. If fetching fails, note "参照不可（理由）" and continue without blocking.
-3. Record each successfully retrieved URL in `{doc_urls}` for use in the review-result comment.
+Issue タイトルや本文に外部ツール・ライブラリ・フレームワーク・サービス名が含まれる場合:
+1. `WebFetch` で Issue に最も関連する公式ドキュメントページを取得する。
+2. 取得に失敗した場合は「参照不可（理由）」と記録し、処理を継続する。
+3. 取得に成功した各 URL を `{doc_urls}` に記録し、レビュー結果コメントで使用する。
 
-Skip entirely when the Issue contains no external tool/library names.
+Issue に外部ツール・ライブラリ名が含まれない場合はスキップ。
 
-## Step 3.5: Behavior verification (optional — when feasible)
+## ステップ 3.5: 動作確認（任意 — 実施可能な場合のみ）
 
-Attempt to confirm whether the reported problem actually occurs in the current codebase.
+報告された問題が現在のコードベースで実際に発生するかを確認する。
 
-| Issue type | Verification method |
+| Issue の種類 | 確認方法 |
 |---|---|
-| Skill / Claude Code behavior | Launch a sub-agent and reproduce the scenario described in the Issue |
-| Code bug (test exists) | Run the relevant test suite and check for failures |
-| Code bug (no test) | Perform manual behavior confirmation |
-| Verification not feasible | Note "確認不可（理由）" and continue |
+| スキル / Claude Code の動作 | サブエージェントを起動し、Issue に記載されたシナリオを再現する |
+| コードバグ（テストあり） | 関連テストスイートを実行し、失敗を確認する |
+| コードバグ（テストなし） | 手動で動作確認を行う |
+| 確認不可 | 「確認不可（理由）」と記録し、処理を継続する |
 
-Store the result in `{verification_result}` for inclusion in the review-result comment.
-This step is **optional** — if infrastructure or context makes it impossible, skip gracefully.
+結果を `{verification_result}` に格納し、レビュー結果コメントに含める。
+このステップは**任意**。インフラやコンテキストの都合で実施不可能な場合はスキップしてよい。
+
+## ステップ 3.75: タイトル更新（人間起票のみ）
+
+`ai-code-scan` ラベルが **ない**（人間起票）場合のみ実行する。
+
+Issue の本文・コメントを読んだうえで、内容を正確に表す適切なタイトルを生成し、`gh issue edit --title` で更新する。
+
+```bash
+gh issue edit {N} --title "{生成したタイトル}"
+```
+
+### タイトル生成ガイドライン
+
+| 項目 | 内容 |
+|---|---|
+| 形式 | `{スコープ}: {動詞} — {対象}` を推奨（例: `gh-kit:issue-review — 人間起票 Issue のタイトルを自動更新する責務を追加`） |
+| 長さ | 60〜80 文字以内 |
+| 言語 | Issue 本文に合わせる（日本語 Issue は日本語タイトル） |
+| 元タイトル保持 | 不要。GitHub の変更履歴（Activity）にタイトル変更が記録されるため、元タイトルを別途残す必要はない |
+
+`ai-code-scan` ラベルあり（AI 起票）の場合はスキップ（タイトルは既に整っているため）。
 
 ## ステップ 4: 本文補完コメントを投稿（必要時のみ）
 
@@ -183,7 +204,7 @@ EOF
 ステップ 1 で取得した `レビュー結果コメント.j2` に沿って実装方針 / 質問 / 分割提案 / 影響範囲を書く。
 質問・分割提案がなければ該当セクションごと省略。
 
-**Omission rule for the "対応案" section**: If the Issue body (or the body-supplement comment posted in Step 4) already contains a "対応案" section, **omit the "対応案" section** from the review-result comment entirely. Do not duplicate it.
+**「対応案」セクションの省略ルール**: Issue 本文（またはステップ 4 で投稿した本文補完コメント）に既に「対応案」セクションが含まれる場合、レビュー結果コメントの「対応案」セクションは**省略**する。重複掲載しない。
 
 ```bash
 gh issue comment {N} --body-file <(cat <<'EOF'
@@ -283,6 +304,6 @@ fi
 
 ## 制約
 
-- メイン Issue 本文は書き換えない（GitHub Issue API の `update` を呼ばない）
+- メイン Issue 本文は書き換えない（タイトル更新は許可 — `gh issue edit --title` のみ使用可）
 - 既存セクションが揃っているなら本文補完コメント（ステップ 4）はスキップ
 - 推奨案は必ず明示（「後で決める」「TBD」禁止）

@@ -40,8 +40,9 @@ flowchart TD
 | 4 | `/gh-kit:pr-draft-create-auto` | 確認:* なしの Issue 全件 → Draft PR を作成 |
 | 5 | `/gh-kit:pr-draft-create` | 1 Issue から Draft PR を 1 件作成（`pr-draft-creator` エージェントの実装本体） |
 | 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
-| 7 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → Ready 化 |
-| 8 | `/gh-kit:pr-review-auto` | `確認:issue-reviewer` Ready PR を直列でレビュー → 合格 + assignees 未設定ならマージ |
+| 6a | `/gh-kit:pr-test-create` | PR のテスト計画を立案しテストコードを作成（`pr-test-creator` エージェントの実装本体） |
+| 7 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → `pr-test-creator` 先行起動 → Ready 化 |
+| 8 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + assignees 未設定ならマージ |
 | 9 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
 
 ## サブエージェント一覧
@@ -53,22 +54,25 @@ flowchart TD
 | 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | `gh-kit:issue-review` スキルの薄ラッパー。1 Issue をレビューし戻り値を返す |
 | 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `worktree_create` MCP + 雛形コミット + Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、ユーザー確認要否を返す |
+| 4a | `pr-test-creator` | `/gh-kit:pr-implement-auto` | `pr-test-create` スキルの薄ラッパー。テスト計画立案 → テストコード作成を担当 |
 | 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は base 取り込み・マージ・`worktree_remove`・push まで自走 |
 
 ## 共通リソース
 
-| パス | 用途 |
+| パス / 場所 | 用途 |
 |---|---|
 | `plugins/gh-kit/scripts/constants.sh` | ラベル名等の定数一元定義（Session Start フックで環境変数として自動展開、`GH_KIT_` プレフィックス付き） |
-| `plugins/gh-kit/templates/観点メニュー.md` | コード品質観点リスト（code-scan-auto / pr-reviewer が共通参照） |
-| `plugins/gh-kit/templates/ファイル解決.md` | code-scanner の観点→ファイル変換ルール |
-| `plugins/gh-kit/templates/イシュードキュメント.j2` | code-scanner が起票する Issue 本文（Jinja2） |
-| `plugins/gh-kit/templates/ユーザー確認要否判定.md` | ユーザー確認要否の判定基準（ブラックリスト + assignee 操作手順） |
-| `plugins/gh-kit/templates/コンフリクト通知コメント.j2` | コンフリクト自走解消失敗時に PR へ投稿する選択肢付きコメント（Jinja2） |
-| `plugins/gh-kit/templates/レビュー結果コメント.j2` | `issue-review` スキルが投稿するレビュー結果コメント本文（Jinja2） |
-| `plugins/gh-kit/templates/PRドキュメント.j2` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文（Jinja2） |
+| Wiki: `観点メニュー` | コード品質観点リスト（code-scan-auto / pr-reviewer が共通参照） |
+| Wiki: `ファイル解決` | code-scanner の観点→ファイル変換ルール |
+| Wiki: `イシュードキュメント` | code-scanner が起票する Issue 本文テンプレート |
+| Wiki: `ユーザー確認要否判定` | ユーザー確認要否の判定基準（ブラックリスト + assignee 操作手順） |
+| Wiki: `コンフリクト通知コメント` | コンフリクト自走解消失敗時に PR へ投稿する選択肢付きコメント |
+| Wiki: `レビュー結果コメント` | `issue-review` スキルが投稿するレビュー結果コメント本文 |
+| Wiki: `PRドキュメント` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文 |
+| Wiki: `Wikiページ` | wiki-create スキルが Wiki ページ本文を生成するときに参照するテンプレート |
+| Wiki: `テスト実行結果` | pr-implementer がテスト全成功後に PR コメントとして投稿するエビデンステンプレート |
 | `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
-| `plugins/gh-kit/scripts/templates/template_get.py` | templates/ 配下の指定ファイルを stdout に出す CLI |
+| `plugins/gh-kit/scripts/templates/template_get.py` | `GH_KIT_WIKI_PATH` で指定された Wiki ローカル clone からテンプレートを取得する CLI |
 | `plugins/gh-kit/scripts/worktree/worktree-tool.py` | worktree 作成・削除 CLI（`~/.claude/tokens/gh-kit/worktree/` でセッショントークン管理） |
 | `plugins/gh-kit/mcp/server.py` | `gh-kit-tools` MCP サーバー（FastMCP）|
 | `plugins/gh-kit/.mcp.json` | MCP サーバー起動設定 |
@@ -78,7 +82,7 @@ flowchart TD
 
 | ツール | サーバー | 用途 |
 |---|---|---|
-| `template_get` | `gh-kit-tools` | テンプレート 6 種（`.j2` × 4 + `.md` × 2）の本文取得。`template_name` は Literal で制約 |
+| `template_get` | `gh-kit-tools` | GitHub Wiki からテンプレートを取得。`template_name` は Literal で制約（拡張子込み）。内部で Wiki ローカル clone の `{ページ名}.md` を読む |
 | `worktree_create` | `gh-kit-tools` | ブランチ `{type}/{title}` + `.claude/worktrees/{type}-{title}` 作成。pr-draft-creator / pr-implementer が呼ぶ |
 | `worktree_remove` | `gh-kit-tools` | マージ済みワークツリーとブランチを削除。pr-reviewer がマージ完了後に呼ぶ |
 
@@ -86,7 +90,7 @@ flowchart TD
 
 | 変数 | 用途 | 使うスキル |
 |---|---|---|
-| `GH_KIT_WIKI_PATH` | GitHub Wiki のローカル clone パス（例: `/path/to/repo.wiki`） | `wiki-create` |
+| `GH_KIT_WIKI_PATH` | GitHub Wiki のローカル clone パス（例: `/path/to/repo.wiki`） | `wiki-create`, `template_get` |
 | `GH_KIT_CHECKLIST_PAGES` | Wiki チェックリストページ名のカンマ区切りリスト（例: `共通チェックリスト,テストチェックリスト`）。デフォルト: `共通チェックリスト`。指定したページが存在する場合のみコンテキストに注入される | `issue-review`, `pr-draft-create`, `pr-review` |
 
 ## ラベル一覧

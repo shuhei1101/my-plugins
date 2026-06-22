@@ -16,7 +16,7 @@ disable-model-invocation: true
 | 1 | `state: open` |
 | 2 | `確認:issue-reviewer` / `確認:pr-implementer` / `処理中` のいずれも付いていない |
 | 3 | `assignees` が空（ユーザー確認待ちでない） |
-| 4 | Issue 本文・コメントの `- [ ]` がすべて埋まっている（推奨案・QA 回答が選択済み） |
+| 4 | Issue 本文・コメントの各 QA セクションに `- [x]` が 1 件以上ある（マルチセレクト形式では 1 件チェックされていれば回答済みと判定する）|
 
 ## 環境変数
 
@@ -71,7 +71,7 @@ Monitor の stdout に `TRIGGER:pr-draft-create-auto` が来たらステップ 1
 gh issue list --state open --json number,title,body,labels,assignees,comments --limit 100
 ```
 
-`確認:issue-reviewer` / `確認:pr-implementer` / `処理中` のいずれも含まず、`assignees` が空で、`- [ ]` 残数 0 のものをフィルタ。0 件なら停止。
+`needs-ai-review` / `needs-fix` / `processing` のいずれも含まず、`assignees` が空で、各 QA セクションに `- [x]` が 1 件以上あるものをフィルタ（マルチセレクト形式では `- [x]` が 1 件でもあれば回答済みと判定する。`- [ ]` 残数 0 では判定しない）。0 件なら停止。
 
 フィルタ後、`優先度:急ぎ` ラベルが付いている Issue を先頭に並べ、次に `優先度:いつでも` 付き、それ以外は番号昇順で処理する:
 
