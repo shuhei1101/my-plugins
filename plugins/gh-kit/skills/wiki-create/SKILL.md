@@ -8,11 +8,16 @@ description: GitHub Wiki に新規ページを 1 件作成して push する。�
 1 対象 = 1 Wiki ページの「現在の仕様スナップショット」を作成する。
 ローカルクローン済みの Wiki リポジトリへファイルを書き出し、commit + push まで実施する。
 
+## 前提: Wiki リポジトリ同期
+
+Session Start フック（`scripts/session-start-pull.sh`）が `GH_KIT_WIKI_PATH` を参照して Wiki リポジトリを自動 pull する。
+セッション内でこのスキルを実行する前に Wiki が最新化されているため、個別の pull 手順は不要。
+
 ## 環境変数
 
 | 変数 | 必須 | 用途 |
 |---|---|---|
-| `GH_KIT_WIKI_PATH` | 必須 | Wiki ローカルリポジトリ絶対パス（例: `/path/to/repo.wiki`） |
+| `GH_KIT_WIKI_PATH` | 必須 | Wiki ローカルリポジトリ絶対パス（例: `/path/to/repo.wiki`）。Session Start フックで自動 pull される |
 
 未設定時は停止。`.claude/settings.local.json` で設定する想定。
 未クローンなら `gh repo view --json url -q .url` の URL に `.wiki.git` を付けて clone するようユーザーへ案内。

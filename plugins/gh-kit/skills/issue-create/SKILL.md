@@ -21,6 +21,11 @@ Issue 起票後に AI レビューフロー（`/gh-kit:issue-review-auto`）が�
 | `needs_user_review` | 任意 | `true` の場合 `gh issue edit --add-assignee` でユーザーをアサイン（既定: `false`） |
 | `extra_labels` | 任意 | 追加ラベルのカンマ区切り文字列（既定: なし） |
 
+## 前提: リポジトリ同期
+
+Session Start フック（`scripts/session-start-pull.sh`）が `GH_KIT_REPO_PATH` を参照してメインリポジトリを自動 pull する。
+セッション内でこのスキルを実行する前にリポジトリが最新化されているため、個別の pull 手順は不要。
+
 ## 動作フロー
 
 1. 必要ラベルを `gh label create` で冪等に用意する（既存ならスキップ）

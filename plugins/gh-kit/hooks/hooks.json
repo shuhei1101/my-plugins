@@ -10,6 +10,14 @@
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/scripts/constants.sh"
             ]
+          },
+          {
+            "_description": "GH_KIT_REPO_PATH / GH_KIT_WIKI_PATH が設定されていればリポジトリを pull して最新化する",
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/scripts/session-start-pull.sh"
+            ]
           }
         ]
       }
