@@ -7,6 +7,7 @@
 #       [--category "カテゴリ名"] [--category-level 2|3]
 #
 # --category を指定すると _Sidebar.md の該当カテゴリセクション末尾にリンクを挿入する。
+# --category を省略すると「未分類」カテゴリとして _Sidebar.md / Home.md に自動追加する。
 # カテゴリが存在しない場合は新規セクションを末尾に追加する。
 # カテゴリ挿入後に Home.md を _Sidebar.md の内容に連動して自動更新する。
 # --category-level: カテゴリ見出しレベル（2=##, 3=###）デフォルトは 2。
@@ -70,6 +71,11 @@ fi
 
 cp "${BODY_FILE}" "${DEST}"
 echo "[wiki-create] wrote ${DEST}"
+
+# --category 未指定時は「未分類」をデフォルトカテゴリとして使用する
+if [ -z "${CATEGORY}" ]; then
+  CATEGORY="未分類"
+fi
 
 # _Sidebar.md および Home.md を更新する
 if [ -n "${CATEGORY}" ]; then
@@ -208,7 +214,8 @@ fi
 
 cd "${WIKI_PATH}"
 git add -- "${PAGE_NAME}"
-[ -n "${CATEGORY}" ] && git add -- "_Sidebar.md" "Home.md" 2>/dev/null || true
+# CATEGORY は常に設定済み（未指定時は「未分類」がデフォルト）なので常に add する
+git add -- "_Sidebar.md" "Home.md" 2>/dev/null || true
 if git diff --cached --quiet; then
   echo "[wiki-create] no changes"
   exit 0
