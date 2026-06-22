@@ -10,10 +10,11 @@ GitHub 操作はすべて `gh` CLI に統一。
 flowchart TD
   U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + 確認:issue-reviewer| Issue[(GitHub Issue)]
   Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント<br>確認:issue-reviewer 除去]
-  Review -->|re_review_needed: false<br>確認:* なし + todo 全埋め| Ready[(Issue Ready)]
-  Review -->|re_review_needed: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
+  Review -->|needs_user_review: false<br>確認:pr-plan 付与| PlanOK[(確認:pr-plan 付き Issue)]
+  Review -->|needs_user_review: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
   UserReply -->|ユーザーが手動で 確認:issue-reviewer 再付与| Issue
-  Ready -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
+  UserReply -->|ユーザーが確認 OK なら 確認:pr-plan 付与| PlanOK
+  PlanOK -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
   WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 処理中]
   Implementing -->|完了| NAR[(Ready PR + 確認:issue-reviewer)]
   NAR -->|/gh-kit:pr-review-auto| Reviewed[approved-merge-ok ラベル付与]
@@ -49,7 +50,7 @@ flowchart TD
 | 1a | `/gh-kit:issue-create` | Issue を 1 件起票する（`確認:issue-reviewer` 強制付与）。`code-scanner` や手動呼び出しの両方から使える |
 | 2 | `/gh-kit:issue-review` | 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを投稿 |
 | 3 | `/gh-kit:issue-review-auto` | `確認:issue-reviewer` 付きの Issue を AI レビュー、コメント投稿 |
-| 4 | `/gh-kit:pr-draft-create-auto` | 確認:* なしの Issue 全件 → Draft PR を作成 |
+| 4 | `/gh-kit:pr-draft-create-auto` | `確認:pr-plan` 付き Issue 全件 → Draft PR を作成 |
 | 5 | `/gh-kit:pr-draft-create` | 1 Issue から Draft PR を 1 件作成（`pr-draft-creator` エージェントの実装本体） |
 | 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
 | 6a | `/gh-kit:pr-test-create` | PR のテスト計画を立案しテストコードを作成（`pr-test-creator` エージェントの実装本体） |
@@ -119,6 +120,7 @@ flowchart TD
 | `処理中` | 何らかの作業中（排他マーカー） |
 | `確認:issue-reviewer` | issue-reviewer スキルがレビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
 | `確認:pr-implementer` | レビュー結果、pr-implementer スキルが修正必要 |
+| `確認:pr-plan` | AI レビュー完了・PR 作成 OK（`issue-review` が `needs_user_review: false` 判定時に付与。`pr-draft-create-auto` の起動契機） |
 
 ### gh-kit フロー制御（processing 細分）
 

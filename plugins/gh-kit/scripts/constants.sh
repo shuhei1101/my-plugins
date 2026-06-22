@@ -41,3 +41,6 @@ echo "export GH_KIT_LABEL_TYPE_DOCS=type:docs" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_TYPE_CHORE=type:chore" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_TYPE_TEST=type:test" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_TYPE=0075CA" >> "$CLAUDE_ENV_FILE"
+
+echo "export GH_KIT_LABEL_CONFIRM_PR_PLAN=確認:pr-plan" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_PLAN=0052CC" >> "$CLAUDE_ENV_FILE"

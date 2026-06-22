@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-draft-create-auto
-description: needs-* なしかつ assignees 空の open Issue 全件から Draft PR を並列で作成する（1 Issue 複数派生対応）
+description: 確認:pr-plan ラベル付き open Issue（processing:* なし）を全件巡回し Draft PR を並列で作成する（1 Issue 複数派生対応）
 disable-model-invocation: true
 ---
 
@@ -14,9 +14,8 @@ disable-model-invocation: true
 | No | 条件 |
 |---|---|
 | 1 | `state: open` |
-| 2 | `確認:issue-reviewer` / `確認:pr-implementer` / `処理中` で始まるラベル（`処理中`・`処理中:pr-draft` 等）のいずれも付いていない |
-| 3 | `assignees` が空（ユーザー確認待ちでない） |
-| 4 | Issue 本文・コメントの各 QA セクションに `- [x]` が 1 件以上ある（マルチセレクト形式では 1 件チェックされていれば回答済みと判定する）|
+| 2 | `確認:pr-plan` ラベルが付いている |
+| 3 | `処理中` で始まるラベル（`処理中`・`処理中:pr-draft` 等）のいずれも付いていない |
 
 ## 環境変数
 
@@ -38,21 +37,19 @@ disable-model-invocation: true
 対象 Issue が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `state: open` かつ `確認:issue-reviewer` / `確認:pr-implementer` / `処理中` で始まるラベルのいずれも付いていない Issue かつ `assignees` が空。
+対象条件: `state: open` かつ `確認:pr-plan` ラベルが付いていて、`処理中` で始まるラベルのいずれも付いていない Issue。
 
 ```bash
 # Monitor に渡すポーリングスクリプト
 while true; do
-  # 確認:* / 処理中 なし・open の Issue を取得
+  # 確認:pr-plan 付き・処理中なし・open の Issue を取得
   AVAILABLE=$(gh issue list --state open \
+    --label "$GH_KIT_LABEL_CONFIRM_PR_PLAN" \
     --json number,labels \
     --jq "[.[] | select(
       (.labels | map(.name) | (
-        index(\"$GH_KIT_LABEL_NEEDS_AI_REVIEW\") == null and
-        index(\"$GH_KIT_LABEL_NEEDS_FIX\") == null and
         (map(startswith(\"$GH_KIT_LABEL_PROCESSING\")) | any | not)
-      )) and
-      (.assignees | length == 0)
+      ))
     )] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:pr-draft-create-auto:count=$AVAILABLE"
@@ -68,21 +65,20 @@ Monitor の stdout に `TRIGGER:pr-draft-create-auto` が来たらステップ 1
 ### ステップ 1: 対象 Issue を収集
 
 ```bash
-gh issue list --state open --json number,title,body,labels,assignees,comments --limit 100
+gh issue list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_PLAN" \
+  --json number,title,body,labels,assignees,comments --limit 100
 ```
 
-`needs-ai-review` / `needs-fix` / `処理中` で始まるラベル（`処理中`・`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review` 等）のいずれも含まず、`assignees` が空で、各 QA セクションに `- [x]` が 1 件以上あるものをフィルタ（マルチセレクト形式では `- [x]` が 1 件でもあれば回答済みと判定する。`- [ ]` 残数 0 では判定しない）。0 件なら停止。
+`確認:pr-plan` ラベルが付いていて、`処理中` で始まるラベル（`処理中`・`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review` 等）のいずれも含まないものをフィルタ。0 件なら停止。
 
 jq フィルタ例:
 ```bash
 # 処理中 prefix 一括除外: startswith("処理中") でマッチするラベルがひとつでもあれば除外
 select(
   (.labels | map(.name) | (
-    index("確認:issue-reviewer") == null and
-    index("確認:pr-implementer") == null and
+    index("確認:pr-plan") != null and
     (map(startswith("処理中")) | any | not)
-  )) and
-  (.assignees | length == 0)
+  ))
 )
 ```
 
