@@ -15,21 +15,20 @@ GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿�
 
 ## ステップ 0: Wiki チェックリストを読み込む
 
-`GH_KIT_WIKI_PATH` と `GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをコンテキストに注入する。
-ページが存在しない場合は警告を出力して続行する（未設定プロジェクトでも従来通り動作する）。
+`GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをリモート Wiki から取得してコンテキストに注入する。
+ページが存在しない場合は警告を出力して続行する。
 
 ```bash
+REPO_SLUG=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
 IFS=',' read -ra PAGES <<< "${GH_KIT_CHECKLIST_PAGES:-共通チェックリスト}"
 for PAGE in "${PAGES[@]}"; do
   PAGE=$(echo "$PAGE" | xargs)  # trim whitespace
-  if [ -n "$GH_KIT_WIKI_PATH" ]; then
-    FILE="$GH_KIT_WIKI_PATH/${PAGE}.md"
-    if [ -f "$FILE" ]; then
-      echo "# Wiki チェックリスト: $PAGE"
-      cat "$FILE"
-    else
-      echo "[INFO] Wiki チェックリストページが見つかりません: $FILE" >&2
-    fi
+  CONTENT=$(curl -fsSL "https://raw.githubusercontent.com/wiki/${REPO_SLUG}/${PAGE}.md" 2>/dev/null)
+  if [ -n "$CONTENT" ]; then
+    echo "# Wiki チェックリスト: $PAGE"
+    echo "$CONTENT"
+  else
+    echo "[INFO] Wiki チェックリストページが見つかりません: ${PAGE}.md" >&2
   fi
 done
 ```
@@ -39,13 +38,18 @@ done
 ## ステップ 1: テンプレートを読み込む
 
 ラベル定数は Session Start フックで自動展開済み（`GH_KIT_LABEL_*` 変数が利用可能）。
-テンプレート本文は `gh-kit-tools` MCP の `template_get` で取得:
+テンプレート本文はリモート Wiki から取得する:
 
-| 用途 | template_name |
-|---|---|
-| Issue 本文テンプレート | `イシュードキュメント.j2` |
-| レビュー結果コメント | `レビュー結果コメント.j2` |
-| ユーザー確認要否判定基準 | `ユーザー確認要否判定.md` |
+```bash
+REPO_SLUG=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
+WIKI_BASE="https://raw.githubusercontent.com/wiki/${REPO_SLUG}"
+```
+
+| 用途 | Wiki ページ名 | curl コマンド例 |
+|---|---|---|
+| Issue 本文テンプレート | `イシュードキュメント` | `curl -fsSL "${WIKI_BASE}/イシュードキュメント.md"` |
+| レビュー結果コメント | `レビュー結果コメント` | `curl -fsSL "${WIKI_BASE}/レビュー結果コメント.md"` |
+| ユーザー確認要否判定基準 | `ユーザー確認要否判定` | `curl -fsSL "${WIKI_BASE}/ユーザー確認要否判定.md"` |
 
 ## ステップ 2: Issue とラベルを取得
 

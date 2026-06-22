@@ -21,9 +21,7 @@ description: "wip Draft PR を 1 件実装する: worktree 復帰 → fetch/rese
 
 ## ステップ 1: ユーザー確認要否判定基準を読み込む
 
-```bash
-cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザー確認要否判定.md"
-```
+!`curl -fsSL "https://raw.githubusercontent.com/wiki/$(gh repo view --json nameWithOwner --jq '.nameWithOwner')/ユーザー確認要否判定.md" 2>/dev/null || echo "[WARN] ユーザー確認要否判定 Wiki ページを取得できませんでした"`
 
 ステップ 7 で参照する。
 
@@ -74,11 +72,11 @@ cd "$WT" && npm test
 
 ## ステップ 5: テスト実行結果を PR コメントとして投稿する
 
-全テスト成功後、`テスト実行結果.j2` テンプレートを取得して実値で埋め、PR にコメントを投稿する。
+全テスト成功後、`テスト実行結果` Wiki ページのテンプレートを取得して実値で埋め、PR にコメントを投稿する。
 
 ```bash
-# テンプレートを取得（template_get MCP または直接 cat）
-cat "${CLAUDE_PLUGIN_ROOT}/templates/テスト実行結果.j2"
+# Wiki からテンプレートを取得
+curl -fsSL "https://raw.githubusercontent.com/wiki/$(gh repo view --json nameWithOwner --jq '.nameWithOwner')/テスト実行結果.md"
 ```
 
 テンプレートを実値（テスト種別・ファイル・件数・実行コマンド・サマリ出力）で埋めて PR コメントを投稿する。
