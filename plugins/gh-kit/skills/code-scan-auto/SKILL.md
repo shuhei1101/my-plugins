@@ -30,14 +30,21 @@ gh issue list --state all --label "$GH_KIT_LABEL_AI_CODE_SCAN" --limit 50
 
 このメニューから既存 Issue とかぶらない観点を **N** 件（`GH_KIT_CODE_SCAN_PARALLEL`）選ぶ。
 
-### ステップ 3: code-scanner を並列起動
+### ステップ 3: code-scanner をバックグラウンドで並列起動（完了を待たない・通知駆動）
 
-[サブエージェントで並列実行・完了を待つ] 観点ごとに `code-scanner` を 1 体ずつ並列起動する。
-（戻り値: `[{issue_number, issue_url, title}]`）
+**原則: 完了を待たない。** `run_in_background: true` でサブエージェントを起動したら即座に Monitor 監視に戻る。
+完了通知（`<task-notification>`）を受けたら後処理（ステップ 4）を実行する。
+
+観点ごとに `code-scanner` を 1 体ずつ `run_in_background: true` で並列起動する:
+- 起動上限 **N**（`GH_KIT_CODE_SCAN_PARALLEL`）に達している場合は新規起動をキューイングし、1 体完了通知を受けたら次を起動する
+- 起動後は即座に Monitor に制御を戻す
 
 各サブエージェントに渡す入力: 観点（メニューから 1 件抜粋）
 
-### ステップ 4: 起票結果に対して issue-review-auto を連鎖実行
+### ステップ 4: 通知ハンドラ（サブエージェント完了時に実行）
 
-ステップ 3 で 1 件以上 Issue が起票されたら、続けて `/gh-kit:issue-review-auto` を呼び出して
+`code-scanner` からの完了通知（`<task-notification>`）を受信したら以下を実行する:
+（戻り値: `{issue_number, issue_url, title}` を通知から取得）
+
+全スキャナーの完了後（または最後の通知受信後）、1 件以上 Issue が起票されたら続けて `/gh-kit:issue-review-auto` を呼び出して
 新規 Issue を AI レビューしてしまう（`確認:issue-reviewer` 付きの Issue が対象）。

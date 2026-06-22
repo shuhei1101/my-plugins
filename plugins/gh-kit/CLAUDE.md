@@ -10,13 +10,15 @@ GitHub 操作はすべて `gh` CLI に統一。
 flowchart TD
   U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + 確認:issue-reviewer| Issue[(GitHub Issue)]
   Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント<br>確認:issue-reviewer 除去]
-  Review -->|re_review_needed: false<br>確認:* なし + todo 全埋め| Ready[(Issue Ready)]
-  Review -->|re_review_needed: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
+  Review -->|needs_user_review: false<br>確認:pr-plan 付与| PlanOK[(確認:pr-plan 付き Issue)]
+  Review -->|needs_user_review: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
   UserReply -->|ユーザーが手動で 確認:issue-reviewer 再付与| Issue
-  Ready -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
+  UserReply -->|ユーザーが確認 OK なら 確認:pr-plan 付与| PlanOK
+  PlanOK -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
   WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 処理中]
   Implementing -->|完了| NAR[(Ready PR + 確認:issue-reviewer)]
-  NAR -->|/gh-kit:pr-review-auto| Merged[master]
+  NAR -->|/gh-kit:pr-review-auto| Reviewed[approved-merge-ok ラベル付与]
+  Reviewed -->|/gh-kit:pr-merger-auto| Merged[master]
 ```
 
 **再レビューループ:** AI がレビューコメントを投稿後、ユーザーが Issue にコメントで返答し、さらに AI に確認してほしい場合は手動で `確認:issue-reviewer` を再付与する。次回 `/gh-kit:issue-review-auto` 実行時に再レビューモードで動作し、追加 QA またはラベル除去を行う。
@@ -48,13 +50,15 @@ flowchart TD
 | 1a | `/gh-kit:issue-create` | Issue を 1 件起票する（`確認:issue-reviewer` 強制付与）。`code-scanner` や手動呼び出しの両方から使える |
 | 2 | `/gh-kit:issue-review` | 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを投稿 |
 | 3 | `/gh-kit:issue-review-auto` | `確認:issue-reviewer` 付きの Issue を AI レビュー、コメント投稿 |
-| 4 | `/gh-kit:pr-draft-create-auto` | 確認:* なしの Issue 全件 → Draft PR を作成 |
+| 4 | `/gh-kit:pr-draft-create-auto` | `確認:pr-plan` 付き Issue 全件 → Draft PR を作成 |
 | 5 | `/gh-kit:pr-draft-create` | 1 Issue から Draft PR を 1 件作成（`pr-draft-creator` エージェントの実装本体） |
 | 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
 | 6a | `/gh-kit:pr-test-create` | PR のテスト計画を立案しテストコードを作成（`pr-test-creator` エージェントの実装本体） |
 | 7 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → `pr-test-creator` 先行起動 → Ready 化 |
-| 8 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + assignees 未設定ならマージ |
-| 9 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
+| 8 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + assignees 未設定なら `approved-merge-ok` ラベル付与 |
+| 9 | `/gh-kit:pr-merge` | `approved-merge-ok` ラベル付き PR を 1 件 base へマージし worktree 削除・push まで実行 |
+| 10 | `/gh-kit:pr-merger-auto` | `approved-merge-ok` ラベル付き Ready PR を Monitor 方式で直列マージ |
+| 11 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
 
 ## サブエージェント一覧
 
@@ -66,7 +70,8 @@ flowchart TD
 | 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `worktree_create` MCP + 雛形コミット + Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、ユーザー確認要否を返す |
 | 4a | `pr-test-creator` | `/gh-kit:pr-implement-auto` | `pr-test-create` スキルの薄ラッパー。テスト計画立案 → テストコード作成を担当 |
-| 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は base 取り込み・マージ・`worktree_remove`・push まで自走 |
+| 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は `approved-merge-ok` ラベルを付与して `pr-merger` へ委譲 |
+| 6 | `pr-merger` | `/gh-kit:pr-merger-auto` | `approved-merge-ok` PR を base 取り込み・マージ・`worktree_remove`・push まで実行 |
 
 ## 共通リソース
 
@@ -115,6 +120,7 @@ flowchart TD
 | `処理中` | 何らかの作業中（排他マーカー） |
 | `確認:issue-reviewer` | issue-reviewer スキルがレビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
 | `確認:pr-implementer` | レビュー結果、pr-implementer スキルが修正必要 |
+| `確認:pr-plan` | AI レビュー完了・PR 作成 OK（`issue-review` が `needs_user_review: false` 判定時に付与。`pr-draft-create-auto` の起動契機） |
 
 ### gh-kit フロー制御（processing 細分）
 
@@ -157,10 +163,13 @@ auto 系スキル（`issue-review-auto` / `pr-implement-auto` / `pr-review-auto`
 | ラベル | 意味 |
 |---|---|
 | `wip` | Draft 雛形 PR |
+| `approved-merge-ok` | AI レビュー OK でマージ可（`pr-review` が付与、`pr-merger` がマージ後に除去） |
 
 ## 直列マージ原則
 
-`pr-review-auto` は **必ず 1 件ずつ** `pr-reviewer` を呼ぶ。並列起動は禁止（master 取り込みとマージの競合を避けるため）。並列実装（`pr-implement-auto`）は許容、並列マージは禁止。
+`pr-review-auto` は **必ず 1 件ずつ** `pr-reviewer` を呼ぶ。
+`pr-merger-auto` は **必ず 1 件ずつ** `pr-merger` を呼ぶ。
+並列起動は禁止（master 取り込みとマージの競合を避けるため）。並列実装（`pr-implement-auto`）は許容、並列マージは禁止。
 
 ## 前提
 

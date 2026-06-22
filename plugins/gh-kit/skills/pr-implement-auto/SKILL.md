@@ -92,7 +92,6 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 ```bash
 gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING" \
   --remove-label "$GH_KIT_LABEL_WIP" --remove-label "$GH_KIT_LABEL_NEEDS_FIX"
-gh issue edit {N} --add-assignee @me
 ```
 
 ### ステップ 3: pr-test-creator を先行起動（テストタスクがある場合）
@@ -117,14 +116,19 @@ gh pr view {N} --json body --jq '.body' | grep -q "- \[ \] 自動テスト作成
 `HAS_TEST_TASK=true` の場合: `pr-test-creator` サブエージェントを起動し、完了を待ってから `pr-implementer` を起動する（直列）。
 `HAS_TEST_TASK=false` の場合: `pr-implementer` を直接起動する。
 
-### ステップ 3a: pr-implementer を並列起動
+### ステップ 3a: pr-implementer をバックグラウンドで並列起動（完了を待たない・通知駆動）
 
-`pr-test-creator` の完了後（またはテストタスクなしの場合はステップ 3 完了後）に `pr-implementer` を起動する。
+**原則: 完了を待たない。** `run_in_background: true` でサブエージェントを起動したら即座に Monitor 監視に戻る。
+完了通知（`<task-notification>`）を受けたら後処理（ステップ 4）を実行する。
 
-[サブエージェントで並列実行・完了を待つ]
-（戻り値: `[{branch, pr_number, status, needs_user_review, commits_added}]`）
+`pr-test-creator` の完了後（またはテストタスクなしの場合はステップ 3 完了後）に `pr-implementer` を `run_in_background: true` で起動する:
+- 起動上限 **N**（`GH_KIT_PR_IMPLEMENT_PARALLEL`）に達している場合は新規起動をキューイングし、1 体完了通知を受けたら次を起動する
+- 起動後は即座に Monitor に制御を戻す
 
-### ステップ 4: 後処理
+### ステップ 4: 通知ハンドラ（サブエージェント完了時に実行）
+
+`pr-implementer` からの完了通知（`<task-notification>`）を受信したら以下を実行する:
+（戻り値: `{branch, pr_number, status, needs_user_review, commits_added}` を通知から取得）
 
 ```bash
 # 成功
@@ -147,6 +151,8 @@ if [ -n "$ISSUE_N" ]; then
   gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
 fi
 ```
+
+後処理完了後、キューに積まれた次の PR があれば `pr-implementer` を起動する。
 
 ### ステップ 5: pr-review-auto を連鎖実行
 
