@@ -22,7 +22,7 @@ gh repo clone $(gh repo view --json nameWithOwner --jq '.nameWithOwner').wiki "$
 
 ## カテゴリ・Sidebar/Home 自動更新
 
-`--category` を指定すると以下が自動実行される:
+`_Sidebar.md` / `Home.md` への自動追加は **常に実行される**（`--category` 指定の有無に関わらず）:
 
 | No | 動作 |
 |---|---|
@@ -31,7 +31,7 @@ gh repo clone $(gh repo view --json nameWithOwner --jq '.nameWithOwner').wiki "$
 | 3 | カテゴリ階層は `##`（レベル2）・`###`（レベル3）の 2 段階まで |
 | 4 | `Home.md` を `_Sidebar.md` の内容から自動再生成する |
 
-カテゴリを指定しない場合は `_Sidebar.md` / `Home.md` の更新はスキップされる。
+`--category` を省略した場合は **「未分類」** カテゴリとして `_Sidebar.md` / `Home.md` に自動追加される。
 
 ## ページ名規約
 
@@ -73,7 +73,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/wiki-create.sh" \
   --category-level 2
 ```
 
-`--category` はオプション。省略時は `_Sidebar.md` / `Home.md` の更新をスキップする。
+`--category` はオプション。省略時は「未分類」カテゴリとして `_Sidebar.md` / `Home.md` に自動追加される。
 `--category-level` は `2`（`##`）または `3`（`###`）を指定。デフォルトは `2`。
 
 スクリプトが以下を行う:
@@ -81,8 +81,8 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/wiki-create.sh" \
 | No | 動作 |
 |---|---|
 | 1 | `${GH_KIT_WIKI_PATH}/{page-name}` に本文を書き込む（既存なら上書き拒否で停止）|
-| 2 | `--category` 指定時: `_Sidebar.md` の該当カテゴリにリンクを挿入（カテゴリ未存在なら新規追加）|
-| 3 | `--category` 指定時: `Home.md` を `_Sidebar.md` の内容から自動再生成 |
+| 2 | `_Sidebar.md` の該当カテゴリにリンクを挿入（カテゴリ未存在なら新規追加）。`--category` 省略時は「未分類」カテゴリ |
+| 3 | `Home.md` を `_Sidebar.md` の内容から自動再生成 |
 | 4 | Wiki リポで `git add` + `git commit` + `git push`（差分なしならスキップ）|
 
 ### ステップ 4: 結果報告
