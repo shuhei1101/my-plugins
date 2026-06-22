@@ -29,7 +29,7 @@ while true; do
     --json number,labels,isDraft \
     --jq "[.[] | select(
       .isDraft == false and
-      (.labels | map(.name) | index(\"$GH_KIT_LABEL_PROCESSING\") | not)
+      (.labels | map(.name) | (map(startswith(\"$GH_KIT_LABEL_PROCESSING\")) | any | not))
     )] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:pr-review-auto:count=$AVAILABLE"
@@ -49,7 +49,7 @@ gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
   --json number,title,headRefName,baseRefName,statusCheckRollup,labels --limit 50
 ```
 
-`処理中` 付きは除外。`優先度:急ぎ` 付き PR を先頭に、次に `優先度:いつでも` 付き、それ以外は番号昇順でキューを形成する:
+`処理中` で始まるラベル（`処理中`・`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review` 等）付きは除外。`優先度:急ぎ` 付き PR を先頭に、次に `優先度:いつでも` 付き、それ以外は番号昇順でキューを形成する:
 
 ```bash
 # jq でラベル名に優先度:急ぎ を含むものを先頭に、次に優先度:いつでも、残りは番号昇順
