@@ -15,7 +15,10 @@ description: GitHub Wiki に新規ページを 1 件作成して push する。�
 | `GH_KIT_WIKI_PATH` | 必須 | Wiki ローカルリポジトリ絶対パス（例: `/path/to/repo.wiki`）。Session Start フックで自動 pull される |
 
 未設定時は停止。`.claude/settings.local.json` で設定する想定。
-未クローンなら `gh repo view --json url -q .url` の URL に `.wiki.git` を付けて clone するようユーザーへ案内。
+未クローンなら以下で clone する:
+```bash
+gh repo clone $(gh repo view --json nameWithOwner --jq '.nameWithOwner').wiki "${GH_KIT_WIKI_PATH}"
+```
 
 ## カテゴリ・Sidebar/Home 自動更新
 
@@ -40,7 +43,11 @@ description: GitHub Wiki に新規ページを 1 件作成して push する。�
 
 ## ページ本文テンプレート
 
-`template_get(template_name="Wikiページ.j2")` MCP ツールを呼んでテンプレートを取得すること。
+リモート Wiki の `Wikiページ` ページからテンプレートを取得する。
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/wiki/$(gh repo view --json nameWithOwner --jq '.nameWithOwner')/Wikiページ.md"
+```
 
 テンプレートのポリシー: 1 対象 = 1 ページ。書くのは「今どうなっているか」だけ。履歴・経緯・却下案は書かない。
 
@@ -53,7 +60,7 @@ description: GitHub Wiki に新規ページを 1 件作成して push する。�
 
 ### ステップ 2: ページ本文を生成
 
-`template_get(template_name="Wikiページ.j2")` でテンプレートを取得し、対象の現在仕様を埋めて下書きする。
+上記の curl コマンドで `Wikiページ` テンプレートを取得し、対象の現在仕様を埋めて下書きする。
 履歴・「なぜこうなったか」「以前は〜だった」は書かない。
 
 ### ステップ 3: 作成スクリプトを実行

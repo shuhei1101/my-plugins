@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: 1 PR をレビューし、合格 + assignees なしなら base 取り込み→マージ→worktree 削除→push まで実行
+description: 1 PR をレビューし、合格 + assignees なしなら approved-merge-ok ラベルを付与して pr-merger に委譲する
 model: sonnet
 ---
 
@@ -27,7 +27,7 @@ model: sonnet
 
 ```json
 {
-  "verdict": "approved-merged" | "approved-user-review-pending" | "changes-requested" | "conflict" | "failed",
+  "verdict": "approved-merge-ok" | "approved-user-review-pending" | "changes-requested" | "failed",
   "pr_number": 42,
   "branch": "feat/foo-bar",
   "message": "詳細メッセージ",
