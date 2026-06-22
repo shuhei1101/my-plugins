@@ -173,6 +173,12 @@ fi
 
 マージしない。verdict = `approved-user-review-pending`、message に「ユーザー確認待ち（assignees 設定済み）」と理由。
 
+ユーザーが内容を確認したら、以下の操作をすることで次回 `pr-review-auto` の Monitor が自動検知してマージフローへ進む:
+1. PR に `user-reviewed` ラベルを付与する
+2. assignees を外す（自身を remove する）
+
+`pr-review-auto` は `user-reviewed` ラベル付きの Ready PR（assignees なし）を検知したとき、AI レビュー済みとみなしてマージを実行する。
+
 ## ステップ 7-C: Drop（PR Close without merge）
 
 PR を `--close` した場合（failed / conflict）も `processing:*` ラベルを除去する（Issue は Close しない）。
