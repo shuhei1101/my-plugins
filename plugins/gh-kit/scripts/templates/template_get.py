@@ -1,17 +1,27 @@
-"""template_get.py — gh-kit/templates/ 配下のテンプレートを stdout に出力する CLI。
+"""template_get.py — GitHub Wiki からテンプレートを取得して stdout に出力する CLI。
 
 使い方:
   python template_get.py <template_name>
 
 template_name は plugins/gh-kit/templates/ 配下のファイル名（拡張子込み）。
-存在しないテンプレートは終了コード 2 で停止する。
+拡張子を除いた名前で Wiki ページを検索する（例: PRドキュメント.j2 → PRドキュメント）。
+
+Wiki は GH_KIT_WIKI_PATH 環境変数で指定されたローカル clone から読み取る。
+GH_KIT_WIKI_PATH が未設定または Wiki ページが存在しない場合は終了コード 2 でエラー終了する。
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
-TEMPLATES_DIR = Path(__file__).resolve().parent.parent.parent / "templates"
+
+def _wiki_path() -> Path | None:
+    """GH_KIT_WIKI_PATH 環境変数から Wiki ローカル clone のパスを返す。未設定なら None。"""
+    val = os.environ.get("GH_KIT_WIKI_PATH", "").strip()
+    if not val:
+        return None
+    return Path(val)
 
 
 def main(argv: list[str]) -> int:
@@ -24,12 +34,31 @@ def main(argv: list[str]) -> int:
         print(f"ERROR: 不正なテンプレート名: {name}", file=sys.stderr)
         return 1
 
-    path = TEMPLATES_DIR / name
-    if not path.is_file():
-        print(f"ERROR: テンプレートが見つからない: {path}", file=sys.stderr)
+    # 拡張子を除いた Wiki ページ名を導出
+    page_name = Path(name).stem  # 例: "PRドキュメント.j2" -> "PRドキュメント"
+
+    # Wiki ローカル clone から取得
+    wiki_dir = _wiki_path()
+    if wiki_dir is None:
+        print(
+            "ERROR: GH_KIT_WIKI_PATH 環境変数が未設定。\n"
+            "  Wiki ローカル clone のパスを GH_KIT_WIKI_PATH に設定してください。\n"
+            "  例: GH_KIT_WIKI_PATH=/path/to/repo.wiki",
+            file=sys.stderr,
+        )
         return 2
 
-    sys.stdout.write(path.read_text(encoding="utf-8"))
+    wiki_page = wiki_dir / f"{page_name}.md"
+    if not wiki_page.is_file():
+        print(
+            f"ERROR: Wiki ページが見つかりません: {wiki_page}\n"
+            f"  Wiki が初期化されているか確認してください。\n"
+            f"  未 clone の場合: gh repo clone {{owner}}/{{repo}}.wiki {wiki_dir}",
+            file=sys.stderr,
+        )
+        return 2
+
+    sys.stdout.write(wiki_page.read_text(encoding="utf-8"))
     return 0
 
 
