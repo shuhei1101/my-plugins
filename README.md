@@ -1,5 +1,7 @@
 # Claude Plugins
 
+https://github.com/shuhei1101/my-plugins/wiki
+
 ## 推奨コマンド
 - **マーケットプレイス追加 + 全プラグインをインストール/更新**
 ```bash
