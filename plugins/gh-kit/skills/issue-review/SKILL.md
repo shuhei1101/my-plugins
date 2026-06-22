@@ -13,6 +13,29 @@ GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿�
 |---|---|
 | Issue 番号 | 例: 42 |
 
+## ステップ 0: Wiki チェックリストを読み込む
+
+`GH_KIT_WIKI_PATH` と `GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをコンテキストに注入する。
+ページが存在しない場合は警告を出力して続行する（未設定プロジェクトでも従来通り動作する）。
+
+```bash
+IFS=',' read -ra PAGES <<< "${GH_KIT_CHECKLIST_PAGES:-共通チェックリスト}"
+for PAGE in "${PAGES[@]}"; do
+  PAGE=$(echo "$PAGE" | xargs)  # trim whitespace
+  if [ -n "$GH_KIT_WIKI_PATH" ]; then
+    FILE="$GH_KIT_WIKI_PATH/${PAGE}.md"
+    if [ -f "$FILE" ]; then
+      echo "# Wiki チェックリスト: $PAGE"
+      cat "$FILE"
+    else
+      echo "[INFO] Wiki チェックリストページが見つかりません: $FILE" >&2
+    fi
+  fi
+done
+```
+
+取得できたチェックリスト内容は、ステップ 5 のレビューで確認項目として参照する。
+
 ## ステップ 1: テンプレートを読み込む
 
 ラベル定数は Session Start フックで自動展開済み（`GH_KIT_LABEL_*` 変数が利用可能）。
@@ -113,28 +136,49 @@ gh issue close {N}
 
 Issue が言及する領域・関連ファイルを Read で確認。Read 時に PreToolUse フックがファイル系ルールを自動注入する。
 
-### Step 3a: Fetch official documentation (only when external tool/library names are present)
+### ステップ 3a: 公式ドキュメント取得（外部ツール・ライブラリ名がある場合のみ）
 
-If the Issue title or body contains the name of an external tool, library, framework, or service:
-1. Use `WebFetch` to retrieve the official documentation page(s) most relevant to the Issue.
-2. If fetching fails, note "参照不可（理由）" and continue without blocking.
-3. Record each successfully retrieved URL in `{doc_urls}` for use in the review-result comment.
+Issue タイトルや本文に外部ツール・ライブラリ・フレームワーク・サービス名が含まれる場合:
+1. `WebFetch` で Issue に最も関連する公式ドキュメントページを取得する。
+2. 取得に失敗した場合は「参照不可（理由）」と記録し、処理を継続する。
+3. 取得に成功した各 URL を `{doc_urls}` に記録し、レビュー結果コメントで使用する。
 
-Skip entirely when the Issue contains no external tool/library names.
+Issue に外部ツール・ライブラリ名が含まれない場合はスキップ。
 
-## Step 3.5: Behavior verification (optional — when feasible)
+## ステップ 3.5: 動作確認（任意 — 実施可能な場合のみ）
 
-Attempt to confirm whether the reported problem actually occurs in the current codebase.
+報告された問題が現在のコードベースで実際に発生するかを確認する。
 
-| Issue type | Verification method |
+| Issue の種類 | 確認方法 |
 |---|---|
-| Skill / Claude Code behavior | Launch a sub-agent and reproduce the scenario described in the Issue |
-| Code bug (test exists) | Run the relevant test suite and check for failures |
-| Code bug (no test) | Perform manual behavior confirmation |
-| Verification not feasible | Note "確認不可（理由）" and continue |
+| スキル / Claude Code の動作 | サブエージェントを起動し、Issue に記載されたシナリオを再現する |
+| コードバグ（テストあり） | 関連テストスイートを実行し、失敗を確認する |
+| コードバグ（テストなし） | 手動で動作確認を行う |
+| 確認不可 | 「確認不可（理由）」と記録し、処理を継続する |
 
-Store the result in `{verification_result}` for inclusion in the review-result comment.
-This step is **optional** — if infrastructure or context makes it impossible, skip gracefully.
+結果を `{verification_result}` に格納し、レビュー結果コメントに含める。
+このステップは**任意**。インフラやコンテキストの都合で実施不可能な場合はスキップしてよい。
+
+## ステップ 3.75: タイトル更新（人間起票のみ）
+
+`ai-code-scan` ラベルが **ない**（人間起票）場合のみ実行する。
+
+Issue の本文・コメントを読んだうえで、内容を正確に表す適切なタイトルを生成し、`gh issue edit --title` で更新する。
+
+```bash
+gh issue edit {N} --title "{生成したタイトル}"
+```
+
+### タイトル生成ガイドライン
+
+| 項目 | 内容 |
+|---|---|
+| 形式 | `{スコープ}: {動詞} — {対象}` を推奨（例: `gh-kit:issue-review — 人間起票 Issue のタイトルを自動更新する責務を追加`） |
+| 長さ | 60〜80 文字以内 |
+| 言語 | Issue 本文に合わせる（日本語 Issue は日本語タイトル） |
+| 元タイトル保持 | 不要。GitHub の変更履歴（Activity）にタイトル変更が記録されるため、元タイトルを別途残す必要はない |
+
+`ai-code-scan` ラベルあり（AI 起票）の場合はスキップ（タイトルは既に整っているため）。
 
 ## ステップ 4: 本文補完コメントを投稿（必要時のみ）
 
@@ -160,7 +204,7 @@ EOF
 ステップ 1 で取得した `レビュー結果コメント.j2` に沿って実装方針 / 質問 / 分割提案 / 影響範囲を書く。
 質問・分割提案がなければ該当セクションごと省略。
 
-**Omission rule for the "対応案" section**: If the Issue body (or the body-supplement comment posted in Step 4) already contains a "対応案" section, **omit the "対応案" section** from the review-result comment entirely. Do not duplicate it.
+**「対応案」セクションの省略ルール**: Issue 本文（またはステップ 4 で投稿した本文補完コメント）に既に「対応案」セクションが含まれる場合、レビュー結果コメントの「対応案」セクションは**省略**する。重複掲載しない。
 
 ```bash
 gh issue comment {N} --body-file <(cat <<'EOF'
@@ -168,6 +212,45 @@ gh issue comment {N} --body-file <(cat <<'EOF'
 EOF
 )
 ```
+
+## ステップ 5.5: タイプラベル判定・付与
+
+Issue 本文・タイトル・補完コメント（ステップ 4）の内容から、適切な `type:*` ラベルを判定して付与する。
+
+### 判定基準
+
+| type ラベル | 変数 | 付与条件 |
+|---|---|---|
+| `type:bug` | `$GH_KIT_LABEL_TYPE_BUG` | 既存の動作が仕様または期待と異なる問題の修正 |
+| `type:feat` | `$GH_KIT_LABEL_TYPE_FEAT` | 新機能追加・既存機能の有意な拡張 |
+| `type:refactor` | `$GH_KIT_LABEL_TYPE_REFACTOR` | 外部動作を変えずにコードを整理・改善 |
+| `type:docs` | `$GH_KIT_LABEL_TYPE_DOCS` | ドキュメント・コメントのみの変更 |
+| `type:chore` | `$GH_KIT_LABEL_TYPE_CHORE` | ビルド設定・依存更新・CI/CD など |
+| `type:test` | `$GH_KIT_LABEL_TYPE_TEST` | テストコードの追加・修正のみ |
+
+いずれにも当てはまらない場合は `$GH_KIT_LABEL_TYPE_FEAT` を選ぶ（デフォルト）。
+
+### 既付与時スキップ + 冪等付与
+
+```bash
+# 既に type:* ラベルが付与されている場合はスキップ
+EXISTING_TYPE=$(gh issue view {N} --json labels --jq '.labels[].name' | grep '^type:' | head -1)
+if [ -n "$EXISTING_TYPE" ]; then
+  echo "type ラベル ${EXISTING_TYPE} 付与済みのためスキップ"
+else
+  # 選んだタイプラベルを変数に設定（例: TYPE_LABEL="$GH_KIT_LABEL_TYPE_BUG"）
+  TYPE_LABEL="$GH_KIT_LABEL_TYPE_{判定したタイプ}"
+
+  # ラベルが存在しなければ作成（冪等）
+  gh label list --json name --jq '.[].name' | grep -q "^${TYPE_LABEL}$" || \
+    gh label create "${TYPE_LABEL}" --color "$GH_KIT_LABEL_COLOR_TYPE" --description "Issue タイプ: ${TYPE_LABEL}"
+
+  # Issue に付与
+  gh issue edit {N} --add-label "${TYPE_LABEL}"
+fi
+```
+
+`AIコードスキャン` ラベルがある（AI 起票）場合もこのステップを実行する（`code-scanner` が付与済みの場合は `--add-label` が冪等で安全）。
 
 ## ステップ 6: 優先度ラベルを付与（人間起票 Issue のみ）
 
@@ -221,6 +304,6 @@ fi
 
 ## 制約
 
-- メイン Issue 本文は書き換えない（GitHub Issue API の `update` を呼ばない）
+- メイン Issue 本文は書き換えない（タイトル更新は許可 — `gh issue edit --title` のみ使用可）
 - 既存セクションが揃っているなら本文補完コメント（ステップ 4）はスキップ
 - 推奨案は必ず明示（「後で決める」「TBD」禁止）

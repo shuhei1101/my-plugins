@@ -96,7 +96,7 @@ gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING" \
 gh issue edit {N} --add-assignee @me
 ```
 
-### ステップ 3: pr-implementer を並列起動
+### ステップ 3: pr-test-creator を先行起動（テストタスクがある場合）
 
 起動前に、紐づく Issue に `処理中:pr-implement` を付与する。
 
@@ -108,6 +108,20 @@ if [ -n "$ISSUE_N" ]; then
   gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
 fi
 ```
+
+PR 本文の「実装予定タスク」に「自動テスト作成/変更」チェックボックスが含まれ、かつ未完了（`- [ ] 自動テスト作成`）の場合は、`pr-test-creator` を先行起動してテストコードを作成させる。
+
+```bash
+# テストタスクの存在確認
+gh pr view {N} --json body --jq '.body' | grep -q "- \[ \] 自動テスト作成" && HAS_TEST_TASK=true || HAS_TEST_TASK=false
+```
+
+`HAS_TEST_TASK=true` の場合: `pr-test-creator` サブエージェントを起動し、完了を待ってから `pr-implementer` を起動する（直列）。
+`HAS_TEST_TASK=false` の場合: `pr-implementer` を直接起動する。
+
+### ステップ 3a: pr-implementer を並列起動
+
+`pr-test-creator` の完了後（またはテストタスクなしの場合はステップ 3 完了後）に `pr-implementer` を起動する。
 
 [サブエージェントで並列実行・完了を待つ]
 （戻り値: `[{branch, pr_number, status, needs_user_review, commits_added}]`）
