@@ -13,6 +13,29 @@ GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿�
 |---|---|
 | Issue 番号 | 例: 42 |
 
+## ステップ 0: Wiki チェックリストを読み込む
+
+`GH_KIT_WIKI_PATH` と `GH_KIT_CHECKLIST_PAGES` が設定されている場合に限り、指定されたチェックリストページをコンテキストに注入する。
+ページが存在しない場合は警告を出力して続行する（未設定プロジェクトでも従来通り動作する）。
+
+```bash
+IFS=',' read -ra PAGES <<< "${GH_KIT_CHECKLIST_PAGES:-共通チェックリスト}"
+for PAGE in "${PAGES[@]}"; do
+  PAGE=$(echo "$PAGE" | xargs)  # trim whitespace
+  if [ -n "$GH_KIT_WIKI_PATH" ]; then
+    FILE="$GH_KIT_WIKI_PATH/${PAGE}.md"
+    if [ -f "$FILE" ]; then
+      echo "# Wiki チェックリスト: $PAGE"
+      cat "$FILE"
+    else
+      echo "[INFO] Wiki チェックリストページが見つかりません: $FILE" >&2
+    fi
+  fi
+done
+```
+
+取得できたチェックリスト内容は、ステップ 5 のレビューで確認項目として参照する。
+
 ## ステップ 1: テンプレートを読み込む
 
 ラベル定数は Session Start フックで自動展開済み（`GH_KIT_LABEL_*` 変数が利用可能）。
@@ -30,7 +53,7 @@ GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿�
 gh issue view {N} --json number,title,body,labels,comments
 ```
 
-ラベルに `ai-code-scan` が含まれるかで起票元を判定:
+ラベルに `AIコードスキャン` が含まれるかで起票元を判定:
 
 | ラベル | 起票元 | 本文の状態 |
 |---|---|---|
@@ -190,12 +213,37 @@ EOF
 )
 ```
 
-## ステップ 6: ユーザー確認要否判定
+## ステップ 6: 優先度ラベルを付与（人間起票 Issue のみ）
+
+ラベルに `AIコードスキャン` が含まれない（= 人間起票）かつ、Issue に優先度ラベルがまだ付いていない場合に限り、以下の基準で優先度を判定して付与する。
+
+| 状況 | 優先度ラベル |
+|---|---|
+| セキュリティ脆弱性・クラッシュバグ・データ損失リスク・緊急対応が必要 | `優先度:急ぎ` |
+| コード品質・ドキュメント・機能改善など時期を問わず対応できる | `優先度:いつでも` |
+
+```bash
+# Issue の既存ラベルを取得
+CURRENT_LABELS=$(gh issue view {N} --json labels --jq '.labels | map(.name) | .[]')
+
+# 優先度ラベルが未付与かつ AIコードスキャン 起票でない場合のみ付与
+if ! echo "$CURRENT_LABELS" | grep -q "$GH_KIT_LABEL_AI_CODE_SCAN"; then
+  if ! echo "$CURRENT_LABELS" | grep -qE "$GH_KIT_LABEL_PRIORITY_URGENT|$GH_KIT_LABEL_PRIORITY_LOW"; then
+    # LLM で重大度を判定し、急ぎなら URGENT、それ以外は LOW を使う
+    # 急ぎの場合:
+    gh issue edit {N} --add-label "$GH_KIT_LABEL_PRIORITY_URGENT"
+    # いつでもの場合:
+    # gh issue edit {N} --add-label "$GH_KIT_LABEL_PRIORITY_LOW"
+  fi
+fi
+```
+
+## ステップ 7: ユーザー確認要否判定
 
 ステップ 1 で取得した `ユーザー確認要否判定.md` に照らして判定する。
 ステップ 5 で質問が含まれる場合・分割提案がある場合は無条件で true。
 
-## ステップ 7: 戻り値
+## ステップ 8: 戻り値
 
 ```json
 {
