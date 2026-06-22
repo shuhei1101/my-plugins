@@ -39,7 +39,18 @@ Issue 起票後に AI レビューフロー（`/gh-kit:issue-review-auto`）が�
 gh label list | grep -q "^${GH_KIT_LABEL_NEEDS_AI_REVIEW}" || \
   gh label create "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --color "$GH_KIT_LABEL_COLOR_NEEDS_AI_REVIEW" --description "AI レビュー必要"
 
+gh label list | grep -qF "${GH_KIT_LABEL_PRIORITY_URGENT}" || \
+  gh label create "${GH_KIT_LABEL_PRIORITY_URGENT}" \
+    --color "${GH_KIT_LABEL_COLOR_PRIORITY_URGENT}" \
+    --description "早急に対応が必要なもの"
+
+gh label list | grep -qF "${GH_KIT_LABEL_PRIORITY_LOW}" || \
+  gh label create "${GH_KIT_LABEL_PRIORITY_LOW}" \
+    --color "${GH_KIT_LABEL_COLOR_PRIORITY_LOW}" \
+    --description "時期を問わず対応可能なもの"
 ```
+
+> **新ラベルを優先利用:** `優先度:急ぎ` / `優先度:いつでも` を使うこと。旧ラベル (`priority:high` / `priority:medium` / `priority:low`) は既存 Issue/PR を尊重するため削除しない。
 
 ## ステップ 2: ラベル文字列を組み立てる
 
