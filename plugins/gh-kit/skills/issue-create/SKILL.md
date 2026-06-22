@@ -45,7 +45,8 @@ gh label list | grep -q "^${GH_KIT_LABEL_NEEDS_AI_REVIEW}" || \
 
 ```bash
 # 確認:issue-reviewer は呼び出し側が指定しなくても必ず付与する（構造的保証）
-LABELS="${GH_KIT_LABEL_AI_CODE_SCAN},${GH_KIT_LABEL_NEEDS_AI_REVIEW},{type},{priority}"
+# ai-code-scan ラベルは code-scanner 経由起票時のみ extra_labels で渡す（出自タグのため）
+LABELS="${GH_KIT_LABEL_NEEDS_AI_REVIEW},{type},{priority}"
 
 GH_LOGIN=$(gh api user --jq '.login')
 ASSIGNEE_OPT=""
