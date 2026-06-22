@@ -31,15 +31,13 @@ disable-model-invocation: true
 
 ```bash
 # Monitor に渡すポーリングスクリプト
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
-
 while true; do
-  WIP_COUNT=$(gh pr list --state open --label "$LABEL_WIP" \
+  WIP_COUNT=$(gh pr list --state open --label "$GH_KIT_LABEL_WIP" \
     --json number,labels,isDraft \
-    --jq "[.[] | select(.isDraft == true and (.labels | map(.name) | (map(startswith(\"$LABEL_PROCESSING\")) | any | not)))] | length" 2>/dev/null || echo 0)
-  FIX_COUNT=$(gh pr list --state open --label "$LABEL_NEEDS_FIX" \
+    --jq "[.[] | select(.isDraft == true and (.labels | map(.name) | (map(startswith(\"$GH_KIT_LABEL_PROCESSING\")) | any | not)))] | length" 2>/dev/null || echo 0)
+  FIX_COUNT=$(gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_FIX" \
     --json number,labels,isDraft \
-    --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"$LABEL_PROCESSING\")) | any | not))] | length" 2>/dev/null || echo 0)
+    --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"$GH_KIT_LABEL_PROCESSING\")) | any | not))] | length" 2>/dev/null || echo 0)
   AVAILABLE=$((WIP_COUNT + FIX_COUNT))
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:pr-implement-auto:count=$AVAILABLE"
@@ -102,7 +100,6 @@ gh issue edit {N} --add-assignee @me
 起動前に、紐づく Issue に `処理中:pr-implement` を付与する。
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 # PR 本文から Issue 番号を抽出して付与
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
