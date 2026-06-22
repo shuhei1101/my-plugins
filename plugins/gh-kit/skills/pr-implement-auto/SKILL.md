@@ -94,7 +94,6 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 ```bash
 gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING" \
   --remove-label "$GH_KIT_LABEL_WIP" --remove-label "$GH_KIT_LABEL_NEEDS_FIX"
-gh issue edit {N} --add-assignee @me
 ```
 
 ### ステップ 3: pr-test-creator を先行起動（テストタスクがある場合）
