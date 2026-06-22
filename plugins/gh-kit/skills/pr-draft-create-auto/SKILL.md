@@ -110,18 +110,27 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 ```
 
-### ステップ 4: pr-draft-creator を並列起動
+### ステップ 4: pr-draft-creator をバックグラウンドで並列起動（完了を待たない・通知駆動）
 
-[サブエージェントで並列実行・完了を待つ]
-（戻り値: `[{branch, pr_url, pr_number}]`）
+**原則: 完了を待たない。** `run_in_background: true` でサブエージェントを起動したら即座に Monitor 監視に戻る。
+完了通知（`<task-notification>`）を受けたら後処理（ステップ 5）を実行する。
 
-### ステップ 5: 後処理
+各 Issue に対して `pr-draft-creator` サブエージェントを `run_in_background: true` で起動する:
+- 起動上限 **N**（`GH_KIT_PR_DRAFT_CREATE_PARALLEL`）に達している場合は新規起動をキューイングし、1 体完了通知を受けたら次を起動する
+- 起動後は即座に Monitor に制御を戻す
+
+### ステップ 5: 通知ハンドラ（サブエージェント完了時に実行）
+
+`pr-draft-creator` からの完了通知（`<task-notification>`）を受信したら以下を実行する:
+（戻り値: `{branch, pr_url, pr_number}` を通知から取得）
 
 ```bash
 gh pr edit {PR番号} --add-label "$GH_KIT_LABEL_WIP"
 gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
 gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_PROCESSING_PR_DRAFT"
 ```
+
+後処理完了後、キューに積まれた次の Issue があれば `pr-draft-creator` を起動する。
 
 ### ステップ 6: 完了報告
 
