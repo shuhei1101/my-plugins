@@ -40,4 +40,4 @@ gh issue list --state all --label "$GH_KIT_LABEL_AI_CODE_SCAN" --limit 50
 ### ステップ 4: 起票結果に対して issue-review-auto を連鎖実行
 
 ステップ 3 で 1 件以上 Issue が起票されたら、続けて `/gh-kit:issue-review-auto` を呼び出して
-新規 Issue を AI レビューしてしまう（`needs-ai-review` 付きの Issue が対象）。
+新規 Issue を AI レビューしてしまう（`確認:issue-reviewer` 付きの Issue が対象）。
