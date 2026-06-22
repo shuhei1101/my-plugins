@@ -36,10 +36,10 @@ disable-model-invocation: true
 while true; do
   WIP_COUNT=$(gh pr list --state open --label "$LABEL_WIP" \
     --json number,labels,isDraft \
-    --jq "[.[] | select(.isDraft == true and (.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not))] | length" 2>/dev/null || echo 0)
+    --jq "[.[] | select(.isDraft == true and (.labels | map(.name) | (map(startswith(\"$LABEL_PROCESSING\")) | any | not)))] | length" 2>/dev/null || echo 0)
   FIX_COUNT=$(gh pr list --state open --label "$LABEL_NEEDS_FIX" \
     --json number,labels,isDraft \
-    --jq "[.[] | select((.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not))] | length" 2>/dev/null || echo 0)
+    --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"$LABEL_PROCESSING\")) | any | not))] | length" 2>/dev/null || echo 0)
   AVAILABLE=$((WIP_COUNT + FIX_COUNT))
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:pr-implement-auto:count=$AVAILABLE"
@@ -70,7 +70,7 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 ```
 
-`処理中` 付きは除外。`wip` ラベル付き PR はさらに `isDraft: true` のみ対象。0 件なら停止。
+`処理中` で始まるラベル（`処理中`・`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review` 等）付きは除外。`wip` ラベル付き PR はさらに `isDraft: true` のみ対象。0 件なら停止。
 
 収集後、`優先度:急ぎ` ラベルが付いている PR を先頭に並べ、次に `優先度:いつでも` 付き、それ以外の順（番号昇順）で処理する:
 
