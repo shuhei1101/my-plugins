@@ -1,4 +1,43 @@
 {
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/PreToolUse/pre-merge-version-check.py"
+            ]
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "_description": "git merge 後に reload_plugins を実行（git merge 系コマンド用）",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/PostToolUse/post-merge-upgrade.py"
+            ]
+          },
+          {
+            "_description": "git push origin master 後に reload_plugins を実行（gh CLI 経由マージ後の push を補足）",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/PostToolUse/post-push-reload.py"
+            ]
+          }
+        ]
+      }
+    ]
+  },
   "env": {
     "GH_KIT_CHECKLIST_PAGES": "共通チェックリスト"
   },

@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-implement-auto
-description: ラベル wip / 確認:pr-implementer の Draft PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
+description: ラベル wip（Draft）/ 確認:pr-implementer（Draft・Ready）の PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
 disable-model-invocation: true
 ---
 
@@ -27,19 +27,19 @@ disable-model-invocation: true
 対象 PR が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `wip` または `確認:pr-implementer` ラベル付きの Draft PR（`処理中` 付きは除外）。
+対象条件: `wip` ラベル付きの Draft PR、または `確認:pr-implementer` ラベル付きの PR（Draft・Ready 両方）。いずれも `処理中` 付きは除外。
 
 ```bash
 # Monitor に渡すポーリングスクリプト
 . "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
 
 while true; do
-  WIP_COUNT=$(gh pr list --state open --label "$LABEL_WIP" --draft \
-    --json number,labels \
-    --jq "[.[] | select(.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)] | length" 2>/dev/null || echo 0)
-  FIX_COUNT=$(gh pr list --state open --label "$LABEL_NEEDS_FIX" --draft \
-    --json number,labels \
-    --jq "[.[] | select(.labels | map(.name) | index(\"$LABEL_PROCESSING\") | not)] | length" 2>/dev/null || echo 0)
+  WIP_COUNT=$(gh pr list --state open --label "$LABEL_WIP" \
+    --json number,labels,isDraft \
+    --jq "[.[] | select(.isDraft == true and (.labels | map(.name) | (map(startswith(\"$LABEL_PROCESSING\")) | any | not)))] | length" 2>/dev/null || echo 0)
+  FIX_COUNT=$(gh pr list --state open --label "$LABEL_NEEDS_FIX" \
+    --json number,labels,isDraft \
+    --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"$LABEL_PROCESSING\")) | any | not))] | length" 2>/dev/null || echo 0)
   AVAILABLE=$((WIP_COUNT + FIX_COUNT))
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:pr-implement-auto:count=$AVAILABLE"
@@ -54,22 +54,23 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 
 ### ステップ 1: 対象 PR を収集
 
-`wip`（初回実装待ち）と `確認:pr-implementer`（レビューで差し戻された再実装待ち）の Draft PR
+`wip`（初回実装待ち）と `確認:pr-implementer`（レビューで差し戻された再実装待ち）の PR
 を両方拾う。gh CLI のラベル絞り込みは AND 扱いになるので 2 回呼んでマージする。
+`wip` は Draft PR のみ対象。`確認:pr-implementer` は Draft・Ready どちらも対象。
 
 ```bash
 # 指定なしのとき
 {
-  gh pr list --state open --label "$GH_KIT_LABEL_WIP" --draft \
-    --json number,title,headRefName,baseRefName,body,labels --limit 50
-  gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_FIX" --draft \
-    --json number,title,headRefName,baseRefName,body,labels --limit 50
+  gh pr list --state open --label "$GH_KIT_LABEL_WIP" \
+    --json number,title,headRefName,baseRefName,body,labels,isDraft --limit 50
+  gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_FIX" \
+    --json number,title,headRefName,baseRefName,body,labels,isDraft --limit 50
 } | jq -s 'add | unique_by(.number)'
 # 指定ありのとき
 gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 ```
 
-`処理中` 付きは除外。`isDraft: false` は対象外。0 件なら停止。
+`処理中` で始まるラベル（`処理中`・`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review` 等）付きは除外。`wip` ラベル付き PR はさらに `isDraft: true` のみ対象。0 件なら停止。
 
 収集後、`優先度:急ぎ` ラベルが付いている PR を先頭に並べ、次に `優先度:いつでも` 付き、それ以外の順（番号昇順）で処理する:
 
@@ -93,7 +94,6 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 ```bash
 gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING" \
   --remove-label "$GH_KIT_LABEL_WIP" --remove-label "$GH_KIT_LABEL_NEEDS_FIX"
-gh issue edit {N} --add-assignee @me
 ```
 
 ### ステップ 3: pr-test-creator を先行起動（テストタスクがある場合）
@@ -161,5 +161,5 @@ fi
 |---|---|
 | 1 | マージしてはならない（マージは `pr-review-auto` の責務） |
 | 2 | `処理中` 付き PR を別セッションが触ってはならない |
-| 3 | Draft 以外の PR は触らない |
+| 3 | `wip` ラベル付きで `isDraft: false` の PR は触らない（`確認:pr-implementer` 付き PR は Draft・Ready 両方対象） |
 | 4 | 新規ブランチ・新規 PR を作成しない |
