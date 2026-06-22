@@ -286,6 +286,22 @@ fi
 ステップ 1 で取得した `ユーザー確認要否判定.md` に照らして判定する。
 ステップ 5 で質問が含まれる場合・分割提案がある場合は無条件で true。
 
+## ステップ 7.5: `確認:pr-plan` ラベル付与
+
+`needs_user_review: false` の場合（= AI 判断で実装着手 OK）は、`確認:pr-plan` ラベルを Issue に付与して `pr-draft-create-auto` が拾える状態にする。
+`needs_user_review: true` の場合はスキップ（ユーザーが確認後に手動で付与する）。
+
+```bash
+# ラベルが存在しなければ作成（冪等）
+gh label list --json name --jq '.[].name' | grep -qF "$GH_KIT_LABEL_CONFIRM_PR_PLAN" || \
+  gh label create "$GH_KIT_LABEL_CONFIRM_PR_PLAN" \
+    --color "$GH_KIT_LABEL_COLOR_CONFIRM_PR_PLAN" \
+    --description "AI レビュー完了・PR 作成 OK（pr-draft-create-auto の契機）"
+
+# Issue に付与
+gh issue edit {N} --add-label "$GH_KIT_LABEL_CONFIRM_PR_PLAN"
+```
+
 ## ステップ 8: 戻り値
 
 ```json
