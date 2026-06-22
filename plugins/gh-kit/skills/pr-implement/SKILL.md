@@ -21,9 +21,7 @@ description: "wip Draft PR を 1 件実装する: worktree 復帰 → fetch/rese
 
 ## ステップ 1: ユーザー確認要否判定基準を読み込む
 
-```bash
-cat "${CLAUDE_PLUGIN_ROOT}/templates/ユーザー確認要否判定.md"
-```
+!`curl -fsSL "https://raw.githubusercontent.com/wiki/$(gh repo view --json nameWithOwner --jq '.nameWithOwner')/ユーザー確認要否判定.md" 2>/dev/null || echo "[WARN] ユーザー確認要否判定 Wiki ページを取得できませんでした"`
 
 ステップ 7 で参照する。
 
@@ -74,11 +72,11 @@ cd "$WT" && npm test
 
 ## ステップ 5: テスト実行結果を PR コメントとして投稿する
 
-全テスト成功後、`テスト実行結果.j2` テンプレートを取得して実値で埋め、PR にコメントを投稿する。
+全テスト成功後、`テスト実行結果` Wiki ページのテンプレートを取得して実値で埋め、PR にコメントを投稿する。
 
 ```bash
-# テンプレートを取得（template_get MCP または直接 cat）
-cat "${CLAUDE_PLUGIN_ROOT}/templates/テスト実行結果.j2"
+# Wiki からテンプレートを取得
+curl -fsSL "https://raw.githubusercontent.com/wiki/$(gh repo view --json nameWithOwner --jq '.nameWithOwner')/テスト実行結果.md"
 ```
 
 テンプレートを実値（テスト種別・ファイル・件数・実行コマンド・サマリ出力）で埋めて PR コメントを投稿する。
@@ -101,19 +99,6 @@ git -C "$WT" push origin {branch}
 ステップ 1 で読み込んだ基準に照らし、実装結果（実コード変更内容）から
 `needs_user_review: true|false` を決める。
 Issue 起票時の判断と変わる可能性あり（例: refactor 想定だったが仕様に踏み込んだ場合は true）。
-
-## ステップ 7.5: PR 本文チェックリストを全チェック済みに更新
-
-実装が完了したタスクについて、PR 本文の `- [ ]` を `- [x]` に置換し `gh pr edit` で更新する。
-
-```bash
-# 現在の PR 本文を取得し、- [ ] を - [x] に置換して更新する
-CURRENT_BODY=$(gh pr view {PR_NUMBER} --json body --jq '.body')
-UPDATED_BODY=$(echo "$CURRENT_BODY" | sed 's/- \[ \]/- [x]/g')
-gh pr edit {PR_NUMBER} --body "$UPDATED_BODY"
-```
-
-未実装タスクが残っている場合は省略せず、その理由を PR コメントに記載する。
 
 ## ステップ 8: PR を Ready 化
 
