@@ -8,11 +8,6 @@ description: "wip Draft PR を 1 件実装する: worktree 復帰 → fetch/rese
 既存 Draft PR の中身を実装し、Ready for review にする。
 新規ブランチ・新規 PR の作成は行わない。
 
-## 前提: リポジトリ同期
-
-Session Start フック（`scripts/session-start-pull.sh`）が `GH_KIT_REPO_PATH` を参照してメインリポジトリを自動 pull する。
-worktree（実装対象ブランチ）の同期はステップ 2 の `fetch + reset --hard` で行う。
-
 ## 入力
 
 | 引数 | 必須 | 内容 |

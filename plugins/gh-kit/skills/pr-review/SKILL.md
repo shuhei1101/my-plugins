@@ -7,11 +7,6 @@ description: 1 件の PR をレビューし、承認かつ assignees がなけ�
 
 PR を 1 件レビューし、合格時はそのまま base ブランチへマージする。
 
-## 前提: リポジトリ同期
-
-Session Start フック（`scripts/session-start-pull.sh`）が `GH_KIT_REPO_PATH` を参照してメインリポジトリを自動 pull する。
-worktree（レビュー対象ブランチ）の同期はステップ 6 の `fetch + reset --hard` で行う。
-
 ## 入力
 
 | 引数 | 内容 |

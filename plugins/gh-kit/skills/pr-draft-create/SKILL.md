@@ -8,11 +8,6 @@ description: "1 Issue から Draft PR を作成する: PR 本文テンプレ取�
 1 件の Issue から Draft PR（空コミットのみ）を作成する。
 実装は行わない — 実装は `/gh-kit:pr-implement` が担当。
 
-## 前提: リポジトリ同期
-
-Session Start フック（`scripts/session-start-pull.sh`）が `GH_KIT_REPO_PATH` を参照してメインリポジトリを自動 pull する。
-セッション内でこのスキルを実行する前にリポジトリが最新化されているため、個別の pull 手順は不要。
-
 ## 入力
 
 | 引数 | 必須 | 内容 |

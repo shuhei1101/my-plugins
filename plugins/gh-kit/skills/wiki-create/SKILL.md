@@ -8,11 +8,6 @@ description: GitHub Wiki に新規ページを 1 件作成して push する。�
 1 対象 = 1 Wiki ページの「現在の仕様スナップショット」を作成する。
 ローカルクローン済みの Wiki リポジトリへファイルを書き出し、commit + push まで実施する。
 
-## 前提: Wiki リポジトリ同期
-
-Session Start フック（`scripts/session-start-pull.sh`）が `GH_KIT_WIKI_PATH` を参照して Wiki リポジトリを自動 pull する。
-セッション内でこのスキルを実行する前に Wiki が最新化されているため、個別の pull 手順は不要。
-
 ## 環境変数
 
 | 変数 | 必須 | 用途 |

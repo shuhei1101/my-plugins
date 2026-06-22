@@ -7,11 +7,6 @@ description: 1 Issue をレビューし、本文補完コメント（必要時�
 
 GitHub Issue を 1 件レビューし、結果を gh CLI でコメント投稿する。
 
-## 前提: リポジトリ同期
-
-Session Start フック（`scripts/session-start-pull.sh`）が `GH_KIT_REPO_PATH` を参照してメインリポジトリを自動 pull する。
-セッション内でこのスキルを実行する前にリポジトリが最新化されているため、個別の pull 手順は不要。
-
 ## 入力
 
 | 引数 | 内容 |
