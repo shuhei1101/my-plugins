@@ -1,0 +1,105 @@
+---
+name: gh-kit:pr-merger-auto
+description: approved-merge-ok ラベル付き Ready PR を 1 件ずつ直列でマージする
+disable-model-invocation: true
+---
+
+# pr-merger-auto
+
+`approved-merge-ok` ラベル付き Ready PR をキューとして 1 件ずつ消化する。
+**並列実行は絶対にしない**（master 取り込みとマージが競合してバグるため）。
+
+assignees が設定されている PR はスキップする（ユーザー確認待ち）。
+
+## タスク
+
+### ステップ 0: Monitor でイベント待機
+
+対象 PR が既に存在する場合はそのままステップ 1 へ進む。
+存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
+
+対象条件: `approved-merge-ok` ラベル付きの Ready（非 Draft）PR（`処理中` 付きは除外）。
+
+```bash
+# Monitor に渡すポーリングスクリプト
+while true; do
+  AVAILABLE=$(gh pr list --state open --label "$GH_KIT_LABEL_APPROVED_MERGE_OK" \
+    --json number,labels,isDraft,assignees \
+    --jq "[.[] | select(
+      .isDraft == false and
+      (.assignees | length) == 0 and
+      (.labels | map(.name) | index(\"$GH_KIT_LABEL_PROCESSING\") | not)
+    )] | length" 2>/dev/null || echo 0)
+  if [ "$AVAILABLE" -gt 0 ]; then
+    echo "TRIGGER:pr-merger-auto:count=$AVAILABLE"
+    break
+  fi
+  sleep 30
+done
+```
+
+Monitor の stdout に `TRIGGER:pr-merger-auto` が来たらステップ 1 へ進む。
+手動停止は TaskStop で行う。
+
+### ステップ 1: マージ対象 PR を収集
+
+```bash
+gh pr list --state open --label "$GH_KIT_LABEL_APPROVED_MERGE_OK" \
+  --json number,title,headRefName,baseRefName,statusCheckRollup,labels,assignees --limit 50
+```
+
+`処理中` 付きは除外。assignees が設定されている PR は除外。
+`優先度:急ぎ` 付き PR を先頭に、次に `優先度:いつでも` 付き、それ以外は番号昇順でキューを形成する:
+
+```bash
+# jq でラベル名に優先度:急ぎ を含むものを先頭に、次に優先度:いつでも、残りは番号昇順
+jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORITY_LOW" 'sort_by(
+  if (.labels | map(.name) | index($urgent)) then 0
+  elif (.labels | map(.name) | index($low)) then 1
+  else 2
+  end, .number
+)'
+```
+
+### ステップ 2: 上から 1 件取り出す
+
+```bash
+gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
+# 紐づく Issue に 処理中:pr-review を付与
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -n "$ISSUE_N" ]; then
+  gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"
+fi
+```
+
+CI が failure なら failed へ。
+
+### ステップ 3: pr-merger に委譲
+
+[サブエージェントで実行・完了を待つ]
+（戻り値: `{verdict, pr_number, branch, message}`）
+
+入力:
+- PR 番号 / タイトル / base / head
+- リポジトリ root
+
+### ステップ 4: 後処理
+
+```bash
+# 全 verdict 共通: Issue の 処理中:pr-review を除去
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+```
+
+| verdict | 動作 |
+|---|---|
+| merged | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_APPROVED_MERGE_OK"`（マージは pr-merger が実施済み）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"` |
+| conflict / failed | `GH_LOGIN="$(gh api user --jq '.login')" && gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX" --add-assignee "$GH_LOGIN" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"` |
+
+ステップ 2 に戻ってキューが空になるまで繰り返す。
+
+### ステップ 5: 完了報告
+
+| 項目 | 内容 |
+|---|---|
+| 処理 PR 件数 | カテゴリ別（merged / conflict / failed） |
+| 残った PR | 各カテゴリの番号一覧 |
