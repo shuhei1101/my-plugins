@@ -88,12 +88,19 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 ```
 
-### ステップ 3: issue-reviewer を並列起動
+### ステップ 3: issue-reviewer をバックグラウンドで並列起動（完了を待たない・通知駆動）
 
-[サブエージェントで並列実行・完了を待つ] 上位 N 件を並列処理する。
-（戻り値: `{issue_number, re_review_needed, status}` — エージェントが gh CLI でコメント投稿を完結させる）
+**原則: 完了を待たない。** `run_in_background: true` でサブエージェントを起動したら即座に Monitor 監視に戻る。
+完了通知（`<task-notification>`）を受けたら後処理（ステップ 4）を実行する。
 
-### ステップ 4: ラベル更新 + assignee 追加
+上位 N 件（`GH_KIT_ISSUE_REVIEW_PARALLEL`）を `run_in_background: true` で並列起動する:
+- 起動上限に達している場合は新規起動をキューイングし、1 体完了通知を受けたら次を起動する
+- 起動後は即座に Monitor に制御を戻す
+
+### ステップ 4: 通知ハンドラ（サブエージェント完了時に実行）
+
+`issue-reviewer` からの完了通知（`<task-notification>`）を受信したら以下を実行する:
+（戻り値: `{issue_number, re_review_needed, status}` を通知から取得 — エージェントが gh CLI でコメント投稿を完結させる）
 
 戻り値の `status` と `re_review_needed` に応じてラベルを操作する。
 
