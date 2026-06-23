@@ -288,7 +288,7 @@ fi
 
 ## ステップ 7.5: `確認:pr-plan` ラベル付与
 
-`needs_user_review: false` の場合（= AI 判断で実装着手 OK）は、`確認:pr-plan` ラベルを Issue に付与して `pr-draft-create-auto` が拾える状態にする。
+`needs_user_review: false` の場合（= AI 判断で実装着手 OK）は、`確認:pr-plan` ラベルを Issue に付与して `pr-plan-auto` が拾える状態にする。
 `needs_user_review: true` の場合はスキップ（ユーザーが確認後に手動で付与する）。
 
 ```bash
@@ -296,7 +296,7 @@ fi
 gh label list --json name --jq '.[].name' | grep -qF "$GH_KIT_LABEL_CONFIRM_PR_PLAN" || \
   gh label create "$GH_KIT_LABEL_CONFIRM_PR_PLAN" \
     --color "$GH_KIT_LABEL_COLOR_CONFIRM_PR_PLAN" \
-    --description "AI レビュー完了・PR 作成 OK（pr-draft-create-auto の契機）"
+    --description "AI レビュー完了・PR 作成 OK（pr-plan-auto の契機）"
 
 # Issue に付与
 gh issue edit {N} --add-label "$GH_KIT_LABEL_CONFIRM_PR_PLAN"

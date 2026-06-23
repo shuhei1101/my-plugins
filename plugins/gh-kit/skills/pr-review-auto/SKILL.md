@@ -22,7 +22,7 @@ gh-kit フローにおけるラベルの移り変わりを示す。
 | Issue 起票直後 | — | `確認:issue-reviewer` | `issue-create` スキル |
 | Issue レビュー中 | — | `確認:issue-reviewer`（維持） | — |
 | Issue レビュー完了 | — | （`確認:*` なし） | `issue-review` スキル |
-| Draft PR 作成中 | `処理中:pr-planner` → `wip` | `処理中:pr-planner` | `pr-draft-create-auto` |
+| Draft PR 作成中 | `処理中:pr-planner` → `wip` | `処理中:pr-planner` | `pr-plan-auto` |
 | Draft PR 作成完了 | `wip` | `処理中:pr-planner`（維持） | — |
 | 実装中 | `処理中:pr-implementer` | `処理中:pr-implementer` | `pr-implement-auto` |
 | 実装完了（Ready 化） | `確認:issue-reviewer` | — | `pr-implement-auto` (ステップ 4) |
@@ -164,6 +164,7 @@ ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fix
 |---|---|
 | approved-merge-ok | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --remove-label "$GH_KIT_LABEL_USER_REVIEWED"`（`approved-merge-ok` ラベルは pr-reviewer が付与済み。マージは pr-merger-auto が実行する）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
 | approved-user-review-pending | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"`（assignees はそのまま残す。ユーザーが `user-reviewed` を付けて assignees を外すと次回 Monitor が検知してマージへ自動進行）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
+| needs-fix | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_NEEDS_FIX"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"`（PR 本文の `- [ ]` 未消化による差し戻し。`確認:pr-implementer` ラベルが付与された状態で`pr-implement-auto` の次回実行を待つ） |
 | changes-requested | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_NEEDS_FIX"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
 | failed | `GH_LOGIN="$(gh api user --jq '.login')" && gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_NEEDS_FIX" --add-assignee "$GH_LOGIN" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
 
