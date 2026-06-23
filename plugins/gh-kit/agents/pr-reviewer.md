@@ -27,7 +27,7 @@ model: sonnet
 
 ```json
 {
-  "verdict": "確認:pr-merger" | "approved-user-review-pending" | "changes-requested" | "failed",
+  "verdict": "approved-merge-ok" | "approved-user-review-pending" | "changes-requested" | "needs-fix" | "failed",
   "pr_number": 42,
   "branch": "feat/foo-bar",
   "message": "詳細メッセージ",
