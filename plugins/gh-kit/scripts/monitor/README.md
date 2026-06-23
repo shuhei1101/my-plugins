@@ -35,8 +35,7 @@ Claude のメインセッションを占有せずに、`claude -p` ヘッドレ�
 |---|---|---|
 | `AI_TOOL` | `claude` | 使用する AI CLI ツール（`claude` / `codex`） |
 | `POLL_INTERVAL` | `30` | ポーリング間隔（秒） |
-| `MAX_TURNS` | `50` | `claude -p` の最大ターン数 |
-| `MAX_BUDGET_USD` | `2.00` | `claude -p` の最大予算（USD） |
+| `MAX_BUDGET_USD` | `2.00` | `claude -p` の最大予算（USD）（`--max-turns` は claude CLI に存在しないため廃止） |
 | `LOCK_FILE` | `/tmp/gh-kit-issue-review.lock` | flock ロックファイルパス |
 
 ### claude -p 呼び出しフラグ
@@ -48,7 +47,6 @@ claude -p "/gh-kit:issue-review $ISSUE_NUMBER" \
   --strict-mcp-config \
   --permission-mode dontAsk \
   --allowedTools "Bash,Read,Edit,Write,WebFetch" \
-  --max-turns 50 \
   --max-budget-usd 2.00 \
   --output-format json \
   --no-session-persistence
@@ -56,10 +54,10 @@ claude -p "/gh-kit:issue-review $ISSUE_NUMBER" \
 
 - `--plugin-dir`: gh-kit プラグインをこのセッションにロード（スキル展開が有効）
 - `--strict-mcp-config` + `--mcp-config`: 指定した MCP サーバーのみ使用
-- `--permission-mode dontAsk`: 権限プロンプトを出さずに許可済みツールのみ実行
-- `--max-turns` + `--max-budget-usd`: 暴走防止の二重セーフティ
-- `--output-format json`: 結果を JSON で受け取り `jq` でハンドリング
-- `--no-session-persistence`: 履歴ファイルの肥大化を防止
+- `--permission-mode dontAsk`: 権限プロンプトを出さずに許可済みツールのみ実行（有効な値: `acceptEdits`, `auto`, `bypassPermissions`, `default`, `dontAsk`, `plan`）
+- `--max-budget-usd`: 暴走防止のコスト上限（`--max-turns` は claude CLI に存在しないため廃止）
+- `--output-format json`: 結果を JSON で受け取り標準エラーにも tee 出力
+- `--no-session-persistence`: 履歴ファイルの肥大化を防止（`--print` 利用時のみ有効）
 
 ### AI ツール切り替え（Codex 対応）
 
@@ -154,7 +152,7 @@ sudo systemctl stop gh-kit-issue-review
 
 ## 認証
 
-`--permission-mode dontAsk` を使う場合、`ANTHROPIC_API_KEY` 環境変数が必要。
+`--permission-mode dontAsk` を使う場合、または `--max-budget-usd` で API 利用量を制限する場合、`ANTHROPIC_API_KEY` 環境変数が必要。
 
 ```bash
 # API キーで認証
@@ -172,13 +170,20 @@ claude setup-token
 issue-review-daemon.sh
   ├── while true (30s ポーリング)
   │     ├── gh issue list → 対象 Issue を優先度順で取得
-  │     └── Issue あり → flock 取得 → claude -p /gh-kit:issue-review {N}
-  │                          │
-  │                          └── /gh-kit:issue-review スキルが実行
-  │                                ├── Issue レビュー（AI）
-  │                                ├── コメント投稿
-  │                                └── ラベル付け替え（確認: 除去、処理中: 除去など）
+  │     └── Issue あり
+  │           ├── 処理中ラベル付与（排他マーカー）
+  │           └── flock 取得 → claude -p /gh-kit:issue-review {N}
+  │                                │
+  │                                └── /gh-kit:issue-review スキルが実行
+  │                                      ├── Issue レビュー（AI）
+  │                                      ├── コメント投稿
+  │                                      └── ラベル付け替え（確認: 除去、処理中: 除去など）
   └── sleep POLL_INTERVAL
+
+処理中ラベル除去タイミング:
+  - 正常完了: issue-review スキルが除去（+ trap RETURN による冗長除去）
+  - ロック失敗 (exit 200): trap RETURN により除去してキューに戻す
+  - 異常終了 (exit ≠ 0): trap RETURN により除去してキューに戻す
 
 flock /tmp/gh-kit-issue-review.lock
   └── 同時実行を機械的に 1 並列に制限（複数デーモン起動時も安全）

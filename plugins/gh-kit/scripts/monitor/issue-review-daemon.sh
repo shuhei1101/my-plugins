@@ -15,7 +15,6 @@
 #   MCP_CONFIG_PATH     MCP 設定ファイルパス（必須）
 #   AI_TOOL             使用する AI CLI ツール (claude / codex) [デフォルト: claude]
 #   POLL_INTERVAL       ポーリング間隔（秒）[デフォルト: 30]
-#   MAX_TURNS           claude -p の最大ターン数 [デフォルト: 50]
 #   MAX_BUDGET_USD      claude -p の最大予算（USD）[デフォルト: 2.00]
 #   LOCK_FILE           flock に使うロックファイルパス [デフォルト: /tmp/gh-kit-issue-review.lock]
 
@@ -27,7 +26,6 @@ GH_KIT_PLUGIN_DIR="${GH_KIT_PLUGIN_DIR:-}"
 MCP_CONFIG_PATH="${MCP_CONFIG_PATH:-}"
 AI_TOOL="${AI_TOOL:-claude}"
 POLL_INTERVAL="${POLL_INTERVAL:-30}"
-MAX_TURNS="${MAX_TURNS:-50}"
 MAX_BUDGET_USD="${MAX_BUDGET_USD:-2.00}"
 LOCK_FILE="${LOCK_FILE:-${TMPDIR:-/tmp}/gh-kit-issue-review.lock}"
 
@@ -85,6 +83,7 @@ log "  AI_TOOL=${AI_TOOL}"
 log "  GH_KIT_PLUGIN_DIR=${GH_KIT_PLUGIN_DIR}"
 log "  MCP_CONFIG_PATH=${MCP_CONFIG_PATH}"
 log "  POLL_INTERVAL=${POLL_INTERVAL}s"
+log "  MAX_BUDGET_USD=${MAX_BUDGET_USD}"
 log "  LOCK_FILE=${LOCK_FILE}"
 
 # ─── 対象 Issue 取得（優先度順ソート、処理中除外）───────────────────────────
@@ -120,33 +119,46 @@ run_issue_review() {
     log "WARN: 処理中ラベルの付与に失敗しました（Issue #${issue_number}）"
   }
 
+  # 関数終了時に必ず処理中ラベルを除去する（孤児化防止）
+  # issue-review スキルが正常完了した場合も冗長に除去する（二重除去は無害）
+  trap "gh issue edit \"$issue_number\" --remove-label \"$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER\" 2>/dev/null || true" RETURN
+
   local exit_code=0
 
-  # flock で排他制御 + claude -p でヘッドレス実行
-  # -n: ロック取得失敗時は即終了（別インスタンスが実行中）
-  flock -n "$LOCK_FILE" \
+  # サブシェル + 専用ロック fd 方式で flock 排他制御
+  # exit 200: flock -n でロック取得失敗（別インスタンス実行中）
+  # exit 0  : claude -p 正常完了
+  # その他  : claude -p 異常終了（タイムアウト / SIGINT / 予算枯渇 / MAX_TURNS など）
+  (
+    flock -n 9 || exit 200
     "$AI_TOOL" -p "/gh-kit:issue-review $issue_number" \
       --plugin-dir "$GH_KIT_PLUGIN_DIR" \
       --mcp-config "$MCP_CONFIG_PATH" \
       --strict-mcp-config \
       --permission-mode dontAsk \
       --allowedTools "Bash,Read,Edit,Write,WebFetch" \
-      --max-turns "$MAX_TURNS" \
       --max-budget-usd "$MAX_BUDGET_USD" \
       --output-format json \
       --no-session-persistence \
-    2>&1 | tee /dev/stderr | jq -r '.result // empty' 2>/dev/null || exit_code=$?
+    2>&1 | tee /dev/stderr
+  ) 9>"$LOCK_FILE" || exit_code=$?
 
-  if [ "$exit_code" -eq 1 ]; then
+  if [ "$exit_code" -eq 200 ]; then
     # flock -n でロック取得失敗（別インスタンス実行中）
     log "SKIP: ロック取得失敗 — 別インスタンスが実行中です（Issue #${issue_number}）"
-    # 処理中ラベルを除去してキューに戻す
-    gh issue edit "$issue_number" \
-      --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" 2>/dev/null || true
+    # trap RETURN でラベルは除去される
+    return
+  fi
+
+  if [ "$exit_code" -ne 0 ]; then
+    log "ERROR: claude -p が異常終了しました（Issue #${issue_number}, exit_code=${exit_code}）"
+    log "  処理中ラベルを除去してキューに戻します"
+    # trap RETURN でラベルは除去される
     return
   fi
 
   log "Issue #${issue_number} のレビューが完了しました（exit_code=${exit_code}）"
+  # trap RETURN による処理中ラベル除去は冗長だが無害（issue-review スキルが既に除去済みのケースも想定）
 }
 
 # ─── メインループ ────────────────────────────────────────────────────────────
