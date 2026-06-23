@@ -75,14 +75,14 @@ echo "未消化チェックリスト数: $UNCHECKED"
 
 | 条件 | 動作 |
 |---|---|
-| `- [ ]` の件数 >= 1 | **即座に `$GH_KIT_LABEL_NEEDS_FIX` ラベルを付与して差し戻し（ステップ 7-A へスキップ）** |
+| `- [ ]` の件数 >= 1 | **即座に `$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT` ラベルを付与して差し戻し（ステップ 7-A へスキップ）** |
 | `- [ ]` の件数 == 0 | ステップ 3 以降に進む |
 
 `- [ ]` が残っている場合は以下を実行して処理を終了する:
 
 ```bash
-# 確認:pr-implementer ラベルを付与（$GH_KIT_LABEL_NEEDS_FIX）
-gh pr edit {N} --add-label "$GH_KIT_LABEL_NEEDS_FIX"
+# 確認:pr-implementer ラベルを付与（$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT）
+gh pr edit {N} --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"
 
 # 差し戻しコメントを投稿
 gh pr comment {N} --body "$(cat <<'EOF'
@@ -162,7 +162,7 @@ event 判定（優先度順）:
 
 | 優先度 | 条件 | event | verdict | 次の動作 |
 |---|---|---|---|---|
-| 1（最優先） | PR 本文に `- [ ]` が 1 件以上残っている | ステップ 2.5 で処理済み | `needs-fix`（`確認:pr-implementer` ラベル付与） | ステップ 7-A へスキップ（ここには到達しない） |
+| 1（最優先） | PR 本文に `- [ ]` が 1 件以上残っている | ステップ 2.5 で処理済み | `needs-fix`（`確認:pr-implementer`（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`）ラベル付与） | ステップ 7-A へスキップ（ここには到達しない） |
 | 2 | blocker / critical / major を含む | `--request-changes` | `changes-requested` | ステップ 7-A（ラベルなし） |
 | 3 | minor / nit のみ + assignees なし | `--approve` | `approved-merge-ok` | ステップ 6（`確認:pr-merger` ラベル付与） |
 | 4 | minor / nit のみ + assignees あり | `--approve` | `approved-user-review-pending` | ステップ 7-B（ラベルなし） |

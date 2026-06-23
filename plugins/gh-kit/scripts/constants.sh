@@ -6,15 +6,22 @@
 # 注意: サブシェルで export しても親プロセス（Claude Code）には伝わらない。
 #       $CLAUDE_ENV_FILE への追記により Claude Code が環境変数として読み込む。
 
-echo "export GH_KIT_LABEL_NEEDS_AI_REVIEW=確認:issue-reviewer" >> "$CLAUDE_ENV_FILE"
-echo "export GH_KIT_LABEL_NEEDS_FIX=確認:pr-implementer" >> "$CLAUDE_ENV_FILE"
+# Issue レビュー待ちラベル（issue-review-auto が検知・処理する）
+echo "export GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW=確認:issue-reviewer" >> "$CLAUDE_ENV_FILE"
+# PR レビュー待ちラベル（pr-review-auto が検知・処理する）
+echo "export GH_KIT_LABEL_CONFIRM_PR_REVIEW=確認:pr-reviewer" >> "$CLAUDE_ENV_FILE"
+# PR 実装待ちラベル（pr-implement-auto が検知・処理する）— GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER のエイリアス
+# 注: GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER は pr-plan-reviewer スキルでも定義済み（下部参照）
+# こちらは廃止された GH_KIT_LABEL_NEEDS_FIX（=確認:pr-implementer）の後継変数エイリアス
+echo "export GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT=確認:pr-implementer" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_AI_CODE_SCAN=AIコードスキャン" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_WIP=wip" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_CONFIRM_PR_MERGER=確認:pr-merger" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_USER_REVIEWED=user-reviewed" >> "$CLAUDE_ENV_FILE"
 
-echo "export GH_KIT_LABEL_COLOR_NEEDS_AI_REVIEW=0E8A16" >> "$CLAUDE_ENV_FILE"
-echo "export GH_KIT_LABEL_COLOR_NEEDS_FIX=D93F0B" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_CONFIRM_ISSUE_REVIEW=0E8A16" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_REVIEW=0E8A16" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_IMPLEMENT=D93F0B" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_AI_CODE_SCAN=1D76DB" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_WIP=C2E0C6" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_MERGER=0E8A16" >> "$CLAUDE_ENV_FILE"

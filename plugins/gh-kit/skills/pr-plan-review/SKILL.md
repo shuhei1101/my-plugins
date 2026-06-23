@@ -87,7 +87,7 @@ Issue が取得できない場合は verdict = `failed` で終了する。
 | 優先度 | 条件 | verdict | 次の動作 |
 |---|---|---|---|
 | 1 | Issue 番号が取得できない | `failed` | ステップ 8-C へ |
-| 2 | `blocker` / `major` を含む | `needs-revision` | ステップ 7 へ（`$GH_KIT_LABEL_NEEDS_FIX` ラベル付与） |
+| 2 | `blocker` / `major` を含む | `needs-revision` | ステップ 7 へ（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT` ラベル付与） |
 | 3 | `minor` / `nit` のみ、または finding なし | `approved` | ステップ 6 へ（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER` ラベル付与） |
 
 ## ステップ 6: 合格時 — 確認:pr-implementer ラベル付与
@@ -102,10 +102,10 @@ gh pr edit {N} --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER"
 | ラベル付与成功 | `approved` |
 | 失敗 | `failed` |
 
-## ステップ 7: 不合格時 — needs-fix ラベル付与
+## ステップ 7: 不合格時 — 確認:pr-implementer ラベル付与
 
 ```bash
-gh pr edit {N} --add-label "$GH_KIT_LABEL_NEEDS_FIX"
+gh pr edit {N} --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"
 ```
 
 verdict = `needs-revision`。PR 作成者（`pr-planner`）が修正して `確認:pr-plan-reviewer` ラベルを再付与するまで待つ。

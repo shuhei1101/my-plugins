@@ -1,12 +1,12 @@
 ---
 name: gh-kit:issue-review-auto
-description: 確認:issue-reviewer ラベルの Issue を並列で AI レビューし、コメント投稿する
+description: 確認:issue-reviewer（GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW）ラベルの Issue を並列で AI レビューし、コメント投稿する
 disable-model-invocation: true
 ---
 
 # issue-review-auto
 
-`確認:issue-reviewer` 付きの Issue を `issue-reviewer` に並列で渡す。
+`確認:issue-reviewer`（`$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW`）付きの Issue を `issue-reviewer` に並列で渡す。
 
 ## 環境変数
 
@@ -18,19 +18,19 @@ disable-model-invocation: true
 
 | 引数 | 必須 | 内容 |
 |---|---|---|
-| Issue 番号 | 任意 | 省略時は `確認:issue-reviewer` 付きを全件巡回 |
+| Issue 番号 | 任意 | 省略時は `確認:issue-reviewer`（`$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW`）付きを全件巡回 |
 
 ## フロー概要
 
 ```
-確認:issue-reviewer 付き Issue 収集
+確認:issue-reviewer（$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW）付き Issue 収集
   → issue-reviewer に渡す（初回レビュー or 再レビュー）
     → re_review_needed: false → 確認:issue-reviewer 除去 → Draft PR 作成フローへ
     → re_review_needed: true  → 確認:issue-reviewer 除去のみ（ユーザーが必要なら再付与）
     → status: waiting         → ラベル変更なし（ユーザー返答待ち）
 ```
 
-**ユーザーが再レビューを要求する場合:** ユーザーが Issue にコメントを追記した後、手動で `確認:issue-reviewer` を再付与すると、次回の `issue-review-auto` 実行時に `issue-reviewer` が再レビューモードで動作する。
+**ユーザーが再レビューを要求する場合:** ユーザーが Issue にコメントを追記した後、手動で `確認:issue-reviewer`（`$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW`）を再付与すると、次回の `issue-review-auto` 実行時に `issue-reviewer` が再レビューモードで動作する。
 
 ## ループ継続制約（厳守）
 
@@ -51,10 +51,10 @@ disable-model-invocation: true
 ```bash
 # Monitor に渡すポーリングスクリプト（TRIGGER 後はステップ 1 へ進み、処理完了後に再びこのスクリプトを Monitor で実行する）
 while true; do
-  COUNT=$(gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
+  COUNT=$(gh issue list --state open --label "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW" \
     --json number --jq 'length' 2>/dev/null || echo 0)
   # 処理中:* ラベル付きを除いたカウント（処理中: で始まるラベルがひとつでもあれば除外）
-  AVAILABLE=$(gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
+  AVAILABLE=$(gh issue list --state open --label "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW" \
     --json number,labels \
     --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"処理中:\")) | any | not))] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
@@ -72,7 +72,7 @@ Monitor の stdout に `TRIGGER:issue-review-auto` が来たらステップ 1 �
 
 ```bash
 # 指定なしのとき
-gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --json number,title,labels --limit 100
+gh issue list --state open --label "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW" --json number,title,labels --limit 100
 # 指定ありのとき
 gh issue view {N} --json number,title,body,labels,comments
 ```
@@ -126,7 +126,7 @@ if [ "{status}" = "waiting" ]; then
 fi
 
 # status: ok の場合 — 処理中:issue-reviewer と 確認:issue-reviewer を除去
-ARGS=(--remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW")
+ARGS=(--remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" --remove-label "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW")
 gh issue edit {N} "${ARGS[@]}"
 
 # needs_user_review: true の場合は assignee を追加
@@ -146,7 +146,7 @@ Issue はすでにクローズされているため、ラベル付け替えは�
 `処理中:issue-reviewer` ラベルのみ除去する（クローズ済み Issue には add-label が効かないため remove のみ）:
 
 ```bash
-gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" 2>/dev/null || true
+gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" --remove-label "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW" 2>/dev/null || true
 ```
 
 ### ステップ 5: 結果報告（TaskStop 受信後のみ実行）
