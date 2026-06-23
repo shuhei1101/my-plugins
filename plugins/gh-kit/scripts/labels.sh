@@ -117,11 +117,6 @@ upsert_label "確認:pr-plan-reviewer"   "0E8A16" "Draft PR プランの AI レ�
 upsert_label "処理中:pr-plan-reviewer" "FBCA04" "pr-plan-reviewer エージェントがレビュー中"
 
 # ──────────────────────────────────────────
-# PR 専用
-# ──────────────────────────────────────────
-upsert_label "wip"                    "C2E0C6" "Draft 雛形 PR"
-
-# ──────────────────────────────────────────
 # 出自タグ
 # ──────────────────────────────────────────
 upsert_label "AIコードスキャン"        "1D76DB" "claude code がスキャンして起票"

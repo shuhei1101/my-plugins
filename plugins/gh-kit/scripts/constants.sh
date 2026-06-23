@@ -19,14 +19,12 @@ echo "export GH_KIT_LABEL_CONFIRM_PR_REVIEW=確認:pr-reviewer" >> "$CLAUDE_ENV_
 echo "export GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT=確認:pr-implementer" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_AI_CODE_SCAN=AIコードスキャン" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_CONFIRM_PR_MERGER=確認:pr-merger" >> "$CLAUDE_ENV_FILE"
-echo "export GH_KIT_LABEL_USER_REVIEWED=user-reviewed" >> "$CLAUDE_ENV_FILE"
 
 echo "export GH_KIT_LABEL_COLOR_CONFIRM_ISSUE_REVIEW=0E8A16" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_REVIEW=0E8A16" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_IMPLEMENT=D93F0B" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_AI_CODE_SCAN=1D76DB" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_MERGER=0E8A16" >> "$CLAUDE_ENV_FILE"
-echo "export GH_KIT_LABEL_COLOR_USER_REVIEWED=5319E7" >> "$CLAUDE_ENV_FILE"
 
 # 各エージェント固有の処理中ラベル（排他マーカー）
 echo "export GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER=処理中:issue-reviewer" >> "$CLAUDE_ENV_FILE"
@@ -66,8 +64,11 @@ echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_IMPLEMENTER=D93F0B" >> "$CLAUDE_ENV_F
 
 # ──────────────────────────────────────────
 # 後方互換エイリアス（移行期間中。次のメジャーアップで削除予定）
-# GH_KIT_LABEL_NEEDS_AI_REVIEW / GH_KIT_LABEL_NEEDS_FIX を参照している
+# GH_KIT_LABEL_NEEDS_AI_REVIEW / GH_KIT_LABEL_NEEDS_FIX / GH_KIT_LABEL_WIP /
+# GH_KIT_LABEL_USER_REVIEWED を参照している
 # 外部スクリプト・サブエージェント・本リポジトリ外プラグインとの互換性を保つ。
 # ──────────────────────────────────────────
 echo "export GH_KIT_LABEL_NEEDS_AI_REVIEW=確認:issue-reviewer" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_NEEDS_FIX=確認:pr-implementer" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_WIP=wip" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_USER_REVIEWED=user-reviewed" >> "$CLAUDE_ENV_FILE"
