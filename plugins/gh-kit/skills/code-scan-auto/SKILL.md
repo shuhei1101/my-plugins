@@ -19,6 +19,7 @@ disable-model-invocation: true
 - **完了を待たない。** `run_in_background: true` でサブエージェントを起動したら即座に制御を戻す。
 - ステップ 4 完了後は**途中結果を報告せず**、次の処理サイクルへ進む。
 - TaskStop を受け取った場合のみ最終報告を行う。
+- Monitorは何があっても絶対に止めない。
 
 ## タスク
 

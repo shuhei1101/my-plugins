@@ -8,6 +8,7 @@ disable-model-invocation: true
 
 `確認:pr-plan-reviewer` ラベル付き Draft PR を全件巡回し、PR プランをレビューする。
 実装コードのレビューは行わない（それは `pr-review-auto` の責務）。
+- Monitorは何があっても絶対に止めない。
 
 ## ラベル遷移（このスキルに関係する部分）
 
