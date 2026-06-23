@@ -90,13 +90,20 @@ if diff -q "$DIR/CLAUDE.md" "$DIR/AGENTS.md" > /dev/null 2>&1; then
   ln -s "AGENTS.md" "$DIR/CLAUDE.md"
   echo "✓ $DIR: 内容が同一 → CLAUDE.md をシンボリックリンクに変換"
 else
-  # 内容が異なる → AGENTS.md に CLAUDE.md 内容をマージ
-  echo "" >> "$DIR/AGENTS.md"
-  echo "<!-- CLAUDE.md からのマージ内容 -->" >> "$DIR/AGENTS.md"
-  cat "$DIR/CLAUDE.md" >> "$DIR/AGENTS.md"
-  rm "$DIR/CLAUDE.md"
-  ln -s "AGENTS.md" "$DIR/CLAUDE.md"
-  echo "✓ $DIR: CLAUDE.md の内容を AGENTS.md にマージしてシンボリックリンク作成"
+  # 内容が異なる → AGENTS.md に CLAUDE.md 内容をマージ（冪等性: 既にマージ済みならスキップ）
+  if grep -q "<!-- CLAUDE.md からのマージ内容 -->" "$DIR/AGENTS.md" 2>/dev/null; then
+    # マーカーが既に存在する → マージ済みのためスキップ
+    rm "$DIR/CLAUDE.md"
+    ln -s "AGENTS.md" "$DIR/CLAUDE.md"
+    echo "✓ $DIR: マージ済み（マーカー検出）→ CLAUDE.md をシンボリックリンクに変換"
+  else
+    echo "" >> "$DIR/AGENTS.md"
+    echo "<!-- CLAUDE.md からのマージ内容 -->" >> "$DIR/AGENTS.md"
+    cat "$DIR/CLAUDE.md" >> "$DIR/AGENTS.md"
+    rm "$DIR/CLAUDE.md"
+    ln -s "AGENTS.md" "$DIR/CLAUDE.md"
+    echo "✓ $DIR: CLAUDE.md の内容を AGENTS.md にマージしてシンボリックリンク作成"
+  fi
 fi
 ```
 

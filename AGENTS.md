@@ -1,7 +1,8 @@
 # AGENTS.md — my-plugins 開発者ガイド
 
-> このファイルは AGENTS.md を正とし、CLAUDE.md はシンボリックリンクとして管理されます。
-> Claude Code も OpenAI Codex も同一の指示ファイルを参照します。
+> このファイルは AGENTS.md を正として管理されます。
+> CLAUDE.md は「AGENTS.md を参照」する薄いプレースホルダです（Windows 環境でのシンボリックリンク互換性問題を回避するため）。
+> Claude Code も OpenAI Codex も同一の指示ファイル（AGENTS.md）を参照します。
 
 ---
 
@@ -17,7 +18,7 @@
 
 | 要素 | Claude Code | OpenAI Codex | 共存方針 |
 |---|---|---|---|
-| 指示ファイル | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` を正とし `CLAUDE.md` はシンボリックリンク |
+| 指示ファイル | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` を正とし `CLAUDE.md` は薄いプレースホルダ（Windows 互換性のためシンボリックリンクを使わない） |
 | フック設定 | `hooks/hooks.json`（プラグイン内） | `.codex/hooks.json` or `~/.codex/hooks.json` | ライフサイクルイベント名は共通。設定配置先が異なる |
 | スキル | `skills/<name>/SKILL.md` | `skills/<name>/SKILL.md` | 完全共通（フロントマターも同一） |
 | プラグインマニフェスト | `.claude-plugin/plugin.json` | `.codex-plugin/plugin.json` | 両方を並置 |
@@ -60,9 +61,15 @@ mkdir -p ~/.codex
 # 例: ~/.claude/plugins/cache/mentaiko-claude-plugins/guard-kit/1.0
 PLUGIN_ROOT="$HOME/.claude/plugins/cache/mentaiko-claude-plugins"
 
-# 複数プラグインの hooks を ~/.codex/hooks.json に統合する場合は
-# jq や手動でマージする
-cp "$PLUGIN_ROOT/guard-kit/1.0/hooks/hooks.json" ~/.codex/hooks.json
+# 複数プラグインの hooks.json を jq で統合する場合:
+# 例: guard-kit と gh-kit の hooks を ~/.codex/hooks.json にマージ
+jq -s '.[0].hooks + .[1].hooks | {hooks: .}' \
+  "$PLUGIN_ROOT/guard-kit/1.0/hooks/hooks.json" \
+  "$PLUGIN_ROOT/gh-kit/0.45/hooks/hooks.json" \
+  > ~/.codex/hooks.json
+
+# プラグインが 1 つだけの場合はそのままコピーでも可:
+# cp "$PLUGIN_ROOT/guard-kit/1.0/hooks/hooks.json" ~/.codex/hooks.json
 ```
 
 #### 4. `${CLAUDE_PLUGIN_ROOT}` 変数の置き換え
