@@ -1,12 +1,12 @@
 ---
 name: gh-kit:pr-implement-auto
-description: ラベル wip（Draft）/ 確認:pr-implementer（GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT）（Draft・Ready）の PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
+description: 確認:pr-implementer（GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT）ラベル付き PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
 disable-model-invocation: true
 ---
 
 # pr-implement-auto
 
-`pr-plan-auto` で雛形化された Draft PR を拾い、中身を実装して Ready for review に切り替える。
+`確認:pr-implementer` ラベル付き PR を拾い、中身を実装して Ready for review に切り替える。
 
 ## 環境変数
 
@@ -34,20 +34,16 @@ disable-model-invocation: true
 対象 PR が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `wip` ラベル付きの Draft PR、または `確認:pr-implementer`（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`）ラベル付きの PR（Draft・Ready 両方）。いずれも `処理中:` で始まるラベル付きは除外。
+対象条件: `確認:pr-implementer`（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`）ラベル付きの PR（Draft・Ready 問わず）。`処理中:` で始まるラベル付きは除外。
 
 **ステップ 4 完了後（キューが空の場合も含む）はこのステップに戻り、Monitor を再起動してポーリングを継続する。**
 
 ```bash
 # Monitor に渡すポーリングスクリプト
 while true; do
-  WIP_COUNT=$(gh pr list --state open --label "$GH_KIT_LABEL_WIP" \
-    --json number,labels,isDraft \
-    --jq "[.[] | select(.isDraft == true and (.labels | map(.name) | (map(startswith(\"処理中:\")) | any | not)))] | length" 2>/dev/null || echo 0)
-  FIX_COUNT=$(gh pr list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT" \
-    --json number,labels,isDraft \
+  AVAILABLE=$(gh pr list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT" \
+    --json number,labels \
     --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"処理中:\")) | any | not))] | length" 2>/dev/null || echo 0)
-  AVAILABLE=$((WIP_COUNT + FIX_COUNT))
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:pr-implement-auto:count=$AVAILABLE"
     break
@@ -61,23 +57,17 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 
 ### ステップ 1: 対象 PR を収集
 
-`wip`（初回実装待ち）と `確認:pr-implementer`（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`：レビューで差し戻された再実装待ち）の PR
-を両方拾う。gh CLI のラベル絞り込みは AND 扱いになるので 2 回呼んでマージする。
-`wip` は Draft PR のみ対象。`確認:pr-implementer` は Draft・Ready どちらも対象。
+`確認:pr-implementer`（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`）ラベル付きの PR を収集する（Draft・Ready 問わず）。
 
 ```bash
 # 指定なしのとき
-{
-  gh pr list --state open --label "$GH_KIT_LABEL_WIP" \
-    --json number,title,headRefName,baseRefName,body,labels,isDraft --limit 50
-  gh pr list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT" \
-    --json number,title,headRefName,baseRefName,body,labels,isDraft --limit 50
-} | jq -s 'add | unique_by(.number)'
+gh pr list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT" \
+  --json number,title,headRefName,baseRefName,body,labels,isDraft --limit 50
 # 指定ありのとき
 gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 ```
 
-`処理中:` で始まるラベル（`処理中:pr-implementer`・`処理中:pr-planner`・`処理中:pr-reviewer`・`処理中:pr-merger` 等）付きは除外。`wip` ラベル付き PR はさらに `isDraft: true` のみ対象。0 件なら停止。
+`処理中:` で始まるラベル（`処理中:pr-implementer`・`処理中:pr-planner`・`処理中:pr-reviewer`・`処理中:pr-merger` 等）付きは除外。0 件なら停止。
 
 > **注記:** `$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`（= `確認:pr-implementer`）は実装待ち専用ラベル（旧 `GH_KIT_LABEL_NEEDS_FIX` の後継）。Issue レビュー用の `確認:issue-reviewer`（`$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW`）とは別物。
 
@@ -97,12 +87,11 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 
 ### ステップ 2: 排他制御
 
-`wip` / `確認:pr-implementer` どちらが付いていても外せるよう、両方 `--remove-label` する
-（存在しないラベルを外そうとしてもエラーにはならない）。
+`確認:pr-implementer` を除去して `処理中:pr-implementer` を付与する。
 
 ```bash
 gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER" \
-  --remove-label "$GH_KIT_LABEL_WIP" --remove-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"
+  --remove-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"
 ```
 
 ### ステップ 3: pr-test-creator を先行起動（テストタスクがある場合）
@@ -155,8 +144,8 @@ if [ -n "$ISSUE_N" ]; then
   gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER"
 fi
 
-# 失敗
-gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER" --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"
+# 失敗（実装エラー・ビルド失敗等の場合は pr-reviewer にエスカレーション）
+gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER" --add-label "$GH_KIT_LABEL_CONFIRM_PR_REVIEW"
 gh pr comment {N} --body "{失敗理由}"
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
@@ -178,5 +167,4 @@ fi
 |---|---|
 | 1 | マージしてはならない（マージは `pr-review-auto` の責務） |
 | 2 | `処理中:pr-implementer` 付き PR を別セッションが触ってはならない |
-| 3 | `wip` ラベル付きで `isDraft: false` の PR は触らない（`確認:pr-implementer` 付き PR は Draft・Ready 両方対象） |
-| 4 | 新規ブランチ・新規 PR を作成しない |
+| 3 | 新規ブランチ・新規 PR を作成しない |
