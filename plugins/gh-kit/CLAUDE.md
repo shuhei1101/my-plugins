@@ -14,7 +14,7 @@ flowchart TD
   Review -->|needs_user_review: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
   UserReply -->|ユーザーが手動で 確認:issue-reviewer 再付与| Issue
   UserReply -->|ユーザーが確認 OK なら 確認:pr-plan 付与| PlanOK
-  PlanOK -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
+  PlanOK -->|/gh-kit:pr-plan-auto| WIP[(Draft PR + wip)]
   WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 処理中]
   Implementing -->|完了| NAR[(Ready PR + 確認:issue-reviewer)]
   NAR -->|/gh-kit:pr-review-auto| Reviewed[approved-merge-ok ラベル付与]
@@ -50,8 +50,8 @@ flowchart TD
 | 1a | `/gh-kit:issue-create` | Issue を 1 件起票する（`確認:issue-reviewer` 強制付与）。`code-scanner` や手動呼び出しの両方から使える |
 | 2 | `/gh-kit:issue-review` | 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを投稿 |
 | 3 | `/gh-kit:issue-review-auto` | `確認:issue-reviewer` 付きの Issue を AI レビュー、コメント投稿 |
-| 4 | `/gh-kit:pr-draft-create-auto` | `確認:pr-plan` 付き Issue 全件 → Draft PR を作成 |
-| 5 | `/gh-kit:pr-draft-create` | 1 Issue から Draft PR を 1 件作成（`pr-draft-creator` エージェントの実装本体） |
+| 4 | `/gh-kit:pr-plan-auto` | `確認:pr-plan` 付き Issue 全件 → Draft PR を作成 |
+| 5 | `/gh-kit:pr-plan` | 1 Issue から Draft PR を 1 件作成（`pr-planner` エージェントの実装本体） |
 | 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
 | 6a | `/gh-kit:pr-test-create` | PR のテスト計画を立案しテストコードを作成（`pr-test-creator` エージェントの実装本体） |
 | 7 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → `pr-test-creator` 先行起動 → Ready 化 |
@@ -67,7 +67,7 @@ flowchart TD
 | 1 | `code-scanner` | `/gh-kit:code-scan-auto` | 1 観点でスキャンし `gh-kit:issue-create` スキル経由で起票 |
 | 1a | `issue-creator` | `/gh-kit:issue-create` | `issue-create` スキルの薄ラッパー（Agent ツール経由での起票に使用） |
 | 2 | `issue-reviewer` | `/gh-kit:issue-review-auto` | `gh-kit:issue-review` スキルの薄ラッパー。1 Issue をレビューし戻り値を返す |
-| 3 | `pr-draft-creator` | `/gh-kit:pr-draft-create-auto` | `worktree_create` MCP + 雛形コミット + Draft PR 起票 |
+| 3 | `pr-planner` | `/gh-kit:pr-plan-auto` | `worktree_create` MCP + 雛形コミット + Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、ユーザー確認要否を返す |
 | 4a | `pr-test-creator` | `/gh-kit:pr-implement-auto` | `pr-test-create` スキルの薄ラッパー。テスト計画立案 → テストコード作成を担当 |
 | 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は `approved-merge-ok` ラベルを付与して `pr-merger` へ委譲 |
@@ -84,7 +84,7 @@ flowchart TD
 | Wiki: `ユーザー確認要否判定` | ユーザー確認要否の判定基準（ブラックリスト + assignee 操作手順） |
 | Wiki: `コンフリクト通知コメント` | コンフリクト自走解消失敗時に PR へ投稿する選択肢付きコメント |
 | Wiki: `レビュー結果コメント` | `issue-review` スキルが投稿するレビュー結果コメント本文 |
-| Wiki: `PRドキュメント` | pr-draft-creator が `gh pr create --body-file` に渡す PR 本文 |
+| Wiki: `PRドキュメント` | pr-planner が `gh pr create --body-file` に渡す PR 本文 |
 | Wiki: `Wikiページ` | wiki-create スキルが Wiki ページ本文を生成するときに参照するテンプレート |
 | Wiki: `テスト実行結果` | pr-implementer がテスト全成功後に PR コメントとして投稿するエビデンステンプレート |
 | `plugins/gh-kit/scripts/wiki-create.sh` | wiki-create スキルの実体（Wiki ローカル clone へ 1 ページ書き込み + push） |
@@ -100,7 +100,7 @@ flowchart TD
 | ツール | サーバー | 用途 |
 |---|---|---|
 | `template_get` | `gh-kit-tools` | GitHub Wiki からテンプレートを取得。`template_name` は Literal で制約（拡張子込み）。内部で Wiki ローカル clone の `{ページ名}.md` を読む |
-| `worktree_create` | `gh-kit-tools` | ブランチ `{type}/{title}` + `.claude/worktrees/{type}-{title}` 作成。pr-draft-creator / pr-implementer が呼ぶ |
+| `worktree_create` | `gh-kit-tools` | ブランチ `{type}/{title}` + `.claude/worktrees/{type}-{title}` 作成。pr-planner / pr-implementer が呼ぶ |
 | `worktree_remove` | `gh-kit-tools` | マージ済みワークツリーとブランチを削除。pr-reviewer がマージ完了後に呼ぶ |
 
 ## 環境変数
@@ -109,7 +109,7 @@ flowchart TD
 |---|---|---|
 | `GH_KIT_REPO_PATH` | メインリポジトリの絶対パス（例: `/path/to/repo`）。Session Start フックで自動 pull する | Session Start フック |
 | `GH_KIT_WIKI_PATH` | GitHub Wiki のローカル clone パス（例: `/path/to/repo.wiki`）。Session Start フックで自動 pull する | `wiki-create`, `template_get`, Session Start フック |
-| `GH_KIT_CHECKLIST_PAGES` | Wiki チェックリストページ名のカンマ区切りリスト（例: `共通チェックリスト,テストチェックリスト`）。デフォルト: `共通チェックリスト`。指定したページが存在する場合のみコンテキストに注入される | `issue-review`, `pr-draft-create`, `pr-review` |
+| `GH_KIT_CHECKLIST_PAGES` | Wiki チェックリストページ名のカンマ区切りリスト（例: `共通チェックリスト,テストチェックリスト`）。デフォルト: `共通チェックリスト`。指定したページが存在する場合のみコンテキストに注入される | `issue-review`, `pr-plan`, `pr-review` |
 
 ## ラベル一覧
 
@@ -120,13 +120,13 @@ flowchart TD
 | `処理中` | 何らかの作業中（排他マーカー） |
 | `確認:issue-reviewer` | issue-reviewer スキルがレビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
 | `確認:pr-implementer` | レビュー結果、pr-implementer スキルが修正必要 |
-| `確認:pr-plan` | AI レビュー完了・PR 作成 OK（`issue-review` が `needs_user_review: false` 判定時に付与。`pr-draft-create-auto` の起動契機） |
+| `確認:pr-plan` | AI レビュー完了・PR 作成 OK（`issue-review` が `needs_user_review: false` 判定時に付与。`pr-plan-auto` の起動契機） |
 
 ### gh-kit フロー制御（processing 細分）
 
 | ラベル | 意味 |
 |---|---|
-| `処理中:pr-draft` | Draft PR 作成処理中（`pr-draft-create-auto` が付与） |
+| `処理中:pr-draft` | Draft PR 作成処理中（`pr-plan-auto` が付与） |
 | `処理中:pr-implement` | 実装エージェントが実装中（`pr-implement-auto` が付与） |
 | `処理中:pr-review` | レビューエージェントがレビュー中（`pr-review-auto` が付与） |
 
@@ -142,13 +142,13 @@ flowchart TD
 |---|---|
 | `AIコードスキャン` | claude code がスキャンして起票（出自タグ） |
 | `type:*` | 種別タグ（例: `type:bug`, `type:refactor`） |
-| `処理中:pr-draft` | `pr-draft-create-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
+| `処理中:pr-draft` | `pr-plan-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
 | `処理中:pr-implement` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
 | `処理中:pr-review` | `pr-review-auto` がレビュー中（レビュー開始〜マージ/Close まで Issue に付与） |
 
 ### 優先度（Issue・PR 共通）
 
-`code-scanner` が起票時に自動付与。人間起票 Issue は `issue-reviewer` が付与する。`pr-draft-create` が Issue の優先度ラベルを PR にも継承させる。
+`code-scanner` が起票時に自動付与。人間起票 Issue は `issue-reviewer` が付与する。`pr-plan` が Issue の優先度ラベルを PR にも継承させる。
 マッピング基準は重大度ベース（セキュリティ/クラッシュ → 急ぎ、コード品質 → いつでも）。
 
 | ラベル | 色 | 意味 |
@@ -156,7 +156,7 @@ flowchart TD
 | `優先度:急ぎ` | 赤 (`B60205`) | セキュリティ脆弱性・クラッシュバグ・データ損失リスクなど早急に対応が必要なもの |
 | `優先度:いつでも` | 青 (`0075CA`) | コード品質・ドキュメント不足など時期を問わず対応可能なもの |
 
-auto 系スキル（`issue-review-auto` / `pr-implement-auto` / `pr-review-auto` / `pr-draft-create-auto`）は `優先度:急ぎ` の対象を優先して処理する。
+auto 系スキル（`issue-review-auto` / `pr-implement-auto` / `pr-review-auto` / `pr-plan-auto`）は `優先度:急ぎ` の対象を優先して処理する。
 
 ### PR 専用
 

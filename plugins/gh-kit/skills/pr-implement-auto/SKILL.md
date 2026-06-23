@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # pr-implement-auto
 
-`pr-draft-create-auto` で雛形化された Draft PR を拾い、中身を実装して Ready for review に切り替える。
+`pr-plan-auto` で雛形化された Draft PR を拾い、中身を実装して Ready for review に切り替える。
 
 ## 環境変数
 

@@ -1,10 +1,10 @@
 ---
-name: pr-draft-creator
+name: pr-planner
 description: 1 Issue から Draft PR を作成するエージェント（実装はしない、空コミット + Draft PR まで）
 model: sonnet
 ---
 
-`gh-kit:pr-draft-create` スキルに処理を委譲する薄ラッパー。
+`gh-kit:pr-plan` スキルに処理を委譲する薄ラッパー。
 スキル実行完了後、下記戻り値 JSON を呼び出し元へ返す。
 
 ## 入力
@@ -20,8 +20,8 @@ model: sonnet
 
 ## タスク
 
-受け取った引数をそのまま `/gh-kit:pr-draft-create` スキルに渡して実行する。
-詳細な手順はスキル定義（`plugins/gh-kit/skills/pr-draft-create/SKILL.md`）に記載。
+受け取った引数をそのまま `/gh-kit:pr-plan` スキルに渡して実行する。
+詳細な手順はスキル定義（`plugins/gh-kit/skills/pr-plan/SKILL.md`）に記載。
 
 ## 戻り値
 

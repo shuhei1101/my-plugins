@@ -11,7 +11,7 @@ echo "export GH_KIT_LABEL_NEEDS_AI_REVIEW=確認:issue-reviewer" >> "$CLAUDE_ENV
 echo "export GH_KIT_LABEL_NEEDS_FIX=確認:pr-implementer" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_AI_CODE_SCAN=AIコードスキャン" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_WIP=wip" >> "$CLAUDE_ENV_FILE"
-echo "export GH_KIT_LABEL_APPROVED_MERGE_OK=approved-merge-ok" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_APPROVED_MERGE_OK=確認:pr-merger" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_USER_REVIEWED=user-reviewed" >> "$CLAUDE_ENV_FILE"
 
 echo "export GH_KIT_LABEL_COLOR_PROCESSING=FBCA04" >> "$CLAUDE_ENV_FILE"
