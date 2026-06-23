@@ -14,6 +14,12 @@ disable-model-invocation: true
 |---|---|---|
 | `GH_KIT_CODE_SCAN_PARALLEL` | `5` | 並列起動するスキャナー数 |
 
+## ループ継続制約（厳守）
+
+- **完了を待たない。** `run_in_background: true` でサブエージェントを起動したら即座に制御を戻す。
+- ステップ 4 完了後は**途中結果を報告せず**、次の処理サイクルへ進む。
+- TaskStop を受け取った場合のみ最終報告を行う。
+
 ## タスク
 
 ### ステップ 1: 既存 Issue を確認
@@ -48,3 +54,5 @@ gh issue list --state all --label "$GH_KIT_LABEL_AI_CODE_SCAN" --limit 50
 
 全スキャナーの完了後（または最後の通知受信後）、1 件以上 Issue が起票されたら続けて `/gh-kit:issue-review-auto` を呼び出して
 新規 Issue を AI レビューしてしまう（`確認:issue-reviewer` 付きの Issue が対象）。
+
+**完了後はユーザーへの途中報告を行わない。TaskStop を受け取るまで待機する。**
