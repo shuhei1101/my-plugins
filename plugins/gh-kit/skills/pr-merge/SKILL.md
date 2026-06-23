@@ -88,7 +88,7 @@ git -C {REPO_ROOT} push origin {BASE_BRANCH}
 ## ステップ 6: Issue close + ラベル整理
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+. "${CLAUDE_PLUGIN_ROOT}/scripts/constants.sh"
 # PR 本文から "Refs #N" または "Closes #N" で Issue 番号を抽出
 ISSUE_N=$(gh pr view {PR_NUMBER} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
