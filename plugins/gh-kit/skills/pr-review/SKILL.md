@@ -100,6 +100,33 @@ EOF
 
 verdict = `needs-fix`（`確認:pr-implementer` ラベル付与 + changes-requested 相当の差し戻し扱い）でスキルを終了する。
 
+## ステップ 2.6: Issue 照合チェック（スキップ禁止）
+
+**このチェックはステップ 3 のコードレビューと独立して必ず実行する。**
+
+PR 本文から紐づく Issue を特定し、「実装内容が Issue で定義した問題を解決しているか」を確認する。
+
+```bash
+# PR 本文から Issue 番号を抽出
+ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
+if [ -z "$ISSUE_N" ]; then
+  echo "[WARN] PR 本文から Issue 番号を抽出できませんでした。Issue 照合チェックをスキップします。" >&2
+else
+  gh issue view "$ISSUE_N" --json number,title,body,comments
+fi
+```
+
+Issue が取得できた場合、以下の観点で照合する:
+
+| 観点 | 確認内容 |
+|---|---|
+| 問題解決 | Issue で定義された問題・課題が、この PR の変更によって解決されているか |
+| スコープ過不足 | Issue のスコープが過不足なく実装されているか（漏れ・余分な変更がないか） |
+| issue-reviewer 方針反映 | issue-reviewer が確定した採用方針・QA 回答が実装に反映されているか |
+
+Issue 照合チェックの finding は severity = `major` 以上として扱い、ステップ 4 の finding に含める。
+Issue が取得できない場合はチェックをスキップし、レビューコメントに「Issue 照合チェック: スキップ（Issue 番号未取得）」と記載する。
+
 ## ステップ 3: ファイル走査とルール注入
 
 変更ファイルを Read で読む。Read 時に PreToolUse フックがファイル系ルールを自動注入する — これが第一審査基準。
