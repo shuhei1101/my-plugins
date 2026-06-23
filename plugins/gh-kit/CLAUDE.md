@@ -42,6 +42,27 @@ flowchart TD
 }
 ```
 
+### ラベル移行（既存リポジトリへの初回適用時）
+
+旧ラベル名が残存しているリポジトリに対しては `migrate-labels.sh` を実行して最新名へリネームする。
+
+```bash
+# 方法 1: 引数でリポジトリを指定
+bash plugins/gh-kit/scripts/migrate-labels.sh owner/repo
+
+# 方法 2: 環境変数で指定
+GH_KIT_REPO=owner/repo bash plugins/gh-kit/scripts/migrate-labels.sh
+```
+
+リネーム対象ラベル:
+
+| 旧ラベル | 新ラベル |
+|---|---|
+| `確認:pr-planner` | `確認:pr-plan` |
+| `処理中:pr-planner` | `処理中:pr-draft` |
+
+スクリプトは冪等。新ラベル名が既に存在する場合はスキップする。
+
 ## スキル一覧
 
 | No | スキル | 概要 |
