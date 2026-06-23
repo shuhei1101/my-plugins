@@ -133,6 +133,12 @@ GH_KIT_REPO=owner/repo bash plugins/gh-kit/scripts/migrate-labels.sh
 
 ## ラベル一覧
 
+### ラベル命名規約
+
+- `確認:*` および `処理中:*` のサフィックスは **agent 名（`-er` 付き）** に統一する。skill 名（例: `pr-plan`）は使わない。
+- 正: `確認:pr-planner`（agent 名）/ 誤: `確認:pr-plan`（skill 名）
+- `constants.sh` が命名規約の正本。新ラベル追加時は必ず `constants.sh` に定数を追加すること。
+
 ### gh-kit フロー制御（共通）
 
 | ラベル | 意味 |
