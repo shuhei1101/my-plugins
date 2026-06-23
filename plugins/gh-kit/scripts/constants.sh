@@ -6,15 +6,25 @@
 # 注意: サブシェルで export しても親プロセス（Claude Code）には伝わらない。
 #       $CLAUDE_ENV_FILE への追記により Claude Code が環境変数として読み込む。
 
-echo "export GH_KIT_LABEL_NEEDS_AI_REVIEW=確認:issue-reviewer" >> "$CLAUDE_ENV_FILE"
-echo "export GH_KIT_LABEL_NEEDS_FIX=確認:pr-implementer" >> "$CLAUDE_ENV_FILE"
+# Issue レビュー待ちラベル（issue-review-auto が検知・処理する）
+echo "export GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW=確認:issue-reviewer" >> "$CLAUDE_ENV_FILE"
+# PR レビュー待ちラベル（pr-review-auto が検知・処理する）
+echo "export GH_KIT_LABEL_CONFIRM_PR_REVIEW=確認:pr-reviewer" >> "$CLAUDE_ENV_FILE"
+# PR 実装待ちラベル（pr-implement-auto が検知・処理する）
+# 注意: GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT と GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER は
+# どちらも値が「確認:pr-implementer」で同一だが、異なる契機で付与される:
+#   - GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT : pr-reviewer が差し戻し時に付与（PR 実装再依頼）
+#   - GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER: pr-plan-reviewer が承認時に付与（初回実装依頼）
+# 同じラベル名を使うことで pr-implement-auto の検知ロジックを統一できる設計。
+echo "export GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT=確認:pr-implementer" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_AI_CODE_SCAN=AIコードスキャン" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_WIP=wip" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_CONFIRM_PR_MERGER=確認:pr-merger" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_USER_REVIEWED=user-reviewed" >> "$CLAUDE_ENV_FILE"
 
-echo "export GH_KIT_LABEL_COLOR_NEEDS_AI_REVIEW=0E8A16" >> "$CLAUDE_ENV_FILE"
-echo "export GH_KIT_LABEL_COLOR_NEEDS_FIX=D93F0B" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_CONFIRM_ISSUE_REVIEW=0E8A16" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_REVIEW=0E8A16" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_IMPLEMENT=D93F0B" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_AI_CODE_SCAN=1D76DB" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_WIP=C2E0C6" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_MERGER=0E8A16" >> "$CLAUDE_ENV_FILE"
@@ -55,3 +65,11 @@ echo "export GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER=確認:pr-implementer" >> "$CLA
 echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_PLAN_REVIEWER=0E8A16" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_PROCESSING_PR_PLAN_REVIEWER=FBCA04" >> "$CLAUDE_ENV_FILE"
 echo "export GH_KIT_LABEL_COLOR_CONFIRM_PR_IMPLEMENTER=D93F0B" >> "$CLAUDE_ENV_FILE"
+
+# ──────────────────────────────────────────
+# 後方互換エイリアス（移行期間中。次のメジャーアップで削除予定）
+# GH_KIT_LABEL_NEEDS_AI_REVIEW / GH_KIT_LABEL_NEEDS_FIX を参照している
+# 外部スクリプト・サブエージェント・本リポジトリ外プラグインとの互換性を保つ。
+# ──────────────────────────────────────────
+echo "export GH_KIT_LABEL_NEEDS_AI_REVIEW=確認:issue-reviewer" >> "$CLAUDE_ENV_FILE"
+echo "export GH_KIT_LABEL_NEEDS_FIX=確認:pr-implementer" >> "$CLAUDE_ENV_FILE"

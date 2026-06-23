@@ -36,8 +36,8 @@ Issue 起票後に AI レビューフロー（`/gh-kit:issue-review-auto`）が�
 ## ステップ 1: ラベルを冪等に用意する
 
 ```bash
-gh label list | grep -q "^${GH_KIT_LABEL_NEEDS_AI_REVIEW}" || \
-  gh label create "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --color "$GH_KIT_LABEL_COLOR_NEEDS_AI_REVIEW" --description "AI レビュー必要"
+gh label list | grep -q "^${GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW}" || \
+  gh label create "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW" --color "$GH_KIT_LABEL_COLOR_CONFIRM_ISSUE_REVIEW" --description "issue-reviewer エージェントによるレビュー必要"
 
 gh label list | grep -qF "${GH_KIT_LABEL_PRIORITY_URGENT}" || \
   gh label create "${GH_KIT_LABEL_PRIORITY_URGENT}" \
@@ -57,7 +57,7 @@ gh label list | grep -qF "${GH_KIT_LABEL_PRIORITY_LOW}" || \
 ```bash
 # 確認:issue-reviewer は呼び出し側が指定しなくても必ず付与する（構造的保証）
 # ai-code-scan ラベルは code-scanner 経由起票時のみ extra_labels で渡す（出自タグのため）
-LABELS="${GH_KIT_LABEL_NEEDS_AI_REVIEW},{type},{priority}"
+LABELS="${GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW},{type},{priority}"
 
 GH_LOGIN=$(gh api user --jq '.login')
 ASSIGNEE_OPT=""

@@ -1,12 +1,12 @@
 ---
 name: gh-kit:pr-review-auto
-description: 確認:issue-reviewer または user-reviewed の Ready PR を 1 件ずつ直列でレビューし、合格 + assignees なしなら 確認:pr-merger ラベルを付与する
+description: 確認:pr-reviewer（GH_KIT_LABEL_CONFIRM_PR_REVIEW）または user-reviewed の Ready PR を 1 件ずつ直列でレビューし、合格 + assignees なしなら 確認:pr-merger ラベルを付与する
 disable-model-invocation: true
 ---
 
 # pr-review-auto
 
-`確認:issue-reviewer` または `user-reviewed` 付き Ready PR をキューとして 1 件ずつ消化する。
+`確認:pr-reviewer`（`$GH_KIT_LABEL_CONFIRM_PR_REVIEW`）または `user-reviewed` 付き Ready PR をキューとして 1 件ずつ消化する。
 **並列実行は絶対にしない**（master 取り込みとマージが競合してバグるため）。
 
 PR に assignees が設定されている場合はレビューだけ実施してマージしない。
@@ -17,22 +17,29 @@ PR に assignees が設定されている場合はレビューだけ実施して
 
 gh-kit フローにおけるラベルの移り変わりを示す。
 
-| フェーズ | PR ラベル | Issue ラベル | 付与者 |
-|---|---|---|---|
-| Issue 起票直後 | — | `確認:issue-reviewer` | `issue-create` スキル |
-| Issue レビュー中 | — | `確認:issue-reviewer`（維持） | — |
-| Issue レビュー完了 | — | （`確認:*` なし） | `issue-review` スキル |
-| Draft PR 作成中 | `処理中:pr-planner` → `wip` | `処理中:pr-planner` | `pr-plan-auto` |
-| Draft PR 作成完了 | `wip` | `処理中:pr-planner`（維持） | — |
-| 実装中 | `処理中:pr-implementer` | `処理中:pr-implementer` | `pr-implement-auto` |
-| 実装完了（Ready 化） | `確認:issue-reviewer` | — | `pr-implement-auto` (ステップ 4) |
-| PR レビュー中 | `確認:issue-reviewer` + `処理中:pr-reviewer` (PR に付与) | `処理中:pr-reviewer` | `pr-review-auto` |
-| PR レビュー: ユーザー確認待ち | `確認:issue-reviewer`（除去） + assignees | — | `pr-review-auto` / `pr-reviewer` |
-| ユーザー確認完了 | `user-reviewed` | — | ユーザー手動 |
-| マージ完了 | （PR Close） | （Issue Close） | `pr-reviewer` |
+| フェーズ | PR ラベル | Issue ラベル | 付与者 | 使用変数 |
+|---|---|---|---|---|
+| Issue 起票直後 | — | `確認:issue-reviewer` | `issue-create` スキル | `$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW` |
+| Issue レビュー中 | — | `確認:issue-reviewer`（維持） + `処理中:issue-reviewer` | `issue-review-auto` | `$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER` |
+| Issue レビュー完了 | — | `確認:issue-reviewer` 除去 | `issue-review-auto` | — |
+| Draft PR 作成中 | `処理中:pr-planner` → `wip` | `処理中:pr-planner` | `pr-plan-auto` | `$GH_KIT_LABEL_PROCESSING_PR_PLANNER`, `$GH_KIT_LABEL_WIP` |
+| Draft PR 作成完了 | `wip` | — | `pr-plan-auto` | `$GH_KIT_LABEL_WIP` |
+| PR プランレビュー待ち | `確認:pr-plan-reviewer` | — | ユーザーまたは将来の自動化 | `$GH_KIT_LABEL_CONFIRM_PR_PLAN_REVIEWER` |
+| PR プランレビュー中 | `処理中:pr-plan-reviewer` | — | `pr-plan-review-auto` | `$GH_KIT_LABEL_PROCESSING_PR_PLAN_REVIEWER` |
+| PR プランレビュー合格 | `確認:pr-implementer` | — | `pr-plan-review-auto` | `$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER` |
+| 実装中 | `処理中:pr-implementer` | `処理中:pr-implementer` | `pr-implement-auto` | `$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER` |
+| 実装完了（Ready 化） | `確認:pr-reviewer` | — | `pr-implement-auto`（ステップ 4） | `$GH_KIT_LABEL_CONFIRM_PR_REVIEW` |
+| 実装差し戻し（再実装待ち） | `確認:pr-implementer` | — | `pr-review-auto`（ステップ 4） | `$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT` |
+| PR レビュー中 | `確認:pr-reviewer` + `処理中:pr-reviewer` | `処理中:pr-reviewer` | `pr-review-auto` | `$GH_KIT_LABEL_CONFIRM_PR_REVIEW`, `$GH_KIT_LABEL_PROCESSING_PR_REVIEWER` |
+| PR レビュー: ユーザー確認待ち | `確認:pr-reviewer` 除去 + assignees | — | `pr-review-auto` / `pr-reviewer` | — |
+| ユーザー確認完了 | `user-reviewed` | — | ユーザー手動 | `$GH_KIT_LABEL_USER_REVIEWED` |
+| マージ待ち | `確認:pr-merger` | — | `pr-reviewer` スキル | `$GH_KIT_LABEL_CONFIRM_PR_MERGER` |
+| マージ中 | `処理中:pr-merger` | — | `pr-merger-auto` | `$GH_KIT_LABEL_PROCESSING_PR_MERGER` |
+| マージ完了 | （PR Close） | （Issue Close） | `pr-merger` スキル | — |
 
-> **注記:** `GH_KIT_LABEL_NEEDS_AI_REVIEW` = `確認:issue-reviewer` が実装完了後の「PR レビュー待ち」ラベルとして機能する。
-> ラベル名は Issue レビュー用と共用されているが、PR フェーズでは「pr-review-auto が AI レビューすべき PR」を示す目的で使用される。
+> **注記:** Issue レビュー用ラベル `確認:issue-reviewer`（`$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW`）と PR レビュー待ちラベル `確認:pr-reviewer`（`$GH_KIT_LABEL_CONFIRM_PR_REVIEW`）は用途が異なる別個のラベル。
+> - Issue フェーズ: `確認:issue-reviewer` → `issue-review-auto` が検知・処理
+> - PR フェーズ: `確認:pr-reviewer` → `pr-review-auto` が検知・処理
 
 ## ループ継続制約（厳守）
 
@@ -55,7 +62,7 @@ gh label list | grep -q "^${GH_KIT_LABEL_USER_REVIEWED}" || \
 対象 PR が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `確認:issue-reviewer` または `user-reviewed` ラベル付きの Ready（非 Draft）PR（`処理中:` で始まるラベル付きは除外）。
+対象条件: `確認:pr-reviewer`（`$GH_KIT_LABEL_CONFIRM_PR_REVIEW`）または `user-reviewed` ラベル付きの Ready（非 Draft）PR（`処理中:` で始まるラベル付きは除外）。
 直列制約は維持（Monitor 検知後もステップ 1→4 の直列ループを継続する）。
 
 **ステップ 4 のキューが空になったらこのステップに戻り、Monitor を再起動してポーリングを継続する。**
@@ -63,8 +70,8 @@ gh label list | grep -q "^${GH_KIT_LABEL_USER_REVIEWED}" || \
 ```bash
 # Monitor に渡すポーリングスクリプト
 while true; do
-  # 確認:issue-reviewer 付き PR を収集
-  AI_REVIEW=$(gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
+  # 確認:pr-reviewer 付き PR を収集
+  AI_REVIEW=$(gh pr list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_REVIEW" \
     --json number,labels,isDraft \
     --jq "[.[] | select(
       .isDraft == false and
@@ -91,11 +98,11 @@ Monitor の stdout に `TRIGGER:pr-review-auto` が来たらステップ 1 へ�
 
 ### ステップ 1: レビュー対象 PR を収集
 
-`確認:issue-reviewer` と `user-reviewed` の両方を対象とする。重複を排除してマージする。
+`確認:pr-reviewer`（`$GH_KIT_LABEL_CONFIRM_PR_REVIEW`）と `user-reviewed` の両方を対象とする。重複を排除してマージする。
 
 ```bash
-# 確認:issue-reviewer 付き PR
-AI_LIST=$(gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
+# 確認:pr-reviewer 付き PR
+AI_LIST=$(gh pr list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_REVIEW" \
   --json number,title,headRefName,baseRefName,statusCheckRollup,labels --limit 50)
 # user-reviewed 付き PR
 USER_LIST=$(gh pr list --state open --label "$GH_KIT_LABEL_USER_REVIEWED" \
@@ -171,11 +178,11 @@ ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fix
 
 | verdict | 動作 |
 |---|---|
-| approved-merge-ok | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --remove-label "$GH_KIT_LABEL_USER_REVIEWED"`（`確認:pr-merger` ラベルは pr-reviewer が付与済み。マージは pr-merger-auto が実行する）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
-| approved-user-review-pending | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"`（assignees はそのまま残す。ユーザーが `user-reviewed` を付けて assignees を外すと次回 Monitor が検知してマージへ自動進行）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
-| needs-fix | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_NEEDS_FIX"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"`（PR 本文の `- [ ]` 未消化による差し戻し。`確認:pr-implementer` ラベルが付与された状態で`pr-implement-auto` の次回実行を待つ） |
-| changes-requested | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_NEEDS_FIX"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
-| failed | `GH_LOGIN="$(gh api user --jq '.login')" && gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_NEEDS_FIX" --add-assignee "$GH_LOGIN" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
+| approved-merge-ok | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --remove-label "$GH_KIT_LABEL_CONFIRM_PR_REVIEW" --remove-label "$GH_KIT_LABEL_USER_REVIEWED"`（`確認:pr-merger` ラベルは pr-reviewer が付与済み。マージは pr-merger-auto が実行する）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
+| approved-user-review-pending | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --remove-label "$GH_KIT_LABEL_CONFIRM_PR_REVIEW"`（assignees はそのまま残す。ユーザーが `user-reviewed` を付けて assignees を外すと次回 Monitor が検知してマージへ自動進行）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
+| needs-fix | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"`（PR 本文の `- [ ]` 未消化による差し戻し。`確認:pr-implementer`（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`）ラベルが付与された状態で `pr-implement-auto` の次回実行を待つ） |
+| changes-requested | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
+| failed | `GH_LOGIN="$(gh api user --jq '.login')" && gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT" --add-assignee "$GH_LOGIN" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
 
 ステップ 2 に戻ってキューが空になるまで繰り返す。
 キューが空になったらステップ 0（Monitor）へ戻り、次のイベントを待機する。

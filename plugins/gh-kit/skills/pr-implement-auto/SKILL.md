@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-implement-auto
-description: ラベル wip（Draft）/ 確認:pr-implementer（Draft・Ready）の PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
+description: ラベル wip（Draft）/ 確認:pr-implementer（GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT）（Draft・Ready）の PR を N 件並列で実装し、Ready 化 → そのまま pr-review-auto に連鎖
 disable-model-invocation: true
 ---
 
@@ -34,7 +34,7 @@ disable-model-invocation: true
 対象 PR が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `wip` ラベル付きの Draft PR、または `確認:pr-implementer` ラベル付きの PR（Draft・Ready 両方）。いずれも `処理中:` で始まるラベル付きは除外。
+対象条件: `wip` ラベル付きの Draft PR、または `確認:pr-implementer`（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`）ラベル付きの PR（Draft・Ready 両方）。いずれも `処理中:` で始まるラベル付きは除外。
 
 **ステップ 4 完了後（キューが空の場合も含む）はこのステップに戻り、Monitor を再起動してポーリングを継続する。**
 
@@ -44,7 +44,7 @@ while true; do
   WIP_COUNT=$(gh pr list --state open --label "$GH_KIT_LABEL_WIP" \
     --json number,labels,isDraft \
     --jq "[.[] | select(.isDraft == true and (.labels | map(.name) | (map(startswith(\"処理中:\")) | any | not)))] | length" 2>/dev/null || echo 0)
-  FIX_COUNT=$(gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_FIX" \
+  FIX_COUNT=$(gh pr list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT" \
     --json number,labels,isDraft \
     --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"処理中:\")) | any | not))] | length" 2>/dev/null || echo 0)
   AVAILABLE=$((WIP_COUNT + FIX_COUNT))
@@ -61,7 +61,7 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 
 ### ステップ 1: 対象 PR を収集
 
-`wip`（初回実装待ち）と `確認:pr-implementer`（レビューで差し戻された再実装待ち）の PR
+`wip`（初回実装待ち）と `確認:pr-implementer`（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`：レビューで差し戻された再実装待ち）の PR
 を両方拾う。gh CLI のラベル絞り込みは AND 扱いになるので 2 回呼んでマージする。
 `wip` は Draft PR のみ対象。`確認:pr-implementer` は Draft・Ready どちらも対象。
 
@@ -70,7 +70,7 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 {
   gh pr list --state open --label "$GH_KIT_LABEL_WIP" \
     --json number,title,headRefName,baseRefName,body,labels,isDraft --limit 50
-  gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_FIX" \
+  gh pr list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT" \
     --json number,title,headRefName,baseRefName,body,labels,isDraft --limit 50
 } | jq -s 'add | unique_by(.number)'
 # 指定ありのとき
@@ -78,6 +78,8 @@ gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 ```
 
 `処理中:` で始まるラベル（`処理中:pr-implementer`・`処理中:pr-planner`・`処理中:pr-reviewer`・`処理中:pr-merger` 等）付きは除外。`wip` ラベル付き PR はさらに `isDraft: true` のみ対象。0 件なら停止。
+
+> **注記:** `$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`（= `確認:pr-implementer`）は実装待ち専用ラベル（旧 `GH_KIT_LABEL_NEEDS_FIX` の後継）。Issue レビュー用の `確認:issue-reviewer`（`$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW`）とは別物。
 
 収集後、`優先度:急ぎ` ラベルが付いている PR を先頭に並べ、次に `優先度:いつでも` 付き、それ以外の順（番号昇順）で処理する:
 
@@ -100,7 +102,7 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 
 ```bash
 gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER" \
-  --remove-label "$GH_KIT_LABEL_WIP" --remove-label "$GH_KIT_LABEL_NEEDS_FIX"
+  --remove-label "$GH_KIT_LABEL_WIP" --remove-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"
 ```
 
 ### ステップ 3: pr-test-creator を先行起動（テストタスクがある場合）
@@ -141,7 +143,8 @@ gh pr view {N} --json body --jq '.body' | grep -q "- \[ \] 自動テスト作成
 
 ```bash
 # 成功
-gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER" --add-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"
+# GH_KIT_LABEL_CONFIRM_PR_REVIEW（= 確認:pr-reviewer）を付与して pr-review-auto に引き渡す
+gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER" --add-label "$GH_KIT_LABEL_CONFIRM_PR_REVIEW"
 if [ "{needs_user_review}" = "true" ]; then
   GH_LOGIN="$(gh api user --jq '.login')"
   gh pr edit {N} --add-assignee "$GH_LOGIN"
@@ -153,7 +156,7 @@ if [ -n "$ISSUE_N" ]; then
 fi
 
 # 失敗
-gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER" --add-label "$GH_KIT_LABEL_NEEDS_FIX"
+gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER" --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"
 gh pr comment {N} --body "{失敗理由}"
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
@@ -166,7 +169,7 @@ fi
 
 ### ステップ 5: pr-review-auto を連鎖実行
 
-ステップ 4 で 1 件以上 `確認:issue-reviewer` を付与した PR が存在すれば、続けて
+ステップ 4 で 1 件以上 `確認:pr-reviewer`（`$GH_KIT_LABEL_CONFIRM_PR_REVIEW`）を付与した PR が存在すれば、続けて
 `/gh-kit:pr-review-auto` を呼び出して直列レビュー → マージへ進める。
 
 ## 厳守事項
