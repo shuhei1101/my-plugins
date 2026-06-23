@@ -25,10 +25,12 @@ disable-model-invocation: true
 ```
 確認:issue-reviewer（$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW）付き Issue 収集
   → issue-reviewer に渡す（初回レビュー or 再レビュー）
-    → re_review_needed: false → 確認:issue-reviewer 除去 → Draft PR 作成フローへ
-    → re_review_needed: true  → 確認:issue-reviewer 除去のみ（ユーザーが必要なら再付与）
+    → re_review_needed: false → 確認:issue-reviewer 除去 → assignee にユーザーを追加
+    → re_review_needed: true  → 確認:issue-reviewer 除去 → assignee にユーザーを追加
     → status: waiting         → ラベル変更なし（ユーザー返答待ち）
 ```
+
+**注意:** pr-planner の自動起動は廃止。レビュー完了後は常に assignee にユーザーを追加する。ユーザーが確認後に手動で `確認:pr-planner` を付与して次工程を進める。
 
 **ユーザーが再レビューを要求する場合:** ユーザーが Issue にコメントを追記した後、手動で `確認:issue-reviewer`（`$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW`）を再付与すると、次回の `issue-review-auto` 実行時に `issue-reviewer` が再レビューモードで動作する。
 
@@ -94,7 +96,10 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 ### ステップ 2: 排他制御
 
 ```bash
-gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
+# 自身に依頼された確認ラベルを除去し、処理中ラベルを付与する
+gh issue edit {N} \
+  --remove-label "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW" \
+  --add-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
 ```
 
 ### ステップ 3: issue-reviewer をバックグラウンドで並列起動（完了を待たない・通知駆動）
@@ -118,10 +123,12 @@ gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
 **status が `ok` の場合（通常レビュー完了）:**
 
 ```bash
-# status: waiting の場合 — ユーザー返答待ちのため 処理中:issue-reviewer のみ除去
+# status: waiting の場合 — ユーザー返答待ちのため 処理中:issue-reviewer と 確認:issue-reviewer を除去
+# ユーザーが返答後に再レビューが必要な場合は手動で 確認:issue-reviewer を再付与すること
 if [ "{status}" = "waiting" ]; then
-  gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
-  # 確認:issue-reviewer は維持（次回以降も待機継続）
+  gh issue edit {N} \
+    --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" \
+    --remove-label "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW"
   return
 fi
 
@@ -129,13 +136,11 @@ fi
 ARGS=(--remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" --remove-label "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW")
 gh issue edit {N} "${ARGS[@]}"
 
-# needs_user_review: true の場合は assignee を追加
-if [ "{needs_user_review}" = "true" ]; then
-  GH_LOGIN="$(gh api user --jq '.login')"
-  gh issue edit {N} --add-assignee "$GH_LOGIN"
-fi
+# レビュー完了後は needs_user_review の値に関わらず、常に assignee にユーザーを追加する（スキップ禁止）
+GH_LOGIN="$(gh api user --jq '.login')"
+gh issue edit {N} --add-assignee "$GH_LOGIN"
 
-# re_review_needed: false かつ needs-* が他になければ Draft PR フローへ進める（呼び出し元が判定）
+# 次工程（pr-planner 起動など）はユーザーが手動で 確認:pr-planner ラベルを付与して進める
 ```
 
 **注意:** `needs-user-review` ラベルは使用しない。ユーザー確認が必要な場合は assignee を追加する。ユーザーが AI の追加質問に返答した後、再度 AI レビューが必要と判断した場合は手動で `確認:issue-reviewer` を付け直す。

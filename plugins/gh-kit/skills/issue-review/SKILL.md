@@ -281,33 +281,18 @@ if ! echo "$CURRENT_LABELS" | grep -q "$GH_KIT_LABEL_AI_CODE_SCAN"; then
 fi
 ```
 
-## ステップ 7: ユーザー確認要否判定
+## ステップ 7: レビュー完了後の assignee 追加（スキップ禁止）
 
-ステップ 1 で取得した `ユーザー確認要否判定.md` に照らして判定する。
-以下のいずれかに該当する場合は **無条件で `needs_user_review: true`**:
-- ステップ 5 のレビューコメントに「確認したい質問」セクション（QA-N 形式）が含まれる
-- ステップ 5 のレビューコメントに「分割提案」セクションが含まれる
-
-**チェックボックス（`- [ ]`）の残存数は判定に使用しない。**
-対応案は「複数の候補からどれか 1 つを選ぶ」選択肢形式であり、
-選ばれなかった選択肢のチェックボックスは意図的に未チェックのまま残るため。
-チェックボックス数で判定すると常に `needs_user_review: true` になってしまう。
-
-## ステップ 7.5: `確認:pr-planner` ラベル付与
-
-`needs_user_review: false` の場合（= AI 判断で実装着手 OK）は、`確認:pr-planner` ラベルを Issue に付与して `pr-plan-auto` が拾える状態にする。
-`needs_user_review: true` の場合はスキップ（ユーザーが確認後に手動で付与する）。
+レビュー完了後は、**必ず** GH ユーザーを Issue の assignee に追加する。
+`needs_user_review` による条件分岐は行わない。常に実行する。
 
 ```bash
-# ラベルが存在しなければ作成（冪等）
-gh label list --json name --jq '.[].name' | grep -qF "$GH_KIT_LABEL_CONFIRM_PR_PLANNER" || \
-  gh label create "$GH_KIT_LABEL_CONFIRM_PR_PLANNER" \
-    --color "$GH_KIT_LABEL_COLOR_CONFIRM_PR_PLANNER" \
-    --description "AI レビュー完了・PR 作成 OK（pr-plan-auto の契機）"
-
-# Issue に付与
-gh issue edit {N} --add-label "$GH_KIT_LABEL_CONFIRM_PR_PLANNER"
+GH_LOGIN="$(gh api user --jq '.login')"
+gh issue edit {N} --add-assignee "$GH_LOGIN"
 ```
+
+ユーザーが確認後に次工程（PR 作成など）に進める場合は、ユーザーが手動で `確認:pr-planner` ラベルを付与する。
+AI が自動判定して `確認:pr-planner` を付与することは禁止。
 
 ## ステップ 8: 戻り値
 
