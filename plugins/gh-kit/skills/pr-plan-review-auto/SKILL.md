@@ -97,8 +97,8 @@ gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_PLAN_REVIEWER"
 | verdict | 動作 |
 |---|---|
 | `approved` | `gh pr edit {N} --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER"` — `pr-implement-auto` が拾って実装開始 |
-| `needs-revision` | `gh pr edit {N} --add-label "$GH_KIT_LABEL_NEEDS_FIX"` — PR 作成者が修正後に `確認:pr-plan-reviewer` を再付与 |
-| `failed` | `GH_LOGIN="$(gh api user --jq '.login')" && gh pr edit {N} --add-label "$GH_KIT_LABEL_NEEDS_FIX" --add-assignee "$GH_LOGIN"` |
+| `needs-revision` | `gh pr edit {N} --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"` — PR 作成者が修正後に `確認:pr-plan-reviewer` を再付与 |
+| `failed` | `GH_LOGIN="$(gh api user --jq '.login')" && gh pr edit {N} --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT" --add-assignee "$GH_LOGIN"` |
 
 ステップ 1 に戻りキューが空になるまで繰り返す。
 
@@ -116,8 +116,8 @@ gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_PLAN_REVIEWER"
 |---|---|
 | `GH_KIT_LABEL_CONFIRM_PR_PLAN_REVIEWER` | `確認:pr-plan-reviewer` |
 | `GH_KIT_LABEL_PROCESSING_PR_PLAN_REVIEWER` | `処理中:pr-plan-reviewer` |
-| `GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER` | `確認:pr-implementer` |
-| `GH_KIT_LABEL_NEEDS_FIX` | `修正が必要` |
+| `GH_KIT_LABEL_CONFIRM_PR_IMPLEMENTER` | `確認:pr-implementer`（pr-plan-review 合格時に付与） |
+| `GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT` | `確認:pr-implementer`（実装差し戻し・失敗時に付与。旧 `GH_KIT_LABEL_NEEDS_FIX` の後継） |
 
 ## 厳守事項
 

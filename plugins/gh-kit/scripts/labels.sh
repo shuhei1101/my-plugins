@@ -79,8 +79,9 @@ upsert_label "処理中:pr-reviewer"      "FBCA04" "レビューエージェン�
 # ──────────────────────────────────────────
 # フロー制御: 確認 系（エージェント名 -er 統一）
 # ──────────────────────────────────────────
-upsert_label "確認:issue-reviewer"     "0E8A16" "issue-reviewer エージェントによるレビュー必要"
-upsert_label "確認:pr-implementer"     "D93F0B" "レビュー結果、pr-implementer エージェントが修正必要"
+upsert_label "確認:issue-reviewer"     "0E8A16" "issue-reviewer エージェントによるレビュー必要（GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW）"
+upsert_label "確認:pr-reviewer"        "0E8A16" "pr-reviewer エージェントによるレビュー必要（GH_KIT_LABEL_CONFIRM_PR_REVIEW）"
+upsert_label "確認:pr-implementer"     "D93F0B" "レビュー結果、pr-implementer エージェントが修正必要（GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT）"
 upsert_label "確認:pr-planner"         "0052CC" "AI レビュー完了・PR 作成 OK（pr-draft-create-auto の起動契機）"
 
 # ──────────────────────────────────────────
@@ -149,6 +150,11 @@ migrate_label "priority:low"           "優先度:いつでも"
 # 旧英語フロー制御ラベル
 migrate_label "needs-ai-review"        "確認:issue-reviewer"
 migrate_label "needs-user-review"      "確認:pr-implementer"
+
+# 旧 pr-review-auto が使っていた 確認:issue-reviewer（PR 上）→ 確認:pr-reviewer への移行
+# 注: 確認:issue-reviewer は Issue でも使われるため Issue/PR を区別して手動実行すること
+# migrate_label は Issue と PR を両方対象にするため、以下はコメントアウト
+# migrate_label "確認:issue-reviewer"   "確認:pr-reviewer"  # PR のみ移行したい場合は手動で実施
 migrate_label "processing:pr-draft"    "処理中:pr-planner"
 migrate_label "processing:pr-implement" "処理中:pr-implementer"
 migrate_label "processing:pr-review"   "処理中:pr-reviewer"

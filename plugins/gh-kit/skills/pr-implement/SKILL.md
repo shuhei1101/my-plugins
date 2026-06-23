@@ -152,7 +152,7 @@ gh pr ready {PR_NUMBER}
 gh pr comment {PR_NUMBER} --body "実装完了。レビュー待ち。{変更サマリ}"
 ```
 
-`$GH_KIT_LABEL_NEEDS_AI_REVIEW` ラベル付与と assignees 追加（`needs_user_review: true` の場合）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
+`$GH_KIT_LABEL_CONFIRM_PR_REVIEW`（`確認:pr-reviewer`）ラベル付与と assignees 追加（`needs_user_review: true` の場合）は呼び出し側（`/gh-kit:pr-implement-auto`）の責務。
 
 ## ステップ 9: 戻り値
 
