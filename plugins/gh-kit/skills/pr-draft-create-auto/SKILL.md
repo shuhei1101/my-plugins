@@ -15,7 +15,7 @@ disable-model-invocation: true
 |---|---|
 | 1 | `state: open` |
 | 2 | `確認:pr-plan` ラベルが付いている |
-| 3 | `処理中` で始まるラベル（`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review`・`処理中:pr-merger` 等）のいずれも付いていない |
+| 3 | `処理中` で始まるラベル（`処理中:pr-planner`・`処理中:pr-implementer`・`処理中:pr-reviewer`・`処理中:pr-merger` 等）のいずれも付いていない |
 
 ## 環境変数
 
@@ -69,7 +69,7 @@ gh issue list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_PLAN" \
   --json number,title,body,labels,assignees,comments --limit 100
 ```
 
-`確認:pr-plan` ラベルが付いていて、`処理中:` で始まるラベル（`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review`・`処理中:pr-merger` 等）のいずれも含まないものをフィルタ。0 件なら停止。
+`確認:pr-plan` ラベルが付いていて、`処理中:` で始まるラベル（`処理中:pr-planner`・`処理中:pr-implementer`・`処理中:pr-reviewer`・`処理中:pr-merger` 等）のいずれも含まないものをフィルタ。0 件なら停止。
 
 jq フィルタ例:
 ```bash
@@ -107,7 +107,7 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 ### ステップ 3: 排他制御
 
 ```bash
-gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_PR_DRAFT"
+gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_PR_PLANNER"
 ```
 
 ### ステップ 4: pr-draft-creator をバックグラウンドで並列起動（完了を待たない・通知駆動）
@@ -127,7 +127,7 @@ gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_PR_DRAFT"
 ```bash
 gh pr edit {PR番号} --add-label "$GH_KIT_LABEL_WIP"
 gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
-# 処理中:pr-draft は排他制御（ステップ 3）で付与済みのため、ここでは何もしない
+# 処理中:pr-planner は排他制御（ステップ 3）で付与済みのため、ここでは何もしない
 ```
 
 後処理完了後、キューに積まれた次の Issue があれば `pr-draft-creator` を起動する。

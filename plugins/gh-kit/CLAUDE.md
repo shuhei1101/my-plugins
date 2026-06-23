@@ -15,7 +15,7 @@ flowchart TD
   UserReply -->|ユーザーが手動で 確認:issue-reviewer 再付与| Issue
   UserReply -->|ユーザーが確認 OK なら 確認:pr-plan 付与| PlanOK
   PlanOK -->|/gh-kit:pr-draft-create-auto| WIP[(Draft PR + wip)]
-  WIP -->|/gh-kit:pr-implement-auto| Implementing[実装中 処理中:pr-implement]
+  WIP -->|/gh-kit:pr-implement-auto| Implementing[実装中 処理中:pr-implementer]
   Implementing -->|完了| NAR[(Ready PR + 確認:issue-reviewer)]
   NAR -->|/gh-kit:pr-review-auto| Reviewed[approved-merge-ok ラベル付与]
   Reviewed -->|/gh-kit:pr-merger-auto| Merged[master]
@@ -129,9 +129,9 @@ flowchart TD
 | ラベル | 付与エージェント | 付与先 | 意味 |
 |---|---|---|---|
 | `処理中:issue-reviewer` | `issue-review-auto` | Issue | issue-reviewer が AI レビュー中 |
-| `処理中:pr-draft` | `pr-draft-create-auto` | Issue, PR | Draft PR 作成処理中 |
-| `処理中:pr-implement` | `pr-implement-auto` | PR, Issue | 実装エージェントが実装中 |
-| `処理中:pr-review` | `pr-review-auto` | PR, Issue | レビューエージェントがレビュー中 |
+| `処理中:pr-planner` | `pr-draft-create-auto` | Issue, PR | Draft PR 作成処理中 |
+| `処理中:pr-implementer` | `pr-implement-auto` | PR, Issue | 実装エージェントが実装中 |
+| `処理中:pr-reviewer` | `pr-review-auto` | PR, Issue | レビューエージェントがレビュー中 |
 | `処理中:pr-merger` | `pr-merger-auto` | PR | マージエージェントがマージ中 |
 
 ### ユーザー確認待ち（assignees）
@@ -147,9 +147,9 @@ flowchart TD
 | `AIコードスキャン` | claude code がスキャンして起票（出自タグ） |
 | `type:*` | 種別タグ（例: `type:bug`, `type:refactor`） |
 | `処理中:issue-reviewer` | `issue-review-auto` が AI レビュー中（レビュー完了で除去） |
-| `処理中:pr-draft` | `pr-draft-create-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
-| `処理中:pr-implement` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
-| `処理中:pr-review` | `pr-review-auto` がレビュー中（レビュー開始〜マージ/Close まで Issue に付与） |
+| `処理中:pr-planner` | `pr-draft-create-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
+| `処理中:pr-implementer` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
+| `処理中:pr-reviewer` | `pr-review-auto` がレビュー中（レビュー開始〜マージ/Close まで Issue に付与） |
 
 ### 優先度（Issue・PR 共通）
 

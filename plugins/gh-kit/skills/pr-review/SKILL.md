@@ -132,9 +132,9 @@ PR を `--close` した場合（failed / conflict）も `processing:*` ラベル
 ISSUE_N=$(gh pr view {PR_NUMBER} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
   gh issue edit "$ISSUE_N" \
-    --remove-label "$LABEL_PROCESSING_PR_DRAFT" \
-    --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT" \
-    --remove-label "$LABEL_PROCESSING_PR_REVIEW"
+    --remove-label "$LABEL_PROCESSING_PR_PLANNER" \
+    --remove-label "$LABEL_PROCESSING_PR_IMPLEMENTER" \
+    --remove-label "$LABEL_PROCESSING_PR_REVIEWER"
 fi
 ```
 
