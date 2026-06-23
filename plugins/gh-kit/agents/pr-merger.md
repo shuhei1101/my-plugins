@@ -1,6 +1,6 @@
 ---
 name: pr-merger
-description: approved-merge-ok ラベル付き PR を 1 件マージし、worktree 削除まで実行
+description: マージ可能 ラベル付き PR を 1 件マージし、worktree 削除まで実行
 model: sonnet
 ---
 

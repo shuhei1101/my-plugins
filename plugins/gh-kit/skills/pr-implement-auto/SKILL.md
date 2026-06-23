@@ -68,7 +68,7 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 ```
 
-`処理中` で始まるラベル（`処理中`・`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review` 等）付きは除外。`wip` ラベル付き PR はさらに `isDraft: true` のみ対象。0 件なら停止。
+`処理中` で始まるラベル（`処理中`・`処理中:pr-planner`・`処理中:pr-implementer`・`処理中:pr-reviewer` 等）付きは除外。`wip` ラベル付き PR はさらに `isDraft: true` のみ対象。0 件なら停止。
 
 収集後、`優先度:急ぎ` ラベルが付いている PR を先頭に並べ、次に `優先度:いつでも` 付き、それ以外の順（番号昇順）で処理する:
 
@@ -96,13 +96,13 @@ gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING" \
 
 ### ステップ 3: pr-test-creator を先行起動（テストタスクがある場合）
 
-起動前に、紐づく Issue に `処理中:pr-implement` を付与する。
+起動前に、紐づく Issue に `処理中:pr-implementer` を付与する。
 
 ```bash
 # PR 本文から Issue 番号を抽出して付与
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
+  gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER"
 fi
 ```
 
@@ -137,10 +137,10 @@ if [ "{needs_user_review}" = "true" ]; then
   GH_LOGIN="$(gh api user --jq '.login')"
   gh pr edit {N} --add-assignee "$GH_LOGIN"
 fi
-# Issue の 処理中:pr-implement を除去
+# Issue の 処理中:pr-implementer を除去
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
+  gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER"
 fi
 
 # 失敗
@@ -148,7 +148,7 @@ gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LA
 gh pr comment {N} --body "{失敗理由}"
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT"
+  gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER"
 fi
 ```
 

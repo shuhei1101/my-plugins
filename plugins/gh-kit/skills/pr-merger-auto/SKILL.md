@@ -1,12 +1,12 @@
 ---
 name: gh-kit:pr-merger-auto
-description: approved-merge-ok ラベル付き Ready PR を 1 件ずつ直列でマージする
+description: マージ可能 ラベル付き Ready PR を 1 件ずつ直列でマージする
 disable-model-invocation: true
 ---
 
 # pr-merger-auto
 
-`approved-merge-ok` ラベル付き Ready PR をキューとして 1 件ずつ消化する。
+`マージ可能` ラベル付き Ready PR をキューとして 1 件ずつ消化する。
 **並列実行は絶対にしない**（master 取り込みとマージが競合してバグるため）。
 
 assignees が設定されている PR はスキップする（ユーザー確認待ち）。
@@ -18,7 +18,7 @@ assignees が設定されている PR はスキップする（ユーザー確認
 対象 PR が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `approved-merge-ok` ラベル付きの Ready（非 Draft）PR（`処理中` 付きは除外）。
+対象条件: `マージ可能` ラベル付きの Ready（非 Draft）PR（`処理中` 付きは除外）。
 
 ```bash
 # Monitor に渡すポーリングスクリプト
@@ -65,10 +65,10 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 
 ```bash
 gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
-# 紐づく Issue に 処理中:pr-review を付与
+# 紐づく Issue に 処理中:pr-reviewer を付与
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
-  gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"
+  gh issue edit "$ISSUE_N" --add-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"
 fi
 ```
 
@@ -86,14 +86,14 @@ CI が failure なら failed へ。
 ### ステップ 4: 後処理
 
 ```bash
-# 全 verdict 共通: Issue の 処理中:pr-review を除去
+# 全 verdict 共通: Issue の 処理中:pr-reviewer を除去
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 ```
 
 | verdict | 動作 |
 |---|---|
-| merged | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_APPROVED_MERGE_OK"`（マージは pr-merger が実施済み）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"` |
-| conflict / failed | `GH_LOGIN="$(gh api user --jq '.login')" && gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX" --add-assignee "$GH_LOGIN" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEW"` |
+| merged | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_APPROVED_MERGE_OK"`（マージは pr-merger が実施済み）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
+| conflict / failed | `GH_LOGIN="$(gh api user --jq '.login')" && gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX" --add-assignee "$GH_LOGIN" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
 
 ステップ 2 に戻ってキューが空になるまで繰り返す。
 

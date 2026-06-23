@@ -1,11 +1,11 @@
 ---
 name: gh-kit:pr-review
-description: 1 件の PR をレビューし、合格かつ assignees がなければ approved-merge-ok ラベルを付与して pr-merger に委譲する
+description: 1 件の PR をレビューし、合格かつ assignees がなければ マージ可能 ラベルを付与して pr-merger に委譲する
 ---
 
 # pr-review
 
-PR を 1 件レビューし、合格時は `approved-merge-ok` ラベルを付与して `pr-merger` に委譲する。
+PR を 1 件レビューし、合格時は `マージ可能` ラベルを付与して `pr-merger` に委譲する。
 マージ責務は持たない（`pr-merge` スキルが実行する）。
 
 ## 入力
@@ -93,12 +93,12 @@ event 判定:
 | 条件 | event | 次の動作 |
 |---|---|---|
 | blocker / critical / major を含む | `--request-changes` | ステップ 7-A（ラベルなし） |
-| minor / nit のみ + assignees なし | `--approve` | ステップ 6（`approved-merge-ok` ラベル付与） |
+| minor / nit のみ + assignees なし | `--approve` | ステップ 6（`マージ可能` ラベル付与） |
 | minor / nit のみ + assignees あり | `--approve` | ステップ 7-B（ラベルなし） |
 
-## ステップ 6: approved-merge-ok ラベル付与（approve + assignees なしのみ）
+## ステップ 6: マージ可能 ラベル付与（approve + assignees なしのみ）
 
-マージは `pr-merger` スキルに委譲する。このスキルは `approved-merge-ok` ラベルを付与するだけで終了する。
+マージは `pr-merger` スキルに委譲する。このスキルは `マージ可能` ラベルを付与するだけで終了する。
 
 ```bash
 gh pr edit {PR_NUMBER} --add-label "$GH_KIT_LABEL_APPROVED_MERGE_OK"
@@ -106,7 +106,7 @@ gh pr edit {PR_NUMBER} --add-label "$GH_KIT_LABEL_APPROVED_MERGE_OK"
 
 | 状況 | verdict |
 |---|---|
-| ラベル付与成功 | `approved-merge-ok` |
+| ラベル付与成功 | `マージ可能` |
 | その他失敗 | `failed` |
 
 ## ステップ 7-A: changes-requested
