@@ -94,9 +94,9 @@ ISSUE_N=$(gh pr view {PR_NUMBER} --json body --jq '.body' | grep -oP '(?:Refs|Cl
 if [ -n "$ISSUE_N" ]; then
   gh issue close "$ISSUE_N"
   gh issue edit "$ISSUE_N" \
-    --remove-label "$LABEL_PROCESSING_PR_DRAFT" \
-    --remove-label "$LABEL_PROCESSING_PR_IMPLEMENT" \
-    --remove-label "$LABEL_PROCESSING_PR_REVIEW"
+    --remove-label "$LABEL_PROCESSING_PR_PLANNER" \
+    --remove-label "$LABEL_PROCESSING_PR_IMPLEMENTER" \
+    --remove-label "$LABEL_PROCESSING_PR_REVIEWER"
 fi
 ```
 
