@@ -13,6 +13,27 @@ PR に assignees が設定されている場合はレビューだけ実施して
 ユーザーが確認完了後に `user-reviewed` ラベルを付与して assignees を外すと、Monitor が検知してマージフローへ自動進行する。
 マージは `pr-merger-auto` が `approved-merge-ok` ラベルを検知して実行する。
 
+## ラベル遷移表
+
+gh-kit フローにおけるラベルの移り変わりを示す。
+
+| フェーズ | PR ラベル | Issue ラベル | 付与者 |
+|---|---|---|---|
+| Issue 起票直後 | — | `確認:issue-reviewer` | `issue-create` スキル |
+| Issue レビュー中 | — | `確認:issue-reviewer`（維持） | — |
+| Issue レビュー完了 | — | （`確認:*` なし） | `issue-review` スキル |
+| Draft PR 作成中 | `処理中` → `wip` | `処理中:pr-draft` | `pr-draft-create-auto` |
+| Draft PR 作成完了 | `wip` | `処理中:pr-draft`（維持） | — |
+| 実装中 | `処理中` | `処理中:pr-implement` | `pr-implement-auto` |
+| 実装完了（Ready 化） | `確認:issue-reviewer` | — | `pr-implement-auto` (ステップ 4) |
+| PR レビュー中 | `確認:issue-reviewer` + `処理中:pr-review` | `処理中:pr-review` | `pr-review-auto` |
+| PR レビュー: ユーザー確認待ち | `確認:issue-reviewer`（除去） + assignees | — | `pr-review-auto` / `pr-reviewer` |
+| ユーザー確認完了 | `user-reviewed` | — | ユーザー手動 |
+| マージ完了 | （PR Close） | （Issue Close） | `pr-reviewer` |
+
+> **注記:** `GH_KIT_LABEL_NEEDS_AI_REVIEW` = `確認:issue-reviewer` が実装完了後の「PR レビュー待ち」ラベルとして機能する。
+> ラベル名は Issue レビュー用と共用されているが、PR フェーズでは「pr-review-auto が AI レビューすべき PR」を示す目的で使用される。
+
 ## タスク
 
 ### ステップ -1: ラベルを冪等に用意する
