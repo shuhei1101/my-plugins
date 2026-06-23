@@ -44,10 +44,10 @@ disable-model-invocation: true
 while true; do
   COUNT=$(gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
     --json number --jq 'length' 2>/dev/null || echo 0)
-  # 処理中:issue-reviewer 付きを除いたカウント
+  # 処理中:* ラベル付きを除いたカウント（処理中: で始まるラベルがひとつでもあれば除外）
   AVAILABLE=$(gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
     --json number,labels \
-    --jq "[.[] | select(.labels | map(.name) | index(\"$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER\") | not)] | length" 2>/dev/null || echo 0)
+    --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"処理中:\")) | any | not))] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:issue-review-auto:count=$AVAILABLE"
     break
@@ -68,7 +68,7 @@ gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --json number
 gh issue view {N} --json number,title,body,labels,comments
 ```
 
-`処理中:issue-reviewer` 付きは除外（他セッションが処理中）。0 件なら停止。
+`処理中:` で始まるラベル付きは除外（他セッションが処理中）。0 件なら停止。
 
 収集後、`優先度:急ぎ` ラベルが付いている Issue を先頭に並べ、次に `優先度:いつでも` 付き、それ以外の順で処理する:
 
