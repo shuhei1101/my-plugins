@@ -110,6 +110,12 @@ upsert_label "type:chore"             "0075CA" "ビルド設定・依存更新�
 upsert_label "type:test"              "0075CA" "テストコードの追加・修正のみ"
 
 # ──────────────────────────────────────────
+# フロー制御: 確認 系（pr-plan-reviewer）
+# ──────────────────────────────────────────
+upsert_label "確認:pr-plan-reviewer"   "0E8A16" "Draft PR プランの AI レビュー待ち（pr-plan-review-auto の起動契機）"
+upsert_label "処理中:pr-plan-reviewer" "FBCA04" "pr-plan-reviewer エージェントがレビュー中"
+
+# ──────────────────────────────────────────
 # PR 専用
 # ──────────────────────────────────────────
 upsert_label "wip"                    "C2E0C6" "Draft 雛形 PR"
