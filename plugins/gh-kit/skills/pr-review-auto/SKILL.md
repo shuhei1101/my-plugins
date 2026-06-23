@@ -34,6 +34,13 @@ gh-kit フローにおけるラベルの移り変わりを示す。
 > **注記:** `GH_KIT_LABEL_NEEDS_AI_REVIEW` = `確認:issue-reviewer` が実装完了後の「PR レビュー待ち」ラベルとして機能する。
 > ラベル名は Issue レビュー用と共用されているが、PR フェーズでは「pr-review-auto が AI レビューすべき PR」を示す目的で使用される。
 
+## ループ継続制約（厳守）
+
+- **Monitor ループは TaskStop が来るまで絶対に終了しない。**
+- ステップ 4 完了後（キューが空になった場合も含む）は**即座にステップ 0（Monitor）へ戻る。**
+- **途中結果報告は禁止。** ステップ 4 の後処理が終わったら報告せず次のポーリングサイクルへ。
+- ステップ 5 はステップ 4 の通常完了フローとは別に、TaskStop を受信したときにのみ実行する。
+
 ## タスク
 
 ### ステップ -1: ラベルを冪等に用意する
@@ -50,6 +57,8 @@ gh label list | grep -q "^${GH_KIT_LABEL_USER_REVIEWED}" || \
 
 対象条件: `確認:issue-reviewer` または `user-reviewed` ラベル付きの Ready（非 Draft）PR（`処理中:` で始まるラベル付きは除外）。
 直列制約は維持（Monitor 検知後もステップ 1→4 の直列ループを継続する）。
+
+**ステップ 4 のキューが空になったらこのステップに戻り、Monitor を再起動してポーリングを継続する。**
 
 ```bash
 # Monitor に渡すポーリングスクリプト
@@ -169,8 +178,11 @@ ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fix
 | failed | `GH_LOGIN="$(gh api user --jq '.login')" && gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_NEEDS_FIX" --add-assignee "$GH_LOGIN" && gh pr comment {N} --body "{詳細}"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
 
 ステップ 2 に戻ってキューが空になるまで繰り返す。
+キューが空になったらステップ 0（Monitor）へ戻り、次のイベントを待機する。
 
-### ステップ 5: 完了報告
+### ステップ 5: 完了報告（TaskStop 受信後のみ実行）
+
+**このステップは TaskStop を受け取った場合にのみ実行する。キューが空になっただけでは実行しない。**
 
 | 項目 | 内容 |
 |---|---|
