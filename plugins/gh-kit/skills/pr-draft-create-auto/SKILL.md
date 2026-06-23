@@ -15,7 +15,7 @@ disable-model-invocation: true
 |---|---|
 | 1 | `state: open` |
 | 2 | `確認:pr-plan` ラベルが付いている |
-| 3 | `処理中` で始まるラベル（`処理中`・`処理中:pr-draft` 等）のいずれも付いていない |
+| 3 | `処理中` で始まるラベル（`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review`・`処理中:pr-merger` 等）のいずれも付いていない |
 
 ## 環境変数
 
@@ -37,18 +37,18 @@ disable-model-invocation: true
 対象 Issue が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `state: open` かつ `確認:pr-plan` ラベルが付いていて、`処理中` で始まるラベルのいずれも付いていない Issue。
+対象条件: `state: open` かつ `確認:pr-plan` ラベルが付いていて、`処理中:` で始まるラベルのいずれも付いていない Issue。
 
 ```bash
 # Monitor に渡すポーリングスクリプト
 while true; do
-  # 確認:pr-plan 付き・処理中なし・open の Issue を取得
+  # 確認:pr-plan 付き・処理中:* なし・open の Issue を取得
   AVAILABLE=$(gh issue list --state open \
     --label "$GH_KIT_LABEL_CONFIRM_PR_PLAN" \
     --json number,labels \
     --jq "[.[] | select(
       (.labels | map(.name) | (
-        (map(startswith(\"$GH_KIT_LABEL_PROCESSING\")) | any | not)
+        (map(startswith(\"処理中:\")) | any | not)
       ))
     )] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
@@ -69,15 +69,15 @@ gh issue list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_PLAN" \
   --json number,title,body,labels,assignees,comments --limit 100
 ```
 
-`確認:pr-plan` ラベルが付いていて、`処理中` で始まるラベル（`処理中`・`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review` 等）のいずれも含まないものをフィルタ。0 件なら停止。
+`確認:pr-plan` ラベルが付いていて、`処理中:` で始まるラベル（`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review`・`処理中:pr-merger` 等）のいずれも含まないものをフィルタ。0 件なら停止。
 
 jq フィルタ例:
 ```bash
-# 処理中 prefix 一括除外: startswith("処理中") でマッチするラベルがひとつでもあれば除外
+# 処理中: prefix 一括除外: startswith("処理中:") でマッチするラベルがひとつでもあれば除外
 select(
   (.labels | map(.name) | (
     index("確認:pr-plan") != null and
-    (map(startswith("処理中")) | any | not)
+    (map(startswith("処理中:")) | any | not)
   ))
 )
 ```
@@ -107,7 +107,7 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 ### ステップ 3: 排他制御
 
 ```bash
-gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
+gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_PR_DRAFT"
 ```
 
 ### ステップ 4: pr-draft-creator をバックグラウンドで並列起動（完了を待たない・通知駆動）
@@ -127,7 +127,7 @@ gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 ```bash
 gh pr edit {PR番号} --add-label "$GH_KIT_LABEL_WIP"
 gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
-gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_PROCESSING_PR_DRAFT"
+# 処理中:pr-draft は排他制御（ステップ 3）で付与済みのため、ここでは何もしない
 ```
 
 後処理完了後、キューに積まれた次の Issue があれば `pr-draft-creator` を起動する。

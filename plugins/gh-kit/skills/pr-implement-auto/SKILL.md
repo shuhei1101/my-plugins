@@ -27,17 +27,17 @@ disable-model-invocation: true
 対象 PR が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `wip` ラベル付きの Draft PR、または `確認:pr-implementer` ラベル付きの PR（Draft・Ready 両方）。いずれも `処理中` 付きは除外。
+対象条件: `wip` ラベル付きの Draft PR、または `確認:pr-implementer` ラベル付きの PR（Draft・Ready 両方）。いずれも `処理中:` で始まるラベル付きは除外。
 
 ```bash
 # Monitor に渡すポーリングスクリプト
 while true; do
   WIP_COUNT=$(gh pr list --state open --label "$GH_KIT_LABEL_WIP" \
     --json number,labels,isDraft \
-    --jq "[.[] | select(.isDraft == true and (.labels | map(.name) | (map(startswith(\"$GH_KIT_LABEL_PROCESSING\")) | any | not)))] | length" 2>/dev/null || echo 0)
+    --jq "[.[] | select(.isDraft == true and (.labels | map(.name) | (map(startswith(\"処理中:\")) | any | not)))] | length" 2>/dev/null || echo 0)
   FIX_COUNT=$(gh pr list --state open --label "$GH_KIT_LABEL_NEEDS_FIX" \
     --json number,labels,isDraft \
-    --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"$GH_KIT_LABEL_PROCESSING\")) | any | not))] | length" 2>/dev/null || echo 0)
+    --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"処理中:\")) | any | not))] | length" 2>/dev/null || echo 0)
   AVAILABLE=$((WIP_COUNT + FIX_COUNT))
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:pr-implement-auto:count=$AVAILABLE"
@@ -68,7 +68,7 @@ Monitor の stdout に `TRIGGER:pr-implement-auto` が来たらステップ 1 �
 gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 ```
 
-`処理中` で始まるラベル（`処理中`・`処理中:pr-draft`・`処理中:pr-implement`・`処理中:pr-review` 等）付きは除外。`wip` ラベル付き PR はさらに `isDraft: true` のみ対象。0 件なら停止。
+`処理中:` で始まるラベル（`処理中:pr-implement`・`処理中:pr-draft`・`処理中:pr-review`・`処理中:pr-merger` 等）付きは除外。`wip` ラベル付き PR はさらに `isDraft: true` のみ対象。0 件なら停止。
 
 収集後、`優先度:急ぎ` ラベルが付いている PR を先頭に並べ、次に `優先度:いつでも` 付き、それ以外の順（番号昇順）で処理する:
 
@@ -90,7 +90,7 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 （存在しないラベルを外そうとしてもエラーにはならない）。
 
 ```bash
-gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING" \
+gh pr edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT" \
   --remove-label "$GH_KIT_LABEL_WIP" --remove-label "$GH_KIT_LABEL_NEEDS_FIX"
 ```
 
@@ -132,7 +132,7 @@ gh pr view {N} --json body --jq '.body' | grep -q "- \[ \] 自動テスト作成
 
 ```bash
 # 成功
-gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"
+gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT" --add-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW"
 if [ "{needs_user_review}" = "true" ]; then
   GH_LOGIN="$(gh api user --jq '.login')"
   gh pr edit {N} --add-assignee "$GH_LOGIN"
@@ -144,7 +144,7 @@ if [ -n "$ISSUE_N" ]; then
 fi
 
 # 失敗
-gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_NEEDS_FIX"
+gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENT" --add-label "$GH_KIT_LABEL_NEEDS_FIX"
 gh pr comment {N} --body "{失敗理由}"
 ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
@@ -164,6 +164,6 @@ fi
 | No | 禁止 |
 |---|---|
 | 1 | マージしてはならない（マージは `pr-review-auto` の責務） |
-| 2 | `処理中` 付き PR を別セッションが触ってはならない |
+| 2 | `処理中:pr-implement` 付き PR を別セッションが触ってはならない |
 | 3 | `wip` ラベル付きで `isDraft: false` の PR は触らない（`確認:pr-implementer` 付き PR は Draft・Ready 両方対象） |
 | 4 | 新規ブランチ・新規 PR を作成しない |
