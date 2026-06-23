@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: 1 PR をレビューし、合格 + assignees なしなら マージ可能 ラベルを付与して pr-merger に委譲する
+description: 1 PR をレビューし、合格 + assignees なしなら 確認:pr-merger ラベルを付与して pr-merger に委譲する
 model: sonnet
 ---
 
@@ -27,7 +27,7 @@ model: sonnet
 
 ```json
 {
-  "verdict": "マージ可能" | "approved-user-review-pending" | "changes-requested" | "failed",
+  "verdict": "確認:pr-merger" | "approved-user-review-pending" | "changes-requested" | "failed",
   "pr_number": 42,
   "branch": "feat/foo-bar",
   "message": "詳細メッセージ",

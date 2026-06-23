@@ -84,9 +84,13 @@ upsert_label "確認:pr-implementer"     "D93F0B" "レビュー結果、pr-imple
 upsert_label "確認:pr-planner"         "0052CC" "AI レビュー完了・PR 作成 OK（pr-draft-create-auto の起動契機）"
 
 # ──────────────────────────────────────────
+# フロー制御: 確認 系（追加）
+# ──────────────────────────────────────────
+upsert_label "確認:pr-merger"          "0E8A16" "pr-reviewer がレビュー OK と判定し、pr-merger によるマージ待ち"
+
+# ──────────────────────────────────────────
 # ステータス
 # ──────────────────────────────────────────
-upsert_label "マージ可能"              "0E8A16" "AI レビュー OK でマージ可（pr-reviewer が付与、pr-merger がマージ後に除去）"
 upsert_label "要修正"                  "D93F0B" "修正が必要（pr-reviewer が付与）"
 
 # ──────────────────────────────────────────
@@ -126,8 +130,9 @@ migrate_label "処理中:pr-review"       "処理中:pr-reviewer"
 # 確認 系 旧→新
 migrate_label "確認:pr-plan"           "確認:pr-planner"
 
-# ステータス 旧英語→新日本語
-migrate_label "approved-merge-ok"      "マージ可能"
+# ステータス 旧→新
+migrate_label "approved-merge-ok"      "確認:pr-merger"
+migrate_label "マージ可能"             "確認:pr-merger"
 migrate_label "needs-fix"              "要修正"
 
 # 旧英語優先度ラベル
