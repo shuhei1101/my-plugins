@@ -64,8 +64,12 @@ CI が failure なら `failed` で返して停止。
 ステップ 2 で取得した PR 本文を対象に、未消化チェックリスト（`- [ ]`）が 1 件以上残っていないか確認する。
 
 ```bash
-# PR 本文の未消化チェックリスト数を確認
-UNCHECKED=$(gh pr view {N} --json body --jq '.body' | python3 -c "import sys; print(sys.stdin.read().count('- [ ]'))")
+# PR 本文の未消化チェックリスト数を確認（行頭の実チェックボックスのみ。インラインコード内の `- [ ]` は除外）
+UNCHECKED=$(gh pr view {N} --json body --jq '.body' | python3 -c "
+import sys, re
+body = sys.stdin.read()
+print(len(re.findall(r'^[ \t]*[-*] \[ \]', body, re.MULTILINE)))
+")
 echo "未消化チェックリスト数: $UNCHECKED"
 ```
 
@@ -168,7 +172,7 @@ gh pr edit {PR_NUMBER} --add-label "$GH_KIT_LABEL_APPROVED_MERGE_OK"
 PR を `--close` した場合（failed / conflict）も `processing:*` ラベルを除去する（Issue は Close しない）。
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/labels.sh"
+. "${CLAUDE_PLUGIN_ROOT}/scripts/constants.sh"
 ISSUE_N=$(gh pr view {PR_NUMBER} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
   gh issue edit "$ISSUE_N" \
