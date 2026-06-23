@@ -61,6 +61,7 @@ gh pr list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_PLAN_REVIEWER" \
 `優先度:急ぎ` ラベルが付いている PR を先頭に、次に `優先度:いつでも` 付き、それ以外は番号昇順で処理する:
 
 ```bash
+# 注: 優先度ラベルは処理順序のみを制御する。ユーザー確認スキップ・自動マージのトリガーにはならない。
 jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORITY_LOW" 'sort_by(
   if (.labels | map(.name) | index($urgent)) then 0
   elif (.labels | map(.name) | index($low)) then 1
