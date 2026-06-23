@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-plan-auto
-description: 確認:pr-plan ラベル付き open Issue（processing:* なし）を全件巡回し Draft PR を並列で作成する（1 Issue 複数派生対応）
+description: 確認:pr-planner ラベル付き open Issue（processing:* なし）を全件巡回し Draft PR を並列で作成する（1 Issue 複数派生対応）
 disable-model-invocation: true
 ---
 
@@ -14,7 +14,7 @@ disable-model-invocation: true
 | No | 条件 |
 |---|---|
 | 1 | `state: open` |
-| 2 | `確認:pr-plan` ラベルが付いている |
+| 2 | `確認:pr-planner` ラベルが付いている |
 | 3 | `処理中` で始まるラベル（`処理中:pr-planner`・`処理中:pr-implementer`・`処理中:pr-reviewer`・`処理中:pr-merger` 等）のいずれも付いていない |
 
 ## 環境変数
@@ -37,12 +37,12 @@ disable-model-invocation: true
 対象 Issue が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
-対象条件: `state: open` かつ `確認:pr-plan` ラベルが付いていて、`処理中:` で始まるラベルのいずれも付いていない Issue。
+対象条件: `state: open` かつ `確認:pr-planner` ラベルが付いていて、`処理中:` で始まるラベルのいずれも付いていない Issue。
 
 ```bash
 # Monitor に渡すポーリングスクリプト
 while true; do
-  # 確認:pr-plan 付き・処理中:* なし・open の Issue を取得
+  # 確認:pr-planner 付き・処理中:* なし・open の Issue を取得
   AVAILABLE=$(gh issue list --state open \
     --label "$GH_KIT_LABEL_CONFIRM_PR_PLANNER" \
     --json number,labels \
@@ -69,14 +69,14 @@ gh issue list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_PLANNER" \
   --json number,title,body,labels,assignees,comments --limit 100
 ```
 
-`確認:pr-plan` ラベルが付いていて、`処理中:` で始まるラベル（`処理中:pr-planner`・`処理中:pr-implementer`・`処理中:pr-reviewer`・`処理中:pr-merger` 等）のいずれも含まないものをフィルタ。0 件なら停止。
+`確認:pr-planner` ラベルが付いていて、`処理中:` で始まるラベル（`処理中:pr-planner`・`処理中:pr-implementer`・`処理中:pr-reviewer`・`処理中:pr-merger` 等）のいずれも含まないものをフィルタ。0 件なら停止。
 
 jq フィルタ例:
 ```bash
 # 処理中: prefix 一括除外: startswith("処理中:") でマッチするラベルがひとつでもあれば除外
 select(
   (.labels | map(.name) | (
-    index("確認:pr-plan") != null and
+    index("確認:pr-planner") != null and
     (map(startswith("処理中:")) | any | not)
   ))
 )
