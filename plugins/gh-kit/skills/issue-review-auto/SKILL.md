@@ -44,10 +44,10 @@ disable-model-invocation: true
 while true; do
   COUNT=$(gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
     --json number --jq 'length' 2>/dev/null || echo 0)
-  # 処理中 付きを除いたカウント
+  # 処理中:issue-reviewer 付きを除いたカウント
   AVAILABLE=$(gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
     --json number,labels \
-    --jq "[.[] | select(.labels | map(.name) | index(\"$GH_KIT_LABEL_PROCESSING\") | not)] | length" 2>/dev/null || echo 0)
+    --jq "[.[] | select(.labels | map(.name) | index(\"$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER\") | not)] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:issue-review-auto:count=$AVAILABLE"
     break
@@ -68,7 +68,7 @@ gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --json number
 gh issue view {N} --json number,title,body,labels,comments
 ```
 
-`処理中` 付きは除外（他セッションが処理中）。0 件なら停止。
+`処理中:issue-reviewer` 付きは除外（他セッションが処理中）。0 件なら停止。
 
 収集後、`優先度:急ぎ` ラベルが付いている Issue を先頭に並べ、次に `優先度:いつでも` 付き、それ以外の順で処理する:
 
@@ -85,7 +85,7 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 ### ステップ 2: 排他制御
 
 ```bash
-gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
+gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
 ```
 
 ### ステップ 3: issue-reviewer をバックグラウンドで並列起動（完了を待たない・通知駆動）
@@ -107,15 +107,15 @@ gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 **status が `ok` の場合（通常レビュー完了）:**
 
 ```bash
-# status: waiting の場合 — ユーザー返答待ちのため 処理中 のみ除去
+# status: waiting の場合 — ユーザー返答待ちのため 処理中:issue-reviewer のみ除去
 if [ "{status}" = "waiting" ]; then
-  gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING"
+  gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
   # 確認:issue-reviewer は維持（次回以降も待機継続）
   return
 fi
 
-# status: ok の場合 — 処理中 と 確認:issue-reviewer を除去
-ARGS=(--remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW")
+# status: ok の場合 — 処理中:issue-reviewer と 確認:issue-reviewer を除去
+ARGS=(--remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW")
 gh issue edit {N} "${ARGS[@]}"
 
 # needs_user_review: true の場合は assignee を追加
@@ -132,10 +132,10 @@ fi
 **status が `duplicate_merged` または `duplicate_closed` の場合（重複検出・クローズ済み）:**
 
 Issue はすでにクローズされているため、ラベル付け替えは不要。
-`処理中` ラベルのみ除去する（クローズ済み Issue には add-label が効かないため remove のみ）:
+`処理中:issue-reviewer` ラベルのみ除去する（クローズ済み Issue には add-label が効かないため remove のみ）:
 
 ```bash
-gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" 2>/dev/null || true
+gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" 2>/dev/null || true
 ```
 
 ### ステップ 5: 結果報告

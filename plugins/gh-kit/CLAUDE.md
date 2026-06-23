@@ -15,7 +15,7 @@ flowchart TD
   UserReply -->|ユーザーが手動で 確認:issue-reviewer 再付与| Issue
   UserReply -->|ユーザーが確認 OK なら 確認:pr-plan 付与| PlanOK
   PlanOK -->|/gh-kit:pr-plan-auto| WIP[(Draft PR + wip)]
-  WIP -->|/gh-kit:pr-implement-auto| Implementing[実装 処理中]
+  WIP -->|/gh-kit:pr-implement-auto| Implementing[実装中 処理中:pr-implementer]
   Implementing -->|完了| NAR[(Ready PR + 確認:issue-reviewer)]
   NAR -->|/gh-kit:pr-review-auto| Reviewed[approved-merge-ok ラベル付与]
   Reviewed -->|/gh-kit:pr-merger-auto| Merged[master]
@@ -117,18 +117,22 @@ flowchart TD
 
 | ラベル | 意味 |
 |---|---|
-| `処理中` | 何らかの作業中（排他マーカー） |
 | `確認:issue-reviewer` | issue-reviewer スキルがレビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
 | `確認:pr-implementer` | レビュー結果、pr-implementer スキルが修正必要 |
 | `確認:pr-plan` | AI レビュー完了・PR 作成 OK（`issue-review` が `needs_user_review: false` 判定時に付与。`pr-plan-auto` の起動契機） |
 
-### gh-kit フロー制御（processing 細分）
+### gh-kit フロー制御（各エージェント固有の処理中ラベル）
 
-| ラベル | 意味 |
-|---|---|
-| `処理中:pr-draft` | Draft PR 作成処理中（`pr-plan-auto` が付与） |
-| `処理中:pr-implement` | 実装エージェントが実装中（`pr-implement-auto` が付与） |
-| `処理中:pr-review` | レビューエージェントがレビュー中（`pr-review-auto` が付与） |
+単体 `処理中` ラベルは廃止。各エージェントが固有の `処理中:*` ラベルを付与することで排他制御する。
+`startswith("処理中:")` で全種類を一括フィルタできるため、Monitor ポーリングはそのまま動作する。
+
+| ラベル | 付与エージェント | 付与先 | 意味 |
+|---|---|---|---|
+| `処理中:issue-reviewer` | `issue-review-auto` | Issue | issue-reviewer が AI レビュー中 |
+| `処理中:pr-planner` | `pr-plan-auto` | Issue, PR | Draft PR 作成処理中 |
+| `処理中:pr-implementer` | `pr-implement-auto` | PR, Issue | 実装エージェントが実装中 |
+| `処理中:pr-reviewer` | `pr-review-auto` | PR, Issue | レビューエージェントがレビュー中 |
+| `処理中:pr-merger` | `pr-merger-auto` | PR | マージエージェントがマージ中 |
 
 ### ユーザー確認待ち（assignees）
 
@@ -142,9 +146,10 @@ flowchart TD
 |---|---|
 | `AIコードスキャン` | claude code がスキャンして起票（出自タグ） |
 | `type:*` | 種別タグ（例: `type:bug`, `type:refactor`） |
-| `処理中:pr-draft` | `pr-plan-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
-| `処理中:pr-implement` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
-| `処理中:pr-review` | `pr-review-auto` がレビュー中（レビュー開始〜マージ/Close まで Issue に付与） |
+| `処理中:issue-reviewer` | `issue-review-auto` が AI レビュー中（レビュー完了で除去） |
+| `処理中:pr-planner` | `pr-plan-auto` が Draft PR を作成完了し PR 対応中（Draft PR が存在する間 Issue に付与） |
+| `処理中:pr-implementer` | `pr-implement-auto` が実装中（実装開始〜完了まで Issue に付与） |
+| `処理中:pr-reviewer` | `pr-review-auto` がレビュー中（レビュー開始〜マージ/Close まで Issue に付与） |
 
 ### 優先度（Issue・PR 共通）
 
