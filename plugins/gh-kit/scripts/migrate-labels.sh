@@ -17,7 +17,9 @@ REPO="${1:-${GH_KIT_REPO:-}}"
 
 migrate_label() {
   local old=$1 new=$2
-  if gh label list --repo "$REPO" --search "$old" --json name --jq '.[].name' | grep -qx "$old"; then
+  # --search は部分一致のリスクあり。--limit 1000 + jq で完全一致確認する
+  if gh label list --repo "$REPO" --limit 1000 --json name \
+      --jq --arg n "$old" '.[] | select(.name == $n) | .name' | grep -qx "$old"; then
     gh label edit "$old" --repo "$REPO" --name "$new" && echo "renamed: $old -> $new"
   else
     echo "skip: $old not found (already renamed or does not exist)"
@@ -28,8 +30,9 @@ echo "=== gh-kit ラベル移行スクリプト ==="
 echo "対象リポジトリ: $REPO"
 echo ""
 
-migrate_label "確認:pr-planner" "確認:pr-plan"
-migrate_label "処理中:pr-planner" "処理中:pr-draft"
+# 確認:pr-plan（skill名）→ 確認:pr-planner（agent名規約）
+migrate_label "確認:pr-plan" "確認:pr-planner"
+# 処理中:pr-planner は既に正しい命名のためリネーム不要
 
 echo ""
 echo "=== 完了 ==="

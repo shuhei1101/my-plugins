@@ -10,10 +10,10 @@ GitHub 操作はすべて `gh` CLI に統一。
 flowchart TD
   U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + 確認:issue-reviewer| Issue[(GitHub Issue)]
   Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント<br>確認:issue-reviewer 除去]
-  Review -->|needs_user_review: false<br>確認:pr-plan 付与| PlanOK[(確認:pr-plan 付き Issue)]
+  Review -->|needs_user_review: false<br>確認:pr-planner 付与| PlanOK[(確認:pr-planner 付き Issue)]
   Review -->|needs_user_review: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
   UserReply -->|ユーザーが手動で 確認:issue-reviewer 再付与| Issue
-  UserReply -->|ユーザーが確認 OK なら 確認:pr-plan 付与| PlanOK
+  UserReply -->|ユーザーが確認 OK なら 確認:pr-planner 付与| PlanOK
   PlanOK -->|/gh-kit:pr-plan-auto| WIP[(Draft PR + wip)]
   WIP -->|/gh-kit:pr-implement-auto| Implementing[実装中 処理中:pr-implementer]
   Implementing -->|完了| NAR[(Ready PR + 確認:issue-reviewer)]
@@ -58,8 +58,7 @@ GH_KIT_REPO=owner/repo bash plugins/gh-kit/scripts/migrate-labels.sh
 
 | 旧ラベル | 新ラベル |
 |---|---|
-| `確認:pr-planner` | `確認:pr-plan` |
-| `処理中:pr-planner` | `処理中:pr-draft` |
+| `確認:pr-plan` | `確認:pr-planner` |
 
 スクリプトは冪等。新ラベル名が既に存在する場合はスキップする。
 
@@ -71,7 +70,7 @@ GH_KIT_REPO=owner/repo bash plugins/gh-kit/scripts/migrate-labels.sh
 | 1a | `/gh-kit:issue-create` | Issue を 1 件起票する（`確認:issue-reviewer` 強制付与）。`code-scanner` や手動呼び出しの両方から使える |
 | 2 | `/gh-kit:issue-review` | 1 Issue をレビューし、本文補完コメント（必要時のみ）+ レビュー結果コメントを投稿 |
 | 3 | `/gh-kit:issue-review-auto` | `確認:issue-reviewer` 付きの Issue を AI レビュー、コメント投稿 |
-| 4 | `/gh-kit:pr-plan-auto` | `確認:pr-plan` 付き Issue 全件 → Draft PR を作成 |
+| 4 | `/gh-kit:pr-plan-auto` | `確認:pr-planner` 付き Issue 全件 → Draft PR を作成 |
 | 5 | `/gh-kit:pr-plan` | 1 Issue から Draft PR を 1 件作成（`pr-planner` エージェントの実装本体） |
 | 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
 | 6a | `/gh-kit:pr-test-create` | PR のテスト計画を立案しテストコードを作成（`pr-test-creator` エージェントの実装本体） |
@@ -140,7 +139,7 @@ GH_KIT_REPO=owner/repo bash plugins/gh-kit/scripts/migrate-labels.sh
 |---|---|
 | `確認:issue-reviewer` | issue-reviewer スキルがレビュー必要（必ず付く）。初回レビュー後に除去。ユーザーが返答後に再付与で再レビューループ開始 |
 | `確認:pr-implementer` | レビュー結果、pr-implementer スキルが修正必要 |
-| `確認:pr-plan` | AI レビュー完了・PR 作成 OK（`issue-review` が `needs_user_review: false` 判定時に付与。`pr-plan-auto` の起動契機） |
+| `確認:pr-planner` | AI レビュー完了・PR 作成 OK（`issue-review` が `needs_user_review: false` 判定時に付与。`pr-plan-auto` の起動契機） |
 
 ### gh-kit フロー制御（各エージェント固有の処理中ラベル）
 
