@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: 1 PR をレビューし、合格 + assignees なしなら approved-merge-ok ラベルを付与して pr-merger に委譲する
+description: 1 PR をレビューし、合格 + assignees なしなら 確認:pr-merger ラベルを付与して pr-merger に委譲する
 model: sonnet
 ---
 

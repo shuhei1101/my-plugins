@@ -44,7 +44,7 @@ disable-model-invocation: true
 while true; do
   # 確認:pr-plan 付き・処理中:* なし・open の Issue を取得
   AVAILABLE=$(gh issue list --state open \
-    --label "$GH_KIT_LABEL_CONFIRM_PR_PLAN" \
+    --label "$GH_KIT_LABEL_CONFIRM_PR_PLANNER" \
     --json number,labels \
     --jq "[.[] | select(
       (.labels | map(.name) | (
@@ -65,7 +65,7 @@ Monitor の stdout に `TRIGGER:pr-plan-auto` が来たらステップ 1 へ進�
 ### ステップ 1: 対象 Issue を収集
 
 ```bash
-gh issue list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_PLAN" \
+gh issue list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_PLANNER" \
   --json number,title,body,labels,assignees,comments --limit 100
 ```
 

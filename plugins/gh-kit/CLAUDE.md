@@ -10,14 +10,14 @@ GitHub 操作はすべて `gh` CLI に統一。
 flowchart TD
   U[ユーザー or /gh-kit:code-scan-auto] -->|gh issue create + 確認:issue-reviewer| Issue[(GitHub Issue)]
   Issue -->|/gh-kit:issue-review-auto| Review[AI が方針/質問を Issue コメント<br>確認:issue-reviewer 除去]
-  Review -->|needs_user_review: false<br>確認:pr-plan 付与| PlanOK[(確認:pr-plan 付き Issue)]
+  Review -->|needs_user_review: false<br>確認:pr-planner 付与| PlanOK[(確認:pr-planner 付き Issue)]
   Review -->|needs_user_review: true<br>ユーザーが返答| UserReply[ユーザーがコメント返答]
   UserReply -->|ユーザーが手動で 確認:issue-reviewer 再付与| Issue
   UserReply -->|ユーザーが確認 OK なら 確認:pr-plan 付与| PlanOK
   PlanOK -->|/gh-kit:pr-plan-auto| WIP[(Draft PR + wip)]
   WIP -->|/gh-kit:pr-implement-auto| Implementing[実装中 処理中:pr-implementer]
   Implementing -->|完了| NAR[(Ready PR + 確認:issue-reviewer)]
-  NAR -->|/gh-kit:pr-review-auto| Reviewed[approved-merge-ok ラベル付与]
+  NAR -->|/gh-kit:pr-review-auto| Reviewed[確認:pr-merger ラベル付与]
   Reviewed -->|/gh-kit:pr-merger-auto| Merged[master]
 ```
 
@@ -55,9 +55,9 @@ flowchart TD
 | 6 | `/gh-kit:pr-implement` | wip Draft PR を 1 件実装し Ready 化（`pr-implementer` エージェントの実装本体） |
 | 6a | `/gh-kit:pr-test-create` | PR のテスト計画を立案しテストコードを作成（`pr-test-creator` エージェントの実装本体） |
 | 7 | `/gh-kit:pr-implement-auto` | `wip` Draft PR を N 件並列で実装 → `pr-test-creator` 先行起動 → Ready 化 |
-| 8 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + assignees 未設定なら `approved-merge-ok` ラベル付与 |
-| 9 | `/gh-kit:pr-merge` | `approved-merge-ok` ラベル付き PR を 1 件 base へマージし worktree 削除・push まで実行 |
-| 10 | `/gh-kit:pr-merger-auto` | `approved-merge-ok` ラベル付き Ready PR を Monitor 方式で直列マージ |
+| 8 | `/gh-kit:pr-review-auto` | `needs-ai-review` Ready PR を直列でレビュー → 合格 + assignees 未設定なら `確認:pr-merger` ラベル付与 |
+| 9 | `/gh-kit:pr-merge` | `確認:pr-merger` ラベル付き PR を 1 件 base へマージし worktree 削除・push まで実行 |
+| 10 | `/gh-kit:pr-merger-auto` | `確認:pr-merger` ラベル付き Ready PR を Monitor 方式で直列マージ |
 | 11 | `/gh-kit:wiki-create` | GitHub Wiki に 1 対象 = 1 ページの仕様スナップショットを新規作成して push |
 
 ## サブエージェント一覧
@@ -70,8 +70,8 @@ flowchart TD
 | 3 | `pr-planner` | `/gh-kit:pr-plan-auto` | `worktree_create` MCP + 雛形コミット + Draft PR 起票 |
 | 4 | `pr-implementer` | `/gh-kit:pr-implement-auto` | 既存 Draft PR に実装コミットを積み Ready 化、ユーザー確認要否を返す |
 | 4a | `pr-test-creator` | `/gh-kit:pr-implement-auto` | `pr-test-create` スキルの薄ラッパー。テスト計画立案 → テストコード作成を担当 |
-| 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は `approved-merge-ok` ラベルを付与して `pr-merger` へ委譲 |
-| 6 | `pr-merger` | `/gh-kit:pr-merger-auto` | `approved-merge-ok` PR を base 取り込み・マージ・`worktree_remove`・push まで実行 |
+| 5 | `pr-reviewer` | `/gh-kit:pr-review-auto` | レビュー → 合格時は `確認:pr-merger` ラベルを付与して `pr-merger` へ委譲 |
+| 6 | `pr-merger` | `/gh-kit:pr-merger-auto` | `確認:pr-merger` PR を base 取り込み・マージ・`worktree_remove`・push まで実行 |
 
 ## 共通リソース
 
@@ -168,7 +168,7 @@ auto 系スキル（`issue-review-auto` / `pr-implement-auto` / `pr-review-auto`
 | ラベル | 意味 |
 |---|---|
 | `wip` | Draft 雛形 PR |
-| `approved-merge-ok` | AI レビュー OK でマージ可（`pr-review` が付与、`pr-merger` がマージ後に除去） |
+| `確認:pr-merger` | pr-reviewer がレビュー OK と判定し、pr-merger によるマージ待ち |
 
 ## 直列マージ原則
 

@@ -1,11 +1,11 @@
 ---
 name: gh-kit:pr-merge
-description: approved-merge-ok ラベル付き PR を 1 件 base へマージし、worktree 削除・push まで実行する
+description: 確認:pr-merger ラベル付き PR を 1 件 base へマージし、worktree 削除・push まで実行する
 ---
 
 # pr-merge
 
-`approved-merge-ok` ラベルが付いた PR を base ブランチへマージする。
+`確認:pr-merger` ラベルが付いた PR を base ブランチへマージする。
 レビュー責務は持たない（`pr-review` が承認済み前提）。
 
 ## 入力
@@ -24,7 +24,7 @@ gh pr view {N} --json number,title,body,headRefName,baseRefName,labels,assignees
 ```
 
 - `isDraft: true` なら `failed` で返して停止
-- `approved-merge-ok` ラベルが付いていなければ `failed` で返して停止
+- `確認:pr-merger` ラベルが付いていなければ `failed` で返して停止
 - assignees が設定されていれば `failed` で返して停止（ユーザー確認待ちのため）
 - CI が failure なら `failed` で返して停止
 

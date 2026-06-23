@@ -1,11 +1,11 @@
 ---
 name: gh-kit:pr-review
-description: 1 件の PR をレビューし、合格かつ assignees がなければ approved-merge-ok ラベルを付与して pr-merger に委譲する
+description: 1 件の PR をレビューし、合格かつ assignees がなければ 確認:pr-merger ラベルを付与して pr-merger に委譲する
 ---
 
 # pr-review
 
-PR を 1 件レビューし、合格時は `approved-merge-ok` ラベルを付与して `pr-merger` に委譲する。
+PR を 1 件レビューし、合格時は `確認:pr-merger` ラベルを付与して `pr-merger` に委譲する。
 マージ責務は持たない（`pr-merge` スキルが実行する）。
 
 ## 入力
@@ -137,20 +137,20 @@ event 判定（優先度順）:
 |---|---|---|---|---|
 | 1（最優先） | PR 本文に `- [ ]` が 1 件以上残っている | ステップ 2.5 で処理済み | `needs-fix`（`確認:pr-implementer` ラベル付与） | ステップ 7-A へスキップ（ここには到達しない） |
 | 2 | blocker / critical / major を含む | `--request-changes` | `changes-requested` | ステップ 7-A（ラベルなし） |
-| 3 | minor / nit のみ + assignees なし | `--approve` | `approved-merge-ok` | ステップ 6（`approved-merge-ok` ラベル付与） |
+| 3 | minor / nit のみ + assignees なし | `--approve` | `approved-merge-ok` | ステップ 6（`確認:pr-merger` ラベル付与） |
 | 4 | minor / nit のみ + assignees あり | `--approve` | `approved-user-review-pending` | ステップ 7-B（ラベルなし） |
 
-## ステップ 6: approved-merge-ok ラベル付与（approve + assignees なしのみ）
+## ステップ 6: 確認:pr-merger ラベル付与（approve + assignees なしのみ）
 
-マージは `pr-merger` スキルに委譲する。このスキルは `approved-merge-ok` ラベルを付与するだけで終了する。
+マージは `pr-merger` スキルに委譲する。このスキルは `確認:pr-merger` ラベルを付与するだけで終了する。
 
 ```bash
-gh pr edit {PR_NUMBER} --add-label "$GH_KIT_LABEL_APPROVED_MERGE_OK"
+gh pr edit {PR_NUMBER} --add-label "$GH_KIT_LABEL_CONFIRM_PR_MERGER"
 ```
 
 | 状況 | verdict |
 |---|---|
-| ラベル付与成功 | `approved-merge-ok` |
+| ラベル付与成功 | `確認:pr-merger` |
 | その他失敗 | `failed` |
 
 ## ステップ 7-A: changes-requested
@@ -172,13 +172,12 @@ gh pr edit {PR_NUMBER} --add-label "$GH_KIT_LABEL_APPROVED_MERGE_OK"
 PR を `--close` した場合（failed / conflict）も `processing:*` ラベルを除去する（Issue は Close しない）。
 
 ```bash
-. "${CLAUDE_PLUGIN_ROOT}/scripts/constants.sh"
 ISSUE_N=$(gh pr view {PR_NUMBER} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fixes) #\K[0-9]+' | head -1)
 if [ -n "$ISSUE_N" ]; then
   gh issue edit "$ISSUE_N" \
-    --remove-label "$LABEL_PROCESSING_PR_PLANNER" \
-    --remove-label "$LABEL_PROCESSING_PR_IMPLEMENTER" \
-    --remove-label "$LABEL_PROCESSING_PR_REVIEWER"
+    --remove-label "$GH_KIT_LABEL_PROCESSING_PR_PLANNER" \
+    --remove-label "$GH_KIT_LABEL_PROCESSING_PR_IMPLEMENTER" \
+    --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"
 fi
 ```
 
