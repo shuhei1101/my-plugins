@@ -32,6 +32,13 @@ disable-model-invocation: true
 
 **ユーザーが再レビューを要求する場合:** ユーザーが Issue にコメントを追記した後、手動で `確認:issue-reviewer` を再付与すると、次回の `issue-review-auto` 実行時に `issue-reviewer` が再レビューモードで動作する。
 
+## ループ継続制約（厳守）
+
+- **Monitor ループは TaskStop が来るまで絶対に終了しない。**
+- サブエージェント完了後は後処理のみ行い、**即座にステップ 0（Monitor）へ戻る。**
+- **途中結果報告は禁止。** 「N 件処理しました」などのユーザー向け報告はステップ 5（全処理終了後）にのみ行う。
+- ステップ 4 が完了したら報告せず次のポーリングサイクルへ。
+
 ## タスク
 
 ### ステップ 0: Monitor でイベント待機
@@ -39,15 +46,17 @@ disable-model-invocation: true
 対象 Issue が既に存在する場合はそのままステップ 1 へ進む。
 存在しない場合は Monitor ツールで以下のポーリングスクリプトを実行し、対象が出現したらステップ 1 へ進む。
 
+**ステップ 4 完了後もこのステップに戻り、Monitor を再起動してポーリングを継続する。**
+
 ```bash
-# Monitor に渡すポーリングスクリプト
+# Monitor に渡すポーリングスクリプト（TRIGGER 後はステップ 1 へ進み、処理完了後に再びこのスクリプトを Monitor で実行する）
 while true; do
   COUNT=$(gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
     --json number --jq 'length' 2>/dev/null || echo 0)
-  # 処理中:issue-reviewer 付きを除いたカウント
+  # 処理中:* ラベル付きを除いたカウント（処理中: で始まるラベルがひとつでもあれば除外）
   AVAILABLE=$(gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" \
     --json number,labels \
-    --jq "[.[] | select(.labels | map(.name) | index(\"$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER\") | not)] | length" 2>/dev/null || echo 0)
+    --jq "[.[] | select(.labels | map(.name) | (map(startswith(\"処理中:\")) | any | not))] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
     echo "TRIGGER:issue-review-auto:count=$AVAILABLE"
     break
@@ -68,7 +77,7 @@ gh issue list --state open --label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" --json number
 gh issue view {N} --json number,title,body,labels,comments
 ```
 
-`処理中:issue-reviewer` 付きは除外（他セッションが処理中）。0 件なら停止。
+`処理中:` で始まるラベル付きは除外（他セッションが処理中）。0 件なら停止。
 
 収集後、`優先度:急ぎ` ラベルが付いている Issue を先頭に並べ、次に `優先度:いつでも` 付き、それ以外の順で処理する:
 
@@ -101,6 +110,8 @@ gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
 
 `issue-reviewer` からの完了通知（`<task-notification>`）を受信したら以下を実行する:
 （戻り値: `{issue_number, re_review_needed, status}` を通知から取得 — エージェントが gh CLI でコメント投稿を完結させる）
+
+**後処理完了後は結果報告せずに即座にステップ 0（Monitor）へ戻る。**
 
 戻り値の `status` と `re_review_needed` に応じてラベルを操作する。
 
@@ -138,7 +149,9 @@ Issue はすでにクローズされているため、ラベル付け替えは�
 gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" --remove-label "$GH_KIT_LABEL_NEEDS_AI_REVIEW" 2>/dev/null || true
 ```
 
-### ステップ 5: 結果報告
+### ステップ 5: 結果報告（TaskStop 受信後のみ実行）
+
+**このステップは TaskStop を受け取った場合にのみ実行する。途中経過の報告は禁止。**
 
 | 項目 | 内容 |
 |---|---|
