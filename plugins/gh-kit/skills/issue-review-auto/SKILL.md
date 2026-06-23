@@ -94,7 +94,10 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 ### ステップ 2: 排他制御
 
 ```bash
-gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
+# 自身に依頼された確認ラベルを除去し、処理中ラベルを付与する
+gh issue edit {N} \
+  --remove-label "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW" \
+  --add-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
 ```
 
 ### ステップ 3: issue-reviewer をバックグラウンドで並列起動（完了を待たない・通知駆動）
@@ -118,10 +121,12 @@ gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
 **status が `ok` の場合（通常レビュー完了）:**
 
 ```bash
-# status: waiting の場合 — ユーザー返答待ちのため 処理中:issue-reviewer のみ除去
+# status: waiting の場合 — ユーザー返答待ちのため 処理中:issue-reviewer と 確認:issue-reviewer を除去
+# ユーザーが返答後に再レビューが必要な場合は手動で 確認:issue-reviewer を再付与すること
 if [ "{status}" = "waiting" ]; then
-  gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER"
-  # 確認:issue-reviewer は維持（次回以降も待機継続）
+  gh issue edit {N} \
+    --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_REVIEWER" \
+    --remove-label "$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW"
   return
 fi
 

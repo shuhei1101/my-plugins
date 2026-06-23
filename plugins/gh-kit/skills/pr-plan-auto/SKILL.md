@@ -134,9 +134,12 @@ gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING_PR_PLANNER"
 （戻り値: `{branch, pr_url, pr_number}` を通知から取得）
 
 ```bash
-gh pr edit {PR番号} --add-label "$GH_KIT_LABEL_WIP"
-gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
-# 処理中:pr-planner は排他制御（ステップ 3）で付与済みのため、ここでは何もしない
+# 処理中:pr-planner を除去し、確認:pr-plan-reviewer を付与する（wip は使用しない）
+gh pr edit {PR番号} \
+  --remove-label "$GH_KIT_LABEL_PROCESSING_PR_PLANNER" \
+  --add-label "$GH_KIT_LABEL_CONFIRM_PR_PLAN_REVIEWER"
+gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_PLANNER"
+gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）。pr-plan-reviewer によるレビュー待ち。"
 ```
 
 後処理完了後、キューに積まれた次の Issue があれば `pr-planner` を起動する。

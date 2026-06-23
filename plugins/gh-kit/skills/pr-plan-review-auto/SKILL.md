@@ -14,13 +14,11 @@ disable-model-invocation: true
 
 | フェーズ | PR ラベル | 付与者 |
 |---|---|---|
-| Draft PR 作成直後 | `wip` | `pr-plan-auto` |
-| PR プランレビュー待ち | `確認:pr-plan-reviewer` | ユーザーまたは将来の自動化 |
-| PR プランレビュー中 | `処理中:pr-plan-reviewer` | このスキル（ステップ 2） |
-| レビュー合格 | `確認:pr-implementer`（`処理中:pr-plan-reviewer` 除去） | このスキル（ステップ 4） |
-| レビュー不合格 | `修正が必要`（`処理中:pr-plan-reviewer` 除去） | このスキル（ステップ 4） |
-
-> **注記:** `wip` ラベルはこのスキルでは除去しない。`pr-implement-auto` の排他制御のため、実装開始時に除去する。
+| Draft PR 作成完了 | `確認:pr-plan-reviewer` | `pr-plan-auto` |
+| PR プランレビュー待ち | `確認:pr-plan-reviewer` | `pr-plan-auto` |
+| PR プランレビュー中 | `確認:pr-plan-reviewer` 除去 + `処理中:pr-plan-reviewer` | このスキル（ステップ 2） |
+| レビュー合格 | `処理中:pr-plan-reviewer` 除去 + `確認:pr-implementer` | このスキル（ステップ 4） |
+| レビュー不合格 | `処理中:pr-plan-reviewer` 除去 + `確認:pr-implementer` | このスキル（ステップ 4） |
 
 ## タスク
 
