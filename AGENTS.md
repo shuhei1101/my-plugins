@@ -93,3 +93,31 @@ hooks が正しく配置されていれば Codex でも同等の rules injection
 ```
 
 詳細は `plugins/util/skills/codex-compat/SKILL.md` を参照してください。
+
+---
+
+## 優先度:急ぎ ラベルの仕様
+
+`優先度:急ぎ`（`GH_KIT_LABEL_PRIORITY_URGENT`）ラベルは **処理順序を先頭に並べる目的のみ** に使用されます。
+
+### 効果
+
+- 各 auto スキル（`issue-review-auto`・`pr-implement-auto`・`pr-review-auto`・`pr-merger-auto`）のキュー形成時、`優先度:急ぎ` が付いた Issue/PR を先頭にソートする。
+- 他の全ての処理はラベルなし Items と同一の手順で実行される。
+
+### 効果がないこと（仕様上の禁止事項）
+
+| 誤解されやすい動作 | 実際の挙動 |
+|---|---|
+| ユーザー確認をスキップする | しない。assignees の有無と verdict で独立して制御される |
+| 自動マージを許可する | しない。assignees が設定されている PR は AI が単独マージしない（pr-review スキル 制約 No.3） |
+| レビューを省略する | しない。通常と同じレビュー・マージフローを通る |
+
+### 実装の根拠
+
+各 auto スキルの jq ソートは以下の形式であり、優先度ラベルに基づく **条件分岐（スキップ・自動マージ）は一切存在しない**:
+
+```bash
+# 優先度ラベルは処理順序のみを制御する。ユーザー確認スキップ・自動マージのトリガーにはならない。
+jq 'sort_by(if 優先度:急ぎ then 0 elif 優先度:いつでも then 1 else 2 end, .number)'
+```

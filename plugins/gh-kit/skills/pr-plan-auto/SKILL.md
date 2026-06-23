@@ -95,6 +95,7 @@ select(
 
 ```bash
 # jq でラベル名に優先度:急ぎ を含むものを先頭に、次に優先度:いつでも、残りは番号昇順
+# 注: 優先度ラベルは処理順序のみを制御する。ユーザー確認スキップ・自動マージのトリガーにはならない。
 jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORITY_LOW" 'sort_by(
   if (.labels | map(.name) | index($urgent)) then 0
   elif (.labels | map(.name) | index($low)) then 1
