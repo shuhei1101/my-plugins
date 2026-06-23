@@ -1,10 +1,10 @@
 ---
-name: gh-kit:pr-draft-create-auto
+name: gh-kit:pr-plan-auto
 description: 確認:pr-plan ラベル付き open Issue（processing:* なし）を全件巡回し Draft PR を並列で作成する（1 Issue 複数派生対応）
 disable-model-invocation: true
 ---
 
-# pr-draft-create-auto
+# pr-plan-auto
 
 「実装着手 OK」になった Issue を全件巡回し、それぞれから Draft PR を作る。
 1 Issue から複数派生してよい。実装は `/gh-kit:pr-implement-auto` が担当。
@@ -21,7 +21,7 @@ disable-model-invocation: true
 
 | 変数 | 既定 | 用途 |
 |---|---|---|
-| `GH_KIT_PR_DRAFT_CREATE_PARALLEL` | `5` | 並列起動上限 |
+| `GH_KIT_PR_PLAN_PARALLEL` | `5` | 並列起動上限 |
 
 ## 入力
 
@@ -52,14 +52,14 @@ while true; do
       ))
     )] | length" 2>/dev/null || echo 0)
   if [ "$AVAILABLE" -gt 0 ]; then
-    echo "TRIGGER:pr-draft-create-auto:count=$AVAILABLE"
+    echo "TRIGGER:pr-plan-auto:count=$AVAILABLE"
     break
   fi
   sleep 30
 done
 ```
 
-Monitor の stdout に `TRIGGER:pr-draft-create-auto` が来たらステップ 1 へ進む。
+Monitor の stdout に `TRIGGER:pr-plan-auto` が来たらステップ 1 へ進む。
 手動停止は TaskStop で行う。
 
 ### ステップ 1: 対象 Issue を収集
@@ -110,18 +110,18 @@ jq --arg urgent "$GH_KIT_LABEL_PRIORITY_URGENT" --arg low "$GH_KIT_LABEL_PRIORIT
 gh issue edit {N} --add-label "$GH_KIT_LABEL_PROCESSING"
 ```
 
-### ステップ 4: pr-draft-creator をバックグラウンドで並列起動（完了を待たない・通知駆動）
+### ステップ 4: pr-planner をバックグラウンドで並列起動（完了を待たない・通知駆動）
 
 **原則: 完了を待たない。** `run_in_background: true` でサブエージェントを起動したら即座に Monitor 監視に戻る。
 完了通知（`<task-notification>`）を受けたら後処理（ステップ 5）を実行する。
 
-各 Issue に対して `pr-draft-creator` サブエージェントを `run_in_background: true` で起動する:
-- 起動上限 **N**（`GH_KIT_PR_DRAFT_CREATE_PARALLEL`）に達している場合は新規起動をキューイングし、1 体完了通知を受けたら次を起動する
+各 Issue に対して `pr-planner` サブエージェントを `run_in_background: true` で起動する:
+- 起動上限 **N**（`GH_KIT_PR_PLAN_PARALLEL`）に達している場合は新規起動をキューイングし、1 体完了通知を受けたら次を起動する
 - 起動後は即座に Monitor に制御を戻す
 
 ### ステップ 5: 通知ハンドラ（サブエージェント完了時に実行）
 
-`pr-draft-creator` からの完了通知（`<task-notification>`）を受信したら以下を実行する:
+`pr-planner` からの完了通知（`<task-notification>`）を受信したら以下を実行する:
 （戻り値: `{branch, pr_url, pr_number}` を通知から取得）
 
 ```bash
@@ -130,7 +130,7 @@ gh issue comment {N} --body "PR #{番号} を起票（スコープ: {scope}）"
 gh issue edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING" --add-label "$GH_KIT_LABEL_PROCESSING_PR_DRAFT"
 ```
 
-後処理完了後、キューに積まれた次の Issue があれば `pr-draft-creator` を起動する。
+後処理完了後、キューに積まれた次の Issue があれば `pr-planner` を起動する。
 
 ### ステップ 6: 完了報告
 

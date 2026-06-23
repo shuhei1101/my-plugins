@@ -22,7 +22,7 @@ gh-kit フローにおけるラベルの移り変わりを示す。
 | Issue 起票直後 | — | `確認:issue-reviewer` | `issue-create` スキル |
 | Issue レビュー中 | — | `確認:issue-reviewer`（維持） | — |
 | Issue レビュー完了 | — | （`確認:*` なし） | `issue-review` スキル |
-| Draft PR 作成中 | `処理中` → `wip` | `処理中:pr-draft` | `pr-draft-create-auto` |
+| Draft PR 作成中 | `処理中` → `wip` | `処理中:pr-draft` | `pr-plan-auto` |
 | Draft PR 作成完了 | `wip` | `処理中:pr-draft`（維持） | — |
 | 実装中 | `処理中` | `処理中:pr-implement` | `pr-implement-auto` |
 | 実装完了（Ready 化） | `確認:issue-reviewer` | — | `pr-implement-auto` (ステップ 4) |

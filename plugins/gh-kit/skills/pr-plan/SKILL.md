@@ -1,9 +1,9 @@
 ---
-name: gh-kit:pr-draft-create
-description: "1 Issue から Draft PR を作成する: PR 本文テンプレ取得 → worktree_create MCP → 空コミット → push → gh pr create --draft。pr-draft-creator エージェントから呼ばれる。"
+name: gh-kit:pr-plan
+description: "1 Issue から Draft PR を作成する: PR 本文テンプレ取得 → worktree_create MCP → 空コミット → push → gh pr create --draft。pr-planner エージェントから呼ばれる。"
 ---
 
-# pr-draft-create
+# pr-plan
 
 1 件の Issue から Draft PR（空コミットのみ）を作成する。
 実装は行わない — 実装は `/gh-kit:pr-implement` が担当。
@@ -89,7 +89,7 @@ EOF
 ルール:
 - `Closes #N` は使わない — 本文先頭に `Refs #N` を置く（1 Issue 複数 PR に対応）。
 - 必ず `--draft` を付ける。
-- ラベル付与（`wip` 等）は呼び出し側（`/gh-kit:pr-draft-create-auto`）の責務。
+- ラベル付与（`wip` 等）は呼び出し側（`/gh-kit:pr-plan-auto`）の責務。
 
 ## ステップ 6: Issue の優先度ラベルを PR に継承
 
