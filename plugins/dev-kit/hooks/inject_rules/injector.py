@@ -7,7 +7,7 @@ import pathlib
 import re
 import sys
 
-LOG_TAG      = "rules-injection"
+LOG_TAG      = "inject_rules"
 TARGET_TOOLS = ("Edit", "Write", "Read")
 
 RULES_DIR  = pathlib.Path(__file__).resolve().parent / "rules"  # .md ルールフォルダの置き場所
@@ -15,7 +15,7 @@ CACHE_PATH = RULES_DIR / "cache.json"                  # スキャン結果キ�
 TOKEN_DIR  = pathlib.Path.home() / ".claude" / "tokens" / "dev-kit" / "rules"  # セッショントークン保存先（プラグイン別）
 
 # 1回の注入で許可する最大文字数（Claude の additional_context 上限）
-CHAR_LIMIT = 10_000
+CHAR_LIMIT = 10000
 # 分割注入時に最低確保する body 文字数（これ未満なら分割せず次ブロックで打ち切る）
 MIN_PARTIAL_CHARS = 200
 
@@ -377,11 +377,11 @@ def main() -> int:
     # systemMessage: 完了・未完了を問わず常に件数を表示する
     if remaining_count > 0:
         progress_line = (
-            f"  ⚠️ 読み込み中: {loaded_files}/{total_files} ファイル / "
+            f"     読み込み中: {loaded_files}/{total_files} ファイル / "
             f"{packed_body_chars:,}/{remaining_total_chars:,} 文字 — 残り {remaining_count} 未完了\n"
         )
     else:
-        progress_line = f"  ✅ 読み込み完了: {loaded_files}/{total_files} ファイル\n"
+        progress_line = f"     読み込み完了: {loaded_files}/{total_files} ファイル\n"
     packed_rel_paths = [b["rel_path"] for b in packed_blocks]
     system_msg = "[rules-injection]\n" + progress_line + "".join(f"  · {f}\n" for f in packed_rel_paths)
 
