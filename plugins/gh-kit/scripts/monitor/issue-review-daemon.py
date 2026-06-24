@@ -104,9 +104,7 @@ def die(msg: str) -> None:
 
 
 def preflight() -> None:
-    """起動前に外部コマンド（claude / gh）の存在と GH_REPO の設定を検証する。"""
-    if not os.environ.get("GH_REPO"):
-        die("GH_REPO 環境変数が未設定です。OWNER/REPO 形式で設定してから再実行してください。")
+    """起動前に外部コマンド（claude / gh）の存在を検証する。"""
     for tool in ("claude", "gh"):
         if shutil.which(tool) is None:
             die(f"{tool!r} が見つかりません。インストールされているか確認してください。")
@@ -126,7 +124,7 @@ def find_next_issue() -> int | None:
     )
     if result.returncode != 0:
         log(f"WARN: gh issue list が失敗しました (exit={result.returncode}): {result.stderr.strip()}")
-        log("  GH_REPO 環境変数を設定するか、git リポジトリ内で実行してください")
+        log("  git リポジトリ内で実行してください")
         return None
     issues = json.loads(result.stdout)
 
@@ -240,7 +238,6 @@ def main() -> int:
     log(f"  GH_KIT_PLUGIN_DIR={GH_KIT_PLUGIN_DIR}")
     log(f"  POLL_INTERVAL={POLL_INTERVAL}s")
     log(f"  LOCK_FILE={LOCK_FILE}")
-    log(f"  GH_REPO={os.environ.get('GH_REPO', '(未設定 — git リポジトリ内で実行するか GH_REPO を設定してください)')}")
     log(f"ポーリング開始（間隔: {POLL_INTERVAL}s）")
 
     while True:
