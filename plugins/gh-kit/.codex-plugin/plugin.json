@@ -1,5 +1,21 @@
 {
   "name": "gh-kit",
   "description": "GitHub Issues/PR/Wiki + ワークツリー操作のフルキット（gh CLI + template_get/worktree_create/worktree_remove MCP + pre-merge-check + Wiki ページ作成）。リモート PR 駆動の自走フロー一式",
-  "version": "0.45"
+  "version": "0.47.0",
+  "author": {
+    "name": "tamago-yaki"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "gh-kit",
+    "shortDescription": "GitHub Issues/PR/Wiki と PR 駆動フローを支援します。",
+    "longDescription": "GitHub Issues、Pull Requests、Wiki、ワークツリー操作をまとめ、Issue レビューから PR 作成、実装、レビュー、マージまでのリモート PR 駆動フローを支援するプラグインです。",
+    "developerName": "tamago-yaki",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "defaultPrompt": [
+      "Use gh-kit to review GitHub Issues.",
+      "Use gh-kit to create a draft PR."
+    ]
+  }
 }

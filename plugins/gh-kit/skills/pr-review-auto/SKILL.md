@@ -1,7 +1,7 @@
 ---
 name: gh-kit:pr-review-auto
 description: 確認:pr-reviewer（GH_KIT_LABEL_CONFIRM_PR_REVIEW）ラベル付き PR を 1 件ずつ直列でレビューし、承認後はユーザーへの確認案内コメントを投稿する（確認:pr-merger はユーザーが手動付与）
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # pr-review-auto

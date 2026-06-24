@@ -1,7 +1,7 @@
 ---
 name: gh-kit:issue-review-auto
 description: 確認:issue-reviewer（GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW）ラベルの Issue を並列で AI レビューし、コメント投稿する
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # issue-review-auto

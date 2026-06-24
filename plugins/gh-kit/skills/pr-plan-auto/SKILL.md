@@ -1,7 +1,7 @@
 ---
 name: gh-kit:pr-plan-auto
 description: 確認:pr-planner ラベル付き open Issue（processing:* なし）を全件巡回し Draft PR を並列で作成する（1 Issue 複数派生対応）
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # pr-plan-auto

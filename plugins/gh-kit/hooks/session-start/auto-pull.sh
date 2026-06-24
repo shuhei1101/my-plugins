@@ -14,15 +14,15 @@ pull_repo() {
   local path="$2"
 
   if [ ! -d "$path/.git" ]; then
-    echo "[gh-kit:session-start-pull] WARN: ${label} のパスが git リポジトリではありません: ${path}" >&2
+    echo "[gh-kit:auto-pull] WARN: ${label} のパスが git リポジトリではありません: ${path}" >&2
     return
   fi
 
-  echo "[gh-kit:session-start-pull] ${label} を pull 中: ${path}"
+  echo "[gh-kit:auto-pull] ${label} を pull 中: ${path}"
   if git -C "$path" pull --ff-only 2>&1; then
-    echo "[gh-kit:session-start-pull] ${label} の pull 完了"
+    echo "[gh-kit:auto-pull] ${label} の pull 完了"
   else
-    echo "[gh-kit:session-start-pull] WARN: ${label} の pull に失敗しました（続行）: ${path}" >&2
+    echo "[gh-kit:auto-pull] WARN: ${label} の pull に失敗しました（続行）: ${path}" >&2
   fi
 }
 

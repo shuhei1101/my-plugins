@@ -4,19 +4,19 @@
       {
         "hooks": [
           {
-            "_description": "gh-kit 定数（ラベル名・カラー等）を環境変数としてセッション内に展開する",
+            "_description": "定数を環境変数としてセッション内に展開する",
             "type": "command",
             "command": "bash",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/scripts/constants.sh"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/session-start/constants.sh"
             ]
           },
           {
-            "_description": "GH_KIT_REPO_PATH / GH_KIT_WIKI_PATH が設定されていればリポジトリを pull して最新化する",
+            "_description": "GH_KIT_REPO_PATH / GH_KIT_WIKI_PATH のリポジトリを pull して最新化する",
             "type": "command",
             "command": "bash",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/scripts/session-start-pull.sh"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/session-start/auto-pull.sh"
             ]
           }
         ]

@@ -1,7 +1,7 @@
 ---
 name: gh-kit:pr-plan-review-auto
 description: 確認:pr-plan-reviewer ラベル付き Draft PR を全件巡回し、pr-plan-reviewer に委譲して PR プランをレビューする。合格時は 確認:pr-implementer ラベルを付与して実装フローに引き渡す。
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # pr-plan-review-auto

@@ -1,7 +1,7 @@
 ---
 name: gh-kit:pr-merger-auto
 description: 確認:pr-merger ラベル付き PR を 1 件ずつ直列でマージする（Draft・Ready 問わずラベルのみで判断）
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # pr-merger-auto
