@@ -31,12 +31,6 @@ python tools/bump-version.py minor
 python tools/bump-version.py major
 ```
 
-
-
-
-
-
-
 Claude Code プラグインのマーケットプレイスです。
 スキル・エージェント・フックなどをプラグインとして配布・管理します。
 
