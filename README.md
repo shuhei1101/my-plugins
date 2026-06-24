@@ -37,6 +37,21 @@ GH_KIT=$(ls ~/.claude/plugins/cache/mentaiko-claude-plugins/gh-kit/ | sort -V | 
 python ~/.claude/plugins/cache/mentaiko-claude-plugins/gh-kit/${GH_KIT}/scripts/monitor/issue-review-daemon.py
 ```
 
+- gh_monitor.env の例（`gh_monitor.env.example` をコピーして編集）
+```env
+# 対象 GitHub リポジトリ（OWNER/REPO 形式、必須）
+GH_REPO=your-org/your-repo
+
+# AI ツール名（省略時: claude）
+# AI_TOOL=claude
+
+# ポーリング間隔（秒、省略時: 30）
+# POLL_INTERVAL=30
+
+# claude -p の最大予算 USD（省略時: 2.00）
+# MAX_BUDGET_USD=2.00
+```
+
 Claude Code プラグインのマーケットプレイスです。
 スキル・エージェント・フックなどをプラグインとして配布・管理します。
 
