@@ -90,11 +90,6 @@ upsert_label "確認:pr-planner"         "0052CC" "AI レビュー完了・PR �
 upsert_label "確認:pr-merger"          "0E8A16" "pr-reviewer がレビュー OK と判定し、pr-merger によるマージ待ち"
 
 # ──────────────────────────────────────────
-# ステータス
-# ──────────────────────────────────────────
-upsert_label "要修正"                  "D93F0B" "修正が必要（pr-reviewer が付与）"
-
-# ──────────────────────────────────────────
 # 優先度
 # ──────────────────────────────────────────
 upsert_label "優先度:急ぎ"             "B60205" "セキュリティ脆弱性・クラッシュバグ・データ損失リスクなど早急に対応が必要なもの"
@@ -135,8 +130,6 @@ migrate_label "確認:pr-plan"           "確認:pr-planner"
 # ステータス 旧→新
 migrate_label "approved-merge-ok"      "確認:pr-merger"
 migrate_label "マージ可能"             "確認:pr-merger"
-migrate_label "needs-fix"              "要修正"
-
 # 旧英語優先度ラベル
 migrate_label "priority:high"          "優先度:急ぎ"
 migrate_label "priority:medium"        "優先度:いつでも"
