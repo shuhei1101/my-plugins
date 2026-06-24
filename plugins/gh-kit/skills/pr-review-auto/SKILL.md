@@ -1,6 +1,6 @@
 ---
 name: gh-kit:pr-review-auto
-description: 確認:pr-reviewer（GH_KIT_LABEL_CONFIRM_PR_REVIEW）ラベル付き PR を 1 件ずつ直列でレビューし、合格 + assignees なしなら 確認:pr-merger ラベルを付与する
+description: 確認:pr-reviewer（GH_KIT_LABEL_CONFIRM_PR_REVIEW）ラベル付き PR を 1 件ずつ直列でレビューし、承認後はユーザーへの確認案内コメントを投稿する（確認:pr-merger はユーザーが手動付与）
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,8 @@ disable-model-invocation: true
 **並列実行は絶対にしない**（master 取り込みとマージが競合してバグるため）。
 
 PR に assignees が設定されている場合はレビューだけ実施してマージしない。
-ユーザー確認完了後は、ユーザーが手動で `確認:pr-merger` ラベルを付与する（`user-reviewed` ラベルによる自動進行は廃止）。
+レビュー承認後は、ユーザーが内容を確認してから手動で `確認:pr-merger` ラベルを付与する。
+**AI は `確認:pr-merger` ラベルを自動付与しない（誤マージ防止のため）。**
 マージは `pr-merger-auto` が `確認:pr-merger` ラベルを検知して実行する。
 
 ## ラベル遷移表
@@ -34,7 +35,7 @@ gh-kit フローにおけるラベルの移り変わりを示す。
 | PR レビュー中 | `確認:pr-reviewer` 除去 + `処理中:pr-reviewer` | `処理中:pr-reviewer` | `pr-review-auto` | `$GH_KIT_LABEL_CONFIRM_PR_REVIEW`, `$GH_KIT_LABEL_PROCESSING_PR_REVIEWER` |
 | PR レビュー: ユーザー確認待ち | `処理中:pr-reviewer` 除去 + assignees | — | `pr-review-auto` / `pr-reviewer` | — |
 | ユーザー確認完了 | ユーザーが手動で `確認:pr-merger` を付与 | — | ユーザー手動 | `$GH_KIT_LABEL_CONFIRM_PR_MERGER` |
-| マージ待ち | `確認:pr-merger` | — | `pr-reviewer` スキル | `$GH_KIT_LABEL_CONFIRM_PR_MERGER` |
+| マージ待ち | `確認:pr-merger` | — | **ユーザー手動**（AI は自動付与しない） | `$GH_KIT_LABEL_CONFIRM_PR_MERGER` |
 | マージ中 | `確認:pr-merger` 除去 + `処理中:pr-merger` | — | `pr-merger-auto` | `$GH_KIT_LABEL_PROCESSING_PR_MERGER` |
 | マージ完了 | （PR Close） | `処理中:*` 除去 + （Issue Close） | `pr-merger` スキル | — |
 
@@ -137,7 +138,7 @@ ISSUE_N=$(gh pr view {N} --json body --jq '.body' | grep -oP '(?:Refs|Closes|Fix
 
 | verdict | 動作 |
 |---|---|
-| approved-merge-ok | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --remove-label "$GH_KIT_LABEL_CONFIRM_PR_REVIEW"`（`確認:pr-merger` ラベルは pr-reviewer が付与済み。マージは pr-merger-auto が実行する）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
+| approved-pending-user-merge | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --remove-label "$GH_KIT_LABEL_CONFIRM_PR_REVIEW"`（**`確認:pr-merger` ラベルはユーザーが手動で付与する。AI による自動付与は禁止。** ユーザーが `確認:pr-merger` を付与すると pr-merger-auto がマージを実行する）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
 | approved-user-review-pending | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --remove-label "$GH_KIT_LABEL_CONFIRM_PR_REVIEW"`（assignees はそのまま残す。ユーザーが手動で `確認:pr-merger` を付与してから assignees を外すと pr-merger-auto がマージを実行する）+ `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
 | needs-fix | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"`（PR 本文の `- [ ]` 未消化による差し戻し。`確認:pr-implementer`（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`）ラベルが付与された状態で `pr-implement-auto` の次回実行を待つ） |
 | changes-requested | `gh pr edit {N} --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER" --add-label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT"` + `gh issue edit "$ISSUE_N" --remove-label "$GH_KIT_LABEL_PROCESSING_PR_REVIEWER"` |
