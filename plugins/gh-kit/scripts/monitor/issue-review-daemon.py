@@ -89,7 +89,9 @@ def die(msg: str) -> None:
 
 
 def preflight() -> None:
-    """起動前に外部コマンド（AI_TOOL / gh）の存在を検証する。"""
+    """起動前に外部コマンド（AI_TOOL / gh）の存在と GH_REPO の設定を検証する。"""
+    if not os.environ.get("GH_REPO"):
+        die("GH_REPO 環境変数が未設定です。OWNER/REPO 形式で設定してから再実行してください。")
     for tool in (AI_TOOL, "gh"):
         if shutil.which(tool) is None:
             die(f"{tool!r} が見つかりません。インストールされているか確認してください。")
