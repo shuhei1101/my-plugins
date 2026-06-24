@@ -1,23 +1,37 @@
 # プラグイン更新時のルール
 
 プラグイン更新時必ず以下ファイルのバージョンを更新すること。
-Claude Code 向けと Codex 向けの両方を更新する。
 
-## Claude Code 向け（.claude-plugin/）
+## マニフェスト管理方針（symlink 方式）
 
-- `plugins/<name>/.claude-plugin/plugin.json` — バージョン・説明を更新
-- `.claude-plugin/marketplace.json` — バージョン・説明を更新
+`.codex-plugin/*.json` を正ファイルとし、`.claude-plugin/*.json` はシンボリックリンクで参照します。
 
-## Codex 向け（.codex-plugin/）
+```
+.codex-plugin/plugin.json  ← 正ファイル（こちらを更新する）
+.claude-plugin/plugin.json → ../.codex-plugin/plugin.json（symlink）
+```
+
+### 更新手順
+
+`.codex-plugin/` 側のみを更新すれば、`.claude-plugin/` 側にも自動反映されます。
 
 - `plugins/<name>/.codex-plugin/plugin.json` — バージョン・説明を更新
 - `.codex-plugin/marketplace.json` — バージョン・説明を更新
 
-> **推奨**: `.claude-plugin/*.json` を更新した後、同期スクリプトを実行すると Codex 側に自動反映できます。
+### symlink を初期化する場合
+
+symlink が壊れているまたは初回セットアップの場合は `/util:codex-compat` スキルを実行してください。
 
 ```bash
-# リポジトリルートで実行
-bash plugins/gh-kit/scripts/sync-codex-manifests.sh
+# 手動で symlink を作成する場合
+cd plugins/<name>/
+rm -f .claude-plugin/plugin.json
+ln -s "../.codex-plugin/plugin.json" .claude-plugin/plugin.json
+
+# ルートの marketplace.json
+cd <repo-root>
+rm -f .claude-plugin/marketplace.json
+ln -s "../.codex-plugin/marketplace.json" .claude-plugin/marketplace.json
 ```
 
-このスクリプトは冪等です。差分がある場合のみ上書きするため、何度実行しても安全です。
+> **前提**: WSL2 環境（`core.symlinks=true` が必要）。詳細は `plugins/util/skills/codex-compat/SKILL.md` を参照。

@@ -1,7 +1,7 @@
 # AGENTS.md — my-plugins 開発者ガイド
 
 > このファイルは AGENTS.md を正として管理されます。
-> CLAUDE.md は「AGENTS.md を参照」する薄いプレースホルダです（Windows 環境でのシンボリックリンク互換性問題を回避するため）。
+> CLAUDE.md は AGENTS.md へのシンボリックリンクです（WSL2 前提。`core.symlinks=true` で動作）。
 > Claude Code も OpenAI Codex も同一の指示ファイル（AGENTS.md）を参照します。
 
 ---
@@ -18,7 +18,7 @@
 
 | 要素 | Claude Code | OpenAI Codex | 共存方針 |
 |---|---|---|---|
-| 指示ファイル | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` を正とし `CLAUDE.md` は薄いプレースホルダ（Windows 互換性のためシンボリックリンクを使わない） |
+| 指示ファイル | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` を正とし `CLAUDE.md` はシンボリックリンク（WSL2 前提。`core.symlinks=true` で動作） |
 | フック設定 | `hooks/hooks.json`（プラグイン内） | `.codex/hooks.json` or `~/.codex/hooks.json` | ライフサイクルイベント名は共通。設定配置先が異なる |
 | スキル | `skills/<name>/SKILL.md` | `skills/<name>/SKILL.md` | 完全共通（フロントマターも同一） |
 | プラグインマニフェスト | `.claude-plugin/plugin.json` | `.codex-plugin/plugin.json` | 両方を並置 |
