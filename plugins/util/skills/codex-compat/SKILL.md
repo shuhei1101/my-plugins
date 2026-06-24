@@ -134,7 +134,41 @@ find "$TARGET_DIR" \
   done
 ```
 
-### ステップ 5: 設定ファイル系の対応案内
+### ステップ 5: plugin.json / marketplace.json のシンボリックリンク化
+
+各プラグインおよびリポジトリルートの `plugin.json` / `marketplace.json` については、
+`.codex-plugin/` 側を正として `.claude-plugin/` 側をシンボリックリンクにすることで DRY に管理できます。
+
+> **方針**: `.codex-plugin/plugin.json` を正ファイルとし、`.claude-plugin/plugin.json` をシンボリックリンクにする
+
+```bash
+TARGET_DIR="${1:-$(pwd)}"
+
+# 各プラグインの plugin.json を symlink 化
+for plugin_dir in "$TARGET_DIR"/plugins/*/; do
+  src="$plugin_dir/.codex-plugin/plugin.json"
+  dst="$plugin_dir/.claude-plugin/plugin.json"
+  if [ -f "$src" ] && [ -f "$dst" ]; then
+    rm "$dst"
+    ln -s "../.codex-plugin/plugin.json" "$dst"
+    echo "symlinked: $dst -> ../.codex-plugin/plugin.json"
+  fi
+done
+
+# ルートの marketplace.json を symlink 化
+src="$TARGET_DIR/.codex-plugin/marketplace.json"
+dst="$TARGET_DIR/.claude-plugin/marketplace.json"
+if [ -f "$src" ] && [ -f "$dst" ]; then
+  rm "$dst"
+  ln -s "../.codex-plugin/marketplace.json" "$dst"
+  echo "symlinked: $dst -> ../.codex-plugin/marketplace.json"
+fi
+```
+
+> **注意**: symlink 化後は `.codex-plugin/` 側のみを更新すれば両方に反映されます。
+> `sync-codex-manifests.sh` を使用していた場合は不要になります。
+
+### ステップ 6: 設定ファイル系の対応案内
 
 スクリプトによる自動移行が難しい設定ファイルについては、以下の指示に従って手動対応する:
 
@@ -155,9 +189,20 @@ Claude Code と Codex で共通のため、設定ファイルの中身は流用�
 
 ---
 
+## 前提条件（WSL2 前提）
+
+このスキルは **WSL2（Windows Subsystem for Linux 2）前提** で動作設計されています。
+
+| 環境 | サポート状況 |
+|---|---|
+| WSL2 (Linux on Windows) | 完全サポート。`core.symlinks=true` が標準で有効 |
+| Linux / macOS | 完全サポート |
+| Windows ネイティブ (cmd.exe / PowerShell) | 非サポート。`mklink /D` には管理者権限が必要。Git の `core.symlinks` が `false` になっている場合あり |
+
+WSL2 では `core.symlinks=true` がデフォルトのため、`ln -s` で作成した symlink は `git add` で mode 120000 として正しくトラッキングされます。
+
 ## 注意事項
 
-- WSL2 環境ではシンボリックリンクが `ln -s` で作成可能（Windows 側からは見えない場合あり）
 - `.gitignore` にシンボリックリンクが除外されていないことを確認すること
-- Git はシンボリックリンクをトラッキングできる（`git config core.symlinks true` が必要な場合あり）
-- Codex がシンボリックリンクを解釈できるかは実行環境依存。解釈できない場合は 3-a/3-b でコピー運用に切り替える
+- `git config core.symlinks` が `false` の場合は `git config core.symlinks true` を実行してから作業すること
+- Windows ネイティブ環境（WSL 外）での使用は想定外。`cmd.exe` の管理者権限 + `mklink` が必要になる
