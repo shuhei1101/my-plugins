@@ -14,19 +14,13 @@
       "name": "dev-kit",
       "source": "./plugins/dev-kit",
       "description": "編集対象ファイルに応じた開発ルールを自動注入するプラグイン",
-      "version": "1.17"
+      "version": "1.18"
     },
     {
       "name": "gh-kit",
       "source": "./plugins/gh-kit",
       "description": "GitHub Issues/PR/Wiki + ワークツリー操作のフルキット（gh CLI + template_get/worktree_create/worktree_remove MCP + pre-merge-check + Wiki ページ作成）。リモート PR 駆動の自走フロー一式",
-      "version": "0.49"
-    },
-    {
-      "name": "util",
-      "source": "./plugins/util",
-      "description": "汎用ユーティリティスキル集（サブエージェント委譲・Codex 両対応移行など）",
-      "version": "1.2"
+      "version": "0.50"
     }
   ]
 }

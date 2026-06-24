@@ -7,9 +7,7 @@
     ./issue-review-daemon.py
 
 環境変数（オプション、上書き用）:
-    AI_TOOL             使用する AI CLI ツール (claude / codex) [デフォルト: claude]
     POLL_INTERVAL       ポーリング間隔（秒）[デフォルト: 30]
-    MAX_BUDGET_USD      claude -p の最大予算（USD）[デフォルト: 2.00]
     LOCK_FILE           flock に使うロックファイルパス [デフォルト: $TMPDIR/gh-kit-issue-review.lock]
     TMPDIR              一時ディレクトリ（POSIX 標準）。LOCK_FILE のデフォルトパス算出に使用。
                         未設定なら Python の tempfile.gettempdir() が /tmp 等を返す。
@@ -82,9 +80,7 @@ _load_env_file(Path.cwd() / "gh_monitor.env")
 # これにより GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW などが定数名そのままで使える。
 _load_constants_sh(globals())
 
-AI_TOOL = os.environ.get("AI_TOOL", "claude")
 POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", "30"))
-MAX_BUDGET_USD = os.environ.get("MAX_BUDGET_USD", "2.00")
 LOCK_FILE = os.environ.get(
     "LOCK_FILE",
     str(Path(os.environ.get("TMPDIR", tempfile.gettempdir())) / "gh-kit-issue-review.lock"),
@@ -108,10 +104,10 @@ def die(msg: str) -> None:
 
 
 def preflight() -> None:
-    """起動前に外部コマンド（AI_TOOL / gh）の存在と GH_REPO の設定を検証する。"""
+    """起動前に外部コマンド（claude / gh）の存在と GH_REPO の設定を検証する。"""
     if not os.environ.get("GH_REPO"):
         die("GH_REPO 環境変数が未設定です。OWNER/REPO 形式で設定してから再実行してください。")
-    for tool in (AI_TOOL, "gh"):
+    for tool in ("claude", "gh"):
         if shutil.which(tool) is None:
             die(f"{tool!r} が見つかりません。インストールされているか確認してください。")
 
@@ -180,11 +176,10 @@ def remove_label(issue_number: int, label: str) -> None:
 def run_ai_review(issue_number: int) -> int:
     """AI CLI に /gh-kit:issue-review を投げ、出力を stderr にミラーして exit code を返す。"""
     cmd = [
-        AI_TOOL, "-p", f"/gh-kit:issue-review {issue_number}",
+        "claude", "-p", f"/gh-kit:issue-review {issue_number}",
         "--plugin-dir", GH_KIT_PLUGIN_DIR,
         "--permission-mode", "dontAsk",
         "--allowedTools", "Bash,Read,Edit,Write,WebFetch",
-        "--max-budget-usd", MAX_BUDGET_USD,
         "--output-format", "json",
         "--no-session-persistence",
     ]
@@ -220,7 +215,7 @@ def review_issue(issue_number: int) -> None:
             if exit_code != 0:
                 # AI CLI が異常終了: ラベルを戻してキュー再投入させる
                 log(
-                    f"ERROR: {AI_TOOL} -p が異常終了しました"
+                    f"ERROR: claude -p が異常終了しました"
                     f"（Issue #{issue_number}, exit_code={exit_code}）"
                 )
                 log("  処理中ラベルを除去してキューに戻します")
@@ -242,10 +237,8 @@ def main() -> int:
     preflight()
 
     log("issue-review-daemon 起動")
-    log(f"  AI_TOOL={AI_TOOL}")
     log(f"  GH_KIT_PLUGIN_DIR={GH_KIT_PLUGIN_DIR}")
     log(f"  POLL_INTERVAL={POLL_INTERVAL}s")
-    log(f"  MAX_BUDGET_USD={MAX_BUDGET_USD}")
     log(f"  LOCK_FILE={LOCK_FILE}")
     log(f"  GH_REPO={os.environ.get('GH_REPO', '(未設定 — git リポジトリ内で実行するか GH_REPO を設定してください)')}")
     log(f"ポーリング開始（間隔: {POLL_INTERVAL}s）")
