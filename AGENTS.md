@@ -1,7 +1,7 @@
 # AGENTS.md — my-plugins 開発者ガイド
 
 > このファイルは AGENTS.md を正として管理されます。
-> CLAUDE.md は「AGENTS.md を参照」する薄いプレースホルダです（Windows 環境でのシンボリックリンク互換性問題を回避するため）。
+> CLAUDE.md は AGENTS.md へのシンボリックリンクです（WSL2 前提。`core.symlinks=true` で動作）。
 > Claude Code も OpenAI Codex も同一の指示ファイル（AGENTS.md）を参照します。
 
 ---
@@ -18,7 +18,7 @@
 
 | 要素 | Claude Code | OpenAI Codex | 共存方針 |
 |---|---|---|---|
-| 指示ファイル | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` を正とし `CLAUDE.md` は薄いプレースホルダ（Windows 互換性のためシンボリックリンクを使わない） |
+| 指示ファイル | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` を正とし `CLAUDE.md` はシンボリックリンク（WSL2 前提。`core.symlinks=true` で動作） |
 | フック設定 | `hooks/hooks.json`（プラグイン内） | `.codex/hooks.json` or `~/.codex/hooks.json` | ライフサイクルイベント名は共通。設定配置先が異なる |
 | スキル | `skills/<name>/SKILL.md` | `skills/<name>/SKILL.md` | 完全共通（フロントマターも同一） |
 | プラグインマニフェスト | `.claude-plugin/plugin.json` | `.codex-plugin/plugin.json` | 両方を並置 |
@@ -93,6 +93,37 @@ hooks が正しく配置されていれば Codex でも同等の rules injection
 ```
 
 詳細は `plugins/util/skills/codex-compat/SKILL.md` を参照してください。
+
+---
+
+## AI が自動付与してはいけないラベル
+
+以下のラベルは **ユーザーが手動で付与する責務** を持つ。AI（issue-reviewer・pr-reviewer 等）による自動付与は絶対に禁止。
+
+| ラベル | 変数 | 付与タイミング | 付与者 | 禁止されているスキル |
+|---|---|---|---|---|
+| `確認:pr-planner` | `$GH_KIT_LABEL_CONFIRM_PR_PLANNER` | Issue レビュー完了後、ユーザーが内容を確認して PR 作成を承認するとき | **ユーザー手動** | `issue-review`, `issue-reviewer` |
+| `確認:pr-merger` | `$GH_KIT_LABEL_CONFIRM_PR_MERGER` | PR レビュー承認後、ユーザーが内容を確認してマージを承認するとき | **ユーザー手動** | `pr-review`, `pr-reviewer` |
+
+### 禁止の理由
+
+1. **誤マージ・誤起動の防止**: AI がラベルを自動付与すると、ユーザーが意図しないタイミングで次工程（PR 作成・マージ）が自動実行される。
+2. **ユーザーの承認ステップを保証**: 重要な操作（PR 作成・マージ）には必ずユーザーの目視確認と意思決定を挟む。
+3. **フロー制御の明確化**: 「AI がレビューする」と「ユーザーが承認する」は別の責務として分離する。
+
+### 正しいフロー
+
+```
+[Issue レビュー完了] → issue-reviewer が assignee を追加 + 案内コメント投稿
+  → ユーザーが Issue を確認
+  → ユーザーが手動で 確認:pr-planner を付与
+  → pr-plan-auto が Draft PR を作成
+
+[PR レビュー承認] → pr-reviewer が承認コメント投稿（ラベル付与なし）
+  → ユーザーが PR を確認
+  → ユーザーが手動で 確認:pr-merger を付与
+  → pr-merger-auto がマージを実行
+```
 
 ---
 

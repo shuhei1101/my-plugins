@@ -1,11 +1,12 @@
 ---
 name: gh-kit:pr-review
-description: 1 件の PR をレビューし、合格かつ assignees がなければ 確認:pr-merger ラベルを付与して pr-merger に委譲する
+description: 1 件の PR をレビューし、合格かつ assignees がなければユーザーへの確認コメントを投稿する（確認:pr-merger ラベルはユーザーが手動付与）
 ---
 
 # pr-review
 
-PR を 1 件レビューし、合格時は `確認:pr-merger` ラベルを付与して `pr-merger` に委譲する。
+PR を 1 件レビューし、合格時はユーザーへの確認コメントを投稿する。
+`確認:pr-merger` ラベルはユーザーが手動で付与する（AI による自動付与は禁止）。
 マージ責務は持たない（`pr-merge` スキルが実行する）。
 
 ## 入力
@@ -164,21 +165,8 @@ event 判定（優先度順）:
 |---|---|---|---|---|
 | 1（最優先） | PR 本文に `- [ ]` が 1 件以上残っている | ステップ 2.5 で処理済み | `needs-fix`（`確認:pr-implementer`（`$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`）ラベル付与） | ステップ 7-A へスキップ（ここには到達しない） |
 | 2 | blocker / critical / major を含む | `--request-changes` | `changes-requested` | ステップ 7-A（ラベルなし） |
-| 3 | minor / nit のみ + assignees なし | `--approve` | `approved-merge-ok` | ステップ 6（`確認:pr-merger` ラベル付与） |
+| 3 | minor / nit のみ + assignees なし | `--approve` | `approved-pending-user-merge` | ステップ 7-D（ユーザーへの説明コメント投稿、ラベル付与なし） |
 | 4 | minor / nit のみ + assignees あり | `--approve` | `approved-user-review-pending` | ステップ 7-B（ラベルなし） |
-
-## ステップ 6: 確認:pr-merger ラベル付与（approve + assignees なしのみ）
-
-マージは `pr-merger` スキルに委譲する。このスキルは `確認:pr-merger` ラベルを付与するだけで終了する。
-
-```bash
-gh pr edit {PR_NUMBER} --add-label "$GH_KIT_LABEL_CONFIRM_PR_MERGER"
-```
-
-| 状況 | verdict |
-|---|---|
-| ラベル付与成功 | `確認:pr-merger` |
-| その他失敗 | `failed` |
 
 ## ステップ 7-A: changes-requested
 
@@ -188,11 +176,39 @@ gh pr edit {PR_NUMBER} --add-label "$GH_KIT_LABEL_CONFIRM_PR_MERGER"
 
 マージしない。verdict = `approved-user-review-pending`、message に「ユーザー確認待ち（assignees 設定済み）」と理由。
 
-ユーザーが内容を確認したら、以下の操作をすることで次回 `pr-review-auto` の Monitor が自動検知してマージフローへ進む:
-1. PR に `user-reviewed` ラベルを付与する
+ユーザーが内容を確認したら、以下の操作をすることでマージフローへ進む:
+1. PR に `確認:pr-merger` ラベルを手動で付与する
 2. assignees を外す（自身を remove する）
 
-`pr-review-auto` は `user-reviewed` ラベル付きの Ready PR（assignees なし）を検知したとき、AI レビュー済みとみなしてマージを実行する。
+`pr-merger-auto` は `確認:pr-merger` ラベル付きの PR（assignees なし）を検知したとき、マージを実行する。
+
+## ステップ 7-D: approved-pending-user-merge
+
+**AI による `確認:pr-merger` ラベル付与は禁止。ラベルはユーザーが手動で付与する。**
+
+以下のコメントを投稿し、ユーザーに手動で `確認:pr-merger` を付与してもらうよう案内する:
+
+```bash
+gh pr comment {PR_NUMBER} --body "$(cat <<'EOF'
+## レビュー承認済み — マージにはユーザー確認が必要です
+
+このPRはレビューを通過しました。
+
+マージを実行する場合は、以下の手順で進めてください:
+
+1. PR の内容を確認する
+2. 問題なければ `確認:pr-merger` ラベルを手動で付与する
+3. `pr-merger-auto` が自動的にマージを実行します
+
+**AI は `確認:pr-merger` ラベルを自動付与しません（誤マージ防止のため）。**
+EOF
+)"
+```
+
+| 状況 | verdict |
+|---|---|
+| コメント投稿成功 | `approved-pending-user-merge` |
+| その他失敗 | `failed` |
 
 ## ステップ 7-C: Drop（PR Close without merge）
 
