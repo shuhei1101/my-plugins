@@ -10,7 +10,7 @@ import sys
 LOG_TAG      = "rules-injection"
 TARGET_TOOLS = ("Edit", "Write", "Read")
 
-RULES_DIR  = pathlib.Path(__file__).resolve().parent.parent / "rules"  # .md ルールファイルの置き場所
+RULES_DIR  = pathlib.Path(__file__).resolve().parent / "rules"  # .md ルールフォルダの置き場所
 CACHE_PATH = RULES_DIR / "cache.json"                  # スキャン結果キャッシュ
 TOKEN_DIR  = pathlib.Path.home() / ".claude" / "tokens" / "dev-kit" / "rules"  # セッショントークン保存先（プラグイン別）
 

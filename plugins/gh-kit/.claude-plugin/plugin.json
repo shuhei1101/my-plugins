@@ -1,5 +1,5 @@
 {
   "name": "gh-kit",
   "description": "GitHub Issues/PR/Wiki + ワークツリー操作のフルキット（gh CLI + template_get/worktree_create/worktree_remove MCP + pre-merge-check + Wiki ページ作成）。リモート PR 駆動の自走フロー一式",
-  "version": "0.46"
+  "version": "0.47"
 }
