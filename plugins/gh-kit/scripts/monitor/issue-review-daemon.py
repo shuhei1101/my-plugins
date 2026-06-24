@@ -14,10 +14,7 @@
     TMPDIR              一時ディレクトリ（POSIX 標準）。LOCK_FILE のデフォルトパス算出に使用。
                         未設定なら Python の tempfile.gettempdir() が /tmp 等を返す。
 
-constants.sh から動的注入される定数:
-    GH_KIT_LABEL_* （plugins/gh-kit/hooks/session-start/constants.sh 参照）
-    起動時にパースして本モジュールのトップレベル名前空間にそのままの定数名で注入する。
-    外部 export 済みの値があればそちらを優先。
+    constants.sh から動的注入される定数: _load_constants_sh() 参照
 """
 
 from __future__ import annotations
@@ -74,16 +71,10 @@ LOCK_FILE = os.environ.get(
     str(Path(os.environ.get("TMPDIR", tempfile.gettempdir())) / "gh-kit-issue-review.lock"),
 )
 
-# 処理中:* ラベルのプレフィックス（priority_key で固定文字列を撒かないため定数化）
-LABEL_PROCESSING_PREFIX = "処理中:"
-
 # 優先度ソート時のランク（数値が小さいほど先に処理）
 PRIORITY_RANK_URGENT = 0
 PRIORITY_RANK_LOW = 1
 PRIORITY_RANK_NORMAL = 2
-
-EXIT_LOCK_BUSY = 200
-
 
 def log(msg: str) -> None:
     """タイムスタンプ付きで stderr にログ 1 行を出力する。"""
@@ -106,7 +97,6 @@ def preflight() -> None:
 
 def find_next_issue() -> int | None:
     """確認:issue-reviewer ラベル付きで処理中ではない次の Issue 番号を返す（なければ None）。"""
-    # gh CLI / JSON パースのエラーは握りつぶさず上位に伝播させる（フォールバックを設けない）
     result = subprocess.run(
         [
             "gh", "issue", "list",
@@ -114,16 +104,19 @@ def find_next_issue() -> int | None:
             "--label", GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW,  # noqa: F821 — constants.sh から動的注入
             "--json", "number,labels",
         ],
-        check=True,
         capture_output=True,
         text=True,
     )
+    if result.returncode != 0:
+        log(f"WARN: gh issue list が失敗しました (exit={result.returncode}): {result.stderr.strip()}")
+        log("  GH_REPO 環境変数を設定するか、git リポジトリ内で実行してください")
+        return None
     issues = json.loads(result.stdout)
 
     def is_not_processing(issue: dict) -> bool:
         """Issue に 処理中:* ラベルが付いていないかを判定する。"""
         return not any(
-            lbl["name"].startswith(LABEL_PROCESSING_PREFIX) for lbl in issue.get("labels", [])
+            lbl["name"].startswith(GH_KIT_LABEL_PROCESSING_PREFIX) for lbl in issue.get("labels", [])
         )
 
     def priority_key(issue: dict) -> tuple[int, int]:
@@ -233,16 +226,18 @@ def main() -> int:
     log(f"  POLL_INTERVAL={POLL_INTERVAL}s")
     log(f"  MAX_BUDGET_USD={MAX_BUDGET_USD}")
     log(f"  LOCK_FILE={LOCK_FILE}")
+    log(f"  GH_REPO={os.environ.get('GH_REPO', '(未設定 — git リポジトリ内で実行するか GH_REPO を設定してください)')}")
     log(f"ポーリング開始（間隔: {POLL_INTERVAL}s）")
 
     while True:
-        issue_number = find_next_issue()
-        if issue_number is not None:
-            # 対象 Issue あり: レビュー実行
-            review_issue(issue_number)
-        else:
-            # 対象 Issue なし: 次のポーリングまで待機
-            log(f"対象 Issue なし — {POLL_INTERVAL}s 待機")
+        try:
+            issue_number = find_next_issue()
+            if issue_number is not None:
+                review_issue(issue_number)
+            else:
+                log(f"対象 Issue なし — {POLL_INTERVAL}s 待機")
+        except Exception as exc:
+            log(f"ERROR: ポーリング中に例外が発生しました: {exc}")
         time.sleep(POLL_INTERVAL)
 
 
