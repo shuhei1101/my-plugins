@@ -31,6 +31,12 @@ python tools/bump-version.py minor
 python tools/bump-version.py major
 ```
 
+- issue-review-daemon 起動（カレントディレクトリに gh_monitor.env を配置してから実行）
+```bash
+GH_KIT=$(ls ~/.claude/plugins/cache/mentaiko-claude-plugins/gh-kit/ | sort -V | tail -1)
+python ~/.claude/plugins/cache/mentaiko-claude-plugins/gh-kit/${GH_KIT}/scripts/monitor/issue-review-daemon.py
+```
+
 Claude Code プラグインのマーケットプレイスです。
 スキル・エージェント・フックなどをプラグインとして配布・管理します。
 

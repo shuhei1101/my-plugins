@@ -34,6 +34,22 @@ from pathlib import Path
 GH_KIT_PLUGIN_DIR = str(Path(__file__).resolve().parent.parent.parent)
 
 
+def _load_env_file(path: Path) -> None:
+    """gh_monitor.env が存在すれば os.environ に読み込む（外部 export 済みを優先）。"""
+    if not path.is_file():
+        return
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        if key and key not in os.environ:
+            os.environ[key] = value.strip()
+
+
 def _load_constants_sh(target: dict[str, object]) -> None:
     """hooks/session-start/constants.sh の export 行を target 名前空間に注入する。
 
@@ -58,6 +74,9 @@ def _load_constants_sh(target: dict[str, object]) -> None:
         # 外部 env を優先し、無ければ constants.sh の値を採用
         target[key] = os.environ.get(key, value)
 
+
+# カレントディレクトリの gh_monitor.env を優先して読み込む（外部 export 済みを優先）。
+_load_env_file(Path.cwd() / "gh_monitor.env")
 
 # constants.sh の定数を本モジュールのトップレベルに注入。
 # これにより GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW などが定数名そのままで使える。
