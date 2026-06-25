@@ -31,16 +31,14 @@ python tools/bump-version.py minor
 python tools/bump-version.py major
 ```
 
-- issue-review-daemon 起動（カレントディレクトリに gh_monitor.env を配置してから実行）
+- issue-review-daemon 起動（git リポジトリ内で実行する）
 ```bash
 GH_KIT=$(ls ~/.claude/plugins/cache/mentaiko-claude-plugins/gh-kit/ | sort -V | tail -1)
-python ~/.claude/plugins/cache/mentaiko-claude-plugins/gh-kit/${GH_KIT}/scripts/monitor/issue-review-daemon.py
+python ~/.claude/plugins/cache/mentaiko-claude-plugins/gh-kit/${GH_KIT}/monitor/main.py
 ```
 
-- gh_monitor.env の例（`gh_monitor.env.example` をコピーして編集）
+- gh_monitor.env の例（任意、ポーリング間隔などを上書きしたい場合のみ）
 ```env
-# 対象 GitHub リポジトリ（OWNER/REPO 形式、必須）
-GH_REPO=your-org/your-repo
 # ポーリング間隔（秒、省略時: 30）
 # POLL_INTERVAL=30
 ```
