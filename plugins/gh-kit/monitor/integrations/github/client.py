@@ -4,7 +4,7 @@ import json
 import subprocess
 from functools import lru_cache
 
-from utils import log
+from shared.logger import logger
 
 
 @lru_cache(maxsize=1)
@@ -16,7 +16,7 @@ def current_login() -> str | None:
         text=True,
     )
     if result.returncode != 0:
-        log(f"WARN: gh api user が失敗しました (exit={result.returncode}): {result.stderr.strip()}")
+        logger.warning(f"gh api user が失敗しました (exit={result.returncode}): {result.stderr.strip()}")
         return None
     return result.stdout.strip() or None
 
@@ -37,8 +37,10 @@ def list_issues(label: str) -> list[dict]:
         text=True,
     )
     if result.returncode != 0:
-        log(f"WARN: gh issue list が失敗しました (exit={result.returncode}): {result.stderr.strip()}")
-        log("  git リポジトリ内で実行してください")
+        logger.warning(
+            f"gh issue list が失敗しました (exit={result.returncode}): {result.stderr.strip()}"
+            " (git リポジトリ内で実行してください)"
+        )
         return []
     issues = json.loads(result.stdout)
     login = current_login()

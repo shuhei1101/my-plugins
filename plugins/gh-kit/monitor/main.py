@@ -23,32 +23,33 @@ from pathlib import Path
 # 同パッケージ内モジュールを解決できるようにパスを通す
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import issue_triage
 import settings
-from utils import die, log
+from features.monitors import issue_triage_monitor
+from shared.logger import logger
 
 
 def preflight() -> None:
     """起動前に外部コマンド（claude / gh）の存在を検証する。"""
     for tool in ("claude", "gh"):
         if shutil.which(tool) is None:
-            die(f"{tool!r} が見つかりません。インストールされているか確認してください。")
+            logger.error(f"{tool!r} が見つかりません。インストールされているか確認してください。")
+            sys.exit(1)
 
 
 def main() -> int:
     """デーモン本体: 各モニターの poll() を順番に呼び出し続ける。"""
     preflight()
 
-    log("gh-kit monitor 起動")
-    log(f"  POLL_INTERVAL={settings.POLL_INTERVAL}s")
-    log("ポーリング開始")
+    logger.info("gh-kit monitor 起動")
+    logger.info(f"POLL_INTERVAL={settings.POLL_INTERVAL}s")
+    logger.info("ポーリング開始")
 
     while True:
         try:
-            issue_triage.poll()
-            # 将来追加例: issue_spec.poll()
-        except Exception as exc:
-            log(f"ERROR: ポーリング中に例外が発生しました: {exc}")
+            issue_triage_monitor.poll()
+            # 将来追加例: issue_spec_monitor.poll()
+        except Exception:
+            logger.exception("ポーリング中に例外が発生しました")
         time.sleep(settings.POLL_INTERVAL)
 
 
@@ -56,5 +57,5 @@ if __name__ == "__main__":
     try:
         sys.exit(main())
     except KeyboardInterrupt:
-        log("SIGINT を受信しました。終了します。")
+        logger.info("SIGINT を受信しました。終了します。")
         sys.exit(130)
