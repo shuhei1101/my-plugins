@@ -1,10 +1,6 @@
 ---
 paths:
-  - "**/features/**/client.py"
-  - "**/features/**/query.py"
-  - "**/features/**/service.py"
-  - "**/features/**/types.py"
-  - "**/integrations/**/client.py"
+  - "**/*.py"
 ---
 
 # TypeScript 風 Python — 関数ファースト設計

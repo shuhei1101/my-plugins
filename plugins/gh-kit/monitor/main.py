@@ -10,7 +10,7 @@ gh-kit モニターデーモン。各モニターの poll() を順番に呼び�
     1. {name}.py を作成し poll() 関数を実装する
     2. main() 内の while ループに {name}.poll() を追記する
 
-    constants.sh から動的注入される定数: utils._load_constants_sh() 参照
+    constants.sh から動的注入される定数: utils.load_constants_sh() 参照
 """
 
 from __future__ import annotations
@@ -23,9 +23,9 @@ from pathlib import Path
 # 同パッケージ内モジュールを解決できるようにパスを通す
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import issue_review
+import issue_triage
 import settings
-from utils import GH_KIT_PLUGIN_DIR, die, log
+from utils import die, log
 
 
 def preflight() -> None:
@@ -40,14 +40,13 @@ def main() -> int:
     preflight()
 
     log("gh-kit monitor 起動")
-    log(f"  GH_KIT_PLUGIN_DIR={GH_KIT_PLUGIN_DIR}")
     log(f"  POLL_INTERVAL={settings.POLL_INTERVAL}s")
     log("ポーリング開始")
 
     while True:
         try:
-            issue_review.poll()
-            # 将来追加例: pr_plan.poll()
+            issue_triage.poll()
+            # 将来追加例: issue_spec.poll()
         except Exception as exc:
             log(f"ERROR: ポーリング中に例外が発生しました: {exc}")
         time.sleep(settings.POLL_INTERVAL)

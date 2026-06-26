@@ -50,7 +50,7 @@ testpaths = ["tests"]
 asyncio_mode = "auto"
 addopts = ["-ra", "--strict-markers", "--strict-config", "-W", "error"]
 markers = [
-    "smoke: real external-service tests (requires --run-smoke)",
+    "external: real external-service connectivity tests (requires --run-external)",
 ]
 ```
 

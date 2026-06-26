@@ -34,8 +34,8 @@ paths:
 
 ## マーカー
 
-- ファイル全体は `pytestmark = pytest.mark.smoke`、関数単位は `@pytest.mark.slow` 等
-- 選択実行は `pytest -m "not smoke"`
+- ファイル全体は `pytestmark = pytest.mark.external`、関数単位は `@pytest.mark.slow` 等
+- 選択実行は `pytest -m "not external"`
 
 ## デバッグ
 
