@@ -31,6 +31,17 @@ python tools/bump-version.py minor
 python tools/bump-version.py major
 ```
 
+- バージョンアップ（全プラグイン強制 minor / master 差分関係なし）
+```bash
+python tools/bump-version-all.py
+
+```
+
+- バージョンアップ（全プラグイン強制 major）
+```bash
+python tools/bump-version-all.py major
+```
+
 - issue-review-daemon 起動（git リポジトリ内で実行する）
 ```bash
 GH_KIT=$(ls ~/.claude/plugins/cache/mentaiko-claude-plugins/gh-kit/ | sort -V | tail -1)
