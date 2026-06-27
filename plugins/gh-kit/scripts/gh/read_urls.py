@@ -36,9 +36,10 @@ def main() -> int:
         try:
             content = fetch_url(url)
             # 取得元 URL をメタ情報に含めた md コードフェンスで包む（複数 URL のとき境界が分かる）
-            print(f"```md:{url}")
+            # フェンスは 5 連バッククォート: 取得内容に ``` や ```` のコードブロックが含まれても閉じ判定されないようにする
+            print(f"`````md:{url}")
             print(content)
-            print("```")
+            print("`````")
         except urllib.error.URLError as exc:
             # ネットワーク到達不能・HTTP エラー等。URL を stderr に出して継続
             print(f"取得失敗: {url}: {exc}", file=sys.stderr)

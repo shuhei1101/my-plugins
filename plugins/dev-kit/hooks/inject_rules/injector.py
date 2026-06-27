@@ -319,7 +319,8 @@ def _resolve_url_placeholders(content: str) -> str:
         if len(text) > MAX_URL_CHARS:
             text = text[:MAX_URL_CHARS] + "\n\n...(truncated)"
         # 取得元 URL をメタ情報に含めた md コードフェンスで包む（境界と出典が一目で分かる）
-        return f"{match.group(0)}\n\n```md:{url}\n{text}\n```"
+        # フェンスは 5 連バッククォート: 取得内容に ``` や ```` が含まれても閉じ判定されないようにする
+        return f"{match.group(0)}\n\n`````md:{url}\n{text}\n`````"
 
     return URL_PLACEHOLDER_RE.sub(_replace, content)
 
