@@ -1,7 +1,7 @@
 """モニター共通の Template Method 抽象基底。
 
 各モニター（issue-triage / issue-spec / pr-plan / ...）は ``Monitor`` を継承し、
-**3 つのプロパティ**（``confirm_label`` / ``processing_label`` / ``skill_command``）
+**3 つのメソッド**（``get_confirm_label`` / ``get_processing_label`` / ``get_skill_command``）
 を実装するだけで、以下の共通処理が自動で動く:
 
 1. 確認ラベル付き Issue/PR を gh から一覧取得
@@ -41,13 +41,11 @@ class Monitor(ABC):
         """処理中マークとして付与するラベル名（constants.sh の値を返す）。"""
         ...
 
-    @property
     @abstractmethod
-    def skill_command(self) -> str:
-        """claude -p に渡すスキル起動文字列のテンプレート。
+    def skill_command(self, n: int) -> str:
+        """claude -p に渡すスキル起動文字列を組み立てて返す。
 
-        ``{n}`` プレースホルダを 1 箇所だけ含めて Issue/PR 番号を埋め込む。
-        例: ``"/gh-kit:issue-triage {n}"``
+        例: ``f"/gh-kit:issue-triage {n}"``
         """
         ...
 
@@ -106,7 +104,7 @@ class Monitor(ABC):
             logger.warning(f"[{self.name}] 処理中ラベルの付与に失敗しました（#{number}）")
 
         try:
-            exit_code = run_claude_prompt(self.skill_command.format(n=number))
+            exit_code = run_claude_prompt(self.skill_command(number))
             if exit_code != 0:
                 # 異常終了: 処理中ラベルだけ外してキュー再投入させる（次のポーリングで再試行）
                 logger.error(

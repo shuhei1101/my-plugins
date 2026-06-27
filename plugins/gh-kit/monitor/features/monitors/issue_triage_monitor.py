@@ -20,9 +20,8 @@ class IssueTriageMonitor(Monitor):
     def processing_label(self) -> str:
         return GH_KIT_LABEL_PROCESSING_ISSUE_TRIAGE  # noqa: F821
 
-    @property
-    def skill_command(self) -> str:
-        return "/gh-kit:issue-triage {n}"
+    def skill_command(self, n: int) -> str:
+        return f"/gh-kit:issue-triage {n}"
 
     @property
     def name(self) -> str:

@@ -30,7 +30,7 @@ MIN_PARTIAL_CHARS = 200
 # URL 埋め込み構文 @`URL`
 URL_PLACEHOLDER_RE = re.compile(r"@`(https?://[^`]+)`")
 # 1 URL の展開上限（超過分は ...(truncated) で切る）
-MAX_URL_CHARS = 5000
+MAX_URL_CHARS = 20000
 # キャッシュ全体の TTL（秒）。期限切れで cache/ を丸ごと作り直す
 CACHE_TTL_SECONDS = 1800
 # fetch のタイムアウト（秒）
@@ -177,18 +177,30 @@ def _load_entries() -> list[dict]:
 
 
 def _normalize_github_url(url: str) -> str:
-    """github.com/{owner}/{repo}/blob/{rest} を raw.githubusercontent.com の URL に変換する。
+    """GitHub の blob / wiki ページ URL を raw.githubusercontent.com の URL に変換する。
 
-    マッチしなければ url をそのまま返す。
+    対応パターン:
+    - github.com/{owner}/{repo}/blob/{rest}    → raw.githubusercontent.com/{owner}/{repo}/{rest}
+    - github.com/{owner}/{repo}/wiki/{page}    → raw.githubusercontent.com/wiki/{owner}/{repo}/{page}.md
+      （末尾 .md は補完。Wiki UI URL でも raw markdown を取得できる）
+
+    どちらにもマッチしなければ url をそのまま返す。
     """
     m = re.match(
         r"^https?://(?:www\.)?github\.com/([^/]+)/([^/]+)/blob/(.+)$",
         url,
     )
-    if not m:
-        return url
-    owner, repo, rest = m.group(1), m.group(2), m.group(3)
-    return f"https://raw.githubusercontent.com/{owner}/{repo}/{rest}"
+    if m:
+        owner, repo, rest = m.group(1), m.group(2), m.group(3)
+        return f"https://raw.githubusercontent.com/{owner}/{repo}/{rest}"
+    m = re.match(
+        r"^https?://(?:www\.)?github\.com/([^/]+)/([^/]+)/wiki/(.+?)(?:\.md)?$",
+        url,
+    )
+    if m:
+        owner, repo, page = m.group(1), m.group(2), m.group(3)
+        return f"https://raw.githubusercontent.com/wiki/{owner}/{repo}/{page}.md"
+    return url
 
 
 class _HTMLTextExtractor(HTMLParser):
@@ -268,8 +280,8 @@ def _fetch_url_text(url: str) -> str:
             charset = part[len("charset="):].strip().strip('"').strip("'") or "utf-8"
     text = raw.decode(charset, errors="replace")
 
-    # github.com 経由（raw に変換済み）はプレーンテキスト想定
-    if "github.com" in url:
+    # raw.githubusercontent.com に変換済みのものはプレーンテキスト（markdown）想定
+    if "raw.githubusercontent.com" in fetch_url:
         return text.strip()
     if ctype.startswith("text/html") or ctype == "application/xhtml+xml":
         return _html_to_text(text)
@@ -293,7 +305,8 @@ def _resolve_url_placeholders(content: str) -> str:
             return f"{match.group(0)}\n<!-- fetch failed: {url} ({e}) -->"
         if len(text) > MAX_URL_CHARS:
             text = text[:MAX_URL_CHARS] + "\n\n...(truncated)"
-        return f"{match.group(0)}\n\n{text}"
+        # 取得元 URL をメタ情報に含めた md コードフェンスで包む（境界と出典が一目で分かる）
+        return f"{match.group(0)}\n\n```md:{url}\n{text}\n```"
 
     return URL_PLACEHOLDER_RE.sub(_replace, content)
 

@@ -13,5 +13,35 @@ GitHub Issue を 1 件トリアージし、起票直後の状態から「分か�
 | ---------- | ------- |
 | Issue 番号 | 例: 42  |
 
-## 重要事項
+## コメント返信ルール（共通）
 
+!`python "${CLAUDE_PLUGIN_ROOT}/scripts/gh/read_urls.py" "${WIKI_BASE}/gh-kit_規約_コメント.md"`
+
+## ステップ 0: 起動時のラベル切り替え
+
+```bash
+gh issue edit {N} \
+  --remove-label "$GH_KIT_LABEL_CONFIRM_ISSUE_TRIAGE" \
+  --add-label "$GH_KIT_LABEL_PROCESSING_ISSUE_TRIAGE"
+```
+
+
+## ステップ 1: Issue 取得
+
+```bash
+gh issue view {N} --json number,title,body,labels,comments,assignees
+```
+
+## ステップ 2: 本文の整形・骨組み作成
+
+### ステップ 2a: 既存本文の整文・整形
+
+- ユーザー入力の誤字脱字・改行整理・文言修正を行う
+- **ユーザーが書いた範囲を超えた内容を加えない**（情報の追加は後続フェーズ）
+
+### ステップ 2b: 後続フェーズのセクション骨組みを作成
+
+下記テンプレートに沿って、欠けているセクションを骨組みとして用意する。
+issue-triage が自身で埋めるのは `## 概要` / `## 背景` / `## 現状` のみ。
+
+### Issue 本文テンプレート

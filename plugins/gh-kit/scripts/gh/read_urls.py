@@ -1,37 +1,56 @@
-"""指定 URL のコンテンツを取得して標準出力に返す。
-
-GitHub blob URL は raw.githubusercontent.com に変換してから取得する。
-複数 URL を指定した場合は順番に取得して出力する。
-
-# 使い方
-python read_urls.py <URL> [<URL> ...]
-"""
+"""指定 URL のコンテンツを取得して標準出力に返す（GitHub blob URL は raw に自動変換、複数 URL 対応）。"""
 from __future__ import annotations
 
+import argparse
 import sys
+import traceback
+import urllib.error
 import urllib.request
 
 from utils import normalize_github_url
 
+# 終了コード
+EXIT_OK = 0
+EXIT_FETCH_FAILED = 2  # 少なくとも 1 件の URL で取得失敗
+
+
+def parse_args() -> argparse.Namespace:
+    """コマンドライン引数をパースして返す。"""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("urls", nargs="+", help="取得対象 URL（1 件以上、GitHub blob URL は raw に自動変換）")
+    return parser.parse_args()
+
+
+def fetch_url(url: str) -> str:
+    """指定 URL の本文を取得して文字列で返す。"""
+    with urllib.request.urlopen(url) as resp:
+        return resp.read().decode("utf-8")
+
 
 def main() -> int:
-    if len(sys.argv) < 2:
-        print("使い方: python read_urls.py <URL> [<URL> ...]", file=sys.stderr)
-        return 1
+    args = parse_args()
 
-    exit_code = 0
-    for raw_url in sys.argv[1:]:
+    exit_code = EXIT_OK
+    for raw_url in args.urls:
         url = normalize_github_url(raw_url)
         try:
-            with urllib.request.urlopen(url) as resp:
-                print(resp.read().decode("utf-8"))
-        except Exception:
-            import traceback
-            traceback.print_exc()
-            exit_code = 1
+            content = fetch_url(url)
+            # 取得元 URL をメタ情報に含めた md コードフェンスで包む（複数 URL のとき境界が分かる）
+            print(f"```md:{url}")
+            print(content)
+            print("```")
+        except urllib.error.URLError as exc:
+            # ネットワーク到達不能・HTTP エラー等。URL を stderr に出して継続
+            print(f"取得失敗: {url}: {exc}", file=sys.stderr)
+            exit_code = EXIT_FETCH_FAILED
 
     return exit_code
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except Exception:
+        # 想定外の例外はトレースバック出力して異常終了
+        traceback.print_exc()
+        sys.exit(1)
