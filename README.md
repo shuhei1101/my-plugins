@@ -7,10 +7,21 @@ https://github.com/shuhei1101/my-plugins/wiki
 ```bash
 python tools/marketplace.py upgrade
 ```
+- バージョンアップ（全プラグイン強制 minor / master 差分関係なし）
+```bash
+python tools/bump-version-all.py
+
+```
 
 - **ローカル編集したプラグインを一括同期**
 ```bash
 python tools/sync_plugin_cache.py
+```
+
+
+- バージョンアップ（全プラグイン強制 major）
+```bash
+python tools/bump-version-all.py major
 ```
 
 - pushコマンド
@@ -29,17 +40,6 @@ python tools/bump-version.py minor
 - バージョンアップ（major）
 ```bash
 python tools/bump-version.py major
-```
-
-- バージョンアップ（全プラグイン強制 minor / master 差分関係なし）
-```bash
-python tools/bump-version-all.py
-
-```
-
-- バージョンアップ（全プラグイン強制 major）
-```bash
-python tools/bump-version-all.py major
 ```
 
 - issue-review-daemon 起動（git リポジトリ内で実行する）

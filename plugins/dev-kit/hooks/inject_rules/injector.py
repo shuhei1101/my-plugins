@@ -9,6 +9,7 @@ import shutil
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from html.parser import HTMLParser
 
@@ -264,9 +265,21 @@ def _html_to_text(html: str) -> str:
     return "\n".join(out_lines).strip()
 
 
+def _percent_encode_url(url: str) -> str:
+    """URL の path / query に含まれる非 ASCII 文字を percent-encoding する。
+
+    urllib.request は ASCII URL しか受け付けないため、日本語などを含む URL は
+    送信前に各部を quote する必要がある。スキーム・ホストは触らない。
+    """
+    parts = urllib.parse.urlsplit(url)
+    safe_path = urllib.parse.quote(parts.path, safe="/%")
+    safe_query = urllib.parse.quote(parts.query, safe="=&%")
+    return urllib.parse.urlunsplit(parts._replace(path=safe_path, query=safe_query))
+
+
 def _fetch_url_text(url: str) -> str:
     """URL から本文テキストを取得する。github.com は raw に変換、HTML はタグ除去する。"""
-    fetch_url = _normalize_github_url(url)
+    fetch_url = _percent_encode_url(_normalize_github_url(url))
     req = urllib.request.Request(fetch_url, headers={"User-Agent": "inject_rules/1.0"})
     with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
         raw = resp.read()
