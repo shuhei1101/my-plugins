@@ -25,20 +25,24 @@
     </p>
 
     <div class="page-header"><h1>Issue #0: 顧客一覧の初期実装</h1></div>
-    <p class="hint">案の一覧。採用された案には <span class="badge ok">採用</span> マークを付ける。派生案は親案にぶら下げる。</p>
+    <p class="hint">案は kebab-case 名前順で縦に並べる。派生案も入れ子にせずフラットに並べ、ディレクトリ階層はパス表記（例: `a-left-filter / with-bulk-edit`）で示す。</p>
 
     <section class="card">
-      <h2>案一覧</h2>
-      <ul class="meta-list">
-        <li>
-          <a href="a-left-filter/">a-left-filter</a>
-          <span class="badge ok">採用</span>
-          <ul class="meta-list" style="margin-left: 1.5em;">
-            <li><a href="a-left-filter/with-bulk-edit/">a-left-filter / with-bulk-edit</a>（派生案）</li>
-          </ul>
-        </li>
-        <li><a href="b-modal-filter/">b-modal-filter</a></li>
-      </ul>
+      <h2>a-left-filter <span class="badge ok">採用</span></h2>
+      <p>左サイドにフィルターを常時表示する案。発見性が高く、連続切替がしやすい。</p>
+      <p><a href="a-left-filter/">この案を開く</a></p>
+    </section>
+
+    <section class="card">
+      <h2>a-left-filter / with-bulk-edit</h2>
+      <p>親案 a-left-filter に行の一括選択と一括編集ボタンを追加した派生案。</p>
+      <p><a href="a-left-filter/with-bulk-edit/">この案を開く</a></p>
+    </section>
+
+    <section class="card">
+      <h2>b-modal-filter</h2>
+      <p>フィルターをモーダルで開閉する案。一覧のメイン幅を最大化できる。</p>
+      <p><a href="b-modal-filter/">この案を開く</a></p>
     </section>
   </main>
 </body>
