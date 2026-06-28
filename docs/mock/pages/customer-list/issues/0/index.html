@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>顧客一覧 / Issue 0 - 案リスト</title>
+  <link rel="stylesheet" href="../../../../assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">my-plugins mock</div>
+    <nav class="nav">
+      <a href="../../../../">モック</a>
+      <a href="../../../">画面</a>
+      <a href="../../">顧客一覧</a>
+    </nav>
+    <div class="user"><span class="avatar">S</span><span>shuhei</span></div>
+  </header>
+  <main class="main">
+    <p class="breadcrumb">
+      <a href="../../../../">モック</a> &gt;
+      <a href="../../../">画面</a> &gt;
+      <a href="../../">顧客一覧</a> &gt;
+      <span>Issue #0</span>
+    </p>
+
+    <div class="page-header"><h1>Issue #0: 顧客一覧の初期実装</h1></div>
+    <p class="hint">案は kebab-case 名前順で縦に並べる。派生案も入れ子にせずフラットに並べ、ディレクトリ階層はパス表記（例: `a-left-filter / with-bulk-edit`）で示す。</p>
+
+    <section class="card">
+      <h2>a-left-filter <span class="badge ok">採用</span></h2>
+      <p>左サイドにフィルターを常時表示する案。発見性が高く、連続切替がしやすい。</p>
+      <p><a href="a-left-filter/">この案を開く</a></p>
+    </section>
+
+    <section class="card">
+      <h2>a-left-filter / with-bulk-edit</h2>
+      <p>親案 a-left-filter に行の一括選択と一括編集ボタンを追加した派生案。</p>
+      <p><a href="a-left-filter/with-bulk-edit/">この案を開く</a></p>
+    </section>
+
+    <section class="card">
+      <h2>b-modal-filter</h2>
+      <p>フィルターをモーダルで開閉する案。一覧のメイン幅を最大化できる。</p>
+      <p><a href="b-modal-filter/">この案を開く</a></p>
+    </section>
+  </main>
+</body>
+</html>
