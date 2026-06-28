@@ -67,7 +67,7 @@ gh pr list --state open --label "$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT" \
 gh pr view {N} --json number,title,headRefName,baseRefName,body,labels,isDraft
 ```
 
-`処理中:` で始まるラベル（`処理中:pr-implementer`・`処理中:pr-planner`・`処理中:pr-reviewer`・`処理中:pr-merger` 等）付きは除外。0 件なら停止。
+`処理中:` で始まるラベル（`処理中:pr-impl`・`処理中:pr-arch`・`処理中:pr-impl-review`・`処理中:pr-merge` 等）付きは除外。0 件なら停止。
 
 > **注記:** `$GH_KIT_LABEL_CONFIRM_PR_IMPLEMENT`（= `確認:pr-implementer`）は実装待ち専用ラベル（旧 `GH_KIT_LABEL_NEEDS_FIX` の後継）。Issue レビュー用の `確認:issue-reviewer`（`$GH_KIT_LABEL_CONFIRM_ISSUE_REVIEW`）とは別物。
 

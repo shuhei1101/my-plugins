@@ -1,7 +1,7 @@
 """モニター共通の Template Method 抽象基底。
 
 各モニター（issue-triage / issue-spec / pr-plan / ...）は ``Monitor`` を継承し、
-**3 つのメソッド**（``get_confirm_label`` / ``get_processing_label`` / ``get_skill_command``）
+**3 つのメンバー**（プロパティ ``confirm_label`` / ``processing_label`` とメソッド ``skill_command``）
 を実装するだけで、以下の共通処理が自動で動く:
 
 1. 確認ラベル付き Issue/PR を gh から一覧取得

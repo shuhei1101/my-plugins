@@ -5,7 +5,7 @@
 
 # 定数
 export REPO_SLUG=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
-export WIKI_BASE="https://raw.githubusercontent.com/wiki/${REPO_SLUG}"
+export WIKI_BASE="https://raw.githubusercontent.com/${REPO_SLUG}/master/docs/wiki"
 
 # GitHub Issue / PR のラベル名（CLAUDE.md のモニター一覧と 1:1 対応）
 
