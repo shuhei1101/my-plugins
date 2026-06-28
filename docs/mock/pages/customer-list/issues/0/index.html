@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>顧客一覧 / Issue 0 - 案リスト</title>
+  <link rel="stylesheet" href="../../../../assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">my-plugins mock</div>
+    <nav class="nav">
+      <a href="../../../../">モック</a>
+      <a href="../../../">画面</a>
+      <a href="../../">顧客一覧</a>
+    </nav>
+    <div class="user"><span class="avatar">S</span><span>shuhei</span></div>
+  </header>
+  <main class="main">
+    <p class="breadcrumb">
+      <a href="../../../../">モック</a> &gt;
+      <a href="../../../">画面</a> &gt;
+      <a href="../../">顧客一覧</a> &gt;
+      <span>Issue #0</span>
+    </p>
+
+    <div class="adopted-banner">採用: a-left-filter</div>
+
+    <div class="page-header"><h1>Issue #0: 顧客一覧の初期実装</h1></div>
+    <p class="hint">フィルター UI の方式を 2 案出して比較した。</p>
+
+    <section class="card">
+      <h2>案 A: 左サイドフィルター</h2>
+      <p>左に固定のフィルターパネルを置く案。発見性が高く、頻繁な絞り込み操作に強い。</p>
+      <ul class="meta-list">
+        <li><strong>良い点:</strong> 条件が常時可視 / 多条件の同時切替がしやすい</li>
+        <li><strong>懸念点:</strong> モバイルでドロワー化が必要 / メイン幅が狭くなる</li>
+      </ul>
+      <p><a href="a-left-filter/">案 A を開く</a></p>
+    </section>
+
+    <section class="card">
+      <h2>案 B: フィルターモーダル</h2>
+      <p>フィルターはモーダルで開閉する案。メインの情報密度を最大化できる。</p>
+      <ul class="meta-list">
+        <li><strong>良い点:</strong> 一覧のメイン幅をフルに使える / モバイル対応が楽</li>
+        <li><strong>懸念点:</strong> 絞り込み状態の発見性が低い / 試行錯誤に向かない</li>
+      </ul>
+      <p><a href="b-modal-filter/">案 B を開く</a></p>
+    </section>
+
+    <section class="card">
+      <h2>比較表</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>観点</th>
+            <th>案 A</th>
+            <th>案 B</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>フィルター発見性</td><td>◯</td><td>△</td></tr>
+          <tr><td>メイン情報密度</td><td>△</td><td>◯</td></tr>
+          <tr><td>モバイル対応コスト</td><td>中</td><td>低</td></tr>
+          <tr><td>連続切替の操作性</td><td>◯</td><td>△</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>採用理由</h2>
+      <p>業務での絞り込み頻度が高く、発見性と連続切替を重視した結果、案 A（左サイドフィルター）を採用。モバイル対応のドロワー化コストは許容範囲。</p>
+    </section>
+  </main>
+</body>
+</html>

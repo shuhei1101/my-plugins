@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>顧客詳細 / Issue 0 - 案リスト</title>
+  <link rel="stylesheet" href="../../../../assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">my-plugins mock</div>
+    <nav class="nav">
+      <a href="../../../../">モック</a>
+      <a href="../../../">画面</a>
+      <a href="../../">顧客詳細</a>
+    </nav>
+    <div class="user"><span class="avatar">S</span><span>shuhei</span></div>
+  </header>
+  <main class="main">
+    <p class="breadcrumb">
+      <a href="../../../../">モック</a> &gt;
+      <a href="../../../">画面</a> &gt;
+      <a href="../../">顧客詳細</a> &gt;
+      <span>Issue #0</span>
+    </p>
+
+    <div class="adopted-banner">採用: a-tabs</div>
+
+    <div class="page-header"><h1>Issue #0: 顧客詳細の初期実装</h1></div>
+    <p class="hint">情報量が多いため、レイアウト 2 案を比較した。</p>
+
+    <section class="card">
+      <h2>案 A: タブ切り替え</h2>
+      <p>基本情報 / 関連 / 履歴 をタブで切り替える案。</p>
+      <ul class="meta-list">
+        <li><strong>良い点:</strong> セクション間の認知が明確 / スクロールしなくて済む</li>
+        <li><strong>懸念点:</strong> タブ跨ぎの比較ができない</li>
+      </ul>
+      <p><a href="a-tabs/">案 A を開く</a></p>
+    </section>
+
+    <section class="card">
+      <h2>案 B: 縦積み（スクロール）</h2>
+      <p>全セクションを縦に積む案。</p>
+      <ul class="meta-list">
+        <li><strong>良い点:</strong> 上から順に読める / 全体俯瞰がしやすい</li>
+        <li><strong>懸念点:</strong> 情報量が増えるとスクロール量が増える</li>
+      </ul>
+      <p><a href="b-stack/">案 B を開く</a></p>
+    </section>
+
+    <section class="card">
+      <h2>採用理由</h2>
+      <p>関連情報のセクション数が多く、スクロールでの全体把握が現実的でないため、案 A（タブ）を採用。</p>
+    </section>
+  </main>
+</body>
+</html>
