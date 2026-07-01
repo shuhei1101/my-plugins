@@ -21,47 +21,43 @@ export GH_KIT_LABEL_PROCESSING_ISSUE_TRIAGE="処理中:issue-triage"
 export GH_KIT_LABEL_CONFIRM_ISSUE_SPEC="確認:issue-spec"
 export GH_KIT_LABEL_PROCESSING_ISSUE_SPEC="処理中:issue-spec"
 
-# 3. issue-ui
-export GH_KIT_LABEL_CONFIRM_ISSUE_UI="確認:issue-ui"
-export GH_KIT_LABEL_PROCESSING_ISSUE_UI="処理中:issue-ui"
+# 3. pr-ui
+export GH_KIT_LABEL_CONFIRM_PR_UI="確認:pr-ui"
+export GH_KIT_LABEL_PROCESSING_PR_UI="処理中:pr-ui"
 
-# 4. issue-arch
-export GH_KIT_LABEL_CONFIRM_ISSUE_ARCH="確認:issue-arch"
-export GH_KIT_LABEL_PROCESSING_ISSUE_ARCH="処理中:issue-arch"
+# 4. pr-arch
+export GH_KIT_LABEL_CONFIRM_PR_ARCH="確認:pr-arch"
+export GH_KIT_LABEL_PROCESSING_PR_ARCH="処理中:pr-arch"
 
-# 5. pr-plan
-export GH_KIT_LABEL_CONFIRM_PR_PLAN="確認:pr-plan"
-export GH_KIT_LABEL_PROCESSING_PR_PLAN="処理中:pr-plan"
-
-# 6. pr-test
+# 5. pr-test
 export GH_KIT_LABEL_CONFIRM_PR_TEST="確認:pr-test"
 export GH_KIT_LABEL_PROCESSING_PR_TEST="処理中:pr-test"
 
-# 7. pr-impl
+# 6. pr-impl
 export GH_KIT_LABEL_CONFIRM_PR_IMPL="確認:pr-impl"
 export GH_KIT_LABEL_PROCESSING_PR_IMPL="処理中:pr-impl"
 
-# 8. pr-impl-review
+# 7. pr-impl-review
 export GH_KIT_LABEL_CONFIRM_PR_IMPL_REVIEW="確認:pr-impl-review"
 export GH_KIT_LABEL_PROCESSING_PR_IMPL_REVIEW="処理中:pr-impl-review"
 
-# 9. pr-doc-plan
+# 8. pr-doc-plan
 export GH_KIT_LABEL_CONFIRM_PR_DOC_PLAN="確認:pr-doc-plan"
 export GH_KIT_LABEL_PROCESSING_PR_DOC_PLAN="処理中:pr-doc-plan"
 
-# 10. pr-doc
+# 9. pr-doc
 export GH_KIT_LABEL_CONFIRM_PR_DOC="確認:pr-doc"
 export GH_KIT_LABEL_PROCESSING_PR_DOC="処理中:pr-doc"
 
-# 11. pr-doc-review
+# 10. pr-doc-review
 export GH_KIT_LABEL_CONFIRM_PR_DOC_REVIEW="確認:pr-doc-review"
 export GH_KIT_LABEL_PROCESSING_PR_DOC_REVIEW="処理中:pr-doc-review"
 
-# 12. pr-merge
+# 11. pr-merge
 export GH_KIT_LABEL_CONFIRM_PR_MERGE="確認:pr-merge"
 export GH_KIT_LABEL_PROCESSING_PR_MERGE="処理中:pr-merge"
 
-# 13. reset
+# 12. reset
 export GH_KIT_LABEL_CONFIRM_RESET="確認:reset"
 export GH_KIT_LABEL_PROCESSING_RESET="処理中:reset"
 

@@ -7,7 +7,7 @@ import traceback
 import urllib.error
 import urllib.request
 
-from utils import normalize_github_url
+from utils import normalize_github_url, strip_yaml_frontmatter
 
 # 終了コード
 EXIT_OK = 0
@@ -35,6 +35,8 @@ def main() -> int:
         url = normalize_github_url(raw_url)
         try:
             content = fetch_url(url)
+            # raw MD の先頭に Jekyll などの YAML front matter が付いていたら剥がす
+            content = strip_yaml_frontmatter(content)
             # 取得元 URL をメタ情報に含めた md コードフェンスで包む（複数 URL のとき境界が分かる）
             # フェンスは 5 連バッククォート: 取得内容に ``` や ```` のコードブロックが含まれても閉じ判定されないようにする
             print(f"`````md:{url}")

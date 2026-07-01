@@ -36,6 +36,8 @@ MAX_URL_CHARS = 20000
 CACHE_TTL_SECONDS = 1800
 # fetch のタイムアウト（秒）
 FETCH_TIMEOUT = 10
+# Jekyll などの YAML front matter を先頭から剥がすための正規表現
+_YAML_FRONTMATTER_RE = re.compile(r"\A---\r?\n.*?\r?\n---\r?\n", re.DOTALL)
 
 
 def _eprint(msg: str) -> None:
@@ -295,7 +297,8 @@ def _fetch_url_text(url: str) -> str:
 
     # raw.githubusercontent.com に変換済みのものはプレーンテキスト（markdown）想定
     if "raw.githubusercontent.com" in fetch_url:
-        return text.strip()
+        # Jekyll などの YAML front matter が先頭に付いていたら剥がす（プロンプトに混ざるのを防ぐ）
+        return _YAML_FRONTMATTER_RE.sub("", text, count=1).strip()
     if ctype.startswith("text/html") or ctype == "application/xhtml+xml":
         return _html_to_text(text)
     return text.strip()
