@@ -1,6 +1,8 @@
 ---
 name: gh-kit:issue-triage
 description: 起票直後の Issue を 1 件トリアージし、本文整形・後続セクション骨組み作成・タイトル更新・タイプ/優先度ラベル付与・現状調査（コードベース/関連テスト/関連 Issue/PR/関連ドキュメント/再現実行）を行い、結果を本文に反映してユーザー確認待ちにする
+argument-hint: "[issue-number]"
+arguments: "issue_number"
 ---
 
 # issue-triage
@@ -9,9 +11,7 @@ GitHub Issue を 1 件トリアージし、起票直後の状態から「分か�
 
 ## 入力
 
-| 引数       | 内容    |
-| ---------- | ------- |
-| Issue 番号 | 例: 42  |
+- Issue 番号: $issue_number
 
 ## コメント返信ルール（共通）
 
@@ -20,7 +20,7 @@ GitHub Issue を 1 件トリアージし、起票直後の状態から「分か�
 ## ステップ 0: 起動時のラベル切り替え
 
 ```bash
-gh issue edit {N} \
+gh issue edit $issue_number \
   --remove-label "$GH_KIT_LABEL_CONFIRM_ISSUE_TRIAGE" \
   --add-label "$GH_KIT_LABEL_PROCESSING_ISSUE_TRIAGE"
 ```
@@ -29,7 +29,7 @@ gh issue edit {N} \
 ## ステップ 1: Issue 取得
 
 ```bash
-gh issue view {N} --json number,title,body,labels,comments,assignees
+gh issue view $issue_number --json number,title,body,labels,comments,assignees
 ```
 
 ## ステップ 2: 本文の整形・骨組み作成
@@ -54,7 +54,7 @@ issue-triage が自身で埋めるのは `## 概要` / `## 背景` / `## 現状`
 Issue 本文の内容を正確に表すタイトルに更新する。
 
 ```bash
-gh issue edit {N} --title "{生成タイトル}"
+gh issue edit $issue_number --title "{生成タイトル}"
 ```
 
 | 項目   | 内容                                                                                     |
@@ -112,3 +112,164 @@ gh issue edit {N} --title "{生成タイトル}"
 外部疎通テストは **料金発生のため自動実行禁止**。
 実行が必要な場合は本文の `### 再現手順` に「ユーザー手動で `--run-external` 付き実行が必要」と記録するに留める。
 
+### ステップ 5c: 関連 Issue/PR 検索
+
+`[サブエージェントで並列実行・完了を待つ]` `gh-kit:related-issue-finder` と `gh-kit:related-pr-finder` を **並列起動**。
+（戻り値: `{ "issues": [{number, url, state, title, summary, relation}], "prs": [{number, url, state, merged_at, title, summary, relation}] }`）
+
+各サブエージェントへの入力:
+- Issue 番号
+- タイトル・本文から抽出した検索キーワード（3〜6 個）
+- 関連ファイルパス（related-pr-finder のみ、ステップ 5a で見つかったファイル名）
+
+### バグ報告の場合の再現手順記録
+
+タイプラベルが `type:bug` の場合、ステップ 5b で実施した再現操作を **番号付き箇条書きで `### 再現手順` に記録**。再現結果（ログ・スクリーンショット）を末尾に貼る。再現しなかった場合もその旨を記録する。
+
+
+## ステップ 6: 本文 `## 現状` に調査結果を反映
+
+ステップ 5a〜5c の戻り値を Issue 本文テンプレートの表形式（`No / 〜 / 補足` 列構成）に整形して `## 現状` の各サブセクションに書き込む。
+
+```bash
+gh issue edit $issue_number --body-file <(cat <<'EOF'
+{整形した本文}
+EOF
+)
+```
+
+**禁止事項**:
+- 想像で「○○のはず」と書かない（調査で確認できたものだけ書く。学習データは使用しない）
+- 仕様や実装方針を推測しない（後続フェーズの責務）
+
+
+## ステップ 7: 分岐判定
+
+| 判定                                                          | 対応                                                                             |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| 完全重複 Issue が見つかった                                   | クローズ提案コメント → ステップ 8（assignee=ユーザー で待機）                    |
+| スコープが大きすぎる（依存関係あり / 共通目的の 1 機能）      | **子 Issue 分割** 提案コメント → ステップ 8                                      |
+| スコープが大きすぎる（独立した複数機能 / 目的が混在）         | **独立 Issue 分割** 提案コメント（元 Issue クローズ、新規親 Issue を複数作成） → ステップ 8 |
+| それ以外                                                      | ステップ 8 へ                                                                    |
+
+**分割方針の判断基準:**
+- **依存関係 or 共通目的あり** → 子 Issue 分割（親子リンク / Sub-issue で管理、通常同じ PR ツリーで進行）
+  - 例: 「認証機能追加」→ 子: サインイン / サインアップ / パスワードリセット
+- **独立した複数機能 / 目的が混在** → 独立 Issue 分割（親子関係なし、別々の PR ツリーで進行）
+  - 例: 「認証機能追加 + タスク管理機能追加」→ 別々の親 Issue 2 件に分割
+- **迷ったら「同じ PR にまとめる可能性があるか」**: あり → 子 Issue / なし → 独立 Issue
+
+提案コメントは下記フォーマット。
+
+```
+> 🤖 @issue-triage → @{ユーザーログイン名}
+
+## {タイトル例: 完全重複候補あり / 子 Issue 分割提案 / 独立 Issue 分割提案}
+
+{本文: 重複先の Issue リンクや分割案の概要（子 Issue の場合はサブ Issue タイトル案、独立の場合は新規親 Issue タイトル案）}
+```
+
+
+## ステップ 8: 完了報告 + assignee 設定
+
+```bash
+gh issue comment $issue_number --body-file <(cat <<'EOF'
+> 🤖 @issue-triage → @{ユーザーログイン名}
+
+## トリアージ完了
+
+本文の `## 概要` / `## 背景` / `## 現状` を整理し、後続フェーズ（spec/ui/arch）のセクション骨組みを用意しました。内容をご確認ください。
+- 問題なければ `フェーズ終了` ラベル付与 → 次フェーズ（issue-spec）へ
+- 修正が必要なら assignee を外してフィードバックコメントを記入
+EOF
+)
+
+GH_LOGIN="$(gh api user --jq '.login')"
+gh issue edit $issue_number --add-assignee "$GH_LOGIN"
+```
+
+
+## ステップ 9: 処理中ラベル除去
+
+```bash
+gh issue edit $issue_number --remove-label "$GH_KIT_LABEL_PROCESSING_ISSUE_TRIAGE"
+```
+
+ここで一旦終了する。次の起動は以下のいずれか:
+- ユーザーが assignee を外す → デーモンが再検知 → このスキルが再起動し **ステップ 10** から開始
+- ユーザーが `フェーズ終了` を付与 → デーモンが再検知 → このスキルが再起動し **ステップ 11** から開始
+
+
+## ステップ 10: ユーザー応答ループ（assignee 外しのみ・`フェーズ終了` なしの場合）
+
+ユーザーが assignee を外して再起動した場合、最新コメントの追記内容を確認して対応する。
+
+| 内容                            | 対応                                                                                                |
+| ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| 明確かつ妥当な指示              | 即本文反映 → 同コメントに「本文の `## XXX` を更新しました」と短く追記 → ステップ 8（再依頼）へ      |
+| 不明確な指示・複数解釈可能      | 「この理解で合っていますか？こう書き換えます」と確認の追記 → ステップ 8 へ                          |
+| 妥当性に疑問がある指示          | 「ご指摘の方法だと {懸念点}。代替案として {案} はいかがでしょうか？」と返す → ステップ 8 へ        |
+| 質問                            | 質問に回答するのみ、本文は触らない → ステップ 8 へ                                                  |
+
+返信フォーマット:
+
+```
+---
+> 🤖 @issue-triage → @{ユーザーログイン名}
+
+## {タイトル: 短い要約}
+
+{本文}
+```
+
+コメントは **個別に Resolve しない**。Resolve はステップ 11 でフェーズ終了時にまとめて行う。
+
+
+## ステップ 11: フェーズ終了処理（`フェーズ終了` 付与で再起動した場合）
+
+### ステップ 11a: 自分宛コメントの精査（Resolve 対象の選別）
+
+「自分宛のコメント」を全件取得し、Resolve 可否を判定する。
+宛先は各コメント先頭の `@{宛先}` を見て判定する。
+
+| 対象                                                                       | 扱い                              |
+| -------------------------------------------------------------------------- | --------------------------------- |
+| 自身（issue-triage）が投稿 → **ユーザーが回答済** or **議論完了 / 本文反映済** | Resolve 対象                      |
+| 自身（issue-triage）が投稿 → **ユーザー未回答**（選択肢提示・確認要求など）  | **Resolve NG**（11b で確認へ）    |
+| ユーザー → `@issue-triage` 宛コメント（AI 側が対応済）                       | Resolve 対象                      |
+| 他モニター宛のコメント                                                     | 無視（そのモニターが処理）        |
+
+### ステップ 11b: 一括 Resolve
+
+11a で Resolve 対象に選別したコメントを一括で Resolve する。
+ユーザー未回答分は **Resolve せず残す**
+
+```bash
+# 各コメントの subjectId を取得して Resolve（minimizeComment mutation）
+gh api graphql -f query='
+  mutation($id: ID!) {
+    minimizeComment(input: { subjectId: $id, classifier: RESOLVED }) {
+      minimizedComment { isMinimized }
+    }
+  }
+' -f id="{コメントの node_id}"
+```
+
+各コメントの `node_id` は `gh issue view $issue_number --json comments --jq '.comments[].id'` などで取得。
+
+### ステップ 11c: ラベル更新（次フェーズへ）
+
+```bash
+gh issue edit $issue_number \
+  --remove-label "$GH_KIT_LABEL_CONFIRM_ISSUE_TRIAGE" \
+  --remove-label "$GH_KIT_LABEL_PHASE_END" \
+  --add-label "$GH_KIT_LABEL_CONFIRM_ISSUE_SPEC"
+```
+
+assignee を外す:
+
+```bash
+gh issue edit $issue_number --remove-assignee "$GH_LOGIN"
+```
+
+フロー終了。次は issue-spec モニターが検知して起動する。

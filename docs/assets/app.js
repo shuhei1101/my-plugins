@@ -40,43 +40,55 @@ const BREADCRUMB_LABELS = {
  * 1. パンくずリスト
  * ---------------------------------------------------------------------------- */
 
+/** ルート（末尾スラッシュ付き）とパス配下のセグメントに分割する */
+function splitPathBySiteRoot() {
+  // _layouts/default.html が data-site-root="{{ '/' | relative_url }}" を注入する
+  // GitHub Pages（project pages）だと "/my-plugins/"、ローカルルート配信だと "/"
+  const bodyRoot = document.body?.dataset?.siteRoot || "/";
+  const siteRoot = bodyRoot.endsWith("/") ? bodyRoot : bodyRoot + "/";
+
+  const pathname = decodeURIComponent(window.location.pathname);
+  // 末尾のファイル名を落として必ずディレクトリ形にする
+  const dir = pathname.endsWith("/") ? pathname : pathname.replace(/\/[^\/]*$/, "/");
+
+  // site root 直下の相対パスを取り出す
+  const rel = dir.startsWith(siteRoot) ? dir.slice(siteRoot.length) : dir.replace(/^\//, "");
+  const segs = rel.split("/").filter(Boolean);
+  return { siteRoot, segs };
+}
+
+/** その中間層セグメントを「非リンクの中間表示」にするかどうか */
+function isNonLinkableSegment(seg, index, segs) {
+  // pages/{画面名}/issues/ は index.md を置かない中間層（規約）→ リンクにしない
+  return seg === "issues" && segs[index - 2] === "pages";
+}
+
 /** URL パスの各セグメントを辿ってパンくずリンクを組み立てる */
 function buildBreadcrumb() {
   const host = document.querySelector("[data-breadcrumb]");
   if (!host) return;
 
-  const pathname = decodeURIComponent(window.location.pathname);
-  // 末尾のファイル名を落とす（/foo/bar.html → /foo/、/foo/ → /foo/）
-  const dir = pathname.endsWith("/") ? pathname : pathname.replace(/\/[^\/]*$/, "/");
-  const rawSegs = dir.split("/").filter(Boolean);
-
-  // docs ディレクトリ配下だけを対象にする（GitHub Pages は docs=/ になるので docs セグメントは無いことが多い）
-  const docsIdx = rawSegs.indexOf("docs");
-  const segs = docsIdx >= 0 ? rawSegs.slice(docsIdx + 1) : rawSegs;
-  const baseSegs = docsIdx >= 0 ? rawSegs.slice(0, docsIdx + 1) : [];
-
-  // docs ルート（トップ）へのリンク相対パス
-  const upToRoot = "../".repeat(segs.length) || "./";
+  const { siteRoot, segs } = splitPathBySiteRoot();
 
   const parts = [];
-  parts.push(`<a href="${upToRoot}">${BREADCRUMB_LABELS[""]}</a>`);
+  parts.push(`<a href="${siteRoot}">${BREADCRUMB_LABELS[""]}</a>`);
 
+  // 各セグメントの累積 URL を絶対パス（site root からの絶対）で組む
+  let acc = siteRoot;
   segs.forEach((seg, i) => {
-    const remaining = segs.length - 1 - i;
-    const rel = "../".repeat(remaining) || "./";
+    acc += seg + "/";
     const label = BREADCRUMB_LABELS[seg] || seg;
     const isLast = i === segs.length - 1;
     parts.push(`<span class="sep">/</span>`);
-    if (isLast) {
+    if (isLast || isNonLinkableSegment(seg, i, segs)) {
+      // 現在地 or 中間層 → リンクにしない
       parts.push(`<span class="current">${label}</span>`);
     } else {
-      parts.push(`<a href="${rel}">${label}</a>`);
+      parts.push(`<a href="${acc}">${label}</a>`);
     }
   });
 
   host.innerHTML = parts.join("");
-  // baseSegs は将来 GitHub Pages 以外の配置検証時に使うため保持。今は未使用。
-  void baseSegs;
 }
 
 
