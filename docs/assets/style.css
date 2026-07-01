@@ -52,6 +52,22 @@
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
+/* ダークモード用オーバーライド。html[data-theme="dark"] を app.js が付ける */
+html[data-theme="dark"] {
+  --bg: #0d1117;
+  --bg-elevated: #161b22;
+  --bg-hover: #21262d;
+  --bg-code: #1c2128;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #58a6ff;
+  --accent-hover: #79b8ff;
+  --ok: #3fb950;
+  --warn: #d29922;
+  --danger: #f85149;
+}
+
 
 /* ==========================================================================
    2. リセット・ベース
@@ -73,7 +89,7 @@ a:hover { color: var(--accent-hover); }
 
 /* ==========================================================================
    3. トップバー
-   全ページ共通のヘッダ帯。左にサイト名、右にナビ / ユーザー情報を置く。
+   全ページ共通のヘッダ帯。左にサイト名、右にツールボタン（MD DL 等）を置く。
    ========================================================================== */
 .topbar {
   position: sticky;
@@ -89,6 +105,77 @@ a:hover { color: var(--accent-hover); }
 }
 .brand { font-weight: 700; font-size: 16px; }
 .brand a { color: var(--text); }
+
+/* トップバー中央の全ページ検索 */
+.topbar-search {
+  position: relative;
+  flex: 1;
+  max-width: 480px;
+  margin: 0 var(--space-md);
+}
+.topbar-search input[type="search"] {
+  width: 100%;
+  height: 32px;
+}
+.search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+  margin: 0;
+  padding: var(--space-xs) 0;
+  list-style: none;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+}
+.search-results li a {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-xs) var(--space-md);
+  color: var(--text);
+}
+.search-results li a:hover { background: var(--bg-hover); }
+.search-title { font-weight: 600; }
+.search-path { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+
+/* トップバー右側のツールボタン群 */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.md-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+}
+.md-download::before { content: "📄"; }
+.md-download:hover { color: var(--accent); border-color: var(--accent); }
+
+/* テーマ切替ボタン */
+.theme-toggle {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+.theme-toggle:hover { background: var(--bg-hover); }
 
 .nav { display: flex; gap: var(--space-md); }
 .nav a {
@@ -138,6 +225,21 @@ a:hover { color: var(--accent-hover); }
 }
 
 .main { padding: var(--space-lg); max-width: 1280px; margin: 0 auto; }
+
+/* MD ページ用: 本文と TOC の 2 カラム（狭幅では TOC を隠す） */
+.main-with-toc {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: var(--space-lg);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+.main-content { min-width: 0; }
+@media (max-width: 960px) {
+  .main-with-toc { grid-template-columns: 1fr; }
+  .toc { display: none; }
+}
 
 
 /* ==========================================================================
@@ -387,6 +489,38 @@ th.sort-desc::after { content: "▼"; opacity: 1; color: var(--accent); }
 .markdown-body h3 { font-size: 16px; }
 .markdown-body h4 { font-size: 14px; color: var(--text-muted); }
 
+/* 見出しの右横に付く # アンカー。hover で薄く表示 */
+.heading-anchor {
+  margin-left: var(--space-sm);
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  text-decoration: none;
+  font-weight: normal;
+}
+.markdown-body h2:hover .heading-anchor,
+.markdown-body h3:hover .heading-anchor,
+.markdown-body h4:hover .heading-anchor { opacity: 0.6; }
+.heading-anchor:hover { opacity: 1 !important; color: var(--accent); }
+
+/* コードブロック右上のコピーボタン */
+.code-copy {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  padding: 2px 8px;
+  font-size: 11px;
+  font-family: var(--font-base);
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.markdown-body pre:hover .code-copy { opacity: 1; }
+.code-copy:hover { color: var(--accent); border-color: var(--accent); }
+
 .markdown-body p { margin: var(--space-sm) 0; }
 
 .markdown-body ul,
@@ -460,11 +594,86 @@ th.sort-desc::after { content: "▼"; opacity: 1; color: var(--accent); }
 
 
 /* ==========================================================================
-   13. 狭幅対応
+   14. 目次サイドバー（MD ページ用）
+   ========================================================================== */
+.toc {
+  position: sticky;
+  top: calc(var(--topbar-h) + var(--space-md));
+  align-self: start;
+  max-height: calc(100vh - var(--topbar-h) - var(--space-lg));
+  overflow-y: auto;
+  padding: var(--space-sm) var(--space-md);
+  font-size: 13px;
+  border-left: 1px solid var(--border);
+}
+.toc-title {
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.toc-list { list-style: none; margin: 0; padding: 0; }
+.toc-item { margin: 2px 0; }
+.toc-item a {
+  display: block;
+  padding: 2px 6px;
+  border-left: 2px solid transparent;
+  color: var(--text-muted);
+  border-radius: 2px;
+  line-height: 1.4;
+}
+.toc-item a:hover { color: var(--text); background: var(--bg-hover); }
+.toc-item a.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--bg-hover);
+}
+.toc-lv3 a { padding-left: 18px; font-size: 12px; }
+
+
+/* ==========================================================================
+   15. コード言語ラベル
+   ========================================================================== */
+.code-lang {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-sm);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: lowercase;
+  letter-spacing: 0.03em;
+  padding: 1px 6px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+
+/* ==========================================================================
+   16. Mermaid ホルダー
+   ========================================================================== */
+.mermaid-holder {
+  padding: var(--space-md);
+  margin: var(--space-md) 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  text-align: center;
+}
+.mermaid-holder svg { max-width: 100%; height: auto; }
+
+
+/* ==========================================================================
+   17. 狭幅対応
    ========================================================================== */
 @media (max-width: 720px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { display: none; }
   .detail-grid { grid-template-columns: 1fr; }
   .main { padding: var(--space-md); }
+  .topbar-search { display: none; }
 }

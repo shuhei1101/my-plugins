@@ -4,6 +4,18 @@
 title: my-plugins
 description: プラグイン開発リポジトリの Wiki + モック
 
+# GitHub Pages のプロジェクトサイトはリポジトリ名がパスプレフィクスになる
+# 例: https://shuhei1101.github.io/my-plugins/ で配信されるので baseurl を明示
+# これにより {{ '/' | relative_url }} が "/my-plugins/" を返し、
+# トップ / パンくずの リンクが 404 にならなくなる
+baseurl: /my-plugins
+
+# MD ダウンロードボタン用に raw.githubusercontent.com のパスを組み立てる
+repository:
+  owner: shuhei1101
+  name: my-plugins
+  branch: master
+
 # Markdown 処理（kramdown + GFM 互換）
 markdown: kramdown
 kramdown:

@@ -8,11 +8,19 @@
  * Markdown → HTML の変換は Jekyll 側で完了しているので、ここでは行わない。
  *
  * 提供する機能:
- *   1. パンくずリスト  ... [data-breadcrumb] があれば URL 階層から自動生成
- *   2. テーブルソート  ... table にヘッダクリックで昇降ソートを付与
- *   3. テーブルフィルタ ... table 上部に検索ボックスを差し込み行を絞り込み
- *   4. トップに戻る    ... [data-back-to-top] のボタンをスクロール量で表示切替
- *   5. Mock demo 用    ... 検索・行クリック・新規追加・編集モード・トースト
+ *   1.  パンくずリスト     ... [data-breadcrumb] があれば URL 階層から自動生成
+ *   2.  テーブルソート     ... table にヘッダクリックで昇降ソートを付与
+ *   3.  テーブルフィルタ   ... table 上部に検索ボックスを差し込み行を絞り込み
+ *   4.  見出しアンカー     ... h2-h4 に # リンクを追加、クリックで URL をコピー
+ *   5.  コードコピー       ... pre 右上に「コピー」ボタン
+ *   6.  MD ダウンロード   ... [data-md-download] を raw MD URL に張り替える
+ *   7.  トップに戻る       ... [data-back-to-top] のボタンをスクロール量で表示切替
+ *   8.  目次サイドバー     ... [data-toc] に h2/h3 を並べ、現在位置ハイライト
+ *   9.  ダークモード切替   ... [data-theme-toggle] で light/dark 切替、localStorage 保存
+ *   10. Mermaid 自動描画   ... code.language-mermaid をレンダリング
+ *   11. コード言語ラベル   ... pre 左上に言語名（yaml, js 等）を表示
+ *   12. 全ページ検索       ... /search.json をロードして topbar 検索窓で絞り込み
+ *   13. Mock demo 用       ... 検索・行クリック・新規追加・編集モード・トースト
  * ============================================================================ */
 
 /* ---------- 定数 ---------- */
@@ -166,7 +174,348 @@ function injectTableFilter(table) {
 
 
 /* ============================================================================
- * 4. トップに戻るボタン
+ * 4. 見出しアンカーリンク
+ * ---------------------------------------------------------------------------- */
+
+/** 日本語見出しからも使えるスラッグを生成する */
+function slugify(text) {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    // URL で問題になる記号だけ落とす。日本語文字はそのまま残す（modern browser は decode 済で扱う）
+    .replace(/[^\p{L}\p{N}\-_.]/gu, "");
+}
+
+/** h2〜h4 に id と # リンクを付与する */
+function insertHeadingAnchors() {
+  const root = document.querySelector(".markdown-body");
+  if (!root) return;
+  const used = new Set();
+
+  root.querySelectorAll("h2, h3, h4").forEach((h) => {
+    // id が既にあればそれを、無ければ本文から生成
+    let id = h.id || slugify(h.textContent || "");
+    if (!id) return;
+    // 重複回避
+    let unique = id;
+    let n = 2;
+    while (used.has(unique)) unique = `${id}-${n++}`;
+    used.add(unique);
+    h.id = unique;
+
+    const a = document.createElement("a");
+    a.className = "heading-anchor";
+    a.href = `#${unique}`;
+    a.setAttribute("aria-label", "この見出しへのリンクをコピー");
+    a.textContent = "#";
+    // クリック時に URL をクリップボードへコピー（ページ遷移はそのまま）
+    a.addEventListener("click", () => {
+      const url = window.location.origin + window.location.pathname + `#${unique}`;
+      navigator.clipboard?.writeText(url).then(() => showToast(`URL をコピー: #${unique}`));
+    });
+    h.appendChild(a);
+  });
+}
+
+
+/* ============================================================================
+ * 5. コードブロックのコピーボタン
+ * ---------------------------------------------------------------------------- */
+
+/** `<pre><code>` の右上にコピーボタンを差し込む */
+function addCodeCopyButtons() {
+  document.querySelectorAll(".markdown-body pre").forEach((pre) => {
+    if (pre.dataset.copyReady === "true") return;
+    pre.dataset.copyReady = "true";
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "code-copy";
+    btn.textContent = "コピー";
+    btn.addEventListener("click", async () => {
+      const code = pre.querySelector("code")?.innerText ?? pre.innerText;
+      try {
+        await navigator.clipboard.writeText(code);
+        btn.textContent = "コピー済";
+        window.setTimeout(() => { btn.textContent = "コピー"; }, 1500);
+      } catch {
+        btn.textContent = "失敗";
+      }
+    });
+    // pre を position: relative にして右上に置く
+    pre.style.position = "relative";
+    pre.appendChild(btn);
+  });
+}
+
+
+/* ============================================================================
+ * 6. MD ダウンロード（raw リンク）
+ * ---------------------------------------------------------------------------- */
+
+/** [data-md-download] を現在ページに対応する raw MD の URL に張り替える */
+function bindMdDownloadLink() {
+  const link = document.querySelector("[data-md-download]");
+  if (!link) return;
+  const rawBase = document.body?.dataset?.rawBase;
+  const pagePath = document.body?.dataset?.pagePath;
+  if (!rawBase || !pagePath) {
+    link.hidden = true;
+    return;
+  }
+  // rawBase 末尾のスラッシュ調整
+  const base = rawBase.replace(/\/+$/, "");
+  // pagePath は Jekyll が Liquid で埋めた実ソースパス（例: "mock/index.md" / "wiki/gh-kit/規約/Wiki管理.md"）
+  link.href = `${base}/${pagePath}`;
+  link.target = "_blank";
+  link.rel = "noopener";
+}
+
+
+/* ============================================================================
+ * 8. 目次サイドバー
+ * ---------------------------------------------------------------------------- */
+
+/** .markdown-body の h2/h3 から目次を組み立て、スクロールで現在位置をハイライト */
+function buildToc() {
+  const container = document.querySelector("[data-toc]");
+  const list = document.querySelector("[data-toc-list]");
+  const root = document.querySelector(".markdown-body");
+  if (!container || !list || !root) return;
+
+  const headings = Array.from(root.querySelectorAll("h2, h3"));
+  if (headings.length < 2) {
+    // 見出し 1 個以下では目次不要
+    return;
+  }
+  container.hidden = false;
+
+  headings.forEach((h) => {
+    if (!h.id) return;
+    const li = document.createElement("li");
+    li.className = h.tagName === "H3" ? "toc-item toc-lv3" : "toc-item toc-lv2";
+    const a = document.createElement("a");
+    a.href = `#${h.id}`;
+    // アンカー "#" は本文だけ取り出す
+    a.textContent = h.textContent.replace(/#$/, "").trim();
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+
+  // スクロール位置に応じたハイライト
+  const links = new Map(Array.from(list.querySelectorAll("a")).map((a) => [a.getAttribute("href").slice(1), a]));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      const link = links.get(e.target.id);
+      if (!link) return;
+      if (e.isIntersecting) link.classList.add("active");
+      else link.classList.remove("active");
+    });
+  }, { rootMargin: "-30% 0px -60% 0px" });
+  headings.forEach((h) => { if (h.id) io.observe(h); });
+}
+
+
+/* ============================================================================
+ * 9. ダークモード切替
+ * ---------------------------------------------------------------------------- */
+
+const THEME_STORAGE_KEY = "docs-theme";
+
+/** 現在のテーマを html[data-theme] に反映 */
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  // Mermaid にも反映（再描画）
+  if (window.mermaid && typeof window.mermaid.initialize === "function") {
+    window.mermaid.initialize({ startOnLoad: false, theme: theme === "dark" ? "dark" : "default" });
+  }
+}
+
+/** ボタン + localStorage + OS 設定でテーマを決める */
+function bindThemeToggle() {
+  const btn = document.querySelector("[data-theme-toggle]");
+  // OS 設定 → localStorage の順で初期値
+  const stored = localStorage.getItem(THEME_STORAGE_KEY);
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const initial = stored || (prefersDark ? "dark" : "light");
+  applyTheme(initial);
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem(THEME_STORAGE_KEY, next);
+    // 既存の mermaid をテーマ変更後に再描画（グラフを破棄して再生成）
+    rerenderMermaid();
+  });
+}
+
+
+/* ============================================================================
+ * 10. Mermaid 自動描画
+ * ---------------------------------------------------------------------------- */
+
+/** 元 MD テキストを data 属性に退避して SVG に置き換える */
+async function renderMermaid() {
+  if (!window.mermaid) return;
+  const blocks = document.querySelectorAll("pre > code.language-mermaid");
+  if (blocks.length === 0) return;
+
+  window.mermaid.initialize({ startOnLoad: false, theme: document.documentElement.dataset.theme === "dark" ? "dark" : "default" });
+
+  for (const [i, code] of blocks.entries()) {
+    const pre = code.parentElement;
+    const src = code.textContent;
+    // pre 全体を div.mermaid に置き換える（元テキストは data-mermaid-src に退避）
+    const holder = document.createElement("div");
+    holder.className = "mermaid-holder";
+    holder.dataset.mermaidSrc = src;
+    try {
+      const id = `mermaid-${Date.now()}-${i}`;
+      const { svg } = await window.mermaid.render(id, src);
+      holder.innerHTML = svg;
+    } catch (e) {
+      holder.innerHTML = `<div class="md-error">Mermaid の描画に失敗: ${e?.message ?? e}</div>`;
+    }
+    pre.replaceWith(holder);
+  }
+}
+
+/** テーマ切替時に既存の Mermaid ホルダーを再描画する */
+async function rerenderMermaid() {
+  if (!window.mermaid) return;
+  const holders = document.querySelectorAll(".mermaid-holder[data-mermaid-src]");
+  window.mermaid.initialize({ startOnLoad: false, theme: document.documentElement.dataset.theme === "dark" ? "dark" : "default" });
+  for (const [i, holder] of holders.entries()) {
+    const src = holder.dataset.mermaidSrc;
+    try {
+      const id = `mermaid-re-${Date.now()}-${i}`;
+      const { svg } = await window.mermaid.render(id, src);
+      holder.innerHTML = svg;
+    } catch (e) {
+      holder.innerHTML = `<div class="md-error">Mermaid の描画に失敗: ${e?.message ?? e}</div>`;
+    }
+  }
+}
+
+
+/* ============================================================================
+ * 11. コードブロックの言語ラベル
+ * ---------------------------------------------------------------------------- */
+
+/** code の class="language-xxx" から言語名を取り出して pre 左上に付ける */
+function addCodeLangLabels() {
+  document.querySelectorAll(".markdown-body pre > code[class*='language-']").forEach((code) => {
+    const pre = code.parentElement;
+    if (pre.dataset.langReady === "true") return;
+    pre.dataset.langReady = "true";
+
+    const m = /language-([^\s]+)/.exec(code.className);
+    if (!m) return;
+    const lang = m[1];
+    // mermaid はラベル不要（図として表示するので）
+    if (lang === "mermaid") return;
+
+    const label = document.createElement("span");
+    label.className = "code-lang";
+    label.textContent = lang;
+    pre.style.position = "relative";
+    pre.appendChild(label);
+  });
+}
+
+
+/* ============================================================================
+ * 12. 全ページ検索
+ * ---------------------------------------------------------------------------- */
+
+let searchIndexCache = null;
+
+/** search.json を初回だけ fetch する */
+async function loadSearchIndex() {
+  if (searchIndexCache) return searchIndexCache;
+  const url = document.body?.dataset?.searchIndex;
+  if (!url) return [];
+  const res = await fetch(url);
+  if (!res.ok) return [];
+  searchIndexCache = await res.json();
+  return searchIndexCache;
+}
+
+/** クエリで entries を絞り込む（title / url / path / content 部分一致） */
+function filterSearch(entries, query) {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  return entries
+    .map((e) => {
+      const hay = `${e.title}\n${e.url}\n${e.path}\n${e.content}`.toLowerCase();
+      const idx = hay.indexOf(q);
+      if (idx < 0) return null;
+      // タイトル一致を最上位、次に path、最後に本文
+      const score =
+        (e.title?.toLowerCase().includes(q) ? 0 : 100) +
+        (e.path?.toLowerCase().includes(q) ? 0 : 50) +
+        idx / 1000;
+      return { entry: e, score };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.score - b.score)
+    .slice(0, 10)
+    .map((x) => x.entry);
+}
+
+/** topbar 検索入力にドロップダウン結果を紐付ける */
+function bindSearchBox() {
+  const input = document.querySelector("[data-search-input]");
+  const results = document.querySelector("[data-search-results]");
+  if (!input || !results) return;
+
+  const render = (entries) => {
+    if (entries.length === 0) {
+      results.hidden = true;
+      results.innerHTML = "";
+      return;
+    }
+    results.hidden = false;
+    results.innerHTML = entries
+      .map((e) => `
+        <li>
+          <a href="${e.url}">
+            <span class="search-title">${escapeHtml(e.title)}</span>
+            <span class="search-path">${escapeHtml(e.path)}</span>
+          </a>
+        </li>
+      `)
+      .join("");
+  };
+
+  const handle = async () => {
+    const entries = await loadSearchIndex();
+    render(filterSearch(entries, input.value));
+  };
+  input.addEventListener("input", handle);
+  input.addEventListener("focus", handle);
+  // ドロップダウン外をクリックしたら閉じる
+  document.addEventListener("click", (e) => {
+    if (!results.contains(e.target) && e.target !== input) {
+      results.hidden = true;
+    }
+  });
+}
+
+/** HTML エスケープ（検索結果の描画に使う） */
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+
+/* ============================================================================
+ * 7. トップに戻るボタン
  * ---------------------------------------------------------------------------- */
 
 /** スクロール量で表示切替し、クリックで先頭へスムーズスクロール */
@@ -187,7 +536,7 @@ function bindBackToTop() {
 
 
 /* ============================================================================
- * 5. Mock demo 用ハンドラ
+ * 8. Mock demo 用ハンドラ
  * 対象 DOM が無いページでは何もしない（早期 return）。
  * ---------------------------------------------------------------------------- */
 
@@ -267,11 +616,30 @@ function showToast(message) {
  * エントリポイント
  * ---------------------------------------------------------------------------- */
 
-function init() {
+/** Mock demo 画面用にトースト要素が無ければ差し込む（他画面の共通機能でも使うため） */
+function ensureToastElement() {
+  if (document.getElementById("toast")) return;
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.id = "toast";
+  t.hidden = true;
+  document.body.appendChild(t);
+}
+
+async function init() {
   // 共通機能
+  ensureToastElement();
+  bindThemeToggle();                 // 最初にテーマを反映（フラッシュ抑止）
   buildBreadcrumb();
   bindBackToTop();
+  bindMdDownloadLink();
+  insertHeadingAnchors();            // まず見出しに id を振る（TOC がそれを使う）
+  buildToc();
+  addCodeLangLabels();
+  addCodeCopyButtons();
+  await renderMermaid();              // mermaid は pre を差し替えるので copy/label より後
   enhanceTables(document);
+  bindSearchBox();
 
   // Mock demo 固有のハンドラ
   bindSearchFilter();
