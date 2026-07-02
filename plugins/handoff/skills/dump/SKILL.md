@@ -102,4 +102,11 @@ disable-model-invocation: true
 
 ## ステップ 5: 完了報告
 
-生成したファイルの絶対パスをユーザーに報告する。あわせて次の一手（`/compact` 実行）を促す。
+以下を出力する。session_id 部分は実値に埋める。
+
+```bash
+生成ファイル: {絶対パス}
+自動復元: /compact
+手動復元: /handoff:load {session_id}
+```
+
