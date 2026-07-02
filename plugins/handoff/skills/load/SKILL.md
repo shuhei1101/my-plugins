@@ -1,8 +1,8 @@
 ---
 name: handoff:load
 description: 過去のハンドオフ Markdownを読み込んで現セッションのコンテキストに取り込む
-argument-hint: "[session-id]"
-arguments: "session_id"
+argument-hint: "[handoff_title or handoff_file_path]"
+arguments: "handoff_title"
 disable-model-invocation: true
 ---
 
@@ -12,19 +12,26 @@ disable-model-invocation: true
 
 ## 入力
 
-- `$session_id`: 復元したいハンドオフの session_id。必須。
+`$handoff_title`: 復元対象の指定（必須）。以下いずれかを受け付ける。
+
+- `${HANDOFF_DIR}` 配下のファイル名から `.md` を除いた文字列（例: `20260703120000_xxx`）
+- ハンドオフファイルの絶対パス
 
 ## ステップ 1: 引数の有無を確認する
 
-- `$session_id` が指定されていないなら、以下の案内をユーザーに返してスキルを終了する
+`$handoff_title` が未指定なら、以下を案内してスキルを終了する。
 
-  > session_id を指定してください。ハンドオフファイルは `$HANDOFF_DIR` 配下に `<session_id>.md` の形で保存されています。
-  > 一覧を確認するには `ls $HANDOFF_DIR` を実行してください。復元したいファイル名から `.md` を除いた文字列が session_id です。
+> handoff_title を指定してください。ハンドオフファイルは `$HANDOFF_DIR` 配下に `<handoff_title>.md` の形で保存されています。
+> 一覧を確認するには `ls $HANDOFF_DIR` を実行してください。復元したいファイル名から `.md` を除いた文字列が handoff_title です。
 
-## ステップ 2: 対象ファイルを特定する
+## ステップ 2: 対象ファイルパスを確定する
 
-- 対象: `${HANDOFF_DIR}/${session_id}.md`
-- ファイルが存在しなければユーザーに「対象ファイルが見つからない」旨を報告して終了する
+`$handoff_title` の形式で対象パスを決める。
+
+- 絶対パスならそのまま対象パスとする
+- それ以外は `${HANDOFF_DIR}/${handoff_title}.md` を対象パスとする
+
+対象パスが存在しなければ「対象ファイルが見つからない」旨をユーザーに報告して終了する。
 
 ## ステップ 3: ハンドオフを Read で全文読み込む
 
