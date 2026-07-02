@@ -1,0 +1,33 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "_description": "handoff 定数をセッション内に展開する",
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/scripts/constants.sh"
+            ]
+          }
+        ]
+      }
+    ],
+
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "_description": "コンパクト直後、前セッションのハンドオフ Markdown を additionalContext として注入し、注入後ファイルを削除する",
+            "type": "command",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/post-compact/load_dump.py"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
