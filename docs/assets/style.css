@@ -74,6 +74,13 @@ html[data-theme="dark"] {
    ========================================================================== */
 * { box-sizing: border-box; }
 
+/* # アンカージャンプで見出しが sticky topbar の下に隠れないよう、
+   スクロール位置を topbar の高さだけ下げる */
+html {
+  scroll-padding-top: calc(var(--topbar-h) + var(--space-md));
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -488,6 +495,12 @@ th.sort-desc::after { content: "▼"; opacity: 1; color: var(--accent); }
 .markdown-body h2 { font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: var(--space-xs); }
 .markdown-body h3 { font-size: 16px; }
 .markdown-body h4 { font-size: 14px; color: var(--text-muted); }
+
+/* # アンカージャンプ時に sticky topbar の下に見出しが隠れないよう
+   個別の要素側にも余白を持たせる（html の scroll-padding-top と二重で担保） */
+.markdown-body :is(h1, h2, h3, h4) {
+  scroll-margin-top: calc(var(--topbar-h) + var(--space-md));
+}
 
 /* 見出しの右横に付く # アンカー。hover で薄く表示 */
 .heading-anchor {

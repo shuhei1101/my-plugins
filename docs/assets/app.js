@@ -303,17 +303,37 @@ function buildToc() {
     list.appendChild(li);
   });
 
-  // スクロール位置に応じたハイライト
-  const links = new Map(Array.from(list.querySelectorAll("a")).map((a) => [a.getAttribute("href").slice(1), a]));
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      const link = links.get(e.target.id);
-      if (!link) return;
-      if (e.isIntersecting) link.classList.add("active");
-      else link.classList.remove("active");
-    });
-  }, { rootMargin: "-30% 0px -60% 0px" });
-  headings.forEach((h) => { if (h.id) io.observe(h); });
+  // スクロール位置に応じた「常に 1 つだけ active」ハイライト
+  // topbar 高さ + 少しの余白より上に位置する見出しのうち最後尾を active にする
+  const links = Array.from(list.querySelectorAll("a"));
+  const linkById = new Map(links.map((a) => [a.getAttribute("href").slice(1), a]));
+
+  const updateActive = () => {
+    const topbarH = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--topbar-h")) || 56;
+    const spaceMd = 16;
+    const threshold = topbarH + spaceMd + 4; // トップバー直下より下に降りた見出しを現在地とみなす
+
+    let currentId = null;
+    for (const h of headings) {
+      if (!h.id) continue;
+      const rect = h.getBoundingClientRect();
+      if (rect.top <= threshold) {
+        currentId = h.id;
+      } else {
+        break; // 見出しは DOM 順に並ぶので、閾値より下に来た時点で以降を見る必要なし
+      }
+    }
+    // 全リンクの active をクリアしてから 1 つだけ付ける
+    links.forEach((a) => a.classList.remove("active"));
+    if (currentId) {
+      const a = linkById.get(currentId);
+      if (a) a.classList.add("active");
+    }
+  };
+
+  window.addEventListener("scroll", updateActive, { passive: true });
+  window.addEventListener("resize", updateActive);
+  updateActive();
 }
 
 
