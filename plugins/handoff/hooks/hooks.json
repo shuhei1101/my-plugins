@@ -13,21 +13,6 @@
           }
         ]
       }
-    ],
-
-    "PostCompact": [
-      {
-        "hooks": [
-          {
-            "_description": "コンパクト直後、前セッションのハンドオフ Markdown を additionalContext として注入し、注入後ファイルを削除する",
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/post-compact/load_dump.py"
-            ]
-          }
-        ]
-      }
     ]
   }
 }

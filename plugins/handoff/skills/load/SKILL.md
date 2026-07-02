@@ -1,6 +1,6 @@
 ---
 name: handoff:load
-description: 過去のハンドオフ Markdownを手動で読み込んで現セッションのコンテキストに取り込む
+description: 過去のハンドオフ Markdownを読み込んで現セッションのコンテキストに取り込む
 argument-hint: "[session-id]"
 arguments: "session_id"
 disable-model-invocation: true
@@ -35,7 +35,3 @@ disable-model-invocation: true
 
 - 読み込んだハンドオフの `## タスク一覧` を短く要約してユーザーに提示する
 - 続けて何から着手するかをユーザーに確認する（進行中タスクの再開 / 未着手タスクの着手 / 別の指示）
-
-## 補足
-
-- `HANDOFF_DIR` が未設定なら SessionStart フックが走っていない状態。Claude Code の再起動をユーザーに促す

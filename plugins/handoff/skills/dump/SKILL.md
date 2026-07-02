@@ -108,7 +108,6 @@ disable-model-invocation: true
 以下を出力する。session_id 部分は実値に埋める。
 
 ```bash
-生成ファイル: {絶対パス}
-自動復元: /compact
-手動復元: /handoff:load {session_id}
+生成ファイル: `{絶対パス}`
+手動復元: `/handoff:load {session_id}`
 ```
