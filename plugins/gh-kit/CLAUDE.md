@@ -1,21 +1,23 @@
 # gh-kit ワークフロー設計
 
-## モニター一覧（パイプライン順）
+## タイプ一覧
 
-| #   | モニター名     | 起動スキル            | 監視ラベル          | 完了時の次ラベル                                                   | 入力          | 必須/任意                             |
-| --- | -------------- | --------------------- | ------------------- | ------------------------------------------------------------------ | ------------- | ------------------------------------- |
-| 1   | issue-triage   | gh-kit:issue-triage   | 確認:issue-triage   | 確認:issue-spec                                                    | Issue 番号    | 必須                                  |
-| 2   | issue-spec     | gh-kit:issue-spec     | 確認:issue-spec     | **【完了時に worktree + Draft PR 作成 + 紐づく Issue 記入】** →（ユーザー手動）確認:pr-ui（画面あり）/ 確認:pr-arch（画面なし） | 〃 | 〃 |
-| 3   | pr-ui          | gh-kit:pr-ui          | 確認:pr-ui          | 確認:pr-arch                                                       | Issue + PR 番号 | 画面ありの場合のみ                  |
-| 4   | pr-arch        | gh-kit:pr-arch        | 確認:pr-arch        | 確認:pr-test                                                       | PR 番号       | 実装系で必須                          |
-| 5   | pr-test        | gh-kit:pr-test        | 確認:pr-test        | 確認:pr-impl                                                       | 〃            | 〃                                    |
-| 6   | pr-impl        | gh-kit:pr-impl        | 確認:pr-impl        | 確認:pr-impl-review                                                | 〃            | 〃                                    |
-| 7   | pr-impl-review | gh-kit:pr-impl-review | 確認:pr-impl-review | 確認:pr-doc-plan（合格時）/ 確認:pr-impl（差し戻し時）             | 〃            | 〃                                    |
-| 8   | pr-doc-plan    | gh-kit:pr-doc-plan    | 確認:pr-doc-plan    | 確認:pr-doc（影響あり）/ 確認:pr-merge（影響なし）                 | 〃            | 必須（影響リスト確認のみ）            |
-| 9   | pr-doc         | gh-kit:pr-doc         | 確認:pr-doc         | 確認:pr-doc-review                                                 | 〃            | ドキュメント影響あり時のみ            |
-| 10  | pr-doc-review  | gh-kit:pr-doc-review  | 確認:pr-doc-review  | （ユーザー手動）確認:pr-merge（合格時）/ 確認:pr-doc（差し戻し時） | 〃            | 〃                                    |
-| 11  | pr-merge       | gh-kit:pr-merge       | 確認:pr-merge       | 完了                                                               | 〃            | 必須                                  |
-| 12  | reset          | gh-kit:reset          | 確認:reset          | 完了                                                               | Issue/PR 番号 | 不要化時のみ（ユーザー手動付与）      |
+1 Issue に付与する type は必ず 1 個。混在は分割対象（`issue-triage` の分割判定で捌く）。
+起票直後で内容が固まっていない Issue は type 未付与でもよい（`issue-triage` で確定）。
+
+| No | type       | ユースケース                                            | PR |
+| -- | ---------- | ------------------------------------------------------- | -- |
+| 1  | `epic`     | サブイシューを束ねる親（自身は実装 PR を持たない）      | ✕  |
+| 2  | `feat`     | 新規機能追加（1 対象システム内で閉じる）                | ○  |
+| 3  | `refactor` | 内部リファクタリング（振る舞い変更なし）                | ○  |
+| 4  | `bug`      | バグ修正                                                | ○  |
+| 5  | `docs`     | ドキュメント更新のみ                                    | ○  |
+| 6  | `chore`    | ビルド設定・軽微修正                                    | ○  |
+| 7  | `question` | 質疑応答のみ（コメントループ、実装なし）                | ✕  |
+
+- `question` は途中で実装が必要になったら **別 Issue 起票 or `epic` 化** して起点にする（そのままタイプ変更はしない）
+- `epic` はサブイシュー完了状況の追跡と親クローズだけ担当。実装ロジックは持たない
+
 
 ---
 
@@ -1324,3 +1326,18 @@ pr-arch が起票直後に骨組みを作成し、後続モニターが自分の
 | ------------------------------ | ------------ |
 | 議論の経緯（論点・質問・回答） | コメント履歴 |
 | 確定した内容（最新版のみ）     | 本文         |
+
+
+---
+
+## Phase 2 案: タイプ別ワークフロー / サブイシュー分割（検討中）
+
+> Phase 1 の全 Issue 直列パイプラインを、**タイプごとの分岐フロー + サブイシューによる対象システム別分割** に発展させる。
+> 既存モニター / スキルへの反映は Phase 2 実装で行う。本セクションは合意済みの目標構造の記述。
+
+### タイプ一覧
+
+1 Issue に付与する type は必ず 1 個。混在は分割対象（`issue-triage` の分割判定で捌く）。
+起票直後で内容が固まっていない Issue は type 未付与でもよい（`issue-triage` で確定）。
+
+
