@@ -9,12 +9,3 @@ paths: "*"
     - →ルールが注入される
   - その後、Editツールを使用し、編集を行う
 
-## ツール活用
-- 作業実施時は極力以下タスクツールを活用する
-  - TaskCreate
-  - TaskUpdate
-  - TaskGet
-  - TaskList
-- ユーザに質問をするときは極力以下ツールを活用する
-  - AskUserQuestion
-

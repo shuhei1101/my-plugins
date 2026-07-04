@@ -1,42 +1,126 @@
 # gh-kit ワークフロー設計
 
-## タイプ一覧
+## ラベル一覧
 
-1 Issue に付与する type は必ず 1 個。混在は分割対象（`issue-triage` の分割判定で捌く）。
-起票直後で内容が固まっていない Issue は type 未付与でもよい（`issue-triage` で確定）。
+| No  | ラベル            | 概要                                     | 補足 |
+| --- | ----------------- | ---------------------------------------- | ---- |
+| 1   | `layer:epic`      | 機能全体（対象システム横断）の親 Issue   |      |
+| 2   | `layer:story`     | ユースケース単位の親 Issue               |      |
+| 3   | `layer:subsystem` | 対象システム別担当分担用の親 Issue       |      |
+| 4   | `type:feat`       | 新規機能追加                             |      |
+| 5   | `type:refactor`   | 内部リファクタリング（振る舞い変更なし） |      |
+| 6   | `type:bug`        | バグ修正                                 |      |
+| 7   | `type:docs`       | ドキュメント更新                         |      |
+| 8   | `type:chore`      | ビルド設定・軽微修正                     |    |
+| 9   | `type:question`   | 質疑応答のみ                             |   |
+| 10  | `scope:backend`   | バックエンド担当                         |    |
+| 11  | `scope:frontend`  | フロントエンド担当                       |    |
 
-| No | type       | ユースケース                                            | PR |
-| -- | ---------- | ------------------------------------------------------- | -- |
-| 1  | `epic`     | サブイシューを束ねる親（自身は実装 PR を持たない）      | ✕  |
-| 2  | `feat`     | 新規機能追加（1 対象システム内で閉じる）                | ○  |
-| 3  | `refactor` | 内部リファクタリング（振る舞い変更なし）                | ○  |
-| 4  | `bug`      | バグ修正                                                | ○  |
-| 5  | `docs`     | ドキュメント更新のみ                                    | ○  |
-| 6  | `chore`    | ビルド設定・軽微修正                                    | ○  |
-| 7  | `question` | 質疑応答のみ（コメントループ、実装なし）                | ✕  |
+- `layer:*` は自身は実装コードを持たず、全子完了 → 自ブランチを親レイヤーにマージ → クローズ
+- `type:*` は親（`layer:*` or master）のブランチから派生して 1 leaf の PR を持ち、完了 → 親ブランチにマージ
+- `scope:*` は将来対象システムが増えたら追加（モバイル、CLI ツール、等）
+- GitHub Issue Type（組織リポジトリで利用可）に将来移行する場合は **`layer:*` を Issue Type に昇格**、`type:*` / `scope:*` はラベルのままにする
 
-- `question` は途中で実装が必要になったら **別 Issue 起票 or `epic` 化** して起点にする（そのままタイプ変更はしない）
-- `epic` はサブイシュー完了状況の追跡と親クローズだけ担当。実装ロジックは持たない
+## 各レイヤー作業
+
+### 新規画面作成
+
+
+## gitGraph（ブランチ + commit + モニター対応）
+
+story 1 個 + subsystem 2 個（BE / FE）+ 各 subsystem に docs task + 実装 task という最小構成を例示。
+
+```mermaid
+---
+config:
+  gitGraph:
+    mainBranchName: master
+---
+gitGraph
+    commit id: "master baseline"
+    branch epic/root
+    checkout epic/root
+    commit id: "epic init (pr-init)"
+
+    branch docs/scenario
+    checkout docs/scenario
+    commit id: "シナリオ更新 (pr-doc)"
+    checkout epic/root
+    merge docs/scenario tag: "Squash"
+
+    branch story/A
+    checkout story/A
+    commit id: "story A init (pr-init)"
+
+    branch subsystem/BE
+    checkout subsystem/BE
+    commit id: "subsystem BE init (pr-init)"
+
+    branch docs/BE-module
+    checkout docs/BE-module
+    commit id: "BE モジュール構成/結合 更新 (pr-doc)"
+    checkout subsystem/BE
+    merge docs/BE-module tag: "Squash"
+
+    branch feat/BE-impl
+    checkout feat/BE-impl
+    commit id: "BE 実装 (pr-impl)"
+    checkout subsystem/BE
+    merge feat/BE-impl tag: "Squash"
+
+    checkout story/A
+    merge subsystem/BE tag: "通常"
+
+    branch subsystem/FE
+    checkout subsystem/FE
+    commit id: "subsystem FE init (pr-init)"
+
+    branch docs/FE-module
+    checkout docs/FE-module
+    commit id: "FE モジュール構成/結合 更新 (pr-doc)"
+    checkout subsystem/FE
+    merge docs/FE-module tag: "Squash"
+
+    branch feat/FE-impl
+    checkout feat/FE-impl
+    commit id: "FE 実装 (pr-impl)"
+    checkout subsystem/FE
+    merge feat/FE-impl tag: "Squash"
+
+    checkout story/A
+    merge subsystem/FE tag: "通常"
+
+    checkout epic/root
+    merge story/A tag: "通常"
+
+    checkout master
+    merge epic/root tag: "通常"
+```
+
 
 
 ---
 
 ## 設計レベルとモニターの対応
 
-| 設計レベル            | 担当モニター   | 決めること                                                          |
-| --------------------- | -------------- | ------------------------------------------------------------------- |
-| 管理                  | issue-triage   | タイトル・概要・背景・type/priority・分割判断                       |
-| SA（システム要件）+ Draft PR 作成 | issue-spec | 機能要件（エラー/バリ含む）・非機能要件・スコープ外。**完了時に worktree + Draft PR 作成 + 紐づく Issue 記入** |
-| UI + UI 実装計画      | pr-ui          | 画面構成・モック・画面遷移・UI 関連の実装計画 **+ UI ライブラリ採用時は PoC まで実施**（Wiki も更新） |
-| SS（システム方式）+ 実装計画 | pr-arch        | コンポーネント分割・採用ライブラリ・データフロー・実装計画（コード変更一覧）**+ ライブラリ選定で必要な場合は PoC 実施**（Wiki も更新） |
-| テスト                | pr-test        | テストコード作成（Red 状態）                                        |
-| 実装                  | pr-impl        | 実装 → Green 化                                                     |
-| 実装レビュー          | pr-impl-review | コード品質チェック                                                  |
-| ドキュメント計画      | pr-doc-plan    | 実装結果を踏まえた詳細なドキュメント修正計画                        |
-| ドキュメント実装      | pr-doc         | Wiki / CLAUDE.md / Rules の実コミット                               |
-| ドキュメントレビュー  | pr-doc-review  | ドキュメント差分のレビュー                                          |
-| マージ                | pr-merge       | マージ + コンフリクト解消 + worktree 削除                           |
-| 中断リセット          | reset          | 不要化した Issue/PR の巻き戻し（追記 Wiki 削除・worktree 削除・クローズ） |
+| 設計レベル                   | 担当モニター                | 決めること                                                                                                          |
+| ---------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 管理                         | `issue-triage`              | タイトル・概要・背景・type/priority・分割判断（epic / story / subsystem / task いずれの layer にするか、サブ起票）  |
+| 現状調査                     | `issue-investigate`         | 既存コード・関連テスト・関連 Issue/PR・再現ログ                                                                     |
+| SA（システム要件）           | `issue-spec`                | 機能要件（エラー/バリ含む）+ 非機能要件（性能・セキュリティ・運用制約）+ スコープ外                                  |
+| ドキュメント変更計画         | `issue-doc-plan`            | どのページに何を追加/変更/新規作成するか                                                                            |
+| Draft PR 作成                | `pr-init`                   | worktree + Draft PR 作成 + `## 紐づく Issue` 記入 + PR 本文骨組み配置                                              |
+| UI + UI 実装計画             | `pr-ui`                     | 画面構成・モック・画面遷移・UI 関連の実装計画（UI ライブラリ採用時は PoC まで、Wiki も更新）                        |
+| SS（システム方式）+ 実装計画 | `pr-arch`                   | コンポーネント分割・採用ライブラリ・データフロー・実装計画（ライブラリ選定で必要なら PoC 実施、Wiki も更新）        |
+| テスト                       | `pr-test`                   | テストコード作成（Red 状態）                                                                                        |
+| 実装                         | `pr-impl`                   | 実装 → Green 化                                                                                                     |
+| 実装レビュー                 | `pr-impl-review`            | コード品質チェック                                                                                                  |
+| 直接実装（`chore`）          | `pr-quick-impl`             | 軽微修正の直接コミット（TDD・レビュー・ドキュメント全スキップ）                                                     |
+| 質疑応答（`question`）       | `issue-question`            | ユーザーとのコメントループのみ（実装なし）                                                                          |
+| ドキュメント実装             | `pr-doc`                    | Wiki / CLAUDE.md / Rules の実コミット                                                                               |
+| ドキュメントレビュー         | `pr-doc-review`             | ドキュメント差分のレビュー                                                                                          |
+| マージ                       | `pr-merge`                  | マージ + コンフリクト解消 + worktree 削除                                                                           |
+| 中断リセット                 | `reset`                     | 不要化した Issue/PR の巻き戻し（追記 Wiki 削除・worktree 削除・クローズ）                                            |
 
 ---
 
@@ -323,39 +407,16 @@ dev-kit のルール（言語/フレームワーク横断の規約。プロジ�
 - `データモデル一覧.md` → `設計図/モジュール構成/` に統合（DTO / ドメインオブジェクト / 型定義はモジュール構成で扱う）
 - `命名規則.md` → 廃止（一般的な言語規約は rules 側、プロジェクト固有はリポジトリ規約で扱う）
 
-## ワークフロー全体の流れ
+## ワークフロー原則
 
-```
-[Issue]
-  起票 → triage（整理・現状調査）
-       → spec（要件定義 = 機能要件 / 非機能要件 / スコープ外）
-                          … ここまで Issue 上で確定（要件レベル）
-                          ※ UI / SS / PoC / 実装計画 / ドキュメント関連は Issue には書かない
-  ※ issue-spec 完了時に **worktree + Draft PR 作成 + `## 紐づく Issue` 記入 + PR 本文骨組み配置** を自動実施
-  ↓ ユーザーが OK したら 確認:pr-ui（画面あり）/ 確認:pr-arch（画面なし）を手動付与
-
-[PR]
-  pr-ui（画面ありの場合のみ）:
-         画面構成・モック・画面遷移
-         ※ UI ライブラリ採用なら PoC まで実施
-         ※ docs/wiki/ の画面遷移図なども更新
-  ↓
-  pr-arch: システム方式設計（コンポーネント分割・採用ライブラリ・データフロー）
-         + 実装計画（コード変更一覧）を SS 設計と同時に記入
-         ※ ライブラリ選定で PoC が必要なら PoC まで実施
-         ※ docs/wiki/ の設計図（モジュール構成・ER図・データフロー図 等）も更新
-         ↻ ユーザー回答 → 本文の SS 設計 / 実装計画を埋める
-  ↓
-  pr-test → pr-impl → pr-impl-review → pr-doc-plan → pr-doc → pr-doc-review → pr-merge
-
-[中断クローズ]
-  reset（任意・ユーザー手動）: 不要化した Issue/PR を巻き戻してクローズ
-```
-
+- 具体的な monitor 遷移は `## タイプ別フロー` を参照。type ごとに通る atomic モニターの組み合わせが変わる
 - Issue は「**何を作るか**」（要件レベル）まで。UI / SS / PoC / 実装計画 / ドキュメント影響は Issue には書かない
 - PR は「**どう作るか**」（設計詳細）と「**実装結果**」「**ドキュメント更新**」を担当
 - 設計詳細（UI / SS / Wiki 図）を PR 配下に置く理由: **PR diff としてレビューできる**ようにするため
+- Issue → PR の移行は `pr-init` モニターが担当。worktree + Draft PR + `## 紐づく Issue` 記入 + 本文骨組みまで実施し、`pr-init` 完了時に type に応じた次の PR 側モニターラベルを付ける
+- ドキュメント更新は実装 PR とは分離: 実装サブは実装のみ、docs サブが Wiki / CLAUDE.md / Rules を扱う（同一 `epic` 配下のペアで並べる）
 - 確定したコメントは削除して履歴をクリーンに保つ
+- 中断クローズは `reset` モニター（任意・ユーザー手動）で巻き戻し
 
 ---
 
@@ -1326,18 +1387,3 @@ pr-arch が起票直後に骨組みを作成し、後続モニターが自分の
 | ------------------------------ | ------------ |
 | 議論の経緯（論点・質問・回答） | コメント履歴 |
 | 確定した内容（最新版のみ）     | 本文         |
-
-
----
-
-## Phase 2 案: タイプ別ワークフロー / サブイシュー分割（検討中）
-
-> Phase 1 の全 Issue 直列パイプラインを、**タイプごとの分岐フロー + サブイシューによる対象システム別分割** に発展させる。
-> 既存モニター / スキルへの反映は Phase 2 実装で行う。本セクションは合意済みの目標構造の記述。
-
-### タイプ一覧
-
-1 Issue に付与する type は必ず 1 個。混在は分割対象（`issue-triage` の分割判定で捌く）。
-起票直後で内容が固まっていない Issue は type 未付与でもよい（`issue-triage` で確定）。
-
-
