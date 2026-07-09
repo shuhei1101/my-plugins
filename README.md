@@ -42,18 +42,6 @@ python tools/bump-version.py minor
 python tools/bump-version.py major
 ```
 
-- issue-review-daemon 起動（git リポジトリ内で実行する）
-```bash
-GH_KIT=$(ls ~/.claude/plugins/cache/mentaiko-claude-plugins/gh-kit/ | sort -V | tail -1)
-python ~/.claude/plugins/cache/mentaiko-claude-plugins/gh-kit/${GH_KIT}/monitor/main.py
-```
-
-- gh_monitor.env の例（任意、ポーリング間隔などを上書きしたい場合のみ）
-```env
-# ポーリング間隔（秒、省略時: 30）
-# POLL_INTERVAL=30
-```
-
 Claude Code プラグインのマーケットプレイスです。
 スキル・エージェント・フックなどをプラグインとして配布・管理します。
 

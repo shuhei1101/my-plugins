@@ -9,7 +9,7 @@
             "type": "command",
             "command": "python",
             "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/inject_rules/injector.py"
+              "${CLAUDE_PLUGIN_ROOT}/hooks/inject-rules/injector.py"
             ]
           }
         ]

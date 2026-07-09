@@ -81,3 +81,12 @@ Log the following to logs/${CLAUDE_SESSION_ID}.log:
 
 $ARGUMENTS
 ```
+
+## ユーザー定義環境変数を値として展開する
+
+`$ARGUMENTS` / `${CLAUDE_SESSION_ID}` などの公式変数以外に、プラグイン側で `export` した独自環境変数（`$GH_KIT_LABEL_LAYER_EPIC` など）をスキル本文に **値として** 埋め込みたい場合のルール。
+
+- バッククォートで挟むと Markdown のインラインコード扱いになり展開されない
+  - 例: `` `$GH_KIT_LABEL_LAYER_EPIC` `` は `$GH_KIT_LABEL_LAYER_EPIC` という文字列がそのまま Claude に渡る（値を判断材料にできない）
+- 値を渡したい場合は動的コンテキスト注入の `` !`echo "$VAR"` `` 形式を使う
+  - 例: `` !`echo "$GH_KIT_LABEL_LAYER_EPIC"` `` はスキル読み込み時に `echo` が実行され、値（例: `layer:epic`）が本文に埋め込まれる

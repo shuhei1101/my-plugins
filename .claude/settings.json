@@ -38,11 +38,7 @@
       }
     ]
   },
-  "env": {
-    "GH_KIT_CHECKLIST_PAGES": "共通チェックリスト"
-  },
   "enabledPlugins": {
-    "dev-kit@mentaiko-claude-plugins": true,
-    "gh-kit@mentaiko-claude-plugins": true
+    "dev-kit@mentaiko-claude-plugins": true
   }
 }
