@@ -1,0 +1,1349 @@
+[
+  {
+    "rel_path": "claude/Claude Code Tool活用.md",
+    "paths": [
+      "*"
+    ]
+  },
+  {
+    "rel_path": "claude/Claude_Json.md",
+    "paths": [
+      "**/hooks/**",
+      "**/settings.json"
+    ]
+  },
+  {
+    "rel_path": "claude/Claude共通.md",
+    "paths": [
+      "**/skills/**/SKILL.md",
+      "**/rules/**/*.md",
+      "**/hooks/**/*.md",
+      "**/mcp/**",
+      "**/CLAUDE.md",
+      "**/mcp_server.py",
+      "**/.mcp.json",
+      "**/agents/**/*.md"
+    ]
+  },
+  {
+    "rel_path": "claude/claudeプラグイン.md",
+    "paths": [
+      "**/plugins/**"
+    ]
+  },
+  {
+    "rel_path": "claude/mcp.md",
+    "paths": [
+      "**/mcp/**",
+      "**/mcp_server.py",
+      "**/.mcp.json"
+    ]
+  },
+  {
+    "rel_path": "claude/skills活用.md",
+    "paths": [
+      "**/skills/*.md"
+    ]
+  },
+  {
+    "rel_path": "claude/サブエージェント.md",
+    "paths": [
+      "**/agents/**/*.md"
+    ]
+  },
+  {
+    "rel_path": "claude/フック.md",
+    "paths": [
+      "**/hooks/**",
+      "**/settings.json"
+    ]
+  },
+  {
+    "rel_path": "claude/ルール記載.md",
+    "paths": [
+      "~/rules/**/*.md"
+    ]
+  },
+  {
+    "rel_path": "dev/yaml-sot.md",
+    "paths": [
+      "**/*.{py,html,js,css,j2,ts,tsx,yaml,yml}",
+      "**/*.{yml,yaml}.*"
+    ]
+  },
+  {
+    "rel_path": "dev/コーディング全般.md",
+    "paths": [
+      "**/*.{py,html,js,css,j2,ts,tsx,yaml,yml}"
+    ]
+  },
+  {
+    "rel_path": "html/components/カスタムエレメント.md",
+    "paths": [
+      "**/components/**/*.{ts,js}",
+      "**/_shared/**/*.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/components/先読みカタログ.md",
+    "paths": [
+      "**/frontend/pages/**",
+      "**/components/**"
+    ]
+  },
+  {
+    "rel_path": "html/components/共通シェル.md",
+    "paths": [
+      "**/app-shell*"
+    ]
+  },
+  {
+    "rel_path": "html/core/iframe禁止.md",
+    "paths": [
+      "**/frontend/**/*.{css,html,ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/core/ビルドレス原則.md",
+    "paths": [
+      "**/frontend/**/*.css",
+      "**/frontend/**/*.html",
+      "**/frontend/**/*.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/css/コメント.md",
+    "paths": [
+      "**/frontend/**/*.css"
+    ]
+  },
+  {
+    "rel_path": "html/css/トークン.md",
+    "paths": [
+      "**/css/tokens.css",
+      "**/tokens.css"
+    ]
+  },
+  {
+    "rel_path": "html/css/ネスト.md",
+    "paths": [
+      "**/frontend/**/*.css"
+    ]
+  },
+  {
+    "rel_path": "html/css/レイヤー構成.md",
+    "paths": [
+      "**/frontend/**/*.css"
+    ]
+  },
+  {
+    "rel_path": "html/html/コメント.md",
+    "paths": [
+      "**/frontend/**/*.html"
+    ]
+  },
+  {
+    "rel_path": "html/html/ネイティブ要素.md",
+    "paths": [
+      "**/frontend/**/*.html"
+    ]
+  },
+  {
+    "rel_path": "html/js/api層.md",
+    "paths": [
+      "**/frontend/**/api*.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/js/websocket.md",
+    "paths": [
+      "**/ws/**/*.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/js/エンドポイント.md",
+    "paths": [
+      "**/frontend/**/*.ts"
+    ]
+  },
+  {
+    "rel_path": "html/js/バニラTS方針.md",
+    "paths": [
+      "**/frontend/**/*.ts"
+    ]
+  },
+  {
+    "rel_path": "html/js/モジュール解決.md",
+    "paths": [
+      "**/frontend/**/*.{ts,js}",
+      "**/frontend/**/*.html"
+    ]
+  },
+  {
+    "rel_path": "html/js/レイヤー分離.md",
+    "paths": [
+      "**/frontend/**/*.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/js/状態管理.md",
+    "paths": [
+      "**/frontend/**/*.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/layout/レイアウトパターン.md",
+    "paths": [
+      "**/layout.css",
+      "**/app-shell*"
+    ]
+  },
+  {
+    "rel_path": "html/layout/画面テンプレート.md",
+    "paths": [
+      "**/frontend/pages/**/*.html"
+    ]
+  },
+  {
+    "rel_path": "html/mock/indexモック.md",
+    "paths": [
+      "**/mocks/index.html"
+    ]
+  },
+  {
+    "rel_path": "html/mock/モックテーマ.md",
+    "paths": [
+      "**/mocks/theme/**"
+    ]
+  },
+  {
+    "rel_path": "html/mock/モック画面ルール.md",
+    "paths": [
+      "**/mocks/**"
+    ]
+  },
+  {
+    "rel_path": "html/naming/cssクラス.md",
+    "paths": [
+      "**/frontend/**/*.css"
+    ]
+  },
+  {
+    "rel_path": "html/naming/カスタムエレメント.md",
+    "paths": [
+      "**/components/**/*.{ts,js}",
+      "**/_shared/**/*.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/naming/ファイル名.md",
+    "paths": [
+      "**/frontend/**/*.css",
+      "**/frontend/**/*.html",
+      "**/frontend/**/*.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/pages/_shared.md",
+    "paths": [
+      "**/frontend/pages/**/_shared/**"
+    ]
+  },
+  {
+    "rel_path": "html/pages/index-html.md",
+    "paths": [
+      "**/frontend/pages/**/index.html"
+    ]
+  },
+  {
+    "rel_path": "html/pages/screen-css.md",
+    "paths": [
+      "**/frontend/pages/**/screen.css"
+    ]
+  },
+  {
+    "rel_path": "html/pages/screen-ts.md",
+    "paths": [
+      "**/frontend/pages/**/screen.ts",
+      "**/frontend/pages/**/api.ts",
+      "**/frontend/pages/**/state.ts"
+    ]
+  },
+  {
+    "rel_path": "html/pages/画面の作り方.md",
+    "paths": [
+      "**/frontend/pages/**"
+    ]
+  },
+  {
+    "rel_path": "html/shared/components.md",
+    "paths": [
+      "**/frontend/shared/components/**"
+    ]
+  },
+  {
+    "rel_path": "html/shared/core.md",
+    "paths": [
+      "**/frontend/shared/core/**"
+    ]
+  },
+  {
+    "rel_path": "html/shared/css.md",
+    "paths": [
+      "**/shared/css/**"
+    ]
+  },
+  {
+    "rel_path": "html/shared/fmt.md",
+    "paths": [
+      "**/frontend/shared/lib/fmt.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/shared/lib.md",
+    "paths": [
+      "**/shared/lib/**"
+    ]
+  },
+  {
+    "rel_path": "html/shared/logger.md",
+    "paths": [
+      "**/frontend/shared/lib/logger.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/shared/vendor.md",
+    "paths": [
+      "**/shared/vendor/**"
+    ]
+  },
+  {
+    "rel_path": "html/testing/e2eテスト.md",
+    "paths": [
+      "**/frontend/tests/e2e/**/*.spec.{ts,js}",
+      "**/playwright.config.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/testing/テスト戦略.md",
+    "paths": [
+      "**/frontend/**/*.test.{ts,js}",
+      "**/frontend/tests/e2e/**/*.spec.{ts,js}",
+      "**/vitest.config.{ts,js}",
+      "**/playwright.config.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/testing/フィクスチャー.md",
+    "paths": [
+      "**/frontend/tests/e2e/**/*.spec.{ts,js}",
+      "**/playwright.config.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/testing/ユニットテスト.md",
+    "paths": [
+      "**/frontend/**/*.test.{ts,js}",
+      "**/vitest.config.{ts,js}"
+    ]
+  },
+  {
+    "rel_path": "html/tooling/tsc運用.md",
+    "paths": [
+      "**/frontend/**/*.ts",
+      "**/tsconfig*.json",
+      "**/eslint.config.*",
+      "**/package.json",
+      "**/vitest.config.*",
+      "**/playwright.config.*"
+    ]
+  },
+  {
+    "rel_path": "html/typescript/コメント.md",
+    "paths": [
+      "**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "html/typescript/型システム.md",
+    "paths": [
+      "**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "html/typescript/関数とオブジェクト引数.md",
+    "paths": [
+      "**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "html/フォルダ構成.md",
+    "paths": [
+      "**/frontend/**"
+    ]
+  },
+  {
+    "rel_path": "html/モバイル対応.md",
+    "paths": [
+      "**/frontend/pages/**/index.html",
+      "**/frontend/pages/**/screen.css",
+      "**/frontend/pages/**/screen.ts",
+      "**/frontend/shared/css/**",
+      "**/frontend/shared/components/**"
+    ]
+  },
+  {
+    "rel_path": "html/共通化の判断.md",
+    "paths": [
+      "**/frontend/**"
+    ]
+  },
+  {
+    "rel_path": "markdown/マークダウン編集.md",
+    "paths": [
+      "**/*.md"
+    ]
+  },
+  {
+    "rel_path": "markdown/マーメイド.md",
+    "paths": [
+      "**/*.md"
+    ]
+  },
+  {
+    "rel_path": "markdown/判定フローチャート.md",
+    "paths": [
+      "**/*.md"
+    ]
+  },
+  {
+    "rel_path": "next/backend/APIフォルダ概要.md",
+    "paths": [
+      "**/app/api/**/route.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/DB Enum.md",
+    "paths": [
+      "**/drizzle/schema.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/DB-ID設計.md",
+    "paths": [
+      "**/drizzle/db.ts",
+      "**/drizzle/schema.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/DB-ts.md",
+    "paths": [
+      "**/app/api/**/db.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/DBタイムスタンプ.md",
+    "paths": [
+      "**/drizzle/schema.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/DBヘルパー-ts.md",
+    "paths": [
+      "**/app/api/**/dbHelper.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/DBマイグレーション.md",
+    "paths": [
+      "**/drizzle.config.ts",
+      "**/drizzle/migrations/**/*.sql"
+    ]
+  },
+  {
+    "rel_path": "next/backend/DBリレーション.md",
+    "paths": [
+      "**/drizzle/schema.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/DB変更履歴.md",
+    "paths": [
+      "**/app/api/**/service.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/DB楽観的ロック.md",
+    "paths": [
+      "**/app/(authenticated)/**/*EditScreen.tsx",
+      "**/app/api/**/db.ts",
+      "**/app/api/**/service.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/Drizzleスタイル.md",
+    "paths": [
+      "**/app/api/**/db.ts",
+      "**/app/api/**/query.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/アクション-ts.md",
+    "paths": [
+      "**/app/(authenticated)/**/*EditScreen.tsx",
+      "**/app/(authenticated)/**/actions.ts",
+      "**/app/(shared)/actions/**/*.ts",
+      "**/app/(shared)/actions/auth.ts",
+      "**/app/(shared)/actions/types.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/ウェブフック.md",
+    "paths": [
+      "**/app/api/**/webhooks/**/route.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/キャッシュ.md",
+    "paths": [
+      "**/app/(authenticated)/**/actions.ts",
+      "**/next.config.js",
+      "**/next.config.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/クエリ-ts.md",
+    "paths": [
+      "**/app/api/**/query.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/クライアント-ts.md",
+    "paths": [
+      "**/app/api/**/client.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/サービス-ts.md",
+    "paths": [
+      "**/app/(authenticated)/**/actions.ts",
+      "**/app/api/**/service.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/プロキシ.md",
+    "paths": [
+      "**/middleware.ts",
+      "**/proxy.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/ルート-ts.md",
+    "paths": [
+      "**/app/api/**/route.ts",
+      "**/app/api/**/auth/**/route.ts",
+      "**/app/api/**/cron/**/route.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/レートリミット.md",
+    "paths": [
+      "**/proxy.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/ローカルYAML開発DB.md",
+    "paths": [
+      "**/app/**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "next/backend/冪等性.md",
+    "paths": [
+      "**/app/api/v{N}/webhooks/**/route.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/認証アクション.md",
+    "paths": [
+      "**/app/(shared)/actions/auth.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/認証クライアント.md",
+    "paths": [
+      "**/app/(shared)/auth/client.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/認証コンテキスト.md",
+    "paths": [
+      "**/app/(authenticated)/**/actions.ts",
+      "**/app/(authenticated)/*/[id]/edit/page.tsx",
+      "**/app/(shared)/auth/index.ts",
+      "**/app/(shared)/auth/provider.ts",
+      "**/app/api/**/route.ts",
+      "**/proxy.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/認証スキーマ.md",
+    "paths": [
+      "**/drizzle/schema.ts",
+      "**/lib/auth.ts"
+    ]
+  },
+  {
+    "rel_path": "next/backend/認証セットアップ.md",
+    "paths": [
+      "**/app/(shared)/auth/provider.ts",
+      "**/app/api/**/auth/**/route.ts",
+      "**/lib/auth.ts"
+    ]
+  },
+  {
+    "rel_path": "next/devops/デプロイ.md",
+    "paths": [
+      "**/Dockerfile",
+      "**/vercel.json"
+    ]
+  },
+  {
+    "rel_path": "next/devtools/Storybook.md",
+    "paths": [
+      "**/*.stories.ts",
+      "**/*.stories.tsx",
+      "**/.storybook/main.ts",
+      "**/.storybook/preview.ts"
+    ]
+  },
+  {
+    "rel_path": "next/devtools/モック.md",
+    "paths": [
+      "**/mocks/browser.ts",
+      "**/mocks/handlers.ts",
+      "**/mocks/server.ts"
+    ]
+  },
+  {
+    "rel_path": "next/devtools/リントとフォーマット.md",
+    "paths": [
+      "**/.prettierrc",
+      "**/prettier.config.{js,ts,mjs}",
+      "**/next.config.{js,ts,mjs}"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/404-tsx.md",
+    "paths": [
+      "**/app/(authenticated)/*/[id]/edit/page.tsx",
+      "**/app/(authenticated)/*/[id]/page.tsx",
+      "**/app/**/not-found.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/IDルーティング.md",
+    "paths": [
+      "**/app/(authenticated)/*/[id]/edit/page.tsx",
+      "**/app/(authenticated)/*/[id]/page.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/PWA.md",
+    "paths": [
+      "**/app/manifest.ts",
+      "**/app/sw.ts",
+      "**/public/sw.js"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/SEO.md",
+    "paths": [
+      "**/app/(authenticated)/*/[id]/page.tsx",
+      "**/app/(authenticated)/*/page.tsx",
+      "**/app/**/icon.tsx",
+      "**/app/**/opengraph-image.tsx",
+      "**/app/**/robots.ts",
+      "**/app/**/sitemap.ts",
+      "**/app/**/twitter-image.tsx",
+      "**/app/manifest.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/Zustandパターン.md",
+    "paths": [
+      "**/app/**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/appフォルダ概要.md",
+    "paths": [
+      "**/app/**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/conventions/コメント規約.md",
+    "paths": [
+      "**/app/**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/conventions/ルートファイル規約.md",
+    "paths": [
+      "**/app/**/default.tsx",
+      "**/app/**/layout.tsx",
+      "**/app/**/loading.tsx",
+      "**/app/**/template.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/conventions/命名規約.md",
+    "paths": [
+      "**/app/**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/conventions/型規約.md",
+    "paths": [
+      "**/app/**/*.{ts,tsx}",
+      "**/app/(authenticated)/**/form.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/url-state.md",
+    "paths": [
+      "**/hooks/use*UrlState.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/useActionState.md",
+    "paths": [
+      "**/app/(authenticated)/**/*EditScreen.tsx",
+      "**/app/(authenticated)/**/*NewScreen.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/useFormパターン.md",
+    "paths": [
+      "**/hooks/use*Form.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/useMutationパターン.md",
+    "paths": [
+      "**/hooks/use*.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/useQueryパターン.md",
+    "paths": [
+      "**/app/(authenticated)/**/*ListScreen.tsx",
+      "**/hooks/use*.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/useUrlStateパターン.md",
+    "paths": [
+      "**/app/(authenticated)/**/*ListScreen.tsx",
+      "**/hooks/use*UrlState.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/アセット.md",
+    "paths": [
+      "**/next.config.js",
+      "**/next.config.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/エラー-tsx.md",
+    "paths": [
+      "**/app/**/error.tsx",
+      "**/app/global-error.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/エンドポイント.md",
+    "paths": [
+      "**/app/(shared)/endpoints.ts",
+      "**/app/api/**/client.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/クエリクライアントセットアップ.md",
+    "paths": [
+      "**/app/(shared)/providers/QueryProvider.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/コンテキストパターン.md",
+    "paths": [
+      "**/app/**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/コンポーネントカタログ.md",
+    "paths": [
+      "**/*.stories.tsx",
+      "**/app/(shared)/components/**/*.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/スクリーンラッパー.md",
+    "paths": [
+      "**/app/(authenticated)/**/*EditScreen.tsx",
+      "**/app/(authenticated)/**/*ListScreen.tsx",
+      "**/app/(authenticated)/**/*NewScreen.tsx",
+      "**/app/(authenticated)/**/*ViewScreen.tsx",
+      "**/app/(shared)/components/ScreenWrapper.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/ストリーミング.md",
+    "paths": [
+      "**/app/**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/タグ入力.md",
+    "paths": [
+      "**/app/(shared)/components/TagInput.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/ダイアログ.md",
+    "paths": [
+      "**/*AlertDialog.tsx",
+      "**/*Dialog.tsx",
+      "**/*Drawer.tsx",
+      "**/*Popover.tsx",
+      "**/*Sheet.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/フィーチャーフォルダ.md",
+    "paths": [
+      "**/app/(authenticated)/**/*.tsx",
+      "**/app/(authenticated)/*/new/page.tsx",
+      "**/app/(authenticated)/*/page.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/フォーム-ts.md",
+    "paths": [
+      "**/app/(authenticated)/**/form.ts",
+      "**/hooks/use*Form.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/フォームコンポーネント.md",
+    "paths": [
+      "**/app/(authenticated)/**/*EditScreen.tsx",
+      "**/app/(authenticated)/**/*NewScreen.tsx",
+      "**/hooks/use*Form.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/ページヘッダー.md",
+    "paths": [
+      "**/app/(authenticated)/**/*ListScreen.tsx",
+      "**/app/(authenticated)/**/*ViewScreen.tsx",
+      "**/app/(shared)/components/PageHeader.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/ルートグループ.md",
+    "paths": [
+      "**/app/(auth)/**/*.tsx",
+      "**/app/**/layout.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/ローディングボタン.md",
+    "paths": [
+      "**/app/(shared)/components/LoadingButton.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/一覧スクリーン-tsx.md",
+    "paths": [
+      "**/app/(authenticated)/**/*ListScreen.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/一覧ページ-tsx.md",
+    "paths": [
+      "**/app/(authenticated)/*/page.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/必須マーク.md",
+    "paths": [
+      "**/app/(shared)/components/RequiredMark.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/状態管理判断基準.md",
+    "paths": [
+      "**/app/**/*.{ts,tsx}"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/確認ダイアログ.md",
+    "paths": [
+      "**/app/(authenticated)/**/*EditScreen.tsx",
+      "**/app/(shared)/hooks/useConfirmDialog.ts",
+      "**/app/(shared)/providers/ConfirmDialogProvider.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/空状態.md",
+    "paths": [
+      "**/app/(authenticated)/**/*ListScreen.tsx",
+      "**/app/(shared)/components/EmptyState.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/編集スクリーン-tsx.md",
+    "paths": [
+      "**/app/(authenticated)/**/*EditScreen.tsx",
+      "**/app/(authenticated)/**/*NewScreen.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/編集ページ-tsx.md",
+    "paths": [
+      "**/app/(authenticated)/*/[id]/edit/page.tsx",
+      "**/app/(authenticated)/*/new/page.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/自動保存.md",
+    "paths": [
+      "**/hooks/useAutosave.ts",
+      "**/useBeforeUnload.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/自動保存インジケーター.md",
+    "paths": [
+      "**/app/(shared)/components/AutosaveIndicator.tsx",
+      "**/hooks/useAutosave.ts"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/詳細スクリーン-tsx.md",
+    "paths": [
+      "**/app/(authenticated)/**/*ViewScreen.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/frontend/詳細ページ-tsx.md",
+    "paths": [
+      "**/app/(authenticated)/*/[id]/page.tsx"
+    ]
+  },
+  {
+    "rel_path": "next/shared/エラーアクションハンドラー.md",
+    "paths": [
+      "**/app/(authenticated)/**/actions.ts",
+      "**/app/(shared)/actions/**/*.ts",
+      "**/app/(shared)/actions/types.ts",
+      "**/app/(shared)/errors/handler/action.ts"
+    ]
+  },
+  {
+    "rel_path": "next/shared/エラークライアントハンドラー.md",
+    "paths": [
+      "**/app/(shared)/errors/handler/client.ts"
+    ]
+  },
+  {
+    "rel_path": "next/shared/エラークラス.md",
+    "paths": [
+      "**/app/(shared)/errors/appError.ts",
+      "**/app/(shared)/errors/handler/action.ts",
+      "**/app/(shared)/errors/handler/client.ts",
+      "**/app/(shared)/errors/handler/server.ts",
+      "**/app/**/error.tsx",
+      "**/app/api/**/client.ts",
+      "**/app/api/**/db.ts",
+      "**/app/api/**/query.ts",
+      "**/app/api/**/service.ts"
+    ]
+  },
+  {
+    "rel_path": "next/shared/エラールートハンドラー.md",
+    "paths": [
+      "**/app/(shared)/errors/handler/server.ts",
+      "**/app/api/**/route.ts"
+    ]
+  },
+  {
+    "rel_path": "next/shared/セキュリティ.md",
+    "paths": [
+      "**/next.config.js",
+      "**/next.config.ts",
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "rel_path": "next/shared/ロガータグ.md",
+    "paths": [
+      "**/app/(shared)/logger.ts",
+      "**/app/api/**/route.ts"
+    ]
+  },
+  {
+    "rel_path": "next/shared/ロガー実装.md",
+    "paths": [
+      "**/app/(shared)/logger.ts",
+      "**/app/api/**/route.ts",
+      "**/app/api/**/webhooks/**/route.ts"
+    ]
+  },
+  {
+    "rel_path": "next/shared/環境変数.md",
+    "paths": [
+      "**/app/(shared)/config.ts",
+      "**/app/**/env.ts",
+      "**/.env.example",
+      "**/.env.local",
+      "**/.env.sample"
+    ]
+  },
+  {
+    "rel_path": "next/testing/E2Eテスト.md",
+    "paths": [
+      "**/playwright.config.ts",
+      "tests/e2e/**/*.spec.ts",
+      "tests/pages/**/*.ts"
+    ]
+  },
+  {
+    "rel_path": "next/testing/テスト戦略.md",
+    "paths": [
+      "tests/e2e/**/*.spec.ts",
+      "tests/unit/**/*.test.ts"
+    ]
+  },
+  {
+    "rel_path": "next/testing/フィクスチャー.md",
+    "paths": [
+      "tests/e2e/**/*.spec.ts",
+      "tests/fixtures/**/*.ts"
+    ]
+  },
+  {
+    "rel_path": "next/testing/ユニットテスト.md",
+    "paths": [
+      "tests/components/**/*.test.tsx",
+      "tests/unit/**/*.test.ts",
+      "tests/unit/**/*.test.tsx",
+      "**/vitest.config.ts"
+    ]
+  },
+  {
+    "rel_path": "python/architecture/TypeScriptスタイル適用.md",
+    "paths": [
+      "**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/architecture/コンポジションルート.md",
+    "paths": [
+      "**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/architecture/リファクタリング判断.md",
+    "paths": [
+      "**/features/**/service.py"
+    ]
+  },
+  {
+    "rel_path": "python/architecture/レイアウト.md",
+    "paths": [
+      "**/features/**/types.py",
+      "**/main.py"
+    ]
+  },
+  {
+    "rel_path": "python/architecture/依存関係管理.md",
+    "paths": [
+      "**/features/**/service.py",
+      "**/integrations/**/client.py",
+      "**/main.py"
+    ]
+  },
+  {
+    "rel_path": "python/architecture/設計原則.md",
+    "paths": [
+      "**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/concurrency/並列処理.md",
+    "paths": [
+      "**/runtime/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/concurrency/非同期処理.md",
+    "paths": [
+      "**/runtime/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/core/コメント.md",
+    "paths": [
+      "**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/core/スタイル.md",
+    "paths": [
+      "**/*.py",
+      "**/pyproject.toml"
+    ]
+  },
+  {
+    "rel_path": "python/core/デコレーター.md",
+    "paths": [
+      "**/_decorators.py",
+      "**/features/**/service.py",
+      "**/integrations/**/client.py",
+      "**/integrations/llm/**/*.py",
+      "**/shared/decorators.py"
+    ]
+  },
+  {
+    "rel_path": "python/core/命名規則.md",
+    "paths": [
+      "**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/core/型ヒント.md",
+    "paths": [
+      "**/*.py",
+      "**/features/**/types.py",
+      "**/shared/types.py"
+    ]
+  },
+  {
+    "rel_path": "python/core/言語ルール.md",
+    "paths": [
+      "**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/fastapi/アプリケーション.md",
+    "paths": [
+      "**/server/app.py",
+      "**/server/ws/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/fastapi/スキーマ.md",
+    "paths": [
+      "**/features/**/route.py",
+      "**/server/routes/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/fastapi/ヘルスチェック.md",
+    "paths": [
+      "**/healthz.py",
+      "**/server/routes/**/health*.py",
+      "**/server/routes/health*.py"
+    ]
+  },
+  {
+    "rel_path": "python/fastapi/ルート定義.md",
+    "paths": [
+      "**/features/**/route.py",
+      "**/server/routes/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/fastapi/認証とエラー.md",
+    "paths": [
+      "**/features/**/route.py",
+      "**/server/error_handlers.py",
+      "**/server/routes/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/llm/Instructor.md",
+    "paths": [
+      "**/integrations/llm/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/llm/コストとキャッシュ.md",
+    "paths": [
+      "**/integrations/llm/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/llm/プロバイダー.md",
+    "paths": [
+      "**/integrations/llm/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/llm/プロンプトローダー.md",
+    "paths": [
+      "**/integrations/llm/prompts/**/*.py",
+      "prompts/index.yaml"
+    ]
+  },
+  {
+    "rel_path": "python/llm/プロンプト執筆.md",
+    "paths": [
+      "**/integrations/llm/prompts/**/*.py",
+      "prompts/**/*.j2",
+      "prompts/**/*.md",
+      "prompts/index.yaml"
+    ]
+  },
+  {
+    "rel_path": "python/llm/例外とリトライ.md",
+    "paths": [
+      "**/integrations/llm/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/packaging/Pythonバージョン.md",
+    "paths": [
+      "**/pyproject.toml"
+    ]
+  },
+  {
+    "rel_path": "python/packaging/pyproject設定.md",
+    "paths": [
+      "**/pyproject.toml"
+    ]
+  },
+  {
+    "rel_path": "python/packaging/依存パッケージ管理.md",
+    "paths": [
+      "**/pyproject.toml"
+    ]
+  },
+  {
+    "rel_path": "python/packaging/配布設定.md",
+    "paths": [
+      "**/pyproject.toml"
+    ]
+  },
+  {
+    "rel_path": "python/performance/パフォーマンスチートシート.md",
+    "paths": [
+      "**/benchmarks/**/*.py",
+      "**/perf/**/*.py",
+      "**/profile_*.py"
+    ]
+  },
+  {
+    "rel_path": "python/scripts/Pythonスクリプト.md",
+    "paths": [
+      "**/{tool,tools,script,scripts}/**/*.py",
+      "**/hooks/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/scripts/Tkinter.md",
+    "paths": [
+      "**/*_gui.py",
+      "**/gui.py",
+      "**/gui/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/scripts/launchers-windows.md",
+    "paths": [
+      "**/*.bat"
+    ]
+  },
+  {
+    "rel_path": "python/scripts/ランチャー-Unix.md",
+    "paths": [
+      "**/*.sh"
+    ]
+  },
+  {
+    "rel_path": "python/shared/エラー定義.md",
+    "paths": [
+      "**/server/error_handlers.py",
+      "**/shared/errors.py"
+    ]
+  },
+  {
+    "rel_path": "python/shared/シークレットと環境変数.md",
+    "paths": [
+      "**/config/settings.yaml*",
+      "**/shared/constants.py",
+      "**/shared/settings.py",
+      ".env",
+      ".env.sample"
+    ]
+  },
+  {
+    "rel_path": "python/shared/ロガー.md",
+    "paths": [
+      "**/shared/logger.py"
+    ]
+  },
+  {
+    "rel_path": "python/shared/型定義.md",
+    "paths": [
+      "**/shared/types.py"
+    ]
+  },
+  {
+    "rel_path": "python/shared/定数.md",
+    "paths": [
+      "**/shared/constants.py"
+    ]
+  },
+  {
+    "rel_path": "python/shared/設定.md",
+    "paths": [
+      "**/config/settings.yaml*",
+      "**/shared/settings.py"
+    ]
+  },
+  {
+    "rel_path": "python/testing/pytest.md",
+    "paths": [
+      "**/benchmarks/**/*.py",
+      "**/tests/**/test_*.py",
+      "**/tests/conftest.py"
+    ]
+  },
+  {
+    "rel_path": "python/testing/テスト戦略.md",
+    "paths": [
+      "**/tests/**/test_*.py",
+      "**/tests/external/**/*.py"
+    ]
+  },
+  {
+    "rel_path": "python/testing/フィクスチャー.md",
+    "paths": [
+      "**/benchmarks/**/*.py",
+      "**/tests/**/test_*.py",
+      "**/tests/conftest.py"
+    ]
+  },
+  {
+    "rel_path": "python/testing/モック.md",
+    "paths": [
+      "**/tests/**/test_*.py",
+      "**/tests/conftest.py"
+    ]
+  }
+]

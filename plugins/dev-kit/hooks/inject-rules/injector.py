@@ -13,7 +13,7 @@ import urllib.parse
 import urllib.request
 from html.parser import HTMLParser
 
-LOG_TAG      = "inject_rules"
+LOG_TAG      = "inject-rules"
 TARGET_TOOLS = ("Edit", "Write", "Read")
 
 # ルールの取得元（my-plugins の docs/rules を GitHub raw で公開したもの。テスト・フォーク時は env で差し替え）

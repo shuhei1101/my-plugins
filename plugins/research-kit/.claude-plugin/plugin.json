@@ -1,5 +1,5 @@
 {
   "name": "research-kit",
   "description": "プロジェクト調査をカスタムサブエージェントへ委譲する仕組みを提供するプラグイン",
-  "version": "1.16"
+  "version": "1.17"
 }
