@@ -8,31 +8,31 @@
       "name": "guard-kit",
       "source": "./plugins/guard-kit",
       "description": "ローカル Git 保護フック群（master 直接コミット阻止 / 危険 git コマンド阻止 / .git・lock ファイル保護 / 削除検知 / セッション規約注入）",
-      "version": "1.14"
+      "version": "1.15"
     },
     {
       "name": "dev-kit",
       "source": "./plugins/dev-kit",
       "description": "編集対象ファイルに応じた開発ルールを自動注入するプラグイン",
-      "version": "1.15"
+      "version": "1.16"
     },
     {
       "name": "research-kit",
       "source": "./plugins/research-kit",
       "description": "プロジェクト調査をカスタムサブエージェントへ委譲する仕組みを提供するプラグイン",
-      "version": "1.14"
+      "version": "1.15"
     },
     {
       "name": "handoff",
       "source": "./plugins/handoff",
       "description": "セッションを跨いで作業を引き継ぐハンドオフスキル + PostCompact フックによる自動注入プラグイン",
-      "version": "1.7"
+      "version": "1.8"
     },
     {
       "name": "util",
       "source": "./plugins/util",
       "description": "util",
-      "version": "1.7"
+      "version": "1.8"
     }
   ]
 }

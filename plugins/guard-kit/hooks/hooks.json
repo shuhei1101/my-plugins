@@ -18,7 +18,7 @@
         "matcher": "Edit|Write",
         "hooks": [
           {
-            "_description": "保護ブランチ（main/master/develop）への直接編集をブロックし /gh-kit:start の使用を促す",
+            "_description": "保護ブランチ（main/master/develop）への直接編集をブロックしワークツリー作成を促す",
             "type": "command",
             "command": "python",
             "args": [

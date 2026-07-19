@@ -1,7 +1,7 @@
 """保護ブランチへの直接ファイル編集を検出してブロックするフック。
 
 PreToolUse フックとして動作し、main/master/develop ブランチへの
-Edit・Write ツール呼び出しを阻止して gh-kit-tools の worktree_create MCP 呼び出しを促す。
+Edit・Write ツール呼び出しを阻止して `git worktree add` によるワークツリー作成を促す。
 ただし、対象ファイルが .gitignore に一致する場合は通過させる。
 
 Usage:

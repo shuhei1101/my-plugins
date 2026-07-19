@@ -16,8 +16,10 @@ from html.parser import HTMLParser
 LOG_TAG      = "inject_rules"
 TARGET_TOOLS = ("Edit", "Write", "Read")
 
-RULES_DIR         = pathlib.Path(__file__).resolve().parent / "rules"  # .md ルールフォルダの置き場所（テンプレート）
-CACHE_DIR         = pathlib.Path(__file__).resolve().parent / "cache"  # URL 展開済みルール + メタの集約先
+# ルールの取得元（my-plugins の docs/rules を GitHub raw で公開したもの。テスト・フォーク時は env で差し替え）
+RULES_BASE_URL    = os.environ.get("DEV_KIT_RULES_BASE", "https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules")
+RULES_INDEX_URL   = f"{RULES_BASE_URL}/index.yaml"                     # ルール索引（rel_path + 適用 paths の SoT）
+CACHE_DIR         = pathlib.Path(__file__).resolve().parent / "cache"  # 取得済みルール + メタの集約先
 CACHE_RULES_DIR   = CACHE_DIR / "rules"                  # rules/ と同じ構造で URL 展開済み .md を配置
 CACHE_SCAN_PATH   = CACHE_DIR / "scan_cache.json"        # スキャン結果（旧 rules/cache.json の移設先）
 CACHE_EXPIRES_PATH = CACHE_DIR / "expires_at.txt"        # キャッシュ全体の有効期限（UNIX タイム）
@@ -94,89 +96,57 @@ def _match_any(pattern: str, candidates: list[str]) -> bool:
     return any(regex.match(c) for c in candidates)
 
 
-def _parse_frontmatter(content: str) -> dict | None:
-    """先頭の --- フロントマターを行ベースで解析し paths を返す。
+def _parse_index(text: str) -> list[dict]:
+    """index.yaml（ルール索引）を行ベースで解析してエントリ一覧を返す。
 
-    paths の値はクォート必須。クォートなしのエントリは無視する。
+    想定書式（paths の glob はクォート必須。クォートなしのエントリは無視する）:
+        rules:
+          - path: python/core/命名規則.md
+            paths:
+              - "**/*.py"
     YAML safe_load は `- **/*.py` のようなクォートなし glob をエイリアス参照と
-    解釈して壊すため、フロントマターは行単位で独自に解析する。
+    解釈して壊すため、行単位で独自に解析する。
     """
-    lines = content.splitlines()
-    if not lines or lines[0].strip() != "---":
-        return None
-    end = None
-    for i in range(1, len(lines)):
-        if lines[i].strip() == "---":
-            end = i
-            break
-    if end is None:
-        return None
-
-    paths: list[str] = []
-    current_key: str | None = None
-
-    for line in lines[1:end]:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        if stripped.startswith("- "):
-            if current_key == "paths":
-                val = stripped[2:].strip()
-                # クォートで囲まれた値のみ受け付ける
-                if len(val) >= 2 and val[0] in "\"'" and val[-1] == val[0]:
-                    paths.append(val[1:-1])
-            continue
-        if ":" in stripped:
-            key, _, rest = stripped.partition(":")
-            key = key.strip().lower()
-            rest = rest.strip()
-            current_key = key
-            if key == "paths" and rest and not rest.startswith("["):
-                # paths: "foo.py" 形式のインライン値
-                if len(rest) >= 2 and rest[0] in "\"'" and rest[-1] == rest[0]:
-                    paths.append(rest[1:-1])
-                current_key = None
-            elif key != "paths":
-                current_key = None
-
-    return {"paths": paths} if paths else None
-
-
-def _scan_rules() -> list[dict]:
-    """RULES_DIR 配下の .md を走査してフロントマターを解析し、エントリ一覧を返す。"""
     entries: list[dict] = []
-    for md in sorted(RULES_DIR.rglob("*.md")):
-        try:
-            content = md.read_text(encoding="utf-8")
-        except Exception as e:
-            _eprint(f"読み込みエラー ({md}): {e}")
+    current: dict | None = None
+    in_paths = False
+
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#") or stripped == "rules:":
             continue
-        frontmatter = _parse_frontmatter(content)
-        if not frontmatter:
+        if stripped.startswith("- path:"):
+            val = stripped[len("- path:"):].strip()
+            if len(val) >= 2 and val[0] in "\"'" and val[-1] == val[0]:
+                val = val[1:-1]
+            current = {"rel_path": val, "paths": []}
+            entries.append(current)
+            in_paths = False
             continue
-        entries.append({
-            "rel_path": str(md.relative_to(RULES_DIR)).replace("\\", "/"),
-            "paths": frontmatter["paths"],
-        })
-    return entries
+        if stripped == "paths:":
+            in_paths = True
+            continue
+        if stripped.startswith("- ") and in_paths and current is not None:
+            val = stripped[2:].strip()
+            # クォートで囲まれた値のみ受け付ける
+            if len(val) >= 2 and val[0] in "\"'" and val[-1] == val[0]:
+                current["paths"].append(val[1:-1])
+            continue
+        in_paths = False
+
+    return [e for e in entries if e["rel_path"] and e["paths"]]
 
 
-def _load_entries() -> list[dict]:
-    """スキャン結果キャッシュがあればそれを使い、なければ _scan_rules() で生成して保存する。"""
-    if CACHE_SCAN_PATH.exists():
-        try:
-            data = json.loads(CACHE_SCAN_PATH.read_text(encoding="utf-8"))
-            if isinstance(data, list):
-                return data
-        except Exception as e:
-            _eprint(f"scan_cache 読み込みエラー: {e}")
-    entries = _scan_rules()
+def _read_scan_cache() -> list[dict] | None:
+    """索引キャッシュを読み込む。無い・壊れている場合は None を返す。"""
+    if not CACHE_SCAN_PATH.exists():
+        return None
     try:
-        CACHE_SCAN_PATH.parent.mkdir(parents=True, exist_ok=True)
-        CACHE_SCAN_PATH.write_text(json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8")
+        data = json.loads(CACHE_SCAN_PATH.read_text(encoding="utf-8"))
+        return data if isinstance(data, list) else None
     except Exception as e:
-        _eprint(f"scan_cache 書き込みエラー: {e}")
-    return entries
+        _eprint(f"scan_cache 読み込みエラー: {e}")
+        return None
 
 
 def _normalize_github_url(url: str) -> str:
@@ -328,29 +298,48 @@ def _resolve_url_placeholders(content: str) -> str:
     return URL_PLACEHOLDER_RE.sub(_replace, content)
 
 
-def _build_cache_rules(entries: list[dict]) -> None:
-    """rules/ 配下の .md を URL 展開して cache/rules/ 配下に書き出す。既存があればスキップ。"""
-    for entry in entries:
-        rel = entry["rel_path"]
-        src = RULES_DIR / rel
-        dst = CACHE_RULES_DIR / rel
-        if dst.exists():
-            continue
+def _load_rule_body(rel_path: str) -> str:
+    """ルール本文を取得して返す（キャッシュ優先・無ければ URL からオンデマンド取得）。
+
+    取得失敗時は空文字を返し、注入処理は止めない（次回のツール呼び出しで再試行される）。
+    """
+    dst = CACHE_RULES_DIR / rel_path
+    if dst.exists():
         try:
-            content = src.read_text(encoding="utf-8")
+            return dst.read_text(encoding="utf-8")
         except Exception as e:
-            _eprint(f"ルール読み込みエラー ({rel}): {e}")
-            continue
-        expanded = _resolve_url_placeholders(content)
-        try:
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            dst.write_text(expanded, encoding="utf-8")
-        except Exception as e:
-            _eprint(f"cache 書き込みエラー ({rel}): {e}")
+            _eprint(f"cache 読み込みエラー ({rel_path}): {e}")
+    url = f"{RULES_BASE_URL}/{rel_path}"
+    try:
+        text = _resolve_url_placeholders(_fetch_url_text(url))
+    except Exception as e:
+        _eprint(f"ルール取得エラー ({url}): {e}")
+        return ""
+    try:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_text(text, encoding="utf-8")
+    except Exception as e:
+        _eprint(f"cache 書き込みエラー ({rel_path}): {e}")
+    return text
+
+
+def _write_expiry() -> None:
+    """キャッシュ全体の有効期限を今から TTL 分先に設定する。"""
+    try:
+        CACHE_EXPIRES_PATH.write_text(
+            str(int(time.time() + CACHE_TTL_SECONDS)),
+            encoding="utf-8",
+        )
+    except Exception as e:
+        _eprint(f"expires_at 書き込みエラー: {e}")
 
 
 def _ensure_cache_fresh() -> list[dict]:
-    """TTL を確認し、期限切れなら cache/ を丸ごと作り直して entries を返す。"""
+    """索引キャッシュの TTL を確認し、期限切れなら index.yaml を再取得して entries を返す。
+
+    再取得に失敗した場合は期限切れの索引キャッシュを継続利用する（stale フォールバック）。
+    ルール本文はここでは取得しない（マッチしたものだけ _load_rule_body がオンデマンド取得）。
+    """
     expired = True
     if CACHE_EXPIRES_PATH.exists():
         try:
@@ -359,25 +348,36 @@ def _ensure_cache_fresh() -> list[dict]:
                 expired = False
         except Exception as e:
             _eprint(f"expires_at 読み込みエラー: {e}")
-    if expired and CACHE_DIR.exists():
+
+    if not expired:
+        cached = _read_scan_cache()
+        if cached is not None:
+            return cached
+
+    # 期限切れ（or 索引キャッシュ破損）→ index.yaml を再取得
+    try:
+        entries = _parse_index(_fetch_url_text(RULES_INDEX_URL))
+    except Exception as e:
+        _eprint(f"index 取得エラー（キャッシュを継続利用）: {RULES_INDEX_URL} ({e})")
+        stale = _read_scan_cache()
+        if stale is not None:
+            _write_expiry()
+            return stale
+        return []
+
+    # 取得成功 → cache/ を作り直す（本文キャッシュも索引と一緒に更新サイクルを揃える）
+    if CACHE_DIR.exists():
         try:
             shutil.rmtree(CACHE_DIR)
         except Exception as e:
             _eprint(f"cache 削除エラー: {e}")
-
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     CACHE_RULES_DIR.mkdir(parents=True, exist_ok=True)
-
-    entries = _load_entries()
-    _build_cache_rules(entries)
-
     try:
-        CACHE_EXPIRES_PATH.write_text(
-            str(int(time.time() + CACHE_TTL_SECONDS)),
-            encoding="utf-8",
-        )
+        CACHE_SCAN_PATH.write_text(json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8")
     except Exception as e:
-        _eprint(f"expires_at 書き込みエラー: {e}")
+        _eprint(f"scan_cache 書き込みエラー: {e}")
+    _write_expiry()
     return entries
 
 
@@ -518,23 +518,23 @@ def main() -> int:
     blocks: list[dict] = []
     remaining_total_chars = 0  # to_inject 全体の残り body 文字数合計（進捗表示用）
     for r in to_inject:
-        abs_path = (RULES_DIR / r).as_posix()
         patterns = entry_paths_map.get(r, [])
-        rule_content = ""
-        try:
-            rule_content = (CACHE_RULES_DIR / r).read_text(encoding="utf-8")
-        except Exception as e:
-            _eprint(f"ルール読み込みエラー ({r}): {e}")
+        rule_content = _load_rule_body(r)
+        if not rule_content:
+            # 取得失敗。完了扱いにせずスキップする（次回のツール呼び出しで再試行）
+            continue
         offset = partial_offsets.get(r, 0)      # 部分読み込みのオフセット（0なら先頭から）
         remaining_body = _split_body(rule_content, offset)  # 今回読む対象
         remaining_total_chars += len(remaining_body)
         blocks.append({
-            "abs_path": abs_path,
+            "abs_path": f"{RULES_BASE_URL}/{r}",
             "patterns": [f"`{p}`" for p in patterns],
             "body": remaining_body,
             "rel_path": r,
             "offset": offset,
         })
+    if not blocks:
+        return 0
 
     # CHAR_LIMIT に収まる分だけ貪欲にパック
     # 大きなファイルは部分的に含め、残りは partial として次回へ
