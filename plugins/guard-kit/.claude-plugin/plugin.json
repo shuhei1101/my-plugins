@@ -1,5 +1,5 @@
 {
   "name": "guard-kit",
   "description": "ローカル Git 保護フック群（master 直接コミット阻止 / 危険 git コマンド阻止 / .git・lock ファイル保護 / 削除検知 / セッション規約注入）",
-  "version": "1.15"
+  "version": "1.16"
 }
