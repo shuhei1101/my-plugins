@@ -5,6 +5,15 @@
 ## 命名
 
 - ファイル `test_*.py`、関数 `test_*()`。クラスは使わず関数で書く
+- 単体テストは `test_{関数名}_when_{条件}`。
+  条件分岐のない唯一のケースは `test_{関数名}` のみ。
+  先頭が `_` の関数は `_` を外す（例: `_get_client` → `test_get_client_when_settings_missing`）
+- 期待値（returns_x / raises_y 等）は名前に入れない。
+  期待値が変わるたびに関数名まで変わるため、期待値は docstring とアサートに書く
+- 結合 / E2E はフロー・シナリオ見出しと機械対応させる。
+  `正常系` → `test_normal` / `正常系（{条件}）` → `test_normal_when_{条件}` / `異常系（{条件}）` → `test_error_when_{条件}`
+- 外部疎通は `test_ext_{関数名}_when_{パラメータ値}`。
+  バリエーションが 1 つだけなら `test_ext_{関数名}` のみ
 
 ## fixtures
 
