@@ -131,9 +131,9 @@ created_at: {yyyy-mm-dd hh:mm:ss}
 
 ## ステップ 4: 完了報告
 
-以下を出力する。session_title 部分は実値に埋める。
+以下を出力する。
 
 ```bash
 生成ファイル: `{絶対パス}`
-手動復元: `/handoff:load {session_title}`
+手動復元: `/handoff:load ${HANDOFF_DIR}/{yyyymmddhhmmss}_{session_title}`
 ```

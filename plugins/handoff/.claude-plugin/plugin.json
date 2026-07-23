@@ -1,5 +1,5 @@
 {
   "name": "handoff",
   "description": "セッションを跨いで作業を引き継ぐハンドオフスキルと PostCompact 注入フックを提供するプラグイン",
-  "version": "1.11"
+  "version": "1.12"
 }
