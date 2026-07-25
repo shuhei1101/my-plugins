@@ -1,0 +1,767 @@
+# inject-rules ルール索引（SoT）
+# url: ルール本文の絶対 URL / paths: 注入トリガーの glob（クォート必須）
+rules:
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/claude/Claude Code Tool活用.md
+    paths:
+      - "*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/claude/Claude_Json.md
+    paths:
+      - "**/hooks/**"
+      - "**/settings.json"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/claude/Claude共通.md
+    paths:
+      - "**/skills/**/SKILL.md"
+      - "**/rules/**/*.md"
+      - "**/hooks/**/*.md"
+      - "**/mcp/**"
+      - "**/CLAUDE.md"
+      - "**/mcp_server.py*"
+      - "**/.mcp.json"
+      - "**/agents/**/*.md"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/claude/claudeプラグイン.md
+    paths:
+      - "**/plugins/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/claude/mcp.md
+    paths:
+      - "**/mcp/**"
+      - "**/mcp_server.py*"
+      - "**/.mcp.json"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/claude/skills活用.md
+    paths:
+      - "**/skills/*.md"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/claude/サブエージェント.md
+    paths:
+      - "**/agents/**/*.md"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/claude/フック.md
+    paths:
+      - "**/hooks/**"
+      - "**/settings.json"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/claude/ルール記載.md
+    paths:
+      - "~/rules/**/*.md"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/dev/yaml-sot.md
+    paths:
+      - "**/*.{py,html,js,css,j2,ts,tsx,yaml,yml}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/dev/コーディング全般.md
+    paths:
+      - "**/*.{py,html,js,css,j2,ts,tsx,yaml,yml}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/components/カスタムエレメント.md
+    paths:
+      - "**/components/**/*.{ts,js}*"
+      - "**/_shared/**/*.{ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/components/先読みカタログ.md
+    paths:
+      - "**/frontend/pages/**"
+      - "**/components/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/components/共通シェル.md
+    paths:
+      - "**/app-shell*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/core/iframe禁止.md
+    paths:
+      - "**/frontend/**/*.{css,html,ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/core/ビルドレス原則.md
+    paths:
+      - "**/frontend/**/*.css*"
+      - "**/frontend/**/*.html*"
+      - "**/frontend/**/*.{ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/css/コメント.md
+    paths:
+      - "**/frontend/**/*.css*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/css/トークン.md
+    paths:
+      - "**/css/tokens.css*"
+      - "**/tokens.css*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/css/ネスト.md
+    paths:
+      - "**/frontend/**/*.css*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/css/レイヤー構成.md
+    paths:
+      - "**/frontend/**/*.css*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/html/コメント.md
+    paths:
+      - "**/frontend/**/*.html*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/html/ネイティブ要素.md
+    paths:
+      - "**/frontend/**/*.html*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/js/api層.md
+    paths:
+      - "**/frontend/**/api*.{ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/js/websocket.md
+    paths:
+      - "**/ws/**/*.{ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/js/エンドポイント.md
+    paths:
+      - "**/frontend/**/*.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/js/バニラTS方針.md
+    paths:
+      - "**/frontend/**/*.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/js/モジュール解決.md
+    paths:
+      - "**/frontend/**/*.{ts,js}*"
+      - "**/frontend/**/*.html*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/js/レイヤー分離.md
+    paths:
+      - "**/frontend/**/*.{ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/js/状態管理.md
+    paths:
+      - "**/frontend/**/*.{ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/layout/レイアウトパターン.md
+    paths:
+      - "**/layout.css*"
+      - "**/app-shell*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/layout/画面テンプレート.md
+    paths:
+      - "**/frontend/pages/**/*.html*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/mock/indexモック.md
+    paths:
+      - "**/mocks/index.html*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/mock/モックテーマ.md
+    paths:
+      - "**/mocks/theme/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/mock/モック画面ルール.md
+    paths:
+      - "**/mocks/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/naming/cssクラス.md
+    paths:
+      - "**/frontend/**/*.css*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/naming/カスタムエレメント.md
+    paths:
+      - "**/components/**/*.{ts,js}*"
+      - "**/_shared/**/*.{ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/naming/ファイル名.md
+    paths:
+      - "**/frontend/**/*.css*"
+      - "**/frontend/**/*.html*"
+      - "**/frontend/**/*.{ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/pages/_shared.md
+    paths:
+      - "**/frontend/pages/**/_shared/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/pages/index-html.md
+    paths:
+      - "**/frontend/pages/**/index.html*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/pages/screen-css.md
+    paths:
+      - "**/frontend/pages/**/screen.css*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/pages/screen-ts.md
+    paths:
+      - "**/frontend/pages/**/screen.ts*"
+      - "**/frontend/pages/**/api.ts*"
+      - "**/frontend/pages/**/state.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/pages/画面の作り方.md
+    paths:
+      - "**/frontend/pages/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/shared/components.md
+    paths:
+      - "**/frontend/shared/components/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/shared/core.md
+    paths:
+      - "**/frontend/shared/core/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/shared/css.md
+    paths:
+      - "**/shared/css/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/shared/fmt.md
+    paths:
+      - "**/frontend/shared/lib/fmt.{ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/shared/lib.md
+    paths:
+      - "**/shared/lib/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/shared/logger.md
+    paths:
+      - "**/frontend/shared/lib/logger.{ts,js}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/shared/vendor.md
+    paths:
+      - "**/shared/vendor/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/testing/e2eテスト.md
+    paths:
+      - "**/frontend/tests/e2e/**/*.spec.{ts,js}*"
+      - "**/playwright.config.{ts,js}"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/testing/テスト戦略.md
+    paths:
+      - "**/frontend/**/*.test.{ts,js}*"
+      - "**/frontend/tests/e2e/**/*.spec.{ts,js}*"
+      - "**/vitest.config.{ts,js}"
+      - "**/playwright.config.{ts,js}"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/testing/フィクスチャー.md
+    paths:
+      - "**/frontend/tests/e2e/**/*.spec.{ts,js}*"
+      - "**/playwright.config.{ts,js}"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/testing/ユニットテスト.md
+    paths:
+      - "**/frontend/**/*.test.{ts,js}*"
+      - "**/vitest.config.{ts,js}"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/tooling/tsc運用.md
+    paths:
+      - "**/frontend/**/*.ts*"
+      - "**/tsconfig*.json"
+      - "**/eslint.config.*"
+      - "**/package.json"
+      - "**/vitest.config.*"
+      - "**/playwright.config.*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/typescript/コメント.md
+    paths:
+      - "**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/typescript/型システム.md
+    paths:
+      - "**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/typescript/関数とオブジェクト引数.md
+    paths:
+      - "**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/フォルダ構成.md
+    paths:
+      - "**/frontend/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/モバイル対応.md
+    paths:
+      - "**/frontend/pages/**/index.html*"
+      - "**/frontend/pages/**/screen.css*"
+      - "**/frontend/pages/**/screen.ts*"
+      - "**/frontend/shared/css/**"
+      - "**/frontend/shared/components/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/html/共通化の判断.md
+    paths:
+      - "**/frontend/**"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/markdown/マークダウン編集.md
+    paths:
+      - "**/*.md"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/markdown/マーメイド.md
+    paths:
+      - "**/*.md"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/markdown/判定フローチャート.md
+    paths:
+      - "**/*.md"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/APIフォルダ概要.md
+    paths:
+      - "**/app/api/**/route.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/DB Enum.md
+    paths:
+      - "**/drizzle/schema.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/DB-ID設計.md
+    paths:
+      - "**/drizzle/db.ts*"
+      - "**/drizzle/schema.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/DB-ts.md
+    paths:
+      - "**/app/api/**/db.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/DBタイムスタンプ.md
+    paths:
+      - "**/drizzle/schema.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/DBヘルパー-ts.md
+    paths:
+      - "**/app/api/**/dbHelper.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/DBマイグレーション.md
+    paths:
+      - "**/drizzle.config.ts"
+      - "**/drizzle/migrations/**/*.sql"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/DBリレーション.md
+    paths:
+      - "**/drizzle/schema.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/DB変更履歴.md
+    paths:
+      - "**/app/api/**/service.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/DB楽観的ロック.md
+    paths:
+      - "**/app/(authenticated)/**/*EditScreen.tsx*"
+      - "**/app/api/**/db.ts*"
+      - "**/app/api/**/service.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/Drizzleスタイル.md
+    paths:
+      - "**/app/api/**/db.ts*"
+      - "**/app/api/**/query.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/アクション-ts.md
+    paths:
+      - "**/app/(authenticated)/**/*EditScreen.tsx*"
+      - "**/app/(authenticated)/**/actions.ts*"
+      - "**/app/(shared)/actions/**/*.ts*"
+      - "**/app/(shared)/actions/auth.ts*"
+      - "**/app/(shared)/actions/types.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/ウェブフック.md
+    paths:
+      - "**/app/api/**/webhooks/**/route.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/キャッシュ.md
+    paths:
+      - "**/app/(authenticated)/**/actions.ts*"
+      - "**/next.config.js"
+      - "**/next.config.ts"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/クエリ-ts.md
+    paths:
+      - "**/app/api/**/query.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/クライアント-ts.md
+    paths:
+      - "**/app/api/**/client.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/サービス-ts.md
+    paths:
+      - "**/app/(authenticated)/**/actions.ts*"
+      - "**/app/api/**/service.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/プロキシ.md
+    paths:
+      - "**/middleware.ts*"
+      - "**/proxy.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/ルート-ts.md
+    paths:
+      - "**/app/api/**/route.ts*"
+      - "**/app/api/**/auth/**/route.ts*"
+      - "**/app/api/**/cron/**/route.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/レートリミット.md
+    paths:
+      - "**/proxy.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/ローカルYAML開発DB.md
+    paths:
+      - "**/app/**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/冪等性.md
+    paths:
+      - "**/app/api/v{N}/webhooks/**/route.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/認証アクション.md
+    paths:
+      - "**/app/(shared)/actions/auth.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/認証クライアント.md
+    paths:
+      - "**/app/(shared)/auth/client.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/認証コンテキスト.md
+    paths:
+      - "**/app/(authenticated)/**/actions.ts*"
+      - "**/app/(authenticated)/*/[id]/edit/page.tsx*"
+      - "**/app/(shared)/auth/index.ts*"
+      - "**/app/(shared)/auth/provider.ts*"
+      - "**/app/api/**/route.ts*"
+      - "**/proxy.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/認証スキーマ.md
+    paths:
+      - "**/drizzle/schema.ts*"
+      - "**/lib/auth.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/backend/認証セットアップ.md
+    paths:
+      - "**/app/(shared)/auth/provider.ts*"
+      - "**/app/api/**/auth/**/route.ts*"
+      - "**/lib/auth.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/devops/デプロイ.md
+    paths:
+      - "**/Dockerfile"
+      - "**/vercel.json"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/devtools/Storybook.md
+    paths:
+      - "**/*.stories.ts*"
+      - "**/*.stories.tsx*"
+      - "**/.storybook/main.ts"
+      - "**/.storybook/preview.ts"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/devtools/モック.md
+    paths:
+      - "**/mocks/browser.ts"
+      - "**/mocks/handlers.ts"
+      - "**/mocks/server.ts"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/devtools/リントとフォーマット.md
+    paths:
+      - "**/.prettierrc"
+      - "**/prettier.config.{js,ts,mjs}"
+      - "**/next.config.{js,ts,mjs}"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/404-tsx.md
+    paths:
+      - "**/app/(authenticated)/*/[id]/edit/page.tsx*"
+      - "**/app/(authenticated)/*/[id]/page.tsx*"
+      - "**/app/**/not-found.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/IDルーティング.md
+    paths:
+      - "**/app/(authenticated)/*/[id]/edit/page.tsx*"
+      - "**/app/(authenticated)/*/[id]/page.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/PWA.md
+    paths:
+      - "**/app/manifest.ts*"
+      - "**/app/sw.ts*"
+      - "**/public/sw.js"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/SEO.md
+    paths:
+      - "**/app/(authenticated)/*/[id]/page.tsx*"
+      - "**/app/(authenticated)/*/page.tsx*"
+      - "**/app/**/icon.tsx*"
+      - "**/app/**/opengraph-image.tsx*"
+      - "**/app/**/robots.ts*"
+      - "**/app/**/sitemap.ts*"
+      - "**/app/**/twitter-image.tsx*"
+      - "**/app/manifest.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/Zustandパターン.md
+    paths:
+      - "**/app/**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/appフォルダ概要.md
+    paths:
+      - "**/app/**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/conventions/コメント規約.md
+    paths:
+      - "**/app/**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/conventions/ルートファイル規約.md
+    paths:
+      - "**/app/**/default.tsx*"
+      - "**/app/**/layout.tsx*"
+      - "**/app/**/loading.tsx*"
+      - "**/app/**/template.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/conventions/命名規約.md
+    paths:
+      - "**/app/**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/conventions/型規約.md
+    paths:
+      - "**/app/**/*.{ts,tsx}*"
+      - "**/app/(authenticated)/**/form.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/url-state.md
+    paths:
+      - "**/hooks/use*UrlState.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/useActionState.md
+    paths:
+      - "**/app/(authenticated)/**/*EditScreen.tsx*"
+      - "**/app/(authenticated)/**/*NewScreen.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/useFormパターン.md
+    paths:
+      - "**/hooks/use*Form.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/useMutationパターン.md
+    paths:
+      - "**/hooks/use*.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/useQueryパターン.md
+    paths:
+      - "**/app/(authenticated)/**/*ListScreen.tsx*"
+      - "**/hooks/use*.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/useUrlStateパターン.md
+    paths:
+      - "**/app/(authenticated)/**/*ListScreen.tsx*"
+      - "**/hooks/use*UrlState.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/アセット.md
+    paths:
+      - "**/next.config.js"
+      - "**/next.config.ts"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/エラー-tsx.md
+    paths:
+      - "**/app/**/error.tsx*"
+      - "**/app/global-error.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/エンドポイント.md
+    paths:
+      - "**/app/(shared)/endpoints.ts*"
+      - "**/app/api/**/client.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/クエリクライアントセットアップ.md
+    paths:
+      - "**/app/(shared)/providers/QueryProvider.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/コンテキストパターン.md
+    paths:
+      - "**/app/**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/コンポーネントカタログ.md
+    paths:
+      - "**/*.stories.tsx*"
+      - "**/app/(shared)/components/**/*.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/スクリーンラッパー.md
+    paths:
+      - "**/app/(authenticated)/**/*EditScreen.tsx*"
+      - "**/app/(authenticated)/**/*ListScreen.tsx*"
+      - "**/app/(authenticated)/**/*NewScreen.tsx*"
+      - "**/app/(authenticated)/**/*ViewScreen.tsx*"
+      - "**/app/(shared)/components/ScreenWrapper.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/ストリーミング.md
+    paths:
+      - "**/app/**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/タグ入力.md
+    paths:
+      - "**/app/(shared)/components/TagInput.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/ダイアログ.md
+    paths:
+      - "**/*AlertDialog.tsx*"
+      - "**/*Dialog.tsx*"
+      - "**/*Drawer.tsx*"
+      - "**/*Popover.tsx*"
+      - "**/*Sheet.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/フィーチャーフォルダ.md
+    paths:
+      - "**/app/(authenticated)/**/*.tsx*"
+      - "**/app/(authenticated)/*/new/page.tsx*"
+      - "**/app/(authenticated)/*/page.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/フォーム-ts.md
+    paths:
+      - "**/app/(authenticated)/**/form.ts*"
+      - "**/hooks/use*Form.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/フォームコンポーネント.md
+    paths:
+      - "**/app/(authenticated)/**/*EditScreen.tsx*"
+      - "**/app/(authenticated)/**/*NewScreen.tsx*"
+      - "**/hooks/use*Form.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/ページヘッダー.md
+    paths:
+      - "**/app/(authenticated)/**/*ListScreen.tsx*"
+      - "**/app/(authenticated)/**/*ViewScreen.tsx*"
+      - "**/app/(shared)/components/PageHeader.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/ルートグループ.md
+    paths:
+      - "**/app/(auth)/**/*.tsx*"
+      - "**/app/**/layout.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/ローディングボタン.md
+    paths:
+      - "**/app/(shared)/components/LoadingButton.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/一覧スクリーン-tsx.md
+    paths:
+      - "**/app/(authenticated)/**/*ListScreen.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/一覧ページ-tsx.md
+    paths:
+      - "**/app/(authenticated)/*/page.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/必須マーク.md
+    paths:
+      - "**/app/(shared)/components/RequiredMark.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/状態管理判断基準.md
+    paths:
+      - "**/app/**/*.{ts,tsx}*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/確認ダイアログ.md
+    paths:
+      - "**/app/(authenticated)/**/*EditScreen.tsx*"
+      - "**/app/(shared)/hooks/useConfirmDialog.ts*"
+      - "**/app/(shared)/providers/ConfirmDialogProvider.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/空状態.md
+    paths:
+      - "**/app/(authenticated)/**/*ListScreen.tsx*"
+      - "**/app/(shared)/components/EmptyState.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/編集スクリーン-tsx.md
+    paths:
+      - "**/app/(authenticated)/**/*EditScreen.tsx*"
+      - "**/app/(authenticated)/**/*NewScreen.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/編集ページ-tsx.md
+    paths:
+      - "**/app/(authenticated)/*/[id]/edit/page.tsx*"
+      - "**/app/(authenticated)/*/new/page.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/自動保存.md
+    paths:
+      - "**/hooks/useAutosave.ts*"
+      - "**/useBeforeUnload.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/自動保存インジケーター.md
+    paths:
+      - "**/app/(shared)/components/AutosaveIndicator.tsx*"
+      - "**/hooks/useAutosave.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/詳細スクリーン-tsx.md
+    paths:
+      - "**/app/(authenticated)/**/*ViewScreen.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/frontend/詳細ページ-tsx.md
+    paths:
+      - "**/app/(authenticated)/*/[id]/page.tsx*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/shared/エラーアクションハンドラー.md
+    paths:
+      - "**/app/(authenticated)/**/actions.ts*"
+      - "**/app/(shared)/actions/**/*.ts*"
+      - "**/app/(shared)/actions/types.ts*"
+      - "**/app/(shared)/errors/handler/action.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/shared/エラークライアントハンドラー.md
+    paths:
+      - "**/app/(shared)/errors/handler/client.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/shared/エラークラス.md
+    paths:
+      - "**/app/(shared)/errors/appError.ts*"
+      - "**/app/(shared)/errors/handler/action.ts*"
+      - "**/app/(shared)/errors/handler/client.ts*"
+      - "**/app/(shared)/errors/handler/server.ts*"
+      - "**/app/**/error.tsx*"
+      - "**/app/api/**/client.ts*"
+      - "**/app/api/**/db.ts*"
+      - "**/app/api/**/query.ts*"
+      - "**/app/api/**/service.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/shared/エラールートハンドラー.md
+    paths:
+      - "**/app/(shared)/errors/handler/server.ts*"
+      - "**/app/api/**/route.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/shared/セキュリティ.md
+    paths:
+      - "**/next.config.js"
+      - "**/next.config.ts"
+      - ".env"
+      - ".env.local"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/shared/ロガータグ.md
+    paths:
+      - "**/app/(shared)/logger.ts*"
+      - "**/app/api/**/route.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/shared/ロガー実装.md
+    paths:
+      - "**/app/(shared)/logger.ts*"
+      - "**/app/api/**/route.ts*"
+      - "**/app/api/**/webhooks/**/route.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/shared/環境変数.md
+    paths:
+      - "**/app/(shared)/config.ts*"
+      - "**/app/**/env.ts*"
+      - "**/.env.example"
+      - "**/.env.local"
+      - "**/.env.sample"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/testing/E2Eテスト.md
+    paths:
+      - "**/playwright.config.ts*"
+      - "tests/e2e/**/*.spec.ts*"
+      - "tests/pages/**/*.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/testing/テスト戦略.md
+    paths:
+      - "tests/e2e/**/*.spec.ts*"
+      - "tests/unit/**/*.test.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/testing/フィクスチャー.md
+    paths:
+      - "tests/e2e/**/*.spec.ts*"
+      - "tests/fixtures/**/*.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/next/testing/ユニットテスト.md
+    paths:
+      - "tests/components/**/*.test.tsx*"
+      - "tests/unit/**/*.test.ts*"
+      - "tests/unit/**/*.test.tsx*"
+      - "**/vitest.config.ts*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/architecture/TypeScriptスタイル適用.md
+    paths:
+      - "**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/architecture/コンポジションルート.md
+    paths:
+      - "**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/architecture/リファクタリング判断.md
+    paths:
+      - "**/features/**/service.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/architecture/レイアウト.md
+    paths:
+      - "**/features/**/types.py*"
+      - "**/main.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/architecture/依存関係管理.md
+    paths:
+      - "**/features/**/service.py*"
+      - "**/integrations/**/client.py*"
+      - "**/main.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/architecture/設計原則.md
+    paths:
+      - "**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/concurrency/並列処理.md
+    paths:
+      - "**/runtime/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/concurrency/非同期処理.md
+    paths:
+      - "**/runtime/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/core/コメント.md
+    paths:
+      - "**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/core/スタイル.md
+    paths:
+      - "**/*.py*"
+      - "**/pyproject.toml"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/core/デコレーター.md
+    paths:
+      - "**/_decorators.py*"
+      - "**/features/**/service.py*"
+      - "**/integrations/**/client.py*"
+      - "**/integrations/llm/**/*.py*"
+      - "**/shared/decorators.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/core/命名規則.md
+    paths:
+      - "**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/core/型ヒント.md
+    paths:
+      - "**/*.py*"
+      - "**/features/**/types.py*"
+      - "**/shared/types.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/core/言語ルール.md
+    paths:
+      - "**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/fastapi/アプリケーション.md
+    paths:
+      - "**/server/app.py*"
+      - "**/server/ws/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/fastapi/スキーマ.md
+    paths:
+      - "**/features/**/route.py*"
+      - "**/server/routes/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/fastapi/ヘルスチェック.md
+    paths:
+      - "**/healthz.py*"
+      - "**/server/routes/**/health*.py*"
+      - "**/server/routes/health*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/fastapi/ルート定義.md
+    paths:
+      - "**/features/**/route.py*"
+      - "**/server/routes/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/fastapi/認証とエラー.md
+    paths:
+      - "**/features/**/route.py*"
+      - "**/server/error_handlers.py*"
+      - "**/server/routes/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/llm/Instructor.md
+    paths:
+      - "**/integrations/llm/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/llm/コストとキャッシュ.md
+    paths:
+      - "**/integrations/llm/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/llm/プロバイダー.md
+    paths:
+      - "**/integrations/llm/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/llm/プロンプトローダー.md
+    paths:
+      - "**/integrations/llm/prompts/**/*.py*"
+      - "prompts/index.yaml"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/llm/プロンプト執筆.md
+    paths:
+      - "**/integrations/llm/prompts/**/*.py*"
+      - "prompts/**/*.j2"
+      - "prompts/**/*.md"
+      - "prompts/index.yaml"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/llm/例外とリトライ.md
+    paths:
+      - "**/integrations/llm/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/packaging/Pythonバージョン.md
+    paths:
+      - "**/pyproject.toml"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/packaging/pyproject設定.md
+    paths:
+      - "**/pyproject.toml"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/packaging/依存パッケージ管理.md
+    paths:
+      - "**/pyproject.toml"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/packaging/配布設定.md
+    paths:
+      - "**/pyproject.toml"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/performance/パフォーマンスチートシート.md
+    paths:
+      - "**/benchmarks/**/*.py*"
+      - "**/perf/**/*.py*"
+      - "**/profile_*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/scripts/Pythonスクリプト.md
+    paths:
+      - "**/{tool,tools,script,scripts}/**/*.py*"
+      - "**/hooks/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/scripts/Tkinter.md
+    paths:
+      - "**/*_gui.py*"
+      - "**/gui.py*"
+      - "**/gui/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/scripts/launchers-windows.md
+    paths:
+      - "**/*.bat*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/scripts/ランチャー-Unix.md
+    paths:
+      - "**/*.sh*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/shared/エラー定義.md
+    paths:
+      - "**/server/error_handlers.py*"
+      - "**/shared/errors.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/shared/シークレットと環境変数.md
+    paths:
+      - "**/config/settings.yaml*"
+      - "**/shared/constants.py*"
+      - "**/shared/settings.py*"
+      - ".env"
+      - ".env.sample"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/shared/ロガー.md
+    paths:
+      - "**/shared/logger.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/shared/型定義.md
+    paths:
+      - "**/shared/types.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/shared/定数.md
+    paths:
+      - "**/shared/constants.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/shared/設定.md
+    paths:
+      - "**/config/settings.yaml*"
+      - "**/shared/settings.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/testing/pytest.md
+    paths:
+      - "**/benchmarks/**/*.py*"
+      - "**/tests/**/test_*.py*"
+      - "**/tests/conftest.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/testing/テスト戦略.md
+    paths:
+      - "**/tests/**/test_*.py*"
+      - "**/tests/external/**/*.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/testing/フィクスチャー.md
+    paths:
+      - "**/benchmarks/**/*.py*"
+      - "**/tests/**/test_*.py*"
+      - "**/tests/conftest.py*"
+  - url: https://raw.githubusercontent.com/shuhei1101/my-plugins/master/docs/rules/python/testing/モック.md
+    paths:
+      - "**/tests/**/test_*.py*"
+      - "**/tests/conftest.py*"

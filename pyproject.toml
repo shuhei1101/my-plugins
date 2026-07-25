@@ -1,0 +1,25 @@
+[project]
+name = "my-plugins"
+version = "0.1.0"
+description = "Claude Code プラグイン群"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    # 観測基盤への送出は SDK 導入環境でのみ有効になるため、その経路の検証用に開発依存で入れる
+    "opentelemetry-sdk>=1.30",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.30",
+]
+
+[tool.uv]
+managed = true
+package = false
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = ["-ra", "--import-mode=importlib"]

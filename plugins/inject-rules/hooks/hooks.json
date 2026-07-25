@@ -1,0 +1,52 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "_description": "新規ファイルを空で作ってから編集する手順を作業規約としてコンテキストへ注入する",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+
+    "PreToolUse": [
+      {
+        "matcher": "Read|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "_description": "読み取り対象ファイルにマッチする規約ドキュメントをコンテキストへ注入する",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre_tool_use.py"
+            ],
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "_description": "圧縮でルールがコンテキストから消えるため注入済み記録を破棄して再注入させる",
+            "command": "python",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/pre_compact.py"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,20 +1,5 @@
 {
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write|Read",
-        "hooks": [
-          {
-            "_description": "編集対象ファイルにマッチする開発ルールを注入",
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/inject-rules/injector.py"
-            ]
-          }
-        ]
-      }
-    ],
     "UserPromptSubmit": [
       {
         "hooks": [
@@ -24,20 +9,6 @@
             "command": "python",
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit/inject_task_rule.py"
-            ]
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "_description": "圧縮前にセッショントークンを削除（ルール再注入を可能にする）",
-            "type": "command",
-            "command": "python",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact/clear_session_token.py"
             ]
           }
         ]
