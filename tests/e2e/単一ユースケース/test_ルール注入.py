@@ -190,10 +190,12 @@ def test_error_when_index_missing(claude_project, wiki_server, run_claude, query
     assert result.injections == []
     assert "追記" in first.read_text(encoding="utf-8")
     assert "追記" in second.read_text(encoding="utf-8")
-    # 検証: 取得先 URL を含むログが 1 件だけ記録されている
-    lines = query_logs(f"{LOG_QUERY} |= `索引が取得できないため注入しません`", since=since)
+    # 検証: 取得先を属性に持つログが 1 件だけ記録されている（属性は行本文ではなく構造化メタデータに載る）
+    lines = query_logs(
+        f"{LOG_QUERY} |= `索引が取得できないため注入しません` | index_locations=`{index_url}`",
+        since=since,
+    )
     assert len(lines) == 1
-    assert index_url in lines[0]
 
 
 def test_error_when_index_fetch_failed_with_cache(
@@ -237,6 +239,6 @@ def test_error_when_rule_fetch_failed(
     assert "追記" in target.read_text(encoding="utf-8")
     # 検証: 失敗したルールは注入済みとして記録されていない
     assert load_state(result.session_id, base_dir=session_dir).is_injected(missing_url) is False
-    # 検証: 取得先 URL を含むログが記録されている
-    lines = query_logs(f"{LOG_QUERY} |= `{missing_url}`", since=since)
+    # 検証: 取得先を属性に持つログが記録されている（属性は行本文ではなく構造化メタデータに載る）
+    lines = query_logs(f"{LOG_QUERY} | rule_location=`{missing_url}`", since=since)
     assert len(lines) >= 1

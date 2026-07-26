@@ -1,5 +1,5 @@
 {
   "name": "inject-rules",
-  "version": "1.0",
+  "version": "1.1",
   "description": "編集対象ファイルにマッチする規約ドキュメントを自動注入するプラグイン"
 }

@@ -38,7 +38,7 @@
       "name": "inject-rules",
       "source": "./plugins/inject-rules",
       "description": "操作対象ファイルにマッチする規約ドキュメントを索引から取得してコンテキストへ自動注入するプラグイン",
-      "version": "1.0"
+      "version": "1.1"
     }
   ]
 }

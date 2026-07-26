@@ -34,6 +34,8 @@ OTLP_ENDPOINT = "http://localhost:4317"
 GRAFANA_URL = "http://localhost:3000"
 GRAFANA_AUTH = b64encode(b"admin:admin").decode()
 CLAUDE_TIMEOUT_SEC = 600
+# 隔離した設定ディレクトリへ持ち込む認証ファイル
+CREDENTIALS_FILE = ".credentials.json"
 STACK_READY_TIMEOUT_SEC = 180
 # 会話ログのうち、フックがコンテキストへ渡した内容を表すレコード種別
 HOOK_CONTEXT_TYPE = "hook_additional_context"
@@ -181,19 +183,6 @@ def session_dir(tmp_path: Path) -> Path:
     return tmp_path / "session"
 
 
-def _write_project_env(project: Path, cache_dir: Path, session_dir: Path, indexes: str) -> None:
-    """テスト用プロジェクトの設定へ環境変数を書き込む（ユーザー設定より優先される）。"""
-    path = project / ".claude" / "settings.json"
-    settings = json.loads(path.read_text(encoding="utf-8"))
-    settings["env"] = {
-        "INJECT_RULES_INDEXES": indexes,
-        "INJECT_RULES_CACHE_DIR": str(cache_dir),
-        "INJECT_RULES_SESSION_DIR": str(session_dir),
-        "INJECT_RULES_OTLP_ENDPOINT": OTLP_ENDPOINT,
-    }
-    path.write_text(json.dumps(settings, ensure_ascii=False), encoding="utf-8")
-
-
 @pytest.fixture
 def claude_project(tmp_path: Path) -> Path:
     """ルール注入フックを登録した一時プロジェクトを作る。"""
@@ -235,11 +224,31 @@ def claude_project(tmp_path: Path) -> Path:
 
 
 @pytest.fixture
-def run_claude(claude_cli, claude_project: Path, cache_dir: Path, session_dir: Path):
+def isolated_config_dir(tmp_path: Path) -> Path:
+    """プラグインもユーザー設定も無い、認証だけを引き継いだ設定ディレクトリを返す。
+
+    開発機にインストール済みのプラグイン（inject-rules 自身を含む）が
+    テスト中のフックと二重に走らないよう、設定を丸ごと隔離する。
+    """
+    credentials = Path.home() / ".claude" / CREDENTIALS_FILE
+    if not credentials.exists():
+        pytest.skip(f"{credentials} が無い（claude にログインしてから実行する）")
+    config = tmp_path / "claude-config"
+    config.mkdir()
+    shutil.copy(credentials, config / CREDENTIALS_FILE)
+    return config
+
+
+@pytest.fixture
+def run_claude(
+    claude_cli, claude_project: Path, cache_dir: Path, session_dir: Path, isolated_config_dir: Path
+):
     """索引の場所を環境変数へ渡して Claude Code を 1 セッション実行する factory。"""
 
     def _run(prompt: str, *, indexes: str | None) -> ClaudeResult:
         env = os.environ.copy()
+        # 設定ディレクトリごと隔離する（インストール済みプラグインとユーザー設定を読ませない）
+        env["CLAUDE_CONFIG_DIR"] = str(isolated_config_dir)
         env["INJECT_RULES_CACHE_DIR"] = str(cache_dir)
         env["INJECT_RULES_SESSION_DIR"] = str(session_dir)
         env["INJECT_RULES_OTLP_ENDPOINT"] = OTLP_ENDPOINT
@@ -247,10 +256,6 @@ def run_claude(claude_cli, claude_project: Path, cache_dir: Path, session_dir: P
             env.pop("INJECT_RULES_INDEXES", None)
         else:
             env["INJECT_RULES_INDEXES"] = indexes
-        # プロジェクト設定の env はユーザー設定（~/.claude/settings.json）より優先される。
-        # 開発者の設定が持つ索引でフックが動かないよう、テストの値をここで固定する
-        # （未設定シナリオは空文字にして「索引なし」の分岐へ入れる）
-        _write_project_env(claude_project, cache_dir, session_dir, indexes or "")
         completed = subprocess.run(
             [claude_cli, "-p", prompt, "--output-format", "json", "--permission-mode", "acceptEdits"],
             cwd=claude_project,
@@ -263,7 +268,7 @@ def run_claude(claude_cli, claude_project: Path, cache_dir: Path, session_dir: P
         if completed.returncode != 0:
             pytest.fail(f"claude の実行に失敗:\n{completed.stdout[-2000:]}\n{completed.stderr[-2000:]}")
         session_id = json.loads(completed.stdout)["session_id"]
-        matches = sorted(Path.home().glob(f".claude/projects/*/{session_id}.jsonl"))
+        matches = sorted(isolated_config_dir.glob(f"projects/*/{session_id}.jsonl"))
         if not matches:
             pytest.fail(f"セッション {session_id} の会話ログが見つからない")
         transcript = matches[0].read_text(encoding="utf-8")
