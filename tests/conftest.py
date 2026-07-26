@@ -108,12 +108,12 @@ def fetch_stub():
 
 @pytest.fixture
 def rule_index():
-    """ルール索引 YAML を組み立てる factory。"""
+    """ルール索引 YAML を組み立てる factory（ルールは索引からの相対パスで書く）。"""
 
     def _make(entries: list[tuple[str, list[str]]]) -> str:
         lines = ["rules:"]
-        for url, patterns in entries:
-            lines.append(f"  - url: {url}")
+        for rule, patterns in entries:
+            lines.append(f"  - rule: {rule}")
             lines.append("    paths:")
             lines.extend(f'      - "{p}"' for p in patterns)
         return "\n".join(lines) + "\n"

@@ -129,6 +129,20 @@ def test_fetch_with_cache_when_fetch_failed_with_cache(tmp_path, fetch_stub):
     assert read_cache(A, cache_dir=tmp_path, ttl_sec=TTL_SEC) == "前回の本文"
 
 
+def test_fetch_with_cache_when_local(tmp_path, fetch_stub):
+    """ローカルはキャッシュしない（正常系）。"""
+    # 準備: ローカル絶対パスの場所
+    local = "/home/user/repo/my-plugins/docs/rules/python/core/命名規則.md"
+    fetch = fetch_stub({local: "本文"})
+    # 実行: 2 回呼ぶ
+    first = fetch_with_cache(local, fetch=fetch, cache_dir=tmp_path, ttl_sec=TTL_SEC)
+    second = fetch_with_cache(local, fetch=fetch, cache_dir=tmp_path, ttl_sec=TTL_SEC)
+    # 検証: 毎回読み直し、キャッシュを作らない
+    assert first == second == "本文"
+    assert fetch.calls == [local, local]
+    assert list(tmp_path.glob("*.txt")) == []
+
+
 def test_fetch_with_cache_when_fetch_failed(tmp_path, fetch_stub):
     """取得失敗の伝播（異常系）。"""
     # 準備: キャッシュを持たない状態で取得が失敗する

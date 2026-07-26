@@ -181,6 +181,19 @@ def session_dir(tmp_path: Path) -> Path:
     return tmp_path / "session"
 
 
+def _write_project_env(project: Path, cache_dir: Path, session_dir: Path, indexes: str) -> None:
+    """テスト用プロジェクトの設定へ環境変数を書き込む（ユーザー設定より優先される）。"""
+    path = project / ".claude" / "settings.json"
+    settings = json.loads(path.read_text(encoding="utf-8"))
+    settings["env"] = {
+        "INJECT_RULES_INDEXES": indexes,
+        "INJECT_RULES_CACHE_DIR": str(cache_dir),
+        "INJECT_RULES_SESSION_DIR": str(session_dir),
+        "INJECT_RULES_OTLP_ENDPOINT": OTLP_ENDPOINT,
+    }
+    path.write_text(json.dumps(settings, ensure_ascii=False), encoding="utf-8")
+
+
 @pytest.fixture
 def claude_project(tmp_path: Path) -> Path:
     """ルール注入フックを登録した一時プロジェクトを作る。"""
@@ -223,7 +236,7 @@ def claude_project(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def run_claude(claude_cli, claude_project: Path, cache_dir: Path, session_dir: Path):
-    """索引 URL を環境変数へ渡して Claude Code を 1 セッション実行する factory。"""
+    """索引の場所を環境変数へ渡して Claude Code を 1 セッション実行する factory。"""
 
     def _run(prompt: str, *, indexes: str | None) -> ClaudeResult:
         env = os.environ.copy()
@@ -234,6 +247,10 @@ def run_claude(claude_cli, claude_project: Path, cache_dir: Path, session_dir: P
             env.pop("INJECT_RULES_INDEXES", None)
         else:
             env["INJECT_RULES_INDEXES"] = indexes
+        # プロジェクト設定の env はユーザー設定（~/.claude/settings.json）より優先される。
+        # 開発者の設定が持つ索引でフックが動かないよう、テストの値をここで固定する
+        # （未設定シナリオは空文字にして「索引なし」の分岐へ入れる）
+        _write_project_env(claude_project, cache_dir, session_dir, indexes or "")
         completed = subprocess.run(
             [claude_cli, "-p", prompt, "--output-format", "json", "--permission-mode", "acceptEdits"],
             cwd=claude_project,

@@ -11,6 +11,7 @@ from inject_rules.shared.types import FetchText
 
 CACHE_SUFFIX = ".txt"
 UNLIMITED_TTL_SEC = 10**9  # 期限を問わずキャッシュを読むための実質無期限の寿命
+REMOTE_SCHEMES = ("http://", "https://")
 
 
 def read_cache(url: str, *, cache_dir: Path, ttl_sec: int) -> str | None:
@@ -38,8 +39,12 @@ def write_cache(url: str, text: str, *, cache_dir: Path) -> None:
         return
 
 
-def fetch_with_cache(url: str, *, fetch: FetchText, cache_dir: Path, ttl_sec: int) -> str:
+def fetch_with_cache(location: str, *, fetch: FetchText, cache_dir: Path, ttl_sec: int) -> str:
     """キャッシュを優先し、無ければ取得して保存する。"""
+    # ローカルの場所は毎回読み直す（編集をそのまま反映させるため）
+    if not location.startswith(REMOTE_SCHEMES):
+        return fetch(location)
+    url = location
     cached = read_cache(url, cache_dir=cache_dir, ttl_sec=ttl_sec)
     if cached is not None:
         return cached

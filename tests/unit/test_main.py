@@ -18,6 +18,8 @@ INDEX_URL = "https://example.com/rules.yaml"
 A = "https://example.com/a.md"
 B = "https://example.com/b.md"
 C = "https://example.com/c.md"
+# 索引には索引ファイルからの相対パスを書く（ベースは INDEX_URL の親）
+A_REL, B_REL, C_REL = "a.md", "b.md", "c.md"
 FILE_PATH = "/repo/src/a.py"
 CWD = "/repo"
 
@@ -95,8 +97,8 @@ def test_build_blocks(fetch_stub):
     """全件の組み立て（正常系）。"""
     # 準備
     rules = [
-        RuleDefinition(url=A, patterns=("**/*.py",)),
-        RuleDefinition(url=B, patterns=("**/*.md",)),
+        RuleDefinition(location=A, patterns=("**/*.py",)),
+        RuleDefinition(location=B, patterns=("**/*.md",)),
     ]
     fetch = fetch_stub({A: "本文 A", B: "本文 B"})
     # 実行
@@ -109,7 +111,7 @@ def test_build_blocks(fetch_stub):
 def test_build_blocks_when_offset(fetch_stub):
     """続き位置の反映（正常系）。"""
     # 準備: 続き位置 100 を記録した状態
-    rules = [RuleDefinition(url=A, patterns=("**/*.py",))]
+    rules = [RuleDefinition(location=A, patterns=("**/*.py",))]
     state = SessionState()
     state.mark_partial(A, 100)
     fetch = fetch_stub({A: "あ" * 300})
@@ -124,8 +126,8 @@ def test_build_blocks_when_fetch_failed(fetch_stub):
     """取得失敗の除外（正常系）。"""
     # 準備: 2 件中 1 件が例外
     rules = [
-        RuleDefinition(url=A, patterns=("**/*.py",)),
-        RuleDefinition(url=B, patterns=("**/*.py",)),
+        RuleDefinition(location=A, patterns=("**/*.py",)),
+        RuleDefinition(location=B, patterns=("**/*.py",)),
     ]
     fetch = fetch_stub({B: "本文 B"}, errors={A: urllib.error.URLError("接続できません")})
     # 実行
@@ -137,7 +139,7 @@ def test_build_blocks_when_fetch_failed(fetch_stub):
 def test_build_blocks_when_parallel():
     """並列取得（正常系）。"""
     # 準備: 待機する取得関数を 3 件分（呼び出し時刻を記録する）
-    rules = [RuleDefinition(url=url, patterns=("**/*.py",)) for url in (A, B, C)]
+    rules = [RuleDefinition(location=url, patterns=("**/*.py",)) for url in (A, B, C)]
     lock = threading.Lock()
     started: list[float] = []
     finished: list[float] = []
@@ -165,7 +167,7 @@ def test_main(monkeypatch, capsys, tmp_dirs, rule_index, fetch_stub):
     """1 回で収まる注入（正常系）。"""
     # 準備: マッチするルール 1 件
     monkeypatch.setenv("INJECT_RULES_INDEXES", INDEX_URL)
-    fetch = fetch_stub({INDEX_URL: rule_index([(A, ["**/*.py"])]), A: "命名規約の本文"})
+    fetch = fetch_stub({INDEX_URL: rule_index([(A_REL, ["**/*.py"])]), A: "命名規約の本文"})
     monkeypatch.setattr("inject_rules.main.fetch_text", fetch)
     _stdin(monkeypatch, _payload())
     # 実行
@@ -180,7 +182,7 @@ def test_main_when_not_target_tool(monkeypatch, capsys, tmp_dirs, rule_index, fe
     """対象外ツールの無処理（正常系）。"""
     # 準備
     monkeypatch.setenv("INJECT_RULES_INDEXES", INDEX_URL)
-    fetch = fetch_stub({INDEX_URL: rule_index([(A, ["**/*.py"])]), A: "命名規約の本文"})
+    fetch = fetch_stub({INDEX_URL: rule_index([(A_REL, ["**/*.py"])]), A: "命名規約の本文"})
     monkeypatch.setattr("inject_rules.main.fetch_text", fetch)
     _stdin(monkeypatch, _payload(tool_name="Edit"))
     # 実行
@@ -239,7 +241,7 @@ def test_main_when_no_match(monkeypatch, capsys, tmp_dirs, rule_index, fetch_stu
     """マッチなし（正常系）。"""
     # 準備: 編集対象にマッチしない glob だけの索引
     monkeypatch.setenv("INJECT_RULES_INDEXES", INDEX_URL)
-    fetch = fetch_stub({INDEX_URL: rule_index([(A, ["**/*.md"])]), A: "命名規約の本文"})
+    fetch = fetch_stub({INDEX_URL: rule_index([(A_REL, ["**/*.md"])]), A: "命名規約の本文"})
     monkeypatch.setattr("inject_rules.main.fetch_text", fetch)
     _stdin(monkeypatch, _payload())
     # 実行
@@ -255,7 +257,7 @@ def test_main_when_already_injected(monkeypatch, capsys, tmp_dirs, rule_index, f
     state = SessionState()
     state.mark_injected(A)
     save_state(SESSION, state, base_dir=tmp_dirs.session)
-    fetch = fetch_stub({INDEX_URL: rule_index([(A, ["**/*.py"])]), A: "命名規約の本文"})
+    fetch = fetch_stub({INDEX_URL: rule_index([(A_REL, ["**/*.py"])]), A: "命名規約の本文"})
     monkeypatch.setattr("inject_rules.main.fetch_text", fetch)
     _stdin(monkeypatch, _payload())
     # 実行
@@ -268,7 +270,7 @@ def test_main_when_over_limit(monkeypatch, capsys, tmp_dirs, rule_index, fetch_s
     """上限超過の差し戻し（正常系）。"""
     # 準備: 上限を超える本文
     monkeypatch.setenv("INJECT_RULES_INDEXES", INDEX_URL)
-    fetch = fetch_stub({INDEX_URL: rule_index([(A, ["**/*.py"])]), A: "あ" * 20000})
+    fetch = fetch_stub({INDEX_URL: rule_index([(A_REL, ["**/*.py"])]), A: "あ" * 20000})
     monkeypatch.setattr("inject_rules.main.fetch_text", fetch)
     _stdin(monkeypatch, _payload())
     # 実行

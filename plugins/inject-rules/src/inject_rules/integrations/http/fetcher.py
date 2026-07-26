@@ -1,12 +1,14 @@
-"""URL からのテキスト取得。"""
+"""場所からのテキスト取得。"""
 from __future__ import annotations
 
 import re
+from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import quote
 from urllib.request import urlopen
 
 FETCH_TIMEOUT_SEC = 10
+REMOTE_SCHEMES = ("http://", "https://")
 RAW_HOST = "raw.githubusercontent.com"
 SAFE_URL_CHARS = ":/?#[]@!$&'()*+,;=%~"
 FRONT_MATTER_RE = re.compile(r"\A---\r?\n.*?\r?\n---\r?\n", re.DOTALL)
@@ -17,9 +19,13 @@ SKIP_TAGS = frozenset({"script", "style", "noscript", "head"})
 BLANK_LINES_RE = re.compile(r"\n{3,}")
 
 
-def fetch_text(url: str, *, timeout: int = FETCH_TIMEOUT_SEC) -> str:
-    """URL から本文テキストを取得する。"""
-    target = _normalize_url(url)
+def fetch_text(location: str, *, timeout: int = FETCH_TIMEOUT_SEC) -> str:
+    """場所から本文テキストを取得する。"""
+    # ローカルの場所はファイルとして読む（raw 配信と同じくフロントマターを落とす）
+    if not location.startswith(REMOTE_SCHEMES):
+        text = Path(location).read_text(encoding="utf-8")
+        return FRONT_MATTER_RE.sub("", text).strip()
+    target = _normalize_url(location)
     # 日本語パスをそのまま渡すと urlopen が扱えないためエンコードする
     encoded = quote(target, safe=SAFE_URL_CHARS)
     with urlopen(encoded, timeout=timeout) as response:

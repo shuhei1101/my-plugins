@@ -96,6 +96,33 @@ def test_fetch_text_when_non_ascii_url(monkeypatch):
     assert "%E8%A6%8F%E7%B4%84" in requested
 
 
+def test_fetch_text_when_local_path(tmp_path, monkeypatch):
+    """ローカルファイルの読み込み（正常系）。"""
+    # 準備
+    urlopen = _make_urlopen("")
+    monkeypatch.setattr(URLOPEN_PATH, urlopen)
+    path = tmp_path / "命名規則.md"
+    path.write_text("# 命名規約\n本文\n", encoding="utf-8")
+    # 実行
+    text = fetch_text(str(path))
+    # 検証: ファイルの本文が返り、HTTP 取得が発生しない
+    assert text == "# 命名規約\n本文"
+    assert urlopen.calls == []
+
+
+def test_fetch_text_when_local_front_matter(tmp_path, monkeypatch):
+    """ローカルのフロントマター除去（正常系）。"""
+    # 準備
+    monkeypatch.setattr(URLOPEN_PATH, _make_urlopen(""))
+    path = tmp_path / "a.md"
+    path.write_text("---\ntemplate_version: 1.0.0\n---\n\n# 命名規約\n本文\n", encoding="utf-8")
+    # 実行
+    text = fetch_text(str(path))
+    # 検証: raw 配信と同じ扱いになる
+    assert text.startswith("# 命名規約")
+    assert "template_version" not in text
+
+
 def test_fetch_text_when_unreachable(monkeypatch):
     """取得失敗（異常系）。"""
     # 準備
@@ -103,6 +130,15 @@ def test_fetch_text_when_unreachable(monkeypatch):
     # 実行・検証
     with pytest.raises(urllib.error.URLError):
         fetch_text(PLAIN_URL)
+
+
+def test_fetch_text_when_local_missing(tmp_path, monkeypatch):
+    """ローカルファイル不在（異常系）。"""
+    # 準備
+    monkeypatch.setattr(URLOPEN_PATH, _make_urlopen(""))
+    # 実行・検証
+    with pytest.raises(OSError):
+        fetch_text(str(tmp_path / "存在しない.md"))
 
 
 # =========================

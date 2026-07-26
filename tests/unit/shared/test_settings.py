@@ -23,7 +23,7 @@ def test_from_env(monkeypatch):
     # 実行
     settings = Settings.from_env()
     # 検証
-    assert settings.index_urls == ("https://example.com/rules.yaml",)
+    assert settings.index_locations == ("https://example.com/rules.yaml",)
     assert settings.otlp_endpoint == "http://collector:4317"
     assert settings.cache_dir == Path("/tmp/cache")
     assert settings.session_dir == Path("/tmp/session")
@@ -37,7 +37,7 @@ def test_from_env_when_unset(monkeypatch):
     # 実行
     settings = Settings.from_env()
     # 検証
-    assert settings.index_urls == ()
+    assert settings.index_locations == ()
     assert settings.otlp_endpoint == "http://localhost:4317"
     assert settings.cache_dir == Path.home() / ".cache" / "inject-rules"
     assert settings.session_dir == Path.home() / ".claude" / "tokens" / "inject-rules"
@@ -50,7 +50,7 @@ def test_from_env_when_multiple_indexes(monkeypatch):
     # 実行
     settings = Settings.from_env()
     # 検証
-    assert settings.index_urls == ("https://example.com/a.yaml", "https://example.com/b.yaml")
+    assert settings.index_locations == ("https://example.com/a.yaml", "https://example.com/b.yaml")
 
 
 def test_from_env_when_spaces(monkeypatch):
@@ -60,4 +60,4 @@ def test_from_env_when_spaces(monkeypatch):
     # 実行
     settings = Settings.from_env()
     # 検証: 空要素は落ちる
-    assert settings.index_urls == ("https://example.com/a.yaml", "https://example.com/b.yaml")
+    assert settings.index_locations == ("https://example.com/a.yaml", "https://example.com/b.yaml")

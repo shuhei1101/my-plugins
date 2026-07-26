@@ -12,38 +12,47 @@ FETCH_FAILED_KEY = "index_fetch_failed"
 
 
 def load_rules(
-    index_urls: list[str], *, fetch: FetchText, state: SessionState
+    index_locations: list[str], *, fetch: FetchText, state: SessionState
 ) -> list[RuleDefinition]:
-    """索引 URL の一覧からルール定義の一覧を組み立てる。"""
+    """索引の場所の一覧からルール定義の一覧を組み立てる。"""
     rules: list[RuleDefinition] = []
     seen: set[str] = set()
-    for index_url in index_urls:
+    for index_location in index_locations:
         try:
-            text = fetch(index_url)
+            text = fetch(index_location)
         except OSError as error:
             # 取得できない索引は飛ばし、残りの索引だけで注入を続ける
             # ツール呼び出しのたびに出さないよう、同じ索引の失敗は 1 回だけ通知する
-            if state.mark_notified(f"{FETCH_FAILED_KEY}:{index_url}"):
+            if state.mark_notified(f"{FETCH_FAILED_KEY}:{index_location}"):
                 emit_log(
                     "WARNING",
                     "索引を取得できませんでした",
-                    {"index_url": index_url, "error": str(error)},
+                    {"index_location": index_location, "error": str(error)},
                     endpoint=Settings.from_env().otlp_endpoint,
                 )
             continue
-        for rule in parse_index(text):
+        # ルール本文の取得先は索引ごとに独立して解決する（リモートとローカルを混在できる）
+        for rule in parse_index(text, base=_resolve_base(index_location)):
             # 同じルールが複数の索引にある場合は先の索引を優先する
-            if rule.url in seen:
+            if rule.location in seen:
                 continue
-            seen.add(rule.url)
+            seen.add(rule.location)
             rules.append(rule)
     return rules
 
 
-def parse_index(text: str) -> list[RuleDefinition]:
+def _resolve_base(index_location: str) -> str:
+    """索引の場所からルール本文の取得先の起点を求める。"""
+    # Windows のローカルパスも扱えるよう区切りを正規化してから親を取る
+    normalized = index_location.replace("\\", "/")
+    head, sep, _ = normalized.rpartition("/")
+    return head + sep
+
+
+def parse_index(text: str, *, base: str) -> list[RuleDefinition]:
     """索引 YAML の本文をルール定義の一覧に変換する。"""
     rules: list[RuleDefinition] = []
-    url: str | None = None
+    rule: str | None = None
     patterns: list[str] = []
     collecting = False
 
@@ -53,13 +62,13 @@ def parse_index(text: str) -> list[RuleDefinition]:
         if not line or line.startswith("#") or line == "rules:":
             continue
         # 新しいエントリの開始: 直前まで組み立てていたエントリを確定させる
-        if line.startswith("- url:"):
-            if url and patterns:
-                rules.append(RuleDefinition(url=url, patterns=tuple(patterns)))
-            value = line[len("- url:") :].strip()
+        if line.startswith("- rule:"):
+            if rule and patterns:
+                rules.append(RuleDefinition(location=base + rule, patterns=tuple(patterns)))
+            value = line[len("- rule:") :].strip()
             if len(value) >= 2 and value[0] == value[-1] and value[0] in QUOTES:
                 value = value[1:-1]
-            url = value
+            rule = value
             patterns = []
             collecting = False
             continue
@@ -73,6 +82,6 @@ def parse_index(text: str) -> list[RuleDefinition]:
             if len(value) >= 2 and value[0] == value[-1] and value[0] in QUOTES:
                 patterns.append(value[1:-1])
 
-    if url and patterns:
-        rules.append(RuleDefinition(url=url, patterns=tuple(patterns)))
+    if rule and patterns:
+        rules.append(RuleDefinition(location=base + rule, patterns=tuple(patterns)))
     return rules

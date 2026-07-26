@@ -16,6 +16,8 @@ INDEX_URL = "https://example.com/rules.yaml"
 INDEX_URL_2 = "https://example.com/other.yaml"
 A = "https://example.com/a.md"
 B = "https://example.com/b.md"
+# 索引には索引ファイルからの相対パスを書く（ベースは索引の場所の親）
+A_REL, B_REL = "a.md", "b.md"
 FILE_PATH = "/repo/src/a.py"
 CWD = "/repo"
 CACHE_TTL_SEC = 1800
@@ -66,7 +68,7 @@ def test_normal(monkeypatch, capsys, hook_dirs, rule_index, fetch_stub, run_hook
     # 準備
     monkeypatch.setenv("INJECT_RULES_INDEXES", INDEX_URL)
     _install_fetch(
-        monkeypatch, fetch_stub({INDEX_URL: rule_index([(A, ["**/*.py"])]), A: "命名規約の本文"})
+        monkeypatch, fetch_stub({INDEX_URL: rule_index([(A_REL, ["**/*.py"])]), A: "命名規約の本文"})
     )
     # 実行
     run_hook(_payload())
@@ -89,8 +91,8 @@ def test_normal_when_multiple_indexes(
         monkeypatch,
         fetch_stub(
             {
-                INDEX_URL: rule_index([(A, ["**/*.py"])]),
-                INDEX_URL_2: rule_index([(B, ["**/*.py"])]),
+                INDEX_URL: rule_index([(A_REL, ["**/*.py"])]),
+                INDEX_URL_2: rule_index([(B_REL, ["**/*.py"])]),
                 A: "共通規約の本文",
                 B: "プロジェクト規約の本文",
             }
@@ -107,11 +109,37 @@ def test_normal_when_multiple_indexes(
     assert B in context
 
 
+def test_normal_when_local(monkeypatch, capsys, tmp_path, hook_dirs, rule_index, run_hook):
+    """索引もルール本文もローカルのファイルから読む（正常系・注入元がローカル）。"""
+    # 準備: 一時ディレクトリに索引とルール本文を配置し、HTTP 取得は呼ばれないことを確かめる stub にする
+    docs = tmp_path / "docs"
+    (docs / "rules" / "python").mkdir(parents=True)
+    rule_path = docs / "rules" / "python" / "命名規則.md"
+    rule_path.write_text("ローカルの命名規約\n", encoding="utf-8")
+    index_path = docs / "rules.yaml"
+    index_path.write_text(rule_index([("rules/python/命名規則.md", ["**/*.py"])]), encoding="utf-8")
+    monkeypatch.setenv("INJECT_RULES_INDEXES", str(index_path))
+    urlopen_calls: list[str] = []
+    monkeypatch.setattr(
+        "inject_rules.integrations.http.fetcher.urlopen",
+        lambda url, timeout=None: urlopen_calls.append(url),
+    )
+    # 実行
+    run_hook(_payload())
+    # 検証: ローカルの本文が取得元のパス付きで注入され、通信もキャッシュも発生しない
+    output = _response(capsys)["hookSpecificOutput"]
+    assert output["permissionDecision"] == "allow"
+    assert "ローカルの命名規約" in output["additionalContext"]
+    assert str(rule_path) in output["additionalContext"]
+    assert urlopen_calls == []
+    assert not hook_dirs.cache.exists() or list(hook_dirs.cache.glob("*.txt")) == []
+
+
 def test_normal_when_cache_valid(monkeypatch, capsys, hook_dirs, rule_index, fetch_stub, run_hook):
     """キャッシュだけで完結し、取得を発生させない（正常系）。"""
     # 準備: 索引とルール本文が有効期限内で存在する
     monkeypatch.setenv("INJECT_RULES_INDEXES", INDEX_URL)
-    write_cache(INDEX_URL, rule_index([(A, ["**/*.py"])]), cache_dir=hook_dirs.cache)
+    write_cache(INDEX_URL, rule_index([(A_REL, ["**/*.py"])]), cache_dir=hook_dirs.cache)
     write_cache(A, "キャッシュ済みの本文", cache_dir=hook_dirs.cache)
     fetch = fetch_stub({})
     _install_fetch(monkeypatch, fetch)
@@ -128,7 +156,7 @@ def test_normal_when_over_limit(monkeypatch, capsys, hook_dirs, rule_index, fetc
     """収まる分だけ送り、続きの位置を記録して差し戻す（正常系）。"""
     # 準備: 上限を超えるサイズのルール本文
     monkeypatch.setenv("INJECT_RULES_INDEXES", INDEX_URL)
-    fetch = fetch_stub({INDEX_URL: rule_index([(A, ["**/*.py"])]), A: "あ" * 20000})
+    fetch = fetch_stub({INDEX_URL: rule_index([(A_REL, ["**/*.py"])]), A: "あ" * 20000})
     _install_fetch(monkeypatch, fetch)
     # 実行
     run_hook(_payload())
@@ -158,7 +186,7 @@ def test_normal_when_partial_continued(
     save_state(SESSION, state, base_dir=hook_dirs.session)
     _install_fetch(
         monkeypatch,
-        fetch_stub({INDEX_URL: rule_index([(A, ["**/*.py"])]), A: "あ" * 100 + "い" * 200}),
+        fetch_stub({INDEX_URL: rule_index([(A_REL, ["**/*.py"])]), A: "あ" * 100 + "い" * 200}),
     )
     # 実行
     run_hook(_payload())
@@ -176,7 +204,7 @@ def test_normal_when_no_match(monkeypatch, capsys, hook_dirs, rule_index, fetch_
     """何も出力せず終了する（正常系）。"""
     # 準備: 編集対象にマッチしない glob だけを返す索引
     monkeypatch.setenv("INJECT_RULES_INDEXES", INDEX_URL)
-    fetch = fetch_stub({INDEX_URL: rule_index([(A, ["**/*.md"])]), A: "命名規約の本文"})
+    fetch = fetch_stub({INDEX_URL: rule_index([(A_REL, ["**/*.md"])]), A: "命名規約の本文"})
     _install_fetch(monkeypatch, fetch)
     # 実行
     run_hook(_payload())
@@ -194,7 +222,7 @@ def test_normal_when_already_injected(
     state = SessionState()
     state.mark_injected(A)
     save_state(SESSION, state, base_dir=hook_dirs.session)
-    fetch = fetch_stub({INDEX_URL: rule_index([(A, ["**/*.py"])]), A: "命名規約の本文"})
+    fetch = fetch_stub({INDEX_URL: rule_index([(A_REL, ["**/*.py"])]), A: "命名規約の本文"})
     _install_fetch(monkeypatch, fetch)
     # 実行
     run_hook(_payload())
@@ -231,7 +259,7 @@ def test_error_when_index_missing(monkeypatch, capsys, hook_dirs, fetch_stub, ru
     # 検証: 取得先 URL を含むログが 1 件送出される
     assert _response(capsys) is None
     assert len(logs) == 1
-    assert INDEX_URL in logs[0]["attributes"]["index_urls"]
+    assert INDEX_URL in logs[0]["attributes"]["index_locations"]
     # 検証: 同一セッションの 2 回目では送出されない
     run_hook(_payload())
     assert len(logs) == 1
@@ -243,7 +271,7 @@ def test_error_when_index_fetch_failed_with_cache(
     """期限切れキャッシュを継続利用する（異常系）。"""
     # 準備: 期限切れの索引キャッシュを持ち、索引の取得は接続エラーになる
     monkeypatch.setenv("INJECT_RULES_INDEXES", INDEX_URL)
-    write_cache(INDEX_URL, rule_index([(A, ["**/*.py"])]), cache_dir=hook_dirs.cache)
+    write_cache(INDEX_URL, rule_index([(A_REL, ["**/*.py"])]), cache_dir=hook_dirs.cache)
     _expire_cache(hook_dirs.cache)
     _install_fetch(
         monkeypatch,
@@ -270,7 +298,7 @@ def test_error_when_rule_fetch_failed(
     _install_fetch(
         monkeypatch,
         fetch_stub(
-            {INDEX_URL: rule_index([(A, ["**/*.py"]), (B, ["**/*.py"])]), A: "取得できた本文"},
+            {INDEX_URL: rule_index([(A_REL, ["**/*.py"]), (B_REL, ["**/*.py"])]), A: "取得できた本文"},
             errors={B: urllib.error.URLError("見つかりません")},
         ),
     )
@@ -285,4 +313,4 @@ def test_error_when_rule_fetch_failed(
     assert load_state(SESSION, base_dir=hook_dirs.session).is_injected(B) is False
     # 検証: 取得先 URL を含むログが送出される
     assert len(logs) == 1
-    assert logs[0]["attributes"]["rule_url"] == B
+    assert logs[0]["attributes"]["rule_location"] == B

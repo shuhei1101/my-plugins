@@ -10,7 +10,7 @@ BASE = Path("/repo")
 
 
 def _rule(url: str, *patterns: str) -> RuleDefinition:
-    return RuleDefinition(url=url, patterns=patterns)
+    return RuleDefinition(location=url, patterns=patterns)
 
 
 # =========================
@@ -29,7 +29,7 @@ def test_match_rules():
     # 実行
     matched = match_rules(rules, "/repo/docs/wiki/規約.md", base_dir=BASE)
     # 検証: 索引順で 2 件
-    assert [r.url for r in matched] == ["https://example.com/md.md", "https://example.com/wiki.md"]
+    assert [r.location for r in matched] == ["https://example.com/md.md", "https://example.com/wiki.md"]
 
 
 def test_match_rules_when_no_match():

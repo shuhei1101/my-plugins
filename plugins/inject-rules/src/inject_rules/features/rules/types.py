@@ -8,5 +8,6 @@ from dataclasses import dataclass
 class RuleDefinition:
     """索引 1 行分のルール定義。"""
 
-    url: str
+    # 索引のベースと相対パスを結合した、解決済みの取得先（raw URL またはローカル絶対パス）
+    location: str
     patterns: tuple[str, ...]

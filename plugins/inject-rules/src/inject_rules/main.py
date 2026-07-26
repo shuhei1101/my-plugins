@@ -66,7 +66,7 @@ def _build_blocks(
     """マッチしたルール定義から注入ブロックを組み立てる。"""
     # 直列に取ると件数分の待ち時間がそのままフックの待ち時間になる
     with ThreadPoolExecutor(max_workers=min(len(rules), MAX_FETCH_WORKERS)) as pool:
-        futures = [pool.submit(fetch, rule.url) for rule in rules]
+        futures = [pool.submit(fetch, rule.location) for rule in rules]
 
     blocks: list[InjectionBlock] = []
     for rule, future in zip(rules, futures, strict=True):
@@ -77,14 +77,14 @@ def _build_blocks(
             emit_log(
                 "WARNING",
                 "ルール本文を取得できませんでした",
-                {"rule_url": rule.url, "error": str(error)},
+                {"rule_location": rule.location, "error": str(error)},
                 endpoint=Settings.from_env().otlp_endpoint,
             )
             continue
-        offset = state.offset_of(rule.url)
+        offset = state.offset_of(rule.location)
         blocks.append(
             InjectionBlock(
-                url=rule.url, patterns=rule.patterns, body=body[offset:], offset=offset
+                url=rule.location, patterns=rule.patterns, body=body[offset:], offset=offset
             )
         )
     return blocks
@@ -104,7 +104,7 @@ def main() -> int:
     save = partial(save_state, hook_input.session_id, state, base_dir=settings.session_dir)
 
     # 注入元が未設定: 設定不備をセッションに 1 回だけ通知して素通しする
-    if not settings.index_urls:
+    if not settings.index_locations:
         if state.mark_notified("indexes_unset"):
             emit_log(
                 "WARNING", "注入元が未設定のため注入しません", endpoint=settings.otlp_endpoint
@@ -115,14 +115,14 @@ def main() -> int:
     cached_fetch = partial(
         fetch_with_cache, fetch=fetch_text, cache_dir=settings.cache_dir, ttl_sec=CACHE_TTL_SEC
     )
-    rules = load_rules(list(settings.index_urls), fetch=cached_fetch, state=state)
+    rules = load_rules(list(settings.index_locations), fetch=cached_fetch, state=state)
     # 索引が 1 件も取れない: Wiki 未整備とみなして 1 回だけ通知する
     if not rules:
         if state.mark_notified("index_missing"):
             emit_log(
                 "WARNING",
                 "索引が取得できないため注入しません",
-                {"index_urls": ",".join(settings.index_urls)},
+                {"index_locations": ",".join(settings.index_locations)},
                 endpoint=settings.otlp_endpoint,
             )
         save()
@@ -131,7 +131,7 @@ def main() -> int:
     matched = [
         rule
         for rule in match_rules(rules, hook_input.file_path, base_dir=hook_input.cwd)
-        if not state.is_injected(rule.url)
+        if not state.is_injected(rule.location)
     ]
     if not matched:
         save()

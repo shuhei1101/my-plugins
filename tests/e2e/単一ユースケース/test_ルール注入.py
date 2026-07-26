@@ -18,10 +18,10 @@ CACHE_TTL_SEC = 1800
 
 
 def _index(entries: list[tuple[str, list[str]]]) -> str:
-    """ルール索引 YAML を組み立てる。"""
+    """ルール索引 YAML を組み立てる（ルールは索引からの相対パスで書く）。"""
     lines = ["rules:"]
-    for url, patterns in entries:
-        lines.append(f"  - url: {url}")
+    for rule, patterns in entries:
+        lines.append(f"  - rule: {rule}")
         lines.append("    paths:")
         lines.extend(f'      - "{pattern}"' for pattern in patterns)
     return "\n".join(lines) + "\n"
@@ -62,7 +62,7 @@ def test_normal(claude_project, wiki_server, session_dir, run_claude):
     # 準備: 編集対象にマッチするエントリを 1 件持つ索引とルール本文を配置する
     target = _make_target(claude_project, TARGET)
     rule_url = wiki_server.put("rule.md", _rule_body("MARKER_NAMING"))
-    index_url = wiki_server.put("rules.yaml", _index([(rule_url, [MATCHING_GLOB])]))
+    index_url = wiki_server.put("rules.yaml", _index([("rule.md", [MATCHING_GLOB])]))
     # 実行: 同一セッションで同じファイルを 2 回編集する
     prompt = (
         f"`{TARGET}` の末尾に `追記` という 1 行を追記し、"
@@ -84,8 +84,8 @@ def test_normal_when_multiple_indexes(claude_project, wiki_server, run_claude):
     target = _make_target(claude_project, TARGET)
     first_rule = wiki_server.put("共通.md", _rule_body("MARKER_COMMON"))
     second_rule = wiki_server.put("固有.md", _rule_body("MARKER_PROJECT"))
-    first_index = wiki_server.put("rules1.yaml", _index([(first_rule, [MATCHING_GLOB])]))
-    second_index = wiki_server.put("rules2.yaml", _index([(second_rule, [MATCHING_GLOB])]))
+    first_index = wiki_server.put("rules1.yaml", _index([("共通.md", [MATCHING_GLOB])]))
+    second_index = wiki_server.put("rules2.yaml", _index([("固有.md", [MATCHING_GLOB])]))
     # 実行
     result = run_claude(_edit_prompt(TARGET), indexes=f"{first_index},{second_index}")
     # 検証: 2 件とも取り込まれ、並び順が環境変数の設定順になっている
@@ -96,6 +96,24 @@ def test_normal_when_multiple_indexes(claude_project, wiki_server, run_claude):
     assert "追記" in target.read_text(encoding="utf-8")
 
 
+def test_normal_when_local(claude_project, tmp_path, cache_dir, run_claude):
+    """ローカルに置いた索引とルール本文がそのまま取り込まれる（正常系・注入元がローカル）。"""
+    # 準備: push していない編集内容を模して、索引とルール本文をローカルに置く
+    target = _make_target(claude_project, TARGET)
+    docs = tmp_path / "docs"
+    (docs / "rules").mkdir(parents=True)
+    (docs / "rules" / "編集規約.md").write_text(_rule_body("MARKER_LOCAL"), encoding="utf-8")
+    index_path = docs / "rules.yaml"
+    index_path.write_text(_index([("rules/編集規約.md", [MATCHING_GLOB])]), encoding="utf-8")
+    # 実行
+    result = run_claude(_edit_prompt(TARGET), indexes=str(index_path))
+    # 検証: ローカルの本文が取得元のパス付きで取り込まれ、キャッシュは作られない
+    assert "MARKER_LOCAL" in result.injected_text
+    assert str(docs / "rules" / "編集規約.md") in result.injected_text
+    assert "追記" in target.read_text(encoding="utf-8")
+    assert not cache_dir.exists() or list(cache_dir.glob("*.txt")) == []
+
+
 def test_normal_when_cache_valid(claude_project, unreachable_url, cache_dir, run_claude):
     """到達できない注入元でもキャッシュだけで注入が成立する（正常系）。"""
     # 準備: 索引とルール本文を有効期限内のキャッシュとして置く
@@ -103,7 +121,7 @@ def test_normal_when_cache_valid(claude_project, unreachable_url, cache_dir, run
     rule_url = unreachable_url.replace("rules.yaml", "rule.md")
     write_cache(rule_url, _rule_body("MARKER_CACHED"), cache_dir=cache_dir)
     write_cache(
-        unreachable_url, _index([(rule_url, [MATCHING_GLOB])]), cache_dir=cache_dir
+        unreachable_url, _index([("rule.md", [MATCHING_GLOB])]), cache_dir=cache_dir
     )
     # 実行
     result = run_claude(_edit_prompt(TARGET), indexes=unreachable_url)
@@ -118,7 +136,7 @@ def test_normal_when_over_limit(claude_project, wiki_server, run_claude):
     target = _make_target(claude_project, TARGET)
     body = _rule_body("MARKER_HEAD", padding=15000) + "\n\nMARKER_TAIL\n"
     rule_url = wiki_server.put("rule.md", body)
-    index_url = wiki_server.put("rules.yaml", _index([(rule_url, [MATCHING_GLOB])]))
+    index_url = wiki_server.put("rules.yaml", _index([("rule.md", [MATCHING_GLOB])]))
     # 実行
     result = run_claude(_edit_prompt(TARGET), indexes=index_url)
     # 検証: 前半と後半の両方が取り込まれている
@@ -134,7 +152,7 @@ def test_normal_when_no_match(claude_project, wiki_server, run_claude):
     # 準備: 編集対象にマッチしない glob だけを持つ索引を配置する
     target = _make_target(claude_project, TARGET)
     rule_url = wiki_server.put("rule.md", _rule_body("MARKER_UNUSED"))
-    index_url = wiki_server.put("rules.yaml", _index([(rule_url, [UNMATCHING_GLOB])]))
+    index_url = wiki_server.put("rules.yaml", _index([("rule.md", [UNMATCHING_GLOB])]))
     # 実行
     result = run_claude(_edit_prompt(TARGET), indexes=index_url)
     # 検証
@@ -186,7 +204,7 @@ def test_error_when_index_fetch_failed_with_cache(
     target = _make_target(claude_project, TARGET)
     rule_url = unreachable_url.replace("rules.yaml", "rule.md")
     write_cache(rule_url, _rule_body("MARKER_STALE"), cache_dir=cache_dir)
-    write_cache(unreachable_url, _index([(rule_url, [MATCHING_GLOB])]), cache_dir=cache_dir)
+    write_cache(unreachable_url, _index([("rule.md", [MATCHING_GLOB])]), cache_dir=cache_dir)
     _expire(cache_dir)
     since = time.time()
     # 実行
@@ -208,7 +226,7 @@ def test_error_when_rule_fetch_failed(
     ok_url = wiki_server.put("実在.md", _rule_body("MARKER_OK"))
     missing_url = wiki_server.url_for("実在しない.md")
     index_url = wiki_server.put(
-        "rules.yaml", _index([(ok_url, [MATCHING_GLOB]), (missing_url, [MATCHING_GLOB])])
+        "rules.yaml", _index([("実在.md", [MATCHING_GLOB]), ("実在しない.md", [MATCHING_GLOB])])
     )
     since = time.time()
     # 実行
