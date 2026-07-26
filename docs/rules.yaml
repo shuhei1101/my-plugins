@@ -42,6 +42,10 @@ rules:
   - rule: rules/dev/yaml-sot.md
     paths:
       - "**/*.{py,html,js,css,j2,ts,tsx,yaml,yml}*"
+  - rule: rules/dev/ルール索引への登録.md
+    paths:
+      - "**/docs/**/*.md"
+      - "**/docs/rules.yaml"
   - rule: rules/dev/コーディング全般.md
     paths:
       - "**/*.{py,html,js,css,j2,ts,tsx,yaml,yml}*"
