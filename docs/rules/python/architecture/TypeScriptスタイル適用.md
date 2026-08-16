@@ -50,6 +50,16 @@ Protocol は `@runtime_checkable` を付ければ `isinstance` も可能。
 - Pydantic は検証ありでやや重い → 外部境界に。dataclass は軽量 → 内部に
 - TypedDict は実体が dict なので `json.dumps` がそのまま使える。メソッドは生やせない
 
+## 条件付き必須フィールド
+
+ある項目の値によって他項目の必須 / 省略可が変わるデータは、全項目を `Optional` にして条件を注記する形で表さない。
+
+- 判別子を `Literal` で持つ型に種類ごとに分け、`Annotated[Union[...], Field(discriminator="{判別子}")]` で束ねる
+  - 必須 / 省略可の組み合わせが型で決まり、Pydantic の検証と型検査で効く
+- 分岐は `match` + `assert_never` で網羅させる（種類の追加を型エラーで検知する）
+- インターフェース定義（API のリクエスト仕様）も種類ごとに項目表を分ける
+  - 1 つの表に全項目を並べて補足列に「`{判別子の値}` のとき必須」と書かない
+
 ## Pick / Omit 相当
 
 規約化しない。必要時に Pydantic の `model_dump(exclude=...)`・継承、または別型を手書き。その都度判断でよい。
